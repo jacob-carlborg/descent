@@ -1049,6 +1049,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.TypeofReturnMustBeInsideFunction);
 		case PostBlitsAreOnlyForStructUnionDefinitions:
 			return String.format(ProblemMessages.PostBlitsAreOnlyForStructUnionDefinitions);
+		case CannotHaveEDotTuple:
+			return String.format(ProblemMessages.CannotHaveEDotTuple);
 		default:
 			return "";
 		}

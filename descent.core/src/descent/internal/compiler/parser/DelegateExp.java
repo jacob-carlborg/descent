@@ -5,8 +5,6 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 import static descent.internal.compiler.parser.TY.Tdelegate;
 import static descent.internal.compiler.parser.TY.Tfunction;
-import static descent.internal.compiler.parser.TY.Tpointer;
-import static descent.internal.compiler.parser.TY.Tstruct;
 
 
 public class DelegateExp extends UnaExp {
@@ -112,44 +110,10 @@ public class DelegateExp extends UnaExp {
 			e1 = e1.semantic(sc, context);
 			type = new TypeDelegate(func.type);
 			type = type.semantic(loc, sc, context);
-			//	-----------------
-			/* For func, we need to get the
-			 * right 'this' pointer if func is in an outer class, but our
-			 * existing 'this' pointer is in an inner class.
-			 * This code is analogous to that used for variables
-			 * in DotVarExp::semantic().
-			 */
 			AggregateDeclaration ad = func.toParent().isAggregateDeclaration();
-
-			boolean loop = true;
-			L10: while (loop) {
-				loop = false;
-				Type t = e1.type;
-				if (func.needThis()
-						&& ad != null
-						&& !(t.ty == Tpointer && t.next.ty == Tstruct && ((TypeStruct) t.next).sym == ad)
-						&& !(t.ty == Tstruct && ((TypeStruct) t).sym == ad)) {
-					ClassDeclaration cd = ad.isClassDeclaration();
-					ClassDeclaration tcd = t.isClassHandle();
-
-					if (cd == null || tcd == null
-							|| !(tcd == cd || cd.isBaseOf(tcd, null, context))) {
-						if (tcd != null && tcd.isNested()) { // Try again with outer scope
-
-							e1 = new DotVarExp(loc, e1, tcd.vthis);
-							e1 = e1.semantic(sc, context);
-							// goto L10;
-							loop = true;
-							continue L10;
-						}
-						if (context.acceptsProblems()) {
-							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ThisForSymbolNeedsToBeType, this, new String[] { func.toChars(context), ad.toChars(context), t
-									.toChars(context) }));
-						}
-					}
-				}
+			if (func.needThis()) {
+			    e1 = getRightThis(loc, sc, ad, e1, func, context);
 			}
-			//	-----------------
 		}
 		return this;
 	}

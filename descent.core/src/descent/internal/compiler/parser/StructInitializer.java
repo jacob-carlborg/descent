@@ -82,6 +82,8 @@ public class StructInitializer extends Initializer {
 						if (context.acceptsProblems()) {
 							context.acceptProblem(Problem.newSemanticTypeError(IProblem.TooManyInitializers, this, new String[] { ad.toChars(context) }));
 						}
+						field.remove(i);
+						i--;
 						continue;
 					} else {
 						s = ad.fields.get(fieldi);

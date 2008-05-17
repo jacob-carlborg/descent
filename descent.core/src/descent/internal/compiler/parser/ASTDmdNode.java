@@ -43,6 +43,7 @@ import static descent.internal.compiler.parser.TY.Tclass;
 import static descent.internal.compiler.parser.TY.Tdelegate;
 import static descent.internal.compiler.parser.TY.Tfunction;
 import static descent.internal.compiler.parser.TY.Tident;
+import static descent.internal.compiler.parser.TY.Tpointer;
 import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Tstruct;
 import static descent.internal.compiler.parser.TY.Ttuple;
@@ -1891,6 +1892,65 @@ public abstract class ASTDmdNode extends ASTNode {
 			break;
 		}
 		return e;
+	}
+	
+	/*************************************************************
+	 * Now that we have the right function f, we need to get the
+	 * right 'this' pointer if f is in an outer class, but our
+	 * existing 'this' pointer is in an inner class.
+	 * This code is analogous to that used for variables
+	 * in DotVarExp::semantic().
+	 */
+	public static Expression getRightThis(Loc loc, Scope sc,
+			AggregateDeclaration ad, Expression e1, Declaration var,
+			SemanticContext context) {
+		boolean gotoL1 = true;
+	L1:
+		while(gotoL1) {
+			gotoL1 = false;
+			
+			Type t = e1.type.toBasetype(context);
+	
+			if (ad != null
+					&& !(t.ty == Tpointer && t.next.ty == Tstruct && ((TypeStruct) t.next).sym == ad)
+					&& !(t.ty == Tstruct && ((TypeStruct) t).sym == ad)) {
+				ClassDeclaration cd = ad.isClassDeclaration();
+				ClassDeclaration tcd = t.isClassHandle();
+	
+				if (null == cd || null == tcd
+						|| !(tcd == cd || cd.isBaseOf(tcd, null, context))) {
+					if (tcd != null && tcd.isNested()) { // Try again with outer scope
+	
+						e1 = new DotVarExp(loc, e1, tcd.vthis);
+						e1 = e1.semantic(sc, context);
+	
+						// Skip over nested functions, and get the enclosing
+						// class type.
+						Dsymbol s = tcd.toParent();
+						while (s != null && s.isFuncDeclaration() != null) {
+							FuncDeclaration f = s.isFuncDeclaration();
+							if (f.vthis != null) {
+								e1 = new VarExp(loc, f.vthis);
+							}
+							s = s.toParent();
+						}
+						if (s != null && s.isClassDeclaration() != null) {
+							e1.type = s.isClassDeclaration().type;
+						}
+						e1 = e1.semantic(sc, context);
+						// goto L1;
+						gotoL1 = true;
+						continue L1;
+					}
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.ThisForSymbolNeedsToBeType, var, new String[] { var
+								.toChars(context), ad.toChars(context), t
+								.toChars(context) }));
+					}
+				}
+			}
+		}
+		return e1;
 	}
 	
 	public void errorOnModifier(int problemId, TOK tok, SemanticContext context) {

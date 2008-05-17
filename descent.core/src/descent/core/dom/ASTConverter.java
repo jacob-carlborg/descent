@@ -543,7 +543,11 @@ public class ASTConverter {
 	}
 	
 	public void convert(StorageClassDeclaration a, List<Declaration> toAdd) {
-		descent.core.dom.Modifier modifier = convert(a.modifier);
+		descent.core.dom.Modifier modifier = null;
+		
+		if (a.modifier != null) {
+			convert(a.modifier);
+		}
 		
 		if (a.single && a.decl != null && a.decl.size() >= 1) {
 			Declaration decl = convertDeclaration((Dsymbol) a.decl.get(0)); // SEMANTIC
@@ -584,8 +588,10 @@ public class ASTConverter {
 			}
 		}
 		
-		descent.core.dom.ModifierDeclaration b = new descent.core.dom.ModifierDeclaration(ast);			
-		b.setModifier(modifier);
+		descent.core.dom.ModifierDeclaration b = new descent.core.dom.ModifierDeclaration(ast);
+		if (modifier != null) {
+			b.setModifier(modifier);
+		}
 		convertDeclarations(b.declarations(), a.decl);
 		b.setSourceRange(a.start, a.length);
 		toAdd.add(b);
@@ -614,7 +620,10 @@ public class ASTConverter {
 	}
 
 	public void convert(ProtDeclaration a, List<Declaration> toAdd) {
-		descent.core.dom.Modifier modifier = convert(a.modifier);
+		descent.core.dom.Modifier modifier = null;
+		if (a.modifier != null) {
+			modifier = convert(a.modifier);
+		}
 		
 		if (a.single && a.decl != null && a.decl.size() > 0) {
 			if (a.decl.size() == 1) {
@@ -645,8 +654,10 @@ public class ASTConverter {
 			}
 		}
 		
-		descent.core.dom.ModifierDeclaration b = new descent.core.dom.ModifierDeclaration(ast);			
-		b.setModifier(modifier);
+		descent.core.dom.ModifierDeclaration b = new descent.core.dom.ModifierDeclaration(ast);
+		if (modifier != null) {
+			b.setModifier(modifier);
+		}
 		convertDeclarations(b.declarations(), a.decl);
 		b.setSourceRange(a.start, a.length);
 		toAdd.add(b);

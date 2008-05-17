@@ -10,9 +10,6 @@ import static descent.internal.compiler.parser.STC.STCfield;
 import static descent.internal.compiler.parser.TOK.TOKdsymbol;
 import static descent.internal.compiler.parser.TOK.TOKthis;
 
-import static descent.internal.compiler.parser.TY.Tpointer;
-import static descent.internal.compiler.parser.TY.Tstruct;
-
 
 public class DotVarExp extends UnaExp {
 
@@ -124,54 +121,7 @@ public class DotVarExp extends UnaExp {
 			{
 				AggregateDeclaration ad = var.toParent()
 						.isAggregateDeclaration();
-
-				boolean loop = true;
-				L1: while (loop) {
-					loop = false;
-
-					Type t = e1.type.toBasetype(context);
-
-					if (ad != null
-							&& !(t.ty == Tpointer && t.next.ty == Tstruct && ((TypeStruct) t.next).sym == ad)
-							&& !(t.ty == Tstruct && ((TypeStruct) t).sym == ad)) {
-						ClassDeclaration cd = ad.isClassDeclaration();
-						ClassDeclaration tcd = t.isClassHandle();
-
-						if (cd == null
-								|| tcd == null
-								|| !(tcd == cd || cd.isBaseOf(tcd, null,
-										context))) {
-							if (tcd != null && tcd.isNested()) { // Try again with outer scope
-
-								e1 = new DotVarExp(loc, e1, tcd.vthis);
-								e1 = e1.semantic(sc, context);
-
-								// Skip over nested functions, and get the enclosing
-								// class type.
-								Dsymbol s = tcd.toParent();
-								while (s != null
-										&& s.isFuncDeclaration() != null) {
-									FuncDeclaration f = s.isFuncDeclaration();
-									if (f.vthis() != null) {
-										e1 = new VarExp(loc, f.vthis());
-									}
-									s = s.toParent();
-								}
-								if (s != null && s.isClassDeclaration() != null) {
-									e1.type = s.isClassDeclaration().type;
-								}
-
-								// goto L1;
-								loop = true;
-								continue L1;
-							}
-							if (context.acceptsProblems()) {
-								context.acceptProblem(Problem.newSemanticTypeError(IProblem.ThisForSymbolNeedsToBeType, this, new String[] { var.toChars(context), ad.toChars(context),
-										t.toChars(context) }));
-							}
-						}
-					}
-				}
+			    e1 = getRightThis(loc, sc, ad, e1, var, context);
 				accessCheck(sc, e1, var, context);
 			}
 		}

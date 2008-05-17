@@ -471,6 +471,7 @@ final class ProblemMessages extends NLS {
 	public static String FunctionNameExpectedForStartAddress;
 	public static String TypeofReturnMustBeInsideFunction;
 	public static String PostBlitsAreOnlyForStructUnionDefinitions;
+	public static String CannotHaveEDotTuple;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

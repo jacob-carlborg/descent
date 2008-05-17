@@ -5,7 +5,6 @@ import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.IJavaElement;
-import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.lookup.SemanticRest;
 import descent.internal.compiler.parser.ast.IASTVisitor;
@@ -101,7 +100,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 				throw new IllegalStateException("assert(tvp);");
 			}
 
-			VarDeclaration v = new VarDeclaration(Loc.ZERO, tvp.valType,
+			VarDeclaration v = new VarDeclaration(loc, tvp.valType,
 					tp.ident, init);
 			v.storage_class = STCconst;
 			s = v;
@@ -654,8 +653,13 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			TemplateParameter tp = parameters.get(i);
 			Declaration[] sparam = { null };
 
-			m2 = tp.matchArg(paramscope, ti.tiargs, i, parameters, dedtypes,
-					sparam, context);
+			if (context.apiLevel == Parser.D2) {
+				// TODO Semantic fix this
+				// m2 = tp.matchArg(paramscope, ti.tiargs, i, parameters, dedtypes, sparam, (flag & 2) != 0 ? 1 : 0, context);
+				m2 = tp.matchArg(paramscope, ti.tiargs, i, parameters, dedtypes, sparam, context);
+			} else {
+				m2 = tp.matchArg(paramscope, ti.tiargs, i, parameters, dedtypes, sparam, context);
+			}
 
 			if (m2 == MATCHnomatch) {
 				// goto Lnomatch;

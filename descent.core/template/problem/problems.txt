@@ -1381,8 +1381,9 @@ TypeofReturnMustBeInsideFunction
 PostBlitsAreOnlyForStructUnionDefinitions
 	formatString=Post blits are only for struct/union definitions
 	numArgs=0
-
-
+CannotHaveEDotTuple
+	formatString=Cannot have e.tuple
+	numArgs=0
 
 
 

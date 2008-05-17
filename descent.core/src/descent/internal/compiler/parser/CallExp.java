@@ -390,41 +390,9 @@ public class CallExp extends UnaExp {
 					}
 					ad = td.toParent().isAggregateDeclaration();
 				}
-				/* Now that we have the right function f, we need to get the
-				 * right 'this' pointer if f is in an outer class, but our
-				 * existing 'this' pointer is in an inner class.
-				 * This code is analogous to that used for variables
-				 * in DotVarExp.semantic().
-				 */
-				boolean loopL10 = true;
-				L10: while (loopL10) {
-					loopL10 = false;
-					Type t = ue.e1.type.toBasetype(context);
-					if (f.needThis()
-							&& ad != null
-							&& !(t.ty == Tpointer && t.next.ty == Tstruct && ((TypeStruct) t.next).sym == ad)
-							&& !(t.ty == Tstruct && ((TypeStruct) t).sym == ad)) {
-						ClassDeclaration cd = ad.isClassDeclaration();
-						ClassDeclaration tcd = t.isClassHandle();
-
-						if (cd == null
-								|| tcd == null
-								|| !(tcd == cd || cd.isBaseOf(tcd, null,
-										context))) {
-							if (tcd != null && tcd.isNested()) { // Try again with outer scope
-
-								ue.e1 = new DotVarExp(loc, ue.e1, tcd.vthis);
-								ue.e1 = ue.e1.semantic(sc, context);
-								// goto L10;
-								loopL10 = true;
-								continue L10;
-							}
-							if (context.acceptsProblems()) {
-								context.acceptProblem(Problem.newSemanticTypeError(IProblem.ThisForSymbolNeedsToBeType, this, new String[] { f.toChars(context), ad.toChars(context), t
-												.toChars(context) }));
-							}
-						}
-					}
+				
+				if (f.needThis()) {
+				    ue.e1 = getRightThis(loc, sc, ad, ue.e1, f, context);
 				}
 
 				checkDeprecated(sc, f, context);

@@ -240,6 +240,33 @@ public class TypeAArray extends TypeArray {
 	}
 	
 	@Override
+	public void resolve(Loc loc, Scope sc, Expression[] pe, Type[] pt, Dsymbol[] ps, SemanticContext context) {
+	    // Deal with the case where we thought the index was a type, but
+		// in reality it was an expression.
+		if (index.ty == Tident || index.ty == Tinstance || index.ty == Tsarray) {
+			Expression[] e = { null };
+			Type[] t = { null };
+			Dsymbol[] s = { null };
+
+			index.resolve(loc, sc, e, t, s, context);
+			if (e[0] != null) { // It was an expression -
+				// Rewrite as a static array
+
+				TypeSArray tsa = new TypeSArray(next, e[0], context.encoder);
+				tsa.resolve(loc, sc, pe, pt, ps, context);
+				return;
+			} else if (t != null) {
+				index = t[0];
+			} else {
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.IndexIsNotATypeOrExpression, index));
+				}
+			}
+		}
+		super.resolve(loc, sc, pe, pt, ps, context);
+	}
+	
+	@Override
 	protected void appendSignature0(StringBuilder sb) {
 		sb.append('H');
 		index.appendSignature(sb);

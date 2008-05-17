@@ -670,5 +670,6 @@ public interface IProblem {
 	int FunctionNameExpectedForStartAddress = 459;
 	int TypeofReturnMustBeInsideFunction = 460;
 	int PostBlitsAreOnlyForStructUnionDefinitions = 461;
+	int CannotHaveEDotTuple = 462;
 
 }

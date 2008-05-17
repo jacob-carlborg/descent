@@ -38,6 +38,10 @@ public abstract class TemplateParameter extends ASTDmdNode {
 	public TemplateValueParameter isTemplateValueParameter() {
 		return null;
 	}
+	
+	public TemplateThisParameter isTemplateThisParameter() {
+		return null;
+	}
 
 	/**
 	 * Match actual argument against parameter.

@@ -198,6 +198,19 @@ public class DotIdExp extends UnaExp {
 				if (t != null) {
 					return new TypeExp(loc, t);
 				}
+				
+			    TupleDeclaration tup = s.isTupleDeclaration();
+			    if (tup != null)
+			    {
+				if (eleft != null) {
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotHaveEDotTuple, this));
+					}
+				}
+				e = new TupleExp(loc, tup, context);
+				e = e.semantic(sc, context);
+				return e;
+			    }
 
 				ScopeDsymbol sds = s.isScopeDsymbol();
 				if (sds != null) {

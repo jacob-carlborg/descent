@@ -473,39 +473,59 @@ public abstract class BinExp extends Expression {
 			}
 			return this;
 		} else if (t1.ty == Tclass || t2.ty == Tclass) {
-			MATCH i1;
-			MATCH i2;
 
-			i1 = e2.implicitConvTo(t1, context);
-			i2 = e1.implicitConvTo(t2, context);
+			while(true) {
+				MATCH i1 = e2.implicitConvTo(t1, context);
+				MATCH i2 = e1.implicitConvTo(t2, context);
+	
+				if (i1 != MATCHnomatch && i2 != MATCHnomatch) {
+					// We have the case of class vs. void*, so pick class
+					if (t1.ty == Tpointer) {
+						i1 = MATCHnomatch;
+					} else if (t2.ty == Tpointer) {
+						i2 = MATCHnomatch;
+					}
+				}
+	
+				if (i2 != MATCHnomatch) {
+					// goto Lt2;
+					e1 = e1.castTo(sc, t2, context);
+					t = t2;
+					if (type == null) {
+						type = t;
+					}
+					return this;
+				} else if (i1 != MATCHnomatch) {
+					// goto Lt1;
+					e2 = e2.castTo(sc, t1, context);
+					t = t1;
+					if (type == null) {
+						type = t;
+					}
+					return this;
+				} else if (t1.ty == Tclass && t2.ty == Tclass) {
+				    TypeClass tc1 = (TypeClass) t1;
+					TypeClass tc2 = (TypeClass) t2;
 
-			if (i1 != MATCHnomatch && i2 != MATCHnomatch) {
-				// We have the case of class vs. void*, so pick class
-				if (t1.ty == Tpointer) {
-					i1 = MATCHnomatch;
-				} else if (t2.ty == Tpointer) {
-					i2 = MATCHnomatch;
-				}
-			}
+					/* Pick 'tightest' type
+					 */
+					ClassDeclaration cd1 = tc1.sym.baseClass;
+					ClassDeclaration cd2 = tc2.sym.baseClass;
 
-			if (i2 != MATCHnomatch) {
-				// goto Lt2;
-				e1 = e1.castTo(sc, t2, context);
-				t = t2;
-				if (type == null) {
-					type = t;
+					if (cd1 != null && cd2 != null) {
+						t1 = cd1.type;
+						t2 = cd2.type;
+					} else if (cd1 != null)
+						t1 = cd1.type;
+					else if (cd2 != null)
+						t2 = cd2.type;
+					else {
+						// goto Lincompatible;
+						return typeCombine_Lincompatible_End(t, context);
+					}
+				} else {
+					return typeCombine_Lincompatible_End(t, context);
 				}
-				return this;
-			} else if (i1 != MATCHnomatch) {
-				// goto Lt1;
-				e2 = e2.castTo(sc, t1, context);
-				t = t1;
-				if (type == null) {
-					type = t;
-				}
-				return this;
-			} else {
-				return typeCombine_Lincompatible_End(t, context);
 			}
 		} else if ((e1.op == TOKstring || e1.op == TOKnull)
 				&& e1.implicitConvTo(t2, context) != MATCHnomatch) {
