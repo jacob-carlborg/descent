@@ -220,6 +220,9 @@ public class ScopeDsymbol extends Dsymbol {
 			sd = new ScopeDsymbol(ident);
 		}
 		sd.members = arraySyntaxCopy(members, context);
+		if (sd.members != null) {
+			sd.sourceMembers = new Dsymbols(sd.members);
+		}
 		return sd;
 	}
 	

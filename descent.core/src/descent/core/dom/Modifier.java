@@ -367,6 +367,14 @@ public class Modifier extends ASTNode {
 	 * @return the modifier keyword
 	 */ 
 	public ModifierKeyword getModifierKeyword() {
+		if (this.modifierKeyword == null) {
+			// lazy init must be thread-safe for readers
+			synchronized (this) {
+				if (this.modifierKeyword == null) {
+					this.modifierKeyword = ModifierKeyword.PUBLIC_KEYWORD;
+				}
+			}
+		}
 		return this.modifierKeyword;
 	}
 

@@ -295,39 +295,10 @@ public class FuncDeclaration extends Declaration {
 				return null;
 			}
 			if (materialized == null) {
-				try {
-					String source = javaElement.getSource();
-					// TODO api level
-					Parser parser = new Parser(source.toCharArray(), 0, source
-							.length(), false, false, false, false, Lexer.D1,
-							null, null, false, null);
-					parser.nextToken();
-
-					Module module = parser.parseModuleObj();
-
-					Dsymbol sym = module.members.get(0);
-					while (sym instanceof StorageClassDeclaration
-							|| sym instanceof ProtDeclaration) {
-						if (sym instanceof StorageClassDeclaration) {
-							sym = ((StorageClassDeclaration) sym).decl.get(0);
-						} else {
-							sym = ((ProtDeclaration) sym).decl.get(0);
-						}
-					}
-
-					if (sym instanceof TemplateDeclaration) {
-						sym = ((TemplateDeclaration) sym).members.get(0);
-					}
-
-					FuncDeclaration func = (FuncDeclaration) sym;
-					func.semantic(scope.enclosing, context);
-					func.semantic2(scope.enclosing, context);
-					func.semantic3(scope.enclosing, context);
-					materialized = func;
-				} catch (JavaModelException e1) {
-					Util.log(e1);
-					return null;
-				}
+				materialized = materialize();
+				materialized.semantic(scope.enclosing, context);
+				materialized.semantic2(scope.enclosing, context);
+				materialized.semantic3(scope.enclosing, context);
 			}
 			return materialized.interpret(istate, arguments, context);
 		}
@@ -518,6 +489,38 @@ public class FuncDeclaration extends Declaration {
 		}
 
 		return e;
+	}
+	
+	public FuncDeclaration materialize() {
+		try {
+			String source = javaElement.getSource();
+			// TODO api level
+			Parser parser = new Parser(source.toCharArray(), 0, source
+					.length(), false, false, false, false, Lexer.D1,
+					null, null, false, null);
+			parser.nextToken();
+
+			Module module = parser.parseModuleObj();
+
+			Dsymbol sym = module.members.get(0);
+			while (sym instanceof StorageClassDeclaration
+					|| sym instanceof ProtDeclaration) {
+				if (sym instanceof StorageClassDeclaration) {
+					sym = ((StorageClassDeclaration) sym).decl.get(0);
+				} else {
+					sym = ((ProtDeclaration) sym).decl.get(0);
+				}
+			}
+
+			if (sym instanceof TemplateDeclaration) {
+				sym = ((TemplateDeclaration) sym).members.get(0);
+			}
+
+			return (FuncDeclaration) sym;
+		} catch (JavaModelException e1) {
+			Util.log(e1);
+			return null;
+		}
 	}
 
 	@Override

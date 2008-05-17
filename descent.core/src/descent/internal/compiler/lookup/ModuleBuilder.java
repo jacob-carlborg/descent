@@ -469,7 +469,7 @@ public class ModuleBuilder {
 				member.rest = new SemanticRest(new Runnable() {
 					public void run() {
 						try {
-							member.type = getType(method);
+							member.type = member.sourceType = getType(method);
 						} catch (JavaModelException e) {
 							Util.log(e);
 						}
@@ -498,8 +498,12 @@ public class ModuleBuilder {
 					public void run() {
 						try {
 							member.baseclasses = getBaseClasses(type);
+							if (member.baseclasses != null) {
+								member.sourceBaseclasses = new BaseClasses(member.baseclasses);
+							}
 							member.members = new Dsymbols();
 							fill(module, member.members, type.getChildren(), state);
+							member.sourceMembers = new Dsymbols(member.members);
 						} catch (JavaModelException e) {
 							Util.log(e);
 						}	
@@ -509,6 +513,7 @@ public class ModuleBuilder {
 				member = new ClassDeclaration(getLoc(module, type), getIdent(type), getBaseClasses(type));
 				member.members = new Dsymbols();
 				fill(module, member.members, type.getChildren(), state);
+				member.sourceMembers = new Dsymbols(member.members);
 			}
 
 			member.setJavaElement(type);
@@ -522,8 +527,12 @@ public class ModuleBuilder {
 					public void run() {
 						try {
 							member.baseclasses = getBaseClasses(type);
+							if (member.baseclasses != null) {
+								member.sourceBaseclasses = new BaseClasses(member.baseclasses);
+							}
 							member.members = new Dsymbols();
 							fill(module, member.members, type.getChildren(), state);
+							member.sourceMembers = new Dsymbols(member.members);
 						} catch (JavaModelException e) {
 							Util.log(e);
 						}	
@@ -535,6 +544,7 @@ public class ModuleBuilder {
 				
 				member.members = new Dsymbols();
 				fill(module, member.members, type.getChildren(), state);
+				member.sourceMembers = new Dsymbols(member.members);
 			}
 			
 			member.setJavaElement(type);
@@ -553,6 +563,7 @@ public class ModuleBuilder {
 							member.members = new Dsymbols();
 							try {
 								fill(module, member.members, type.getChildren(), state);
+								member.sourceMembers = new Dsymbols(member.members);
 							} catch (JavaModelException e) {
 								Util.log(e);
 							}
@@ -562,6 +573,7 @@ public class ModuleBuilder {
 					member = new StructDeclaration(getLoc(module, type), id);
 					member.members = new Dsymbols();
 					fill(module, member.members, type.getChildren(), state);
+					member.sourceMembers = new Dsymbols(member.members);
 				}
 				
 				member.setJavaElement(type);
@@ -581,6 +593,7 @@ public class ModuleBuilder {
 							member.members = new Dsymbols();
 							try {
 								fill(module, member.members, type.getChildren(), state);
+								member.sourceMembers = new Dsymbols(member.members);
 							} catch (JavaModelException e) {
 								Util.log(e);
 							}
@@ -591,6 +604,7 @@ public class ModuleBuilder {
 					
 					member.members = new Dsymbols();
 					fill(module, member.members, type.getChildren(), state);
+					member.sourceMembers = new Dsymbols(member.members);
 				}
 				
 				member.setJavaElement(type);
@@ -617,6 +631,7 @@ public class ModuleBuilder {
 								enumMember.setJavaElement(field);
 								member.members.add(enumMember);
 							}
+							member.sourceMembers = new Dsymbols(member.members);
 						} catch (JavaModelException e) {
 							Util.log(e);
 						}
@@ -633,6 +648,7 @@ public class ModuleBuilder {
 					enumMember.setJavaElement(field);
 					member.members.add(enumMember);
 				}
+				member.sourceMembers = new Dsymbols(member.members);
 			}
 			
 			member.setJavaElement(type);
@@ -649,6 +665,7 @@ public class ModuleBuilder {
 							fill(module, symbols, type.getChildren(), state);
 							
 							member.members = symbols;
+							member.sourceMembers = new Dsymbols(member.members);
 							member.parameters = getTemplateParameters(type);
 						} catch (JavaModelException e) {
 							Util.log(e);
@@ -686,8 +703,8 @@ public class ModuleBuilder {
 				member.rest = new SemanticRest(new Runnable() {
 					public void run() {
 						try {
-							member.type = getType(field.getTypeSignature());
-							member.init = getInitializer(field);
+							member.type = member.sourceType = getType(field.getTypeSignature());
+							member.init = member.sourceInit = getInitializer(field);
 						} catch (JavaModelException e) {
 							Util.log(e);
 						}
@@ -706,7 +723,7 @@ public class ModuleBuilder {
 				member.rest = new SemanticRest(new Runnable() {
 					public void run() {
 						try {
-							member.type = getType(field.getTypeSignature());
+							member.type = member.sourceType = getType(field.getTypeSignature());
 						} catch (JavaModelException e) {
 							Util.log(e);
 						}

@@ -243,6 +243,11 @@ public class IdentifierExp extends Expression {
 	public Expression toLvalue(Scope sc, Expression e, SemanticContext context) {
 		return this;
 	}
+	
+	@Override
+	public IdentifierExp syntaxCopy(SemanticContext context) {
+		return (IdentifierExp) super.syntaxCopy(context);
+	}
 
 	@Override
 	public String toString() {

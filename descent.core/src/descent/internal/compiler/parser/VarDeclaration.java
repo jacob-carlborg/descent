@@ -671,7 +671,7 @@ public class VarDeclaration extends Declaration {
 			}
 
 			sv = new VarDeclaration(loc, type != null ? type.syntaxCopy(context)
-					: null, ident, init);
+					: null, ident.syntaxCopy(context), init);
 			sv.storage_class = storage_class;
 		}
 		// Syntax copy for header file

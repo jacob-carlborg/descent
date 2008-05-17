@@ -77,8 +77,6 @@ public class ASTConverter {
 	protected IProgressMonitor monitor;
 	protected boolean resolveBindings;
 	
-	public boolean inTemplateInstantiation;
-	
 	private Comment[] moduleComments;
 	
 	public ASTConverter(boolean resolveBindings, IProgressMonitor monitor) {
@@ -116,7 +114,7 @@ public class ASTConverter {
 			unit.setModuleDeclaration(convert(module.md));
 		}
 		convertDeclarations(unit.declarations(), module.sourceMembers);
-		unit.setSourceRange(module.start, module.length);		
+		setSourceRange(unit, module.start, module.length);		
 		return unit;
 	}
 
@@ -124,7 +122,7 @@ public class ASTConverter {
 		Pragma[] to = new Pragma[from == null ? 0 : from.length];
 		for(int i = 0; i < (from == null ? 0 : from.length); i++) {
 			to[i] = ast.newPragma();
-			to[i].setSourceRange(from[i].start, from[i].length);
+			setSourceRange(to[i], from[i].start, from[i].length);
 		}
 		return to;
 	}
@@ -499,7 +497,7 @@ public class ASTConverter {
 				}
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
@@ -523,11 +521,11 @@ public class ASTConverter {
 				if (convertedValue != null) {
 					fragment.setValue(convertedValue);
 				}
-				fragment.setSourceRange(key.start, value.start + value.length - key.start);
+				setSourceRange(fragment, key.start, value.start + value.length - key.start);
 				b.fragments().add(fragment);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
@@ -546,7 +544,7 @@ public class ASTConverter {
 		descent.core.dom.Modifier modifier = null;
 		
 		if (a.modifier != null) {
-			convert(a.modifier);
+			modifier = convert(a.modifier);
 		}
 		
 		if (a.single && a.decl != null && a.decl.size() >= 1) {
@@ -593,7 +591,7 @@ public class ASTConverter {
 			b.setModifier(modifier);
 		}
 		convertDeclarations(b.declarations(), a.decl);
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		toAdd.add(b);
 	}
 
@@ -603,7 +601,7 @@ public class ASTConverter {
 		convertDeclarations(b.declarations(), a.decl.subList(0, i));
 		if (b.declarations().size() > 0) {
 			Declaration last = b.declarations().get(b.declarations().size() - 1);
-			b.setSourceRange(a.start, last.getStartPosition() + last.getLength() - a.start);
+			setSourceRange(b, a.start, last.getStartPosition() + last.getLength() - a.start);
 			toAdd.add(b);
 			if (dsymbol instanceof ProtDeclaration) {
 				convert((ProtDeclaration) dsymbol, toAdd);
@@ -629,7 +627,7 @@ public class ASTConverter {
 			if (a.decl.size() == 1) {
 				Declaration decl = convertDeclaration((Dsymbol) a.decl.get(0)); // SEMANTIC
 				decl.modifiers().add(0, modifier);
-				decl.setSourceRange(a.start, a.length);
+				setSourceRange(decl, a.start, a.length);
 				toAdd.add(decl);
 				return;
 			} else {
@@ -659,7 +657,7 @@ public class ASTConverter {
 			b.setModifier(modifier);
 		}
 		convertDeclarations(b.declarations(), a.decl);
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		toAdd.add(b);
 	}
 	
@@ -681,7 +679,7 @@ public class ASTConverter {
 				}
 			}
 			declaration.modifiers().add(modifier);
-			declaration.setSourceRange(modifier.getStartPosition(), declaration.getStartPosition() + declaration.getLength() - modifier.getStartPosition());
+			setSourceRange(declaration, modifier.getStartPosition(), declaration.getStartPosition() + declaration.getLength() - modifier.getStartPosition());
 			return declaration;
 		} else {
 			return null;
@@ -711,7 +709,7 @@ public class ASTConverter {
 			}
 		}
 		
-		varToReturn.setSourceRange(start, last.start + last.length - first.start);
+		setSourceRange(varToReturn, start, last.start + last.length - first.start);
 		return varToReturn;
 	}
 	
@@ -735,7 +733,7 @@ public class ASTConverter {
 			}
 		}
 		
-		varToReturn.setSourceRange(first.start, last.start + last.length - first.start);
+		setSourceRange(varToReturn, first.start, last.start + last.length - first.start);
 		return varToReturn;
 	}
 	
@@ -759,7 +757,7 @@ public class ASTConverter {
 			}
 		}
 		
-		varToReturn.setSourceRange(first.start, last.start + last.length - first.start);
+		setSourceRange(varToReturn, first.start, last.start + last.length - first.start);
 		return varToReturn;
 	}
 	
@@ -780,7 +778,7 @@ public class ASTConverter {
 				b.setBody(convertedStatement);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
@@ -808,7 +806,7 @@ public class ASTConverter {
 		if (sa != null) {
 			b.setStaticAssert(sa);
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
@@ -828,7 +826,7 @@ public class ASTConverter {
 				}
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
@@ -845,7 +843,7 @@ public class ASTConverter {
 			if (convertedBody != null) {
 				b.setBody(convertedBody);
 			}
-			b.setSourceRange(a.start, a.length);
+			setSourceRange(b, a.start, a.length);
 		}
 		if (b != null) {
 			if (a.sourceFinalBody != null) {
@@ -872,7 +870,7 @@ public class ASTConverter {
 			if (a.sourceTspec != null) {
 				b.setSpecialization(convert(a.sourceTspec));
 			}
-			b.setSourceRange(a.start, a.length);
+			setSourceRange(b, a.start, a.length);
 			
 			if (resolveBindings) {
 				recordNodes(b, a);
@@ -900,7 +898,7 @@ public class ASTConverter {
 			case TOKreturn: b.setSpecialization(TypeSpecialization.RETURN); break;
 			case TOKsuper: b.setSpecialization(TypeSpecialization.SUPER); break;
 			}
-			b.setSourceRange(a.start, a.length);
+			setSourceRange(b, a.start, a.length);
 			
 			if (resolveBindings) {
 				recordNodes(b, a);
@@ -923,7 +921,7 @@ public class ASTConverter {
 		} else {
 			b.setOperator(PostfixExpression.Operator.DECREMENT);
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
@@ -952,7 +950,7 @@ public class ASTConverter {
 		if (a.sourceBody != null) {
 			b.setBody(convert(a.sourceBody));
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
@@ -979,7 +977,7 @@ public class ASTConverter {
 				b.setType(converted);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
@@ -1002,7 +1000,7 @@ public class ASTConverter {
 		if (a.sourceUpr != null) {
 			b.setToExpression(convert(a.sourceUpr));
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
@@ -1019,7 +1017,7 @@ public class ASTConverter {
 				b.setType(converted);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
@@ -1043,7 +1041,7 @@ public class ASTConverter {
 				}
 			}
 		}
-		tt.setSourceRange(tempinst.start, tempinst.length);
+		setSourceRange(tt, tempinst.start, tempinst.length);
 		return tt;
 	}
 	
@@ -1061,7 +1059,7 @@ public class ASTConverter {
 				}
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(b, a.name);
@@ -1082,7 +1080,7 @@ public class ASTConverter {
 				b.setTemplateType(convertedTi);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
@@ -1096,7 +1094,7 @@ public class ASTConverter {
 		if (a.sourceExp != null) {
 			b.setExpression(convert(a.sourceExp));
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
@@ -1108,7 +1106,7 @@ public class ASTConverter {
 				b.setExpression(convertedExp);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
@@ -1127,7 +1125,7 @@ public class ASTConverter {
 		if (a.sourceSpecValue != null) {
 			b.setSpecificValue(convert(a.sourceSpecValue));
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
@@ -1140,7 +1138,7 @@ public class ASTConverter {
 		if (a.sourceSpecType != null) {
 			b.setSpecificType(convert(a.sourceSpecType));
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
@@ -1152,7 +1150,7 @@ public class ASTConverter {
 				b.setName(convertedIdent);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
@@ -1170,7 +1168,7 @@ public class ASTConverter {
 		if (a.sourceSpecAliasT != null) {
 			b.setSpecificType(convert(a.sourceSpecAliasT));
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
@@ -1210,7 +1208,7 @@ public class ASTConverter {
 	
 	public descent.core.dom.VoidInitializer convert(VoidInitializer a) {
 		descent.core.dom.VoidInitializer b = new descent.core.dom.VoidInitializer(ast);
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
@@ -1227,7 +1225,7 @@ public class ASTConverter {
 		}
 		convertExpressions(b.newArguments(), a.sourceNewargs);
 		convertExpressions(b.constructorArguments(), a.sourceArguments);
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
@@ -1246,7 +1244,7 @@ public class ASTConverter {
 		convertExpressions(b.constructorArguments(), a.arguments);
 		convertBaseClasses(b.baseClasses(), a.cd.sourceBaseclasses);
 		convertDeclarations(b.declarations(), a.cd.members);
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
@@ -1269,7 +1267,7 @@ public class ASTConverter {
 		if (a.sourceUpr != null) {
 			b.setToExpression(convert(a.sourceUpr));
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return convertModifiedType(a, b);
 	}
 	
@@ -1287,7 +1285,7 @@ public class ASTConverter {
 				b.setSize(convertion);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return convertModifiedType(a, b);
 	}
 	
@@ -1304,7 +1302,7 @@ public class ASTConverter {
 			}
 			b.setVariadic(ty.varargs != 0);
 			convertArguments(b.arguments(), ty.parameters);
-			b.setSourceRange(a.start, a.length);
+			setSourceRange(b, a.start, a.length);
 			
 			if (resolveBindings) {
 				recordNodes(b, a);
@@ -1314,7 +1312,7 @@ public class ASTConverter {
 		} else {
 			PointerType b = new PointerType(ast);
 			b.setComponentType(convert(a.sourceNext));
-			b.setSourceRange(a.start, a.length);
+			setSourceRange(b, a.start, a.length);
 			
 			if (resolveBindings) {
 				recordNodes(b, a);
@@ -1338,7 +1336,7 @@ public class ASTConverter {
 				b.setName(convertedName);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
@@ -1359,7 +1357,7 @@ public class ASTConverter {
 		}
 		b.setVariadic(ty.varargs != 0);
 		convertArguments(b.arguments(), ty.parameters);
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return convertModifiedType(a, b);
 	}
 	
@@ -1377,7 +1375,7 @@ public class ASTConverter {
 				b.setKeyType(convertedIndex);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return convertModifiedType(a, b);
 	}
 	
@@ -1389,7 +1387,7 @@ public class ASTConverter {
 				b.setComponentType(convertedType);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return convertModifiedType(a, b);
 	}
 	
@@ -1403,18 +1401,18 @@ public class ASTConverter {
 		}
 		if (a.sourceInit == null) {
 			if (a.ident == null) {
-				b.setSourceRange(a.type.start + a.type.length, 0);
+				setSourceRange(b, a.type.start + a.type.length, 0);
 			} else {
-				b.setSourceRange(a.ident.start, a.ident.length);
+				setSourceRange(b, a.ident.start, a.ident.length);
 			}
 		} else {
 			descent.core.dom.Initializer init = (descent.core.dom.Initializer) convert(a.sourceInit); // SEMANTIC
 			if (init != null) {
 				b.setInitializer(init);
 				if (a.ident != null) {
-					b.setSourceRange(a.ident.start, init.getStartPosition() + init.getLength() - a.ident.start);	
+					setSourceRange(b, a.ident.start, init.getStartPosition() + init.getLength() - a.ident.start);	
 				} else {
-					b.setSourceRange(a.start, a.length);
+					setSourceRange(b, a.start, a.length);
 				}
 			}
 		}
@@ -1437,15 +1435,15 @@ public class ASTConverter {
 		}
 		if (a.init == null) {
 			if (a.ident != null) {
-				b.setSourceRange(a.ident.start, a.ident.length);
+				setSourceRange(b, a.ident.start, a.ident.length);
 			} else {
-				b.setSourceRange(a.start, a.length);
+				setSourceRange(b, a.start, a.length);
 			}
 		} else {
 			descent.core.dom.Initializer init = convert(a.init);
 			if (init != null) {
 				b.setInitializer(init);
-				b.setSourceRange(a.ident.start, init.getStartPosition() + init.getLength() - a.ident.start);
+				setSourceRange(b, a.ident.start, init.getStartPosition() + init.getLength() - a.ident.start);
 			}
 		}
 		
@@ -1476,15 +1474,15 @@ public class ASTConverter {
 					SelectiveImport selective = new SelectiveImport(ast);
 					selective.setName((SimpleName) convert(name));
 					if (alias == null) {
-						selective.setSourceRange(name.start, name.length);
+						setSourceRange(selective, name.start, name.length);
 					} else {
 						selective.setAlias((SimpleName) convert(alias));
-						selective.setSourceRange(alias.start, name.start + name.length - alias.start);
+						setSourceRange(selective, alias.start, name.start + name.length - alias.start);
 					}
 					b.selectiveImports().add(selective);
 				}
 			}
-			b.setSourceRange(a.start, a.length);
+			setSourceRange(b, a.start, a.length);
 			
 			c.imports().add(b);
 			
@@ -1496,7 +1494,7 @@ public class ASTConverter {
 			a = a.next;
 		}
 		fillDeclaration(c, first);
-		c.setSourceRange(first.firstStart, last.start + last.lastLength - first.firstStart);
+		setSourceRange(c, first.firstStart, last.start + last.lastLength - first.firstStart);
 		return c;
 	}
 	
@@ -1522,7 +1520,7 @@ public class ASTConverter {
 				b.setBody(convertedStatement);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
@@ -1570,7 +1568,7 @@ public class ASTConverter {
 		if (a.sourceElsebody != null) {
 			b.setElseBody(convert(a.sourceElsebody));
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
@@ -1597,9 +1595,9 @@ public class ASTConverter {
 				mixin.setExpression(convertedExp);
 			}
 		}
-		mixin.setSourceRange(a.start, a.length);
+		setSourceRange(mixin, a.start, a.length);
 		b.setDeclaration(mixin);
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
@@ -1627,7 +1625,7 @@ public class ASTConverter {
 		b.setVariadic(ty.varargs != 0);
 		convertArguments(b.arguments(), ty.parameters);
 		fillFunction(b, a.fd);
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
@@ -1681,7 +1679,7 @@ public class ASTConverter {
 				b.setBody(convertedBody);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
@@ -1714,7 +1712,7 @@ public class ASTConverter {
 				b.setBody(convertedBody);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
@@ -1735,7 +1733,7 @@ public class ASTConverter {
 				b.setBody(convertedBody);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 
@@ -1793,7 +1791,7 @@ public class ASTConverter {
 	private descent.core.dom.DeclarationStatement wrapWithDeclarationStatement(Declaration declaration) {
 		descent.core.dom.DeclarationStatement declStatement = ast.newDeclarationStatement();
 		declStatement.setDeclaration(declaration);
-		declStatement.setSourceRange(declaration.getStartPosition(), declaration.getLength());
+		setSourceRange(declStatement, declaration.getStartPosition(), declaration.getLength());
 		return declStatement;
 	}
 
@@ -1808,7 +1806,7 @@ public class ASTConverter {
 		if (a.sourceValue != null) {
 			b.setValue(convert(a.sourceValue));
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
@@ -1977,13 +1975,13 @@ public class ASTConverter {
 				b.setLabel(convertedIdent);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
 	public descent.core.dom.GotoDefaultStatement convert(GotoDefaultStatement a) {
 		descent.core.dom.GotoDefaultStatement b = new descent.core.dom.GotoDefaultStatement(ast);
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
@@ -1995,7 +1993,7 @@ public class ASTConverter {
 				b.setLabel(convertedExp);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
@@ -2007,7 +2005,7 @@ public class ASTConverter {
 				b.setExpression(convertedExp);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
@@ -2019,7 +2017,7 @@ public class ASTConverter {
 	public descent.core.dom.Statement convert(ExpStatement a) {
 		if (a.sourceExp == null) {
 			descent.core.dom.EmptyStatement b = new descent.core.dom.EmptyStatement(ast);
-			b.setSourceRange(a.start, a.length);
+			setSourceRange(b, a.start, a.length);
 			return b;
 		} else {
 			descent.core.dom.ExpressionStatement b = new descent.core.dom.ExpressionStatement(ast);
@@ -2027,7 +2025,7 @@ public class ASTConverter {
 			if (convertedExp != null) {
 				b.setExpression(convertedExp);
 			}
-			b.setSourceRange(a.start, a.length);
+			setSourceRange(b, a.start, a.length);
 			return b;
 		}
 	}
@@ -2040,7 +2038,7 @@ public class ASTConverter {
 				b.setExpression(convertedExp);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
@@ -2059,7 +2057,7 @@ public class ASTConverter {
 				b.setName(convertedIdent);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
@@ -2070,7 +2068,7 @@ public class ASTConverter {
 	
 	public descent.core.dom.Expression convert(DollarExp a) {
 		descent.core.dom.DollarLiteral b = new descent.core.dom.DollarLiteral(ast);
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
@@ -2093,7 +2091,7 @@ public class ASTConverter {
 				b.setExpression(convertedCondition);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
@@ -2111,7 +2109,7 @@ public class ASTConverter {
 				b.setExpression(convertedExp);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
@@ -2129,7 +2127,7 @@ public class ASTConverter {
 				b.setExpression(convertedExp);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
@@ -2147,7 +2145,7 @@ public class ASTConverter {
 				b.setExpression(convertedExp);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
@@ -2159,7 +2157,7 @@ public class ASTConverter {
 				b.setBody(convertedStm);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
@@ -2177,7 +2175,7 @@ public class ASTConverter {
 				b.setExpression(convertedExp);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
@@ -2190,7 +2188,7 @@ public class ASTConverter {
 			if (cond.ident != null) {
 				descent.core.dom.Version version = ast.newVersion(new String(
 						cond.ident));
-				version.setSourceRange(cond.startPosition, cond.length);
+				setSourceRange(version, cond.startPosition, cond.length);
 				b.setVersion(version);
 			}
 			ret = b;
@@ -2242,7 +2240,7 @@ public class ASTConverter {
 			if (cond.ident != null) {
 				descent.core.dom.Version version = ast.newVersion(new String(
 						cond.ident));
-				version.setSourceRange(cond.startPosition, cond.length);
+				setSourceRange(version, cond.startPosition, cond.length);
 				b.setVersion(version);
 			}
 			ret = b;
@@ -2269,7 +2267,7 @@ public class ASTConverter {
 				DebugStatement b = new DebugStatement(ast);
 				if (cond.ident != null) {
 					descent.core.dom.Version version = ast.newVersion(new String(cond.ident));
-					version.setSourceRange(cond.startPosition, cond.length);
+					setSourceRange(version, cond.startPosition, cond.length);
 					b.setVersion(version);
 				}
 				ret = b;
@@ -2323,7 +2321,7 @@ public class ASTConverter {
 				VersionStatement b = new VersionStatement(ast);
 				if (cond.ident != null) {
 					descent.core.dom.Version version = ast.newVersion(new String(cond.ident));
-					version.setSourceRange(cond.startPosition, cond.length);
+					setSourceRange(version, cond.startPosition, cond.length);
 					b.setVersion(version);
 				}
 				ret = b;
@@ -2339,7 +2337,7 @@ public class ASTConverter {
 		if (a.elsebody != null) {
 			ret.setElseBody(convert(a.elsebody));
 		}
-		ret.setSourceRange(a.start, a.length);
+		setSourceRange(ret, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(ret, a);
@@ -2356,7 +2354,7 @@ public class ASTConverter {
 				b.setExpression(convertedExp);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
@@ -2369,7 +2367,7 @@ public class ASTConverter {
 		descent.core.dom.DefaultStatement b = new descent.core.dom.DefaultStatement(ast);
 		if(!(a.sourceStatement instanceof SwitchErrorStatement))
 			convertStatements(b.statements(), ((CompoundStatement) ((ScopeStatement) a.sourceStatement).sourceStatement).sourceStatements);
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
@@ -2382,7 +2380,7 @@ public class ASTConverter {
 				b.setOperand(convertedExp);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
@@ -2400,7 +2398,7 @@ public class ASTConverter {
 				b.setOperand(convertedExp);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
@@ -2416,23 +2414,23 @@ public class ASTConverter {
 		if (declaration != null) {
 			b.setDeclaration(declaration);
 		}
-		declaration.setSourceRange(a.start, a.length);
+		setSourceRange(declaration, a.start, a.length);
 		
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
 	public descent.core.dom.Version convert(Version a) {
 		descent.core.dom.Version b = new descent.core.dom.Version(ast);
 		b.setValue(new String(a.value));
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
 	public descent.core.dom.DebugAssignment convert(DebugSymbol a) {
 		descent.core.dom.DebugAssignment b = new descent.core.dom.DebugAssignment(ast);
 		b.setVersion(convert(a.version));
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		fillDeclaration(b, a);
 		return b;
 	}
@@ -2440,7 +2438,7 @@ public class ASTConverter {
 	public descent.core.dom.VersionAssignment convert(VersionSymbol a) {
 		descent.core.dom.VersionAssignment b = new descent.core.dom.VersionAssignment(ast);
 		b.setVersion(convert(a.version));
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		fillDeclaration(b, a);
 		return b;
 	}
@@ -2450,7 +2448,7 @@ public class ASTConverter {
 		if (a.ident != null) {
 			b.setLabel((SimpleName) convert(a.ident));
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
@@ -2474,7 +2472,7 @@ public class ASTConverter {
 				b.setElseExpression(convertedExp);
 			}
 		}
-		b.setSourceRange(a.sourceEcond.start, a.sourceE2.start + a.sourceE2.length - a.sourceEcond.start);
+		setSourceRange(b, a.sourceEcond.start, a.sourceE2.start + a.sourceE2.length - a.sourceEcond.start);
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
@@ -2506,7 +2504,7 @@ public class ASTConverter {
 		} else {
 			descent.core.dom.Block b = new descent.core.dom.Block(ast);
 			convertStatements(b.statements(), a.sourceStatements);
-			b.setSourceRange(a.start, a.length);
+			setSourceRange(b, a.start, a.length);
 			return b;
 		}
 	}
@@ -2519,7 +2517,7 @@ public class ASTConverter {
 				b.setExpression(convertedExp);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
@@ -2547,7 +2545,7 @@ public class ASTConverter {
 			if (convertedIdent != null) {
 				b.setName(convertedIdent);
 			}
-			b.setSourceRange(a.ident.start, a.ident.length);
+			setSourceRange(b, a.ident.start, a.ident.length);
 		}
 		
 		if (resolveBindings) {
@@ -2597,7 +2595,7 @@ public class ASTConverter {
 		if (a.sourceDefaultArg != null) {
 			b.setDefaultValue(convert(a.sourceDefaultArg));
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
@@ -2615,7 +2613,7 @@ public class ASTConverter {
 			}
 		}
 		convertExpressions(b.indexes(), a.sourceArguments);
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
@@ -2633,16 +2631,16 @@ public class ASTConverter {
 				ArrayInitializerFragment fragment = new ArrayInitializerFragment(ast);
 				if (index == null) {
 					fragment.setInitializer(convert(value));
-					fragment.setSourceRange(value.start, value.length);
+					setSourceRange(fragment, value.start, value.length);
 				} else {
 					fragment.setExpression(convert(index));
 					fragment.setInitializer(convert(value));
-					fragment.setSourceRange(index.start, value.start + value.length - index.start);
+					setSourceRange(fragment, index.start, value.start + value.length - index.start);
 				}
 				b.fragments().add(fragment);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;		
 	}
 	
@@ -2655,23 +2653,23 @@ public class ASTConverter {
 				StructInitializerFragment fragment = new StructInitializerFragment(ast);
 				if (index == null) {
 					fragment.setInitializer(convert(value));
-					fragment.setSourceRange(value.start, value.length);
+					setSourceRange(fragment, value.start, value.length);
 				} else {
 					fragment.setName((SimpleName) convert(index));
 					fragment.setInitializer(convert(value));
-					fragment.setSourceRange(index.start, value.start + value.length - index.start);
+					setSourceRange(fragment, index.start, value.start + value.length - index.start);
 				}
 				b.fragments().add(fragment);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
 	public descent.core.dom.Expression convert(ArrayLiteralExp a) {
 		descent.core.dom.ArrayLiteral b = new descent.core.dom.ArrayLiteral(ast);
 		convertExpressions(b.arguments(), a.sourceElements);
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
@@ -2683,7 +2681,7 @@ public class ASTConverter {
 	public descent.core.dom.AsmBlock convert(AsmBlock a) {
 		descent.core.dom.AsmBlock b = new descent.core.dom.AsmBlock(ast);
 		convertStatements(b.statements(), a.sourceStatements);
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
@@ -2693,11 +2691,11 @@ public class ASTConverter {
 			for(Token token : a.toklist) {
 				AsmToken asmToken = new AsmToken(ast);
 				asmToken.setToken(token.toString());
-				asmToken.setSourceRange(token.ptr, token.sourceLen);
+				setSourceRange(asmToken, token.ptr, token.sourceLen);
 				b.tokens().add(asmToken);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
@@ -2712,7 +2710,7 @@ public class ASTConverter {
 		if (a.msg != null) {
 			b.setMessage(convert(a.msg));
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
@@ -2725,9 +2723,9 @@ public class ASTConverter {
 		descent.core.dom.BaseClass b = new descent.core.dom.BaseClass(ast);
 		if (a.modifier != null) {
 			b.setModifier(convert(a.modifier));
-			b.setSourceRange(a.modifier.start, a.sourceType.start + a.sourceType.length - a.modifier.start);
+			setSourceRange(b, a.modifier.start, a.sourceType.start + a.sourceType.length - a.modifier.start);
 		} else {
-			b.setSourceRange(a.sourceType.start, a.sourceType.length);
+			setSourceRange(b, a.sourceType.start, a.sourceType.length);
 		}
 		if (a.sourceType != null) {
 			descent.core.dom.Type convertedType = convert(a.sourceType);
@@ -2743,7 +2741,7 @@ public class ASTConverter {
 		if (a.ident != null) {
 			b.setLabel((SimpleName) convert(a.ident));
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
@@ -2756,7 +2754,7 @@ public class ASTConverter {
 			}
 		}
 		convertExpressions(b.arguments(), a.sourceArguments);
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
@@ -2780,7 +2778,7 @@ public class ASTConverter {
 		if (x.sourceStatement != null && ((CompoundStatement) ((ScopeStatement) x.sourceStatement).sourceStatement).sourceStatements.size() > 0) {
 			convertStatements(b.statements(), ((CompoundStatement) ((ScopeStatement) x.sourceStatement).sourceStatement).sourceStatements);
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
@@ -2799,7 +2797,7 @@ public class ASTConverter {
 					b.setExpression(convertedExp);
 				}
 			}
-			b.setSourceRange(a.start, a.length);
+			setSourceRange(b, a.start, a.length);
 			
 			if (resolveBindings) {
 				recordNodes(b, a);
@@ -2813,16 +2811,16 @@ public class ASTConverter {
 			if (a.tok == TOK.TOKconst) {
 				// const.length() == 5
 				modifier.setModifierKeyword(ModifierKeyword.CONST_KEYWORD);
-				modifier.setSourceRange(a.modifierStart, 5);
+				setSourceRange(modifier, a.modifierStart, 5);
 			} else {
 				// invariant.length() == 9
 				modifier.setModifierKeyword(ModifierKeyword.INVARIANT_KEYWORD);
-				modifier.setSourceRange(a.modifierStart, 9);
+				setSourceRange(modifier, a.modifierStart, 9);
 			}
 			b.setModifier(modifier);
 			
 			b.setExpression(convertedExp);
-			b.setSourceRange(a.start, a.length);
+			setSourceRange(b, a.start, a.length);
 			
 			if (resolveBindings) {
 				recordNodes(b, a);
@@ -2849,7 +2847,7 @@ public class ASTConverter {
 				b.setBody(convertedHandler);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
@@ -2948,7 +2946,7 @@ public class ASTConverter {
 			}
 		}
 		if (a.sourceE2 != null && a.sourceE2 != null) {
-			b.setSourceRange(a.sourceE1.start, a.sourceE2.start + a.sourceE2.length - a.sourceE1.start);
+			setSourceRange(b, a.sourceE1.start, a.sourceE2.start + a.sourceE2.length - a.sourceE1.start);
 		}
 		
 		if (resolveBindings) {
@@ -2964,7 +2962,7 @@ public class ASTConverter {
 			if (a.value != null) {
 				b.setBooleanValue(a.value.equals(BigInteger.ONE));
 			}
-			b.setSourceRange(a.start, a.length);
+			setSourceRange(b, a.start, a.length);
 			
 			if (resolveBindings) {
 				recordNodes(b, a);
@@ -2976,7 +2974,7 @@ public class ASTConverter {
 			if (a.str != null) {
 				b.internalSetEscapedValue(new String(a.str));
 			}
-			b.setSourceRange(a.start, a.length);
+			setSourceRange(b, a.start, a.length);
 			
 			if (resolveBindings) {
 				recordNodes(b, a);
@@ -2988,7 +2986,7 @@ public class ASTConverter {
 			if (a.str != null) {
 				b.internalSetToken(new String(a.str));
 			}
-			b.setSourceRange(a.start, a.length);
+			setSourceRange(b, a.start, a.length);
 			
 			if (resolveBindings) {
 				recordNodes(b, a);
@@ -3001,7 +2999,7 @@ public class ASTConverter {
 	public descent.core.dom.Expression convert(RealExp a) {
 		descent.core.dom.NumberLiteral b = new descent.core.dom.NumberLiteral(ast);
 		b.internalSetToken(new String(a.str));
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
@@ -3012,7 +3010,7 @@ public class ASTConverter {
 	
 	public descent.core.dom.Expression convert(NullExp a) {
 		descent.core.dom.NullLiteral b = new descent.core.dom.NullLiteral(ast);
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
@@ -3023,7 +3021,7 @@ public class ASTConverter {
 	
 	public descent.core.dom.Expression convert(ThisExp a) {
 		descent.core.dom.ThisLiteral b = new descent.core.dom.ThisLiteral(ast);
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
@@ -3034,7 +3032,7 @@ public class ASTConverter {
 	
 	public descent.core.dom.Expression convert(SuperExp a) {
 		descent.core.dom.SuperLiteral b = new descent.core.dom.SuperLiteral(ast);
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
@@ -3050,7 +3048,7 @@ public class ASTConverter {
 				b.stringLiterals().add((StringLiteral) convert(next));
 			}
 			StringExp last = a.allStringExps.get(a.allStringExps.size() - 1);			
-			b.setSourceRange(a.start, last.start + last.length - a.start);
+			setSourceRange(b, a.start, last.start + last.length - a.start);
 			
 			if (resolveBindings) {
 				recordNodes(b, a);
@@ -3061,7 +3059,7 @@ public class ASTConverter {
 			descent.core.dom.StringLiteral b = new descent.core.dom.StringLiteral(ast);
 			b.internalSetEscapedValue(a.sourceString == null ?
 					"" : new String(a.sourceString));
-			b.setSourceRange(a.start, a.length);
+			setSourceRange(b, a.start, a.length);
 			
 			if (resolveBindings) {
 				recordNodes(b, a);
@@ -3076,7 +3074,7 @@ public class ASTConverter {
 		if (a.ident != null && !CharOperation.equals(a.ident.ident, Id.empty)) {
 			b = new descent.core.dom.SimpleType(ast);
 			b.setName((SimpleName) convert(a.ident));
-			b.setSourceRange(a.ident.start, a.ident.length);
+			setSourceRange(b, a.ident.start, a.ident.length);
 			
 			if (resolveBindings) {
 				recordNodes(b, a.ident);
@@ -3102,7 +3100,7 @@ public class ASTConverter {
 			}
 		}
 		if (a.idents == null || a.idents.size() == 0) {
-			b.setSourceRange(a.start, a.length);
+			setSourceRange(b, a.start, a.length);
 			
 			if (resolveBindings) {
 				recordNodes(b, a);
@@ -3110,7 +3108,7 @@ public class ASTConverter {
 			
 			return convertModifiedType(a, b);
 		} else {
-			b.setSourceRange(a.typeofStart, a.typeofLength);
+			setSourceRange(b, a.typeofStart, a.typeofLength);
 			
 			if (resolveBindings) {
 				recordNodes(b, a);
@@ -3122,7 +3120,7 @@ public class ASTConverter {
 	
 	public descent.core.dom.Type convert(TypeReturn a) {
 		TypeofReturn b = new TypeofReturn(ast);
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
@@ -3142,7 +3140,7 @@ public class ASTConverter {
 				}
 			}
 		}
-		b.setSourceRange(a.tempinst.start, a.tempinst.length);
+		setSourceRange(b, a.tempinst.start, a.tempinst.length);
 		if (a.idents != null && a.idents.size() > 0) {
 			return convertQualifiedType(b, a, a.start);
 		}
@@ -3154,13 +3152,13 @@ public class ASTConverter {
 			if (idExp instanceof TemplateInstanceWrapper) {
 				descent.core.dom.Type tt = convert((TemplateInstanceWrapper) idExp);
 				q = ast.newQualifiedType(q, tt);
-				q.setSourceRange(start, a.start + a.length - start);
+				setSourceRange(q, start, a.start + a.length - start);
 			} else {
 				descent.core.dom.SimpleName n = (SimpleName) convert(idExp);
 				descent.core.dom.SimpleType t = ast.newSimpleType(n);
-				t.setSourceRange(n.getStartPosition(), n.getLength());
+				setSourceRange(t, n.getStartPosition(), n.getLength());
 				q = ast.newQualifiedType(q, t);
-				q.setSourceRange(start, idExp.start + idExp.length - start);
+				setSourceRange(q, start, idExp.start + idExp.length - start);
 				
 				if (resolveBindings) {
 					recordNodes(t, idExp);
@@ -3179,7 +3177,7 @@ public class ASTConverter {
 				b.setType(convertedType);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
@@ -3233,16 +3231,16 @@ public class ASTConverter {
 				if (modification.tok == TOK.TOKconst) {
 					// const.length() == 5
 					modifier.setModifierKeyword(ModifierKeyword.CONST_KEYWORD);
-					modifier.setSourceRange(modification.startPosition, 5);
+					setSourceRange(modifier, modification.startPosition, 5);
 				} else {
 					// invariant.length() == 9
 					modifier.setModifierKeyword(ModifierKeyword.INVARIANT_KEYWORD);
-					modifier.setSourceRange(modification.startPosition, 9);
+					setSourceRange(modifier, modification.startPosition, 9);
 				}
 				c.setModifier(modifier);
 				
 				c.setComponentType(b);
-				c.setSourceRange(modification.startPosition, modification.length);
+				setSourceRange(c, modification.startPosition, modification.length);
 				b = c;
 			}
 		}
@@ -3250,11 +3248,11 @@ public class ASTConverter {
 		return b;
 	}
 	
-	private descent.core.dom.Expression convertParenthesizedExpression(Expression a, descent.core.dom.Expression b) {
+	protected descent.core.dom.Expression convertParenthesizedExpression(Expression a, descent.core.dom.Expression b) {
 		if (a.parenthesis != null) {
 			for(Parenthesis paren : a.parenthesis) {
 				ParenthesizedExpression c = new ParenthesizedExpression(ast);
-				c.setSourceRange(paren.startPosition, paren.length);
+				setSourceRange(c, paren.startPosition, paren.length);
 				c.setExpression(b);
 				
 				if (resolveBindings) {
@@ -3294,7 +3292,7 @@ public class ASTConverter {
 		default:
 			throw new IllegalStateException("Invalid modifier: " + a.tok);
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		return b;
 	}
 	
@@ -3348,147 +3346,134 @@ public class ASTConverter {
 		if (source == null || source.isEmpty()) return;
 		for(int i = 0; i < source.size(); i++) {
 			Dsymbol symbol = (Dsymbol) source.get(i);
-			switch(symbol.getNodeType()) {
-			case ASTDmdNode.IMPORT:
-				Import import1 = (Import) symbol;
-				destination.add(convert(import1));
-				while(import1.next != null) {
-					i++;
-					import1 = import1.next;
-				}
-				break;
-			case ASTDmdNode.VAR_DECLARATION: {
-				descent.core.dom.VariableDeclaration b = new descent.core.dom.VariableDeclaration(ast);
-				int start = -1;
-				int end = -1;
-				boolean first = true;
-				while(symbol.getNodeType() == ASTDmdNode.VAR_DECLARATION) {
-					VarDeclaration a = (VarDeclaration) symbol;
-					if (first) {
-						if (a.sourceType != null) {
-							descent.core.dom.Type convertedType = convert(a.sourceType);
-							if (convertedType != null) {
-								b.setType(convertedType);
-							}
-						}
-						convertModifiers(b.modifiers(), a.modifiers);
-						start = a.start;
-						end = processPostDdoc(b, a);						
-						first = false;
-					} else {
-						end = a.start + a.length;
-					}
-					b.fragments().add(convert(a));
-					if (i == source.size() - 1 || a.next == null) {
-						start = processPreDdocs(b, a);
-						break;
-					}
-					
-					i++;
-					symbol = source.get(i);
-				}
-				b.setSourceRange(start, end - start);
-				destination.add(b);
-				break;
-			}
-			case ASTDmdNode.ALIAS_DECLARATION: {
-				descent.core.dom.AliasDeclaration b = new descent.core.dom.AliasDeclaration(ast);
-				int start = -1;
-				int end = -1;
-				boolean first = true;
-				while(symbol.getNodeType() == ASTDmdNode.ALIAS_DECLARATION) {
-					AliasDeclaration a = (AliasDeclaration) symbol;
-					if (first) {
-						if (a.sourceType != null) {
-							descent.core.dom.Type convertedType = convert(a.sourceType);
-							if (convertedType != null) {
-								b.setType(convertedType);
-							}
-						}
-						convertModifiers(b.modifiers(), a.modifiers);
-						start = a.start;
-						end = processPostDdoc(b, a);						
-						first = false;
-					} else {
-						end = a.start + a.length;
-					}
-					b.fragments().add(convert(a));
-					if (i == source.size() - 1 || a.next == null) {
-						start = processPreDdocs(b, a);
-						break;
-					}
-					
-					i++;
-					symbol = (Dsymbol) source.get(i); // SEMANTIC
-				}
-				b.setSourceRange(start, end - start);
-				destination.add(b);
-				break;
-			}
-			case ASTDmdNode.TYPEDEF_DECLARATION: {
-				descent.core.dom.TypedefDeclaration b = new descent.core.dom.TypedefDeclaration(ast);
-				int start = -1;
-				int end = -1;
-				boolean first = true;
-				while(symbol.getNodeType() == ASTDmdNode.TYPEDEF_DECLARATION) {
-					TypedefDeclaration a = (TypedefDeclaration) symbol;
-					if (first) {
-						if (a.sourceBasetype != null) {
-							descent.core.dom.Type convertedType = convert(a.sourceBasetype);
-							if (convertedType != null) {
-								b.setType(convertedType);
-							}
-						}
-						convertModifiers(b.modifiers(), a.modifiers);
-						start = a.start;
-						end = processPostDdoc(b, a);						
-						first = false;
-					} else {
-						end = a.start + a.length;
-					}
-					b.fragments().add(convert(a));
-					if (i == source.size() - 1 || a.next == null) {
-						start = processPreDdocs(b, a);
-						break;
-					}
-					
-					i++;
-					symbol = (Dsymbol) source.get(i); // SEMANTIC
-				}
-				b.setSourceRange(start, end - start);
-				destination.add(b);
-				break;
-			}
-			case ASTDmdNode.PROT_DECLARATION: {
-				convert((ProtDeclaration) symbol, destination);
-				break;
-			}
-			case ASTDmdNode.STORAGE_CLASS_DECLARATION: {
-				convert((StorageClassDeclaration) symbol, destination);
-				break;
-			}
-			case ASTDmdNode.CONDITIONAL_DECLARATION:
-				if (inTemplateInstantiation) {
-					ConditionalDeclaration decl = (ConditionalDeclaration) symbol;
-					switch(decl.condition.inc) {
-					case 0:
-						destination.add((Declaration) convert(symbol));
-						break;
-					case 1:
-						convertDeclarations(destination, decl.decl);
-						break;
-					case 2:
-						convertDeclarations(destination, decl.elsedecl);
-						break;
-					}
-				} else {
-					destination.add((Declaration) convert(symbol));
-				}
-				break;
-			default:
-				destination.add((Declaration) convert(symbol));
-			}
+			i = convertOneOfManyDeclarations(destination, source, i, symbol);
 		}
+	}
+
+	protected int convertOneOfManyDeclarations(List<Declaration> destination, List<Dsymbol> source, int i, Dsymbol symbol) {
+		switch(symbol.getNodeType()) {
+		case ASTDmdNode.IMPORT:
+			Import import1 = (Import) symbol;
+			destination.add(convert(import1));
+			while(import1.next != null) {
+				i++;
+				import1 = import1.next;
+			}
+			break;
+		case ASTDmdNode.VAR_DECLARATION: {
+			descent.core.dom.VariableDeclaration b = new descent.core.dom.VariableDeclaration(ast);
+			int start = -1;
+			int end = -1;
+			boolean first = true;
+			while(symbol.getNodeType() == ASTDmdNode.VAR_DECLARATION) {
+				VarDeclaration a = (VarDeclaration) symbol;
+				if (first) {
+					if (a.sourceType != null) {
+						descent.core.dom.Type convertedType = convert(a.sourceType);
+						if (convertedType != null) {
+							b.setType(convertedType);
+						}
+					}
+					convertModifiers(b.modifiers(), a.modifiers);
+					start = a.start;
+					end = processPostDdoc(b, a);						
+					first = false;
+				} else {
+					end = a.start + a.length;
+				}
+				b.fragments().add(convert(a));
+				if (i == source.size() - 1 || a.next == null) {
+					start = processPreDdocs(b, a);
+					break;
+				}
+				
+				i++;
+				symbol = source.get(i);
+			}
+			setSourceRange(b, start, end - start);
+			destination.add(b);
+			break;
+		}
+		case ASTDmdNode.ALIAS_DECLARATION: {
+			descent.core.dom.AliasDeclaration b = new descent.core.dom.AliasDeclaration(ast);
+			int start = -1;
+			int end = -1;
+			boolean first = true;
+			while(symbol.getNodeType() == ASTDmdNode.ALIAS_DECLARATION) {
+				AliasDeclaration a = (AliasDeclaration) symbol;
+				if (first) {
+					if (a.sourceType != null) {
+						descent.core.dom.Type convertedType = convert(a.sourceType);
+						if (convertedType != null) {
+							b.setType(convertedType);
+						}
+					}
+					convertModifiers(b.modifiers(), a.modifiers);
+					start = a.start;
+					end = processPostDdoc(b, a);						
+					first = false;
+				} else {
+					end = a.start + a.length;
+				}
+				b.fragments().add(convert(a));
+				if (i == source.size() - 1 || a.next == null) {
+					start = processPreDdocs(b, a);
+					break;
+				}
+				
+				i++;
+				symbol = (Dsymbol) source.get(i); // SEMANTIC
+			}
+			setSourceRange(b, start, end - start);
+			destination.add(b);
+			break;
+		}
+		case ASTDmdNode.TYPEDEF_DECLARATION: {
+			descent.core.dom.TypedefDeclaration b = new descent.core.dom.TypedefDeclaration(ast);
+			int start = -1;
+			int end = -1;
+			boolean first = true;
+			while(symbol.getNodeType() == ASTDmdNode.TYPEDEF_DECLARATION) {
+				TypedefDeclaration a = (TypedefDeclaration) symbol;
+				if (first) {
+					if (a.sourceBasetype != null) {
+						descent.core.dom.Type convertedType = convert(a.sourceBasetype);
+						if (convertedType != null) {
+							b.setType(convertedType);
+						}
+					}
+					convertModifiers(b.modifiers(), a.modifiers);
+					start = a.start;
+					end = processPostDdoc(b, a);						
+					first = false;
+				} else {
+					end = a.start + a.length;
+				}
+				b.fragments().add(convert(a));
+				if (i == source.size() - 1 || a.next == null) {
+					start = processPreDdocs(b, a);
+					break;
+				}
+				
+				i++;
+				symbol = (Dsymbol) source.get(i); // SEMANTIC
+			}
+			setSourceRange(b, start, end - start);
+			destination.add(b);
+			break;
+		}
+		case ASTDmdNode.PROT_DECLARATION: {
+			convert((ProtDeclaration) symbol, destination);
+			break;
+		}
+		case ASTDmdNode.STORAGE_CLASS_DECLARATION: {
+			convert((StorageClassDeclaration) symbol, destination);
+			break;
+		}
+		default:
+			destination.add((Declaration) convert(symbol));
+		}
+		return i;
 	}
 
 	public void convertExpressions(List<descent.core.dom.Expression> destination, List<Expression> source) {
@@ -3504,38 +3489,14 @@ public class ASTConverter {
 	public void convertStatements(List<descent.core.dom.Statement> destination, List<Statement> source) {
 		if (source == null || source.isEmpty()) return;
 		for(Statement stm : source) {
-			
-			if (inTemplateInstantiation) {
-				switch(stm.getNodeType()) {
-				case ASTDmdNode.CONDITIONAL_STATEMENT:
-					if (inTemplateInstantiation) {
-						ConditionalStatement condStm = (ConditionalStatement) stm;
-						switch(condStm.condition.inc) {
-						case 1:
-							stm = condStm.ifbody;
-							stm = extractSingleCompoundStatement(stm);
-							break;
-						case 2:
-							stm = condStm.elsebody;
-							stm = extractSingleCompoundStatement(stm);
-							break;
-						}
-					}
-				}
-			}
-			descent.core.dom.Statement convertStm = convert(stm);
-			if (convertStm != null) {
-				destination.add(convertStm);
-			}
+			stm = convertOneOfManyStatements(destination, stm);
 		}
 	}
 
-	private Statement extractSingleCompoundStatement(Statement stm) {
-		if (stm instanceof CompoundStatement) {
-			CompoundStatement cs = (CompoundStatement) stm;
-			if (cs.statements != null && cs.statements.size() == 1) {
-				stm = cs.statements.get(0);
-			}
+	protected Statement convertOneOfManyStatements(List<descent.core.dom.Statement> destination, Statement stm) {
+		descent.core.dom.Statement convertStm = convert(stm);
+		if (convertStm != null) {
+			destination.add(convertStm);
 		}
 		return stm;
 	}
@@ -3575,7 +3536,7 @@ public class ASTConverter {
 				b.setRightHandSide(convertedExp);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
@@ -3599,7 +3560,7 @@ public class ASTConverter {
 				b.setRightOperand(convertedExp);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
@@ -3617,7 +3578,7 @@ public class ASTConverter {
 			}
 		}
 		b.setOperator(op);
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
@@ -3635,7 +3596,7 @@ public class ASTConverter {
 			}
 		}
 		b.setOperator(op);
-		b.setSourceRange(a.start, a.length);
+		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
@@ -3649,32 +3610,22 @@ public class ASTConverter {
 		
 		descent.core.dom.SimpleName b = new descent.core.dom.SimpleName(ast);
 		
-		char[] id;
-		if (inTemplateInstantiation) {
-			if (a.resolvedSymbol instanceof AliasDeclaration) {
-				AliasDeclaration alias = (AliasDeclaration) a.resolvedSymbol;
-				if (alias.aliassym != null && alias.aliassym.ident != null && alias.aliassym.ident.ident != null) {
-					id = alias.aliassym.ident.ident;
-				} else if (alias.sourceType != null) {
-					// HACK: resolve this correctly
-					id = alias.sourceType.toCharArray();
-				} else {
-					id = a.ident;
-				}
-			} else {
-				id = a.ident;
-			}
-		} else {
-			id = a.ident;
-		}
-		b.internalSetIdentifier(new String(id));
-		b.setSourceRange(a.start, a.length);
+		b.internalSetIdentifier(new String(a.ident));
+		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
 		}
 		
 		return convertParenthesizedExpression(a, b);
+	}
+	
+	protected SimpleName newSimpleName() {
+		return new descent.core.dom.SimpleName(ast);
+	}
+	
+	protected void internalSetIdentifier(SimpleName sn, char[] id) {
+		sn.internalSetIdentifier(new String(id));
 	}
 	
 	public descent.core.dom.Type convertTemplateMixin(int start, int length, Type typeof, Identifiers ids, Objects tiargs) {
@@ -3693,7 +3644,7 @@ public class ASTConverter {
 					if (tiargs == null || tiargs.isEmpty()) {
 						descent.core.dom.SimpleName firstName = (SimpleName) convert(id);
 						second = ast.newSimpleType(firstName);
-						second.setSourceRange(firstName.getStartPosition(), firstName.getLength());
+						setSourceRange(second, firstName.getStartPosition(), firstName.getLength());
 					} else {
 						TemplateType type = new TemplateType(ast);
 						type.setName((SimpleName) convert(id));
@@ -3701,7 +3652,7 @@ public class ASTConverter {
 							type.arguments().add(convert(node));
 						}
 						second = type;
-						second.setSourceRange(id.start, start + length - id.start);
+						setSourceRange(second, id.start, start + length - id.start);
 					}
 				} else {
 					if (id instanceof TemplateInstanceWrapper) {
@@ -3709,7 +3660,7 @@ public class ASTConverter {
 					} else {
 						descent.core.dom.SimpleName name = (SimpleName) convert(id);
 						second = ast.newSimpleType(name);
-						second.setSourceRange(name.getStartPosition(), name.getLength());
+						setSourceRange(second, name.getStartPosition(), name.getLength());
 					}
 				}
 				if (ret == null) {
@@ -3721,7 +3672,7 @@ public class ASTConverter {
 				} else {
 					ret = ast.newQualifiedType(ret, second);
 				}
-				ret.setSourceRange(start, second.getStartPosition() + second.getLength() - start);
+				setSourceRange(ret, start, second.getStartPosition() + second.getLength() - start);
 			}
 		}
 		return ret;
@@ -3738,11 +3689,11 @@ public class ASTConverter {
 				IdentifierExp sId = packages.get(i);
 				descent.core.dom.SimpleName sName = (SimpleName) convert(sId);
 				descent.core.dom.QualifiedName qName = ast.newQualifiedName(name, sName);
-				qName.setSourceRange(firstId.start, sId.start + sId.length - firstId.start);
+				setSourceRange(qName, firstId.start, sId.start + sId.length - firstId.start);
 				name = qName;
 			}
 			name = ast.newQualifiedName(name, sIdLast);
-			name.setSourceRange(firstId.start, id.start + id.length - firstId.start);
+			setSourceRange(name, firstId.start, id.start + id.length - firstId.start);
 			return name;
 		}
 	}
@@ -3757,7 +3708,7 @@ public class ASTConverter {
 				IdentifierExp sId = packages.get(i);
 				descent.core.dom.SimpleName sName = (SimpleName) convert(sId);
 				descent.core.dom.QualifiedName qName = ast.newQualifiedName(name, sName);
-				qName.setSourceRange(id.start, sId.start + sId.length - id.start);
+				setSourceRange(qName, id.start, sId.start + sId.length - id.start);
 				name = qName;
 			}
 			return name;
@@ -3910,6 +3861,10 @@ public class ASTConverter {
 	
 	protected void recordNodes(ASTNode node, ASTDmdNode oldASTNode) {
 		this.ast.getBindingResolver().store(node, oldASTNode);
+	}
+	
+	protected void setSourceRange(ASTNode node, int start, int length) {
+		node.setSourceRange(start, length);
 	}
 
 }
