@@ -205,7 +205,7 @@ public class TestRunSession
 	 * @return <code>true</code> iff the runtime VM of this test session is still alive 
 	 */
 	public boolean isKeptAlive() {
-		return fTestRunnerClient.isRunning() && ILaunchManager.DEBUG_MODE.equals(getLaunch().getLaunchMode());
+		return false;
 	}
 
 	/**
@@ -240,66 +240,6 @@ public class TestRunSession
 			for (int i= 0; i < children.length; i++)
 				addFailures(failures, children[i]);
 		}
-	}
-	
-	/**
-	 * @param testId 
-	 * @param launchMode 
-	 * @return <code>false</code> iff the rerun could not be started
-	 * @throws CoreException 
-	 */
-	public boolean rerunTest(String testId, String launchMode) 
-			throws CoreException
-	{
-		// TODO reruns, keeeping in mind the testId could refer to a
-		// TestSuiteElement instead of just a TestcaseElement
-		
-		/*TestElement testElement = fIdToTest.get(testId);
-		
-		if(null == testElement)
-			return false;
-		
-		TestCaseElement testCaseElement = (TestCaseElement) testElement;
-		ITestSpecification test = testCaseElement.getTestSpecification();
-		
-		if (isKeptAlive())
-		{
-			Status status= ((TestCaseElement) getTestElement(testId)).getStatus();
-			if (status == Status.ERROR) {
-				fErrorCount--;
-			} else if (status == Status.FAILURE) {
-				fFailureCount--;
-			}
-			fTestRunnerClient.rerunTest(test);
-			return true;
-			
-		}
-		else if (getLaunch() != null)
-		{
-			// run the selected test using the previous launch configuration
-			ILaunchConfiguration launchConfiguration= getLaunch().getLaunchConfiguration();
-			if (launchConfiguration != null) {
-
-				String name= className;
-				if (testName != null) 
-					name+= "."+testName; //$NON-NLS-1$
-				String configName= Messages.format(JUnitMessages.TestRunnerViewPart_configName, name); 
-				ILaunchConfigurationWorkingCopy tmp= launchConfiguration.copy(configName); 
-				// fix for bug: 64838  unittest view run single test does not use correct class [JUnit] 
-				tmp.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, className);
-				// reset the container
-				tmp.setAttribute(JUnitBaseLaunchConfiguration.LAUNCH_CONTAINER_ATTR, ""); //$NON-NLS-1$
-				if (testName != null) {
-					tmp.setAttribute(JUnitBaseLaunchConfiguration.TESTNAME_ATTR, testName);
-					//	String args= "-rerun "+testId;
-					//	tmp.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, args);
-				}
-				tmp.launch(launchMode, null);	
-				return true;
-			}
-		} */
-		
-		return false;
 	}
 	
 	public TestElement getTestElement(String id)

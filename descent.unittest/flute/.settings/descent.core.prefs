@@ -1,4 +1,4 @@
-#Sun Apr 13 00:24:15 PDT 2008
+#Sat May 17 20:27:32 PDT 2008
 descent.core.compiler.allowDeprecated=disabled
 descent.core.compiler.debugIdentifiers=
 descent.core.compiler.debugLevel=0
@@ -8,7 +8,7 @@ descent.core.compiler.source=1
 descent.core.compiler.taskCaseSensitive=enabled
 descent.core.compiler.taskPriorities=NORMAL,HIGH,LOW,HIGH,LOW,NORMAL
 descent.core.compiler.taskTags=TODO,FIXME,PERHAPS,WTF,NEXTVERSION,TANGO
-descent.core.compiler.versionIdentifiers=DigitalMars, Windows, Win32, X86, LittleEndian, D_InlineAsm, D_InlineAsm_X86, all, FluteUnittests
+descent.core.compiler.versionIdentifiers=DigitalMars, Windows, Win32, X86, LittleEndian, D_InlineAsm, D_InlineAsm_X86, all, Tango
 descent.core.compiler.versionLevel=0
 descent.core.formatter.alignment_for_array_literals=16
 descent.core.formatter.alignment_for_base_class_lists=16

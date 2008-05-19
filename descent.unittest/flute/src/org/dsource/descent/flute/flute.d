@@ -339,19 +339,19 @@ else
 	extern(C) void _moduleUnitTests() { fluteMain(); }
 
 /// A Flectioned marker indicating a unittest
-private const char[] UNITTEST_MARKER = ".__unittest";
+private char[] UNITTEST_MARKER = ".__unittest";
 
 /// A marker indicating a named test
-private const char[] NAMED_TEST_MARKER = ".__setTestName!(__testName_";
+private char[] NAMED_TEST_MARKER = ".__setTestName!(__testName_";
 
 /// A string containing version information, printed at the start of the application
-private const char[] VERSION_STRING = "flute 0.1";
+private char[] VERSION_STRING = "flute 0.1";
 
 /**
  * The config attribute representing whether stacktraces should be used, either
  * "on" or "off"
  */
-private const string STACKTRACE_ATTR = "stacktrace";
+private char[] STACKTRACE_ATTR = "stacktrace";
 
 /*
  * The result of running a test
@@ -483,7 +483,7 @@ private class TestResult
 			{
 				char[] toHex(size_t val)
 				{
-					const int percision = (void*).sizeof * 2;
+					int percision = (void*).sizeof * 2;
 					
 					version(inPhobos)
 						return format("%#0.*x", percision, val);
@@ -855,6 +855,7 @@ private class TestRegistry
 			default:
 				assert(false);
 		}
+		return null;
 	}
 	
 	/**
@@ -901,6 +902,8 @@ private class TestRegistry
 					case ResultType.ERROR:
 						error++;
 						break;
+					default:
+						assert(false);
 				}
 			}
 			io.write("\r\n");
@@ -1024,6 +1027,8 @@ private bool commandLoop()
 		io.write("Unrecognized command " ~ line ~ "\r\n");
 		goto LnextCommand;
 	}
+	
+	assert(false);
 }
 
 /**

@@ -11,7 +11,10 @@ module org.dsource.descent.flute.io;
 
 version(Tango)
 {
+	version = inTango;
 	
+	static if(!is(typeof(string)))
+		private alias char[] string;
 }
 else
 {
@@ -157,7 +160,7 @@ else
 						writef("No port defined in config file\n");
 						exit(EXIT_FAILURE);
 					}
-					uint port = atoi(*portStr);
+					ushort port = cast(ushort) atoi(*portStr);
 					
 					serv = new TcpSocket(AddressFamily.INET);
 					serv.bind(new InternetAddress("127.0.0.1", port));

@@ -36,9 +36,8 @@ public final class JUnitMessages extends NLS
 	public static String OpenEditorAction_error_dialog_message;
 	public static String OpenEditorAction_error_dialog_title;
 	public static String OpenEditorAction_message_cannotopen;
-	public static String RerunAction_label_debug;
-	public static String RerunAction_label_run;
     public static String RunningOneTest_internal_error;
+    public static String RunningOneTest_internal_error_with_message;
 	public static String ScrollLockAction_action_label;
 	public static String ScrollLockAction_action_tooltip;
 	public static String ShowNextFailureAction_label;
@@ -46,11 +45,7 @@ public final class JUnitMessages extends NLS
 	public static String ShowPreviousFailureAction_label;
 	public static String ShowPreviousFailureAction_tooltip;
 	public static String TestRunnerViewPart_activate_on_failure_only;
-	public static String TestRunnerViewPart_cannotrerun_title;
-	public static String TestRunnerViewPart_cannotrerurn_message;
 	public static String TestRunnerViewPart_clear_history_label;
-	public static String TestRunnerViewPart_configName;
-	public static String TestRunnerViewPart_error_cannotrerun;
 	public static String TestRunnerViewPart_hierarchical_layout;
 	public static String TestRunnerViewPart_history;
 	public static String TestRunnerViewPart_jobName;
@@ -64,9 +59,6 @@ public final class JUnitMessages extends NLS
 	public static String TestRunnerViewPart_message_terminated;
 	public static String TestRunnerViewPart_rerunaction_label;
 	public static String TestRunnerViewPart_rerunaction_tooltip;
-	public static String TestRunnerViewPart_rerunFailedFirstLaunchConfigName;
-	public static String TestRunnerViewPart_rerunfailuresaction_label;
-	public static String TestRunnerViewPart_rerunfailuresaction_tooltip;
 	public static String TestRunnerViewPart_select_test_run;
 	public static String TestRunnerViewPart_show_failures_only;
 	public static String TestRunnerViewPart_stopaction_text;

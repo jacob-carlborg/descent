@@ -90,8 +90,16 @@ static if(!is(string)){
 }
 
 // import hell (-version=Tango isn't reliable)
-const bool inTango = false;
-const bool inPhobos = true;
+version(Tango)
+{
+	const bool inTango = true;
+	const bool inPhobos = false;
+}
+else
+{
+	const bool inTango = false;
+	const bool inPhobos = true;
+}
 
 static if(inTango){
 	import tango.core.Vararg;
@@ -101,15 +109,14 @@ static if(inTango){
 	import tango.text.convert.Integer : toInt, toLong;
 	import tango.core.Exception : IllegalArgumentException;
 	import tango.stdc.string : memmove, memcpy, memcmp, strcmp;
-	import tango.stdc.stringz : ptr2array = fromUtf8z;
+	import tango.stdc.stringz : ptr2array = fromStringz;
 	import tango.stdc.stdio : sscanf, printf;
-	import tango.text.convert.Integer : size2array = toUtf8;
+	import tango.text.convert.Integer : size2array = toString;
 	import tango.core.Array : find, rfind;
 	import tango.text.Util : delimit;
 	static import tango.stdc.errno;
 	private alias tango.stdc.errno.errno getErrno;
 	private alias tango.stdc.errno.errno setErrno;
-	import tango.core.Exception : TracedExceptionInfo, setTraceHandler;
 
 	private uint toUint(char[] s){
 		auto x = toLong(s);
@@ -120,7 +127,7 @@ static if(inTango){
 	}
 
 	private char[] getString(Object o){
-		return o.toUtf8();
+		return o.toString();
 	}
 }else static if(inPhobos){
 	import std.stdarg;
@@ -441,19 +448,7 @@ class Symbol{
 		this.type = ti;
 	}
 
-	static if(inTango){
-		/// toString wrapper for Tango
-		override char[] toUtf8()
-		out(s){
-			assert(s.length > 0);
-		}body{
-			return toString();
-		}
-	}else static if(!inPhobos){
-		static assert(0, "neither object.Object.toUtf8 nor object.Object.toString found");
-	}
-
-	string toString()
+	override string toString()
 	out(s){
 		assert(s.length > 0);
 	}body{
@@ -930,10 +925,6 @@ class Trace{
 		}
 	}
 
-	string toUtf8(){
-		return toString();
-	}
-
 	string toString(){
 		static if(is(typeof(Formatter))){
 			return Formatter("0x{0" ~ ZX ~ "}\t0x{1" ~ ZX ~ "}\t{2}",
@@ -1066,13 +1057,13 @@ private{
 }
 
 
-static if(inTango){
+/+ static if(inTango){
 	/**
 	 * Exception containing stack trace information is provided by Tango,
 	 * however the trace infromation is "private"
 	 * ... thus the opApply-trick
 	 */
-	class TracedException : tango.core.Exception.TracedException{
+	class TracedException : Exception{
 		///
 		Trace[] trace;
 
@@ -1101,11 +1092,6 @@ static if(inTango){
 			dg.funcptr = &opApplyTrick;
 			opApply(dg);
 		}
-		
-		///
-		static TracedExceptionInfo tangoTraceHandler(void* ptr = null){
-			return new FlectionedTrace(ptr);
-		}
 
 		///
 		void print(){
@@ -1116,7 +1102,7 @@ static if(inTango){
 			return 1;
 		}
 
-		private static class FlectionedTrace : TracedExceptionInfo{
+		private static class FlectionedTrace {
 			this(void* ptr = null ){
 				if(ptr){
 					m_trace = Trace.getTrace(cast(size_t) ptr);
@@ -1165,7 +1151,7 @@ static if(inTango){
 			private Trace[] m_trace;
 		}
 	}
-}else static if(inPhobos){
+ }else static if(inPhobos){ +/
 	/**
 	 * Exception containing stack trace information.
 	 */
@@ -1349,9 +1335,9 @@ static if(inTango){
 		return e;
 	}
 	
-}else{
+/+ }else{
 	static assert(0, "neither Phobos nor Tango");
-}
+} +/
 
 private void print_traced_exception(Exception e)
 in{

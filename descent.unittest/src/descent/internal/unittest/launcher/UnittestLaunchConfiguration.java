@@ -43,14 +43,7 @@ import descent.unittest.ITestSpecification;
  */
 public class UnittestLaunchConfiguration extends 
 	AbstractDescentLaunchConfigurationDelegate 
-{
-	/**
-	 * The file to load as the list of tests to prioritize (maybe I should
-	 * rethink how this is done -- no need for a whole file if we're using IPC).
-	 */
-	// RETHINK
-	public static final String FAILURES_FILENAME_ATTR= DescentUnittestPlugin.PLUGIN_ID+".FAILURENAMES"; //$NON-NLS-1$
-	
+{	
 	/**
 	 * The file to create next to the fluted executable to use to find the port.
 	 * This is a hack because it's impossible to pass command-line arguments to

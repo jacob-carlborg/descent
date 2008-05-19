@@ -1,8 +1,5 @@
 module sample.module1;
 
-import std.socket : SocketException;
-import std.thread : Thread;
-
 class ArgumentException : Exception
 {
 	this(char[] msg)
@@ -30,7 +27,7 @@ class Bar
 		
 		
 		// To test stack tracing
-		throw new SocketException("YA RLY!", 69);
+		throw new Exception("YA RLY!");
 	}
 	
 	unittest
@@ -74,7 +71,7 @@ void doTheThrowing()
 	
 	
 	
-	throw new ArgumentException("NO WAI!");
+	throw new Exception("NO WAI!");
 }
 
 int main(char[][] args)

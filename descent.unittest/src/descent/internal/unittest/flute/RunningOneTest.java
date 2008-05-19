@@ -43,6 +43,7 @@ class RunningOneTest implements IState
 	private String exceptionType;
 	private StringBuffer message;
 	private List<StackTraceElement> stackTrace;
+	private String internalError;
 	
 	RunningOneTest(FluteApplicationInstance cli)
 	{
@@ -178,14 +179,26 @@ class RunningOneTest implements IState
 			return;
 		}
 		
-		// If we get here, it's probably invalid text. Don't throw an
-		// exception because it might be a network error of some sort.
+		// If we get here, it's probably invalid text. There's been an internal
+		// error (this may desynchronize a lot of other stuff, but in that case
+		// there's bigger stuff to worry about
+		internalError = text;
+		cli.notifyStateReturn();
 	}
 	
 	FluteTestResult getResult()
 	{
+	    if(internalError != null)
+	    {
+	        return FluteTestResult.error(
+	                String.format(JUnitMessages.RunningOneTest_internal_error_with_message,
+	                        internalError),
+	                "", //$NON-NLS-1$
+	                NO_STACK_TRACE);
+	    }
+	    
 		if(resultType == null)
-		{
+		{   
 			return FluteTestResult.error(
 					JUnitMessages.RunningOneTest_internal_error,
 					"", //$NON-NLS-1$

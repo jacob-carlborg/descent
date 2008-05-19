@@ -214,22 +214,11 @@ public class TestViewer {
 			if (testElement instanceof TestSuiteElement) {	
 				manager.add(new OpenModuleAction(fTestRunnerPart, testElement.getId()));
 				manager.add(new Separator());
-				if (!fTestRunnerPart.lastLaunchIsKeptAlive()) {
-					manager.add(new RerunAction(fTestRunnerPart, testElement.getId(), ILaunchManager.RUN_MODE));
-					manager.add(new RerunAction(fTestRunnerPart, testElement.getId(), ILaunchManager.DEBUG_MODE));
-				}
 			} else {
 				TestCaseElement testCaseElement= (TestCaseElement) testElement;
 				manager.add(new OpenTestAction(fTestRunnerPart, 
 						testCaseElement.getTestSpecification().getDeclaration()));
 				manager.add(new Separator());
-				if (fTestRunnerPart.lastLaunchIsKeptAlive()) {
-					manager.add(new RerunAction(fTestRunnerPart, testElement.getId(), ILaunchManager.RUN_MODE));
-					
-				} else {
-					manager.add(new RerunAction(fTestRunnerPart, testElement.getId(), ILaunchManager.RUN_MODE));
-					manager.add(new RerunAction(fTestRunnerPart, testElement.getId(), ILaunchManager.DEBUG_MODE));
-				} 
 			}
 			if (fLayoutMode == TestRunnerViewPart.LAYOUT_HIERARCHICAL) {
 				manager.add(new Separator());

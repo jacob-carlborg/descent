@@ -13,19 +13,13 @@
  *******************************************************************************/
 package descent.internal.unittest.ui;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.text.DateFormat;
-import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
@@ -58,7 +52,6 @@ import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -84,7 +77,6 @@ import org.eclipse.ui.progress.UIJob;
 
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
-import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 
 import org.eclipse.debug.ui.DebugUITools;
 
@@ -99,14 +91,11 @@ import descent.internal.ui.viewsupport.ViewHistory;
 
 import descent.internal.unittest.DescentUnittestPlugin;
 import descent.internal.unittest.Messages;
-import descent.internal.unittest.launcher.UnittestLaunchConfiguration;
 import descent.internal.unittest.model.ITestRunSessionListener;
 import descent.internal.unittest.model.ITestSessionListener;
 import descent.internal.unittest.model.TestCaseElement;
 import descent.internal.unittest.model.TestElement;
-import descent.internal.unittest.model.TestRoot;
 import descent.internal.unittest.model.TestRunSession;
-import descent.internal.unittest.model.TestSuiteElement;
 import descent.unittest.ITestResult;
 import descent.unittest.ITestResult.ResultType;
 
@@ -167,7 +156,6 @@ public class TestRunnerViewPart extends ViewPart {
 	private JUnitCopyAction fCopyAction;
 	
 	private Action fRerunLastTestAction;
-	private Action fRerunLastFailedFirstAction;
 	
 	private Action fFailuresOnlyFilterAction;
 	private ScrollLockAction fScrollLockAction;
@@ -416,7 +404,6 @@ public class TestRunnerViewPart extends ViewPart {
 					if (isDisposed()) 
 						return;	
 					fStopAction.setEnabled(lastLaunchIsKeptAlive());
-					updateRerunFailedFirstAction();
 					processChangesInUI();
 					if (hasErrorsOrFailures()) {
 						selectFirstFailure();
@@ -586,19 +573,6 @@ public class TestRunnerViewPart extends ViewPart {
 		
 		public void run(){
 			rerunTestRun();
-		}
-	}
-	
-	private class RerunLastFailedFirstAction extends Action {
-		public RerunLastFailedFirstAction() {
-			setText(JUnitMessages.TestRunnerViewPart_rerunfailuresaction_label);  
-			setToolTipText(JUnitMessages.TestRunnerViewPart_rerunfailuresaction_tooltip);  
-			DescentUnittestPlugin.setLocalImageDescriptors(this, "relaunchf.gif"); //$NON-NLS-1$
-			setEnabled(false);
-		}
-		
-		public void run(){
-			rerunTestFailedFirst();
 		}
 	}
 
@@ -861,84 +835,8 @@ public class TestRunnerViewPart extends ViewPart {
 			}
 		}
 		if (fTestRunSession != null && fTestRunSession.getLaunch().getLaunchConfiguration() != null) {
-			ILaunchConfiguration configuration= prepareLaunchConfigForRelaunch(fTestRunSession.getLaunch().getLaunchConfiguration());
+			ILaunchConfiguration configuration= fTestRunSession.getLaunch().getLaunchConfiguration();
 			DebugUITools.launch(configuration, fTestRunSession.getLaunch().getLaunchMode());
-		}
-	}
-
-	private ILaunchConfiguration prepareLaunchConfigForRelaunch(ILaunchConfiguration configuration) {
-		try {
-			String attribute= configuration.getAttribute(UnittestLaunchConfiguration.FAILURES_FILENAME_ATTR, ""); //$NON-NLS-1$
-			if (attribute.length() != 0) {
-				String configName= Messages.format(JUnitMessages.TestRunnerViewPart_configName, configuration.getName()); 
-				ILaunchConfigurationWorkingCopy tmp= configuration.copy(configName); 
-				tmp.setAttribute(UnittestLaunchConfiguration.FAILURES_FILENAME_ATTR, ""); //$NON-NLS-1$
-				return tmp;
-			}
-		} catch (CoreException e) {
-			// fall through
-		}
-		return configuration;
-	}
-
-	public void rerunTestFailedFirst() {
-		if (lastLaunchIsKeptAlive()) {
-			// prompt for terminating the existing run
-			if (MessageDialog.openQuestion(getSite().getShell(), JUnitMessages.TestRunnerViewPart_terminate_title, JUnitMessages.TestRunnerViewPart_terminate_message)) {  
-				if (fTestRunSession != null)
-					fTestRunSession.stopTestRun();
-			}
-		}
-		if (fTestRunSession.getLaunch() != null && fTestRunSession.getLaunch().getLaunchConfiguration() != null) {
-				ILaunchConfiguration launchConfiguration= fTestRunSession.getLaunch().getLaunchConfiguration();
-				if (launchConfiguration != null) {
-					try {
-						String oldName= launchConfiguration.getName(); 
-						String oldFailuresFilename= launchConfiguration.getAttribute(UnittestLaunchConfiguration.FAILURES_FILENAME_ATTR, (String) null);
-						String configName;
-						if (oldFailuresFilename != null) {
-							configName= oldName;
-						} else {
-							configName= Messages.format(JUnitMessages.TestRunnerViewPart_rerunFailedFirstLaunchConfigName, oldName); 
-						}
-						ILaunchConfigurationWorkingCopy tmp= launchConfiguration.copy(configName); 
-						tmp.setAttribute(UnittestLaunchConfiguration.FAILURES_FILENAME_ATTR, createFailureNamesFile());
-						tmp.launch(fTestRunSession.getLaunch().getLaunchMode(), null);	
-						return;	
-					} catch (CoreException e) {
-						ErrorDialog.openError(getSite().getShell(), 
-							JUnitMessages.TestRunnerViewPart_error_cannotrerun, e.getMessage(), e.getStatus() 
-						);
-					}
-				}
-				MessageDialog.openInformation(getSite().getShell(), 
-					JUnitMessages.TestRunnerViewPart_cannotrerun_title,  
-					JUnitMessages.TestRunnerViewPart_cannotrerurn_message
-				); 
-		}
-	}	
-
-	private String createFailureNamesFile() throws CoreException {
-		try {
-			File file= File.createTempFile("testFailures", ".txt"); //$NON-NLS-1$ //$NON-NLS-2$
-			file.deleteOnExit();
-			TestElement[] failures= fTestRunSession.getAllFailedTestElements();
-			BufferedWriter bw= null;
-			try {
-				bw= new BufferedWriter(new FileWriter(file));
-				for (int i= 0; i < failures.length; i++) {
-					TestElement testElement= failures[i];
-					bw.write(testElement.getName());
-					bw.newLine();
-				}
-			} finally {
-				if (bw != null) {
-					bw.close();
-				}
-			}
-			return file.getAbsolutePath();
-		} catch (IOException e) {
-			throw new CoreException(new Status(IStatus.ERROR, DescentUnittestPlugin.PLUGIN_ID, IStatus.ERROR, "", e)); //$NON-NLS-1$
 		}
 	}
 
@@ -984,7 +882,6 @@ public class TestRunnerViewPart extends ViewPart {
 					return;	
 				resetViewIcon();
 				fStopAction.setEnabled(false);
-				updateRerunFailedFirstAction();
 			}
 		});	
 		stopUpdateJobs();
@@ -1069,7 +966,6 @@ action enablement
 			stopUpdateJobs();
 			
 			fStopAction.setEnabled(false);
-			fRerunLastFailedFirstAction.setEnabled(false);
 			fRerunLastTestAction.setEnabled(false);
 			
 		} else {
@@ -1083,7 +979,6 @@ action enablement
 			fFailureTrace.clear();
 			registerInfoMessage(fTestRunSession.getTestRunName());
 			
-			updateRerunFailedFirstAction();
 			fRerunLastTestAction.setEnabled(true);
 			
 			if (fTestRunSession.isRunning()) {
@@ -1097,10 +992,6 @@ action enablement
 				fStopAction.setEnabled(fTestRunSession.isKeptAlive());
 			}
 		}
-	}
-
-	private void updateRerunFailedFirstAction() {
-	    fRerunLastFailedFirstAction.setEnabled(hasErrorsOrFailures());
 	}
     
 	private void setTitleToolTip() {
@@ -1361,7 +1252,6 @@ action enablement
 		fStopAction.setEnabled(false);
 		
 		fRerunLastTestAction= new RerunLastAction();
-		fRerunLastFailedFirstAction= new RerunLastFailedFirstAction();
 		
 		fFailuresOnlyFilterAction= new FailuresOnlyFilterAction();
 		
@@ -1382,7 +1272,6 @@ action enablement
 		toolBar.add(fScrollLockAction);
 		toolBar.add(new Separator());
 		toolBar.add(fRerunLastTestAction);
-		toolBar.add(fRerunLastFailedFirstAction);
 		toolBar.add(fStopAction);
 		toolBar.add(fViewHistory.createHistoryDropDownAction());
 		
@@ -1520,28 +1409,6 @@ action enablement
 	
 	public boolean isCreated() {
 		return fCounterPanel != null;
-	}
-
-	public void rerunTest(String testId, String launchMode) {
-		DebugUITools.saveAndBuildBeforeLaunch();
-		try {
-			boolean couldLaunch= fTestRunSession.rerunTest(testId, launchMode);
-			if (! couldLaunch) {
-				MessageDialog.openInformation(getSite().getShell(),
-						JUnitMessages.TestRunnerViewPart_cannotrerun_title,
-						JUnitMessages.TestRunnerViewPart_cannotrerurn_message);
-			} else if (fTestRunSession.isKeptAlive()) {
-				TestCaseElement testCaseElement= (TestCaseElement) fTestRunSession.getTestElement(testId);
-				testCaseElement.setStatus(TestElement.Status.RUNNING);
-				fTestViewer.registerViewerUpdate(testCaseElement);
-				postSyncProcessChanges();
-			}
-
-		} catch (CoreException e) {
-			ErrorDialog.openError(getSite().getShell(), 
-				JUnitMessages.TestRunnerViewPart_error_cannotrerun, e.getMessage(), e.getStatus() 
-			);
-		}
 	}
 
 	private void postSyncProcessChanges() {

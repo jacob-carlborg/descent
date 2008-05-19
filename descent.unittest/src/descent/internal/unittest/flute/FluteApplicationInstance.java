@@ -31,10 +31,10 @@ public class FluteApplicationInstance
 	public static final String FLUTE_VERSION = "flute 0.1"; //$NON-NLS-1$
 	static final String AWAITING_INPUT = "(flute)"; //$NON-NLS-1$
 	private static final String LOCALHOST  = "127.0.0.1"; //$NON-NLS-1$
+	private static final long TIMEOUT = 10000;
 	
 	private SocketConnection fConn;
 	
-	private long fTimeout = 10000;
 	private final Object fWaitLock = new Object();
 	private volatile boolean fWaitLockUsed;
 	
@@ -57,17 +57,6 @@ public class FluteApplicationInstance
 	}
 	
 	/**
-	 * Sets the timeout for commands. Particularly important when running
-	 * tests that could take a while.
-	 * 
-	 * @param timeout the timeout, in milliseconds
-	 */
-	public void setTimeout(long timeout)
-	{
-		fTimeout = timeout;
-	}
-	
-	/**
 	 * Initializes the flute application. Should be called only once
 	 * and before any calls to other methods.
 	 * 
@@ -76,17 +65,17 @@ public class FluteApplicationInstance
 	 */
 	public boolean init() throws IOException
 	{
-		assert(fState instanceof StartingUp);
-		assert(null == fConn);
+		if(null != fConn || !(fState instanceof StartingUp))
+		    throw new IllegalStateException();
 		
 		beforeWaitStateReturn();
 		
-		// Make the connection (interpretation will begin automatically)
+	    // Wait for the connection to be established... with a timeout!
 		fConn = new SocketConnection(fPort);
-		waitStateReturn();
-		boolean retVal = ((StartingUp) fState).hasCorrectVersion;
-		setState(fWaitingState);
-		return retVal;
+        waitStateReturn(TIMEOUT);
+        boolean retVal = ((StartingUp) fState).hasCorrectVersion;
+        setState(fWaitingState);
+        return retVal;
 	}
 	
 	public boolean isConnected()
@@ -141,15 +130,20 @@ public class FluteApplicationInstance
 	}
 	
 	private void waitStateReturn() {
-		try {
-			synchronized (fWaitLock) {
-				if (!fWaitLockUsed) {
-					fWaitLock.wait(fTimeout);
-				}
-			}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		waitStateReturn(0);
+	}
+	
+	private void waitStateReturn(long timeout)
+	{
+	    try {
+            synchronized (fWaitLock) {
+                if (!fWaitLockUsed) {
+                    fWaitLock.wait(timeout);
+                }
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 	}
 	
 	void notifyStateReturn() {
