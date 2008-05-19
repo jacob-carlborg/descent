@@ -11,7 +11,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.debug.core,
  org.eclipse.ui,
  com.ibm.icu,
- descent.core
+ descent.core,
+ org.eclipse.debug.ui
 Eclipse-LazyStart: true
 Export-Package: descent.internal.launching,
  descent.internal.launching.dmd,

@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -32,6 +33,7 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IPath;
@@ -44,6 +46,8 @@ import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.Preferences.PropertyChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -76,6 +80,7 @@ public class LaunchingPlugin extends Plugin implements Preferences.IPropertyChan
 	// The plug-in ID
 	public static final String PLUGIN_ID = "descent.launching"; //$NON-NLS-1$
 	public static final String ID_PLUGIN = PLUGIN_ID;
+	public static final String ID_BUILD_GROUP = "descent.launching.builders"; //$NON-NLS-1$
 	
 	private static final String EMPTY_STRING = "";    //$NON-NLS-1$
 	private String fOldVMPrefString = EMPTY_STRING;
@@ -985,5 +990,36 @@ public class LaunchingPlugin extends Plugin implements Preferences.IPropertyChan
 			}
 		}
 	}
-
+	
+	private static final IPath ICONS_PATH = new Path("$nl$/icons/full"); //$NON-NLS-1$
+	
+	public static ImageDescriptor getImageDescriptor(String relativePath)
+	{
+	    IPath path = ICONS_PATH.append(relativePath); 
+        return createImageDescriptor(getDefault().getBundle(), path, true);
+	}
+	
+	/**
+     * Creates an image descriptor for the given path in a bundle. The path can
+     * contain variables like $NL$. If no image could be found,
+     * <code>useMissingImageDescriptor</code> decides if either the 'missing
+     * image descriptor' is returned or <code>null</code>.
+     * 
+     * @param bundle
+     * @param path
+     * @param useMissingImageDescriptor
+     * @return an {@link ImageDescriptor}, or <code>null</code> iff there's
+     *         no image at the given location and
+     *         <code>useMissingImageDescriptor</code> is <code>true</code>
+     */
+    private static ImageDescriptor createImageDescriptor(Bundle bundle, IPath path, boolean useMissingImageDescriptor) {
+        URL url= FileLocator.find(bundle, path, null);
+        if (url != null) {
+            return ImageDescriptor.createFromURL(url);
+        }
+        if (useMissingImageDescriptor) {
+            return ImageDescriptor.getMissingImageDescriptor();
+        }
+        return null;
+    }
 }
