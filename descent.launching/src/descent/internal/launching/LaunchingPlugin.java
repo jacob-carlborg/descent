@@ -80,6 +80,8 @@ public class LaunchingPlugin extends Plugin implements Preferences.IPropertyChan
 	// The plug-in ID
 	public static final String PLUGIN_ID = "descent.launching"; //$NON-NLS-1$
 	public static final String ID_PLUGIN = PLUGIN_ID;
+	
+	// The build group identifier
 	public static final String ID_BUILD_GROUP = "descent.launching.builders"; //$NON-NLS-1$
 	
 	private static final String EMPTY_STRING = "";    //$NON-NLS-1$
@@ -94,6 +96,11 @@ public class LaunchingPlugin extends Plugin implements Preferences.IPropertyChan
 	 * Identifier for 'runtimeClasspathEntries' extension point
 	 */
 	public static final String ID_EXTENSION_POINT_RUNTIME_CLASSPATH_ENTRIES = "runtimeClasspathEntries"; //$NON-NLS-1$
+	
+	/**
+	 * Identifier for 'dBuilders' extension point
+	 */
+	public static final String ID_EXTENSION_POINT_D_BUILDERS = "dBuilders";
 	
 	/**
 	 * Marker type for JRE container problems.

@@ -172,7 +172,7 @@
    <extension
          point="descent.launching.dBuilders">
       <builder
-            class="descent.internal.launching.debuild.DebuildBuilderNew"
+            class="descent.internal.launching.debuild.DebuildBuilder"
             id="descent.launching.builders.debuildBuilder"
             launchConfigurationType="descent.launching.builders.debuild">
       </builder>

@@ -3,13 +3,12 @@ package descent.internal.launching.debuild;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.debug.core.ILaunchConfiguration;
 
 import descent.core.IJavaProject;
 import descent.core.JavaCore;
-import descent.launching.IExecutableTarget;
 import descent.launching.IVMInstall;
 import descent.launching.JavaRuntime;
 import descent.launching.compiler.ICompileCommand;
@@ -20,28 +19,20 @@ import descent.launching.compiler.ILinkCommand;
  * Wrapper for information about a build request. Exactly one object
  * of this type will exist per DebuildBuilder, and this object should
  * generally simply serve as a wrapper for abstracting getting information
- * that the build needs from the {@link IExecutableTarget}.
- * 
- * Note that many of these methods are simply wrappers for 
- * <code>IExecutableTarget</code> methods. This is okay, since it helps abstract
- * these things from the builder if that interface ever changes.
+ * that the build needs from the {@link ILaunchConfiguration}.
  *
  * @author Robert Fraser
  */
 /* package */ class BuildRequest
 {
-	/**
-	 * Information about the executable target to be built (is it debug?
-	 * should we optimize? Add unit tests? etc., etc.)
-	 */
-	private final IExecutableTarget target;
+	private final ILaunchConfiguration config;
     private final IJavaProject project;
     private final IVMInstall compilerType;
 	
-	public BuildRequest(IExecutableTarget target)
+	public BuildRequest(ILaunchConfiguration config)
 	{
-		this.target = target;
-        this.project = target.getProject();
+		this.config = config;
+        this.project = null; // TODO config.getProject();
         
         IVMInstall compilerType = null;
         try
@@ -76,7 +67,8 @@ import descent.launching.compiler.ILinkCommand;
 	 */
 	public String[] getModules()
 	{
-		return target.getModules();
+		// TODO return config.getModules();
+	    return null;
 	}
     
     /**
@@ -84,7 +76,8 @@ import descent.launching.compiler.ILinkCommand;
      */
     public String[] getDefaultImportPath()
     {
-        return target.getDefaultImportPath();
+        // TODO return config.getDefaultImportPath();
+        return null;
     }
 	
 	/**
@@ -108,17 +101,17 @@ import descent.launching.compiler.ILinkCommand;
         CompileOptions opts = new CompileOptions();
         
         // Set the executable-target-specific options
-        opts.addDebugInfo = target.getAddDebugInfo();
-        opts.addUnittests = target.getAddUnittests();
-        opts.addAssertsAndContracts = target.getAddAssertsAndContracts();
-        opts.inlineFunctions = target.getInlineFunctions();
-        opts.optimizeCode = target.getOptimizeCode();
-        opts.instrumentForCoverage = target.getInstrumentForCoverage();
-        opts.instrumentForProfile = target.getInstrumentForProfile();
-        for(String ident : target.getDefaultVersionIdents())
-            opts.debugIdents.add(ident);
-        for(String ident : target.getDefaultDebugIdents())
-            opts.debugIdents.add(ident);
+     // TODO opts.addDebugInfo = config.getAddDebugInfo();
+     // TODO opts.addUnittests = config.getAddUnittests();
+     // TODO opts.addAssertsAndContracts = config.getAddAssertsAndContracts();
+     // TODO opts.inlineFunctions = config.getInlineFunctions();
+     // TODO opts.optimizeCode = config.getOptimizeCode();
+     // TODO opts.instrumentForCoverage = config.getInstrumentForCoverage();
+     // TODO opts.instrumentForProfile = config.getInstrumentForProfile();
+     // TODO for(String ident : config.getDefaultVersionIdents())
+     // TODO opts.debugIdents.add(ident);
+     // TODO for(String ident : config.getDefaultDebugIdents())
+     // TODO opts.debugIdents.add(ident);
         
         // Set the project-specific options
         opts.insertDebugCode = true; // WAITING_ON_CORE

@@ -22,8 +22,6 @@ import descent.core.IPackageFragment;
 import descent.core.IPackageFragmentRoot;
 import descent.core.IParent;
 import descent.core.JavaModelException;
-import descent.launching.BuildCancelledException;
-
 /**
  * Class that can recurse through dependancies to generate a list of all files
  * that need to be compiled in a module. This class mainly exists to abstract
@@ -90,7 +88,7 @@ import descent.launching.BuildCancelledException;
 				// Since this can take a long time, checking every so often for cancellation
 				// is good!
 				if(pm.isCanceled())
-					throw new BuildCancelledException();
+					return null;
 				
 				collectRecursive(moduleName);
 				pm.worked(10);

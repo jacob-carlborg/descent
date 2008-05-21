@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
@@ -15,9 +16,7 @@ import descent.core.IClasspathEntry;
 import descent.core.IJavaModel;
 import descent.core.IJavaProject;
 import descent.core.JavaModelException;
-import descent.launching.BuildCancelledException;
 import descent.launching.IDBuilder;
-import descent.launching.IExecutableTarget;
 import descent.launching.compiler.BuildError;
 import descent.launching.compiler.BuildResponse;
 import descent.launching.compiler.ICompileCommand;
@@ -25,69 +24,42 @@ import descent.launching.compiler.ICompilerInterface;
 import descent.launching.compiler.ILinkCommand;
 import descent.launching.compiler.IResponseInterpreter;
 
-/**
- * The main engine of the descent remote builder. Given an executable target
- * (info on what type of executable is needed) and a project, performs the
- * build. The publuc interface of this class can be accessed via the
- * {@link #build(IExecutableTarget, IProgressMonitor)} method,
- * which will initiat a build.
- * 
- * @author Robert Fraser
- */
-public class DebuildBuilder
+// TODO recomment
+public class DebuildBuilder implements IDBuilder
 {    
-	/**
-	 * Public interface to the debuild builder, which initiates a new build
-	 * based on the given executable target. The target
-	 * should contain information on what is to be built. Returns the path to
-	 * the executable file if one is built (or already exists in the project)
-     * or null if the project could not be built.
-	 * 
-	 * @param target information about the target executable to be built
-	 * @param pm     a monitor to track the progress of the build
-	 * @return       the path to the executable file or null if one could not
-     *               be built due to an error
-	 */
-	public static String build(IExecutableTarget target, IProgressMonitor pm)
-	{
-		DebuildBuilder builder = new DebuildBuilder(new BuildRequest(target));
-        return builder.build(pm);
-    }
-    
     /* package */ static final boolean DEBUG = true;
-    
     /* package */ static final String EXECUTABLE_FILE_PREFIX = "-";
     
-    //--------------------------------------------------------------------------
-    
-	private final BuildRequest req;
-	private final ErrorReporter err;
+	private BuildRequest req;
+	private ErrorReporter err;
 	
     private List<File> importPath;
     private ObjectFile[] objectFiles;
     private List<GroupedCompile> groupedCompiles;
     private CompileOptions opts;
-    
-	private DebuildBuilder(BuildRequest req)
-	{
-		this.req = req;
-		this.err = new ErrorReporter(req.getProject());
-	}
 	
-	private String build(IProgressMonitor pm)
+    public String build(ILaunchConfiguration config, IProgressMonitor pm)
+            throws CoreException
 	{
+        // TODO remove
+        if(true)
+        {
+            System.out.println("We here, baby!");
+            return null;
+        }
+        
 		if(null == pm)
 			pm = new NullProgressMonitor();
 		
 		if(pm.isCanceled())
-			throw new BuildCancelledException();
+			return null;
 		
 		try
 		{   
 			pm.beginTask("Building D application", 100);
 			
-			// Usually, a little work has been done by now. Move the progress bar to keep the
-			// user in a pleasent and productive mood
+			req = new BuildRequest(config);
+	        err = new ErrorReporter(req.getProject());
 			pm.worked(5); // 5
 			
             IJavaProject project = req.getProject();
@@ -97,7 +69,7 @@ public class DebuildBuilder
             pm.worked(10); // 15
             
 			if(pm.isCanceled())
-				throw new BuildCancelledException();
+				return null;
 			
 			// Then, recursively collect dependancies for all the object files
 			objectFiles = RecursiveDependancyCollector.getObjectFiles(
@@ -107,7 +79,7 @@ public class DebuildBuilder
 					new SubProgressMonitor(pm, 25)); // 40
 			
 			if(pm.isCanceled())
-				throw new BuildCancelledException();
+				return null;
 			
             // Then, get the compile options we should use and apply them to
             // all the object files
@@ -117,14 +89,14 @@ public class DebuildBuilder
             pm.worked(5); // 45
             
             if(pm.isCanceled())
-                throw new BuildCancelledException();
+                return null;
             
             // Create a set of grouped compiles for each compile group we need
             createCompileGroups();
             pm.worked(5); // 50
             
             if(pm.isCanceled())
-                throw new BuildCancelledException();
+                return null;
             
             // Perform each compile operation
             return runCompile(new SubProgressMonitor(pm, 50)); // 100
@@ -136,7 +108,7 @@ public class DebuildBuilder
         }
         catch(Exception e)
         {
-            if(DEBUG && !(e instanceof BuildCancelledException))
+            if(DEBUG)
                 e.printStackTrace();
             if(e instanceof RuntimeException)
                 throw (RuntimeException) e;
@@ -223,7 +195,7 @@ public class DebuildBuilder
             for(GroupedCompile gc : groupedCompiles)
             {
                 if(pm.isCanceled())
-                    throw new BuildCancelledException();
+                    return null;
                 
                 // Get & setup a new compile command
                 ICompileCommand cmd = req.getCompileCommand();
@@ -273,7 +245,7 @@ public class DebuildBuilder
                 return null;
             
             if(pm.isCanceled())
-                throw new BuildCancelledException();
+                return null;
             
             // Create the linker command
             ILinkCommand cmd = req.getLinkCommand();
