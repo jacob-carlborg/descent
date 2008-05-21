@@ -5,9 +5,6 @@ import descent.internal.compiler.parser.Package;
 
 public class AstVisitorAdapter implements IASTVisitor {
 
-	public void endVisit(ASTNode node) {
-	}
-
 	public void endVisit(AddAssignExp node) {
 	}
 
@@ -49,10 +46,10 @@ public class AstVisitorAdapter implements IASTVisitor {
 
 	public void endVisit(ArrayInitializer node) {
 	}
-	
+
 	public void endVisit(ArrayLengthExp node) {
 	}
-
+	
 	public void endVisit(ArrayLiteralExp node) {
 	}
 
@@ -72,6 +69,9 @@ public class AstVisitorAdapter implements IASTVisitor {
 	}
 
 	public void endVisit(AssocArrayLiteralExp node) {
+	}
+
+	public void endVisit(ASTNode node) {
 	}
 
 	public void endVisit(AttribDeclaration node) {
@@ -242,6 +242,10 @@ public class AstVisitorAdapter implements IASTVisitor {
 	public void endVisit(FileExp node) {
 	}
 
+	public void endVisit(FileInitExp node) {
+		
+	}
+
 	public void endVisit(ForeachRangeStatement node) {
 	}
 
@@ -287,9 +291,6 @@ public class AstVisitorAdapter implements IASTVisitor {
 	public void endVisit(IftypeCondition node) {
 	}
 
-	public void endVisit(IsExp node) {
-	}
-
 	public void endVisit(Import node) {
 	}
 
@@ -311,10 +312,17 @@ public class AstVisitorAdapter implements IASTVisitor {
 	public void endVisit(InvariantDeclaration node) {
 	}
 
+	public void endVisit(IsExp node) {
+	}
+
 	public void endVisit(LabelDsymbol node) {
 	}
 
 	public void endVisit(LabelStatement node) {
+	}
+
+	public void endVisit(LineInitExp node) {
+		
 	}
 
 	public void endVisit(LinkDeclaration node) {
@@ -381,6 +389,10 @@ public class AstVisitorAdapter implements IASTVisitor {
 	}
 
 	public void endVisit(Package node) {
+	}
+
+	public void endVisit(PostBlitDeclaration node) {
+		
 	}
 
 	public void endVisit(PostExp node) {
@@ -495,6 +507,10 @@ public class AstVisitorAdapter implements IASTVisitor {
 	}
 
 	public void endVisit(TemplateParameter node) {
+	}
+
+	public void endVisit(TemplateThisParameter node) {
+		
 	}
 
 	public void endVisit(TemplateTupleParameter node) {
@@ -617,9 +633,12 @@ public class AstVisitorAdapter implements IASTVisitor {
 	public void endVisit(TypeQualified node) {
 	}
 
-	public void endVisit(TypeSArray node) {
+	public void endVisit(TypeReturn node) {
 	}
 
+	public void endVisit(TypeSArray node) {
+	}
+	
 	public void endVisit(TypeSlice node) {
 	}
 
@@ -633,9 +652,6 @@ public class AstVisitorAdapter implements IASTVisitor {
 	}
 
 	public void endVisit(TypeTypeof node) {
-	}
-	
-	public void endVisit(TypeReturn node) {
 	}
 
 	public void endVisit(UAddExp node) {
@@ -701,14 +717,6 @@ public class AstVisitorAdapter implements IASTVisitor {
 	public void preVisit(ASTNode node) {
 	}
 
-	public boolean visit(ASTNode node) {
-		return true;
-	}
-
-	public boolean visit(ASTDmdNode node) {
-		return true;
-	}
-
 	public boolean visit(AddAssignExp node) {
 		return true;
 	}
@@ -756,7 +764,7 @@ public class AstVisitorAdapter implements IASTVisitor {
 	public boolean visit(Argument node) {
 		return true;
 	}
-
+	
 	public boolean visit(ArrayExp node) {
 		return true;
 	}
@@ -764,7 +772,7 @@ public class AstVisitorAdapter implements IASTVisitor {
 	public boolean visit(ArrayInitializer node) {
 		return true;
 	}
-	
+
 	public boolean visit(ArrayLengthExp node) {
 		return true;
 	}
@@ -794,6 +802,14 @@ public class AstVisitorAdapter implements IASTVisitor {
 	}
 
 	public boolean visit(AssocArrayLiteralExp node) {
+		return true;
+	}
+
+	public boolean visit(ASTDmdNode node) {
+		return true;
+	}
+
+	public boolean visit(ASTNode node) {
 		return true;
 	}
 
@@ -1021,6 +1037,10 @@ public class AstVisitorAdapter implements IASTVisitor {
 		return true;
 	}
 
+	public boolean visit(FileInitExp node) {
+		return true;
+	}
+
 	public boolean visit(ForeachRangeStatement node) {
 		return true;
 	}
@@ -1081,10 +1101,6 @@ public class AstVisitorAdapter implements IASTVisitor {
 		return true;
 	}
 
-	public boolean visit(IsExp node) {
-		return true;
-	}
-
 	public boolean visit(Import node) {
 		return true;
 	}
@@ -1113,11 +1129,19 @@ public class AstVisitorAdapter implements IASTVisitor {
 		return true;
 	}
 
+	public boolean visit(IsExp node) {
+		return true;
+	}
+
 	public boolean visit(LabelDsymbol node) {
 		return true;
 	}
 
 	public boolean visit(LabelStatement node) {
+		return true;
+	}
+
+	public boolean visit(LineInitExp node) {
 		return true;
 	}
 
@@ -1206,6 +1230,10 @@ public class AstVisitorAdapter implements IASTVisitor {
 	}
 
 	public boolean visit(Package node) {
+		return true;
+	}
+
+	public boolean visit(PostBlitDeclaration node) {
 		return true;
 	}
 
@@ -1361,6 +1389,10 @@ public class AstVisitorAdapter implements IASTVisitor {
 		return true;
 	}
 
+	public boolean visit(TemplateThisParameter node) {
+		return true;
+	}
+
 	public boolean visit(TemplateTupleParameter node) {
 		return true;
 	}
@@ -1512,12 +1544,16 @@ public class AstVisitorAdapter implements IASTVisitor {
 	public boolean visit(TypeInstance node) {
 		return true;
 	}
-
+	
 	public boolean visit(TypePointer node) {
 		return true;
 	}
 
 	public boolean visit(TypeQualified node) {
+		return true;
+	}
+
+	public boolean visit(TypeReturn node) {
 		return true;
 	}
 
@@ -1542,10 +1578,6 @@ public class AstVisitorAdapter implements IASTVisitor {
 	}
 
 	public boolean visit(TypeTypeof node) {
-		return true;
-	}
-	
-	public boolean visit(TypeReturn node) {
 		return true;
 	}
 

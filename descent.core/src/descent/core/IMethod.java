@@ -232,6 +232,15 @@ boolean isNew() throws JavaModelException;
  * @return true if this method is a delete (dellocator), false otherwise
  */
 boolean isDelete() throws JavaModelException;
+/**
+ * Returns whether this method is a postblit.
+ *
+ * @exception JavaModelException if this element does not exist or if an
+ *      exception occurs while accessing its corresponding resource.
+ * 
+ * @return true if this method is a postblit, false otherwise
+ */
+boolean isPostBlit() throws JavaModelException;
 
 /**
  * Returns whether this method is a main method.

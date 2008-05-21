@@ -35,6 +35,7 @@ import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.InterfaceDeclaration;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.NewExp;
+import descent.internal.compiler.parser.PostBlitDeclaration;
 import descent.internal.compiler.parser.ProtDeclaration;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.StorageClassDeclaration;
@@ -238,19 +239,6 @@ public class SelectionEngine extends AstVisitorAdapter {
 	// >>> Speedups
 
 	@Override
-	public boolean visit(Module node) {
-		// Don't visit template instances in the module scope
-		int length = node.members.size();
-		for (int i = 0; i < length; i++) {
-			Dsymbol dsymbol = node.members.get(i);
-			if (null == dsymbol.isTemplateInstance()) {
-				dsymbol.accept(this);
-			}
-		}
-		return false;
-	}
-
-	@Override
 	public boolean visit(ClassDeclaration node) {
 		return visitType(node, node.ident);
 	}
@@ -319,6 +307,15 @@ public class SelectionEngine extends AstVisitorAdapter {
 		}
 		return isInRange(node);
 	}
+	
+	@Override
+	public boolean visit(PostBlitDeclaration node) {
+		if (isInRange(node.ident)) {
+			addBinarySearch(node);
+			return false;
+		}
+		return isInRange(node);
+	}
 
 	@Override
 	public boolean visit(IdentifierExp node) {
@@ -327,10 +324,13 @@ public class SelectionEngine extends AstVisitorAdapter {
 		}
 		
 		doSemantic();
+		
+		Dsymbol sym = node.resolvedSymbol;
+		if (sym == null && node.templateInstance != null) {
+			sym = node.templateInstance.tempdecl;
+		}
 
-		if (node.resolvedSymbol != null) {
-			Dsymbol sym = node.resolvedSymbol;
-			
+		if (sym != null) {
 			// See if this symbols was created at compile-time
 			while (sym.creator != null) {
 				sym = sym.creator;
@@ -347,6 +347,8 @@ public class SelectionEngine extends AstVisitorAdapter {
 				}
 			}
 			return false;
+		} else if (node.templateInstance != null) {
+			
 		}
 
 		return addResolvedExpression(node);

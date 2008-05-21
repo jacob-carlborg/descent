@@ -34,7 +34,7 @@ public class TemplateMixin extends TemplateInstance {
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, idents);
 			TreeVisitor.acceptChildren(visitor, tiargs);
-			TreeVisitor.acceptChildren(visitor, ident);
+			TreeVisitor.acceptChildren(visitor, name);
 		}
 		visitor.endVisit(this);
 	}

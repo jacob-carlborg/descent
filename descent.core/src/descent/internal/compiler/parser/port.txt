@@ -16,8 +16,10 @@ func.c  --> missing StaticCtorDeclaration::StaticCtorDeclaration
             
 Remaining from DMD 2.013
 ------------------------------
+Parser -> 4313(2)
+
 Make an option to ignore unrecongnized pragmas.
-Implement TypeReturn, PostBlitDeclaration and TemplateThisParameter for Descent side.
+Implement TypeReturn, PostBlitDeclaration, TemplateThisParameter, FileInitExp, LineInitExp for Descent side.
 
 cast.c
 class.c

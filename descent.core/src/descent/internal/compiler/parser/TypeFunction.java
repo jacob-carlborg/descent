@@ -27,6 +27,8 @@ public class TypeFunction extends Type implements Cloneable {
 	public Arguments parameters, sourceParameters;
 	public int varargs;
 	public char linkageChar;
+	public boolean ispure;
+	public boolean isnothrow;
 
 	public TypeFunction(Arguments parameters, Type treturn, int varargs,
 			LINK linkage) {

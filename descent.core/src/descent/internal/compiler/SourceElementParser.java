@@ -475,6 +475,13 @@ public class SourceElementParser extends AstVisitorAdapter {
 		return true;
 	}
 	
+	@Override
+	public boolean visit(PostBlitDeclaration node) {
+		visit(node, null, Flags.AccPostBlit, null, Id.ctor);
+		pushLevelInAttribDeclarationStack();
+		return true;
+	}
+	
 	private boolean visit(FuncDeclaration node, TemplateDeclaration templateDeclaration, int flags, Arguments arguments, char[] name) {
 		nodeStack.push(node);
 		

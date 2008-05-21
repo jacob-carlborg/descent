@@ -87,7 +87,7 @@ public abstract class ASTNode
 	}
 	
 	/** {@inheritDoc} */
-	public void accept(IASTVisitor visitor) {
+	public final void accept(IASTVisitor visitor) {
 		AssertIn.isNotNull(visitor);
 
 		// begin with the generic pre-visit

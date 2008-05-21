@@ -101,6 +101,7 @@ public interface IASTVisitor extends ITreeVisitor<ASTNode> {
 	boolean visit(Expression node);
 	boolean visit(ExpStatement node);
 	boolean visit(FileExp node);
+	boolean visit(FileInitExp node);
 	boolean visit(ForeachRangeStatement node);
 	boolean visit(ForeachStatement node);
 	boolean visit(ForStatement node);
@@ -126,6 +127,7 @@ public interface IASTVisitor extends ITreeVisitor<ASTNode> {
 	boolean visit(InvariantDeclaration node);
 	boolean visit(LabelDsymbol node);
 	boolean visit(LabelStatement node);
+	boolean visit(LineInitExp node);
 	boolean visit(LinkDeclaration node);
 	boolean visit(MinAssignExp node);
 	boolean visit(MinExp node);
@@ -148,6 +150,7 @@ public interface IASTVisitor extends ITreeVisitor<ASTNode> {
 	boolean visit(OrExp node);
 	boolean visit(OrOrExp node);
 	boolean visit(Package node);
+	boolean visit(PostBlitDeclaration node);
 	boolean visit(PostExp node);
 	boolean visit(PragmaDeclaration node);
 	boolean visit(PragmaStatement node);
@@ -186,6 +189,7 @@ public interface IASTVisitor extends ITreeVisitor<ASTNode> {
 	boolean visit(TemplateInstanceWrapper node);
 	boolean visit(TemplateMixin node);
 	boolean visit(TemplateParameter node);
+	boolean visit(TemplateThisParameter node);
 	boolean visit(TemplateTupleParameter node);
 	boolean visit(TemplateTypeParameter node);
 	boolean visit(TemplateValueParameter node);
@@ -225,6 +229,7 @@ public interface IASTVisitor extends ITreeVisitor<ASTNode> {
 	boolean visit(TypeInfoTypedefDeclaration node);
 	boolean visit(TypeInstance node);
 	boolean visit(TypePointer node);
+	boolean visit(TypeReturn node);
 	boolean visit(TypeQualified node);
 	boolean visit(TypeSArray node);
 	boolean visit(TypeSlice node);
@@ -331,6 +336,7 @@ public interface IASTVisitor extends ITreeVisitor<ASTNode> {
 	void endVisit(Expression node);
 	void endVisit(ExpStatement node);
 	void endVisit(FileExp node);
+	void endVisit(FileInitExp node);
 	void endVisit(ForeachRangeStatement node);
 	void endVisit(ForeachStatement node);
 	void endVisit(ForStatement node);
@@ -356,6 +362,7 @@ public interface IASTVisitor extends ITreeVisitor<ASTNode> {
 	void endVisit(InvariantDeclaration node);
 	void endVisit(LabelDsymbol node);
 	void endVisit(LabelStatement node);
+	void endVisit(LineInitExp node);
 	void endVisit(LinkDeclaration node);
 	void endVisit(MinAssignExp node);
 	void endVisit(MinExp node);
@@ -378,6 +385,7 @@ public interface IASTVisitor extends ITreeVisitor<ASTNode> {
 	void endVisit(OrExp node);
 	void endVisit(OrOrExp node);
 	void endVisit(Package node);
+	void endVisit(PostBlitDeclaration node);
 	void endVisit(PostExp node);
 	void endVisit(PragmaDeclaration node);
 	void endVisit(PragmaStatement node);
@@ -416,6 +424,7 @@ public interface IASTVisitor extends ITreeVisitor<ASTNode> {
 	void endVisit(TemplateInstanceWrapper node);
 	void endVisit(TemplateMixin node);
 	void endVisit(TemplateParameter node);
+	void endVisit(TemplateThisParameter node);
 	void endVisit(TemplateTupleParameter node);
 	void endVisit(TemplateTypeParameter node);
 	void endVisit(TemplateValueParameter node);
@@ -456,6 +465,7 @@ public interface IASTVisitor extends ITreeVisitor<ASTNode> {
 	void endVisit(TypeInstance node);
 	void endVisit(TypePointer node);
 	void endVisit(TypeQualified node);
+	void endVisit(TypeReturn node);
 	void endVisit(TypeSArray node);
 	void endVisit(TypeSlice node);
 	void endVisit(TypeStruct node);

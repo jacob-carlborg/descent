@@ -210,10 +210,16 @@ public final class Flags {
 	public static final int AccNew = 0x00040000;
 	
 	/**
-	 * New property flag.
+	 * Delete property flag.
 	 * @since 2.0
 	 */
 	public static final int AccDelete = 0x00080000;
+	
+	/**
+	 * Postblit property flag.
+	 * @since 2.0
+	 */
+	public static final int AccPostBlit = 0x00100000;
 	
 	// Extensions for fields (can reuse flags)
 	
@@ -631,6 +637,16 @@ public final class Flags {
 	 */
 	public static boolean isDelete(long flags) {
 		return (flags & AccDelete) != 0;
+	}
+	
+	/**
+	 * Returns whether the given integer includes the <code>postblit</code> modifier.
+	 *
+	 * @param flags the flags
+	 * @return <code>true</code> if the <code>postblit</code> modifier is included
+	 */
+	public static boolean isPostBlit(long flags) {
+		return (flags & AccPostBlit) != 0;
 	}
 	
 	/**

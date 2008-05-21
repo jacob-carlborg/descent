@@ -210,7 +210,8 @@ public boolean isMethod() throws JavaModelException {
 	return !Flags.isConstructor(flags) 
 		&& !Flags.isDestructor(flags)
 		&& !Flags.isNew(flags)
-		&& !Flags.isDelete(flags);
+		&& !Flags.isDelete(flags)
+		&& !Flags.isPostBlit(flags);
 }
 /**
  * @see IMethod
@@ -226,6 +227,9 @@ public boolean isNew() throws JavaModelException {
 }
 public boolean isDelete() throws JavaModelException {
 	return Flags.isDelete(getFlags());
+}
+public boolean isPostBlit() throws JavaModelException {
+	return Flags.isPostBlit(getFlags());
 }
 public boolean isTemplate() throws JavaModelException {
 	return Flags.isTemplate(getFlags());

@@ -9,7 +9,7 @@ import descent.internal.compiler.parser.Package;
  * An abstract visitor class that that delegates each visit method, to the visit
  * method of the element's superclass 
  */
-public abstract class ASTUpTreeVisitor extends TreeVisitor implements IASTVisitor {
+public class ASTUpTreeVisitor extends TreeVisitor implements IASTVisitor {
 
 	
 	public void preVisit(ASTNode elem) {
@@ -1910,6 +1910,56 @@ public abstract class ASTUpTreeVisitor extends TreeVisitor implements IASTVisito
 	public void endVisit(XorExp node) {
 		Assert.isTrue(XorExp.class.getSuperclass().equals(BinExp.class));
 		endVisit((BinExp) node);
+	}
+
+	public void endVisit(FileInitExp node) {
+		Assert.isTrue(FileInitExp.class.getSuperclass().equals(Expression.class));
+		endVisit((Expression) node);
+	}
+
+	public void endVisit(LineInitExp node) {
+		Assert.isTrue(LineInitExp.class.getSuperclass().equals(Expression.class));
+		endVisit((Expression) node);
+	}
+
+	public void endVisit(PostBlitDeclaration node) {
+		Assert.isTrue(PostBlitDeclaration.class.getSuperclass().equals(FuncDeclaration.class));
+		endVisit((FuncDeclaration) node);
+	}
+
+	public void endVisit(TemplateThisParameter node) {
+		Assert.isTrue(TemplateThisParameter.class.getSuperclass().equals(TemplateTypeParameter.class));
+		endVisit((TemplateTypeParameter) node);
+	}
+
+	public void endVisit(TypeReturn node) {
+		Assert.isTrue(TypeReturn.class.getSuperclass().equals(TypeQualified.class));
+		endVisit((TypeQualified) node);
+	}
+
+	public boolean visit(FileInitExp node) {
+		Assert.isTrue(FileInitExp.class.getSuperclass().equals(Expression.class));
+		return visit((Expression) node);
+	}
+
+	public boolean visit(LineInitExp node) {
+		Assert.isTrue(LineInitExp.class.getSuperclass().equals(Expression.class));
+		return visit((Expression) node);
+	}
+
+	public boolean visit(PostBlitDeclaration node) {
+		Assert.isTrue(PostBlitDeclaration.class.getSuperclass().equals(FuncDeclaration.class));
+		return visit((FuncDeclaration) node);
+	}
+
+	public boolean visit(TemplateThisParameter node) {
+		Assert.isTrue(TemplateThisParameter.class.getSuperclass().equals(TemplateTypeParameter.class));
+		return visit((TemplateTypeParameter) node);
+	}
+
+	public boolean visit(TypeReturn node) {
+		Assert.isTrue(TypeReturn.class.getSuperclass().equals(TypeQualified.class));
+		return visit((TypeQualified) node);
 	}
 
 

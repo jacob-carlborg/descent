@@ -134,7 +134,6 @@ public class FuncDeclaration extends Declaration {
 			TreeVisitor.acceptChildren(visitor, modifiers);
 			TreeVisitor.acceptChildren(visitor, sourceType);
 			TreeVisitor.acceptChildren(visitor, ident);
-			// Template args?
 			TreeVisitor.acceptChildren(visitor, sourceFrequire);
 			TreeVisitor.acceptChildren(visitor, sourceFbody);
 			TreeVisitor.acceptChildren(visitor, outId);

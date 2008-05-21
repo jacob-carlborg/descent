@@ -255,6 +255,8 @@ public abstract class ASTDmdNode extends ASTNode {
 	public final static int DOT_TEMPLATE_EXP = 195;
 	public final static int TYPE_REFERENCE = 196;
 	public final static int TYPE_RETURN = 197;
+	public final static int FILE_INIT_EXP = 198;
+	public final static int LINE_INIT_EXP = 199;
 
 	// Defined here because MATCH and Match overlap on Windows
 	public static class Match {

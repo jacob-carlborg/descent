@@ -1,6 +1,8 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class PostBlitDeclaration extends FuncDeclaration {
 	
@@ -84,6 +86,21 @@ public class PostBlitDeclaration extends FuncDeclaration {
 	@Override
 	public int getErrorLength() {
 		return 4; // "this".length()
+	}
+	
+	@Override
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, modifiers);
+			TreeVisitor.acceptChildren(visitor, sourceType);
+			TreeVisitor.acceptChildren(visitor, ident);
+			TreeVisitor.acceptChildren(visitor, sourceFrequire);
+			TreeVisitor.acceptChildren(visitor, sourceFbody);
+			TreeVisitor.acceptChildren(visitor, outId);
+			TreeVisitor.acceptChildren(visitor, sourceFensure);
+		}
+		visitor.endVisit(this);
 	}
 
 }

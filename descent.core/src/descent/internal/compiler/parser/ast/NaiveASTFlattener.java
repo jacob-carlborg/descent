@@ -1308,33 +1308,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 			}
 		}
 		this.buffer.append(")");
-		if (node.frequire != null) {
-			this.buffer.append(LINE_END);
-			printIndent();
-			this.buffer.append("in ");
-			node.frequire.accept(this);
-			this.buffer.append(LINE_END);
-			printIndent();
-		}
-		if (node.fensure != null) {
-			this.buffer.append(LINE_END);
-			printIndent();
-			this.buffer.append("out ");
-			node.fensure.accept(this);
-			this.buffer.append(LINE_END);
-			printIndent();
-		}
-		if (node.fbody != null) {
-			if (node.frequire != null || node.fensure != null) {
-				this.buffer.append("body");
-			}
-			this.buffer.append(" ");
-			node.fbody.accept(this);
-		}
-		if (node.postComment != null) {
-			this.buffer.append(" ");
-			node.postComment.accept(this);
-		}
+		printFunctionBodies(node);
 		return false;
 	}
 
@@ -3187,6 +3161,74 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		this.buffer.append(" ^ ");
 		node.e2.accept(this);
 		return false;
+	}
+	
+	@Override
+	public boolean visit(FileInitExp node) {
+		this.buffer.append("__FILE__");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(LineInitExp node) {
+		this.buffer.append("__LINE__");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(PostBlitDeclaration node) {
+		visitPreDDocss(node.preComments);
+		printIndent();
+		visitModifiers(node.modifiers);
+		
+		this.buffer.append("this(this)");
+		printFunctionBodies(node);
+		return false;
+	}
+	
+	@Override
+	public boolean visit(TemplateThisParameter node) {
+		this.buffer.append("this ");
+		node.ident.accept(this);
+		if (node.specType != null) {
+			this.buffer.append(" : ");
+			node.specType.accept(this);
+		}
+		if (node.defaultType != null) {
+			this.buffer.append(" = ");
+			node.defaultType.accept(this);
+		}
+		return false;
+	}
+
+	private void printFunctionBodies(FuncDeclaration node) {
+		if (node.frequire != null) {
+			this.buffer.append(LINE_END);
+			printIndent();
+			this.buffer.append("in ");
+			node.frequire.accept(this);
+			this.buffer.append(LINE_END);
+			printIndent();
+		}
+		if (node.fensure != null) {
+			this.buffer.append(LINE_END);
+			printIndent();
+			this.buffer.append("out ");
+			node.fensure.accept(this);
+			this.buffer.append(LINE_END);
+			printIndent();
+		}
+		if (node.fbody != null) {
+			if (node.frequire != null || node.fensure != null) {
+				this.buffer.append("body");
+			}
+			this.buffer.append(" ");
+			node.fbody.accept(this);
+		}
+		if (node.postComment != null) {
+			this.buffer.append(" ");
+			node.postComment.accept(this);
+		}
 	}
 
 }
