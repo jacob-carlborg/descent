@@ -216,8 +216,7 @@ public class UnittestLaunchConfiguration extends
 	
 	private static CoreException error(String message)
 	{
-	    return new CoreException(new Status(IStatus.ERROR, 
-	            DescentUnittestPlugin.PLUGIN_ID, message));
+	    return new CoreException(new Status(IStatus.ERROR, DescentUnittestPlugin.PLUGIN_ID, IStatus.ERROR, message, null));
 	}
 	
 	private String getConfigFilePath(ILaunchConfiguration config) throws CoreException

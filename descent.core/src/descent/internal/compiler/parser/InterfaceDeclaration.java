@@ -282,7 +282,11 @@ public class InterfaceDeclaration extends ClassDeclaration {
 		sc.offset = 8;
 
 		for (int j = 0; j < size(members); j++) {
-			members.get(j).semantic(sc, context);
+			Dsymbol s = members.get(j);
+			s.semantic(sc, context);
+			
+			// Need this for vtbl
+			s.consumeRest();
 		}
 		sc.pop();
 	}

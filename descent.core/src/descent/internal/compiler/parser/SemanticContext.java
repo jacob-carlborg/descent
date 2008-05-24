@@ -84,6 +84,7 @@ public class SemanticContext {
 	public boolean fatalWasSignaled;
 	
 	public final ASTNodeEncoder encoder;
+	public boolean alwaysResolveFunctionSemanticRest;
 	private final List<ASTDmdNode> templateEvaluationStack;
 	
 	/*

@@ -13,6 +13,7 @@ import descent.internal.compiler.parser.BaseClasses;
 import descent.internal.compiler.parser.BreakStatement;
 import descent.internal.compiler.parser.CaseStatement;
 import descent.internal.compiler.parser.Chars;
+import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.CompoundStatement;
 import descent.internal.compiler.parser.ContinueStatement;
 import descent.internal.compiler.parser.DebugCondition;
@@ -100,7 +101,6 @@ public class CompletionParser extends Parser {
 	 */
 	@Override
 	protected boolean dietParse(FuncDeclaration f) {
-		
 		// If any argument is being autocompleted, don't skip
 		// Same for return type
 		TypeFunction type = (TypeFunction) f.type;
@@ -850,6 +850,21 @@ public class CompletionParser extends Parser {
 		}
 		
 		return super.newClassDeclaration(loc, id, baseClasses);
+	}
+	
+	@Override
+	protected AggregateDeclaration endAggregateDeclaration(AggregateDeclaration a) {
+		if (a instanceof ClassDeclaration && a.start < cursorLocation && cursorLocation < a.start + a.length) {
+			ClassDeclaration original = (ClassDeclaration) a;
+			CompletionOnClassDeclaration cc = new CompletionOnClassDeclaration(original.loc, original.ident, original.baseclasses);
+			cc.members = original.members;
+			cc.sourceMembers = original.sourceMembers;
+			cc.isCompletingScope = true;
+			
+			assistNode = cc;
+			return cc;
+		}
+		return super.endAggregateDeclaration(a);
 	}
 	
 	@Override

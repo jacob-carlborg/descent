@@ -1097,6 +1097,14 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 	
 	@Override
+	public void endVisit(PostBlitDeclaration node) {
+		nodeStack.pop();
+		
+		requestor.exitMethod(endOfDeclaration(node), -1, -1);
+		popLevelInAttribDeclarationStack();
+	}
+	
+	@Override
 	public void endVisit(CtorDeclaration node) {
 		nodeStack.pop();
 		

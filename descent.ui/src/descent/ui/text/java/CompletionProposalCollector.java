@@ -43,7 +43,6 @@ import descent.internal.ui.text.java.ExperimentalFunctionCallProposal;
 import descent.internal.ui.text.java.FieldProposalInfo;
 import descent.internal.ui.text.java.GetterSetterCompletionProposal;
 import descent.internal.ui.text.java.JavaCompletionProposal;
-import descent.internal.ui.text.java.JavaMethodCompletionProposal;
 import descent.internal.ui.text.java.JavaTemplateCompletionProposal;
 import descent.internal.ui.text.java.JavaTemplatedFunctionCompletionProposal;
 import descent.internal.ui.text.java.LazyJavaCompletionProposal;
@@ -51,6 +50,8 @@ import descent.internal.ui.text.java.LazyJavaFieldCompletionProposal;
 import descent.internal.ui.text.java.LazyJavaMethodCompletionProposal;
 import descent.internal.ui.text.java.LazyJavaTypeCompletionProposal;
 import descent.internal.ui.text.java.MethodCompletionProposal;
+import descent.internal.ui.text.java.MethodProposalInfo;
+import descent.internal.ui.text.java.OverrideCompletionProposal;
 import descent.internal.ui.text.java.ProposalContextInformation;
 import descent.internal.ui.viewsupport.ImageDescriptorRegistry;
 
@@ -757,12 +758,10 @@ public class CompletionProposalCollector extends CompletionRequestor {
 		if (fCompilationUnit == null || fJavaProject == null)
 			return null;
 
-		return null;
-		/* TODO JDT UI override
 		String name= String.valueOf(proposal.getName());
 		String[] paramTypes= Signature.getParameterTypes(String.valueOf(proposal.getSignature()));
 		for (int index= 0; index < paramTypes.length; index++)
-			paramTypes[index]= Signature.toString(paramTypes[index]);
+			paramTypes[index]= Signature.toString(paramTypes[index], false /* don't fully qualiffy names */);
 		int start= proposal.getReplaceStart();
 		int length= getLength(proposal);
 
@@ -775,7 +774,6 @@ public class CompletionProposalCollector extends CompletionRequestor {
 
 		fSuggestedMethodNames.add(new String(name));
 		return javaProposal;
-		*/
 	}
 
 	private IJavaCompletionProposal createMethodReferenceProposal(CompletionProposal methodProposal) {

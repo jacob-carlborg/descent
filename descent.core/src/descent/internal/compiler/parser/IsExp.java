@@ -18,12 +18,18 @@ public class IsExp extends Expression {
 
 	public IsExp(Loc loc, Type targ, IdentifierExp id, TOK tok, Type tspec,
 			TOK tok2) {
+		this(loc, targ, id, tok, tspec, tok2, null);
+	}
+	
+	public IsExp(Loc loc, Type targ, IdentifierExp id, TOK tok, Type tspec,
+			TOK tok2, TemplateParameters parameters) {
 		super(loc, TOK.TOKis);
 		this.targ = this.sourceTarg = targ;
 		this.id = id;
 		this.tok = tok;
 		this.tspec = this.sourceTspec = tspec;
 		this.tok2 = tok2;
+		this.parameters = parameters;
 	}
 
 	@Override

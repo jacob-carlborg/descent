@@ -11,6 +11,7 @@ public class CompletionOnClassDeclaration extends ClassDeclaration {
 	
 	public Scope theScope;
 	public int baseClassIndex = -1;
+	public boolean isCompletingScope = false;
 
 	public CompletionOnClassDeclaration(Loc loc, IdentifierExp id,
 			BaseClasses baseclasses) {

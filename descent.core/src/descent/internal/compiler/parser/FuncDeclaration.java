@@ -1064,10 +1064,6 @@ public class FuncDeclaration extends Declaration {
 
 				// Verify this doesn't override previous final function
 				if (cd.baseClass != null) {
-					if (ident.toString().equals("callWindowProc")) {
-						System.out.println(1);
-					}
-
 					Dsymbol s = cd.baseClass.search(loc, ident, 0, context);
 					if (s != null) {
 						FuncDeclaration f2 = s.isFuncDeclaration();

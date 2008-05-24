@@ -872,6 +872,12 @@ public class Parser extends Lexer {
 				if (attachLeadingComments) {
 					attachLeadingComments(s);
 				}
+				
+				// Hook method for subclasses
+				if (s instanceof AggregateDeclaration) {
+					s = endAggregateDeclaration((AggregateDeclaration) s);
+				}
+				
 				decldefs.add(s);
 			}
 		} while (!once);
@@ -2008,6 +2014,7 @@ public class Parser extends Lexer {
 		} else if (token.value == TOKlcurly) {
 			nextToken();
 			Dsymbols decl = parseDeclDefs(false);
+			
 			if (token.value != TOKrcurly) {
 				parsingErrorInsertTokenAfter(prevToken, "}");
 			}
@@ -6262,6 +6269,8 @@ public class Parser extends Lexer {
 			Type tspec = null;
 			TOK tok = TOKreserved;
 			TOK tok2 = TOKreserved;
+		    TemplateParameters tpl = null;
+		    Loc loc = this.loc;
 
 			nextToken();
 			if (token.value == TOKlparen) {
@@ -6287,6 +6296,8 @@ public class Parser extends Lexer {
 									|| token.value == TOKsuper
 									|| token.value == TOKenum
 									|| token.value == TOKinterface
+									|| (apiLevel == D2 && token.value == TOKconst && peek(token).value == TOKrparen)
+									|| (apiLevel == D2 && token.value == TOKinvariant && peek(token).value == TOKrparen)
 									|| token.value == TOKfunction
 									|| token.value == TOKdelegate || token.value == TOKreturn)) {
 						tok2 = token.value;
@@ -6300,7 +6311,20 @@ public class Parser extends Lexer {
 						}
 					}
 				}
-				check(TOKrparen);
+				
+				if (apiLevel == D2 && ident != null && tspec != null) {
+					if (token.value == TOKcomma)
+						tpl = parseTemplateParameterList(1, null);
+					else {
+						tpl = new TemplateParameters();
+						check(TOKrparen);
+					}
+					TemplateParameter tp = new TemplateTypeParameter(loc,
+							ident, null, null);
+					tpl.add(0, tp);
+				} else {
+					check(TOKrparen);
+				}
 			} else {
 				parsingErrorInsertToComplete(prevToken, "(type identifier : specialization)", "IftypeDeclaration");
 				// goto Lerr;
@@ -6310,7 +6334,11 @@ public class Parser extends Lexer {
 				nextToken();
 				break;
 			}
-			e = new IsExp(loc(), targ, ident, tok, tspec, tok2);
+			if (apiLevel == D2) {
+				e = new IsExp(loc(), targ, ident, tok, tspec, tok2, tpl);
+			} else {
+				e = new IsExp(loc(), targ, ident, tok, tspec, tok2);
+			}
 			break;
 		}
 
@@ -6722,6 +6750,8 @@ public class Parser extends Lexer {
 				case TOKfunction:
 				case TOKdelegate:
 				case TOKtypeof:
+				case TOKfile:
+				case TOKline:
 					// CASE_BASIC_TYPES: // (type)int.size
 				case TOKwchar:
 				case TOKdchar:
@@ -6808,6 +6838,8 @@ public class Parser extends Lexer {
 		int varargs = 0;
 		FuncLiteralDeclaration fd;
 		Type t;
+	    boolean isnothrow = false;
+	    boolean ispure = false;
 
 		if (token.value == TOKlcurly) {
 			t = null;
@@ -6824,11 +6856,25 @@ public class Parser extends Lexer {
 			int[] pointer2_varargs = { varargs };
 			arguments = parseParameters(pointer2_varargs);
 			varargs = pointer2_varargs[0];
+			
+			if (apiLevel == D2) {
+				while (true) {
+					if (token.value == TOKpure)
+						ispure = true;
+					else if (token.value == TOKnothrow)
+						isnothrow = true;
+					else
+						break;
+					nextToken();
+				}
+			}
 		}
 		
 		t = new TypeFunction(arguments, t, varargs, linkage);
-		fd = new FuncLiteralDeclaration(loc(), t, save, null);
+	    ((TypeFunction) t).ispure = ispure;
+	    ((TypeFunction) t).isnothrow = isnothrow;
 		
+		fd = new FuncLiteralDeclaration(loc(), t, save, null);
 		
 		parseContracts(fd);
 		e[0] = new FuncExp(loc(), fd);
@@ -7882,6 +7928,10 @@ public class Parser extends Lexer {
 	
 	protected TemplateMixin newTemplateMixin(Loc loc, IdentifierExp id, Type tqual, Identifiers idents, Objects tiargs) {
 		return new TemplateMixin(loc(), id, tqual, idents, tiargs, encoder);
+	}
+	
+	protected AggregateDeclaration endAggregateDeclaration(AggregateDeclaration a) {
+		return a;
 	}
 	
 	private Statement dietParseStatement(FuncDeclaration f) {

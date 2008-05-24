@@ -706,6 +706,9 @@ public class ClassDeclaration extends AggregateDeclaration {
 		for (i = 0; i < members_dim; i++) {
 			Dsymbol s = members.get(i);
 			s.semantic(sc, context);
+			
+			// Need this for vtbl
+			s.consumeRest();
 		}
 
 		if (sizeok == 2) { // semantic() failed because of forward

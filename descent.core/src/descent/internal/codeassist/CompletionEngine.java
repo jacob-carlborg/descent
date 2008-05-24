@@ -1,5 +1,6 @@
 package descent.internal.codeassist;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1341,18 +1342,59 @@ public class CompletionEngine extends Engine
 		if (scope != null) {
 			rootScope = scope;
 			
+			boolean wantOverrides = node instanceof CompletionOnClassDeclaration && ((CompletionOnClassDeclaration) node).isCompletingScope;
+			
 			if (baseClassIndex == -1) {
 				currentName = CharOperation.NO_CHAR;
 				startPosition = actualCompletionPosition;
 				endPosition = actualCompletionPosition;
 				
 				completeScope(rootScope, INCLUDE_ALL);
+				
+				if (wantOverrides) {
+					List<FuncDeclaration> funcs = new ArrayList<FuncDeclaration>();
+					
+					// Suggest override of the function if its virtual
+					// and it's not from this class
+					for(Object obj : node.vtbl) {
+						if (obj instanceof FuncDeclaration) {
+							FuncDeclaration fd = (FuncDeclaration) obj;
+							if (fd.parent != node) {
+								suggestOverride(fd);
+							}
+							
+							funcs.add(fd);
+						}
+					}
+					
+					// Also suggest interfaces methods, but only if these
+					// are not already present in this class
+					for(BaseClass bc : node.vtblInterfaces) {
+						TypeClass tc = (TypeClass) bc.type;
+					loop:
+						for(Dsymbol member : tc.sym.members) {
+							if (member instanceof FuncDeclaration) {
+								FuncDeclaration fd = (FuncDeclaration) member;
+								for(FuncDeclaration old : funcs) {
+									if (ASTDmdNode.equals(fd.ident, old.ident)) {
+										int cov = fd.type.covariant(old.type, semanticContext);
+										if(cov == 1) {
+											continue loop;
+										}
+									}
+								}
+									
+								suggestOverride(fd);
+							}
+						}
+					}
+				}
 			} else {
 				completeNode(node.baseclasses.get(baseClassIndex).type);
 			}
 		}
 	}
-	
+
 	private void completeSuperDotExp(CompletionOnSuperDotExp node) throws JavaModelException {
 		doSemantic();
 		
@@ -1847,6 +1889,26 @@ public class CompletionEngine extends Engine
 		if (enumDeclaration.memtype.isintegral()) {
 			suggestIntegralProperties(enumDeclaration.getSignature().toCharArray());
 		}
+	}
+	
+	private void suggestOverride(FuncDeclaration fd) {
+		CompletionProposal proposal = createProposal(CompletionProposal.METHOD_DECLARATION, this.actualCompletionPosition, fd);
+		
+		int relevance = computeBaseRelevance();
+		relevance += computeRelevanceForInterestingProposal();
+		relevance += computeRelevanceForCaseMatching(currentName, fd.ident.ident);
+		relevance += R_METHOD_OVERIDE;
+		
+		proposal.setName(fd.ident.ident);
+		
+		handleMethodCompletion(proposal, fd.ident.ident);
+		
+		proposal.setSignature(fd.getSignature().toCharArray());
+		proposal.setTypeSignature(fd.type.getSignature().toCharArray());
+		proposal.setDeclarationSignature(fd.parent.getSignature().toCharArray());
+		proposal.setRelevance(relevance);
+		proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+		CompletionEngine.this.requestor.accept(proposal);
 	}
 	
 	private void suggestMembers(Dsymbols members, boolean onlyStatics, HashtableOfCharArrayAndObject funcSignatures, int includes) {
