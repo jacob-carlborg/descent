@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
@@ -12,6 +13,11 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -20,6 +26,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
@@ -34,18 +41,66 @@ import descent.core.JavaCore;
 import descent.internal.building.BuildingPlugin;
 import descent.internal.ui.util.PixelConverter;
 
-// TODO comments
-public abstract class AbstractBuilderTab extends AbstractLaunchConfigurationTab
+/**
+ * Defines a shared implementation for all the builder tabs used in the Descent
+ * builder configuration. In addition to a number of useful convience methods,
+ * this provides a setting interface which implementations can use to encapsulate
+ * the various settings they provide. See {@link descent.internal.building.ui.AbstractBuilderTab.ISetting}
+ * for more information.
+ * 
+ * @author Robert Fraser
+ */
+/* package */ abstract class AbstractBuilderTab extends AbstractLaunchConfigurationTab
 {
     //--------------------------------------------------------------------------
     // Setting interface
     
-    protected interface ISetting
+    /**
+     * A setting is a way to encapsulate controls and UI logic related to a
+     * one or more attributes. Since a single tab page usually consists of many
+     * different settings that rarely interact, this is an way to avoid namespace
+     * clashes and ensure updates are applied throughout. An AbstractBuilderTab
+     * consists of one or more of these, set by the getSettings() method.
+     */
+    protected static interface ISetting
     {
+        /**
+         * Adds the settings to the control. Settings will be added in the order
+         * of the array returned by the getSettings() method.
+         * 
+         * @param comp the tab to add the controls to
+         * @see org.eclipse.debug.ui.ILaunchConfigurationTab#createControl(org.eclipse.swt.widgets.Composite)
+         */
         public void addToControl(Composite comp);
+        
+        /**
+         * Initialize the launch configuration with information about this setting.
+         * 
+         * @param config the launch config to initialize.
+         * @see org.eclipse.debug.ui.ILaunchConfigurationTab#initializeFrom(org.eclipse.debug.core.ILaunchConfiguration)
+         */
         public void initializeFrom(ILaunchConfiguration config);
+        
+        /**
+         * Applies the setting to the given launch configuration.
+         * 
+         * @param config the config to apply the setting to
+         * @see org.eclipse.debug.ui.ILaunchConfigurationTab#performApply(org.eclipse.debug.core.ILaunchConfigurationWorkingCopy)
+         */
         public void performApply(ILaunchConfigurationWorkingCopy config);
+        
+        /**
+         * Sets the default values in the configuration.
+         * 
+         * @param config
+         * @see org.eclipse.debug.ui.ILaunchConfigurationTab#setDefaults(org.eclipse.debug.core.ILaunchConfigurationWorkingCopy)
+         */
         public void setDefaults(ILaunchConfigurationWorkingCopy config);
+        
+        /**
+         * Checks whether the setting is valid. If the setting is not valid, this
+         * should set the error message on the page.
+         */
         public void validate();
     }
     
@@ -66,6 +121,16 @@ public abstract class AbstractBuilderTab extends AbstractLaunchConfigurationTab
         
         private Group fGroup;
         
+        /**
+         * Creates a new group setting with the given parameters
+         * 
+         * @param label       the label to apply to the group
+         * @param width       the width (number of columns) the group should
+         *                    take up on the top GridLayout.
+         * @param numColumns  the number of columns the resulting group should
+         *                    have.
+         * @param subSettings the settings within the group
+         */
         public GroupSetting(String label, int width, int numColumns,
                 ISetting[] subSettings)
         {
@@ -109,6 +174,120 @@ public abstract class AbstractBuilderTab extends AbstractLaunchConfigurationTab
                 if(null != getErrorMessage())
                     return;
             }
+        }
+    }
+    
+    //--------------------------------------------------------------------------
+    // Text setting
+    
+    /**
+     * A setting that consists of a text field, optionally with a browse button.
+     */
+    protected abstract class TextSetting implements ISetting
+    {
+        private final String fAttribute;
+        private final String fLabelString;
+        private final int fNumColumns;
+        private final boolean fBrowseButton;
+        private final boolean fEditable;
+        
+        protected Label fLabel;
+        protected Text fText;
+        protected Button fButton;
+        
+        /**
+         * Creates a new text setting with the given parameters.
+         * 
+         * @param attribute     the attribute the text setting refers to
+         * @param label         the text of the label
+         * @param numColumns    the number of columns the three controls should
+         *                      take up. Must be >= 2 if no browse button and
+         *                      >= 3 if there is a browse button
+         * @param browseButton  should there be a browse button? if this is true,
+         *                      numColumns must be >= 3 and {@link #browse()} must
+         *                      be implemented in the subclass.
+         * @param editable      sets whether or not the text field is editable.
+         *                      This should only be false if browseButton is true,
+         *                      for obvious reasons.
+         */
+        protected TextSetting(String attribute, String label, int numColumns,
+                boolean browseButton, boolean editable)
+        {
+            fAttribute = attribute;
+            fLabelString = label;
+            fNumColumns = numColumns;
+            fBrowseButton = browseButton;
+            fEditable = editable;
+        }
+        
+        public final void addToControl(Composite comp)
+        {
+            fLabel = new Label(comp, SWT.NONE);
+            fLabel.setText(fLabelString);
+            GridData gd = new GridData();
+            gd.horizontalSpan = 1;
+            fLabel.setLayoutData(gd);
+    
+            fText = new Text(comp, SWT.SINGLE | SWT.BORDER);
+            gd = new GridData(GridData.FILL_HORIZONTAL);
+            gd.horizontalSpan = fNumColumns - (fBrowseButton ? 2 : 1);
+            fText.setLayoutData(gd);
+            fText.setEditable(fEditable);
+            fText.addModifyListener(new ModifyListener()
+            {
+                public void modifyText(ModifyEvent evt)
+                {
+                    validatePage();
+                    updateLaunchConfigurationDialog();
+                }
+            });
+            
+            if(fBrowseButton)
+            {
+                fButton = new Button(comp, SWT.PUSH);
+                fButton.setText("Browse...");
+                gd = new GridData();
+                gd.horizontalSpan = 1;
+                fButton.setLayoutData(gd);
+                setButtonDimensionHint(fButton);
+                fButton.addSelectionListener(new SelectionAdapter()
+                {
+                    public void widgetSelected(SelectionEvent evt)
+                    {
+                        String text = browse();
+                        if(null != text)
+                            fText.setText(text);
+                    }
+                });
+            }
+        }
+        
+        /**
+         * The function to call when the browse button is selected. If
+         * browseButton is true, this must be specified.
+         * 
+         * @return the new text to place in the field
+         */
+        protected String browse()
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        public final void initializeFrom(ILaunchConfiguration config)
+        {
+            String value = "";
+            try
+            {
+                value = config.getAttribute(fAttribute, "");
+            }
+            catch(CoreException e) { }
+            
+            fText.setText(value);
+        }
+
+        public final void performApply(ILaunchConfigurationWorkingCopy config)
+        {
+            config.setAttribute(fAttribute, fText.getText().trim());
         }
     }
     
@@ -342,7 +521,7 @@ public abstract class AbstractBuilderTab extends AbstractLaunchConfigurationTab
      * @param parent     the composite to place it on
      * @param numColumns the number of columns it should take up
      */
-    protected Label createSpacer(Composite parent, int numColumns)
+    protected static Label createSpacer(Composite parent, int numColumns)
     {
         Label spacer = new Label(parent, SWT.NONE);
         GridData gd = new GridData();
@@ -355,6 +534,30 @@ public abstract class AbstractBuilderTab extends AbstractLaunchConfigurationTab
         spacer.setLayoutData(gd);
         
         return spacer;
+    }
+    
+    protected Button createRadioButton(Composite parent, int numColumns, 
+            String label, int indent, SelectionListener listener)
+    {
+        final Button button = new Button(parent, SWT.RADIO);
+        button.setText(label);
+        GridData gd = new GridData();
+        gd.horizontalSpan = numColumns;
+        gd.horizontalIndent = indent;
+        button.setLayoutData(gd);
+        
+        if(null == listener)
+            listener = new SelectionAdapter()
+            {
+                public void widgetSelected(SelectionEvent e)
+                {
+                    if(button.getSelection())
+                        updateLaunchConfigurationDialog();
+                }
+            };
+        button.addSelectionListener(listener);
+        
+        return button;
     }
     
     /**

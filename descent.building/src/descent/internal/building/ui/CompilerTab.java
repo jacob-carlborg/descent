@@ -9,6 +9,8 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
@@ -16,13 +18,14 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.ui.dialogs.PreferencesUtil;
 
 import descent.building.IDescentBuilderConstants;
 import descent.launching.IVMInstall;
 import descent.launching.IVMInstallType;
 import descent.launching.JavaRuntime;
 
-public class CompilerTab extends AbstractBuilderTab
+/* package */ final class CompilerTab extends AbstractBuilderTab
 {
     //--------------------------------------------------------------------------
     // Compiler selection
@@ -46,6 +49,22 @@ public class CompilerTab extends AbstractBuilderTab
             GridData gd = new GridData(GridData.FILL_BOTH);
             gd.horizontalSpan = 1;
             fHelpText.setLayoutData(gd);
+            fHelpText.addSelectionListener(new SelectionAdapter()
+            {
+                public void widgetSelected(SelectionEvent e)
+                {
+                    PreferencesUtil.createPreferenceDialogOn(getShell(),
+                            "descent.debug.ui.preferences.VMPreferencePage",
+                            null, null).open();
+                    
+                    // Reset stuff so new changes are reflected in this dialog
+                    reinitializeCompilers();
+                    int selectionIndex = fCombo.getSelectionIndex();
+                    resetComboItems();
+                    fCombo.select(fCombo.getSelectionIndex() >= fCompilers.length ?
+                            0 : selectionIndex);
+                } 
+            });
             
             createSpacer(fGroup, 1);
             
@@ -61,26 +80,46 @@ public class CompilerTab extends AbstractBuilderTab
                     IVMInstall selectedCompiler = selectedIndex >= 0 ?
                             fCompilers[selectedIndex] : null;
                     compilerOptions.compilerModeChanged(selectedCompiler);
+                    
+                    validatePage();
+                    updateLaunchConfigurationDialog();
                 }
             });
             
             initializeCompilers();
-            String[] items = new String[fCompilers.length];
-            for(int i = 0; i < items.length; i++)
-                items[i] = getCompilerLabel(fCompilers[i]);
-            fCombo.setItems(items);
+            resetComboItems();
         }
         
+        /**
+         * Initialize compilers if they haven't been initialized (since I'm not
+         * sure which order createControl and setDefaults will be set in)
+         */
         private void initializeCompilers()
         {
             if(null != fCompilers)
                 return;
             
+            reinitializeCompilers();
+        }
+        
+        /**
+         * Reset the compiler list whether it's already been set or not
+         */
+        private void reinitializeCompilers()
+        {
             List<IVMInstall> compilers = new ArrayList<IVMInstall>();
             for(IVMInstallType vmInstallType : JavaRuntime.getVMInstallTypes())
                 for(IVMInstall vmInstall : vmInstallType.getVMInstalls())
                     compilers.add(vmInstall);
             fCompilers = compilers.toArray(new IVMInstall[compilers.size()]);
+        }
+        
+        private void resetComboItems()
+        {
+            String[] items = new String[fCompilers.length];
+            for(int i = 0; i < items.length; i++)
+                items[i] = getCompilerLabel(fCompilers[i]);
+            fCombo.setItems(items);
         }
         
         private String getCompilerLabel(IVMInstall compiler)
@@ -105,7 +144,7 @@ public class CompilerTab extends AbstractBuilderTab
             String compilerId = "";
             try
             {
-                compilerTypeId = config.getAttribute(IDescentBuilderConstants.ATTR_COMPILER_ID, "");
+                compilerId = config.getAttribute(IDescentBuilderConstants.ATTR_COMPILER_ID, "");
             }
             catch(CoreException e) { }
             

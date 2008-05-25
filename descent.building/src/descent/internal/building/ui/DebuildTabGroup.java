@@ -11,7 +11,7 @@ public class DebuildTabGroup extends AbstractLaunchConfigurationTabGroup
     {
         ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[]
         {
-             new BuildTab(),
+             new GeneralTab(),
              new CompilerTab(),
              new EnvironmentTab(),
         };

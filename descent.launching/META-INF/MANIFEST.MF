@@ -18,5 +18,4 @@ Export-Package: descent.internal.launching,
  descent.internal.launching.dmd,
  descent.internal.launching.gdc,
  descent.launching,
- descent.launching.compiler,
  descent.launching.environments

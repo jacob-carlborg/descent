@@ -22,6 +22,7 @@ import descent.core.IPackageFragment;
 import descent.core.IPackageFragmentRoot;
 import descent.core.IParent;
 import descent.core.JavaModelException;
+import descent.internal.building.BuilderUtil;
 /**
  * Class that can recurse through dependancies to generate a list of all files
  * that need to be compiled in a module. This class mainly exists to abstract
@@ -144,7 +145,7 @@ import descent.core.JavaModelException;
             boolean isLibraryFile)
 	{
 		return new ObjectFile(project,
-                new File(Util.getAbsolutePath(cu.getPath())),
+                new File(BuilderUtil.getAbsolutePath(cu.getPath())),
                 cu.getFullyQualifiedName(),
 				isLibraryFile);
 	}

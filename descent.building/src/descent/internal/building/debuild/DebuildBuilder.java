@@ -16,6 +16,7 @@ import descent.core.IClasspathEntry;
 import descent.core.IJavaModel;
 import descent.core.IJavaProject;
 import descent.core.JavaModelException;
+import descent.internal.building.BuilderUtil;
 import descent.building.IDBuilder;
 import descent.building.compiler.BuildError;
 import descent.building.compiler.BuildResponse;
@@ -155,7 +156,7 @@ public class DebuildBuilder implements IDBuilder
             {
                 case IClasspathEntry.CPE_SOURCE:
                 case IClasspathEntry.CPE_LIBRARY:
-                    importPath.add(new File(Util.getAbsolutePath(entry.getPath())));
+                    importPath.add(new File(BuilderUtil.getAbsolutePath(entry.getPath())));
                     break;
                 case IClasspathEntry.CPE_PROJECT:
                     String projectName = entry.getPath().lastSegment();
@@ -190,7 +191,7 @@ public class DebuildBuilder implements IDBuilder
             boolean wasSuccesful = true;
             ICompilerInterface compilerInterface = req.getCompilerInterface();
             IJavaProject project = req.getProject();
-            String workingDirectory = Util.getAbsolutePath(project.getOutputLocation());
+            String workingDirectory = BuilderUtil.getAbsolutePath(project.getOutputLocation());
             File outputDirectory = new File(workingDirectory);
             
             // Compile the output files
@@ -297,8 +298,6 @@ public class DebuildBuilder implements IDBuilder
     {
         return EXECUTABLE_FILE_PREFIX +
             System.currentTimeMillis() +
-            (Util.isWindows() ?
-                ".exe" :
-                "");
+            BuilderUtil.EXTENSION_EXECUTABLE;
     }
 }

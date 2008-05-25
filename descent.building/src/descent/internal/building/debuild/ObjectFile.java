@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.Assert;
 
 import descent.core.IJavaProject;
 import descent.core.JavaModelException;
+import descent.internal.building.BuilderUtil;
 import descent.internal.building.BuildingPlugin;
 
 /**
@@ -336,20 +337,14 @@ import descent.internal.building.BuildingPlugin;
 	
 	private String getExtension()
 	{
-        return Util.isWindows() ? ".obj" : ".o";
-    }
-    
-    public static void main(String[] args)
-    {
-        for(Entry<Object, Object> prop : System.getProperties().entrySet())
-            System.out.format("%1$s = %2$s\n", prop.getKey(), prop.getValue());
+        return BuilderUtil.EXTENSION_OBJECT_FILE;
     }
     
     private String getOutputPath()
     {
         try
         {
-            return Util.getAbsolutePath(project.getOutputLocation());
+            return BuilderUtil.getAbsolutePath(project.getOutputLocation());
         }
         catch(JavaModelException e)
         {

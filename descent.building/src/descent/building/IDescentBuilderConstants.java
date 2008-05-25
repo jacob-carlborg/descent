@@ -64,4 +64,32 @@ public interface IDescentBuilderConstants
      * Type: String
      */
     public static final String ATTR_COMPILER_ID = "descent.building.debuild.compiler_id";
+    
+    /**
+     * Specifies the target output type. Must be one of {@link #OUTPUT_TYPE_EXECUTABLE}
+     * or {@link #OUTPUT_TYPE_STATIC_LIBRARY}. Support may be added in the future for
+     * OS dynamic libraries (.dll/.so) and/or DDL.
+     * 
+     * Type: String
+     */
+    public static final String ATTR_OUTPUT_TYPE = "descent.building.debuild.output_type";
+    
+    /**
+     * Specifies the target output file location.
+     * 
+     * Type: String
+     */
+    public static final String ATTR_OUTPUT_FILE = "descent.building.debuild.output_file";
+    
+    /**
+     * Constant used for {@link #ATTR_OUTPUT_TYPE} to specify the output target
+     * should be an executable file.
+     */
+    public static final String OUTPUT_TYPE_EXECUTABLE = "executable";
+    
+    /**
+     * Constant used for {@link #ATTR_OUTPUT_TYPE} to specify the output target
+     * should be a static library (.lib or .a)
+     */
+    public static final String OUTPUT_TYPE_STATIC_LIBRARY = "static_library";
 }
