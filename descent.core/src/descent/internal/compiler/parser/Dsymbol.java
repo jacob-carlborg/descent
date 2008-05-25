@@ -319,6 +319,10 @@ public class Dsymbol extends ASTDmdNode {
 	public NewDeclaration isNewDeclaration() {
 		return null;
 	}
+	
+	public OverloadSet isOverloadSet() {
+		return null;
+	}
 
 	public Package isPackage() {
 		return null;

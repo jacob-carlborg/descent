@@ -4655,6 +4655,8 @@ public class Lexer implements IProblemRequestor {
 	private TOK escapeStringConstant(Token t, int wide) {
 		int c;
 		//Loc start = loc;
+		
+		int firstLineBreak = -1;
 
 		p++;
 		stringbuffer.reset();
@@ -4678,7 +4680,16 @@ public class Lexer implements IProblemRequestor {
 
 			case '\n':
 				newline(NOT_IN_COMMENT);
-				break;
+				
+				// Changed from DMD to allow better error reporting
+				error(IProblem.UnterminatedStringConstant, token.lineNumber,
+						token.ptr, p - token.ptr);
+				t.ustring = CharOperation.NO_CHAR;
+				t.len = 0;
+				t.postfix = 0;
+				
+				t.sourceLen = 0;
+				return TOKstring;
 
 			case '\r':
 				if (input(p) == '\n') {
@@ -4686,7 +4697,16 @@ public class Lexer implements IProblemRequestor {
 				}
 				c = '\n'; // treat EndOfLine as \n character
 				newline(NOT_IN_COMMENT);
-				break;
+				
+				// Changed from DMD to allow better error reporting
+				error(IProblem.UnterminatedStringConstant, token.lineNumber,
+						token.ptr, p - token.ptr);
+				t.ustring = CharOperation.NO_CHAR;
+				t.len = 0;
+				t.postfix = 0;
+				
+				t.sourceLen = 0;
+				return TOKstring;
 
 			case '"':
 				t.len = stringbuffer.offset();

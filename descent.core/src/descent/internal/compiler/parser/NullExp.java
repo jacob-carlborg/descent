@@ -1,7 +1,11 @@
 package descent.internal.compiler.parser;
 
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
+import static descent.internal.compiler.parser.MATCH.MATCHconst;
 import static descent.internal.compiler.parser.MATCH.MATCHconvert;
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
+
 import static descent.internal.compiler.parser.TY.Taarray;
 import static descent.internal.compiler.parser.TY.Tarray;
 import static descent.internal.compiler.parser.TY.Tclass;
@@ -9,7 +13,6 @@ import static descent.internal.compiler.parser.TY.Tdelegate;
 import static descent.internal.compiler.parser.TY.Tpointer;
 import static descent.internal.compiler.parser.TY.Ttypedef;
 import static descent.internal.compiler.parser.TY.Tvoid;
-import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
 public class NullExp extends Expression {
@@ -69,6 +72,17 @@ public class NullExp extends Expression {
 		if (this.type.equals(t)) {
 			return MATCHexact;
 		}
+		
+		if (context.isD2()) {
+		    /* Allow implicit conversions from invariant to mutable|const,
+		     * and mutable to invariant. It works because, after all, a null
+		     * doesn't actually point to anything.
+		     */
+		    if (t.invariantOf(context).equals(type.invariantOf(context))) {
+		    	return MATCHconst;
+		    }
+		}
+		
 		// NULL implicitly converts to any pointer type or dynamic array
 		if (type.ty == Tpointer && type.next.ty == Tvoid) {
 			if (t.ty == Ttypedef) {

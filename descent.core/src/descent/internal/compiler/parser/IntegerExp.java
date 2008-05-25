@@ -6,12 +6,14 @@ import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
+import static descent.internal.compiler.parser.MATCH.MATCHconst;
 import static descent.internal.compiler.parser.MATCH.MATCHconvert;
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 
 import static descent.internal.compiler.parser.TY.Tenum;
 import static descent.internal.compiler.parser.TY.Tint32;
+import static descent.internal.compiler.parser.TY.Tpointer;
 import static descent.internal.compiler.parser.TY.Tuns32;
 import static descent.internal.compiler.parser.TY.Tuns64;
 
@@ -100,15 +102,34 @@ public class IntegerExp extends Expression {
 
 	@Override
 	public MATCH implicitConvTo(Type t, SemanticContext context) {
-		if (type.equals(t)) {
-			return MATCHexact;
-		}
+		TY ty;
+		TY toty;
 
-		TY ty = type.toBasetype(context).ty;
-		TY toty = t.toBasetype(context).ty;
+		if (context.isD2()) {
+			MATCH m = type.implicitConvTo(t, context);
+			if (m.ordinal() >= MATCHconst.ordinal()) {
+				return m;
+			}
 
-		if (type.implicitConvTo(t, context) == MATCHnomatch && t.ty == Tenum) {
-			return MATCHnomatch;
+			ty = type.toBasetype(context).ty;
+			toty = t.toBasetype(context).ty;
+
+			if (m == MATCHnomatch && t.ty == Tenum) {
+				// goto Lno;
+				return MATCHnomatch;
+			}
+		} else {
+			if (type.equals(t)) {
+				return MATCHexact;
+			}
+
+			ty = type.toBasetype(context).ty;
+			toty = t.toBasetype(context).ty;
+
+			if (type.implicitConvTo(t, context) == MATCHnomatch
+					&& t.ty == Tenum) {
+				return MATCHnomatch;
+			}
 		}
 
 		switch (ty) {
@@ -214,27 +235,41 @@ public class IntegerExp extends Expression {
 			}
 			return MATCHconvert;
 
-			
 		case Tfloat32:
 			float f;
 			f = value.floatValue();
 			if (!value.isExactly(f))
 				return MATCHnomatch;
 			return MATCHconvert;
-			 
-		 case Tfloat64:
-			 double d;
-			 d = value.floatValue();
-			 if (!value.isExactly(d))
-				 return MATCHnomatch;
+
+		case Tfloat64:
+			double d;
+			d = value.floatValue();
+			if (!value.isExactly(d))
+				return MATCHnomatch;
 			return MATCHconvert;
-		
-		// TODO this isn't right, make sure th integer can fit in 80 bits.
-		// in practice, since there' no cent types yet, any 64-bit integer
-		// will fit in an 80-bit real
-		 case Tfloat80:
-			 return MATCHconvert;
-			 
+
+			// TODO this isn't right, make sure th integer can fit in 80 bits.
+			// in practice, since there' no cent types yet, any 64-bit integer
+			// will fit in an 80-bit real
+		case Tfloat80:
+			return MATCHconvert;
+
+		case Tpointer:
+			if (context.isD2()) {
+				if (ty == Tpointer
+						&& type.toBasetype(context).nextOf().ty == t
+								.toBasetype(context).nextOf().ty) {
+					/* Allow things like:
+					 *	const char* P = cast(char *)3;
+					 *	char* q = P;
+					 */
+					// goto Lyes;
+					return MATCHconvert;
+				}
+			}
+			break;
+
 		}
 		return super.implicitConvTo(t, context);
 	}

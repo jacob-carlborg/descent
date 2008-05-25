@@ -1,6 +1,7 @@
 package descent.internal.ui.text.java;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.text.Assert;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
@@ -9,7 +10,16 @@ import org.eclipse.jface.text.contentassist.ICompletionProposalExtension4;
 
 import descent.core.ICompilationUnit;
 import descent.core.IJavaProject;
+import descent.core.dom.ASTNode;
+import descent.core.dom.ASTParser;
+import descent.core.dom.AggregateDeclaration;
+import descent.core.dom.ChildListPropertyDescriptor;
+import descent.core.dom.CompilationUnit;
+import descent.core.dom.ITypeBinding;
+import descent.core.dom.NewAnonymousClassExpression;
+import descent.core.dom.rewrite.ASTRewrite;
 import descent.core.dom.rewrite.ImportRewrite;
+import descent.internal.corext.dom.NodeFinder;
 
 public class OverrideCompletionProposal extends JavaTypeCompletionProposal implements ICompletionProposalExtension4 {
 
@@ -53,35 +63,30 @@ public class OverrideCompletionProposal extends JavaTypeCompletionProposal imple
 			index--;
 		final int length= offset - index - 1;
 		buffer.replace(index + 1, length, " "); //$NON-NLS-1$
-//		final ASTParser parser= ASTParser.newParser(AST.JLS3);
-//		parser.setResolveBindings(true);
-//		parser.setStatementsRecovery(true);
+		final ASTParser parser= ASTParser.newParser(fJavaProject.getApiLevel());
+		parser.setResolveBindings(true);
+		parser.setStatementsRecovery(true);
+		parser.setSource(fCompilationUnit);
+		// TODO why it uses the document source instead of the compilation unit?
+		// Maybe because there may be a difference between the working copy and the document?
 //		parser.setSource(buffer.get().toCharArray());
 //		parser.setUnitName(fCompilationUnit.getResource().getFullPath().toString());
 //		parser.setProject(fCompilationUnit.getJavaProject());
-//		final CompilationUnit unit= (CompilationUnit) parser.createAST(new NullProgressMonitor());
-//		ITypeBinding binding= null;
-//		ChildListPropertyDescriptor descriptor= null;
-//		ASTNode node= NodeFinder.perform(unit, index + 1, 0);
-//		if (node instanceof AnonymousClassDeclaration) {
-//			switch (node.getParent().getNodeType()) {
-//				case ASTNode.CLASS_INSTANCE_CREATION:
-//					binding= ((ClassInstanceCreation) node.getParent()).resolveTypeBinding();
-//					break;
-//				case ASTNode.ENUM_CONSTANT_DECLARATION:
-//					IMethodBinding methodBinding= ((EnumConstantDeclaration) node.getParent()).resolveConstructorBinding();
-//					if (methodBinding != null) {
-//						binding= methodBinding.getDeclaringClass();
-//					}
-//			}
-//			descriptor= AnonymousClassDeclaration.BODY_DECLARATIONS_PROPERTY;
-//		} else if (node instanceof AbstractTypeDeclaration) {
-//			final AbstractTypeDeclaration declaration= ((AbstractTypeDeclaration) node);
-//			descriptor= declaration.getBodyDeclarationsProperty();
-//			binding= declaration.resolveBinding();
-//		}
-//		if (binding != null) {
-//			ASTRewrite rewrite= ASTRewrite.create(unit.getAST());
+		final CompilationUnit unit= (CompilationUnit) parser.createAST(new NullProgressMonitor());
+		ITypeBinding binding= null;
+		ChildListPropertyDescriptor descriptor= null;
+		ASTNode node= NodeFinder.perform(unit, index + 1, 0);
+		
+		if (node instanceof NewAnonymousClassExpression) {
+			
+		} else if (node instanceof AggregateDeclaration) {
+			final AggregateDeclaration declaration= ((AggregateDeclaration) node);
+			descriptor= declaration.DECLARATIONS_PROPERTY;
+			binding= declaration.resolveBinding();
+		}
+		
+		if (binding != null) {
+			ASTRewrite rewrite= ASTRewrite.create(unit.getAST());
 //			IMethodBinding[] bindings= StubUtility2.getOverridableMethods(rewrite.getAST(), binding, true);
 //			if (bindings != null && bindings.length > 0) {
 //				List candidates= new ArrayList(bindings.length);
@@ -127,7 +132,7 @@ public class OverrideCompletionProposal extends JavaTypeCompletionProposal imple
 //					}
 //				}
 //			}
-//		}
+		}
 		return true;
 	}
 

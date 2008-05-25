@@ -178,7 +178,8 @@ public class StringExp extends Expression {
 	@Override
 	public MATCH implicitConvTo(Type t, SemanticContext context) {
 		if (!committed) {
-			if (!committed && t.ty == Tpointer && t.next.ty == Tvoid) {
+			boolean comparison = context.isD2() ? t.nextOf().ty == Tvoid : t.next.ty == Tvoid;
+			if (!committed && t.ty == Tpointer && comparison) {
 				return MATCHnomatch;
 			}
 			if (type.ty == Tsarray || type.ty == Tarray || type.ty == Tpointer) {
@@ -240,12 +241,7 @@ public class StringExp extends Expression {
 
 		if (!committed) {
 			se = (StringExp) copy();
-
-			// Descent
-			se.copySourceRange(this);
-
 			se.committed = true;
-
 			copied = 1; // this is the only instance
 		}
 
@@ -261,9 +257,6 @@ public class StringExp extends Expression {
 		if (same(typeb, tb, context)) {
 			if (0 == copied) {
 				se = (StringExp) copy();
-				// Descent
-				se.copySourceRange(this);
-
 				copied = 1;
 			}
 			se.type = t;
@@ -273,8 +266,6 @@ public class StringExp extends Expression {
 		if (tb.ty != Tsarray && tb.ty != Tarray && tb.ty != Tpointer) {
 			if (0 == copied) {
 				se = (StringExp) copy();
-				//		 Descent
-				se.copySourceRange(this);
 				copied = 1;
 			}
 			// goto Lcast;
@@ -283,9 +274,6 @@ public class StringExp extends Expression {
 		if (typeb.ty != Tsarray && typeb.ty != Tarray && typeb.ty != Tpointer) {
 			if (0 == copied) {
 				se = (StringExp) copy();
-				//		 Descent
-				se.copySourceRange(this);
-
 				copied = 1;
 			}
 			// goto Lcast;
@@ -297,9 +285,6 @@ public class StringExp extends Expression {
 		if (typeb.nextOf().size(context) == tb.nextOf().size(context)) {
 			if (0 == copied) {
 				se = (StringExp) copy();
-				//		 Descent
-				se.copySourceRange(this);
-
 				copied = 1;
 			}
 			if (tb.ty == Tsarray) {
@@ -351,8 +336,6 @@ public class StringExp extends Expression {
 					// goto L1;
 					if (0 == copied) {
 						se = (StringExp) copy();
-						// Descent
-						se.copySourceRange(this);
 					}
 					buffer.data.getChars(0, buffer.offset(),
 							se.string = new char[buffer.offset()], 0);
@@ -374,8 +357,6 @@ public class StringExp extends Expression {
 					// goto L1;
 					if (0 == copied) {
 						se = (StringExp) copy();
-						// Descent
-						se.copySourceRange(this);
 					}
 					buffer.data.getChars(0, buffer.offset(),
 							se.string = new char[buffer.offset()], 0);
@@ -398,8 +379,6 @@ public class StringExp extends Expression {
 					// goto L1;
 					if (0 == copied) {
 						se = (StringExp) copy();
-						// Descent
-						se.copySourceRange(this);
 					}
 					buffer.data.getChars(0, buffer.offset(),
 							se.string = new char[buffer.offset()], 0);
@@ -421,8 +400,6 @@ public class StringExp extends Expression {
 					// goto L1;
 					if (0 == copied) {
 						se = (StringExp) copy();
-						// Descent
-						se.copySourceRange(this);
 					}
 					buffer.data.getChars(0, buffer.offset(),
 							se.string = new char[buffer.offset()], 0);
@@ -447,8 +424,6 @@ public class StringExp extends Expression {
 					// goto L1;
 					if (0 == copied) {
 						se = (StringExp) copy();
-						// Descent
-						se.copySourceRange(this);
 					}
 					buffer.data.getChars(0, buffer.offset(),
 							se.string = new char[buffer.offset()], 0);
@@ -474,8 +449,6 @@ public class StringExp extends Expression {
 					// L1: 
 					if (0 == copied) {
 						se = (StringExp) copy();
-						// Descent
-						se.copySourceRange(this);
 					}
 					buffer.data.getChars(0, buffer.offset(),
 							se.string = new char[buffer.offset()], 0);

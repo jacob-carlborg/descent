@@ -7,7 +7,9 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.Constfold.BinExp_fp;
 import static descent.internal.compiler.parser.LINK.LINKd;
 
+import static descent.internal.compiler.parser.MATCH.MATCHconst;
 import static descent.internal.compiler.parser.MATCH.MATCHconvert;
+import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 
 import static descent.internal.compiler.parser.TOK.TOKdelegate;
@@ -258,7 +260,9 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 
 	public Expression copy() {
 		try {
-			return (Expression) clone();
+			Expression exp = (Expression) clone();
+			exp.copySourceRange(this);
+			return exp;
 		} catch (CloneNotSupportedException e) {
 			throw new RuntimeException(e);
 		}
@@ -281,7 +285,8 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	}
 
 	public Expression implicitCastTo(Scope sc, Type t, SemanticContext context) {
-		if (implicitConvTo(t, context) != MATCHnomatch) {
+		MATCH match = implicitConvTo(t, context);
+		if (match != MATCHnomatch) {
 			if (context.global.params.warnings
 					&& Type.impcnvWarn[type.toBasetype(context).ty.ordinal()][t
 							.toBasetype(context).ty.ordinal()]
@@ -297,6 +302,13 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 							IProblem.ImplicitConversionCanCauseLossOfData, 0,
 							start, length, new String[] { toChars(context),
 									type.toChars(context), t.toChars(context) }));
+				}
+			}
+			if (context.isD2()) {
+				if (match == MATCHconst && t == type.constOf(context)) {
+					Expression e = copy();
+					e.type = t;
+					return e;
 				}
 			}
 			return castTo(sc, t, context);
@@ -346,10 +358,18 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 			type = Type.terror;
 		}
 
-		if (t.ty == Tbit && isBit()) {
-			return MATCHconvert;
+		if (!context.isD2()) {
+			if (t.ty == Tbit && isBit()) {
+				return MATCHconvert;
+			}
 		}
 		Expression e = optimize(WANTvalue | WANTflags, context);
+	    if (context.isD2()) {
+	    	if (e.type == t) {
+	    		return MATCHexact;
+	    	}
+	    }
+		
 		if (e != this) {
 			return e.implicitConvTo(t, context);
 		}

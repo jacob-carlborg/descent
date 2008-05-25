@@ -95,7 +95,7 @@ public class PragmaDeclaration extends AttribDeclaration {
 			}
 			semantic_Lnodecl(context);
 			return;
-		} else if (context.apiLevel == Parser.D2 && equals(ident, Id.startaddress)) {
+		} else if (context.isD2() && equals(ident, Id.startaddress)) {
 			if (args == null || args.size() != 1) {
 				if (context.acceptsProblems()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
@@ -158,7 +158,7 @@ public class PragmaDeclaration extends AttribDeclaration {
 		buf.writestring("pragma(");
 		buf.writestring(ident.toChars());
 		if (args != null && args.size() != 0) {
-			if (context.apiLevel == Parser.D2) {
+			if (context.isD2()) {
 		        buf.writestring(", ");
 		        argsToCBuffer(buf, args, hgs, context);
 			} else {

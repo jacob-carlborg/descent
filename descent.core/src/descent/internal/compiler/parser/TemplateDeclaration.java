@@ -653,7 +653,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			TemplateParameter tp = parameters.get(i);
 			Declaration[] sparam = { null };
 
-			if (context.apiLevel == Parser.D2) {
+			if (context.isD2()) {
 				// TODO Semantic fix this
 				// m2 = tp.matchArg(paramscope, ti.tiargs, i, parameters, dedtypes, sparam, (flag & 2) != 0 ? 1 : 0, context);
 				m2 = tp.matchArg(paramscope, ti.tiargs, i, parameters, dedtypes, sparam, context);

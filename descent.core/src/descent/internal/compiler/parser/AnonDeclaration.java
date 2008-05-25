@@ -88,7 +88,7 @@ public class AnonDeclaration extends AttribDeclaration {
 
 			sc = sc.push();
 			
-			if (context.apiLevel == Parser.D2) {
+			if (context.isD2()) {
 				sc.stc &= ~(STCauto | STCscope | STCstatic | STCtls);	
 			} else {
 				sc.stc &= ~(STCauto | STCscope | STCstatic);

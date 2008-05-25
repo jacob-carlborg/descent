@@ -1,9 +1,7 @@
 This file list the porting process from DMD.
 
-Last DMD 1.x ported version: 1.029
+Last DMD 1.x ported version: 1.030
 Last DMD 2.x ported version: 2.003 (but just the lexer and parser)
-
-Notes: 1.029 front end doesn't have differences with 1.028.
 
 -o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-
 
@@ -16,13 +14,10 @@ func.c  --> missing StaticCtorDeclaration::StaticCtorDeclaration
             
 Remaining from DMD 2.013
 ------------------------------
-Parser -> 4313(2)
-
 Make an option to ignore unrecongnized pragmas.
 Implement TypeReturn, PostBlitDeclaration, TemplateThisParameter, FileInitExp, LineInitExp for Descent side.
 
-cast.c
-class.c
+cast.c --> StringExp::implicitConvTo
 clone.c
 constfold.c
 declaration.c
@@ -45,7 +40,6 @@ mtype.c
 mtype.h
 opopver.c
 optimize.c
-parse.c
 statement.c
 statement.h
 struct.c

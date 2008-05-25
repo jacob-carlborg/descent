@@ -323,7 +323,7 @@ public class SemanticContext {
 			Type_typeinfotypelist = (ClassDeclaration) s;
 		}
 		
-		if (apiLevel == Lexer.D2) {
+		if (isD2()) {
 			if (ASTDmdNode.equals(s.ident, Id.TypeInfo_Const)) {
 				Type_typeinfoconst = (ClassDeclaration) s;
 			} else if (ASTDmdNode.equals(s.ident, Id.TypeInfo_Invariant)) {
@@ -339,6 +339,10 @@ public class SemanticContext {
 
 	public void setTypeInfo(Type t, TypeInfoDeclaration vtinfo) {
 		typeInfoDeclarations.put(t, vtinfo);
+	}
+	
+	public boolean isD2() {
+		return apiLevel == Parser.D2;
 	}
 
 }

@@ -45,7 +45,7 @@ public class DeclarationExp extends Expression {
 				}
 			} else { 
 				boolean condition;
-				if (context.apiLevel == Parser.D2) {
+				if (context.isD2()) {
 					condition = s == v && (v.isConst() || v.isInvariant()) && v.init != null;
 				} else {
 					condition = s == v && v.isConst() && v.init() != null;

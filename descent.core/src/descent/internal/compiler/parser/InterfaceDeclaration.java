@@ -9,14 +9,22 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.LINK.LINKwindows;
 
+import static descent.internal.compiler.parser.STC.STCabstract;
+import static descent.internal.compiler.parser.STC.STCauto;
+import static descent.internal.compiler.parser.STC.STCconst;
+import static descent.internal.compiler.parser.STC.STCdeprecated;
+import static descent.internal.compiler.parser.STC.STCfinal;
+import static descent.internal.compiler.parser.STC.STCinvariant;
+import static descent.internal.compiler.parser.STC.STCscope;
+import static descent.internal.compiler.parser.STC.STCstatic;
+import static descent.internal.compiler.parser.STC.STCtls;
+
 import static descent.internal.compiler.parser.TY.Tclass;
 import static descent.internal.compiler.parser.TY.Ttuple;
 
 
 public class InterfaceDeclaration extends ClassDeclaration {
 	
-    int cpp;				// !=0 if this is a C++ interface
-
 	public InterfaceDeclaration(Loc loc, IdentifierExp id,
 			BaseClasses baseclasses) {
 		super(loc, id, baseclasses);
@@ -25,6 +33,7 @@ public class InterfaceDeclaration extends ClassDeclaration {
 			// of all COM
 			// objects
 			com = true;
+			cpp = true;
 		}
 	}
 
@@ -267,15 +276,29 @@ public class InterfaceDeclaration extends ClassDeclaration {
 
 			// Lcontinue: ;
 		}
+		
+		if (context.isD2()) {
+		    protection = sc.protection;
+		    storage_class |= sc.stc & (STCconst | STCinvariant);
+		}
 
 		for (Dsymbol s : members) {
 			s.addMember(sc, this, 1, context);
 		}
 
 		sc = sc.push(this);
+		
+		if (context.isD2()) {
+		    sc.stc &= ~(STCfinal | STCauto | STCscope | STCstatic |
+	                 STCabstract | STCdeprecated | STCconst | STCinvariant | STCtls);
+		    sc.stc |= storage_class & (STCconst | STCinvariant);
+		}
+		
 		sc.parent = this;
 		if (isCOMinterface()) {
 			sc.linkage = LINKwindows;
+		} else if (context.isD2() && isCPPinterface()) {
+	    	sc.linkage = LINK.LINKcpp;
 		}
 		sc.structalign = 8;
 		structalign = sc.structalign;
@@ -314,7 +337,7 @@ public class InterfaceDeclaration extends ClassDeclaration {
 
 	@Override
 	public int vtblOffset() {
-		if (isCOMinterface()) {
+		if (isCOMinterface() || isCPPinterface()) {
 			return 0;
 		}
 		return 1;
@@ -323,6 +346,11 @@ public class InterfaceDeclaration extends ClassDeclaration {
 	@Override
 	public boolean isCOMinterface() {
 		return com;
+	}
+	
+	@Override
+	public boolean isCPPinterface() {
+		return cpp;
 	}
 	
 	public char getSignaturePrefix() {

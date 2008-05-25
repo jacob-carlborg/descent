@@ -111,7 +111,7 @@ public class StorageClassDeclaration extends AttribDeclaration {
 		if (decl != null && decl.size() > 0) {
 			int stc_save = sc.stc;
 
-			if (context.apiLevel == Parser.D2) {
+			if (context.isD2()) {
 				/* These sets of storage classes are mutually exclusive,
 				 * so choose the innermost or most recent one.
 				 */
@@ -169,7 +169,7 @@ public class StorageClassDeclaration extends AttribDeclaration {
 			SemanticContext context) {
 		boolean written = false;
 
-		SCstring[] theTable = context.apiLevel == Parser.D2 ? table2 : table1;
+		SCstring[] theTable = context.isD2() ? table2 : table1;
 
 		for (SCstring sc : theTable) {
 			if ((stc & sc.stc) != 0) {

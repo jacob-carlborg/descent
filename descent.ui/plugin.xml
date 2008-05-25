@@ -125,13 +125,11 @@
     
     <extension
          point="descent.ui.quickFixProcessors">
-      <!--
       <quickFixProcessor
             name="%defaultQuickFixProcessor"
             class="descent.internal.ui.text.correction.QuickFixProcessor"
             id="descent.ui.text.correction.QuickFixProcessor">
       </quickFixProcessor>
-      -->
       <quickFixProcessor
             name="%spellingQuickFixProcessor"
             class="descent.internal.ui.text.spelling.WordQuickFixProcessor"
@@ -258,12 +256,14 @@
                id="descent.ui.PackageExplorer">
          </showInPart>
       </perspectiveExtension>
+      <!--
       <perspectiveExtension
             targetID="descent.ui.JavaBrowsingPerspective">
          <showInPart
                id="descent.ui.PackageExplorer">
          </showInPart>
       </perspectiveExtension>
+      -->
       <perspectiveExtension
             targetID="org.eclipse.debug.ui.DebugPerspective">
          <showInPart
@@ -1256,11 +1256,13 @@
             id="descent.ui.edit.text.java.surround.with.quickMenu">
       </command>
 <!-- perspectives -->
+<!--
       <command
             name="%PerspectiveCommand.javaBrowsing.name"
             description="%PerspectiveCommand.javaBrowsing.description"
             categoryId="org.eclipse.ui.category.perspectives"
             id="descent.ui.JavaBrowsingPerspective" />
+            -->
       <command
             name="%PerspectiveCommand.java.name"
             description="%PerspectiveCommand.java.description"

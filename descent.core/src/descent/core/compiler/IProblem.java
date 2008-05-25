@@ -671,5 +671,6 @@ public interface IProblem {
 	int TypeofReturnMustBeInsideFunction = 460;
 	int PostBlitsAreOnlyForStructUnionDefinitions = 461;
 	int CannotHaveEDotTuple = 462;
+	int CannotCreateCppClasses = 463;
 
 }

@@ -472,6 +472,7 @@ final class ProblemMessages extends NLS {
 	public static String TypeofReturnMustBeInsideFunction;
 	public static String PostBlitsAreOnlyForStructUnionDefinitions;
 	public static String CannotHaveEDotTuple;
+	public static String CannotCreateCppClasses;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

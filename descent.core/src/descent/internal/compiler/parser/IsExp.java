@@ -266,7 +266,7 @@ public class IsExp extends Expression {
 			tspec.toCBuffer(buf, null, hgs, context);
 		}
 
-		if (context.apiLevel == Parser.D2) {
+		if (context.isD2()) {
 			if (parameters != null) { 
 				// First parameter is already output, so start with second
 				for (int i = 1; i < size(parameters); i++) {

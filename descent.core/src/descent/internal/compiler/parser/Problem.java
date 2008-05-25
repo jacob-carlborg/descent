@@ -1051,6 +1051,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.PostBlitsAreOnlyForStructUnionDefinitions);
 		case CannotHaveEDotTuple:
 			return String.format(ProblemMessages.CannotHaveEDotTuple);
+		case CannotCreateCppClasses:
+			return String.format(ProblemMessages.CannotCreateCppClasses);
 		default:
 			return "";
 		}

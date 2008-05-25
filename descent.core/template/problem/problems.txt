@@ -1384,7 +1384,9 @@ PostBlitsAreOnlyForStructUnionDefinitions
 CannotHaveEDotTuple
 	formatString=Cannot have e.tuple
 	numArgs=0
-
+CannotCreateCppClasses
+	formatString=Cannot create C++ classes
+	numArgs=0
 
 
 

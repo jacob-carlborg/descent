@@ -100,7 +100,7 @@ public class CallExp extends UnaExp {
 			FuncDeclaration fd = ((VarExp) e1).var.isFuncDeclaration();
 			if (fd != null) {
 				boolean doInlineDup = true;
-				if (context.apiLevel == Parser.D2) {
+				if (context.isD2()) {
 					doInlineDup = false;
 
 					BUILTIN b = fd.isBuiltin();

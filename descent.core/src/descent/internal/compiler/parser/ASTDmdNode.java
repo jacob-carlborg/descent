@@ -1345,7 +1345,7 @@ public abstract class ASTDmdNode extends ASTNode {
 	 *	1	done
 	 */
 
-	public static int overloadApply(FuncDeclaration fstart,
+	public static boolean overloadApply(FuncDeclaration fstart,
 			OverloadApply_fp fp, Object param, SemanticContext context) {
 		FuncDeclaration f;
 		Declaration d;
@@ -1355,8 +1355,8 @@ public abstract class ASTDmdNode extends ASTNode {
 			FuncAliasDeclaration fa = d.isFuncAliasDeclaration();
 
 			if (fa != null) {
-				if (overloadApply(fa.funcalias, fp, param, context) != 0) {
-					return 1;
+				if (overloadApply(fa.funcalias, fp, param, context)) {
+					return false;
 				}
 				next = fa.overnext;
 			} else {
@@ -1381,14 +1381,14 @@ public abstract class ASTDmdNode extends ASTNode {
 						break; // BUG: should print error message?
 					}
 					if (fp.call(param, f, context) != 0) {
-						return 1;
+						return true;
 					}
 
 					next = f.overnext;
 				}
 			}
 		}
-		return 0;
+		return false;
 	}
 
 	public static Expression interpret_aaLen(InterState istate,
@@ -1503,7 +1503,7 @@ public abstract class ASTDmdNode extends ASTNode {
         if (null != v)
         {
         	boolean condition;
-        	if (context.apiLevel == Lexer.D2) {
+        	if (context.isD2()) {
         		condition = (v.isConst() || v.isInvariant()) && v.init != null && null == v.value;
         	} else {
         		condition = v.isConst() && null != v.init();

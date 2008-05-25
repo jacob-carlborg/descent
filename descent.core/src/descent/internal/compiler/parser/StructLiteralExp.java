@@ -3,7 +3,8 @@ package descent.internal.compiler.parser;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
-import static descent.internal.compiler.parser.TY.Tsarray;
+import static descent.internal.compiler.parser.TY.*;
+import static descent.internal.compiler.parser.MATCH.*;
 
 
 public class StructLiteralExp extends Expression {
@@ -86,6 +87,38 @@ public class StructLiteralExp extends Expression {
 	@Override
 	public int getNodeType() {
 		return 0;
+	}
+	
+	@Override
+	public MATCH implicitConvTo(Type t, SemanticContext context) {
+		if (context.isD2()) {
+			MATCH m = super.implicitConvTo(t, context);
+			if (m != MATCHnomatch) {
+				return m;
+			}
+			if (type.ty == t.ty && type.ty == Tstruct
+					&& ((TypeStruct) type).sym == ((TypeStruct) t).sym) {
+				m = MATCHconst;
+				for (int i = 0; i < size(elements); i++) {
+					Expression e = elements.get(i);
+					Type te = e.type;
+					if (t.mod == 0) {
+						te = te.mutableOf(context);
+					} else {
+						assert (t.mod == Type.MODinvariant);
+						te = te.invariantOf(context);
+					}
+					MATCH m2 = e.implicitConvTo(te, context);
+					//printf("\t%s => %s, match = %d\n", e.toChars(), te.toChars(), m2);
+					if (m2.ordinal() < m.ordinal()) {
+						m = m2;
+					}
+				}
+			}
+			return m;
+		} else {
+			return super.implicitConvTo(t, context);
+		}
 	}
 
 	@Override

@@ -68,7 +68,7 @@ public class TemplateValueParameter extends TemplateParameter {
 		if (e != null) {
 			e = e.syntaxCopy(context);
 			e = e.semantic(sc, context);
-			if (context.apiLevel == Parser.D2) {
+			if (context.isD2()) {
 				// TODO Semantic D2
 //				if (e.op == TOKdefault)
 //				{   DefaultInitExp de = (DefaultInitExp) e;

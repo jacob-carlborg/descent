@@ -13,10 +13,13 @@ import static descent.internal.compiler.parser.PROT.PROTnone;
 
 import static descent.internal.compiler.parser.STC.STCabstract;
 import static descent.internal.compiler.parser.STC.STCauto;
+import static descent.internal.compiler.parser.STC.STCconst;
 import static descent.internal.compiler.parser.STC.STCdeprecated;
 import static descent.internal.compiler.parser.STC.STCfinal;
+import static descent.internal.compiler.parser.STC.STCinvariant;
 import static descent.internal.compiler.parser.STC.STCscope;
 import static descent.internal.compiler.parser.STC.STCstatic;
+import static descent.internal.compiler.parser.STC.STCtls;
 
 import static descent.internal.compiler.parser.TY.Tclass;
 
@@ -48,6 +51,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 	public boolean isabstract; // !=0 if abstract class
 	public List vtbl; // Array of FuncDeclaration's making up the vtbl[]
 	public List vtblFinal; // More FuncDeclaration's that aren't in vtbl[]
+	public boolean cpp;				// !=0 if this is a C++ interface
 
 	public ClassDeclaration(Loc loc, char[] id) { 
 		this(loc, id, null);
@@ -179,17 +183,23 @@ public class ClassDeclaration extends AggregateDeclaration {
 	}
 
 	public void interfaceSemantic(Scope sc, SemanticContext context) {
-		int i;
-
+	    InterfaceDeclaration id = isInterfaceDeclaration();
+		
 		vtblInterfaces = new BaseClasses(interfaces.size());
 
-		for (i = 0; i < interfaces.size(); i++) {
+		for (int i = 0; i < interfaces.size(); i++) {
 			BaseClass b = interfaces.get(i);
 
 			// If this is an interface, and it derives from a COM interface,
 			// then this is a COM interface too.
 			if (b.base.isCOMinterface()) {
 				com = true;
+			}
+
+			if (context.isD2()) {
+				if (b.base.isCPPinterface() && id != null) {
+				    id.cpp = true;
+				}
 			}
 
 			vtblInterfaces.add(b);
@@ -264,6 +274,10 @@ public class ClassDeclaration extends AggregateDeclaration {
 	}
 	
 	public boolean isCOMinterface() {
+		return false;
+	}
+	
+	public boolean isCPPinterface() {
 		return false;
 	}
 
@@ -380,7 +394,12 @@ public class ClassDeclaration extends AggregateDeclaration {
 	    if ((sc.stc & STCdeprecated) != 0) {
 	    	isdeprecated = true;
 	    }
-
+	    
+	    if (sc.linkage == LINK.LINKcpp) {
+	    	if (context.acceptsProblems()) {
+	    		context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.CannotCreateCppClasses, this));
+	    	}
+	    }
 
 		// Expand any tuples in baseclasses[]
 		for (i = 0; i < baseclasses.size();) {
@@ -402,6 +421,13 @@ public class ClassDeclaration extends AggregateDeclaration {
 				i++;
 			}
 		}
+
+		if (context.isD2()) {
+		    if (0 == size(baseclasses) && sc.linkage == LINK.LINKcpp) {
+		    	cpp = true;
+		    }
+		}
+
 
 		// See if there's a base class as first in baseclasses[]
 		if (baseclasses.size() > 0) {
@@ -574,7 +600,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 			
 			if (baseClass.isInterfaceDeclaration() != null) {
 				throw new IllegalStateException(
-						"assert(!baseClass->isInterfaceDeclaration());");
+						"assert(!baseClass.isInterfaceDeclaration());");
 			}
 			b.base = baseClass;
 		}
@@ -603,6 +629,10 @@ public class ClassDeclaration extends AggregateDeclaration {
 			com = baseClass.isCOMclass();
 			isauto = baseClass.isauto;
 			vthis = baseClass.vthis;
+			
+			if (context.isD2()) {
+				storage_class |= baseClass.storage_class & (STCconst | STCinvariant);
+			}
 		} else {
 			// No base class, so this is the root of the class hierarchy
 			vtbl = new ArrayList(1);
@@ -676,9 +706,24 @@ public class ClassDeclaration extends AggregateDeclaration {
 		if ((storage_class & STC.STCabstract) != 0) {
 			isabstract = true;
 		}
+		
+		if (context.isD2()) {
+			if ((storage_class & STCinvariant) != 0) {
+				type = type.invariantOf(context);
+			} else if ((storage_class & STCconst) != 0) {
+				type = type.constOf(context);
+			}
+		}
 
 		sc = sc.push(this);
-		sc.stc &= ~(STCfinal | STCauto | STCscope | STCstatic | STCabstract | STCdeprecated);
+		
+		if (context.isD2()) {
+		    sc.stc &= ~(STCfinal | STCauto | STCscope | STCstatic |
+		   		 STCabstract | STCdeprecated | STCconst | STCinvariant | STCtls);
+		    sc.stc |= storage_class & (STCconst | STCinvariant);
+		} else {
+			sc.stc &= ~(STCfinal | STCauto | STCscope | STCstatic | STCabstract | STCdeprecated);
+		}
 
 		sc.parent = this;
 		sc.inunion = false;
@@ -767,7 +812,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 			
 			members.add(ctor);
 			ctor.addMember(sc, this, 1, context);
-			sc = scsave; // why? What about sc->nofree?
+			sc = scsave; // why? What about sc.nofree?
 			sc.offset = structsize;
 			ctor.semantic(sc, context);
 			defaultCtor = ctor;
@@ -776,7 +821,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		 // Allocate instance of each new interface
         for (i = 0; i < vtblInterfaces.size(); i++)
         {
-            BaseClass b = (BaseClass) vtblInterfaces.get(i);
+            BaseClass b = vtblInterfaces.get(i);
             int thissize = Type.PTRSIZE;
             
             int[] p_sc_offset = new int[]
@@ -796,8 +841,9 @@ public class ClassDeclaration extends AggregateDeclaration {
             }
             
             sc.offset += thissize;
-            if (alignsize < thissize)
-                alignsize = thissize;
+            if (alignsize < thissize) {
+				alignsize = thissize;
+			}
         }
 
 		structsize = sc.offset;
@@ -835,8 +881,26 @@ public class ClassDeclaration extends AggregateDeclaration {
 			 */
 			return false;
 		}
-		FuncDeclaration fdstart = s.toAlias(context).isFuncDeclaration();
-		return !(overloadApply(fdstart, isf, fd, context) == 1 ? true : false);
+		
+		if (context.isD2()) {
+			s = s.toAlias(context);
+			OverloadSet os = s.isOverloadSet();
+			if (os != null) {
+				for (int i = 0; i < size(os.a); i++) {
+					Dsymbol s2 = (Dsymbol) os.a.get(i);
+					FuncDeclaration f2 = s2.isFuncDeclaration();
+					if (f2 != null && overloadApply(f2, isf, fd, context))
+						return false;
+				}
+				return true;
+			} else {
+				FuncDeclaration fdstart = s.isFuncDeclaration();
+				return !overloadApply(fdstart, isf, fd, context);
+			}
+		} else {
+			FuncDeclaration fdstart = s.toAlias(context).isFuncDeclaration();
+			return !overloadApply(fdstart, isf, fd, context);
+		}
 	}
 
 
@@ -941,6 +1005,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		return id;
 	}
 	
+	@Override
 	public char getSignaturePrefix() {
 		if (templated) {
 			return ISignatureConstants.TEMPLATED_CLASS;

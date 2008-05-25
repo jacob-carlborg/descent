@@ -444,7 +444,7 @@ public class TemplateInstance extends ScopeDsymbol {
 							&& (null == d.isFuncDeclaration() || d
 									.isFuncDeclaration().isNested())
 							&& null == isTemplateMixin();
-					if (context.apiLevel == Parser.D2) {
+					if (context.isD2()) {
 						condition = condition && null != d && 0 == (d.storage_class & STCmanifest);
 					}
 					
