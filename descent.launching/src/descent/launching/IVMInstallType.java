@@ -4,8 +4,6 @@ import java.io.File;
 
 import org.eclipse.core.runtime.IStatus;
 
-import descent.launching.compiler.ICompilerInterface;
-
 /**
  * Represents a particular type of compiler for which there may be
  * any number of compiler installations. An example of a compiler type

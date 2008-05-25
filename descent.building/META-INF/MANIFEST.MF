@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Descent Building Plug-in
+Bundle-SymbolicName: descent.building; singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Activator: descent.internal.building.BuildingPlugin
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.debug.core,
+ org.eclipse.debug.ui,
+ descent.core,
+ descent.ui,
+ descent.launching
+Eclipse-LazyStart: true

@@ -1,6 +1,5 @@
 package descent.launching;
 
-
 import java.io.File;
 import java.net.URL;
 
@@ -10,7 +9,7 @@ import org.eclipse.core.runtime.Status;
 
 import descent.internal.launching.LaunchingMessages;
 import descent.internal.launching.LaunchingPlugin;
-import descent.launching.compiler.ICompilerInterface;
+
 /**
  * Abstract implementation of a VM install.
  * <p>
@@ -241,10 +240,5 @@ public abstract class AbstractVMInstall implements IVMInstall {
     {
         // TODO
         return new File("C:\\d\\dmd\\bin\\dmd.exe");
-    }	
-    
-    public ICompilerInterface getCompilerInterface()
-    {
-        return null;
     }
 }

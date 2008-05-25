@@ -9,7 +9,6 @@ import java.util.StringTokenizer;
 
 import descent.launching.AbstractVMInstall;
 import descent.launching.IVMInstallType;
-import descent.launching.compiler.ICompilerInterface;
 
 public class GdcCompiler extends AbstractVMInstall {
 
@@ -64,11 +63,5 @@ public class GdcCompiler extends AbstractVMInstall {
 			return file;
 		}
 		return new File(getInstallLocation(), "bin/gdc");
-	}
-
-	public ICompilerInterface getCompilerInterface()
-	{
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

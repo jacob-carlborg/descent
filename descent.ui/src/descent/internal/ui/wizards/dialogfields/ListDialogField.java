@@ -566,6 +566,14 @@ public class ListDialogField extends DialogField {
 	public List getElements() {
 		return new ArrayList(fElements);
 	}
+	
+	/**
+	 * Gets the elements in the list.
+	 * The list returned should not be modified and is subject to change.
+	 */
+	public List getElementsNoCopy() {
+	    return fElements;
+	}
 
 	/**
 	 * Gets the elements shown at the given index.

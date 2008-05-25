@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension-point id="dBuilders" name="%dBuilders" schema="schema/dBuilders.exsd"/>
+
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.ui.resourcePerspective">
+         <actionSet
+               id="descent.building.buildCommands">
+         </actionSet>
+      </perspectiveExtension>
+      <perspectiveExtension
+            targetID="descent.ui.JavaPerspective">
+         <actionSet
+               id="descent.building.buildCommands">
+         </actionSet>
+      </perspectiveExtension>
+      <perspectiveExtension
+            targetID="org.eclipse.debug.ui.DebugPerspective">
+         <actionSet
+               id="descent.building.buildCommands">
+         </actionSet>
+      </perspectiveExtension>
+      <perspectiveExtension
+            targetID="descent.ui.JavaBrowsingPerspective">
+         <actionSet
+               id="descent.building.buildCommands">
+         </actionSet>
+      </perspectiveExtension>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+      <launchConfigurationTypeImage
+            configTypeID="descent.building.builders.debuild"
+            icon="icons/full/obj16/builders.gif"
+            id="descent.building.builders.debuildImage">
+      </launchConfigurationTypeImage>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            class="descent.internal.building.ui.DebuildTabGroup"
+            description="The default Descent builder"
+            id="descent.building.builders.debuildTabGroup"
+            type="descent.building.builders.debuild">
+      </launchConfigurationTabGroup>
+   </extension>
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="descent.building.BuilderLaunchDelegate"
+            delegateDescription="The default Descent builder"
+            delegateName="Descent Builder"
+            id="descent.building.builders.debuild"
+            modes="descent.building.buildMode"
+            name="Descent Builder">
+      </launchConfigurationType>
+   </extension>
+   <extension
+         point="descent.building.dBuilders">
+      <builder
+            class="descent.internal.building.debuild.DebuildBuilder"
+            id="descent.building.builders.debuildBuilder"
+            launchConfigurationType="descent.building.builders.debuild">
+      </builder>
+   </extension>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            id="descent.building.buildCommands"
+            label="D Building"
+            visible="false">
+         <action
+               class="descent.internal.building.ui.BuildersToolbarAction"
+               disabledIcon="icons/full/obj16/builders_disabled.gif"
+               hoverIcon="icons/full/obj16/builders.gif"
+               icon="icons/full/obj16/builders.gif"
+               id="descent.building.actions.BuildingDropDownAction"
+               label="D Builders..."
+               style="pulldown"
+               toolbarPath="org.eclipse.debug.ui.launchActionSet/debug"
+               tooltip="Select or configure the target to build">
+         </action>
+         <menu
+               id="org.eclipse.ui.run"
+               label="Run"
+               path="additions">
+            <groupMarker
+                  name="descent.building.buildersMenuGroup">
+            </groupMarker>
+         </menu>
+      </actionSet>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchGroups">
+      <launchGroup
+            bannerImage="icons/full/wizban/builders.gif"
+            id="descent.building.builders"
+            image="icons/full/obj16/builders.gif"
+            label="D Builders"
+            mode="descent.building.buildMode"
+            title="Select or configure the target to build">
+      </launchGroup>
+   </extension>
+   <extension
+         point="org.eclipse.debug.core.launchModes">
+      <launchMode
+            label="Build"
+            launchAsLabel="Build As"
+            mode="descent.building.buildMode">
+      </launchMode>
+   </extension>
+
+</plugin>

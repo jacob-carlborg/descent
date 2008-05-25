@@ -1,10 +1,5 @@
 package descent.launching;
 
-import descent.internal.launching.LaunchingPlugin;
-import descent.launching.compiler.ICompilerInterface;
-
-
-
 /**
  * An implementation of IVMInstall that is used for manipulating VMs without necessarily 
  * committing changes.
