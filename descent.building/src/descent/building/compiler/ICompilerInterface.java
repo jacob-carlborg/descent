@@ -35,4 +35,12 @@ public interface ICompilerInterface
 	 * linker.
 	 */
 	public IResponseInterpreter createLinkResponseInterpreter();
+	
+	/**
+	 * Gets the compiler options which should be presented in the UI.
+	 * 
+	 * @return the ordered list of compiler options to be presented in the UI.
+	 */
+	// TODO comment about what sorts of options should be included etc
+	public CompilerOption[] getOptions();
 }

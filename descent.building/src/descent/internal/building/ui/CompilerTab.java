@@ -2,51 +2,79 @@ package descent.internal.building.ui;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.CheckboxCellEditor;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewerEditor;
+import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
+import org.eclipse.jface.viewers.ComboBoxCellEditor;
+import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.TextCellEditor;
+import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.TreeViewerColumn;
+import org.eclipse.jface.viewers.TreeViewerEditor;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 
 import descent.building.IDescentBuilderConstants;
+import descent.building.compiler.BooleanOption;
+import descent.building.compiler.CompilerOption;
+import descent.building.compiler.EnumOption;
+import descent.building.compiler.ICompilerInterface;
+import descent.building.compiler.StringOption;
+import descent.internal.building.compiler.DmdCompilerInterface;
 import descent.launching.IVMInstall;
 import descent.launching.IVMInstallType;
 import descent.launching.JavaRuntime;
 
 /* package */ final class CompilerTab extends AbstractBuilderTab
-{
+{   
     //--------------------------------------------------------------------------
     // Compiler selection
     
     private final class CompilerSetting implements ISetting
     {
-        private Group fGroup;
         private Link fHelpText;
         private Combo fCombo;
         private IVMInstall[] fCompilers;
         
         public void addToControl(Composite comp)
         {
-            fGroup = createGroup(comp, "Compiler Selection", 1, 1);
+            // Create a sub-composite so the table viewer doesn't take over the
+            // entire tab
+            comp = new Composite(comp, SWT.NONE);
+            GridData gd = new GridData(GridData.FILL_HORIZONTAL);
+            gd.horizontalSpan = 1;
+            comp.setLayoutData(gd);
+            GridLayout layout = new GridLayout();
+            layout.numColumns = 1;
+            comp.setLayout(layout);
             
-            fHelpText = new Link(fGroup, SWT.LEFT | SWT.WRAP);
+            fHelpText = new Link(comp, SWT.LEFT | SWT.WRAP);
             fHelpText.setText("Select the compiler/standard library set to use " +
-            		"for this build configuration. Use the <a>Compilers " +
-            		"preference page</a> to set up compiler/standard library " +
-            		"configurations.");
-            GridData gd = new GridData(GridData.FILL_BOTH);
+                    "for this build configuration. Use the <a>Compilers " +
+                    "preference page</a> to set up compiler/standard library " +
+                    "configurations.");
+            gd = new GridData(GridData.FILL_BOTH);
             gd.horizontalSpan = 1;
             fHelpText.setLayoutData(gd);
             fHelpText.addSelectionListener(new SelectionAdapter()
@@ -66,9 +94,7 @@ import descent.launching.JavaRuntime;
                 } 
             });
             
-            createSpacer(fGroup, 1);
-            
-            fCombo = new Combo(fGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
+            fCombo = new Combo(comp, SWT.DROP_DOWN | SWT.READ_ONLY);
             gd = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
             gd.horizontalSpan = 1;
             gd.grabExcessHorizontalSpace = true;
@@ -195,29 +221,363 @@ import descent.launching.JavaRuntime;
             }
         }
 
-        public void validate()
+        public String validate()
         {
             int selectedIndex = fCombo.getSelectionIndex();
             if(selectedIndex < 0)
-            {
-                setErrorMessage("You must select a compiler to use");
-                return;
-            }
+                return "You must select a compiler to use";
+            
+            return null;
         }
     }
     
     public class CompilerOptions implements ISetting
     {
-        private Group fGroup;
+        private abstract class CompilerUIOption
+        {
+            public TreeEntry parent;
+            
+            public abstract CompilerOption getOption();
+            public abstract CellEditor getCellEditor();
+            public abstract Object getValue();
+            public abstract void setValue(Object value);
+            public abstract String getText();
+        }
+        
+        private final class CheckboxUIOption extends CompilerUIOption
+        {
+            private BooleanOption option;
+            public Boolean selected = Boolean.FALSE;
+            private CheckboxCellEditor editor;
+            
+            public CheckboxUIOption(BooleanOption option)
+            {
+                this.option = option;
+            }
+            
+            @Override
+            public CompilerOption getOption()
+            {
+                return option;
+            }
+
+            @Override
+            public CellEditor getCellEditor()
+            {
+                if(null == editor)
+                    editor = new CheckboxCellEditor(fViewer.getTree());
+                
+                return editor;
+            }
+
+            @Override
+            public Object getValue()
+            {
+                return selected;
+            }
+
+            @Override
+            public void setValue(Object value)
+            {
+                selected = (Boolean) value;
+            }
+            
+            @Override
+            public String getText()
+            {
+                return selected ? option.getOnText() : option.getOffText();
+            }
+        }
+        
+        private final class ComboUIOption extends CompilerUIOption
+        {
+            private EnumOption option;
+            public Integer selected = Integer.valueOf(0);
+            private ComboBoxCellEditor editor;
+            
+            public ComboUIOption(EnumOption option)
+            {
+                this.option = option;
+            }
+            
+            @Override
+            public CompilerOption getOption()
+            {
+                return option;
+            }
+            
+            @Override
+            public CellEditor getCellEditor()
+            {
+                if(null == editor)
+                {
+                    editor = new ComboBoxCellEditor(fViewer.getTree(), 
+                            option.getOptionEditLabels());
+                }
+                
+                return editor;
+            }
+
+            @Override
+            public Object getValue()
+            {
+                return selected;
+            }
+
+            @Override
+            public void setValue(Object value)
+            {
+                selected = (Integer) value;
+            }
+            
+            @Override
+            public String getText()
+            {
+                return option.getOptionViewLabels()[selected];
+            }
+        }
+        
+        private final class TextUIOption extends CompilerUIOption
+        {
+            private StringOption option;
+            public String selected = "";
+            private TextCellEditor editor;
+            
+            public TextUIOption(StringOption option)
+            {
+                this.option = option;
+            }
+            
+            @Override
+            public CompilerOption getOption()
+            {
+                return option;
+            }
+            
+            @Override
+            public CellEditor getCellEditor()
+            {
+                if(null == editor)
+                    editor = new TextCellEditor(fViewer.getTree());
+                
+                return editor;
+            }
+
+            @Override
+            public String getText()
+            {
+                return selected;
+            }
+
+            @Override
+            public Object getValue()
+            {
+                return selected;
+            }
+
+            @Override
+            public void setValue(Object value)
+            {
+                selected = (String) value;
+            }
+        }
+        
+        private final class TreeEntry
+        {
+            private final String label;
+            private final CompilerUIOption[] children;
+            
+            public TreeEntry(String label, CompilerUIOption[] children)
+            {
+                this.label = label;
+                this.children = children;
+                
+                for(CompilerUIOption child : children)
+                    child.parent = this;
+            }
+        }
+        
+        private final class OptionsContentProvider implements ITreeContentProvider
+        {
+            public Object[] getChildren(Object parentElement)
+            {
+                if(!(parentElement instanceof TreeEntry))
+                    return EMPTY_ARRAY;
+                return ((TreeEntry) parentElement).children;
+            }
+
+            public Object getParent(Object element)
+            {
+                if(!(element instanceof CompilerUIOption))
+                    return null;
+                return ((CompilerUIOption) element).parent;
+            }
+
+            public boolean hasChildren(Object element)
+            {
+                // Assume every tree entry has at least one element; if it
+                // doesn't, the plus to expand it will just disappear when
+                // the user clicks on it
+                return element instanceof TreeEntry;
+            }
+
+            public Object[] getElements(Object inputElement)
+            {
+                return fEntries;
+            }
+
+            public void dispose()
+            {
+                // Nothing to do
+            }
+
+            public void inputChanged(Viewer viewer, Object oldInput,
+                    Object newInput)
+            {
+                // TODO
+            }
+        }
+        
         private IVMInstall fSelectedCompiler;
+        private TreeViewer fViewer;
+        private TreeEntry[] fEntries;
         
         public void addToControl(Composite comp)
         {
-            fGroup = createGroup(comp, "Compiler Options", 1, 1);
+            fEntries = getTree();
             
-            createSpacer(fGroup, 1);
+            fViewer = new TreeViewer(comp, SWT.BORDER | SWT.FULL_SELECTION);
+            fViewer.getTree().setHeaderVisible(true);
+            fViewer.getTree().setLinesVisible(true);
+            TreeViewerEditor.create(fViewer,
+                    // Here comes the world's most unnecessarily long class name...
+                    new ColumnViewerEditorActivationStrategy(fViewer),
+                    ColumnViewerEditor.DEFAULT);
             
-            // TODO make the list
+            TreeViewerColumn column = new TreeViewerColumn(fViewer, SWT.NONE);
+            column.getColumn().setWidth(200);
+            column.getColumn().setText("Option");
+            column.setLabelProvider(new ColumnLabelProvider()
+            {
+                @Override
+                public String getText(Object element)
+                {
+                    if(element instanceof TreeEntry)
+                        return ((TreeEntry) element).label;
+                    else
+                        return ((CompilerUIOption) element).getOption().getLabel();
+                }
+            });
+            
+            column = new TreeViewerColumn(fViewer, SWT.NONE);
+            column.getColumn().setWidth(200);
+            column.getColumn().setText("Value");
+            column.setLabelProvider(new ColumnLabelProvider()
+            {
+                @Override
+                public Image getImage(Object element)
+                {
+                    if(element instanceof CheckboxUIOption)
+                        return ((CheckboxUIOption) element).selected ?
+                                fCheckedIcon : fUncheckedIcon;
+                    else
+                        return null;
+                }
+                
+                @Override
+                public String getText(Object element)
+                {
+                    if(element instanceof CompilerUIOption)
+                        return ((CompilerUIOption) element).getText();
+                    else
+                        return "";
+                }
+            });
+            column.setEditingSupport(new EditingSupport(fViewer)
+            {
+                @Override
+                protected boolean canEdit(Object element)
+                {
+                    return element instanceof CompilerUIOption;
+                }
+
+                @Override
+                protected CellEditor getCellEditor(Object element)
+                {
+                    if(element instanceof CompilerUIOption)
+                        return ((CompilerUIOption) element).getCellEditor();
+                    else
+                        return null;
+                }
+
+                @Override
+                protected Object getValue(Object element)
+                {
+                    if(element instanceof CompilerUIOption)
+                        return ((CompilerUIOption) element).getValue();
+                    else
+                        return null;
+                }
+
+                @Override
+                protected void setValue(Object element, Object value)
+                {
+                    if(element instanceof CompilerUIOption)
+                        ((CompilerUIOption) element).setValue(value);
+                    fViewer.update(element, null);
+                }
+            });
+            
+            GridData gd = new GridData(GridData.FILL_BOTH);
+            fViewer.getControl().setLayoutData(gd);
+            
+            fViewer.setContentProvider(new OptionsContentProvider());
+        }
+        
+        private TreeEntry[] getTree()
+        {
+            ICompilerInterface compilerInterface = 
+                getCompilerInterface(fSelectedCompiler);
+            Map<String, List<CompilerUIOption>> groups = 
+                new TreeMap<String, List<CompilerUIOption>>();
+            
+            for(CompilerOption opt : compilerInterface.getOptions())
+            {
+                String group = opt.getGroupLabel();
+                if(!groups.containsKey(group));
+                    groups.put(group, new ArrayList<CompilerUIOption>());
+                groups.get(group).add(toUIOption(opt));
+            }
+            
+            TreeEntry[] entries = new TreeEntry[groups.size()];
+            int i = 0;
+            for(String group : groups.keySet())
+            {
+                List<CompilerUIOption> list = groups.get(group);
+                entries[i] = new TreeEntry(group, 
+                        list.toArray(new CompilerUIOption[list.size()]));
+                i++;
+            }
+            
+            return entries;
+        }
+        
+        private CompilerUIOption toUIOption(CompilerOption opt)
+        {
+            if(opt instanceof BooleanOption)
+                return new CheckboxUIOption((BooleanOption) opt);
+            else if(opt instanceof StringOption)
+                return new TextUIOption((StringOption) opt);
+            else if(opt instanceof EnumOption)
+                return new ComboUIOption((EnumOption) opt);
+            else
+                throw new UnsupportedOperationException();
+        }
+        
+        private ICompilerInterface getCompilerInterface(IVMInstall compiler)
+        {
+            // TODO
+            return new DmdCompilerInterface();
         }
         
         public void compilerModeChanged(IVMInstall compiler)
@@ -226,7 +586,8 @@ import descent.launching.JavaRuntime;
                 return;
             
             fSelectedCompiler = compiler;
-            // TODO update the displayed options
+            if(null != fViewer && null != fSelectedCompiler)
+                fViewer.setInput(fSelectedCompiler);
         }
 
         public void initializeFrom(ILaunchConfiguration config)
@@ -244,10 +605,26 @@ import descent.launching.JavaRuntime;
             // TODO Auto-generated method stub
         }
 
-        public void validate()
+        public String validate()
         {
             // TODO Auto-generated method stub
+            return null;
         }
+    }
+    
+    //--------------------------------------------------------------------------
+    // Icon management
+    
+    // This needs to be done at the tab level to allow for disposing)
+    
+    private Image fCheckedIcon = createImage("obj16/checked.png");
+    private Image fUncheckedIcon = createImage("obj16/unchecked.png");
+    
+    public void dispose()
+    {
+        super.dispose();
+        fCheckedIcon.dispose();
+        fUncheckedIcon.dispose();
     }
     
     //--------------------------------------------------------------------------

@@ -139,42 +139,32 @@ import static descent.building.IDescentBuilderConstants.*;
             config.rename(getLaunchConfigurationDialog().generateName(projectName));
         }
 
-        public void validate()
+        public String validate()
         {
             String projectName = fText.getText().trim();
             if (projectName.length() == 0)
-            {
-                setErrorMessage("Project not defined");
-                return;
-            }
+                return "Project not defined";
 
             IStatus status = ResourcesPlugin.getWorkspace().validatePath(
                     IPath.SEPARATOR + projectName, IResource.PROJECT);
             if (!status.isOK())
-            {
-                setErrorMessage(String.format("Invalid project name: %$1s", projectName));
-                return;
-            }
+                return String.format("Invalid project name: %$1s", projectName);
 
             IProject project = getWorkspaceRoot().getProject(projectName);
             if (!project.exists())
-            {
-                setErrorMessage("Project does not exist");
-                return;
-            }
+                return "Project does not exist";
 
             try
             {
                 if (!project.hasNature(JavaCore.NATURE_ID))
-                {
-                    setErrorMessage("Not a D project");
-                    return;
-                }
+                    return "Not a D project";
             }
             catch (Exception e)
             {
                 // Ignore
             }
+            
+            return null;
         }
     }
     
@@ -186,6 +176,9 @@ import static descent.building.IDescentBuilderConstants.*;
         private Label fLabel;
         private Button fExecutableRadio;
         private Button fStaticLibRadio;
+        
+        // Note: Okay to use == for comparing this field
+        private String fCurrentSetting;
         
         public void addToControl(Composite comp)
         {   
@@ -202,8 +195,12 @@ import static descent.building.IDescentBuilderConstants.*;
                         {
                             if(fExecutableRadio.getSelection())
                             {
-                                outputFileSetting.outputTypeChanged();
-                                updateLaunchConfigurationDialog();
+                                if(fCurrentSetting != OUTPUT_TYPE_EXECUTABLE)
+                                {
+                                    fCurrentSetting = OUTPUT_TYPE_EXECUTABLE;
+                                    outputFileSetting.outputTypeChanged();
+                                    updateLaunchConfigurationDialog();
+                                }
                             }
                         }
                     });
@@ -214,8 +211,12 @@ import static descent.building.IDescentBuilderConstants.*;
                         {
                             if(fStaticLibRadio.getSelection())
                             {
-                                outputFileSetting.outputTypeChanged();
-                                updateLaunchConfigurationDialog();
+                                if(fCurrentSetting != OUTPUT_TYPE_STATIC_LIBRARY)
+                                {
+                                    fCurrentSetting = OUTPUT_TYPE_STATIC_LIBRARY;
+                                    outputFileSetting.outputTypeChanged();
+                                    updateLaunchConfigurationDialog();
+                                }
                             }
                         }
                     });
@@ -231,30 +232,23 @@ import static descent.building.IDescentBuilderConstants.*;
             }
             catch(CoreException e) { }
             
-            if(outputType.equals(OUTPUT_TYPE_EXECUTABLE))
-            {
-                fExecutableRadio.setSelection(true);
-                fStaticLibRadio.setSelection(false);
-            }
-            else if(outputType.equals(OUTPUT_TYPE_STATIC_LIBRARY))
+            if(outputType.equals(OUTPUT_TYPE_STATIC_LIBRARY))
             {
                 fExecutableRadio.setSelection(false);
                 fStaticLibRadio.setSelection(true);
+                fCurrentSetting = OUTPUT_TYPE_STATIC_LIBRARY;
             }
             else
             {
-                // Set the defaults
                 fExecutableRadio.setSelection(true);
                 fStaticLibRadio.setSelection(false);
+                fCurrentSetting = OUTPUT_TYPE_EXECUTABLE;
             }
         }
 
         public void performApply(ILaunchConfigurationWorkingCopy config)
         {
-            if(fExecutableRadio.getSelection())
-                config.setAttribute(ATTR_OUTPUT_TYPE, OUTPUT_TYPE_EXECUTABLE);
-            else
-                config.setAttribute(ATTR_OUTPUT_TYPE, OUTPUT_TYPE_STATIC_LIBRARY);
+            config.setAttribute(ATTR_OUTPUT_TYPE, fCurrentSetting);
         }
 
         public void setDefaults(ILaunchConfigurationWorkingCopy config)
@@ -262,9 +256,10 @@ import static descent.building.IDescentBuilderConstants.*;
             config.setAttribute(ATTR_OUTPUT_TYPE, OUTPUT_TYPE_EXECUTABLE);
         }
 
-        public void validate()
+        public String validate()
         {
             // Nothing to do -- any choice is valid
+            return null;
         }
         
         public String getExtension()
@@ -326,19 +321,18 @@ import static descent.building.IDescentBuilderConstants.*;
                     getDefaultLocationForProject(getActiveProject()));
         }
 
-        public void validate()
+        public String validate()
         {
             String pathText = fText.getText().trim();
             if (pathText.length() == 0)
-            {
-                setErrorMessage("Output path not defined");
-                return;
-            }
+                return "Output path not defined";
             
             // No way to check if a file is a valid filename since that's
             // file-system (NTFS/FAT/whatever) dependent :-(. I guess some small
             // sanity checks could be added... but whatever, I'll just handle
             // the error in the builder itself
+            
+            return null;
         }
         
         public void projectChanged(IJavaProject project)
@@ -543,19 +537,17 @@ import static descent.building.IDescentBuilderConstants.*;
             config.setAttribute(ATTR_MODULES_LIST, EMPTY_LIST);
         }
 
-        public void validate()
+        public String validate()
         {
             List<String> modules = fList.getElementsNoCopy();
             
             if(modules.isEmpty())
-            {
-                setErrorMessage("Module list is empty");
-                return;
-            }
+                return "Module list is empty";
             
             // TODO validate the individual modules... maybe (maybe instead
             // have a check button, since this can be a lengthy operation?)
             
+            return null;
         }
     }
     

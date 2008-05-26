@@ -5,6 +5,8 @@ import java.util.regex.Pattern;
 
 import descent.building.compiler.AbstractCompileCommand;
 import descent.building.compiler.AbstractLinkCommand;
+import descent.building.compiler.BooleanOption;
+import descent.building.compiler.CompilerOption;
 import descent.building.compiler.ICompileCommand;
 import descent.building.compiler.ICompilerInterface;
 import descent.building.compiler.ILinkCommand;
@@ -251,6 +253,23 @@ public class DmdCompilerInterface implements ICompilerInterface
 	}
 	
 	//--------------------------------------------------------------------------
+	// UI Options
+	
+	private static final CompilerOption[] uiOptions;
+	
+	static
+	{
+	    final String GROUP_FEATURES;
+	    
+	    uiOptions = new CompilerOption[]
+	    {
+	        //------------------------------------------------------------------
+	        // Features
+	        
+	    };
+	}
+	
+	//--------------------------------------------------------------------------
 	// Interface implementation
 	
 	/* (non-Javadoc)
@@ -284,4 +303,10 @@ public class DmdCompilerInterface implements ICompilerInterface
 	{
 		return new DmdResponseInterpreter();
 	}
+
+    public CompilerOption[] getOptions()
+    {
+        // TODO Auto-generated method stub
+        return uiOptions;
+    }
 }

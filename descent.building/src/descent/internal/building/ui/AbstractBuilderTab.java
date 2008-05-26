@@ -99,9 +99,9 @@ import descent.internal.ui.util.PixelConverter;
         
         /**
          * Checks whether the setting is valid. If the setting is not valid, this
-         * should set the error message on the page.
+         * should return the error message to be displayed to the user.
          */
-        public void validate();
+        public String validate();
     }
     
     private final ISetting[] settings = getSettings();
@@ -166,14 +166,15 @@ import descent.internal.ui.util.PixelConverter;
                 setting.setDefaults(config);
         }
 
-        public void validate()
+        public String validate()
         {
             for(ISetting setting : fChildren)
             {
-                setting.validate();
-                if(null != getErrorMessage())
-                    return;
+                String message = setting.validate();
+                if(null != message)
+                    return message;
             }
+            return null;
         }
     }
     
@@ -330,9 +331,12 @@ import descent.internal.ui.util.PixelConverter;
         
         for(ISetting setting : settings)
         {
-            setting.validate();
-            if(null != getErrorMessage())
+            String message = setting.validate();
+            if(null != message)
+            {
+                setErrorMessage(message);
                 return;
+            }
         }
     }
     
@@ -357,7 +361,7 @@ import descent.internal.ui.util.PixelConverter;
     /* (non-Javadoc)
      * @see org.eclipse.debug.ui.ILaunchConfigurationTab#setDefaults(org.eclipse.debug.core.ILaunchConfigurationWorkingCopy)
      */
-    public void setDefaults(ILaunchConfigurationWorkingCopy config)
+    public final void setDefaults(ILaunchConfigurationWorkingCopy config)
     {
         for(ISetting setting : settings)
             setting.setDefaults(config);
@@ -394,13 +398,13 @@ import descent.internal.ui.util.PixelConverter;
         fTabIcon.dispose();
     }
 
-    private static Image createImage(String path)
+    protected static Image createImage(String path)
     {
         return BuildingPlugin.getImageDescriptor(path).createImage();
     }
 
     @Override
-    public Image getImage()
+    public final Image getImage()
     {
         return fTabIcon;
     }
@@ -413,7 +417,13 @@ import descent.internal.ui.util.PixelConverter;
      * similar constant here for the empty string since the empty string is
      * internalized by the JVM).
      */
-    protected final List EMPTY_LIST = new ArrayList(0);
+    protected static final List EMPTY_LIST = new ArrayList(0);
+    
+    /**
+     * An empty array object to be used by content providers for elements
+     * that are barren and childless.
+     */
+    protected static final Object[] EMPTY_ARRAY = new Object[] {};
     
     /**
      * Creates a group in a grid layout, using columnsUsed columns and having
