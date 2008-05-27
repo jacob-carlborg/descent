@@ -1,5 +1,7 @@
 package melnorme.miscutil;
 
+import java.io.IOException;
+
 
 /**
  * Excepetion adapter to make checked exceptions less annoying. 
@@ -35,27 +37,32 @@ public class ExceptionAdapter extends RuntimeException {
 	}
 */
 	
-	protected void printStackTrace(melnorme.miscutil.log.IPrinter pr) {
-        synchronized (pr) {
-            pr.println(this);
-            StackTraceElement[] trace = originalException.getStackTrace();
-            for (int i=0; i < trace.length; i++) {
-                pr.print("\tat " + trace[i]);
-            	if(i == checkedLength)
-            		pr.print(" [UNCHECKED]");
-                pr.println();
-            }
+	
+	protected void printStackTrace(Appendable pr) {
+        synchronized(pr) {
+            try {
+				pr.append(this.toString());
+	            StackTraceElement[] trace = originalException.getStackTrace();
+	            for (int i=0; i < trace.length; i++) {
+	                pr.append("\tat " + trace[i]);
+	            	if(i == checkedLength)
+	            		pr.append(" [UNCHECKED]");
+	                pr.append("\n");
+	            }
+			} catch (IOException e) {
+				melnorme.miscutil.Assert.assertFail();
+			}
         }
 	}
 	
 	@Override
-	public void printStackTrace(java.io.PrintStream ps) {
-		printStackTrace(new melnorme.miscutil.log.StreamPrinter(ps));
+	public void printStackTrace(java.io.PrintStream ps) {		
+		printStackTrace(ps);
 	}
 
 	@Override
 	public void printStackTrace(java.io.PrintWriter pw) {
-		printStackTrace(new melnorme.miscutil.log.WriterPrinter(pw));
+		printStackTrace(pw);
 	}
 
 
