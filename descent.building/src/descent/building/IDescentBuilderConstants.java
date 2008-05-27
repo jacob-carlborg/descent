@@ -81,6 +81,13 @@ public interface IDescentBuilderConstants
      */
     public static final String ATTR_OUTPUT_FILE = "descent.building.debuild.output_file";
     
+    // TODO comment
+    public static final String ATTR_ADD_UNITTESTS = "descent.building.debuild.add_unittests";
+    public static final String ATTR_DISABLE_ASSERTS = "descent.building.debuild.disable_asserts";
+    public static final String ATTR_ADD_DEBUG_INFO = "descent.building.debuild.add_debug_info";
+    public static final String ATTR_INSTRUMENT_FOR_COVERAGE = "descent.building.debuild.instrument_for_coverage";
+    public static final String ATTR_INSTRUMENT_FOR_PROFILE = "descent.building.debuild.instrument_for_profile";
+    
     /**
      * Constant used for {@link #ATTR_OUTPUT_TYPE} to specify the output target
      * should be an executable file.

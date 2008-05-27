@@ -15,8 +15,12 @@ import org.eclipse.jface.viewers.ColumnViewerEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.ITreeSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TextCellEditor;
+import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.TreeViewerEditor;
@@ -31,6 +35,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.ui.dialogs.PreferencesUtil;
@@ -63,7 +69,7 @@ import descent.launching.JavaRuntime;
             // entire tab
             comp = new Composite(comp, SWT.NONE);
             GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-            gd.horizontalSpan = 1;
+            gd.horizontalSpan = 2;
             comp.setLayoutData(gd);
             GridLayout layout = new GridLayout();
             layout.numColumns = 1;
@@ -75,7 +81,7 @@ import descent.launching.JavaRuntime;
                     "preference page</a> to set up compiler/standard library " +
                     "configurations.");
             gd = new GridData(GridData.FILL_BOTH);
-            gd.horizontalSpan = 1;
+            gd.horizontalSpan = 2;
             fHelpText.setLayoutData(gd);
             fHelpText.addSelectionListener(new SelectionAdapter()
             {
@@ -242,6 +248,8 @@ import descent.launching.JavaRuntime;
             public abstract Object getValue();
             public abstract void setValue(Object value);
             public abstract String getText();
+            public abstract void initializeTo(String value);
+            public abstract void applyTo(ILaunchConfigurationWorkingCopy config);
         }
         
         private final class CheckboxUIOption extends CompilerUIOption
@@ -286,6 +294,19 @@ import descent.launching.JavaRuntime;
             public String getText()
             {
                 return selected ? option.getOnText() : option.getOffText();
+            }
+            
+            @Override
+            public void initializeTo(String value)
+            {
+                selected = Boolean.valueOf(value);
+            }
+
+            @Override
+            public void applyTo(ILaunchConfigurationWorkingCopy config)
+            {
+                config.setAttribute(option.getAttributeId(),
+                        selected ? "true" : "false");
             }
         }
         
@@ -335,6 +356,27 @@ import descent.launching.JavaRuntime;
             {
                 return option.getOptionViewLabels()[selected];
             }
+            
+            @Override
+            public void initializeTo(String value)
+            {
+                String[] optionValues = option.getOptionValues();
+                for(int i = 0; i < optionValues.length; i++)
+                {
+                    if(optionValues[i].equals(i))
+                    {
+                        selected = Integer.valueOf(i);
+                        return;
+                    }
+                }
+            }
+            
+            @Override
+            public void applyTo(ILaunchConfigurationWorkingCopy config)
+            {
+                config.setAttribute(getOption().getAttributeId(),
+                        option.getOptionValues()[selected.intValue()]);
+            }
         }
         
         private final class TextUIOption extends CompilerUIOption
@@ -379,6 +421,18 @@ import descent.launching.JavaRuntime;
             public void setValue(Object value)
             {
                 selected = (String) value;
+            }
+            
+            @Override
+            public void initializeTo(String value)
+            {
+                selected = value;
+            }
+            
+            @Override
+            public void applyTo(ILaunchConfigurationWorkingCopy config)
+            {
+                config.setAttribute(getOption().getAttributeId(), selected);
             }
         }
         
@@ -434,19 +488,22 @@ import descent.launching.JavaRuntime;
             public void inputChanged(Viewer viewer, Object oldInput,
                     Object newInput)
             {
-                // TODO
+                // This is handled externally
             }
         }
         
         private IVMInstall fSelectedCompiler;
         private TreeViewer fViewer;
         private TreeEntry[] fEntries;
+        private Group fHelpGroup;
+        private Label fHelpText;
         
         public void addToControl(Composite comp)
         {
-            fEntries = getTree();
+            initializeTree();
             
             fViewer = new TreeViewer(comp, SWT.BORDER | SWT.FULL_SELECTION);
+            fViewer.setContentProvider(new OptionsContentProvider());
             fViewer.getTree().setHeaderVisible(true);
             fViewer.getTree().setLinesVisible(true);
             TreeViewerEditor.create(fViewer,
@@ -455,7 +512,7 @@ import descent.launching.JavaRuntime;
                     ColumnViewerEditor.DEFAULT);
             
             TreeViewerColumn column = new TreeViewerColumn(fViewer, SWT.NONE);
-            column.getColumn().setWidth(200);
+            column.getColumn().setWidth(250);
             column.getColumn().setText("Option");
             column.setLabelProvider(new ColumnLabelProvider()
             {
@@ -529,13 +586,60 @@ import descent.launching.JavaRuntime;
             });
             
             GridData gd = new GridData(GridData.FILL_BOTH);
+            gd.horizontalSpan = 1;
             fViewer.getControl().setLayoutData(gd);
             
-            fViewer.setContentProvider(new OptionsContentProvider());
+            fHelpGroup = new Group(comp, SWT.SHADOW_IN);
+            gd = new GridData(GridData.FILL_VERTICAL);
+            gd.horizontalSpan = 1;
+            gd.widthHint = 200; // PERHAPS use PixelConverter or something...?
+            fHelpGroup.setLayoutData(gd);
+            
+            GridLayout groupLayout = new GridLayout();
+            groupLayout.numColumns = 1;
+            fHelpGroup.setLayout(groupLayout);
+            
+            fHelpText = new Label(fHelpGroup, SWT.LEFT | SWT.WRAP);
+            gd = new GridData(GridData.FILL_BOTH);
+            gd.horizontalSpan = 1;
+            fHelpText.setText("");
+            fHelpText.setLayoutData(gd);
+            
+            fViewer.addSelectionChangedListener(new ISelectionChangedListener()
+            {
+                public void selectionChanged(SelectionChangedEvent event)
+                {   
+                    TreePath[] paths = ((ITreeSelection) fViewer.getSelection()).getPaths();
+                    if(0 == paths.length)
+                    {
+                        fHelpText.setText("");
+                        fHelpText.update();
+                        return;
+                    }
+                    
+                    Object selected = paths[0].getLastSegment();
+                    if(!(selected instanceof CompilerUIOption))
+                    {
+                        fHelpText.setText("");
+                        fHelpText.update();
+                        return;
+                    }
+                    
+                    fHelpText.setText(((CompilerUIOption) selected).getOption().
+                            getHelpText());
+                    fHelpText.update();
+                }
+            });
+            
+            fViewer.setInput(this);
+            fViewer.expandAll();
         }
         
-        private TreeEntry[] getTree()
+        private void initializeTree()
         {
+            if(null != fEntries)
+                return;
+            
             ICompilerInterface compilerInterface = 
                 getCompilerInterface(fSelectedCompiler);
             Map<String, List<CompilerUIOption>> groups = 
@@ -544,22 +648,20 @@ import descent.launching.JavaRuntime;
             for(CompilerOption opt : compilerInterface.getOptions())
             {
                 String group = opt.getGroupLabel();
-                if(!groups.containsKey(group));
+                if(!groups.containsKey(group))
                     groups.put(group, new ArrayList<CompilerUIOption>());
                 groups.get(group).add(toUIOption(opt));
             }
             
-            TreeEntry[] entries = new TreeEntry[groups.size()];
+            fEntries = new TreeEntry[groups.size()];
             int i = 0;
             for(String group : groups.keySet())
             {
                 List<CompilerUIOption> list = groups.get(group);
-                entries[i] = new TreeEntry(group, 
+                fEntries[i] = new TreeEntry(group, 
                         list.toArray(new CompilerUIOption[list.size()]));
                 i++;
             }
-            
-            return entries;
         }
         
         private CompilerUIOption toUIOption(CompilerOption opt)
@@ -587,27 +689,60 @@ import descent.launching.JavaRuntime;
             
             fSelectedCompiler = compiler;
             if(null != fViewer && null != fSelectedCompiler)
-                fViewer.setInput(fSelectedCompiler);
+            {
+                // TODO
+            }
         }
 
         public void initializeFrom(ILaunchConfiguration config)
         {
-            // TODO Auto-generated method stub
+            initializeTree();
+            for(TreeEntry group : fEntries)
+            {
+                for(CompilerUIOption uiOpt : group.children)
+                {
+                    CompilerOption opt = uiOpt.getOption();
+                    String defaultValue = opt.getDefaultValue();
+                    String value = defaultValue;
+                    try
+                    {
+                        value = config.getAttribute(opt.getAttributeId(), defaultValue);
+                    }
+                    catch(CoreException e) { }
+                    uiOpt.initializeTo(value);
+                    fViewer.update(uiOpt, null);
+                }
+            }
         }
 
         public void performApply(ILaunchConfigurationWorkingCopy config)
         {
-            // TODO Auto-generated method stub
+            initializeTree();
+            for(TreeEntry group : fEntries)
+            {
+                for(CompilerUIOption uiOpt : group.children)
+                {
+                    uiOpt.applyTo(config);
+                }
+            }
         }
 
         public void setDefaults(ILaunchConfigurationWorkingCopy config)
         {
-            // TODO Auto-generated method stub
+            initializeTree();
+            for(TreeEntry group : fEntries)
+            {
+                for(CompilerUIOption uiOpt : group.children)
+                {
+                    CompilerOption opt = uiOpt.getOption();
+                    config.setAttribute(opt.getAttributeId(), opt.getDefaultValue());
+                }
+            }
         }
 
         public String validate()
         {
-            // TODO Auto-generated method stub
+            // PERHAPS should we allow options to validate themselves?
             return null;
         }
     }
@@ -653,7 +788,7 @@ import descent.launching.JavaRuntime;
     protected Layout getTopLayout()
     {
         GridLayout layout = new GridLayout();
-        layout.numColumns = 1;
+        layout.numColumns = 2;
         return layout;
     }
 

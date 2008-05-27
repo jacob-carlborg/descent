@@ -6,14 +6,16 @@ public abstract class CompilerOption
     private final String defaultValue;
     private final String label;
     private final String groupLabel;
+    private final String helpText;
     
     public CompilerOption(String attributeId, String defaultValue, String label,
-            String groupLabel)
+            String groupLabel, String helpText)
     {
         this.attributeId = attributeId;
         this.defaultValue = defaultValue;
         this.label = label;
         this.groupLabel = groupLabel;
+        this.helpText = helpText;
     }
     
     public final String getAttributeId()
@@ -34,5 +36,10 @@ public abstract class CompilerOption
     public final String getGroupLabel()
     {
         return groupLabel;
+    }
+    
+    public final String getHelpText()
+    {
+        return helpText;
     }
 }

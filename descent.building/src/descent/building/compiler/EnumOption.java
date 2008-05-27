@@ -8,17 +8,18 @@ public class EnumOption extends CompilerOption
     
     public EnumOption(String attributeId, String defaultValue,
             String label, String groupLabel, String[] optionValues,
-            String[] optionEditLabels)
+            String[] optionEditLabels, String helpText)
     {
         this(attributeId, defaultValue, label, groupLabel, 
-                optionValues, optionEditLabels, null);
+                optionValues, optionEditLabels, null, helpText);
     }
     
     public EnumOption(String attributeId, String defaultValue,
             String label, String groupLabel, String[] optionValues,
-            String[] optionEditLabels, String[] optionViewLabels)
+            String[] optionEditLabels, String[] optionViewLabels,
+            String helpText)
     {
-        super(attributeId, defaultValue, label, groupLabel);
+        super(attributeId, defaultValue, label, groupLabel, helpText);
         this.optionValues = optionValues;
         this.optionEditLabels = optionEditLabels;
         
