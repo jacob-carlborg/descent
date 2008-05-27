@@ -38,6 +38,7 @@ public class TreeDepthRecon extends TreeWalker {
 	}	
 	
 	
+	@Override
 	public boolean enterNode(IElement element) {
 		depth++;
 
@@ -55,6 +56,7 @@ public class TreeDepthRecon extends TreeWalker {
 		
 	}
 	
+	@Override
 	public void leaveNode(IElement element) {
 		depth--;
 	}

@@ -81,14 +81,15 @@ public abstract class Assert {
 
 	
 	/** Causes an inconditional assertion failure, with message msg.
+	 * Never returns, even though return type is not void.
 	 */
-	public static void fail(String msg) {
+	public static AssertionFailedException fail(String msg) {
 		throw new AssertionFailedException("ASSERT FAIL:" + msg);
 	}
 	
 	/** Like {@link #fail(String)} with empty message. 
 	 */
-	public static void fail() {
+	public static AssertionFailedException fail() {
 		throw new AssertionFailedException("ASSERT FAIL");
 	}
 
@@ -138,14 +139,14 @@ public abstract class Assert {
 	
 	/** Causes an inconditional assertion failure, with message msg.
 	 */
-	public static void assertFail(String msg) {
-		Assert.fail(msg);
+	public static AssertionFailedException assertFail(String msg) {
+		return Assert.fail(msg);
 	}
 	
 	/** Like {@link #fail(String)} with empty message. 
 	 */
-	public static void assertFail() {
-		Assert.fail();
+	public static AssertionFailedException assertFail() {
+		return Assert.fail();
 	}
 	
 }

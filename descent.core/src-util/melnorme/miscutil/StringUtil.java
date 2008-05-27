@@ -81,7 +81,7 @@ public final class StringUtil {
 		if(coll == null) 
 			return new String[0];
 		String[] strs = new String[coll.size()];
-		Iterator iter = coll.iterator();
+		Iterator<?> iter = coll.iterator();
 		for (int i = 0; i < strs.length; i++) {
 			strs[i] = iter.next().toString();
 		}

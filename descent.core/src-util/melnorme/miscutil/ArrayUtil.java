@@ -1,6 +1,9 @@
 package melnorme.miscutil;
 
+import static melnorme.miscutil.Assert.assertTrue;
+
 import java.lang.reflect.Array;
+import java.util.List;
 
 public class ArrayUtil {
 	
@@ -74,6 +77,25 @@ public class ArrayUtil {
 		}
 		return false;
 	}
+	
+	/** Return the index of the first occurrence of elem in array, or -1 if no occurrences. */
+	public static <T> int indexOf(T[] array, T elem) {
+		for (int i = 0; i < array.length; i++) {
+			if(array[i].equals(elem))
+				return i;
+		}
+		return -1;
+	}
+	
+	/** Return the index of the first occurrence of elem in array, or -1 if no occurrences. */
+	public static int indexOf(byte[] array, byte elem) {
+		for (int i = 0; i < array.length; i++) {
+			if(array[i] == elem)
+				return i;
+		}
+		return -1;
+	}
+
 	
     /**
      * Copies the specified range of the specified array into a new array.
@@ -151,6 +173,43 @@ public class ArrayUtil {
                          Math.min(original.length - from, newLength));
         return copy;
     }
+    
+    /** Copies src array range [0 .. src.length] to dest array starting at destIx. */
+	public static void copyToRange(byte[] src, byte[] dest, int destIx) {
+		assertTrue(src.length < dest.length - destIx);
+		System.arraycopy(src, 0, dest, destIx, src.length);
+	}
+
+    /** Create an array from the given list, with the given run-time 
+     * component type.
+     * If the list is null, a zero-length array is created. */
+	@SuppressWarnings("unchecked")
+	public static <T> T[] createFrom(List<T> list, Class<T> cpType) {
+		if(list == null)
+			return (T[])Array.newInstance(cpType, 0);
+	
+		return list.toArray((T[])Array.newInstance(cpType, list.size()));
+	}
+
+	/** Creates an array with the same size as the given list.
+	 * If the list is null, a zero-length array is created. */
+	@SuppressWarnings("unchecked")
+	public static <T> T[] newSameSize(List<?> list, Class<T> cpType) {
+		if(list == null)
+			return (T[])Array.newInstance(cpType, 0);
+		
+		return (T[])Array.newInstance(cpType, list.size());
+	}
+
+	/** Finds the index in the given array of the element that
+	 * equal given elem. */
+	public static <T> int getIndexOfEquals(T[] arr, T elem) {
+		for (int i = 0; i < arr.length; i++) {
+			if(arr[i].equals(elem));
+				return i;
+		}
+		return -1;
+	}
 
 
 
