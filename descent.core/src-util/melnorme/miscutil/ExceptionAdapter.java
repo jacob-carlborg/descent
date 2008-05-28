@@ -32,13 +32,8 @@ public class ExceptionAdapter extends RuntimeException {
 		
 	}
 
-/*	public ExceptionAdapter(String string) {
-		this(new Exception(string));
-	}
-*/
-	
-	
-	protected void printStackTrace(Appendable pr) {
+
+	protected void printStackTraceAppendable(Appendable pr) {
         synchronized(pr) {
             try {
 				pr.append(this.toString());
@@ -57,12 +52,12 @@ public class ExceptionAdapter extends RuntimeException {
 	
 	@Override
 	public void printStackTrace(java.io.PrintStream ps) {		
-		printStackTrace(ps);
+		printStackTraceAppendable(ps);
 	}
 
 	@Override
 	public void printStackTrace(java.io.PrintWriter pw) {
-		printStackTrace(pw);
+		printStackTraceAppendable(pw);
 	}
 
 
@@ -91,8 +86,10 @@ public class ExceptionAdapter extends RuntimeException {
 		}
 	}
 	
-	/** Same as unchecked() but stands for a TODO call. */
-	@Deprecated public static RuntimeException uncheckedTODO(Throwable e) {
+	/** Same as unchecked() but stands for TO DO code. 
+	 * Uses the Deprecated annotation solely to cause a warning. */
+	@Deprecated 
+	public static RuntimeException uncheckedTODO(Throwable e) {
 		return unchecked(e);
 	}
 }
