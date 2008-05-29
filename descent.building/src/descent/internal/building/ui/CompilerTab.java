@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jface.viewers.CellEditor;
@@ -30,6 +29,8 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -39,6 +40,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 
 import descent.building.IDescentBuilderConstants;
@@ -46,6 +48,7 @@ import descent.building.compiler.BooleanOption;
 import descent.building.compiler.CompilerOption;
 import descent.building.compiler.EnumOption;
 import descent.building.compiler.ICompilerInterface;
+import descent.building.compiler.IValidatableOption;
 import descent.building.compiler.StringOption;
 import descent.internal.building.compiler.DmdCompilerInterface;
 import descent.launching.IVMInstall;
@@ -76,10 +79,8 @@ import descent.launching.JavaRuntime;
             comp.setLayout(layout);
             
             fHelpText = new Link(comp, SWT.LEFT | SWT.WRAP);
-            fHelpText.setText("Select the compiler/standard library set to use " +
-                    "for this build configuration. Use the <a>Compilers " +
-                    "preference page</a> to set up compiler/standard library " +
-                    "configurations.");
+            fHelpText.setText("Use the <a>Compilers preference page</a> to set up " +
+            		"compiler/standard library configurations");
             gd = new GridData(GridData.FILL_BOTH);
             gd.horizontalSpan = 2;
             fHelpText.setLayoutData(gd);
@@ -101,9 +102,8 @@ import descent.launching.JavaRuntime;
             });
             
             fCombo = new Combo(comp, SWT.DROP_DOWN | SWT.READ_ONLY);
-            gd = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
+            gd = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
             gd.horizontalSpan = 1;
-            gd.grabExcessHorizontalSpace = true;
             fCombo.addModifyListener(new ModifyListener()
             {
                 public void modifyText(ModifyEvent e)
@@ -166,19 +166,10 @@ import descent.launching.JavaRuntime;
         
         public void initializeFrom(ILaunchConfiguration config)
         {
-            String compilerTypeId = "";
-            try
-            {
-                compilerTypeId = config.getAttribute(IDescentBuilderConstants.ATTR_COMPILER_TYPE_ID, "");
-            }
-            catch(CoreException e) { }
-            
-            String compilerId = "";
-            try
-            {
-                compilerId = config.getAttribute(IDescentBuilderConstants.ATTR_COMPILER_ID, "");
-            }
-            catch(CoreException e) { }
+            String compilerTypeId = getAttribute(config, 
+                    IDescentBuilderConstants.ATTR_COMPILER_TYPE_ID, "");
+            String compilerId = getAttribute(config, 
+                    IDescentBuilderConstants.ATTR_COMPILER_ID, "");
             
             for(int i = 0; i < fCompilers.length; i++)
             {
@@ -237,7 +228,7 @@ import descent.launching.JavaRuntime;
         }
     }
     
-    public class CompilerOptions implements ISetting
+    private final class CompilerOptions implements ISetting
     {
         private abstract class CompilerUIOption
         {
@@ -249,7 +240,7 @@ import descent.launching.JavaRuntime;
             public abstract void setValue(Object value);
             public abstract String getText();
             public abstract void initializeTo(String value);
-            public abstract void applyTo(ILaunchConfigurationWorkingCopy config);
+            public abstract String getStringValue();
         }
         
         private final class CheckboxUIOption extends CompilerUIOption
@@ -303,10 +294,9 @@ import descent.launching.JavaRuntime;
             }
 
             @Override
-            public void applyTo(ILaunchConfigurationWorkingCopy config)
+            public String getStringValue()
             {
-                config.setAttribute(option.getAttributeId(),
-                        selected ? "true" : "false");
+                return selected ? "true" : "false";
             }
         }
         
@@ -372,10 +362,9 @@ import descent.launching.JavaRuntime;
             }
             
             @Override
-            public void applyTo(ILaunchConfigurationWorkingCopy config)
+            public String getStringValue()
             {
-                config.setAttribute(getOption().getAttributeId(),
-                        option.getOptionValues()[selected.intValue()]);
+                return option.getOptionValues()[selected.intValue()];
             }
         }
         
@@ -430,9 +419,9 @@ import descent.launching.JavaRuntime;
             }
             
             @Override
-            public void applyTo(ILaunchConfigurationWorkingCopy config)
+            public String getStringValue()
             {
-                config.setAttribute(getOption().getAttributeId(), selected);
+                return selected;
             }
         }
         
@@ -496,6 +485,7 @@ import descent.launching.JavaRuntime;
         private TreeViewer fViewer;
         private TreeEntry[] fEntries;
         private Group fHelpGroup;
+        private Label fHelpHeader;
         private Label fHelpText;
         
         public void addToControl(Composite comp)
@@ -527,7 +517,7 @@ import descent.launching.JavaRuntime;
             });
             
             column = new TreeViewerColumn(fViewer, SWT.NONE);
-            column.getColumn().setWidth(200);
+            column.getColumn().setWidth(175);
             column.getColumn().setText("Value");
             column.setLabelProvider(new ColumnLabelProvider()
             {
@@ -592,12 +582,19 @@ import descent.launching.JavaRuntime;
             fHelpGroup = new Group(comp, SWT.SHADOW_IN);
             gd = new GridData(GridData.FILL_VERTICAL);
             gd.horizontalSpan = 1;
-            gd.widthHint = 200; // PERHAPS use PixelConverter or something...?
+            gd.widthHint = 225; // PERHAPS use PixelConverter or something...?
             fHelpGroup.setLayoutData(gd);
             
             GridLayout groupLayout = new GridLayout();
             groupLayout.numColumns = 1;
             fHelpGroup.setLayout(groupLayout);
+            
+            fHelpHeader = new Label(fHelpGroup, SWT.LEFT);
+            gd = new GridData(GridData.FILL_HORIZONTAL);
+            gd.horizontalSpan = 1;
+            fHelpHeader.setText("");
+            fHelpHeader.setFont(getBoldFont(comp));
+            fHelpHeader.setLayoutData(gd);
             
             fHelpText = new Label(fHelpGroup, SWT.LEFT | SWT.WRAP);
             gd = new GridData(GridData.FILL_BOTH);
@@ -612,21 +609,35 @@ import descent.launching.JavaRuntime;
                     TreePath[] paths = ((ITreeSelection) fViewer.getSelection()).getPaths();
                     if(0 == paths.length)
                     {
-                        fHelpText.setText("");
-                        fHelpText.update();
+                        unsetHelp();
                         return;
                     }
                     
                     Object selected = paths[0].getLastSegment();
                     if(!(selected instanceof CompilerUIOption))
                     {
-                        fHelpText.setText("");
-                        fHelpText.update();
+                        unsetHelp();
                         return;
                     }
                     
+                    
+                    fHelpHeader.setText(((CompilerUIOption) selected).getOption().
+                            getLabel());
                     fHelpText.setText(((CompilerUIOption) selected).getOption().
                             getHelpText());
+                    updateHelp();
+                }
+                
+                private void unsetHelp()
+                {
+                    fHelpHeader.setText("");
+                    fHelpText.setText("");
+                    updateHelp();
+                }
+                
+                private void updateHelp()
+                {
+                    fHelpHeader.update();
                     fHelpText.update();
                 }
             });
@@ -703,12 +714,7 @@ import descent.launching.JavaRuntime;
                 {
                     CompilerOption opt = uiOpt.getOption();
                     String defaultValue = opt.getDefaultValue();
-                    String value = defaultValue;
-                    try
-                    {
-                        value = config.getAttribute(opt.getAttributeId(), defaultValue);
-                    }
-                    catch(CoreException e) { }
+                    String value = getAttribute(config, opt.getAttributeId(), defaultValue);
                     uiOpt.initializeTo(value);
                     fViewer.update(uiOpt, null);
                 }
@@ -722,7 +728,8 @@ import descent.launching.JavaRuntime;
             {
                 for(CompilerUIOption uiOpt : group.children)
                 {
-                    uiOpt.applyTo(config);
+                    CompilerOption opt = uiOpt.getOption();
+                    config.setAttribute(opt.getAttributeId(), uiOpt.getStringValue());
                 }
             }
         }
@@ -742,24 +749,130 @@ import descent.launching.JavaRuntime;
 
         public String validate()
         {
-            // PERHAPS should we allow options to validate themselves?
+            for(TreeEntry group : fEntries)
+            {
+                for(CompilerUIOption uiOpt : group.children)
+                {
+                    CompilerOption opt = uiOpt.getOption();
+                    if(opt instanceof IValidatableOption)
+                    {
+                        String msg = ((IValidatableOption) opt).isValid(uiOpt.getStringValue());
+                        if(null != msg)
+                            return msg;
+                    }
+                }
+            }
             return null;
         }
     }
     
     //--------------------------------------------------------------------------
-    // Icon management
+    // Additional arguments
+    
+    private final class ArgumentsSetting implements ISetting
+    {
+        private Text fCompilerText;
+        private Text fLinkerText;
+        
+        public final void addToControl(Composite comp)
+        {   
+            comp = new Composite(comp, SWT.NONE);
+            GridData gd = new GridData(GridData.FILL_HORIZONTAL);
+            gd.horizontalSpan = 2;
+            comp.setLayoutData(gd);
+            
+            GridLayout layout = new GridLayout();
+            layout.numColumns = 2;
+            comp.setLayout(layout);
+            
+            addLabel(comp, "Additional compiler args:");
+            fCompilerText = addText(comp);
+            
+            addLabel(comp, "Additional linker args:");
+            fLinkerText = addText(comp);
+        }
+        
+        private Label addLabel(Composite comp, String str)
+        {
+            Label label = new Label(comp, SWT.NONE);
+            label.setText(str);
+            GridData gd = new GridData();
+            gd.horizontalSpan = 1;
+            label.setLayoutData(gd);
+            return label;
+        }
+        
+        private Text addText(Composite comp)
+        {
+            Text text = new Text(comp, SWT.SINGLE | SWT.BORDER);
+            GridData gd = new GridData(GridData.FILL_HORIZONTAL);
+            gd.horizontalSpan = 1;
+            text.setLayoutData(gd);
+            text.addModifyListener(new ModifyListener()
+            {
+                public void modifyText(ModifyEvent evt)
+                {
+                    validatePage();
+                    updateLaunchConfigurationDialog();
+                }
+            });
+            return text;
+        }
+        
+        public void setDefaults(ILaunchConfigurationWorkingCopy config)
+        {
+            config.setAttribute(IDescentBuilderConstants.ATTR_ADDITIONAL_COMPILER_ARGS, "");
+            config.setAttribute(IDescentBuilderConstants.ATTR_ADDITIONAL_LINKER_ARGS, "");
+        }
+        
+        public void initializeFrom(ILaunchConfiguration config)
+        {
+            fCompilerText.setText(getAttribute(config, IDescentBuilderConstants.ATTR_ADDITIONAL_COMPILER_ARGS, ""));
+            fLinkerText.setText(getAttribute(config, IDescentBuilderConstants.ATTR_ADDITIONAL_LINKER_ARGS, ""));
+        }
+
+        public void performApply(ILaunchConfigurationWorkingCopy config)
+        {
+            config.setAttribute(IDescentBuilderConstants.ATTR_ADDITIONAL_COMPILER_ARGS, fCompilerText.getText());
+            config.setAttribute(IDescentBuilderConstants.ATTR_ADDITIONAL_LINKER_ARGS, fLinkerText.getText());
+        }
+        
+        public String validate()
+        {
+            // Assume anything is valid... this setting is for advanced users who
+            // should know what they're doing
+            return null;
+        }
+    }
+    
+    //--------------------------------------------------------------------------
+    // Resource management
     
     // This needs to be done at the tab level to allow for disposing)
     
     private Image fCheckedIcon = createImage("obj16/checked.png");
     private Image fUncheckedIcon = createImage("obj16/unchecked.png");
+    private Font fBoldFont;
+    
+    private Font getBoldFont(Composite comp)
+    {
+        if(null == fBoldFont)
+        {
+            FontData[] fontData = comp.getFont().getFontData();
+            for(FontData dataItem : fontData)
+                dataItem.setStyle(dataItem.getStyle() | SWT.BOLD);
+            fBoldFont = new Font(comp.getDisplay(), fontData);
+        }
+        return fBoldFont;
+    }
     
     public void dispose()
     {
         super.dispose();
         fCheckedIcon.dispose();
         fUncheckedIcon.dispose();
+        if(null != fBoldFont)
+            fBoldFont.dispose();
     }
     
     //--------------------------------------------------------------------------
@@ -781,6 +894,7 @@ import descent.launching.JavaRuntime;
         {
             new CompilerSetting(),
             compilerOptions,
+            new ArgumentsSetting(),
         };
     }
 

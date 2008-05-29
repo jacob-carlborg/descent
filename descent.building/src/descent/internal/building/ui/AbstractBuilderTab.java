@@ -2,6 +2,8 @@ package descent.internal.building.ui;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -192,9 +194,7 @@ import descent.internal.ui.util.PixelConverter;
         private final boolean fBrowseButton;
         private final boolean fEditable;
         
-        protected Label fLabel;
         protected Text fText;
-        protected Button fButton;
         
         /**
          * Creates a new text setting with the given parameters.
@@ -202,11 +202,9 @@ import descent.internal.ui.util.PixelConverter;
          * @param attribute     the attribute the text setting refers to
          * @param label         the text of the label
          * @param numColumns    the number of columns the three controls should
-         *                      take up. Must be >= 2 if no browse button and
-         *                      >= 3 if there is a browse button
+         *                      take up.
          * @param browseButton  should there be a browse button? if this is true,
-         *                      numColumns must be >= 3 and {@link #browse()} must
-         *                      be implemented in the subclass.
+         *                      {@link #browse()} must be implemented in the subclass.
          * @param editable      sets whether or not the text field is editable.
          *                      This should only be false if browseButton is true,
          *                      for obvious reasons.
@@ -223,15 +221,24 @@ import descent.internal.ui.util.PixelConverter;
         
         public final void addToControl(Composite comp)
         {
-            fLabel = new Label(comp, SWT.NONE);
-            fLabel.setText(fLabelString);
-            GridData gd = new GridData();
+            comp = new Composite(comp, SWT.NONE);
+            GridData gd = new GridData(GridData.FILL_HORIZONTAL);
+            gd.horizontalSpan = fNumColumns;
+            comp.setLayoutData(gd);
+            
+            GridLayout layout = new GridLayout();
+            layout.numColumns = fBrowseButton ? 3 : 2;
+            comp.setLayout(layout);
+            
+            Label label = new Label(comp, SWT.NONE);
+            label.setText(fLabelString);
+            gd = new GridData();
             gd.horizontalSpan = 1;
-            fLabel.setLayoutData(gd);
+            label.setLayoutData(gd);
     
             fText = new Text(comp, SWT.SINGLE | SWT.BORDER);
             gd = new GridData(GridData.FILL_HORIZONTAL);
-            gd.horizontalSpan = fNumColumns - (fBrowseButton ? 2 : 1);
+            gd.horizontalSpan = 1;
             fText.setLayoutData(gd);
             fText.setEditable(fEditable);
             fText.addModifyListener(new ModifyListener()
@@ -245,13 +252,13 @@ import descent.internal.ui.util.PixelConverter;
             
             if(fBrowseButton)
             {
-                fButton = new Button(comp, SWT.PUSH);
-                fButton.setText("Browse...");
+                Button button = new Button(comp, SWT.PUSH);
+                button.setText("Browse...");
                 gd = new GridData();
                 gd.horizontalSpan = 1;
-                fButton.setLayoutData(gd);
-                setButtonDimensionHint(fButton);
-                fButton.addSelectionListener(new SelectionAdapter()
+                button.setLayoutData(gd);
+                setButtonDimensionHint(button);
+                button.addSelectionListener(new SelectionAdapter()
                 {
                     public void widgetSelected(SelectionEvent evt)
                     {
@@ -275,15 +282,8 @@ import descent.internal.ui.util.PixelConverter;
         }
 
         public final void initializeFrom(ILaunchConfiguration config)
-        {
-            String value = "";
-            try
-            {
-                value = config.getAttribute(fAttribute, "");
-            }
-            catch(CoreException e) { }
-            
-            fText.setText(value);
+        {   
+            fText.setText(getAttribute(config, fAttribute, ""));
         }
 
         public final void performApply(ILaunchConfigurationWorkingCopy config)
@@ -584,5 +584,84 @@ import descent.internal.ui.util.PixelConverter;
     protected static IWorkspaceRoot getWorkspaceRoot()
     {
         return ResourcesPlugin.getWorkspace().getRoot();
+    }
+    
+    //--------------------------------------------------------------------------
+    // Wrappers for ILaunchConfiguration methods which hide the exceptions,
+    // since the exception will never be thrown
+    
+    protected static String getAttribute(ILaunchConfiguration config, String id,
+            String defaultValue)
+    {
+        String value = defaultValue;
+        try
+        {
+            value = config.getAttribute(id, defaultValue);
+        }
+        catch(CoreException e) { }
+        return value;
+    }
+    
+    protected static boolean getAttribute(ILaunchConfiguration config, String id,
+            boolean defaultValue)
+    {
+        boolean value = defaultValue;
+        try
+        {
+            value = config.getAttribute(id, defaultValue);
+        }
+        catch(CoreException e) { }
+        return value;
+    }
+    
+    protected static int getAttribute(ILaunchConfiguration config, String id,
+            int defaultValue)
+    {
+        int value = defaultValue;
+        try
+        {
+            value = config.getAttribute(id, defaultValue);
+        }
+        catch(CoreException e) { }
+        return value;
+    }
+    
+    @SuppressWarnings("unchecked")
+    protected static List getAttribute(ILaunchConfiguration config, String id,
+            List defaultValue)
+    {
+        List value = defaultValue;
+        try
+        {
+            value = config.getAttribute(id, defaultValue);
+        }
+        catch(CoreException e) { }
+        return value;
+    }
+    
+    @SuppressWarnings("unchecked")
+    protected static Map getAttribute(ILaunchConfiguration config, String id,
+            Map defaultValue)
+    {
+        Map value = defaultValue;
+        try
+        {
+            value = config.getAttribute(id, defaultValue);
+        }
+        catch(CoreException e) { }
+        return value;
+    }
+    
+    @SuppressWarnings("unchecked")
+    protected static Set getAttribute(ILaunchConfiguration config, String id,
+            Set defaultValue)
+    {
+        Set value = defaultValue;
+        try
+        {
+            value = config.getAttribute(id, defaultValue);
+        }
+        catch(CoreException e) { }
+        return value;
     }
 }

@@ -1,21 +1,23 @@
 package descent.internal.building.ui;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -26,6 +28,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 
+import descent.core.IJavaElement;
 import descent.core.IJavaProject;
 import descent.core.JavaCore;
 import descent.core.JavaModelException;
@@ -173,7 +176,6 @@ import static descent.building.IDescentBuilderConstants.*;
     
     private final class OutputTypeSetting implements ISetting
     {
-        private Label fLabel;
         private Button fExecutableRadio;
         private Button fStaticLibRadio;
         
@@ -182,11 +184,11 @@ import static descent.building.IDescentBuilderConstants.*;
         
         public void addToControl(Composite comp)
         {   
-            fLabel = new Label(comp, SWT.LEFT);
-            fLabel.setText("Target type:");
+            Label label = new Label(comp, SWT.LEFT);
+            label.setText("Target type:");
             GridData gd = new GridData();
             gd.horizontalSpan = 3;
-            fLabel.setLayoutData(gd);
+            label.setLayoutData(gd);
             
             fExecutableRadio = createRadioButton(comp, 3, "Executable", 25, 
                     new SelectionAdapter()
@@ -220,17 +222,12 @@ import static descent.building.IDescentBuilderConstants.*;
                             }
                         }
                     });
-            createSpacer(comp, 3);
         }
 
         public void initializeFrom(ILaunchConfiguration config)
         {
-            String outputType = OUTPUT_TYPE_EXECUTABLE;
-            try
-            {
-                outputType = config.getAttribute(ATTR_OUTPUT_TYPE, OUTPUT_TYPE_EXECUTABLE);
-            }
-            catch(CoreException e) { }
+            String outputType = getAttribute(config, ATTR_OUTPUT_TYPE,
+                    OUTPUT_TYPE_EXECUTABLE);
             
             if(outputType.equals(OUTPUT_TYPE_STATIC_LIBRARY))
             {
@@ -430,8 +427,6 @@ import static descent.building.IDescentBuilderConstants.*;
     
     private final class ModulesSetting implements ISetting
     {
-        private Group fGroup;
-        private Label fLabel;
         private ListDialogField fList;
         
         public void addToControl(Composite comp)
@@ -477,18 +472,13 @@ import static descent.building.IDescentBuilderConstants.*;
             }
             
             // Create the group
-            fGroup = createGroup(comp, "Included modules", 3, 3);
+            comp = createGroup(comp, "Included modules", 3, 3);
             
             // Add the label
-            fLabel = new Label(fGroup, SWT.LEFT | SWT.WRAP);
-            fLabel.setText("Select the &modules or packages to build (dependancies will " +
-            		"be built automatically). For an application, it is sufficent " +
-            		"to specify only the module containing the main() or winMain() " +
-            		"function, for libraries there may be multiple modules or " +
-            		"packages to include.");
-            GridData gd = new GridData(GridData.FILL_BOTH);
-            gd.horizontalSpan = 3;
-            fLabel.setLayoutData(gd);
+            newHelpLabel(comp, "- For an executable, choose the module containing main()");
+            newHelpLabel(comp, "- For a library, choose all exported modules");
+            newHelpLabel(comp, "- Dependancies will be built automatically");
+            createSpacer(comp, 3);
             
             // Create the list
             ModulesListAdapter adapter = new ModulesListAdapter();
@@ -501,7 +491,16 @@ import static descent.building.IDescentBuilderConstants.*;
             // TODO ack, so ugly!!!! when we know the final layout of the
             // page, change it so that it doesn't make users want to gouge
             // their eyes out.
-            fList.doFillIntoGrid(fGroup, 3);
+            fList.doFillIntoGrid(comp, 3);
+        }
+        
+        private void newHelpLabel(Composite comp, String text)
+        {
+            Label label = new Label(comp, SWT.LEFT);
+            label.setText(text);
+            GridData gd = new GridData();
+            gd.horizontalSpan = 3;
+            label.setLayoutData(gd);
         }
         
         private void performAdd()
@@ -516,24 +515,17 @@ import static descent.building.IDescentBuilderConstants.*;
 
         public void initializeFrom(ILaunchConfiguration config)
         {
-            List modules = EMPTY_LIST;
-            try
-            {
-                modules = config.getAttribute(ATTR_MODULES_LIST, EMPTY_LIST);
-            }
-            catch(CoreException e) { }
-            
-            fList.setElements(modules);
+            fList.setElements(getAttribute(config, ATTR_MODULES_LIST, EMPTY_LIST));
         }
 
         public void performApply(ILaunchConfigurationWorkingCopy config)
         {
-            // TODO
-            config.setAttribute(ATTR_MODULES_LIST, EMPTY_LIST);
+            config.setAttribute(ATTR_MODULES_LIST, fList.getElements());
         }
 
         public void setDefaults(ILaunchConfigurationWorkingCopy config)
         {
+            // TODO
             config.setAttribute(ATTR_MODULES_LIST, EMPTY_LIST);
         }
 

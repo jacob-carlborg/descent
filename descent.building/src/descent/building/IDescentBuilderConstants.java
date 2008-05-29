@@ -81,12 +81,76 @@ public interface IDescentBuilderConstants
      */
     public static final String ATTR_OUTPUT_FILE = "descent.building.debuild.output_file";
     
-    // TODO comment
+    /**
+     * Add unit tests to the generated executable?
+     * 
+     * Type: String of "true" or "false"
+     */
     public static final String ATTR_ADD_UNITTESTS = "descent.building.debuild.add_unittests";
+    
+    /**
+     * Disable asserts and contracts (in DMD this is called "release mode"). In
+     * other compilers, if asserions, contracts, and array bounds errors can be
+     * disabled separately, this option should only be for disabling asserts,
+     * however clients should be aware that other features may be disabled as well
+     * in generated code.
+     * 
+     * If the compiler does not support disabling of assertions, this option
+     * should be ignored. If the compiler does not support assertions at all, but
+     * this attribute was specified outside the UI to be explicitly "false", an error
+     * should be marked.
+     * 
+     * Type: String of "true" or "false"
+     */
     public static final String ATTR_DISABLE_ASSERTS = "descent.building.debuild.disable_asserts";
+    
+    /**
+     * Include debugging symbols in the generated executable. 
+     * 
+     * If the compiler supports multiple kinds of debugging symbols, the system
+     * default should be used. If a default cannot be determined or the compiler
+     * does not support adding of debugging symbols, an error should be marked.
+     * 
+     * Type: String of "true" or "false"
+     */
     public static final String ATTR_ADD_DEBUG_INFO = "descent.building.debuild.add_debug_info";
+    
+    /**
+     * Include code allowing code coverage to be tracked in the generated
+     * executable.
+     * 
+     * If the compiler does not support debug symbols, an error should be marked.
+     * 
+     * Type: String of "true" or "false"
+     */
     public static final String ATTR_INSTRUMENT_FOR_COVERAGE = "descent.building.debuild.instrument_for_coverage";
+    
+    /**
+     * Include code for profiling the executable.
+     * 
+     * If the compiler supports multiple kinds of profile information, the system
+     * default should be used. If a default cannot be determined or the compiler
+     * does not support adding of profile information, an error should be marked.
+     * 
+     * Type: String of "true" or "false"
+     */
     public static final String ATTR_INSTRUMENT_FOR_PROFILE = "descent.building.debuild.instrument_for_profile";
+    
+    /**
+     * A set of additional compiler arguments that should be added to
+     * the command line when calling the compiler.
+     * 
+     * Type: String
+     */
+    public static final String ATTR_ADDITIONAL_COMPILER_ARGS = "descent.building.debuild.compiler_args";
+    
+    /**
+     * A set of additional linker arguments that should be added to
+     * the command line when calling the linker.
+     * 
+     * Type: String
+     */
+    public static final String ATTR_ADDITIONAL_LINKER_ARGS = "descent.building.debuild.linker_args";
     
     /**
      * Constant used for {@link #ATTR_OUTPUT_TYPE} to specify the output target
