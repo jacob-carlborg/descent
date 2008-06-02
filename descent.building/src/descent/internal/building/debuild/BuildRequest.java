@@ -271,6 +271,7 @@ import descent.building.compiler.ILinkCommand;
         "gcc.",
     };
     
+	// TODO use BuilderUtil.predefinedversions instead
     // Predefined identifiers
     private static final HashSet<String> predefinedVersions = new HashSet<String>();
     

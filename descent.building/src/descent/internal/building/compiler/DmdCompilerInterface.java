@@ -1,20 +1,21 @@
 package descent.internal.building.compiler;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import descent.building.compiler.AbstractCompileCommand;
 import descent.building.compiler.AbstractLinkCommand;
-import descent.building.compiler.BooleanOption;
 import descent.building.compiler.CompilerOption;
 import descent.building.compiler.ICompileCommand;
 import descent.building.compiler.ICompilerInterface;
 import descent.building.compiler.ILinkCommand;
 import descent.building.compiler.IResponseInterpreter;
 import descent.building.compiler.BuildResponse;
+import descent.internal.building.compiler.ui.GdcUIOptions;
 
-import static descent.building.IDescentBuilderConstants.*;
-import static descent.internal.building.compiler.IDmdCompilerConstants.*;
+import static descent.internal.building.compiler.ui.DmdUIOptions.*;
 
 public class DmdCompilerInterface implements ICompilerInterface
 {
@@ -262,152 +263,28 @@ public class DmdCompilerInterface implements ICompilerInterface
 	
 	static
 	{
-	    final String GROUP_FEATURES = "Features";
-	    final String GROUP_WARNINGS = "Warnings";
-	    final String GROUP_OPTIMIZATION = "Optimization";
+	    List<CompilerOption> options = new ArrayList<CompilerOption>();
 	    
-	    // TODO file options for header & doc generation
-	    // TODO Only Windows uses OPTLINK, make a separate list of linker
-	    // options for Linux
-	    uiOptions = new CompilerOption[]
-	    {	        
-	        //------------------------------------------------------------------
-	        // Features
-	        
-            new BooleanOption
-            (
-                    ATTR_ADD_DEBUG_INFO,
-                    true,
-                    "Add debugging symbols",
-                    GROUP_FEATURES,
-                    "-g",
-                    "",
-                    "Adds debugging symbols. These make the generated objects " +
-                    "slightly larger but is needed to use a debugger with the " +
-                    "program."
-            ),
-                    
-            new BooleanOption
-            (
-                    ATTR_DISABLE_ASSERTS,
-                    false,
-                    "Release mode",
-                    GROUP_FEATURES,
-                    "-release",
-                    "",
-                    "Turns off assert() statements in the code, in {} and out {} " +
-                    "blocks on functions, and checking for array bounds errors. This " +
-                    "makes the code run faster, so is a good choice for releasing the " +
-                    "application, but are often useful for development."
-            ),
-                    
-            new BooleanOption
-            (
-                    ATTR_ADD_UNITTESTS,
-                    false,
-                    "Add unit tests",
-                    GROUP_FEATURES,
-                    "-unittest",
-                    "",
-                    "Adds code so that unittest {} blocks in your code are run before " +
-                    "the program launches and enables version(unitttest) {} blocks."
-            ),
-                            
-            new BooleanOption
-            (
-                    ATTR_INSTRUMENT_FOR_COVERAGE,
-                    false,
-                    "Instrument for coverage analysis",
-                    GROUP_FEATURES,
-                    "-cov",
-                    "",
-                    "Adds code to the generated objects so that they will generate " +
-                    "a file containing code coverage information after the program " +
-                    "has been run. This is useful for seeing if unit tests execute " +
-                    "all paths in your code."
-            ),
-                                    
-            new BooleanOption
-            (
-                    ATTR_INSTRUMENT_FOR_PROFILE,
-                    false,
-                    "Instrument for profiling",
-                    GROUP_FEATURES,
-                    "-profile",
-                    "",
-                    "Adds code to the generated objects so they can be prodiled. " +
-                    "This helps find bottlenecks that could be slowing down your " +
-                    "application."
-            ),
-	        
-	        //------------------------------------------------------------------
-	        // Warnings
-	        
-	        new BooleanOption
-	        (
-	                ATTR_ALLOW_DEPRECATED,
-	                true,
-	                "Allow deprecated code",
-	                GROUP_WARNINGS,
-	                "-d",
-	                "",
-	                "Allows code marked with the \"deprecated\" tags to be included " +
-	                "in your program."
-	        ),
-	        
-	        new BooleanOption
-	        (
-	                ATTR_SHOW_WARNINGS,
-                    false,
-                    "Show warnings",
-                    GROUP_WARNINGS,
-                    "-w",
-                    "",
-                    "Adds warnings for potentially unsafe or error-prone code. In " +
-                    "DMD, if warnings are encountered, the program will not be " +
-                    "compiled."
-            ),
-	        
-              
-	        //------------------------------------------------------------------
-	        // Optimization
-	        
-            new BooleanOption
-            (
-                    ATTR_OPTIMIZE_CODE,
-                    false,
-                    "Optimize code",
-                    GROUP_OPTIMIZATION,
-                    "-O",
-                    "",
-                    "Optimizes the generated code for best efficiency."
-            ),
-            
-            new BooleanOption
-            (
-                    ATTR_INLINE_CODE,
-                    false,
-                    "Inline functions",
-                    GROUP_OPTIMIZATION,
-                    "-inline",
-                    "",
-                    "Allows inlining of short functions for increased code efficiency. " +
-                    "This may cause issues with some debuggers."
-             ),
-	        
-            new BooleanOption
-            (
-                    ATTR_NOFLOAT,
-                    false,
-                    "Don't generate __fltused reference",
-                    GROUP_OPTIMIZATION,
-                    "-nofloat",
-                    "",
-                    "Prevents the emission of the __fltused reference in object files, " +
-                    "even if floating point code is present. This is useful in library " +
-                    "files."
-            ),
-	    };
+	    // Features
+	    options.add(OPTION_ADD_DEBUG_INFO);
+	    options.add(OPTION_DISABLE_ASSERTS);
+	    options.add(OPTION_ADD_UNITTESTS);
+	    options.add(OPTION_INSTRUMENT_FOR_COVERAGE);
+	    options.add(OPTION_INSTRUMENT_FOR_PROFILE);
+	    
+	    // Optimization
+	    options.add(OPTION_OPTIMIZE_CODE);
+	    options.add(OPTION_INLINE_CODE);
+	    options.add(OPTION_NOFLOAT);
+	    
+	    // Warnings
+	    options.add(OPTION_ALLOW_DEPRECATED);
+	    options.add(OPTION_SHOW_WARNINGS);
+	    
+	    // TODO testing
+	    options.add(GdcUIOptions.OPTION_EMIT_TEMPLATES);
+	    
+	    uiOptions = options.toArray(new CompilerOption[options.size()]);
 	}
 	
 	//--------------------------------------------------------------------------

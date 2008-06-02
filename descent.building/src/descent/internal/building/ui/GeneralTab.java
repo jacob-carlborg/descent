@@ -1,8 +1,5 @@
 package descent.internal.building.ui;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -12,23 +9,19 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jface.viewers.ILabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 
-import descent.core.IJavaElement;
 import descent.core.IJavaProject;
 import descent.core.JavaCore;
 import descent.core.JavaModelException;
@@ -472,7 +465,7 @@ import static descent.building.IDescentBuilderConstants.*;
             }
             
             // Create the group
-            comp = createGroup(comp, "Included modules", 3, 3);
+            comp = createGroup(comp, "Included modules", 3, 3, GridData.FILL_HORIZONTAL);
             
             // Add the label
             newHelpLabel(comp, "- For an executable, choose the module containing main()");
@@ -531,6 +524,8 @@ import static descent.building.IDescentBuilderConstants.*;
 
         public String validate()
         {
+            return null;
+            /*
             List<String> modules = fList.getElementsNoCopy();
             
             if(modules.isEmpty())
@@ -539,7 +534,7 @@ import static descent.building.IDescentBuilderConstants.*;
             // TODO validate the individual modules... maybe (maybe instead
             // have a check button, since this can be a lengthy operation?)
             
-            return null;
+            return null;*/
         }
     }
     
@@ -568,11 +563,12 @@ import static descent.building.IDescentBuilderConstants.*;
         return new ISetting[]
         {
             new ProjectSetting(),
-            new GroupSetting("Output target", 3, 3, new ISetting[]
-            {
-                outputTypeSetting,
-                outputFileSetting,
-            }),
+            new GroupSetting("Output target", 3, 3, GridData.FILL_HORIZONTAL,
+                new ISetting[]
+                {
+                    outputTypeSetting,
+                    outputFileSetting,
+                }),
             new ModulesSetting(),
         };
     }

@@ -10,10 +10,9 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ColumnViewerEditor;
-import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.jface.viewers.ICellEditorListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.ITreeSelection;
@@ -22,15 +21,12 @@ import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
-import org.eclipse.jface.viewers.TreeViewerEditor;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -42,6 +38,7 @@ import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.PreferencesUtil;
+import org.eclipse.ui.forms.widgets.ScrolledFormText;
 
 import descent.building.IDescentBuilderConstants;
 import descent.building.compiler.BooleanOption;
@@ -233,6 +230,7 @@ import descent.launching.JavaRuntime;
         private abstract class CompilerUIOption
         {
             public TreeEntry parent;
+            public CellEditor editor;
             
             public abstract CompilerOption getOption();
             public abstract CellEditor getCellEditor();
@@ -247,7 +245,6 @@ import descent.launching.JavaRuntime;
         {
             private BooleanOption option;
             public Boolean selected = Boolean.FALSE;
-            private CheckboxCellEditor editor;
             
             public CheckboxUIOption(BooleanOption option)
             {
@@ -264,7 +261,10 @@ import descent.launching.JavaRuntime;
             public CellEditor getCellEditor()
             {
                 if(null == editor)
+                {
                     editor = new CheckboxCellEditor(fViewer.getTree());
+                    editor.addListener(fCellEditorListener);
+                }
                 
                 return editor;
             }
@@ -304,7 +304,6 @@ import descent.launching.JavaRuntime;
         {
             private EnumOption option;
             public Integer selected = Integer.valueOf(0);
-            private ComboBoxCellEditor editor;
             
             public ComboUIOption(EnumOption option)
             {
@@ -324,6 +323,7 @@ import descent.launching.JavaRuntime;
                 {
                     editor = new ComboBoxCellEditor(fViewer.getTree(), 
                             option.getOptionEditLabels());
+                    editor.addListener(fCellEditorListener);
                 }
                 
                 return editor;
@@ -353,7 +353,7 @@ import descent.launching.JavaRuntime;
                 String[] optionValues = option.getOptionValues();
                 for(int i = 0; i < optionValues.length; i++)
                 {
-                    if(optionValues[i].equals(i))
+                    if(optionValues[i].equals(value))
                     {
                         selected = Integer.valueOf(i);
                         return;
@@ -368,11 +368,10 @@ import descent.launching.JavaRuntime;
             }
         }
         
-        private final class TextUIOption extends CompilerUIOption
+        private class TextUIOption extends CompilerUIOption
         {
-            private StringOption option;
+            protected StringOption option;
             public String selected = "";
-            private TextCellEditor editor;
             
             public TextUIOption(StringOption option)
             {
@@ -389,7 +388,10 @@ import descent.launching.JavaRuntime;
             public CellEditor getCellEditor()
             {
                 if(null == editor)
+                {
                     editor = new TextCellEditor(fViewer.getTree());
+                    editor.addListener(fCellEditorListener);
+                }
                 
                 return editor;
             }
@@ -481,12 +483,30 @@ import descent.launching.JavaRuntime;
             }
         }
         
+        private final ICellEditorListener fCellEditorListener =
+            new ICellEditorListener()
+            {
+                public void applyEditorValue()
+                {
+                    validatePage();
+                    updateLaunchConfigurationDialog();
+                }
+
+                public void cancelEditor()
+                {
+                    // Ignore
+                }
+
+                public void editorValueChanged(boolean oldValidState,
+                        boolean newValidState)
+                {
+                    // Ignore; the user hasn't finished editing yet
+                }
+            };
+        
         private IVMInstall fSelectedCompiler;
         private TreeViewer fViewer;
         private TreeEntry[] fEntries;
-        private Group fHelpGroup;
-        private Label fHelpHeader;
-        private Label fHelpText;
         
         public void addToControl(Composite comp)
         {
@@ -496,10 +516,6 @@ import descent.launching.JavaRuntime;
             fViewer.setContentProvider(new OptionsContentProvider());
             fViewer.getTree().setHeaderVisible(true);
             fViewer.getTree().setLinesVisible(true);
-            TreeViewerEditor.create(fViewer,
-                    // Here comes the world's most unnecessarily long class name...
-                    new ColumnViewerEditorActivationStrategy(fViewer),
-                    ColumnViewerEditor.DEFAULT);
             
             TreeViewerColumn column = new TreeViewerColumn(fViewer, SWT.NONE);
             column.getColumn().setWidth(250);
@@ -579,66 +595,56 @@ import descent.launching.JavaRuntime;
             gd.horizontalSpan = 1;
             fViewer.getControl().setLayoutData(gd);
             
-            fHelpGroup = new Group(comp, SWT.SHADOW_IN);
+            Group helpGroup = new Group(comp, SWT.SHADOW_IN);
             gd = new GridData(GridData.FILL_VERTICAL);
             gd.horizontalSpan = 1;
             gd.widthHint = 225; // PERHAPS use PixelConverter or something...?
-            fHelpGroup.setLayoutData(gd);
+            helpGroup.setLayoutData(gd);
+            GridLayout layout = new GridLayout();
+            layout.numColumns = 1;
+            helpGroup.setLayout(layout);
             
-            GridLayout groupLayout = new GridLayout();
-            groupLayout.numColumns = 1;
-            fHelpGroup.setLayout(groupLayout);
-            
-            fHelpHeader = new Label(fHelpGroup, SWT.LEFT);
-            gd = new GridData(GridData.FILL_HORIZONTAL);
-            gd.horizontalSpan = 1;
-            fHelpHeader.setText("");
-            fHelpHeader.setFont(getBoldFont(comp));
-            fHelpHeader.setLayoutData(gd);
-            
-            fHelpText = new Label(fHelpGroup, SWT.LEFT | SWT.WRAP);
+            final ScrolledFormText helpForm = new ScrolledFormText(helpGroup, true);
+            final String NO_TEXT = "<form></form>";
             gd = new GridData(GridData.FILL_BOTH);
             gd.horizontalSpan = 1;
-            fHelpText.setText("");
-            fHelpText.setLayoutData(gd);
+            helpForm.setLayoutData(gd);
+            helpForm.setAlwaysShowScrollBars(true);
+            helpForm.setExpandVertical(true);
+            helpForm.setExpandHorizontal(false);
+            helpForm.setText(NO_TEXT);
             
             fViewer.addSelectionChangedListener(new ISelectionChangedListener()
-            {
+            {   
                 public void selectionChanged(SelectionChangedEvent event)
                 {   
                     TreePath[] paths = ((ITreeSelection) fViewer.getSelection()).getPaths();
                     if(0 == paths.length)
                     {
-                        unsetHelp();
+                        helpForm.setText(NO_TEXT);
                         return;
                     }
                     
                     Object selected = paths[0].getLastSegment();
                     if(!(selected instanceof CompilerUIOption))
                     {
-                        unsetHelp();
+                        helpForm.setText(NO_TEXT);
                         return;
                     }
                     
-                    
-                    fHelpHeader.setText(((CompilerUIOption) selected).getOption().
-                            getLabel());
-                    fHelpText.setText(((CompilerUIOption) selected).getOption().
-                            getHelpText());
-                    updateHelp();
+                    CompilerOption opt = ((CompilerUIOption) selected).getOption();
+                    helpForm.setText(makeFormText(opt.getLabel(), opt.getHelpText()));
                 }
                 
-                private void unsetHelp()
+                private String makeFormText(String label, String helpText)
                 {
-                    fHelpHeader.setText("");
-                    fHelpText.setText("");
-                    updateHelp();
-                }
-                
-                private void updateHelp()
-                {
-                    fHelpHeader.update();
-                    fHelpText.update();
+                    StringBuilder content = new StringBuilder();
+                    content.append("<form><p><b>");
+                    content.append(label);
+                    content.append("</b></p><br></br>");
+                    content.append(helpText);
+                    content.append("</form>");
+                    return content.toString();
                 }
             });
             
@@ -679,10 +685,10 @@ import descent.launching.JavaRuntime;
         {
             if(opt instanceof BooleanOption)
                 return new CheckboxUIOption((BooleanOption) opt);
-            else if(opt instanceof StringOption)
-                return new TextUIOption((StringOption) opt);
             else if(opt instanceof EnumOption)
                 return new ComboUIOption((EnumOption) opt);
+            else if(opt instanceof StringOption)
+                return new TextUIOption((StringOption) opt);
             else
                 throw new UnsupportedOperationException();
         }
@@ -851,28 +857,13 @@ import descent.launching.JavaRuntime;
     // This needs to be done at the tab level to allow for disposing)
     
     private Image fCheckedIcon = createImage("obj16/checked.png");
-    private Image fUncheckedIcon = createImage("obj16/unchecked.png");
-    private Font fBoldFont;
-    
-    private Font getBoldFont(Composite comp)
-    {
-        if(null == fBoldFont)
-        {
-            FontData[] fontData = comp.getFont().getFontData();
-            for(FontData dataItem : fontData)
-                dataItem.setStyle(dataItem.getStyle() | SWT.BOLD);
-            fBoldFont = new Font(comp.getDisplay(), fontData);
-        }
-        return fBoldFont;
-    }
+    private Image fUncheckedIcon = createImage("obj16/unchecked.png"); 
     
     public void dispose()
     {
         super.dispose();
         fCheckedIcon.dispose();
         fUncheckedIcon.dispose();
-        if(null != fBoldFont)
-            fBoldFont.dispose();
     }
     
     //--------------------------------------------------------------------------

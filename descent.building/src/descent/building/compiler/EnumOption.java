@@ -1,6 +1,6 @@
 package descent.building.compiler;
 
-public class EnumOption extends CompilerOption
+public final class EnumOption extends CompilerOption
 {
     private final String[] optionValues;
     private final String[] optionEditLabels;

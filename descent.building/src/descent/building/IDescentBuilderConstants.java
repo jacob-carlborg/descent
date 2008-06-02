@@ -16,6 +16,9 @@ package descent.building;
  */
 public interface IDescentBuilderConstants
 {
+    //--------------------------------------------------------------------------
+    // Eclipse IDs
+    
     /**
      * The ID of the default descent builder.
      */
@@ -27,6 +30,9 @@ public interface IDescentBuilderConstants
      * only.
      */
     public static final String ID_LAUNCH_CONFIGURATION_TYPE = "descent.building.builders.debuild";
+    
+    //--------------------------------------------------------------------------
+    // Launch configuration attributes
     
     /**
      * The project being built (so version/debug/etc. settings should be taken
@@ -153,6 +159,63 @@ public interface IDescentBuilderConstants
     public static final String ATTR_ADDITIONAL_LINKER_ARGS = "descent.building.debuild.linker_args";
     
     /**
+     * Identifies the source from which version/debug arguments should be taken.
+     * The versions will always be taken from the launch configuration but may
+     * also be seeded by another project. Possible values are 
+     * {@link #SOURCE_ACTIVE_PROJECT}, {@link #SOURCE_SELECTED_PROJECT} and
+     * {@link #SOURCE_LAUNCH_CONFIG} (see their javadoc for details about their
+     * meanings).
+     * 
+     * Type: String
+     */
+    public static final String ATTR_VERSION_SOURCE = "descent.building.debuild.version_source";
+    
+    /**
+     * Turn on code in unqualified debug {} blocks? This corresponds to the "-debug"
+     * setting in DMD/GDC.
+     * 
+     * Type: Boolean
+     */
+    public static final String ATTR_DEBUG_MODE = "descent.building.debuild.debug_mode";
+    
+    /**
+     * Level to be used in version= or the empty string if no such level should
+     * be specified. If the string is not a blank string, it should be a valid
+     * base 10 integer.
+     * 
+     * Type: String
+     */
+    public static final String ATTR_VERSION_LEVEL = "descent.building.debuild.version_level";
+    
+    /**
+     * Level to be used in debug= or the empty string if no such level should
+     * be specified. If the string is not a blank string, it should be a valid
+     * base 10 integer.
+     * 
+     * Type: String
+     */
+    public static final String ATTR_DEBUG_LEVEL = "descent.building.debuild.debug_level";
+    
+    /**
+     * A list of (non-predefined) version identifiers to be specified in version=
+     * on the command line.
+     * 
+     * Type: List&lt;String&gt;
+     */
+    public static final String ATTR_VERSION_IDENTS = "descent.building.debuild.version_idents";
+    
+    /**
+     * A list of (non-predefined) debug identifiers to be specified in debug=
+     * on the command line.
+     * 
+     * Type: List&lt;String&gt;
+     */
+    public static final String ATTR_DEBUG_IDENTS = "descent.building.debuild.debug_idents";
+    
+    //--------------------------------------------------------------------------
+    // Output types
+    
+    /**
      * Constant used for {@link #ATTR_OUTPUT_TYPE} to specify the output target
      * should be an executable file.
      */
@@ -163,4 +226,26 @@ public interface IDescentBuilderConstants
      * should be a static library (.lib or .a)
      */
     public static final String OUTPUT_TYPE_STATIC_LIBRARY = "static_library";
+    
+    //--------------------------------------------------------------------------
+    // Version sources
+    
+    /**
+     * Constant used for {@link #ATTR_VERSION_SOURCE} to indicate versions should
+     * be taken from the project specified in {@link #ATTR_PROJECT_NAME} and the
+     * launch configuration.
+     */
+    public static final String SOURCE_SELECTED_PROJECT = "selected_project";
+    
+    /**
+     * Constant used for {@link #ATTR_VERSION_SOURCE} to indicate versions should
+     * be taken from the workspace active project and the launch configuration.
+     */
+    public static final String SOURCE_ACTIVE_PROJECT = "active_project";
+    
+    /**
+     * Constant used for {@link #ATTR_VERSION_SOURCE} to indicate versions should
+     * only be taken from the launch configuration.
+     */
+    public static final String SOURCE_LAUNCH_CONFIG = "launch_configuration";
 }

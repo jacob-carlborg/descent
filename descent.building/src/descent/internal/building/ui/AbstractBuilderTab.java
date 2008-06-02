@@ -119,6 +119,7 @@ import descent.internal.ui.util.PixelConverter;
         private final String fLabel;
         private final int fWidth;
         private final int fNumColumns;
+        private final int fGridFill;
         private final ISetting[] fChildren;
         
         private Group fGroup;
@@ -131,21 +132,23 @@ import descent.internal.ui.util.PixelConverter;
          *                    take up on the top GridLayout.
          * @param numColumns  the number of columns the resulting group should
          *                    have.
+         * @param gridFill    the value to pass to the GridData constructor
          * @param subSettings the settings within the group
          */
         public GroupSetting(String label, int width, int numColumns,
-                ISetting[] subSettings)
+                int gridFill, ISetting[] subSettings)
         {
             
             fLabel = label;
             fWidth = width;
             fNumColumns = numColumns;
+            fGridFill = gridFill;
             fChildren = subSettings;
         }
 
         public void addToControl(Composite comp)
         {
-            fGroup = createGroup(comp, fLabel, fWidth, fNumColumns);
+            fGroup = createGroup(comp, fLabel, fWidth, fNumColumns, fGridFill);
             for(ISetting setting : fChildren)
                 setting.addToControl(fGroup);
         }
@@ -417,7 +420,7 @@ import descent.internal.ui.util.PixelConverter;
      * similar constant here for the empty string since the empty string is
      * internalized by the JVM).
      */
-    protected static final List EMPTY_LIST = new ArrayList(0);
+    protected static final List<?> EMPTY_LIST = new ArrayList<Object>(0);
     
     /**
      * An empty array object to be used by content providers for elements
@@ -433,15 +436,16 @@ import descent.internal.ui.util.PixelConverter;
      * @param text        the group label
      * @param columnsUsed the number of columns the group should take up
      * @param columns     the number of columns the new group will have
+     * @param gridFill    the value to pass to the GridData constructor
      * @return            the new group
      */
     protected Group createGroup(Composite comp, String text, int columnsUsed, 
-            int columns)
+            int columns, int gridFill)
     {
         Group group = new Group(comp, SWT.NONE);
         group.setText(text);
         
-        GridData gd = new GridData(GridData.FILL_HORIZONTAL);
+        GridData gd = new GridData(gridFill);
         gd.horizontalSpan = columnsUsed;
         group.setLayoutData(gd);
         
