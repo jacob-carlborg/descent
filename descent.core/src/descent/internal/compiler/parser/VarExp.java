@@ -17,6 +17,7 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 public class VarExp extends Expression {
 
 	public Declaration var;
+	public boolean hasOverloads;
 
 	public VarExp(Loc loc, Declaration var) {
 		super(loc, TOK.TOKvar);
@@ -148,11 +149,15 @@ public class VarExp extends Expression {
 	@Override
 	public Expression optimize(int result, SemanticContext context)
 	{
-		if((result & WANTinterpret) > 0)
-		{
-			return fromConstInitializer(this, context);
+		if (context.isD2()) {
+		    return fromConstInitializer(result, this, context);
+		} else {
+			if((result & WANTinterpret) > 0)
+			{
+				return fromConstInitializer(this, context);
+			}
+			return this;
 		}
-		return this;
 	}
 
 	@Override

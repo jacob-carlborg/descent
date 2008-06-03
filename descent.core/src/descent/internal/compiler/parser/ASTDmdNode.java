@@ -22,11 +22,11 @@ import static descent.internal.compiler.parser.PROT.PROTpackage;
 import static descent.internal.compiler.parser.PROT.PROTprivate;
 import static descent.internal.compiler.parser.PROT.PROTprotected;
 
-import static descent.internal.compiler.parser.STC.STClazy;
+import static descent.internal.compiler.parser.STC.*;
 import static descent.internal.compiler.parser.STC.STCout;
 import static descent.internal.compiler.parser.STC.STCref;
 
-import static descent.internal.compiler.parser.TOK.TOKarray;
+import static descent.internal.compiler.parser.TOK.*;
 import static descent.internal.compiler.parser.TOK.TOKassocarrayliteral;
 import static descent.internal.compiler.parser.TOK.TOKdelegate;
 import static descent.internal.compiler.parser.TOK.TOKdotexp;
@@ -1086,21 +1086,109 @@ public abstract class ASTDmdNode extends ASTNode {
 	public final int getElementType() {
 		return getNodeType();
 	}
+	
+	/*************************************
+	 * If variable has a const initializer,
+	 * return that initializer.
+	 */
+
+	public static Expression expandVar(int result, VarDeclaration v,
+			SemanticContext context) {
+		Expression e = null;
+		if (v != null
+				&& (v.isConst() || v.isInvariant() || (v.storage_class & STCmanifest) != 0)) {
+			Type tb = v.type.toBasetype(context);
+			if ((result & WANTinterpret) != 0
+					|| (v.storage_class & STCmanifest) != 0
+					|| (tb.ty != Tsarray && tb.ty != Tstruct)) {
+				if (v.init != null) {
+					if (v.inuse != 0) {
+						// goto L1;
+						return e;
+					}
+					Expression ei = v.init.toExpression(context);
+					if (null == ei) {
+						// goto L1;
+						return e;
+					}
+					if (ei.op == TOKconstruct || ei.op == TOKblit) {
+						AssignExp ae = (AssignExp) ei;
+						ei = ae.e2;
+						if (ei.isConst() != true && ei.op != TOKstring) {
+							// goto L1;
+							return e;
+						}
+						if (ei.type != v.type) {
+							// goto L1;
+							return e;
+						}
+					}
+					if (v.scope != null) {
+						v.inuse++;
+						e = ei.syntaxCopy(context);
+						e = e.semantic(v.scope, context);
+						e = e.implicitCastTo(v.scope, v.type, context);
+						v.scope = null;
+						v.inuse--;
+					} else if (null == ei.type) {
+						// goto L1;
+						return e;
+					} else {
+						// Should remove the copy() operation by
+						// making all mods to expressions copy-on-write
+						e = ei.copy();
+					}
+				} else {
+					// goto L1;
+					return e;
+				}
+				if (e.type != v.type) {
+					e = e.castTo(null, v.type, context);
+				}
+				e = e.optimize(result, context);
+			}
+		}
+		//L1: 
+		return e;
+	}
+
 
 	/*************************************
 	 * If expression is a variable with a const initializer,
 	 * return that initializer.
 	 */
-
-	public Expression fromConstInitializer(Expression e1,
+	
+	public static Expression fromConstInitializer(Expression e1,
 			SemanticContext context) {
-		if (e1.op == TOKvar) {
-			VarExp ve = (VarExp) e1;
-			VarDeclaration v = ve.var.isVarDeclaration();
-			if (v != null && v.isConst() && v.init() != null) {
-				Expression ei = v.init().toExpression(context);
-				if (ei != null && ei.type != null) {
-					e1 = ei;
+		return fromConstInitializer(0, e1, context);
+	}
+
+	public static Expression fromConstInitializer(int result, Expression e1,
+			SemanticContext context) {
+		if (context.isD2()) {
+		    Expression e = e1;
+			if (e1.op == TOKvar) {
+				VarExp ve = (VarExp) e1;
+				VarDeclaration v = ve.var.isVarDeclaration();
+				e = expandVar(result, v, context);
+				if (e != null) {
+					if (e.type != e1.type) { // Type 'paint' operation
+						e = e.copy();
+						e.type = e1.type;
+					}
+				} else
+					e = e1;
+			}
+			return e;
+		} else {
+			if (e1.op == TOKvar) {
+				VarExp ve = (VarExp) e1;
+				VarDeclaration v = ve.var.isVarDeclaration();
+				if (v != null && v.isConst() && v.init() != null) {
+					Expression ei = v.init().toExpression(context);
+					if (ei != null && ei.type != null) {
+						e1 = ei;
+					}
 				}
 			}
 		}

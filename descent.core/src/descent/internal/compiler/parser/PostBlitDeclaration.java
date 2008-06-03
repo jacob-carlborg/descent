@@ -65,6 +65,11 @@ public class PostBlitDeclaration extends FuncDeclaration {
 	}
 	
 	@Override
+	public PostBlitDeclaration isPostBlitDeclaration() {
+		return this;
+	}
+	
+	@Override
 	public boolean isVirtual(SemanticContext context) {
 		return false;
 	}

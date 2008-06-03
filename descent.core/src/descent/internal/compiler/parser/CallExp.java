@@ -164,17 +164,33 @@ public class CallExp extends UnaExp {
 		Expression e = this;
 
 		e1 = e1.optimize(result, context);
-		if (e1.op == TOKvar && (result & WANTinterpret) != 0) {
+		
+		boolean condition;
+		if (context.isD2()) {
+			condition = e1.op == TOKvar;
+		} else {
+			condition = e1.op == TOKvar && (result & WANTinterpret) != 0;
+		}
+		
+		if (condition) {
 			FuncDeclaration fd = ((VarExp) e1).var.isFuncDeclaration();
 			if (fd != null) {
-				Expression eresult = fd.interpret(null, arguments, context);
-				if (eresult != null && eresult != EXP_VOID_INTERPRET) {
-					e = eresult;
-				} else if ((result & WANTinterpret) != 0) {
-					if (context.acceptsProblems()) {
-						context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionIsNotEvaluatableAtCompileTime, this, new String[] { toChars(context) }));
+			    BUILTIN b = fd.isBuiltin();
+			    if (context.isD2() && b != BUILTIN.BUILTINunknown) {
+					e = eval_builtin(b, arguments, context);
+					if (null == e)	{		// failed
+					    e = this;		// evaluate at runtime
 					}
-				}
+			    } else {
+					Expression eresult = fd.interpret(null, arguments, context);
+					if (eresult != null && eresult != EXP_VOID_INTERPRET) {
+						e = eresult;
+					} else if ((result & WANTinterpret) != 0) {
+						if (context.acceptsProblems()) {
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionIsNotEvaluatableAtCompileTime, this, new String[] { toChars(context) }));
+						}
+					}
+			    }
 			}
 		}
 		

@@ -7,7 +7,8 @@ import static descent.internal.compiler.parser.TOK.TOKdotvar;
 import static descent.internal.compiler.parser.TOK.TOKindex;
 import static descent.internal.compiler.parser.TOK.TOKint64;
 import static descent.internal.compiler.parser.TOK.TOKstar;
-import static descent.internal.compiler.parser.TOK.TOKvar;
+import static descent.internal.compiler.parser.TOK.*;
+import static descent.internal.compiler.parser.STC.*;
 import static descent.internal.compiler.parser.TY.Tbit;
 import static descent.internal.compiler.parser.TY.Tfunction;
 import static descent.internal.compiler.parser.TY.Tpointer;
@@ -102,7 +103,30 @@ public class AddrExp extends UnaExp {
 	public Expression optimize(int result, SemanticContext context) {
 		Expression e;
 
-		e1 = e1.optimize(result, context);
+		if (context.isD2()) {
+		    /* Rewrite &(a,b) as (a,&b)
+			 */
+			if (e1.op == TOKcomma) {
+				CommaExp ce = (CommaExp) e1;
+				AddrExp ae = new AddrExp(loc, ce.e2);
+				ae.type = type;
+				e = new CommaExp(ce.loc, ce.e1, ae);
+				e.type = type;
+				return e.optimize(result, context);
+			}
+
+			if (e1.op == TOKvar) {
+				VarExp ve = (VarExp) e1;
+				if ((ve.var.storage_class & STCmanifest) != 0) {
+					e1 = e1.optimize(result, context);
+				}
+			} else {
+				e1 = e1.optimize(result, context);
+			}
+		} else {
+			e1 = e1.optimize(result, context);
+		}
+		
 		// Convert &ex to ex
 		if (e1.op == TOKstar) {
 			Expression ex;
@@ -120,10 +144,16 @@ public class AddrExp extends UnaExp {
 			VarExp ve = (VarExp) e1;
 			if (!ve.var.isOut() && !ve.var.isRef()
 					&& !ve.var.isImportedSymbol()) {
-				e = new SymOffExp(loc, ve.var, 0, context);
-				e.copySourceRange(ve);
-				e.type = type;
-				return e;
+				if (context.isD2()) {
+				    SymOffExp se = new SymOffExp(loc, ve.var, 0, ve.hasOverloads, context);
+				    se.type = type;
+				    return se;
+				} else {
+					e = new SymOffExp(loc, ve.var, 0, context);
+					e.copySourceRange(ve);
+					e.type = type;
+					return e;
+				}
 			}
 		}
 		if (e1.op == TOKindex) { // Convert &array[n] to &array+n
@@ -132,8 +162,16 @@ public class AddrExp extends UnaExp {
 			if (ae.e2.op == TOKint64 && ae.e1.op == TOKvar) {
 				integer_t index = ae.e2.toInteger(context);
 				VarExp ve = (VarExp) ae.e1;
-				if (ve.type.ty == Tsarray && ve.type.next.ty != Tbit
-						&& !ve.var.isImportedSymbol()) {
+				
+				boolean condition;
+				if (context.isD2()) {
+					condition = ve.type.ty == Tsarray && !ve.var.isImportedSymbol();
+				} else {
+					condition = ve.type.ty == Tsarray && ve.type.next.ty != Tbit
+					&& !ve.var.isImportedSymbol();
+				}
+				
+				if (condition) {
 					TypeSArray ts = (TypeSArray) ve.type;
 					integer_t dim = ts.dim.toInteger(context);
 					if ((index.compareTo(0) < 0 || index.compareTo(dim) >= 0)) {
@@ -148,8 +186,13 @@ public class AddrExp extends UnaExp {
 					    			}));
 						}
 					}
-					e = new SymOffExp(loc, ve.var, index.multiply(ts.next
-							.size(context)), context);
+					if (context.isD2()) {
+						e = new SymOffExp(loc, ve.var, index.multiply(ts.nextOf()
+								.size(context)), context);
+					} else {
+						e = new SymOffExp(loc, ve.var, index.multiply(ts.next
+								.size(context)), context);
+					}
 					e.type = type;
 					return e;
 				}

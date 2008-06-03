@@ -33,6 +33,11 @@ public class SymOffExp extends Expression {
 		this(loc, var, new integer_t(offset), context);
 	}
 	
+	public SymOffExp(Loc loc, Declaration var, int offset, boolean hasOverloads, SemanticContext context) {
+		// TODO SEMANTIC
+		this(loc, var, new integer_t(offset), context);
+	}
+
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		visitor.visit(this);

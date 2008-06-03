@@ -155,17 +155,16 @@ public class ScopeDsymbol extends Dsymbol {
 
 	@Override
 	public Dsymbol search(Loc loc, char[] ident, int flags, SemanticContext context) {
-		Dsymbol s;
-		int i;
-
 		// Look in symbols declared in this module
-		s = symtab != null ? symtab.lookup(ident) : null;
+		Dsymbol s = symtab != null ? symtab.lookup(ident) : null;
 		if (s != null) {
 		} else if (imports != null && !imports.isEmpty()) {
+			OverloadSet a = null;
+			
 			// Look in imported modules
-			i = -1;
-			for (ScopeDsymbol ss : imports) {
-				i++;
+		loop:
+			for (int i = 0; i < imports.size(); i++) {
+				ScopeDsymbol ss = imports.get(i);
 				Dsymbol s2;
 
 				// If private import, don't search it
@@ -191,16 +190,65 @@ public class ScopeDsymbol extends Dsymbol {
 						if (!(i1 != null && i2 != null && (i1.mod == i2.mod || (i1.parent
 								.isImport() == null
 								&& i2.parent.isImport() == null && ASTDmdNode.equals(i1.ident, i2.ident))))) {
-							ScopeDsymbol.multiplyDefined(loc, s, s2, context);
+							if (context.isD2()) {
+								/* If both s2 and s are overloadable (though we only
+								 * need to check s once)
+								 */
+								if (s2.isOverloadable()
+										&& (a != null || s.isOverloadable())) {
+									if (null == a)
+										a = new OverloadSet();
+									/* Don't add to a[] if s2 is alias of previous sym
+									 */
+									for (int j = 0; j < size(a.a); j++) {
+										Dsymbol s3 = (Dsymbol) a.a.get(j);
+										if (s2.toAlias(context) == s3
+												.toAlias(context)) {
+											if (s3.isDeprecated()) {
+												a.a.set(j, s2);
+											}
+											// goto Lcontinue;
+											continue loop;
+										}
+									}
+									a.push(s2);
+									// Lcontinue: continue;
+								}
+								if ((flags & 4) != 0) { // if return NULL on ambiguity
+									return null;
+								}
+								if (0 == (flags & 2)) {
+									ScopeDsymbol.multiplyDefined(loc, s, s2,
+											context);
+								}
+							} else {
+								ScopeDsymbol.multiplyDefined(loc, s, s2,
+										context);
+							}
 							break;
 						}
 					}
 				}
 			}
+
+			if (context.isD2()) {
+				/* Build special symbol if we had multiple finds
+				 */
+				if (a != null) {
+					a.push(s);
+					s = a;
+				}
+			}
+			
 			if (s != null) {
 				Declaration d = s.isDeclaration();
-				if (d != null && d.protection == PROT.PROTprivate
-						&& d.parent.isTemplateMixin() == null) {
+				
+				boolean condition = d != null && d.protection == PROT.PROTprivate
+					&& d.parent.isTemplateMixin() == null;
+				if (context.isD2()) {
+					condition &= 0 == (flags & 2);
+				}
+				if (condition) {
 					if (context.acceptsProblems()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.MemberIsPrivate, d, new String[] { new String(d.ident.ident) }));
@@ -231,7 +279,7 @@ public class ScopeDsymbol extends Dsymbol {
 	 *	const(MemberInfo)[] getMembers(string);
 	 * Returns NULL if not found
 	 */
-	FuncDeclaration findGetMembers(SemanticContext context) {
+	public FuncDeclaration findGetMembers(SemanticContext context) {
 		Dsymbol s = search_function(this, Id.getmembers, context);
 		FuncDeclaration fdx = s != null ? s.isFuncDeclaration() : null;
 
@@ -239,6 +287,58 @@ public class ScopeDsymbol extends Dsymbol {
 			fdx = null;
 
 		return fdx;
+	}
+	
+	/***************************************
+	 * Determine number of Dsymbols, folding in AttribDeclaration members.
+	 */
+	public static int dim(Array members) {
+		int n = 0;
+		if (members != null) {
+			for (int i = 0; i < size(members); i++) {
+				Dsymbol s = (Dsymbol) members.get(i);
+				AttribDeclaration a = s.isAttribDeclaration();
+
+				if (a != null) {
+					n += dim(a.decl);
+				} else {
+					n++;
+				}
+			}
+		}
+		return n;
+	}
+	
+	/***************************************
+	 * Get nth Dsymbol, folding in AttribDeclaration members.
+	 * Returns:
+	 *	Dsymbol*	nth Dsymbol
+	 *	NULL		not found, *pn gets incremented by the number
+	 *			of Dsymbols
+	 */
+	public static Dsymbol getNth(Array members, int nth, int[] pn) {
+		if (null == members)
+			return null;
+
+		int[] n = { 0 };
+		for (int i = 0; i < size(members); i++) {
+			Dsymbol s = (Dsymbol) members.get(i);
+			AttribDeclaration a = s.isAttribDeclaration();
+
+			if (a != null) {
+				s = getNth(a.decl, nth - n[0], n);
+				if (s != null)
+					return s;
+			} else if (n[0] == nth)
+				return s;
+			else
+				n[0]++;
+		}
+
+		if (pn != null) {
+			pn[0] += n[0];
+		}
+		return null;
 	}
 
 }

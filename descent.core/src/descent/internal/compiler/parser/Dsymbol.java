@@ -320,11 +320,19 @@ public class Dsymbol extends ASTDmdNode {
 		return null;
 	}
 	
+	public boolean isOverloadable() {
+		return false;
+	}
+	
 	public OverloadSet isOverloadSet() {
 		return null;
 	}
 
 	public Package isPackage() {
+		return null;
+	}
+	
+	public PostBlitDeclaration isPostBlitDeclaration() {
 		return null;
 	}
 

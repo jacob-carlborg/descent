@@ -55,6 +55,7 @@ public class VarDeclaration extends Declaration {
 							// (NULL if value not determinable)
 	public Object csym;
 	public Object isym;
+	public Scope scope;
 	
 	private IField javaElement;
 	

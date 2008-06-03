@@ -22,8 +22,6 @@ clone.c
 constfold.c
 declaration.c
 declaration.h
-dsymbol.c
-dsymbol.h
 enum.c
 enum.h
 expression.c
@@ -39,7 +37,7 @@ module.c
 mtype.c
 mtype.h
 opopver.c
-optimize.c
+optimize.c --> CastExp::optimize
 statement.c
 statement.h
 struct.c

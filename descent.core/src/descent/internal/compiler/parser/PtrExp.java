@@ -114,6 +114,20 @@ public class PtrExp extends UnaExp {
 				return e;
 		}
 		
+		if (context.isD2()) {
+		    if (e1.op == TOKsymoff) {
+				SymOffExp se = (SymOffExp) e1;
+				VarDeclaration v = se.var.isVarDeclaration();
+				Expression e = expandVar(result, v, context);
+				if (e != null && e.op == TOKstructliteral) {
+					StructLiteralExp sle = (StructLiteralExp) e;
+					e = sle.getField(type, se.offset.intValue(), context);
+					if (e != EXP_CANT_INTERPRET)
+						return e;
+				}
+			}
+		}
+		
 		return this;
 	}
 	
