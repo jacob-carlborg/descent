@@ -185,7 +185,7 @@ import static descent.building.IDescentBuilderConstants.*;
          */
         private Set fIdents;
         private TableViewer fViewer;
-        private Button fNewButton;
+        private Button fAddButton;
         private Button fRemoveButton;
         
         public DVSetting(String name, boolean allowPredefined, 
@@ -385,7 +385,7 @@ import static descent.building.IDescentBuilderConstants.*;
 
                 public void widgetSelected(SelectionEvent e)
                 {
-                    if(fNewButton == e.widget)
+                    if(fAddButton == e.widget)
                     {
                         fViewer.add("");
                         fViewer.editElement("", 0);
@@ -410,7 +410,7 @@ import static descent.building.IDescentBuilderConstants.*;
             layout.marginHeight = 0;
             comp.setLayout(layout);
             
-            fNewButton = createButton(comp, listener, "New");
+            fAddButton = createButton(comp, listener, "Add");
             fRemoveButton = createButton(comp, listener, "Remove");
         }
         

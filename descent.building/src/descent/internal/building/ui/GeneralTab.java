@@ -1,28 +1,53 @@
 package descent.internal.building.ui;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IMemento;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
+import org.eclipse.ui.dialogs.FilteredItemsSelectionDialog;
 
+import descent.core.ICompilationUnit;
+import descent.core.IJavaElement;
+import descent.core.IJavaModel;
 import descent.core.IJavaProject;
+import descent.core.IMethod;
+import descent.core.IPackageFragment;
+import descent.core.IPackageFragmentRoot;
+import descent.core.IParent;
 import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.internal.building.BuilderUtil;
@@ -110,7 +135,7 @@ import static descent.building.IDescentBuilderConstants.*;
          * Return the IJavaProject corresponding to the project name in the project name
          * text field, or null if the text does not match a project name.
          */
-        private IJavaProject getJavaProject()
+        public IJavaProject getJavaProject()
         {
             String projectName = fText.getText().trim();
             if (projectName.length() < 1)
@@ -261,6 +286,11 @@ import static descent.building.IDescentBuilderConstants.*;
                 return BuilderUtil.EXTENSION_EXECUTABLE;
             else
                 return BuilderUtil.EXTENSION_STATIC_LIBRARY;
+        }
+
+        public boolean isExecutable()
+        {
+            return fExecutableRadio.getSelection();
         }
     }
     
@@ -420,6 +450,240 @@ import static descent.building.IDescentBuilderConstants.*;
     
     private final class ModulesSetting implements ISetting
     {
+        private final class ModuleSearchDialog extends FilteredItemsSelectionDialog
+        {
+            private IJavaElement[] fElements;
+            private boolean fOnlyMain;
+            private Button fOnlyMainCheckbox;
+            
+            public ModuleSearchDialog(Shell shell, boolean onlyMain)
+            {
+                super(shell);
+                fOnlyMain = onlyMain;
+                
+                final ILabelProvider labelProvider = new JavaElementLabelProvider();
+                setTitle("Select included module/package");
+                setListLabelProvider(labelProvider);
+                setSelectionHistory(new SelectionHistory()
+                {
+                    @Override
+                    protected Object restoreItemFromMemento(IMemento memento)
+                    {
+                        IJavaElement element = JavaCore.create(memento.getTextData());
+                        if(null == element || !element.exists())
+                            return null;
+                        if(!(element instanceof ICompilationUnit) &&
+                           !(element instanceof IPackageFragment))
+                            return null;
+                        return element;
+                    }
+
+                    @Override
+                    protected void storeItemToMemento(Object item,
+                            IMemento memento)
+                    {
+                        memento.putTextData(((IJavaElement) item).
+                                getHandleIdentifier());
+                    }
+                });
+                setDetailsLabelProvider(new LabelProvider()
+                {
+                    @Override
+                    public Image getImage(Object element)
+                    {
+                        IPackageFragment pkg = getPackage(element);
+                        return null == pkg ? null : labelProvider.getImage(pkg);
+                    }
+
+                    @Override
+                    public String getText(Object element)
+                    {
+                        IPackageFragment pkg = getPackage(element);
+                        return null == pkg ? "" : labelProvider.getText(pkg);
+                    }
+                    
+                    private IPackageFragment getPackage(Object element)
+                    {
+                        if(element instanceof ICompilationUnit)
+                            return (IPackageFragment) ((ICompilationUnit) element).
+                                    getAncestor(IJavaElement.PACKAGE_FRAGMENT);
+                        else
+                            return null;
+                    }
+                });
+                
+                initializeElements();
+            }
+
+            @Override
+            protected Control createExtendedContentArea(Composite parent)
+            {
+                Composite comp = new Composite(parent, SWT.NONE);
+                GridLayout layout = new GridLayout();
+                layout.numColumns = 1;
+                comp.setLayout(layout);
+                
+                fOnlyMainCheckbox = new Button(comp, SWT.CHECK);
+                fOnlyMainCheckbox.setText("Show only modules with main function");
+                GridData gd = new GridData();
+                gd.horizontalSpan = 1;
+                fOnlyMainCheckbox.setLayoutData(gd);
+                fOnlyMainCheckbox.setSelection(fOnlyMain);
+                
+                fOnlyMainCheckbox.addSelectionListener(new SelectionAdapter()
+                {
+                    @Override
+                    public void widgetSelected(SelectionEvent e)
+                    {
+                        fOnlyMain = fOnlyMainCheckbox.getSelection();
+                        // TODO make this work -- refresh() doesn't, reloadCahce()
+                        // doesn't, scheduleRefresh() doesn't... there seems to be
+                        // no way to make the thing either filter the content or
+                        // reload the list programatically
+                    }
+                });
+                
+                return comp;
+            }
+
+            @Override
+            protected ItemsFilter createFilter()
+            {
+                return new ItemsFilter()
+                {
+                    public boolean isConsistentItem(Object item)
+                    {
+                        return true;
+                    }
+                    
+                    public boolean matchItem(Object item)
+                    {
+                        return matches(getName(item));
+                    }
+                };
+            }
+
+            @Override
+            protected void fillContentProvider(
+                    AbstractContentProvider contentProvider,
+                    ItemsFilter itemsFilter, IProgressMonitor pm)
+                    throws CoreException
+            {
+                for(IJavaElement element : fElements)
+                    contentProvider.add(element, itemsFilter);
+            }
+
+            @Override
+            protected IDialogSettings getDialogSettings()
+            {
+                return BuildingPlugin.getDefault().getDialogSettingsSection(
+                        MODULES_SEARCH_DIALOG_SETTINGS_ID);
+            }
+
+            @Override
+            public String getElementName(Object element)
+            {
+                return getName(element);
+            }
+
+            @Override
+            protected Comparator getItemsComparator()
+            {
+                return new Comparator()
+                {
+                    public int compare(Object o1, Object o2)
+                    {
+                        if(o1.getClass().equals(o2.getClass()))
+                        {
+                            String name1 = getName(o1);
+                            String name2 = getName(o2);
+                            return name1.compareTo(name2);
+                        }
+                        else
+                        {
+                            // Always show modules before packages
+                            return o1 instanceof ICompilationUnit ? -1 : 1;
+                        }
+                    }
+                };
+            }
+
+            @Override
+            protected IStatus validateItem(Object item)
+            {
+                // Anything that'd made it this far is valid
+                return Status.OK_STATUS;
+            }
+            
+            private String getName(Object element)
+            {
+                // PERHAPS why do modules have a ".d" there?
+                return ((IJavaElement) element).getElementName();
+            }
+            
+            private void initializeElements()
+            {
+                try
+                {
+                    // Get the seed projects
+                    IJavaProject project = projectSetting.getJavaProject();
+                    IJavaProject[] projects;
+                    if((null == project) || !project.exists())
+                    {
+                        IJavaModel model = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot());
+                        projects = model.getJavaProjects();
+                    }
+                    else
+                    {
+                        projects = new IJavaProject[] { project };
+                    }
+                    
+                    Set<IJavaElement> elements = new HashSet<IJavaElement>();
+                    for(IJavaProject current : projects)
+                        for(IPackageFragmentRoot root : current.getAllPackageFragmentRoots())
+                            if(!root.isArchive())
+                                collectRecursive(elements, root);
+                    fElements = elements.toArray(new IJavaElement[elements.size()]);
+                }
+                catch(JavaModelException e)
+                {
+                    BuildingPlugin.log(e);
+                    fElements = new IJavaElement[] { };
+                }
+            }
+            
+            private void collectRecursive(Set<IJavaElement> elements, IParent parent)
+            {
+                try
+                {
+                    for(IJavaElement child : parent.getChildren())
+                    {
+                        if(child instanceof IPackageFragmentRoot)
+                        {
+                            collectRecursive(elements, (IPackageFragmentRoot) child);
+                        }
+                        else if(child instanceof IPackageFragment)
+                        {
+                            IPackageFragment pkg = (IPackageFragment) child;
+                            boolean hasChildren = pkg.containsJavaResources();
+                            if(!pkg.isDefaultPackage() && hasChildren)
+                                elements.add(child);
+                            if(hasChildren)
+                                collectRecursive(elements, pkg);
+                        }
+                        else if(child instanceof ICompilationUnit)
+                        {
+                            elements.add(child);
+                        }
+                    }
+                }
+                catch(JavaModelException e)
+                {
+                    // Guess we can't collect from this one... :-(
+                }
+            }
+        }
+        
         private ListDialogField fList;
         
         public void addToControl(Composite comp)
@@ -460,14 +724,16 @@ import static descent.building.IDescentBuilderConstants.*;
     
                 public void dialogFieldChanged(DialogField field)
                 {
-                    validatePage();
+                    settingUpdated();
                 }
             }
             
             // Create the group
             comp = createGroup(comp, "Included modules", 3, 3, GridData.FILL_HORIZONTAL);
             
-            // Add the label
+            // Add the help labels
+            // PERHAPS is this the best way to convey this information? This has
+            // fairly complicated semantics for a new user
             newHelpLabel(comp, "- For an executable, choose the module containing main()");
             newHelpLabel(comp, "- For a library, choose all exported modules");
             newHelpLabel(comp, "- Dependancies will be built automatically");
@@ -478,12 +744,9 @@ import static descent.building.IDescentBuilderConstants.*;
             fList = new ListDialogField(adapter, buttonLabels, 
                     new JavaElementLabelProvider());
             fList.setDialogFieldListener(adapter);
-            fList.setRemoveButtonIndex(IDX_REMOVE);
             fList.setViewerSorter(new JavaElementSorter());
+            fList.setRemoveButtonIndex(IDX_REMOVE);
             
-            // TODO ack, so ugly!!!! when we know the final layout of the
-            // page, change it so that it doesn't make users want to gouge
-            // their eyes out.
             fList.doFillIntoGrid(comp, 3);
         }
         
@@ -498,51 +761,138 @@ import static descent.building.IDescentBuilderConstants.*;
         
         private void performAdd()
         {
-            // TODO
+            IJavaElement entry = showElementSearchDialog(null);
+            if(null != entry)
+                fList.addElement(entry);
         }
         
         private void performEdit(ListDialogField field)
         {
-            // TODO
+            IJavaElement seed = (IJavaElement) field.getElement(0);
+            if(null != seed)
+            {
+                IJavaElement entry = showElementSearchDialog(seed);
+                if(null != entry)
+                    fList.replaceElement(seed, entry);
+            }
+        }
+        
+        private void settingUpdated()
+        {
+            validatePage();
+            updateLaunchConfigurationDialog();
+        }
+        
+        private IJavaElement showElementSearchDialog(IJavaElement seed)
+        {
+            ModuleSearchDialog dialog = new ModuleSearchDialog(getShell(),
+                    outputTypeSetting.isExecutable());
+            dialog.setInitialPattern(seed == null ? "**" : seed.getElementName());
+            int status = dialog.open();
+            if(status != IDialogConstants.OK_ID)
+                return null;
+            
+            Object[] result = dialog.getResult();
+            if(null == result || 0 == result.length)
+                return null;
+            
+            return (IJavaElement) result[0];
         }
 
         public void initializeFrom(ILaunchConfiguration config)
         {
-            fList.setElements(getAttribute(config, ATTR_MODULES_LIST, EMPTY_LIST));
+            List<String> handles = getAttribute(config, ATTR_MODULES_LIST, EMPTY_LIST);
+            List<IJavaElement> elements = 
+                new ArrayList<IJavaElement>(handles.size());
+            for(String handle : handles)
+            {
+                IJavaElement element = JavaCore.create(handle);
+                if(null != element)
+                    elements.add(element);
+            }
+            fList.setElements(elements);
         }
 
         public void performApply(ILaunchConfigurationWorkingCopy config)
         {
-            config.setAttribute(ATTR_MODULES_LIST, fList.getElements());
+            List<IJavaElement> elements = fList.getElements();
+            List<String> handles = new ArrayList<String>(elements.size());
+            for(IJavaElement element : elements)
+                handles.add(element.getHandleIdentifier());
+            config.setAttribute(ATTR_MODULES_LIST, handles);
         }
 
         public void setDefaults(ILaunchConfigurationWorkingCopy config)
         {
-            // TODO
-            config.setAttribute(ATTR_MODULES_LIST, EMPTY_LIST);
+            ICompilationUnit module = getActiveModule();
+            if(isMainModule(module))
+            {
+                String handle = module.getHandleIdentifier();
+                List<String> list = new ArrayList<String>(1);
+                list.add(handle);
+                config.setAttribute(ATTR_MODULES_LIST, list);
+            }
+            else
+            {
+                config.setAttribute(ATTR_MODULES_LIST, EMPTY_LIST);
+            }
+        }
+        
+        private boolean isMainModule(Object element)
+        {
+            try
+            {
+                if(!(element instanceof ICompilationUnit))
+                    return false;
+                ICompilationUnit module = (ICompilationUnit) element;
+                
+                if(null == module || !module.exists())
+                    return false;
+                
+                for(IJavaElement child : module.getChildren())
+                    if(child instanceof IMethod)
+                        if(((IMethod) child).isMainMethod())
+                            return true;
+            }
+            catch(JavaModelException e) { }
+            return false;
         }
 
         public String validate()
         {
+            List<IJavaElement> elements = fList.getElementsNoCopy();
+            
+            if(elements.isEmpty())
+                return "Must specify at least one included module";
+            
+            for(IJavaElement element : elements)
+            {
+                if(!(element instanceof ICompilationUnit) &&
+                   !(element instanceof IPackageFragment)) 
+                    return String.format("Element %1s is not a module or package",
+                            element.getElementName());
+                
+                if(!element.exists())
+                    return String.format("Element %1$s does not exist",
+                            element.getElementName());
+            }
+            
             return null;
-            /*
-            List<String> modules = fList.getElementsNoCopy();
-            
-            if(modules.isEmpty())
-                return "Module list is empty";
-            
-            // TODO validate the individual modules... maybe (maybe instead
-            // have a check button, since this can be a lengthy operation?)
-            
-            return null;*/
         }
     }
+    
+    //--------------------------------------------------------------------------
+    // Constants
+    
+    private static final String MODULES_SEARCH_DIALOG_SETTINGS_ID =
+        BuildingPlugin.PLUGIN_ID + "MODULES_SEARCH_DIALOG_SETTINGS";
     
     //--------------------------------------------------------------------------
     // Tab
     
     private OutputTypeSetting outputTypeSetting;
     private OutputFileSetting outputFileSetting;
+    private ProjectSetting projectSetting;
     
     public String getName()
     {
@@ -560,9 +910,10 @@ import static descent.building.IDescentBuilderConstants.*;
     {
         outputTypeSetting = new OutputTypeSetting();
         outputFileSetting = new OutputFileSetting();
+        projectSetting = new ProjectSetting();
         return new ISetting[]
         {
-            new ProjectSetting(),
+            projectSetting,
             new GroupSetting("Output target", 3, 3, GridData.FILL_HORIZONTAL,
                 new ISetting[]
                 {

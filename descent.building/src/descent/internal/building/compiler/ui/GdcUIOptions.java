@@ -123,28 +123,28 @@ public class GdcUIOptions extends CompilerUIOptions
         new EnumOption
         (
                 ATTR_ALL_SOURCES,
-                EMIT_TEMPLATES_AUTO,
+                EMIT_TEMPLATES_NORMAL,
                 "Emit templates",
                 GROUP_GENERATED_CODE,
                 new String[]
                 {
-                    EMIT_TEMPLATES_AUTO,
                     EMIT_TEMPLATES_NORMAL,
+                    EMIT_TEMPLATES_AUTO,
                     EMIT_TEMPLATES_PRIVATE,
                     EMIT_TEMPLATES_ALL,
                     EMIT_TEMPLATES_NONE,
                 },
                 new String[]
                 {
-                    "Auto",
                     "Normal",
+                    "Auto",
                     "Private",
                     "All",
                     "None"
                 },
                 "<p>Controls whether or not template code is emitted:</p>" +
-                "<li>Auto -- For targets that support templates, the \"all\" mode is used.  Otherwise, the \"private\" mode is used.</li>" +
                 "<li>Normal -- Emit templates, expecting multiple copies to be merged by the linker.</li>" +
+                "<li>Auto -- For targets that support templates, the \"all\" mode is used.  Otherwise, the \"private\" mode is used.</li>" +
                 "<li>Private -- Emit templates, but make them private to the translation unit.  The executable will have multiple copies of code and data.</li>" +
                 "<li>All -- Emit all template instances with public visibility.  Do this even if they would not normally be emitted.</li>" +
                 "<li>None -- Do not emit templates at all.</li>"

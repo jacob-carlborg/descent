@@ -363,18 +363,30 @@ public boolean isBinary() {
 	return false;
 }
 protected boolean isMainMethod(IMethod method) throws JavaModelException {
-	/* TODO JDT Java -> D */
-	if ("main".equals(method.getElementName()) && Signature.SIG_VOID.equals(method.getReturnType())) { //$NON-NLS-1$
-		long flags= method.getFlags();
-		if (Flags.isStatic(flags) && Flags.isPublic(flags)) {
-			String[] paramTypes= method.getParameterTypes();
-			if (paramTypes.length == 1) {
-				// TODO JDT signature
-//				String typeSignature=  Signature.toString(paramTypes[0]);
-//				return "String[]".equals(Signature.getSimpleName(typeSignature)); //$NON-NLS-1$
-			}
-		}
-		return true;
+    // TODO WinMaina and maybe DllMain
+	if(method.getParent() instanceof ICompilationUnit)
+	{
+        if ("main".equals(method.getElementName())) // $NON-NLS-1
+    	{
+    	    String returnType = method.getReturnType();
+    	    if(Signature.SIG_VOID.equals(returnType) || 
+    	       Signature.SIG_INT.equals(returnType))
+    	    {
+    	        String[] args = method.getParameterTypes();
+    	        if(args.length == 0)
+    	        {
+    	            return true;
+    	        }
+    	        else if(args.length == 1)
+    	        {
+    	            
+    	            // TODO will this be D2-ready when constant strings roll around?
+    	            final String ARRAY_OF_STRINGS = "" + Signature.C_DYNAMIC_ARRAY +
+    	                    Signature.C_DYNAMIC_ARRAY + Signature.C_CHAR;
+    	            return args[0].equals(ARRAY_OF_STRINGS);
+    	        }
+    	    }
+    	}
 	}
 	return false;
 }

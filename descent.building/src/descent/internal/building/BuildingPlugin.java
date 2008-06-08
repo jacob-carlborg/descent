@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
@@ -112,6 +113,21 @@ public class BuildingPlugin extends AbstractUIPlugin
             return ImageDescriptor.getMissingImageDescriptor();
         }
         return null;
+    }
+    
+    /**
+     * Returns a section in the Java plugin's dialog settings. If the section doesn't exist yet, it is created.
+     *
+     * @param name the name of the section
+     * @return the section of the given name
+     */
+    public IDialogSettings getDialogSettingsSection(String name) {
+        IDialogSettings dialogSettings= getDialogSettings();
+        IDialogSettings section= dialogSettings.getSection(name);
+        if (section == null) {
+            section= dialogSettings.addNewSection(name);
+        }
+        return section;
     }
 	
 	public static String getUniqueIdentifier()
