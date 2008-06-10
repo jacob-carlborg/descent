@@ -9,15 +9,13 @@ import descent.building.compiler.AbstractCompileCommand;
 import descent.building.compiler.AbstractLinkCommand;
 import descent.building.compiler.CompilerOption;
 import descent.building.compiler.ICompileCommand;
-import descent.building.compiler.ICompilerInterface;
 import descent.building.compiler.ILinkCommand;
 import descent.building.compiler.IResponseInterpreter;
 import descent.building.compiler.BuildResponse;
-import descent.internal.building.compiler.ui.GdcUIOptions;
 
 import static descent.internal.building.compiler.ui.DmdUIOptions.*;
 
-public class DmdCompilerInterface implements ICompilerInterface
+public final class DmdCompilerInterface extends DmdfeCompilerInterface
 {
 	protected static final boolean DEBUG = true;
 	
@@ -259,9 +257,16 @@ public class DmdCompilerInterface implements ICompilerInterface
 	//--------------------------------------------------------------------------
 	// UI Options
 	
-	private static final CompilerOption[] uiOptions;
+	private CompilerOption[] uiOptions;
 	
-	static
+	public synchronized final CompilerOption[] getOptions()
+    {
+        if(null == uiOptions)
+            initializeUIOptions();
+        return uiOptions;
+    }
+	
+	private final void initializeUIOptions()
 	{
 	    List<CompilerOption> options = new ArrayList<CompilerOption>();
 	    
@@ -272,7 +277,7 @@ public class DmdCompilerInterface implements ICompilerInterface
 	    options.add(OPTION_INSTRUMENT_FOR_COVERAGE);
 	    options.add(OPTION_INSTRUMENT_FOR_PROFILE);
 	    
-	    // Optimization
+	    // Generated code
 	    options.add(OPTION_OPTIMIZE_CODE);
 	    options.add(OPTION_INLINE_CODE);
 	    options.add(OPTION_NOFLOAT);
@@ -280,9 +285,6 @@ public class DmdCompilerInterface implements ICompilerInterface
 	    // Warnings
 	    options.add(OPTION_ALLOW_DEPRECATED);
 	    options.add(OPTION_SHOW_WARNINGS);
-	    
-	    // TODO testing
-	    options.add(GdcUIOptions.OPTION_EMIT_TEMPLATES);
 	    
 	    uiOptions = options.toArray(new CompilerOption[options.size()]);
 	}
@@ -293,7 +295,7 @@ public class DmdCompilerInterface implements ICompilerInterface
 	/* (non-Javadoc)
 	 * @see descent.launching.compiler.ICompilerInterface#createCompileCommand()
 	 */
-	public ICompileCommand createCompileCommand()
+	public final ICompileCommand createCompileCommand()
 	{
 		return new DmdCompileCommand();
 	}
@@ -301,7 +303,7 @@ public class DmdCompilerInterface implements ICompilerInterface
 	/* (non-Javadoc)
 	 * @see descent.launching.compiler.ICompilerInterface#createLinkCommand()
 	 */
-	public ILinkCommand createLinkCommand()
+	public final ILinkCommand createLinkCommand()
 	{
 		return new DmdLinkCommand();
 	}
@@ -309,7 +311,7 @@ public class DmdCompilerInterface implements ICompilerInterface
 	/* (non-Javadoc)
 	 * @see descent.launching.compiler.ICompilerInterface#createCompileResponseInterpreter()
 	 */
-	public IResponseInterpreter createCompileResponseInterpreter()
+	public final IResponseInterpreter createCompileResponseInterpreter()
 	{
 		return new DmdResponseInterpreter();
 	}
@@ -317,13 +319,8 @@ public class DmdCompilerInterface implements ICompilerInterface
 	/* (non-Javadoc)
 	 * @see descent.launching.compiler.ICompilerInterface#createLinkResponseInterpreter()
 	 */
-	public IResponseInterpreter createLinkResponseInterpreter()
+	public final IResponseInterpreter createLinkResponseInterpreter()
 	{
 		return new DmdResponseInterpreter();
 	}
-
-    public CompilerOption[] getOptions()
-    {
-        return uiOptions;
-    }
 }

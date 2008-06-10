@@ -4,7 +4,8 @@ import org.eclipse.core.runtime.CoreException;
 
 /**
  * Defines an interface for getting info about a builder type registered with
- * the plugin.
+ * the plugin. This is not intended to be subclasses outside the building
+ * framework (you should instead create classes of type {@link IDBuilder}.
  * 
  * @author Robert Fraser
  */

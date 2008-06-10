@@ -16,9 +16,9 @@ import descent.internal.building.BuildingPlugin;
  * 
  * @author Robert Fraser
  */
-public class BuilderRegistry
+public final class BuilderRegistry
 {
-    private class DBuilderType implements IDBuilderType
+    private static final class DBuilderType implements IDBuilderType
     {
         // Attributes defined in the schema
         private static final String ATTR_ID = "id";

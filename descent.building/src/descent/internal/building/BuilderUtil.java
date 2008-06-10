@@ -21,6 +21,7 @@ public class BuilderUtil
     public static final String EXTENSION_EXECUTABLE;
     public static final String EXTENSION_STATIC_LIBRARY;
     public static final String EXTENSION_DYNAMIC_LIBRARY;
+    public static final String EXTENSION_DDL;
     public static final String EXTENSION_OBJECT_FILE;
     
     static
@@ -32,6 +33,7 @@ public class BuilderUtil
             EXTENSION_EXECUTABLE = ".exe";
             EXTENSION_STATIC_LIBRARY = ".lib";
             EXTENSION_DYNAMIC_LIBRARY = ".dll";
+            EXTENSION_DDL = ".ddl";
             EXTENSION_OBJECT_FILE = ".obj";
         }
         else
@@ -39,6 +41,7 @@ public class BuilderUtil
             EXTENSION_EXECUTABLE = "";
             EXTENSION_STATIC_LIBRARY = ".a";
             EXTENSION_DYNAMIC_LIBRARY = ".so";
+            EXTENSION_DDL = ".ddl";
             EXTENSION_OBJECT_FILE = ".o";
         }
     }

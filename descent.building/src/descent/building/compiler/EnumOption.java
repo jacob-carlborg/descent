@@ -1,6 +1,6 @@
 package descent.building.compiler;
 
-public final class EnumOption extends CompilerOption
+public abstract class EnumOption extends CompilerOption
 {
     private final String[] optionValues;
     private final String[] optionEditLabels;
@@ -8,18 +8,17 @@ public final class EnumOption extends CompilerOption
     
     public EnumOption(String attributeId, String defaultValue,
             String label, String groupLabel, String[] optionValues,
-            String[] optionEditLabels, String helpText)
+            String[] optionEditLabels)
     {
         this(attributeId, defaultValue, label, groupLabel, 
-                optionValues, optionEditLabels, null, helpText);
+                optionValues, optionEditLabels, null);
     }
     
     public EnumOption(String attributeId, String defaultValue,
             String label, String groupLabel, String[] optionValues,
-            String[] optionEditLabels, String[] optionViewLabels,
-            String helpText)
+            String[] optionEditLabels, String[] optionViewLabels)
     {
-        super(attributeId, defaultValue, label, groupLabel, helpText);
+        super(attributeId, defaultValue, label, groupLabel);
         this.optionValues = optionValues;
         this.optionEditLabels = optionEditLabels;
         

@@ -29,6 +29,11 @@ public class BuildingPlugin extends AbstractUIPlugin
     public static final String ID_EXTENSION_POINT_D_BUILDERS = "dBuilders";
     
     /**
+     * Identifier for the 'compilerInterfaces' extension point
+     */
+    public static final String ID_EXTENSION_POINT_COMPILER_INTERFACES = "compilerInterfaces";
+    
+    /**
      * The build group identifier
      */
     public static final String ID_BUILD_GROUP = "descent.building.builders";

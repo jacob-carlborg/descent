@@ -2,6 +2,7 @@
 <?eclipse version="3.2"?>
 <plugin>
    <extension-point id="dBuilders" name="%dBuilders" schema="schema/dBuilders.exsd"/>
+   <extension-point id="compilerInterfaces" name="%compilerInterfaces" schema="schema/compilerInterfaces.exsd"/>
 
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
@@ -111,6 +112,19 @@
             launchAsLabel="Build As"
             mode="descent.building.buildMode">
       </launchMode>
+   </extension>
+   <extension
+         point="descent.building.compilerInterfaces">
+      <compilerInterface
+            class="descent.internal.building.compiler.DmdCompilerInterface"
+            id="descent.building.compiler.DmdCompilerInterface"
+            vmInstallType="descent.internal.debug.ui.launcher.DmdCompilerType">
+      </compilerInterface>
+      <compilerInterface
+            class="descent.internal.building.compiler.GdcCompilerInterface"
+            id="descent.building.compiler.GdcCompilerInterface"
+            vmInstallType="descent.internal.debug.ui.launcher.GdcCompilerType">
+      </compilerInterface>
    </extension>
 
 </plugin>

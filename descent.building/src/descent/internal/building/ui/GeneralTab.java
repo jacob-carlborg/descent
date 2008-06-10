@@ -13,7 +13,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -452,6 +451,47 @@ import static descent.building.IDescentBuilderConstants.*;
     {
         private final class ModuleSearchDialog extends FilteredItemsSelectionDialog
         {
+            // Note -- these classes are a workaround for the superclass not being
+            // able to refresh and generlaly being a bitch of an API to work with.
+            private abstract class AbstractModuleFilter extends ItemsFilter
+            {   
+                public boolean isConsistentItem(Object item)
+                {
+                    return true;
+                }
+                
+                public boolean matchItem(Object item)
+                {
+                    return matches(getName(item));
+                }
+            }
+            
+            private final class AllModulesFilter extends AbstractModuleFilter
+            {
+                @Override
+                public boolean equalsFilter(ItemsFilter filter)
+                {
+                    return filter instanceof AllModulesFilter && 
+                            super.equalsFilter(filter);
+                }
+            }
+            
+            private final class OnlyMainFilter extends AbstractModuleFilter
+            {
+                @Override
+                public boolean matchItem(Object item)
+                {
+                    return isMainModule(item) && super.matchItem(item);
+                }
+                
+                @Override
+                public boolean equalsFilter(ItemsFilter filter)
+                {
+                    return filter instanceof OnlyMainFilter &&
+                            super.equalsFilter(filter);
+                }
+            }
+            
             private IJavaElement[] fElements;
             private boolean fOnlyMain;
             private Button fOnlyMainCheckbox;
@@ -536,10 +576,7 @@ import static descent.building.IDescentBuilderConstants.*;
                     public void widgetSelected(SelectionEvent e)
                     {
                         fOnlyMain = fOnlyMainCheckbox.getSelection();
-                        // TODO make this work -- refresh() doesn't, reloadCahce()
-                        // doesn't, scheduleRefresh() doesn't... there seems to be
-                        // no way to make the thing either filter the content or
-                        // reload the list programatically
+                        applyFilter();
                     }
                 });
                 
@@ -549,18 +586,7 @@ import static descent.building.IDescentBuilderConstants.*;
             @Override
             protected ItemsFilter createFilter()
             {
-                return new ItemsFilter()
-                {
-                    public boolean isConsistentItem(Object item)
-                    {
-                        return true;
-                    }
-                    
-                    public boolean matchItem(Object item)
-                    {
-                        return matches(getName(item));
-                    }
-                };
+                return fOnlyMain ? new OnlyMainFilter() : new AllModulesFilter();
             }
 
             @Override
@@ -626,16 +652,26 @@ import static descent.building.IDescentBuilderConstants.*;
                 try
                 {
                     // Get the seed projects
+                    IJavaModel model = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot());
                     IJavaProject project = projectSetting.getJavaProject();
                     IJavaProject[] projects;
                     if((null == project) || !project.exists())
                     {
-                        IJavaModel model = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot());
                         projects = model.getJavaProjects();
                     }
                     else
                     {
-                        projects = new IJavaProject[] { project };
+                        String[] requiredProjects = project.getRequiredProjectNames();
+                        ArrayList<IJavaProject> projectsList = new ArrayList<IJavaProject>
+                                (requiredProjects.length + 1);
+                        projectsList.add(project);
+                        for(String requiredProjectName : requiredProjects)
+                        {
+                            IJavaProject requiredProject = model.getJavaProject(requiredProjectName);
+                            if(requiredProject.exists() && requiredProject.isOpen())
+                                projectsList.add(requiredProject);
+                        }
+                        projects = projectsList.toArray(new IJavaProject[projectsList.size()]);
                     }
                     
                     Set<IJavaElement> elements = new HashSet<IJavaElement>();
@@ -724,7 +760,8 @@ import static descent.building.IDescentBuilderConstants.*;
     
                 public void dialogFieldChanged(DialogField field)
                 {
-                    settingUpdated();
+                    validatePage();
+                    updateLaunchConfigurationDialog();
                 }
             }
             
@@ -777,16 +814,11 @@ import static descent.building.IDescentBuilderConstants.*;
             }
         }
         
-        private void settingUpdated()
-        {
-            validatePage();
-            updateLaunchConfigurationDialog();
-        }
-        
         private IJavaElement showElementSearchDialog(IJavaElement seed)
         {
             ModuleSearchDialog dialog = new ModuleSearchDialog(getShell(),
-                    outputTypeSetting.isExecutable());
+                    outputTypeSetting.isExecutable() && 
+                    fList.getElementsNoCopy().isEmpty());
             dialog.setInitialPattern(seed == null ? "**" : seed.getElementName());
             int status = dialog.open();
             if(status != IDialogConstants.OK_ID)

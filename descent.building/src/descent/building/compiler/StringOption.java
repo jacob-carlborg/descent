@@ -1,13 +1,13 @@
 package descent.building.compiler;
 
-public class StringOption extends CompilerOption implements IValidatableOption
+public abstract class StringOption extends CompilerOption implements IValidatableOption
 {
     public StringOption(String attributeId, String defaultValue,
-            String label, String groupLabel, String helpText)
+            String label, String groupLabel)
     {
-        super(attributeId, defaultValue, label, groupLabel, helpText);
+        super(attributeId, defaultValue, label, groupLabel);
     }
-    
+
     public String isValid(String value)
     {
         return null;

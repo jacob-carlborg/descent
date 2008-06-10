@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jface.viewers.CellEditor;
@@ -40,6 +41,8 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.forms.widgets.ScrolledFormText;
 
+import descent.building.CompilerInterfaceRegistry;
+import descent.building.ICompilerInterfaceType;
 import descent.building.IDescentBuilderConstants;
 import descent.building.compiler.BooleanOption;
 import descent.building.compiler.CompilerOption;
@@ -47,11 +50,13 @@ import descent.building.compiler.EnumOption;
 import descent.building.compiler.ICompilerInterface;
 import descent.building.compiler.IValidatableOption;
 import descent.building.compiler.StringOption;
-import descent.internal.building.compiler.DmdCompilerInterface;
+import descent.internal.building.BuildingPlugin;
 import descent.launching.IVMInstall;
 import descent.launching.IVMInstallType;
 import descent.launching.JavaRuntime;
 
+// TODO egads, the whole issue of synchronizing all this is CRAZY!!!! So
+// this is in a NON-WORKING STATE right now
 /* package */ final class CompilerTab extends AbstractBuilderTab
 {   
     //--------------------------------------------------------------------------
@@ -108,7 +113,7 @@ import descent.launching.JavaRuntime;
                     int selectedIndex = fCombo.getSelectionIndex();
                     IVMInstall selectedCompiler = selectedIndex >= 0 ?
                             fCompilers[selectedIndex] : null;
-                    compilerOptions.compilerModeChanged(selectedCompiler);
+                    compilerOptions.initializeInput(selectedCompiler);
                     
                     validatePage();
                     updateLaunchConfigurationDialog();
@@ -163,6 +168,22 @@ import descent.launching.JavaRuntime;
         
         public void initializeFrom(ILaunchConfiguration config)
         {
+            int i = getCompilerIndex(config);
+            if(-1 != i)
+                fCombo.select(i);
+            else if(fCompilers.length >= 0)
+                fCombo.select(0);
+        }
+        
+        public IVMInstall getCompiler(ILaunchConfiguration config)
+        {
+            int i = getCompilerIndex(config);
+            return -1 == i ? null : fCompilers[i];
+        }
+        
+        private int getCompilerIndex(ILaunchConfiguration config)
+        {
+            initializeCompilers();
             String compilerTypeId = getAttribute(config, 
                     IDescentBuilderConstants.ATTR_COMPILER_TYPE_ID, "");
             String compilerId = getAttribute(config, 
@@ -174,13 +195,11 @@ import descent.launching.JavaRuntime;
                 if(compiler.getVMInstallType().getId().equals(compilerTypeId) &&
                         compiler.getId().equals(compilerId))
                 {
-                    fCombo.select(i);
-                    return;
+                    return i;
                 }
             }
             
-            if(fCompilers.length >= 0)
-                fCombo.select(0);
+            return -1;
         }
 
         public void performApply(ILaunchConfigurationWorkingCopy config)
@@ -201,12 +220,11 @@ import descent.launching.JavaRuntime;
 
         public void setDefaults(ILaunchConfigurationWorkingCopy config)
         {
-            initializeCompilers();
-            if(fCompilers.length > 0)
+            IVMInstall defaultCompiler = getDefault();
+            if(null != defaultCompiler)
             {
-                IVMInstall first = fCompilers[0];
-                config.setAttribute(IDescentBuilderConstants.ATTR_COMPILER_TYPE_ID, first.getVMInstallType().getId());
-                config.setAttribute(IDescentBuilderConstants.ATTR_COMPILER_ID, first.getId());
+                config.setAttribute(IDescentBuilderConstants.ATTR_COMPILER_TYPE_ID, defaultCompiler.getVMInstallType().getId());
+                config.setAttribute(IDescentBuilderConstants.ATTR_COMPILER_ID, defaultCompiler.getId());
             }
             else
             {
@@ -214,10 +232,17 @@ import descent.launching.JavaRuntime;
                 config.setAttribute(IDescentBuilderConstants.ATTR_COMPILER_ID, "");
             }
         }
+        
+        public IVMInstall getDefault()
+        {
+            initializeCompilers();
+            return fCompilers.length > 0 ? fCompilers[0] : null;
+        }
 
         public String validate()
         {
             int selectedIndex = fCombo.getSelectionIndex();
+            
             if(selectedIndex < 0)
                 return "You must select a compiler to use";
             
@@ -427,6 +452,8 @@ import descent.launching.JavaRuntime;
             }
         }
         
+        // TODO file UI options
+        
         private final class TreeEntry
         {
             private final String label;
@@ -443,7 +470,7 @@ import descent.launching.JavaRuntime;
         }
         
         private final class OptionsContentProvider implements ITreeContentProvider
-        {
+        {   
             public Object[] getChildren(Object parentElement)
             {
                 if(!(parentElement instanceof TreeEntry))
@@ -504,13 +531,13 @@ import descent.launching.JavaRuntime;
                 }
             };
         
-        private IVMInstall fSelectedCompiler;
         private TreeViewer fViewer;
+        private ICompilerInterface fCurrentInterface;
         private TreeEntry[] fEntries;
         
         public void addToControl(Composite comp)
         {
-            initializeTree();
+            initializeInput(null);
             
             fViewer = new TreeViewer(comp, SWT.BORDER | SWT.FULL_SELECTION);
             fViewer.setContentProvider(new OptionsContentProvider());
@@ -652,16 +679,26 @@ import descent.launching.JavaRuntime;
             fViewer.expandAll();
         }
         
-        private void initializeTree()
+        public void initializeInput(IVMInstall compiler)
         {
-            if(null != fEntries)
-                return;
-            
             ICompilerInterface compilerInterface = 
-                getCompilerInterface(fSelectedCompiler);
+                getCompilerInterface(compiler);
+            if(compilerInterface == fCurrentInterface)
+            {
+                if(null == fEntries)
+                    fEntries = new TreeEntry[] { };
+                return;
+            }
+            else if(null == compilerInterface)
+            {
+                fEntries = new TreeEntry[] { };
+                refreshViewer();
+                return;
+            }
+            fCurrentInterface = compilerInterface;
+            
             Map<String, List<CompilerUIOption>> groups = 
                 new TreeMap<String, List<CompilerUIOption>>();
-            
             for(CompilerOption opt : compilerInterface.getOptions())
             {
                 String group = opt.getGroupLabel();
@@ -679,6 +716,17 @@ import descent.launching.JavaRuntime;
                         list.toArray(new CompilerUIOption[list.size()]));
                 i++;
             }
+            
+            refreshViewer();
+        }
+        
+        private void refreshViewer()
+        {
+            if(null != fViewer)
+            {
+                fViewer.refresh();
+                fViewer.expandAll();
+            }
         }
         
         private CompilerUIOption toUIOption(CompilerOption opt)
@@ -692,28 +740,10 @@ import descent.launching.JavaRuntime;
             else
                 throw new UnsupportedOperationException();
         }
-        
-        private ICompilerInterface getCompilerInterface(IVMInstall compiler)
-        {
-            // TODO
-            return new DmdCompilerInterface();
-        }
-        
-        public void compilerModeChanged(IVMInstall compiler)
-        {
-            if(compiler == fSelectedCompiler)
-                return;
-            
-            fSelectedCompiler = compiler;
-            if(null != fViewer && null != fSelectedCompiler)
-            {
-                // TODO
-            }
-        }
 
         public void initializeFrom(ILaunchConfiguration config)
         {
-            initializeTree();
+            initializeInput(compilerSetting.getCompiler(config));
             for(TreeEntry group : fEntries)
             {
                 for(CompilerUIOption uiOpt : group.children)
@@ -729,7 +759,7 @@ import descent.launching.JavaRuntime;
 
         public void performApply(ILaunchConfigurationWorkingCopy config)
         {
-            initializeTree();
+            // TODO needed? initializeTree();
             for(TreeEntry group : fEntries)
             {
                 for(CompilerUIOption uiOpt : group.children)
@@ -742,7 +772,7 @@ import descent.launching.JavaRuntime;
 
         public void setDefaults(ILaunchConfigurationWorkingCopy config)
         {
-            initializeTree();
+            initializeInput(compilerSetting.getDefault());
             for(TreeEntry group : fEntries)
             {
                 for(CompilerUIOption uiOpt : group.children)
@@ -867,8 +897,34 @@ import descent.launching.JavaRuntime;
     }
     
     //--------------------------------------------------------------------------
+    // Shared convience methods
+    
+    private final CompilerInterfaceRegistry registry = 
+        CompilerInterfaceRegistry.getInstance();
+    
+    private ICompilerInterface getCompilerInterface(IVMInstall compiler)
+    {
+        if(null == compiler)
+            return null;
+        
+        try
+        {
+            ICompilerInterfaceType type = registry.
+                    getCompilerInterfaceByVMInstallType(compiler.
+                    getVMInstallType());
+            return null != type ? type.getCompilerInterface() : null;
+        }
+        catch(CoreException e)
+        {
+            BuildingPlugin.log(e);
+            return null;
+        }
+    }
+    
+    //--------------------------------------------------------------------------
     // Tab
     
+    private CompilerSetting compilerSetting;
     private CompilerOptions compilerOptions;
     
     @Override
@@ -880,10 +936,11 @@ import descent.launching.JavaRuntime;
     @Override
     protected ISetting[] getSettings()
     {
+        compilerSetting = new CompilerSetting();
         compilerOptions = new CompilerOptions();
         return new ISetting[]
         {
-            new CompilerSetting(),
+            compilerSetting,
             compilerOptions,
             new ArgumentsSetting(),
         };
