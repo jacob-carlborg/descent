@@ -3,7 +3,7 @@ package descent.internal.compiler.parser;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
+import static descent.internal.compiler.parser.BE.*;
 
 public class CompoundStatement extends Statement {	
 
@@ -35,6 +35,27 @@ public class CompoundStatement extends Statement {
 			TreeVisitor.acceptChildren(visitor, sourceStatements);
 		}
 		visitor.endVisit(this);
+	}
+	
+	@Override
+	public int blockExit(SemanticContext context) {
+		int result = BEfallthru;
+		for (int i = 0; i < size(statements); i++) {
+			Statement s = (Statement) statements.get(i);
+			if (s != null) {
+				if (0 == (result & BEfallthru) && !s.comeFrom()) {
+					if (context.global.params.warnings) {
+						if (context.acceptsProblems()) {
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.StatementIsNotReachable, this));
+						}
+					}
+				}
+
+				result &= ~BEfallthru;
+				result |= s.blockExit(context);
+			}
+		}
+	    return result;
 	}
 
 	@Override
@@ -149,7 +170,7 @@ public class CompoundStatement extends Statement {
 						Statement[] sexception = { null };
 						Statement[] sfinally = { null };
 
-						s.scopeCode(sentry, sexception, sfinally);
+						s.scopeCode(sc, sentry, sexception, sfinally);
 						if (sentry[0] != null) {
 							sentry[0] = sentry[0].semantic(sc, context);
 							statements.set(i, sentry[0]);
@@ -258,12 +279,12 @@ public class CompoundStatement extends Statement {
 	}
 
 	@Override
-	public boolean usesEH() {
+	public boolean usesEH(SemanticContext context) {
 		for (int i = 0; i < statements.size(); i++) {
 			Statement s;
 
 			s = statements.get(i);
-			if (s != null && s.usesEH()) {
+			if (s != null && s.usesEH(context)) {
 				return true;
 			}
 		}

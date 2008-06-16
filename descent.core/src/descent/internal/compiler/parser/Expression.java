@@ -124,6 +124,10 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		e.type = type.pointerTo(context);
 		return e;
 	}
+	
+	public boolean canThrow() {
+		return false;
+	}
 
 	public Expression castTo(Scope sc, Type t, SemanticContext context) {
 		return Expression_castTo(sc, t, context);

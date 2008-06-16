@@ -2,7 +2,7 @@ package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
+import static descent.internal.compiler.parser.BE.*;
 
 public class ScopeStatement extends Statement {
 
@@ -20,6 +20,11 @@ public class ScopeStatement extends Statement {
 			TreeVisitor.acceptChildren(visitor, statement);
 		}
 		visitor.endVisit(this);
+	}
+	
+	@Override
+	public int blockExit(SemanticContext context) {
+		return statement != null ? statement.blockExit(context) : BEfallthru;
 	}
 
 	@Override
@@ -84,7 +89,7 @@ public class ScopeStatement extends Statement {
 				Statement[] sexception = { null };
 				Statement[] sfinally = { null };
 
-				statement.scopeCode(sentry, sexception, sfinally);
+				statement.scopeCode(sc, sentry, sexception, sfinally);
 				if (sfinally[0] != null) {
 					statement = new CompoundStatement(loc, statement,
 							sfinally[0]);
@@ -120,8 +125,8 @@ public class ScopeStatement extends Statement {
 	}
 
 	@Override
-	public boolean usesEH() {
-		return statement != null ? statement.usesEH() : false;
+	public boolean usesEH(SemanticContext context) {
+		return statement != null ? statement.usesEH(context) : false;
 	}
 
 }

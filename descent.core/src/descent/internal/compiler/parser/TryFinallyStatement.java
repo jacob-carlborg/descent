@@ -1,8 +1,8 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.BE.BEfallthru;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
 
 public class TryFinallyStatement extends Statement {
 
@@ -31,11 +31,21 @@ public class TryFinallyStatement extends Statement {
 		}
 		visitor.endVisit(this);
 	}
+	
+	@Override
+	public int blockExit(SemanticContext context) {
+		int result = body.blockExit(context);
+	    return result;
+	}
 
 	@Override
 	public boolean fallOffEnd(SemanticContext context) {
 		boolean result;
-		result = body != null ? body.fallOffEnd(context) : true;
+		if (context.isD2()) {
+			result = body.fallOffEnd(context);
+		} else {
+			result = body != null ? body.fallOffEnd(context) : true;
+		}
 		return result;
 	}
 
@@ -63,6 +73,20 @@ public class TryFinallyStatement extends Statement {
 		sc.scontinue = null; // no break or continue out of finally block
 		finalbody = finalbody.semantic(sc, context);
 		sc.pop();
+		
+		if (context.isD2()) {
+			if (null == body) {
+				return finalbody;
+			}
+			if (null == finalbody) {
+				return body;
+			}
+			if (body.blockExit(context) == BEfallthru) {
+				Statement s = new CompoundStatement(loc, body, finalbody);
+				return s;
+			}
+		}
+		
 		return this;
 	}
 
@@ -85,7 +109,7 @@ public class TryFinallyStatement extends Statement {
 	}
 
 	@Override
-	public boolean usesEH() {
+	public boolean usesEH(SemanticContext context) {
 		return true;
 	}
 

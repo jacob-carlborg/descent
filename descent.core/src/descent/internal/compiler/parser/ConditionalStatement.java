@@ -92,9 +92,9 @@ public class ConditionalStatement extends Statement {
 	}
 
 	@Override
-	public boolean usesEH() {
-		return (ifbody != null && ifbody.usesEH())
-				|| (elsebody != null && elsebody.usesEH());
+	public boolean usesEH(SemanticContext context) {
+		return (ifbody != null && ifbody.usesEH(context))
+				|| (elsebody != null && elsebody.usesEH(context));
 	}
 
 }

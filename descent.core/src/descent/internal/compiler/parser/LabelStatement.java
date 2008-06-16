@@ -1,10 +1,10 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.BE.BEfallthru;
+import static descent.internal.compiler.parser.Scope.CSXlabel;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.Scope.CSXlabel;
-
 
 public class LabelStatement extends Statement {
 
@@ -27,6 +27,11 @@ public class LabelStatement extends Statement {
 			TreeVisitor.acceptChildren(visitor, sourceStatement);
 		}
 		visitor.endVisit(this);
+	}
+	
+	@Override
+	public int blockExit(SemanticContext context) {
+		return statement != null ? statement.blockExit(context) : BEfallthru;
 	}
 
 	@Override
@@ -117,8 +122,8 @@ public class LabelStatement extends Statement {
 	}
 
 	@Override
-	public boolean usesEH() {
-		return statement != null ? statement.usesEH() : false;
+	public boolean usesEH(SemanticContext context) {
+		return statement != null ? statement.usesEH(context) : false;
 	}
 	
 	@Override

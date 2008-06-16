@@ -672,5 +672,7 @@ public interface IProblem {
 	int PostBlitsAreOnlyForStructUnionDefinitions = 461;
 	int CannotHaveEDotTuple = 462;
 	int CannotCreateCppClasses = 463;
+	int SwitchAndCaseAreInDifferentFinallyBlocks = 464;
+	int SwitchAndDefaultAreInDifferentFinallyBlocks = 465;
 
 }

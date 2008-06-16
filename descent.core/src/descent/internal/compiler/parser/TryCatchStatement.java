@@ -30,6 +30,19 @@ public class TryCatchStatement extends Statement {
 		}
 		visitor.endVisit(this);
 	}
+	
+	@Override
+	public int blockExit(SemanticContext context) {
+		int result;
+
+		result = body.blockExit(context);
+
+		for (int i = 0; i < size(catches); i++) {
+			Catch c = (Catch) catches.get(i);
+			result |= c.blockExit(context);
+		}
+		return result;
+	}
 
 	@Override
 	public boolean fallOffEnd(SemanticContext context) {
@@ -83,6 +96,13 @@ public class TryCatchStatement extends Statement {
 				}
 			}
 		}
+		
+		if (context.isD2()) {
+			if (null == body) {
+				return null;
+			}
+		}
+		
 		return this;
 	}
 
@@ -117,7 +137,7 @@ public class TryCatchStatement extends Statement {
 	}
 
 	@Override
-	public boolean usesEH() {
+	public boolean usesEH(SemanticContext context) {
 		return true;
 	}
 

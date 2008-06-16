@@ -10,7 +10,7 @@ import static descent.internal.compiler.parser.Constfold.Equal;
 import static descent.internal.compiler.parser.TOK.TOKequal;
 
 import static descent.internal.compiler.parser.TY.Tarray;
-
+import static descent.internal.compiler.parser.BE.*;
 
 public class SwitchStatement extends Statement {
 
@@ -20,6 +20,8 @@ public class SwitchStatement extends Statement {
 	public List gotoCases; // array of unresolved GotoCaseStatement's
 	public List cases; // array of CaseStatement's
 	public int hasNoDefault; // !=0 if no default statement
+	public TryFinallyStatement tf;
+	public int hasVars;
 
 	public SwitchStatement(Loc loc, Expression c, Statement b) {
 		super(loc);
@@ -35,6 +37,26 @@ public class SwitchStatement extends Statement {
 			TreeVisitor.acceptChildren(visitor, sourceBody);
 		}
 		visitor.endVisit(this);
+	}
+	
+	@Override
+	public int blockExit(SemanticContext context) {
+		int result = BEnone;
+		if (condition.canThrow()) {
+			result |= BEthrow;
+		}
+
+		if (body != null) {
+			result |= body.blockExit(context);
+			if ((result & BEbreak) != 0) {
+				result |= BEfallthru;
+				result &= ~BEbreak;
+			}
+		} else {
+			result |= BEfallthru;
+		}
+
+		return result;
 	}
 
 	@Override
@@ -122,6 +144,7 @@ public class SwitchStatement extends Statement {
 
 	@Override
 	public Statement semantic(Scope sc, SemanticContext context) {
+		tf = sc.tf;
 		if (cases != null) {
 			throw new IllegalStateException("assert(!cases);"); // ensure semantic() is only run once
 		}
@@ -132,6 +155,9 @@ public class SwitchStatement extends Statement {
 			if (condition.type.ty != Tarray) {
 				condition = condition.implicitCastTo(sc, condition.type.nextOf()
 						.arrayOf(context), context);
+			}
+			if (context.isD2()) {
+				condition.type = condition.type.constOf(context);
 			}
 		} else {
 			condition = condition.integralPromotions(sc, context);
@@ -247,8 +273,8 @@ public class SwitchStatement extends Statement {
 	}
 
 	@Override
-	public boolean usesEH() {
-		return body != null ? body.usesEH() : false;
+	public boolean usesEH(SemanticContext context) {
+		return body != null ? body.usesEH(context) : false;
 	}
 	
 	@Override

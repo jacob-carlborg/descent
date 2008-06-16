@@ -1,9 +1,9 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.BE.BEfallthru;
+import static descent.internal.compiler.parser.TOK.TOKon_scope_success;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.TOK.TOKon_scope_success;
-
 
 public class OnScopeStatement extends Statement {
 
@@ -26,6 +26,12 @@ public class OnScopeStatement extends Statement {
 		}
 		visitor.endVisit(this);
 	}
+	
+	@Override
+	public int blockExit(SemanticContext context) {
+		// At this point, this statement is just an empty placeholder
+	    return BEfallthru;
+	}
 
 	@Override
 	public int getNodeType() {
@@ -33,7 +39,7 @@ public class OnScopeStatement extends Statement {
 	}
 
 	@Override
-	public void scopeCode(Statement[] sentry, Statement[] sexception,
+	public void scopeCode(Scope sc, Statement[] sentry, Statement[] sexception,
 			Statement[] sfinally) {
 		sentry[0] = null;
 		sexception[0] = null;
@@ -97,8 +103,12 @@ public class OnScopeStatement extends Statement {
 	}
 
 	@Override
-	public boolean usesEH() {
-		return (tok != TOKon_scope_success);
+	public boolean usesEH(SemanticContext context) {
+		if (context.isD2()) {
+			return true;
+		} else {
+			return (tok != TOKon_scope_success);
+		}
 	}
 
 }

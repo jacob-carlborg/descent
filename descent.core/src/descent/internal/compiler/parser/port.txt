@@ -38,8 +38,6 @@ mtype.c
 mtype.h
 opopver.c
 optimize.c --> CastExp::optimize
-statement.c
-statement.h
 struct.c
 template.c
 template.h

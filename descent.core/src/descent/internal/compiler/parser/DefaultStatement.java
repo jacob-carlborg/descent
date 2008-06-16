@@ -1,9 +1,9 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.BE.BEany;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
 
 public class DefaultStatement extends Statement {
 
@@ -23,6 +23,12 @@ public class DefaultStatement extends Statement {
 			TreeVisitor.acceptChildren(visitor, sourceStatement);
 		}
 		visitor.endVisit(this);
+	}
+	
+	@Override
+	public int blockExit(SemanticContext context) {
+		// Assume the worst
+	    return BEany;
 	}
 
 	@Override
@@ -61,6 +67,14 @@ public class DefaultStatement extends Statement {
 				}
 			}
 			sc.sw.sdefault = this;
+			
+			if (context.isD2()) {
+				if (sc.sw.tf != sc.tf) {
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.SwitchAndDefaultAreInDifferentFinallyBlocks, this));	
+					}
+				}
+			}
 		} else {
 			if (context.acceptsProblems()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.DefaultNotInSwitch, this));
@@ -85,8 +99,8 @@ public class DefaultStatement extends Statement {
 	}
 
 	@Override
-	public boolean usesEH() {
-		return statement.usesEH();
+	public boolean usesEH(SemanticContext context) {
+		return statement.usesEH(context);
 	}
 
 }

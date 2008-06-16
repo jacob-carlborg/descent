@@ -99,7 +99,7 @@ public class VarDeclaration extends Declaration {
 		visitor.endVisit(this);
 	}
 	
-	public Expression callAutoDtor() {
+	public Expression callAutoDtor(Scope sc) {
 		Expression e = null;
 
 		if ((storage_class & (STCauto | STCscope)) != 0 && !noauto) {

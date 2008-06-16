@@ -2,7 +2,7 @@ package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
+import static descent.internal.compiler.parser.BE.*;
 
 public class WhileStatement extends Statement {
 
@@ -23,6 +23,25 @@ public class WhileStatement extends Statement {
 			TreeVisitor.acceptChildren(visitor, body);
 		}
 		visitor.endVisit(this);
+	}
+	
+	@Override
+	public int blockExit(SemanticContext context) {
+		int result = BEnone;
+		if (condition.canThrow()) {
+			result |= BEthrow;
+		}
+		
+		if (body != null) {
+			result |= body.blockExit(context);
+			if ((result & BEbreak) != 0) {
+				result |= BEfallthru;
+			}
+			result &= ~(BEbreak | BEcontinue);
+		} else {
+			result |= BEfallthru;
+		}
+		return result;
 	}
 
 	@Override
@@ -155,8 +174,8 @@ public class WhileStatement extends Statement {
 	}
 
 	@Override
-	public boolean usesEH() {
-		return body != null ? body.usesEH() : false;
+	public boolean usesEH(SemanticContext context) {
+		return body != null ? body.usesEH(context) : false;
 	}
 
 }

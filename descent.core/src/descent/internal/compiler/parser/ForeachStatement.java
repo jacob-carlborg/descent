@@ -1,23 +1,17 @@
 package descent.internal.compiler.parser;
 
-import java.util.List;
-
-import melnorme.miscutil.tree.TreeVisitor;
-
-import org.eclipse.core.runtime.Assert;
-
-import descent.core.compiler.IProblem;
-import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Constfold.ArrayLength;
 import static descent.internal.compiler.parser.Constfold.Index;
-
+import static descent.internal.compiler.parser.MATCH.MATCHconst;
 import static descent.internal.compiler.parser.STC.STCconst;
+import static descent.internal.compiler.parser.STC.STCfinal;
 import static descent.internal.compiler.parser.STC.STCforeach;
 import static descent.internal.compiler.parser.STC.STCin;
+import static descent.internal.compiler.parser.STC.STCinvariant;
 import static descent.internal.compiler.parser.STC.STClazy;
+import static descent.internal.compiler.parser.STC.STCmanifest;
 import static descent.internal.compiler.parser.STC.STCout;
 import static descent.internal.compiler.parser.STC.STCref;
-
 import static descent.internal.compiler.parser.TOK.TOKdelegate;
 import static descent.internal.compiler.parser.TOK.TOKforeach;
 import static descent.internal.compiler.parser.TOK.TOKforeach_reverse;
@@ -25,7 +19,6 @@ import static descent.internal.compiler.parser.TOK.TOKstring;
 import static descent.internal.compiler.parser.TOK.TOKtuple;
 import static descent.internal.compiler.parser.TOK.TOKtype;
 import static descent.internal.compiler.parser.TOK.TOKvar;
-
 import static descent.internal.compiler.parser.TY.Taarray;
 import static descent.internal.compiler.parser.TY.Tarray;
 import static descent.internal.compiler.parser.TY.Tchar;
@@ -39,6 +32,16 @@ import static descent.internal.compiler.parser.TY.Ttuple;
 import static descent.internal.compiler.parser.TY.Tuns32;
 import static descent.internal.compiler.parser.TY.Tuns64;
 import static descent.internal.compiler.parser.TY.Twchar;
+import static descent.internal.compiler.parser.BE.*;
+
+import java.util.List;
+
+import melnorme.miscutil.tree.TreeVisitor;
+
+import org.eclipse.core.runtime.Assert;
+
+import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
 public class ForeachStatement extends Statement {
@@ -82,6 +85,20 @@ public class ForeachStatement extends Statement {
 			TreeVisitor.acceptChildren(visitor, sourceBody);
 		}
 		visitor.endVisit(this);
+	}
+	
+	@Override
+	public int blockExit(SemanticContext context) {
+		int result = BEfallthru;
+
+		if (aggr.canThrow()) {
+			result |= BEthrow;
+		}
+
+		if (body != null) {
+			result |= body.blockExit(context) & ~(BEbreak | BEcontinue);
+		}
+		return result;
 	}
 
 	@Override
@@ -230,6 +247,11 @@ public class ForeachStatement extends Statement {
 
 		aggr = aggr.semantic(sc, context);
 		aggr = resolveProperties(sc, aggr, context);
+		
+		if (context.isD2()) {
+			aggr = aggr.optimize(WANTvalue, context);
+		}
+		
 		if (aggr.type == null) {
 			if (context.acceptsProblems()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.InvalidForeachAggregate, this, new String[] { aggr.toChars(context) }));
@@ -309,7 +331,12 @@ public class ForeachStatement extends Statement {
 					}
 					arg.var = var;
 					
-					var.storage_class |= STCconst;
+					if (context.isD2()) {
+						var.storage_class |= STCmanifest;
+					} else {
+						var.storage_class |= STCconst;
+					}
+					
 					DeclarationExp de = new DeclarationExp(loc, var);
 					st.add(new ExpStatement(loc, de));
 					arg = arguments.get(1); // value
@@ -322,8 +349,16 @@ public class ForeachStatement extends Statement {
 				}
 				Dsymbol var = null;
 				if (te != null) {
-					if (e.type.toBasetype(context).ty == Tfunction
-							&& e.op == TOKvar) {
+					Type tb = e.type.toBasetype(context);
+					
+					boolean condition;
+					if (context.isD2()) {
+						condition = (tb.ty == Tfunction || tb.ty == Tsarray) && e.op == TOKvar;
+					} else {
+						condition = tb.ty == Tfunction && e.op == TOKvar;
+					}
+					
+					if (condition) {
 						VarExp ve = (VarExp) e;
 						var = new AliasDeclaration(loc, arg.ident, ve.var);
 					} else {
@@ -333,11 +368,9 @@ public class ForeachStatement extends Statement {
 								arg.ident, ie);
 						if (e.isConst()) {
 							v.storage_class |= STCconst;
+						} else if (context.isD2()) {
+							v.storage_class |= STCfinal;
 						}
-						//				#if V2
-						//						    else
-						//							v.storage_class |= STCfinal;
-						//				#endif
 						var = v;
 					}
 				} else {
@@ -432,8 +465,19 @@ public class ForeachStatement extends Statement {
 				var = new VarDeclaration(loc, arg.type, arg.ident, null);
 				var.copySourceRange(arg);
 				var.storage_class |= STCforeach;
-				var.storage_class |= arg.storageClass
-						& (STCin | STCout | STCref);
+				
+				if (context.isD2()) {
+					var.storage_class |= arg.storageClass & (STCin | STCout | STCref | STCconst | STCinvariant);
+					if (dim == 2 && i == 0) {
+						key = var;
+						// var.storage_class |= STCfinal;
+					} else { // if (!(arg.storageClass & STCref))
+						// var.storage_class |= STCfinal;
+						value = var;
+					}
+				} else {
+					var.storage_class |= arg.storageClass & (STCin | STCout | STCref);
+				}
 				
 				// Descent: for binding resolution
 				if (arg.ident != null) {
@@ -443,10 +487,13 @@ public class ForeachStatement extends Statement {
 				
 				DeclarationExp de = new DeclarationExp(loc, var);
 				de.semantic(sc, context);
-				if (dim == 2 && i == 0) {
-					key = var;
-				} else {
-					value = var;
+				
+				if (!context.isD2()) {
+					if (dim == 2 && i == 0) {
+						key = var;
+					} else {
+						value = var;
+					}
 				}
 			}
 
@@ -454,7 +501,14 @@ public class ForeachStatement extends Statement {
 			sc.scontinue = this;
 			body = body.semantic(sc, context);
 
-			if (!value.type.equals(tab.next)) {
+			boolean condition;
+			if (context.isD2()) {
+				condition = tab.nextOf().implicitConvTo(value.type, context).ordinal() < MATCHconst.ordinal();
+			} else {
+				condition = !value.type.equals(tab.next);
+			}
+			
+			if (condition) {
 				if (aggr.op == TOKstring) {
 					aggr = aggr.implicitCastTo(sc, value.type.arrayOf(context),
 							context);
@@ -588,6 +642,10 @@ public class ForeachStatement extends Statement {
 		fld.fbody = body;
 		flde = new FuncExp(loc, fld);
 		flde = flde.semantic(sc, context);
+		
+		if (context.isD2()) {
+			fld.tookAddressOf = 0;
+		}
 
 		// Resolve any forward referenced goto's
 		if (gotos != null) {
@@ -640,7 +698,13 @@ public class ForeachStatement extends Statement {
 			ec = new VarExp(loc, fdapply);
 			Expressions exps = new Expressions();
 			exps.add(aggr);
-			int keysize = taa.key.size(loc, context);
+			int keysize;
+			
+			if (context.isD2()) {
+				keysize = taa.index.size(loc, context);
+			} else {
+				keysize = taa.key.size(loc, context);
+			}
 			keysize = (keysize + 3) & ~3;
 			exps.add(new IntegerExp(loc, keysize, Type.tint32));
 			exps.add(flde);
@@ -803,8 +867,8 @@ public class ForeachStatement extends Statement {
 	}
 
 	@Override
-	public boolean usesEH() {
-		return body.usesEH();
+	public boolean usesEH(SemanticContext context) {
+		return body.usesEH(context);
 	}
 
 }

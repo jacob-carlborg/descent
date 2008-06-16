@@ -10,6 +10,10 @@ public abstract class Statement extends ASTDmdNode {
 	public Statement(Loc loc) {
 		this.loc = loc;
 	}
+	
+	public int blockExit(SemanticContext context) {
+		throw new IllegalStateException("assert(0)");
+	}
 
 	public boolean comeFrom() {
 		return false;
@@ -75,7 +79,7 @@ public abstract class Statement extends ASTDmdNode {
 		return null;
 	}
 
-	public void scopeCode(Statement[] sentry, Statement[] sexception,
+	public void scopeCode(Scope sc, Statement[] sentry, Statement[] sexception,
 			Statement[] sfinally) {
 		sentry[0] = null;
 		sexception[0] = null;
@@ -121,7 +125,7 @@ public abstract class Statement extends ASTDmdNode {
 		return buf.toChars();
 	}
 
-	public boolean usesEH() {
+	public boolean usesEH(SemanticContext context) {
 		return false;
 	}
 	

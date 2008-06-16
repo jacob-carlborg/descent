@@ -1,13 +1,7 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
-
-import melnorme.miscutil.tree.TreeVisitor;
-
-import org.eclipse.core.runtime.Assert;
-
-import descent.core.compiler.IProblem;
-import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.BE.BEreturn;
+import static descent.internal.compiler.parser.BE.BEthrow;
 import static descent.internal.compiler.parser.Scope.CSXany_ctor;
 import static descent.internal.compiler.parser.Scope.CSXreturn;
 import static descent.internal.compiler.parser.Scope.CSXsuper_ctor;
@@ -21,8 +15,17 @@ import static descent.internal.compiler.parser.TOK.TOKstring;
 import static descent.internal.compiler.parser.TOK.TOKsuper;
 import static descent.internal.compiler.parser.TOK.TOKthis;
 import static descent.internal.compiler.parser.TOK.TOKvar;
-
+import static descent.internal.compiler.parser.TY.Tstruct;
 import static descent.internal.compiler.parser.TY.Tvoid;
+
+import java.util.ArrayList;
+
+import melnorme.miscutil.tree.TreeVisitor;
+
+import org.eclipse.core.runtime.Assert;
+
+import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
 public class ReturnStatement extends Statement {
@@ -46,6 +49,16 @@ public class ReturnStatement extends Statement {
 			TreeVisitor.acceptChildren(visitor, sourceExp);
 		}
 		visitor.endVisit(this);
+	}
+	
+	@Override
+	public int blockExit(SemanticContext context) {
+		int result = BEreturn;
+
+	    if (exp != null && exp.canThrow()) {
+	    	result |= BEthrow;
+	    }
+	    return result;
 	}
 
 	@Override
@@ -151,6 +164,9 @@ public class ReturnStatement extends Statement {
 				VarDeclaration v = ve.var.isVarDeclaration();
 
 				if (v == null || v.isOut() || v.isRef()) {
+					fd.nrvo_can = 0;
+				} else if (context.isD2() && tbret.ty == Tstruct && ((TypeStruct)tbret).sym.dtor != null) {
+					// Struct being returned has destructors
 					fd.nrvo_can = 0;
 				} else if (fd.nrvo_var == null) {
 					if (!v.isDataseg(context) && !v.isParameter()

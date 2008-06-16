@@ -1,8 +1,8 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.BE.BEgoto;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
 
 public class GotoDefaultStatement extends Statement {
 
@@ -18,6 +18,11 @@ public class GotoDefaultStatement extends Statement {
 		if (children) {
 		}
 		visitor.endVisit(this);
+	}
+	
+	@Override
+	public int blockExit(SemanticContext context) {
+		return BEgoto;
 	}
 
 	@Override

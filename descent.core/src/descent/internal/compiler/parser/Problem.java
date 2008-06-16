@@ -1053,6 +1053,10 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.CannotHaveEDotTuple);
 		case CannotCreateCppClasses:
 			return String.format(ProblemMessages.CannotCreateCppClasses);
+		case SwitchAndCaseAreInDifferentFinallyBlocks:
+			return String.format(ProblemMessages.SwitchAndCaseAreInDifferentFinallyBlocks);
+		case SwitchAndDefaultAreInDifferentFinallyBlocks:
+			return String.format(ProblemMessages.SwitchAndDefaultAreInDifferentFinallyBlocks);
 		default:
 			return "";
 		}

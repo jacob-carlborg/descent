@@ -1,9 +1,10 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.BE.BEbreak;
+import static descent.internal.compiler.parser.BE.BEgoto;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
 
 public class BreakStatement extends Statement {
 
@@ -21,6 +22,11 @@ public class BreakStatement extends Statement {
 			TreeVisitor.acceptChildren(visitor, ident);
 		}
 		visitor.endVisit(this);
+	}
+	
+	@Override
+	public int blockExit(SemanticContext context) {
+		return ident != null ? BEgoto : BEbreak;
 	}
 
 	@Override

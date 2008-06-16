@@ -3,7 +3,7 @@ package descent.internal.compiler.parser;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
+import static descent.internal.compiler.parser.BE.*;
 
 public class PragmaStatement extends Statement {
 
@@ -31,6 +31,12 @@ public class PragmaStatement extends Statement {
 			TreeVisitor.acceptChildren(visitor, sourceBody);
 		}
 		visitor.endVisit(this);
+	}
+	
+	@Override
+	public int blockExit(SemanticContext context) {
+		int result = BEfallthru;
+		return result;
 	}
 
 	@Override
@@ -90,6 +96,27 @@ public class PragmaStatement extends Statement {
 
 				}
 			}
+		} else if (context.isD2() && equals(ident, Id.startaddress)) {
+			if (null == args || args.size() != 1) {
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionNameExpectedForStartAddress, this));
+				}
+			} else {
+				Expression e = (Expression) args.get(0);
+				e = e.semantic(sc, context);
+				e = e.optimize(WANTvalue | WANTinterpret, context);
+				args.set(0, e);
+				Dsymbol sa = getDsymbol(e, context);
+				if (null == sa || null == sa.isFuncDeclaration()) {
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionNameExpectedForStartAddress, e));
+					}
+				}
+				if (body != null) {
+					body = body.semantic(sc, context);
+				}
+				return this;
+			}
 		} else {
 			if (context.acceptsProblems()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
@@ -129,8 +156,8 @@ public class PragmaStatement extends Statement {
 	}
 
 	@Override
-	public boolean usesEH() {
-		return body != null && body.usesEH();
+	public boolean usesEH(SemanticContext context) {
+		return body != null && body.usesEH(context);
 	}
 
 	@Override

@@ -95,9 +95,9 @@ import descent.internal.core.SignatureRequestorAdapter;
  *   "Q"
  *   
  * SliceTypeSignature ::=
- *   "¬" TypeSignature "¬"
- *   Number "¬" Chars // Number == Chars.length --> lower
- *   Number "¬" Chars // Number == Chars.length --> upper
+ *   "" TypeSignature ""
+ *   Number "" Chars // Number == Chars.length --> lower
+ *   Number "" Chars // Number == Chars.length --> upper
  *   
  * FunctionTypeSignature ::=
  *   ( "F"  // D linkage
@@ -132,7 +132,7 @@ import descent.internal.core.SignatureRequestorAdapter;
  *     | "&"  // union
  *     | "|"  // interface
  *     | "E"  // enum
- *     | "¡"  // variable
+ *     | ""  // variable
  *     | "="  // alias
  *     | "T"  // typedef
  *     )
@@ -397,9 +397,9 @@ public final class Signature {
 	
 	/**
 	 * Character constant indicating a slice type in a signature.
-	 * Value is <code>'¬'</code>.
+	 * Value is <code>''</code>.
 	 */
-	public static final char C_SLICE									= '¬';
+	public static final char C_SLICE									= 'Â¬';
 	
 	/**
 	 * Character constant indicating a D linkage in a function signature.
@@ -493,9 +493,9 @@ public final class Signature {
 	
 	/**
 	 * Character constant indicating a variable in a signature.
-	 * Value is <code>'¡'</code>.
+	 * Value is <code>''</code>.
 	 */
-	public static final char C_VARIABLE									= '¡';
+	public static final char C_VARIABLE									= 'Â¡';
 	
 	/**
 	 * Character constant indicating an alias type in a signature.

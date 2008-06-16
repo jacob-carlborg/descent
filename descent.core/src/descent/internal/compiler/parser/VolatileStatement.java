@@ -1,8 +1,8 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.BE.BEfallthru;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
 
 public class VolatileStatement extends Statement {
 
@@ -22,6 +22,11 @@ public class VolatileStatement extends Statement {
 			TreeVisitor.acceptChildren(visitor, sourceStatement);
 		}
 		visitor.endVisit(this);
+	}
+	
+	@Override
+	public int blockExit(SemanticContext context) {
+		return statement != null ? statement.blockExit(context) : BEfallthru;
 	}
 
 	@Override

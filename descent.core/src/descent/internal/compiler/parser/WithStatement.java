@@ -1,11 +1,14 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.BE.BEfallthru;
+import static descent.internal.compiler.parser.BE.BEnone;
+import static descent.internal.compiler.parser.BE.BEthrow;
+import static descent.internal.compiler.parser.TOK.TOKimport;
+import static descent.internal.compiler.parser.TOK.TOKtype;
+import static descent.internal.compiler.parser.TY.Tstruct;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.TOK.*;
-import static descent.internal.compiler.parser.TY.*;
-
 
 public class WithStatement extends Statement {
 
@@ -32,6 +35,20 @@ public class WithStatement extends Statement {
 			TreeVisitor.acceptChildren(visitor, body);
 		}
 		visitor.endVisit(this);
+	}
+	
+	@Override
+	public int blockExit(SemanticContext context) {
+		int result = BEnone;
+		if (exp.canThrow()) {
+			result = BEthrow;
+		}
+		if (body != null) {
+			result |= body.blockExit(context);
+		} else {
+			result |= BEfallthru;
+		}
+		return result;
 	}
 
 	@Override
@@ -125,8 +142,8 @@ public class WithStatement extends Statement {
 	}
 	
 	@Override
-	public boolean usesEH() {
-		return body != null ? body.usesEH() : false;
+	public boolean usesEH(SemanticContext context) {
+		return body != null ? body.usesEH(context) : false;
 	}
 
 }

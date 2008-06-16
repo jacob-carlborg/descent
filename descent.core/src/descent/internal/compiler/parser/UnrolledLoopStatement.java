@@ -2,7 +2,7 @@ package descent.internal.compiler.parser;
 
 import melnorme.miscutil.Assert;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
+import static descent.internal.compiler.parser.BE.*;
 
 public class UnrolledLoopStatement extends Statement {
 
@@ -16,6 +16,19 @@ public class UnrolledLoopStatement extends Statement {
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		Assert.fail("Accept0 on a fake node");
+	}
+	
+	@Override
+	public int blockExit(SemanticContext context) {
+		int result = BEfallthru;
+		for (int i = 0; i < size(statements); i++) {
+			Statement s = (Statement) statements.get(i);
+			if (s != null) {
+				int r = s.blockExit(context);
+				result |= r & ~(BEbreak | BEcontinue);
+			}
+		}
+		return result;
 	}
 
 	@Override
@@ -146,12 +159,12 @@ public class UnrolledLoopStatement extends Statement {
 	}
 
 	@Override
-	public boolean usesEH() {
+	public boolean usesEH(SemanticContext context) {
 		for (int i = 0; i < statements.size(); i++) {
 			Statement s;
 
 			s = statements.get(i);
-			if (s != null && s.usesEH()) {
+			if (s != null && s.usesEH(context)) {
 				return true;
 			}
 		}

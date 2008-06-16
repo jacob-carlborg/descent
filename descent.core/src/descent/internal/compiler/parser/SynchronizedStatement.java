@@ -1,9 +1,9 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.BE.BEfallthru;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
 
 public class SynchronizedStatement extends Statement {
 
@@ -24,6 +24,11 @@ public class SynchronizedStatement extends Statement {
 			TreeVisitor.acceptChildren(visitor, body);
 		}
 		visitor.endVisit(this);
+	}
+	
+	@Override
+	public int blockExit(SemanticContext context) {
+		return body != null ? body.blockExit(context) : BEfallthru;
 	}
 
 	@Override
@@ -97,7 +102,7 @@ public class SynchronizedStatement extends Statement {
 	}
 
 	@Override
-	public boolean usesEH() {
+	public boolean usesEH(SemanticContext context) {
 		return true;
 	}
 

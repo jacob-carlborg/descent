@@ -12,7 +12,7 @@ public interface ISignatureConstants {
 	char UNION = '&';
 	char ENUM = 'E';
 	char ENUM_MEMBER = '~';
-	char VARIABLE = '¡';
+	char VARIABLE = 'Â¡';
 	char ALIAS = '=';
 	char TYPEDEF = 'T';
 	char FUNCTION = '[';
@@ -54,7 +54,7 @@ public interface ISignatureConstants {
 	char TEMPLATE_INSTANCE_SYMBOL = '*';
 	char TYPEOF = '>';
 	char TYPEOF_RETURN = 'Q';
-	char SLICE = '¬';
+	char SLICE = 'Â¬';
 	char SCOPE = '#';
 	char POSITION = '$';
 

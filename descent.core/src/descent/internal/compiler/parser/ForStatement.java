@@ -2,7 +2,7 @@ package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
+import static descent.internal.compiler.parser.BE.*;
 
 public class ForStatement extends Statement {
 
@@ -30,6 +30,35 @@ public class ForStatement extends Statement {
 			TreeVisitor.acceptChildren(visitor, body);
 		}
 		visitor.endVisit(this);
+	}
+	
+	@Override
+	public int blockExit(SemanticContext context) {
+		int result = BEfallthru;
+
+		if (init != null) {
+			result = init.blockExit(context);
+			if (0 == (result & BEfallthru)) {
+				return result;
+			}
+		}
+		if (condition != null) {
+			if (condition.canThrow()) {
+				result |= BEthrow;
+			}
+		} else
+			result &= ~BEfallthru; // the body must do the exiting
+		if (body != null) {
+			int r = body.blockExit(context);
+			if ((r & BEbreak) != 0) {
+				result |= BEfallthru;
+			}
+			result |= r & ~(BEbreak | BEcontinue);
+		}
+		if (increment != null && increment.canThrow()) {
+			result |= BEthrow;
+		}
+		return result;
 	}
 
 	@Override
@@ -143,12 +172,12 @@ public class ForStatement extends Statement {
 	}
 
 	@Override
-	public void scopeCode(Statement[] sentry, Statement[] sexception,
+	public void scopeCode(Scope sc, Statement[] sentry, Statement[] sexception,
 			Statement[] sfinally) {
 		if (init != null) {
-			init.scopeCode(sentry, sexception, sfinally);
+			init.scopeCode(sc, sentry, sexception, sfinally);
 		} else {
-			super.scopeCode(sentry, sexception, sfinally);
+			super.scopeCode(sc, sentry, sexception, sfinally);
 		}
 	}
 
@@ -165,11 +194,21 @@ public class ForStatement extends Statement {
 			condition = new IntegerExp(loc, 1, Type.tboolean);
 		}
 		sc.noctor++;
-		condition = condition.semantic(sc, context);
-		condition = resolveProperties(sc, condition, context);
-	    condition = condition.optimize(WANTvalue, context);
-
-		condition = condition.checkToBoolean(context);
+		
+		boolean check;
+		if (context.isD2()) {
+			check = context != null;
+		} else {
+			check = true;
+		}
+		
+		if (check) {
+			condition = condition.semantic(sc, context);
+			condition = resolveProperties(sc, condition, context);
+		    condition = condition.optimize(WANTvalue, context);
+			condition = condition.checkToBoolean(context);
+		}
+		
 		if (increment != null) {
 			increment = increment.semantic(sc, context);
 		}
@@ -238,8 +277,8 @@ public class ForStatement extends Statement {
 	}
 
 	@Override
-	public boolean usesEH() {
-		return (init != null && init.usesEH()) || body.usesEH();
+	public boolean usesEH(SemanticContext context) {
+		return (init != null && init.usesEH(context)) || body.usesEH(context);
 	}
 
 }

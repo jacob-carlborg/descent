@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.BE.BEgoto;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
@@ -22,6 +23,11 @@ public class GotoCaseStatement extends Statement {
 			TreeVisitor.acceptChildren(visitor, sourceExp);
 		}
 		visitor.endVisit(this);
+	}
+	
+	@Override
+	public int blockExit(SemanticContext context) {
+		return BEgoto;
 	}
 
 	@Override

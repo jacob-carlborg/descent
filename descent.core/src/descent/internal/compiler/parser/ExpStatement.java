@@ -4,6 +4,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.TOK.TOKassert;
 import static descent.internal.compiler.parser.TOK.TOKhalt;
+import static descent.internal.compiler.parser.BE.*;
 
 
 public class ExpStatement extends Statement {
@@ -23,6 +24,29 @@ public class ExpStatement extends Statement {
 			TreeVisitor.acceptChildren(visitor, sourceExp);
 		}
 		visitor.endVisit(this);
+	}
+	
+	@Override
+	public int blockExit(SemanticContext context) {
+		int result = BEfallthru;
+
+		if (exp != null) {
+			if (exp.op == TOKhalt) {
+				return BEhalt;
+			}
+			
+			if (exp.op == TOKassert) {
+				AssertExp a = (AssertExp) exp;
+
+				if (a.e1.isBool(false)) {// if it's an assert(0)
+					return BEhalt;
+				}
+			}
+			if (exp.canThrow()) {
+				result |= BEthrow;
+			}
+		}
+		return result;
 	}
 
 	@Override

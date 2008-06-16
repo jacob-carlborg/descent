@@ -1,11 +1,13 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.BE.BEany;
+import static descent.internal.compiler.parser.TOK.TOKint64;
+import static descent.internal.compiler.parser.TOK.TOKstring;
+import static descent.internal.compiler.parser.TOK.TOKvar;
+import static descent.internal.compiler.parser.TY.Tclass;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.TOK.TOKint64;
-import static descent.internal.compiler.parser.TOK.TOKstring;
-
 
 public class CaseStatement extends Statement {
 
@@ -28,6 +30,12 @@ public class CaseStatement extends Statement {
 			TreeVisitor.acceptChildren(visitor, sourceStatement);
 		}
 		visitor.endVisit(this);
+	}
+	
+	@Override
+	public int blockExit(SemanticContext context) {
+		// Assume the worst
+	    return BEany;
 	}
 
 	@Override
@@ -78,17 +86,40 @@ public class CaseStatement extends Statement {
 
 			exp = exp.implicitCastTo(sc, sw.condition.type, context);
 			exp = exp.optimize(WANTvalue | WANTinterpret, context);
-			if (exp.op != TOKstring && exp.op != TOKint64) {
-				if (context.acceptsProblems()) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CaseMustBeAnIntegralOrStringConstant, sourceExp, new String[] { exp.toChars(context) }));
+			
+			boolean gotoL1 = false;
+			
+			if (context.isD2()) {
+				/* This is where variables are allowed as case expressions.
+				 */
+				if (exp.op == TOKvar)
+				{   VarExp ve = (VarExp) exp;
+				    VarDeclaration v = ve.var.isVarDeclaration();
+				    Type t = exp.type.toBasetype(context);
+				    if (v != null && (t.isintegral() || t.ty == Tclass))
+				    {	/* Flag that we need to do special code generation
+					 * for this, i.e. generate a sequence of if-then-else
+					 */
+					sw.hasVars = 1;
+					// goto L1;
+					gotoL1 = true;
+				    }
 				}
-				exp = new IntegerExp(0);
+			}
+			
+			if (!gotoL1) {
+				if (exp.op != TOKstring && exp.op != TOKint64) {
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.CaseMustBeAnIntegralOrStringConstant, sourceExp, new String[] { exp.toChars(context) }));
+					}
+					exp = new IntegerExp(0);
+				}
 			}
 
+			// L1:
 			for (i = 0; i < sw.cases.size(); i++) {
 				CaseStatement cs = (CaseStatement) sw.cases.get(i);
 
-				//printf("comparing '%s' with '%s'\n", exp.toChars(), cs.exp.toChars());
 				if (cs.exp.equals(exp)) {
 					if (context.acceptsProblems()) {
 						context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.DuplicateCaseInSwitchStatement, this, new String[] { exp.toChars(context) }));
@@ -107,6 +138,14 @@ public class CaseStatement extends Statement {
 					if (gcs.exp == null) {
 						gcs.cs = this;
 						sw.gotoCases.remove(i); // remove from array
+					}
+				}
+			}
+			
+			if (context.isD2()) {
+				if (sc.sw.tf != sc.tf) {
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.SwitchAndCaseAreInDifferentFinallyBlocks, this));
 					}
 				}
 			}
@@ -139,8 +178,8 @@ public class CaseStatement extends Statement {
 	}
 	
 	@Override
-	public boolean usesEH() {
-		return statement.usesEH();
+	public boolean usesEH(SemanticContext context) {
+		return statement.usesEH(context);
 	}
 	
 	@Override

@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.BE.BEfallthru;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
@@ -29,6 +30,10 @@ public class Catch extends ASTDmdNode {
 			TreeVisitor.acceptChildren(visitor, sourceHandler);
 		}
 		visitor.endVisit(this);
+	}
+	
+	public int blockExit(SemanticContext context) {
+		return handler != null ? handler.blockExit(context) : BEfallthru;
 	}
 
 	@Override
@@ -90,7 +95,9 @@ public class Catch extends ASTDmdNode {
 		buf.writenl();
 		buf.writebyte('{');
 		buf.writenl();
-		handler.toCBuffer(buf, hgs, context);
+		if (handler != null) {
+			handler.toCBuffer(buf, hgs, context);
+		}
 		buf.writebyte('}');
 		buf.writenl();
 	}

@@ -35,7 +35,7 @@ public class ThrowStatement extends Statement {
 
 	@Override
 	public Statement semantic(Scope sc, SemanticContext context) {
-		FuncDeclaration fd = (FuncDeclaration) sc.parent.isFuncDeclaration(); // SEMANTIC
+		FuncDeclaration fd = (FuncDeclaration) sc.parent.isFuncDeclaration();
 		fd.hasReturnExp |= 2;
 
 		if (sc.incontract != 0) {

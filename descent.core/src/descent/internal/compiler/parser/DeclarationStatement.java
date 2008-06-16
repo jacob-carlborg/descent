@@ -31,7 +31,7 @@ public class DeclarationStatement extends ExpStatement {
 	}
 
 	@Override
-	public void scopeCode(Statement[] sentry, Statement[] sexception,
+	public void scopeCode(Scope sc, Statement[] sentry, Statement[] sexception,
 			Statement[] sfinally) {
 		sentry[0] = null;
 		sexception[0] = null;
@@ -44,7 +44,7 @@ public class DeclarationStatement extends ExpStatement {
 				if (v != null) {
 					Expression e;
 
-					e = v.callAutoDtor();
+					e = v.callAutoDtor(sc);
 					if (e != null) {
 						sfinally[0] = new ExpStatement(loc, e);
 					}

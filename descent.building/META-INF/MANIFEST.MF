@@ -11,5 +11,6 @@ Require-Bundle: org.eclipse.ui,
  descent.core,
  descent.ui,
  descent.launching,
- org.eclipse.ui.forms
+ org.eclipse.ui.forms,
+ org.eclipse.core.resources
 Eclipse-LazyStart: true

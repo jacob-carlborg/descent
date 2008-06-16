@@ -5,6 +5,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import org.eclipse.core.runtime.Assert;
 
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.BE.*;
 
 
 public class IfStatement extends Statement {
@@ -35,6 +36,25 @@ public class IfStatement extends Statement {
 			TreeVisitor.acceptChildren(visitor, sourceElsebody);
 		}
 		visitor.endVisit(this);
+	}
+	
+	@Override
+	public int blockExit(SemanticContext context) {
+		int result = BEnone;
+	    if (condition.canThrow()) {
+	    	result |= BEthrow;
+	    }
+	    if (ifbody != null) {
+	    	result |= ifbody.blockExit(context);
+	    } else {
+	    	result |= BEfallthru;
+	    }
+	    if (elsebody != null) {
+	    	result |= elsebody.blockExit(context);
+	    } else {
+	    	result |= BEfallthru;
+	    }
+	    return result;
 	}
 
 	@Override
@@ -195,9 +215,9 @@ public class IfStatement extends Statement {
 	}
 
 	@Override
-	public boolean usesEH() {
-		return (ifbody != null && ifbody.usesEH())
-				|| (elsebody != null && elsebody.usesEH());
+	public boolean usesEH(SemanticContext context) {
+		return (ifbody != null && ifbody.usesEH(context))
+				|| (elsebody != null && elsebody.usesEH(context));
 	}
 
 }
