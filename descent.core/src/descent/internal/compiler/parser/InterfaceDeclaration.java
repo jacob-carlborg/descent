@@ -5,6 +5,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.Flags;
+import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.LINK.LINKwindows;
@@ -355,9 +356,9 @@ public class InterfaceDeclaration extends ClassDeclaration {
 	
 	public char getSignaturePrefix() {
 		if (templated) {
-			return ISignatureConstants.TEMPLATED_INTERFACE;
+			return Signature.C_TEMPLATED_INTERFACE;
 		} else {
-			return ISignatureConstants.INTERFACE;
+			return Signature.C_INTERFACE;
 		}
 	}
 	

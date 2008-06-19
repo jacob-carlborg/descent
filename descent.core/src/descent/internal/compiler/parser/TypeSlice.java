@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -190,18 +191,18 @@ public class TypeSlice extends Type {
 	
 	@Override
 	protected void appendSignature0(StringBuilder sb) {
-		sb.append(ISignatureConstants.SLICE);
+		sb.append(Signature.C_SLICE);
 		next.appendSignature(sb);
-		sb.append(ISignatureConstants.SLICE);
+		sb.append(Signature.C_SLICE);
 		
 		char[] expc = encoder.encodeExpression(lwr);
 		sb.append(expc.length);
-		sb.append(ISignatureConstants.SLICE);
+		sb.append(Signature.C_SLICE);
 		sb.append(expc);
 		
 		expc = encoder.encodeExpression(upr);
 		sb.append(expc.length);
-		sb.append(ISignatureConstants.SLICE);
+		sb.append(Signature.C_SLICE);
 		sb.append(expc);
 	}
 	

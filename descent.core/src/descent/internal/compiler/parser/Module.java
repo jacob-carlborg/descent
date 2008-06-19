@@ -6,6 +6,7 @@ import java.util.List;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.ICompilationUnit;
 import descent.core.JavaModelException;
+import descent.core.Signature;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.lookup.SemanticRest;
@@ -403,7 +404,7 @@ public class Module extends Package {
 	}
 	
 	public void appendSignature(StringBuilder sb) {
-		sb.append(ISignatureConstants.MODULE);
+		sb.append(Signature.C_MODULE);
 		String[] pieces = moduleName.split("\\.");
 		for(String piece : pieces) {
 			sb.append(piece.length());

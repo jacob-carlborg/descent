@@ -44,7 +44,7 @@ public class AssignExp extends BinExp {
 	}
 
 	@Override
-	public char[] opId() {
+	public char[] opId(SemanticContext context) {
 		return Id.assign;
 	}
 
@@ -160,7 +160,7 @@ public class AssignExp extends BinExp {
 		if (dim != size(tup2.exps))
 		{
 			if (context.acceptsProblems()) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.MismatchedTupleLengths, this, new String[] { String.valueOf(dim), String.valueOf(size(tup2.exps)) }));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.MismatchedTupleLengths, this, String.valueOf(dim), String.valueOf(size(tup2.exps))));
 			}
 		}
 		else
@@ -225,7 +225,7 @@ public class AssignExp extends BinExp {
 			e2 = e2.implicitCastTo(sc, t1.next, context);
 		} else if (t1.ty == TY.Tsarray) {
 			if (context.acceptsProblems()) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotAssignToStaticArray, this, new String[] { e1.toChars(context) }));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotAssignToStaticArray, this, e1.toChars(context)));
 			}
 		} else {
 			e2 = e2.implicitCastTo(sc, e1.type, context);

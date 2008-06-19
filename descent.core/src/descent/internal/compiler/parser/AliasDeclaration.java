@@ -5,6 +5,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.IField;
+import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.lookup.SemanticRest;
 import descent.internal.compiler.parser.ast.IASTVisitor;
@@ -78,7 +79,7 @@ public class AliasDeclaration extends Declaration {
 	}
 
 	@Override
-	public Type getType() {
+	public Type getType(SemanticContext context) {
 		return type;
 	}
 
@@ -152,7 +153,15 @@ public class AliasDeclaration extends Declaration {
 		 * try to alias y to 3.
 		 */
 		s[0] = type.toDsymbol(sc, context);
-		if (s[0] != null) {
+		
+		boolean condition;
+		if (context.isD2()) {
+			condition = s[0] != null && ((s[0].getType(context) != null && type.equals(s[0].getType(context))) || s[0].isEnumMember() != null);
+		} else {
+			condition = s[0] != null; 
+		}
+		
+		if (condition) {
 			// goto L2;
 			semantic_L2(sc, context, s[0]); // it's a symbolic alias
 			return;
@@ -165,21 +174,35 @@ public class AliasDeclaration extends Declaration {
 			return;
 		} else if (e[0] != null) {
 			// Try to convert Expression to Dsymbol
-			if (e[0].op == TOKvar) {
-				s[0] = ((VarExp) e[0]).var;
-				// goto L2;
-				semantic_L2(sc, context, s[0]); // it's a symbolic alias
-				return;
-			} else if (e[0].op == TOKfunction) {
-				s[0] = ((FuncExp) e[0]).fd;
-				// goto L2;
-				semantic_L2(sc, context, s[0]); // it's a symbolic alias
-				return;
-			} else {
+			if (context.isD2()) {
+				s[0] = getDsymbol(e[0], context);
+				if (s[0] != null) {
+				    // goto L2;
+					semantic_L2(sc, context, s[0]); // it's a symbolic alias
+					return;
+				}
+
 				if (context.acceptsProblems()) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotAliasAnExpression, sourceType, new String[] { e[0].toChars(context) }));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotAliasAnExpression, sourceType, e[0].toChars(context)));
 				}
 				t[0] = e[0].type;
+			} else {
+				if (e[0].op == TOKvar) {
+					s[0] = ((VarExp) e[0]).var;
+					// goto L2;
+					semantic_L2(sc, context, s[0]); // it's a symbolic alias
+					return;
+				} else if (e[0].op == TOKfunction) {
+					s[0] = ((FuncExp) e[0]).fd;
+					// goto L2;
+					semantic_L2(sc, context, s[0]); // it's a symbolic alias
+					return;
+				} else {
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotAliasAnExpression, sourceType, e[0].toChars(context)));
+					}
+					t[0] = e[0].type;
+				}
 			}
 		} else if (t[0] != null) {
 			type = t[0];
@@ -207,11 +230,10 @@ public class AliasDeclaration extends Declaration {
 		if (v != null && v.linkage == LINK.LINKdefault) {
 			if (context.acceptsProblems()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.ForwardReferenceOfSymbol, tempType, new String[] { tempType.toString() }));
+						IProblem.ForwardReferenceOfSymbol, tempType, tempType.toString()));
 				context
 						.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.ForwardReferenceOfSymbol, v.ident, new String[] { new String(
-										v.ident.ident) }));
+								IProblem.ForwardReferenceOfSymbol, v.ident, new String(v.ident.ident)));
 			}
 			s = null;
 		} else {
@@ -280,7 +302,7 @@ public class AliasDeclaration extends Declaration {
 		if (inSemantic != 0) {
 			if (context.acceptsProblems()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.CircularDefinition, ident, new String[] { toChars(context) }));
+						IProblem.CircularDefinition, ident, toChars(context)));
 			}
 		}
 		Dsymbol s = aliassym != null ? aliassym.toAlias(context) : this;
@@ -303,7 +325,7 @@ public class AliasDeclaration extends Declaration {
 	}
 	
 	public char getSignaturePrefix() {
-		return ISignatureConstants.ALIAS;
+		return Signature.C_ALIAS;
 	}
 	
 	public void setJavaElement(IField field) {

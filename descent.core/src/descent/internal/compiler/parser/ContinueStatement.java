@@ -101,7 +101,7 @@ public class ContinueStatement extends Statement {
 					if (!s.hasContinue()) {
 						if (context.acceptsProblems()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
-									IProblem.LabelHasNoContinue, this, new String[] { ident.toChars() }));
+									IProblem.LabelHasNoContinue, this, ident.toChars()));
 						}
 					}
 					if (ls.tf != sc.tf) {
@@ -114,7 +114,7 @@ public class ContinueStatement extends Statement {
 				}
 			}
 			if (context.acceptsProblems()) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.EnclosingLabelForContinueNotFound, ident, new String[] { ident.toChars() }));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.EnclosingLabelForContinueNotFound, ident, ident.toChars()));
 			}
 		} else if (null == sc.scontinue) {
 			if (sc.fes != null) {

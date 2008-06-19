@@ -257,6 +257,7 @@ public abstract class ASTDmdNode extends ASTNode {
 	public final static int TYPE_RETURN = 197;
 	public final static int FILE_INIT_EXP = 198;
 	public final static int LINE_INIT_EXP = 199;
+	public final static int DEFAULT_INIT_EXP = 200;
 
 	// Defined here because MATCH and Match overlap on Windows
 	public static class Match {
@@ -568,7 +569,7 @@ public abstract class ASTDmdNode extends ASTNode {
 				if (context.acceptsProblems()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.SymbolHasNoValue, e,
-							new String[] { e.toChars(context) }));
+							e.toChars(context)));
 				}
 			}
 		}
@@ -628,9 +629,9 @@ public abstract class ASTDmdNode extends ASTNode {
 			if ((d.prot() == PROTprivate && d.getModule() != sc.module
 					|| d.prot() == PROTpackage && !hasPackageAccess(sc, d))) {
 				if (context.acceptsProblems()) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolIsNotAccessible, this, new String[] { d.kind(), d
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolIsNotAccessible, this, d.kind(), d
 							.getModule().toChars(context), d.toChars(context),
-							sc.module.toChars(context) }));
+							sc.module.toChars(context)));
 				}
 			}
 		} else if (e.type.ty == Tclass) { // Do access check
@@ -774,7 +775,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		if (nargs > nparams && tf.varargs == 0) {
 			if (context.acceptsProblems()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.ExpectedNumberArguments, this, new String[] { String.valueOf(nparams), String.valueOf(nargs) }));
+						IProblem.ExpectedNumberArguments, this, String.valueOf(nparams), String.valueOf(nargs)));
 			}
 		}
 
@@ -803,7 +804,7 @@ public abstract class ASTDmdNode extends ASTNode {
 						if (!gotoL2) {
 							if (context.acceptsProblems()) {
 								context.acceptProblem(Problem.newSemanticTypeError(
-										IProblem.ExpectedNumberArguments, this, new String[] { String.valueOf(nparams), String.valueOf(nargs) }));
+										IProblem.ExpectedNumberArguments, this, String.valueOf(nparams), String.valueOf(nargs)));
 							}
 						}
 						break;
@@ -822,7 +823,7 @@ public abstract class ASTDmdNode extends ASTNode {
 						if (arg.implicitConvTo(p.type, context) != MATCH.MATCHnomatch) {
 							if (nargs != nparams) {
 								context.acceptProblem(Problem.newSemanticTypeError(
-										IProblem.ExpectedNumberArguments, this, new String[] { String.valueOf(nparams), String.valueOf(nargs) }));
+										IProblem.ExpectedNumberArguments, this, String.valueOf(nparams), String.valueOf(nargs)));
 							}
 							gotoL1 = true;
 							// goto L1;
@@ -1059,7 +1060,7 @@ public abstract class ASTDmdNode extends ASTNode {
 					if (context.acceptsProblems()) {
 						context.acceptProblem(Problem.newSemanticTypeWarning(
 								IProblem.SymbolNotAnExpression, 0, arg.start,
-								arg.length, new String[] { arg.toChars(context) }));
+								arg.length, arg.toChars(context)));
 					}
 					arg = new IntegerExp(arg.loc, 0, Type.tint32);
 				}
@@ -1360,9 +1361,10 @@ public abstract class ASTDmdNode extends ASTNode {
 	}
 
 	public static void overloadResolveX(Match m, FuncDeclaration fstart,
-			Expressions arguments, SemanticContext context) {
+			Expression ethis, Expressions arguments, SemanticContext context) {
 		Param2 p = new Param2();
 		p.m = m;
+		p.ethis = ethis;
 		p.arguments = arguments;
 		overloadApply(fstart, fp2, p, context);
 	}
@@ -1385,7 +1387,7 @@ public abstract class ASTDmdNode extends ASTNode {
 
 				m.anyf = f;
 				tf = (TypeFunction) f.type;
-				match = tf.callMatch(arguments, context);
+				match = tf.callMatch(f.needThis() ? p.ethis : null, arguments, context);
 				if (match != MATCHnomatch) {
 					if (match.ordinal() > m.last.ordinal()) {
 						// goto LfIsBetter;
@@ -1411,6 +1413,27 @@ public abstract class ASTDmdNode extends ASTNode {
 						m.lastf = f;
 						m.count = 1;
 						return 0;
+					}
+					
+					/* Try to disambiguate using template-style partial ordering rules.
+				     * In essence, if f() and g() are ambiguous, if f() can call g(),
+				     * but g() cannot call f(), then pick f().
+				     * This is because f() is "more specialized."
+				     */
+				    {
+						MATCH c1 = f.leastAsSpecialized(m.lastf, context);
+						MATCH c2 = m.lastf.leastAsSpecialized(f, context);
+						if (c1.ordinal() > c2.ordinal()) {
+							// goto LfIsBetter;
+							m.last = match;
+							m.lastf = f;
+							m.count = 1;
+							return 0;
+						}
+						if (c1.ordinal() < c2.ordinal()) {
+							// goto LlastIsBetter;
+							return 0;
+						}
 					}
 
 					// Lambiguous:
@@ -1464,7 +1487,7 @@ public abstract class ASTDmdNode extends ASTNode {
 					if (null == f) {
 						if (context.acceptsProblems()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
-									IProblem.SymbolIsAliasedToAFunction, a, new String[] { a.toChars(context) }));
+									IProblem.SymbolIsAliasedToAFunction, a, a.toChars(context)));
 						}
 						break; // BUG: should print error message?
 					}
@@ -1610,7 +1633,7 @@ public abstract class ASTDmdNode extends ASTNode {
                 if (null == e) {
                 	if (context.acceptsProblems()) {
 	                	context.acceptProblem(Problem.newSemanticTypeError(
-	        					IProblem.VariableIsUsedBeforeInitialization, v, new String[] { v.toChars(context) }));
+	        					IProblem.VariableIsUsedBeforeInitialization, v, v.toChars(context)));
                 	}
                 }
                 else if (e != EXP_CANT_INTERPRET) {
@@ -1663,12 +1686,12 @@ public abstract class ASTDmdNode extends ASTNode {
 	}
 
 	public static void templateResolve(Match m, TemplateDeclaration td,
-			Scope sc, Loc loc, Objects targsi, Expressions arguments,
+			Scope sc, Loc loc, Objects targsi, Expression ethis, Expressions arguments,
 			SemanticContext context) {
 		FuncDeclaration fd;
 
 		assert (td != null);
-		fd = td.deduceFunctionTemplate(sc, loc, targsi, arguments, context);
+		fd = td.deduceFunctionTemplate(sc, loc, targsi, ethis, arguments, context);
 		if (null == fd) {
 			return;
 		}
@@ -1711,7 +1734,7 @@ public abstract class ASTDmdNode extends ASTNode {
 						if (sc1.scopesym == ti1) {
 							if (context.acceptsProblems()) {
 								context.acceptProblem(Problem.newSemanticTypeError(
-										IProblem.RecursiveTemplateExpansionForTemplateArgument, t1, new String[] { t1.toChars(context) }));
+										IProblem.RecursiveTemplateExpansionForTemplateArgument, t1, t1.toChars(context)));
 							}
 							return true; // fake a match
 						}
@@ -2033,9 +2056,8 @@ public abstract class ASTDmdNode extends ASTNode {
 						continue L1;
 					}
 					if (context.acceptsProblems()) {
-						context.acceptProblem(Problem.newSemanticTypeError(IProblem.ThisForSymbolNeedsToBeType, var, new String[] { var
-								.toChars(context), ad.toChars(context), t
-								.toChars(context) }));
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.ThisForSymbolNeedsToBeType, var, var
+								.toChars(context), ad.toChars(context), t.toChars(context)));
 					}
 				}
 			}

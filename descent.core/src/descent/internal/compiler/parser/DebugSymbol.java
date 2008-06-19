@@ -49,7 +49,7 @@ public class DebugSymbol extends Dsymbol {
 			} else {
 				if (findCondition(m.debugidsNot, ident)) {
 					if (context.acceptsProblems()) {
-						context.acceptProblem(Problem.newSemanticTypeError(IProblem.DebugDefinedAfterUse, this, new String[] { ident.toString() } ));
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.DebugDefinedAfterUse, this, ident.toString()));
 					}
 				}
 				if (null == m.debugids) {

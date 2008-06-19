@@ -71,7 +71,7 @@ public class TypeStruct extends Type {
 				IdentifierExp id = (IdentifierExp) tpi.idents.get(tpi.idents
 						.size() - 1);
 				if (id.dyncast() == DYNCAST_IDENTIFIER && equals(sym.ident, id)) {
-					Type tparent = sym.parent.getType();
+					Type tparent = sym.parent.getType(context);
 					if (null != tparent) {
 						/* Slice off the .foo in S!(T).foo
 						 */
@@ -187,9 +187,9 @@ public class TypeStruct extends Type {
 				}
 			}
 	
-			if (null != s.getType()) {
+			if (null != s.getType(context)) {
 				//return new DotTypeExp(e.loc, e, s);
-				return new TypeExp(e.loc, s.getType());
+				return new TypeExp(e.loc, s.getType(context));
 			}
 	
 			EnumMember em = s.isEnumMember();

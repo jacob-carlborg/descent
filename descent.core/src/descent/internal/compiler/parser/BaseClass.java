@@ -115,8 +115,8 @@ public class BaseClass extends ASTDmdNode {
 						&& ifd.toParent() == base) {
 					if (context.acceptsProblems()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.InterfaceFunctionIsNotImplemented, this, new String[] { id
-										.toChars(context), ifd.ident.toChars() }));
+								IProblem.InterfaceFunctionIsNotImplemented, this, id
+										.toChars(context), ifd.ident.toChars()));
 					}
 				}
 
@@ -128,7 +128,7 @@ public class BaseClass extends ASTDmdNode {
 				if (!cd.isAbstract()) {
 					if (context.acceptsProblems()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.InterfaceFunctionIsNotImplemented, this, new String[] { id.toChars(context), ifd.ident.toChars() }));
+								IProblem.InterfaceFunctionIsNotImplemented, this, id.toChars(context), ifd.ident.toChars()));
 					}
 				}
 				fd = null;

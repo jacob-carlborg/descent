@@ -109,7 +109,7 @@ public class CondExp extends BinExp {
 			SemanticContext context) {
 		if (context.acceptsProblems()) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.ConditionalExpressionIsNotAModifiableLvalue, this, new String[] { toChars(context) }));
+					IProblem.ConditionalExpressionIsNotAModifiableLvalue, this, toChars(context)));
 		}
 		return this;
 	}

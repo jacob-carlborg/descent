@@ -15,18 +15,17 @@ func.c  --> missing StaticCtorDeclaration::StaticCtorDeclaration
 Remaining from DMD 2.013
 ------------------------------
 Make an option to ignore unrecongnized pragmas.
-Implement TypeReturn, PostBlitDeclaration, TemplateThisParameter, FileInitExp, LineInitExp for Descent side.
+Implement TypeReturn, PostBlitDeclaration, TemplateThisParameter, FileInitExp, LineInitExp, DefaultInitExp for Descent side.
 
 cast.c --> StringExp::implicitConvTo
-clone.c
 constfold.c
-declaration.c
+declaration.c --> VarDeclaration::semantic
 declaration.h
 enum.c
 enum.h
 expression.c
 expression.h
-func.c
+func.c --> DtorDeclaration::semantic
 idgen.c
 impcnvgen.c
 init.c
@@ -36,10 +35,7 @@ mars.c
 module.c
 mtype.c
 mtype.h
-opopver.c
 optimize.c --> CastExp::optimize
-struct.c
-template.c
+template.c --> TemplateInstance::semantic
 template.h
 traits.c
-typinf.c

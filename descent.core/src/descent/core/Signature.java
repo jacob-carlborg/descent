@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Stack;
 
 import descent.core.compiler.CharOperation;
-import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.STC;
 import descent.internal.compiler.parser.TypeBasic;
@@ -132,6 +131,7 @@ import descent.internal.core.SignatureRequestorAdapter;
  *     | "&"  // union
  *     | "|"  // interface
  *     | "E"  // enum
+ *     | "~"  // enum member
  *     | ""  // variable
  *     | "="  // alias
  *     | "T"  // typedef
@@ -432,22 +432,22 @@ public final class Signature {
 	public static final char C_CPP_LINKAGE								= 'R';
 	
 	/**
-	 * Character constant indicating a function parameters break using the X letter.
+	 * Character constant indicating a variadic function parameters break with same type.
 	 * Value is <code>'X'</code>.
 	 */
-	public static final char C_FUNCTION_PARAMTERS_BREAK_1				= 'X';
+	public static final char C_FUNCTION_PARAMETERS_BREAK_VARARGS_SAME_TYPE				= 'X';
 	
 	/**
-	 * Character constant indicating a function parameters break using the Y letter.
+	 * Character constant indicating a variadic function parameters break with unknown types.
 	 * Value is <code>'Y'</code>.
 	 */
-	public static final char C_FUNCTION_PARAMTERS_BREAK_2				= 'Y';
+	public static final char C_FUNCTION_PARAMETERS_BREAK_VARARGS_UNKNOWN_TYPES				= 'Y';
 	
 	/**
 	 * Character constant indicating a function parameters break using the Z letter.
 	 * Value is <code>'Z'</code>.
 	 */
-	public static final char C_FUNCTION_PARAMTERS_BREAK_3				= 'Z';
+	public static final char C_FUNCTION_PARAMTERS_BREAK				= 'Z';
 	
 	/**
 	 * Character constant indicating a delegate type in a signature.
@@ -490,6 +490,12 @@ public final class Signature {
 	 * Value is <code>'E'</code>.
 	 */
 	public static final char C_ENUM										= 'E';
+	
+	/**
+	 * Character constant indicating an enum member in a signature.
+	 * Value is <code>'~'</code>.
+	 */
+	public static final char C_ENUM_MEMBER										= '~';
 	
 	/**
 	 * Character constant indicating a variable in a signature.
@@ -546,6 +552,19 @@ public final class Signature {
 	public static final char C_TEMPLATED_FUNCTION						= ')';
 	
 	/**
+	 * Character constant indicating a function in a signature.
+	 * Value is <code>'['</code>.
+	 */
+	public static final char C_FUNCTION						= '[';
+	
+	/**
+	 * Character constant indicating a special function (invariant, static ctor,
+	 * static dtor or unittest) in a signature.
+	 * Value is <code>'}'</code>.
+	 */
+	public static final char C_SPECIAL_FUNCTION						= '}';
+	
+	/**
 	 * Character constant indicating a module in a signature.
 	 * Value is <code>'@'</code>.
 	 */
@@ -598,7 +617,7 @@ public final class Signature {
 	 * value in a signature.
 	 * Value is <code>'\\'</code>.
 	 */
-	public static final char C_TEMPLATE_VALUE_SPECIFIC_VALUE					= '\\';
+	public static final char C_TEMPLATE_VALUE_PARAMETER_SPECIFIC_VALUE					= '\\';
 	
 	/**
 	 * Character constant indicating a template instance in a signature.
@@ -641,6 +660,12 @@ public final class Signature {
 	 * Value is <code>'L'</code>.
 	 */
 	public static final char C_MODIFIER_LAZY							= 'L';
+	
+	/**
+	 * Character constant indicating a positioned symbol in a signature.
+	 * Value is <code>'$'</code>.
+	 */
+	public static final char C_POSITION 									= '$';
 	
 	/**
 	 * String constant for the signature of the primitive type void.
@@ -1331,7 +1356,7 @@ public static String[] getParameterTypes(String methodSignature) throws IllegalA
 			}
 			@Override
 			public void acceptTypeofReturn() {
-				add(String.valueOf(ISignatureConstants.TYPEOF_RETURN));
+				add(String.valueOf(Signature.C_TYPEOF_RETURN));
 			}
 			@Override
 			public void acceptSlice(char[] lwr, char[] upr, String signature) {
@@ -1482,7 +1507,7 @@ public static String getReturnType(String methodSignature) throws IllegalArgumen
 			}
 			@Override
 			public void acceptTypeofReturn() {
-				copy(String.valueOf(ISignatureConstants.TYPEOF_RETURN));
+				copy(String.valueOf(Signature.C_TYPEOF_RETURN));
 			}
 			@Override
 			public void acceptSlice(char[] lwr, char[] upr, String signature) {
@@ -1667,8 +1692,8 @@ public static String toString(String signature, final boolean fqn) throws Illega
 			}
 			@Override
 			public void acceptSymbol(char type, char[] name, int startPosition, String signature) {
-				if (type == ISignatureConstants.FUNCTION ||
-					type == ISignatureConstants.TEMPLATED_FUNCTION) {
+				if (type == Signature.C_FUNCTION ||
+					type == Signature.C_TEMPLATED_FUNCTION) {
 					Stack<StringBuilder> st = stack.peek();
 					
 					StringBuilder funcType = st.pop();
@@ -1683,7 +1708,7 @@ public static String toString(String signature, final boolean fqn) throws Illega
 					}
 					funcName.append(name);
 					
-					if (type == ISignatureConstants.TEMPLATED_FUNCTION) {
+					if (type == Signature.C_TEMPLATED_FUNCTION) {
 						appendTemplateParameters(funcName);
 					}
 					
@@ -1703,11 +1728,11 @@ public static String toString(String signature, final boolean fqn) throws Illega
 					}
 					sb.append(name);
 					
-					if (type == ISignatureConstants.TEMPLATE ||
-						type == ISignatureConstants.TEMPLATED_CLASS ||
-						type == ISignatureConstants.TEMPLATED_STRUCT ||
-						type == ISignatureConstants.TEMPLATED_UNION ||
-						type == ISignatureConstants.TEMPLATED_INTERFACE) {
+					if (type == Signature.C_TEMPLATE ||
+						type == Signature.C_TEMPLATED_CLASS ||
+						type == Signature.C_TEMPLATED_STRUCT ||
+						type == Signature.C_TEMPLATED_UNION ||
+						type == Signature.C_TEMPLATED_INTERFACE) {
 						appendTemplateParameters(sb);
 					}
 				}
@@ -1971,12 +1996,12 @@ public static int getVariadic(String signature) throws IllegalArgumentException 
 			public void acceptArgumentBreak(char c) {
 				if (functionCount == 1) {
 					switch(c) {
-					case ISignatureConstants.FUNCTION_PARAMETERS_BREAK:
+					case Signature.C_FUNCTION_PARAMTERS_BREAK:
 						break;
-					case ISignatureConstants.FUNCTION_PARAMETERS_BREAK_VARIADIC:
+					case Signature.C_FUNCTION_PARAMETERS_BREAK_VARARGS_UNKNOWN_TYPES:
 						variadic[0] = IMethod.VARARGS_UNDEFINED_TYPES;
 						break;
-					case ISignatureConstants.FUNCTION_PARAMETERS_BREAK_VARIADIC2:
+					case Signature.C_FUNCTION_PARAMETERS_BREAK_VARARGS_SAME_TYPE:
 						variadic[0] = IMethod.VARARGS_SAME_TYPES;
 						break;
 					}
@@ -1986,8 +2011,8 @@ public static int getVariadic(String signature) throws IllegalArgumentException 
 			public void acceptSymbol(char type, char[] name, int startPosition, String signature) {
 				if (functionCount == 0) {
 					valid[0] = 
-						type == ISignatureConstants.FUNCTION ||
-						type == ISignatureConstants.TEMPLATED_FUNCTION;
+						type == Signature.C_FUNCTION ||
+						type == Signature.C_TEMPLATED_FUNCTION;
 				}
 			}
 			@Override
@@ -2227,37 +2252,37 @@ public static int getTypeSignatureKind(String signature) {
 		@Override
 		public void acceptSymbol(char type, char[] name, int startPosition, String signature) {
 			switch(type) {
-			case ISignatureConstants.CLASS:
+			case Signature.C_CLASS:
 				kind[0] = CLASS_TYPE_SIGNATURE;
 				break;
-			case ISignatureConstants.STRUCT:
+			case Signature.C_STRUCT:
 				kind[0] = STRUCT_TYPE_SIGNATURE;
 				break;
-			case ISignatureConstants.UNION:
+			case Signature.C_UNION:
 				kind[0] = UNION_TYPE_SIGNATURE;
 				break;
-			case ISignatureConstants.INTERFACE:
+			case Signature.C_INTERFACE:
 				kind[0] = INTERFACE_TYPE_SIGNATURE;
 				break;
-			case ISignatureConstants.FUNCTION:
+			case Signature.C_FUNCTION:
 				kind[0] = FUNCTION_SIGNATURE;
 				break;
-			case ISignatureConstants.TEMPLATE:
+			case Signature.C_TEMPLATE:
 				kind[0] = TEMPLATE_TYPE_SIGNATURE;
 				break;
-			case ISignatureConstants.TEMPLATED_CLASS:
+			case Signature.C_TEMPLATED_CLASS:
 				kind[0] = TEMPLATED_CLASS_TYPE_SIGNATURE;
 				break;
-			case ISignatureConstants.TEMPLATED_STRUCT:
+			case Signature.C_TEMPLATED_STRUCT:
 				kind[0] = TEMPLATED_STRUCT_TYPE_SIGNATURE;
 				break;
-			case ISignatureConstants.TEMPLATED_UNION:
+			case Signature.C_TEMPLATED_UNION:
 				kind[0] = TEMPLATED_UNION_TYPE_SIGNATURE;
 				break;
-			case ISignatureConstants.TEMPLATED_INTERFACE:
+			case Signature.C_TEMPLATED_INTERFACE:
 				kind[0] = TEMPLATED_INTERFACE_TYPE_SIGNATURE;
 				break;
-			case ISignatureConstants.TEMPLATED_FUNCTION:
+			case Signature.C_TEMPLATED_FUNCTION:
 				kind[0] = TEMPLATED_FUNCTION_SIGNATURE;
 				break;
 			}

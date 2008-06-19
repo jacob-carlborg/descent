@@ -40,7 +40,7 @@ public class PostExp extends BinExp {
 	}
 
 	@Override
-	public char[] opId() {
+	public char[] opId(SemanticContext context) {
 		return (op == TOKplusplus) ? Id.postinc : Id.postdec;
 	}
 

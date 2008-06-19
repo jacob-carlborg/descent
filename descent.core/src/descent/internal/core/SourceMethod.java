@@ -424,9 +424,9 @@ protected void appendElementSignature(StringBuilder sb) throws JavaModelExceptio
 	}
 	// TODO Signature varargs
 	if (Flags.isVarargs1(flags)) {
-		sb.append(Signature.C_FUNCTION_PARAMTERS_BREAK_1);	
+		sb.append(Signature.C_FUNCTION_PARAMTERS_BREAK);	
 	} else {
-		sb.append(Signature.C_FUNCTION_PARAMTERS_BREAK_2);
+		sb.append(Signature.C_FUNCTION_PARAMETERS_BREAK_VARARGS_UNKNOWN_TYPES);
 	}
 	
 	// Return type is null for constructors

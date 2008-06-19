@@ -48,7 +48,7 @@ public class CatExp extends BinExp {
 	}
 
 	@Override
-	public char[] opId() {
+	public char[] opId(SemanticContext context) {
 		return Id.cat;
 	}
 
@@ -135,8 +135,7 @@ public class CatExp extends BinExp {
 			if (context.acceptsProblems()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.CanOnlyConcatenateArrays, this,
-						new String[] { e1.type.toChars(context),
-								e2.type.toChars(context), }));
+						e1.type.toChars(context), e2.type.toChars(context)));
 			}
 			type = Type.tint32;
 			e = this;

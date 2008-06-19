@@ -81,7 +81,6 @@ import descent.internal.compiler.parser.FuncAliasDeclaration;
 import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.FuncLiteralDeclaration;
 import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
-import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.Id;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Import;
@@ -148,7 +147,7 @@ import descent.internal.core.util.Util;
  * a given environment, assisting position and storage (and possibly options).
  */
 public class CompletionEngine extends Engine 
-	implements RelevanceConstants, ISearchRequestor, ISignatureConstants {
+	implements RelevanceConstants, ISearchRequestor {
 	
 	public final static Type typeInt = TypeBasic.tint32;
 	public final static Type typeCharArray = new TypeDArray(TypeBasic.tchar);
@@ -1712,9 +1711,9 @@ public class CompletionEngine extends Engine
 		}
 		
 		// Replace variable for function
-		int lastIndexOfVar = CharOperation.lastIndexOf(VARIABLE, signature);
+		int lastIndexOfVar = CharOperation.lastIndexOf(Signature.C_VARIABLE, signature);
 		if (lastIndexOfVar != -1) {
-			signature[lastIndexOfVar] = FUNCTION;
+			signature[lastIndexOfVar] = Signature.C_FUNCTION;
 		}
 		
 		char[] typeSignature = type.getSignature().toCharArray();
@@ -2013,7 +2012,7 @@ public class CompletionEngine extends Engine
 				match(this.currentName, ident)) {
 				
 				// Suggest as if it were a variable declaration
-				String signature = mixin.parent.getSignature() + ISignatureConstants.VARIABLE + ident.length + new String(ident);
+				String signature = mixin.parent.getSignature() + Signature.C_VARIABLE + ident.length + new String(ident);
 				
 				char[] sig = signature.toCharArray();
 				char[] typeName = mixin.inst.getSignature().toCharArray();
@@ -2295,7 +2294,7 @@ public class CompletionEngine extends Engine
 					// If we are expecting an enum, suggest it's members! :-)
 					if (expectedType != null && expectedType instanceof TypeEnum 
 							&& member instanceof EnumDeclaration &&
-							expectedType.same(member.getType())) {
+							expectedType.same(member.getType(semanticContext))) {
 						completeEnumMembers((EnumDeclaration) member, null, true);
 					}
 				}
@@ -2667,7 +2666,7 @@ public class CompletionEngine extends Engine
 	}
 	
 	private void completeJavadoc(CompletionOnJavadocImpl node) {
-		// A very naïve solution for now...
+		// A very naï¿½ve solution for now...
 		char[] ddocSource = node.getSource();
 		DdocParser parser = new DdocParser(ddocSource);
 		Ddoc ddoc = parser.parse();
@@ -3070,15 +3069,15 @@ public class CompletionEngine extends Engine
 		char[] declSignature = sig.toString().toCharArray();
 		
 		if (templateParametersSignature.length > 0) {
-			sig.append(TEMPLATED_CLASS);
+			sig.append(Signature.C_TEMPLATED_CLASS);
 		} else {
-			sig.append(CLASS);
+			sig.append(Signature.C_CLASS);
 		}
 		sig.append(typeName.length);
 		sig.append(typeName);
 		if (templateParametersSignature != null) {
 			sig.append(templateParametersSignature);
-			sig.append(TEMPLATE_PARAMETERS_BREAK);
+			sig.append(Signature.C_TEMPLATE_PARAMETERS_BREAK);
 		}
 		
 		char[] sigChar = sig.toString().toCharArray();
@@ -3170,7 +3169,7 @@ public class CompletionEngine extends Engine
 		
 		char[] declSignature = sig.toString().toCharArray();
 		
-		sig.append(VARIABLE);
+		sig.append(Signature.C_VARIABLE);
 		sig.append(name.length);
 		sig.append(name);
 		
@@ -3218,16 +3217,16 @@ public class CompletionEngine extends Engine
 		char[] declSignature = sig.toString().toCharArray();
 		
 		if (templateParametersSignature.length > 0) {
-			sig.append(TEMPLATED_FUNCTION);
+			sig.append(Signature.C_TEMPLATED_FUNCTION);
 		} else {
-			sig.append(FUNCTION);
+			sig.append(Signature.C_FUNCTION);
 		}
 		sig.append(name.length);
 		sig.append(name);
 		sig.append(signature);
 		if (templateParametersSignature.length > 0) {
 			sig.append(templateParametersSignature);
-			sig.append(TEMPLATE_PARAMETERS_BREAK);
+			sig.append(Signature.C_TEMPLATE_PARAMETERS_BREAK);
 		}
 		
 		char[] sigChars = sig.toString().toCharArray();
@@ -3333,9 +3332,9 @@ public class CompletionEngine extends Engine
 		}
 		
 		if (signature.length > 0 && 
-				(signature[0] == LINK_D || signature[0] == LINK_C ||
-						signature[0] == LINK_CPP || signature[0] == LINK_PASCAL ||
-						signature[0] == LINK_WINDOWS)) {
+				(signature[0] == Signature.C_D_LINKAGE || signature[0] == Signature.C_C_LINKAGE ||
+						signature[0] == Signature.C_CPP_LINKAGE || signature[0] == Signature.C_PASCAL_LINKAGE ||
+						signature[0] == Signature.C_WINDOWS_LINKAGE)) {
 			return computeRelevanceForExpectedType(Signature.getReturnType(signature));
 		}
 		

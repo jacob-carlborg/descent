@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -61,7 +62,7 @@ public class TypeTypeof extends TypeQualified {
 				s = s.searchX(loc, sc, id, context);
 			}
 			if (s != null) {
-				t = s.getType();
+				t = s.getType(context);
 				if (null == t) {
 					if (context.acceptsProblems()) {
 						context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolNotAType, this, new String[] { s.toChars(context) }));
@@ -131,10 +132,10 @@ public class TypeTypeof extends TypeQualified {
 	
 	@Override
 	protected void appendSignature0(StringBuilder sb) {
-		sb.append(ISignatureConstants.TYPEOF);
+		sb.append(Signature.C_TYPEOF);
 		char[] expc = encoder.encodeExpression(exp);
 		sb.append(expc.length);
-		sb.append(ISignatureConstants.TYPEOF);
+		sb.append(Signature.C_TYPEOF);
 		sb.append(expc);
 	}
 

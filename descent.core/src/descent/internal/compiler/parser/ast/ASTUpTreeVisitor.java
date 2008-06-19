@@ -1961,6 +1961,16 @@ public class ASTUpTreeVisitor extends TreeVisitor implements IASTVisitor {
 		Assert.isTrue(TypeReturn.class.getSuperclass().equals(TypeQualified.class));
 		return visit((TypeQualified) node);
 	}
+	
+	public boolean visit(DefaultInitExp node) {
+		Assert.isTrue(DefaultInitExp.class.getSuperclass().equals(Expression.class));
+		return visit((Expression) node);
+	}
+	
+	public void endVisit(DefaultInitExp node) {
+		Assert.isTrue(DefaultInitExp.class.getSuperclass().equals(Expression.class));
+		endVisit((Expression) node);
+	}
 
 
 }

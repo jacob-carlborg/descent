@@ -32,7 +32,7 @@ public class ModAssignExp extends BinExp {
 	}
 
 	@Override
-	public char[] opId() {
+	public char[] opId(SemanticContext context) {
 		return Id.modass;
 	}
 

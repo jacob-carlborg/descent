@@ -46,7 +46,7 @@ public class CmpExp extends BinExp {
 	}
 
 	@Override
-	public char[] opId() {
+	public char[] opId(SemanticContext context) {
 		return Id.cmp;
 	}
 
@@ -102,7 +102,7 @@ public class CmpExp extends BinExp {
 			if (!t1.next.equals(t2.next)) {
 				if (context.acceptsProblems()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.ArrayComparisonTypeMismatch, this, new String[] { t1.next.toChars(context), t2.next.toChars(context) }));
+							IProblem.ArrayComparisonTypeMismatch, this, t1.next.toChars(context), t2.next.toChars(context)));
 				}
 			}
 			e = this;
@@ -110,13 +110,13 @@ public class CmpExp extends BinExp {
 				|| (t1.ty == TY.Tclass && t2.ty == TY.Tclass)) {
 			if (t2.ty == TY.Tstruct) {
 				if (context.acceptsProblems()) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.NeedMemberFunctionOpCmpForSymbolToCompare, this, new String[] { t2
-							.toDsymbol(sc, context).kind(), t2.toChars(context) }));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.NeedMemberFunctionOpCmpForSymbolToCompare, this, t2
+							.toDsymbol(sc, context).kind(), t2.toChars(context)));
 				}
 			} else {
 				if (context.acceptsProblems()) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.NeedMemberFunctionOpCmpForSymbolToCompare, this, new String[] { t1
-							.toDsymbol(sc, context).kind(), t1.toChars(context) }));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.NeedMemberFunctionOpCmpForSymbolToCompare, this, t1
+							.toDsymbol(sc, context).kind(), t1.toChars(context)));
 				}
 			}
 			e = this;

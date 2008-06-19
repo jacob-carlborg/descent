@@ -6,6 +6,7 @@ import java.util.Map;
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
 import descent.core.JavaModelException;
+import descent.core.Signature;
 import descent.core.WorkingCopyOwner;
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.env.INameEnvironment;
@@ -21,7 +22,6 @@ import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.EnumMember;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.FuncDeclaration;
-import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.Id;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Module;
@@ -444,7 +444,7 @@ class DefaultBindingResolver extends BindingResolver {
 	
 	private IBinding resolveBuiltinProperty(Type type, SimpleName name) {
 		String identifier = name.getIdentifier();
-		String signature = type.getSignature() + ISignatureConstants.VARIABLE + identifier.length() + identifier;
+		String signature = type.getSignature() + Signature.C_VARIABLE + identifier.length() + identifier;
 		
 		IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
 		if (binding == null) {

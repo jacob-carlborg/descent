@@ -7,6 +7,7 @@ package descent.internal.compiler.parser;
 public class Param2 {
 	
 	ASTDmdNode.Match m;
+	Expression ethis;
 	Expressions arguments;
 	
 };

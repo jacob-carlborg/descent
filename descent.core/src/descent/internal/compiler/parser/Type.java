@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.MATCH.MATCHconst;
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 import static descent.internal.compiler.parser.STC.STCfield;
@@ -1212,7 +1213,33 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 			}
 			Type at = (Type) dedtypes.get(i);
 			if (null == at) {
-				dedtypes.set(i, this);
+				if (context.isD2()) {
+					// 3*3 == 9 cases
+					if (tparam.isMutable()) { // foo(U:U) T => T
+						// foo(U:U) const(T) => const(T)
+						// foo(U:U) invariant(T) => invariant(T)
+						dedtypes.set(i, this);
+						// goto Lexact;
+						return MATCHexact;
+					} else if (mod == tparam.mod) { // foo(U:const(U)) const(T)
+													// => T
+						// foo(U:invariant(U)) invariant(T) => T
+						dedtypes.set(i, mutableOf(context));
+						// goto Lexact;
+						return MATCHexact;
+					} else if (tparam.isConst()) { // foo(U:const(U)) T => T
+						// foo(U:const(U)) invariant(T) => T
+						dedtypes.set(i, mutableOf(context));
+						// goto Lconst;
+						return MATCHconst;
+					} else { // foo(U:invariant(U)) T => nomatch
+						// foo(U:invariant(U)) const(T) => nomatch
+						// goto Lnomatch;
+						return MATCHnomatch;
+					}
+				} else {
+					dedtypes.set(i, this);
+				}
 				return MATCHexact;
 			}
 			if (equals(at)) {
@@ -1243,7 +1270,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		return new TypeInfoDeclaration(this, 0, context);
 	}
 
-	public boolean builtinTypeInfo() {
+	public boolean builtinTypeInfo(SemanticContext context) {
 		return false;
 	}
 
@@ -1259,7 +1286,17 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		
 		TypeInfoDeclaration vtinfo = context.getTypeInfo(t);
 		if (vtinfo == null) {
-			vtinfo = t.getTypeInfoDeclaration(context);
+			if (context.isD2()) {
+				if (t.isConst()) {
+				    t.vtinfo = new TypeInfoConstDeclaration(t, context);
+				} else if (t.isInvariant()) {
+				    t.vtinfo = new TypeInfoInvariantDeclaration(t, context);
+				} else {
+				    t.vtinfo = t.getTypeInfoDeclaration(context);
+				}
+			} else {
+				vtinfo = t.getTypeInfoDeclaration(context);
+			}
 
 			if (vtinfo == null) {
 				throw new IllegalStateException("assert(t.vtinfo);");
@@ -1268,13 +1305,14 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 			/* If this has a custom implementation in std/typeinfo, then
 			 * do not generate a COMDAT for it.
 			 */
-			if (!t.builtinTypeInfo()) { // Generate COMDAT
+			if (!t.builtinTypeInfo(context)) { // Generate COMDAT
 				if (sc != null) // if in semantic() pass
 				{ // Find module that will go all the way to an object file
 					Module m = sc.module.importedFrom;
 					m.members.add(vtinfo);
 				} else // if in obj generation pass
 				{
+					// t.vtinfo.toObjFile();
 					Assert.isTrue(false);
 				}
 			}
@@ -1306,8 +1344,16 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 			return getInternalTypeInfo_Linternal(sc, t, context);
 
 		case Tarray:
-			if (t.next.ty != Tclass) {
-				break;
+			if (context.isD2()) {
+				// convert to corresponding dynamic array type
+			    t = t.nextOf().mutableOf(context).arrayOf(context);
+			    if (t.nextOf().ty != Tclass) {
+			    	break;
+			    }
+			} else {
+				if (t.next.ty != Tclass) {
+					break;
+				}
 			}
 			//goto Linternal;
 			return getInternalTypeInfo_Linternal(sc, t, context);
@@ -1342,6 +1388,17 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		} catch (CloneNotSupportedException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	/**************************
+	 * Given:
+	 *	T a, b;
+	 * Can we assign:
+	 *	a = b;
+	 * ?
+	 */
+	public boolean isAssignable() {
+	    return true;
 	}
 	
 	public final String getSignature() {

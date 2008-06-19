@@ -36,7 +36,7 @@ public class AndExp extends BinExp {
 	}
 
 	@Override
-	public char[] opId() {
+	public char[] opId(SemanticContext context) {
 		return Id.iand;
 	}
 

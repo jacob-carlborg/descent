@@ -74,7 +74,7 @@ public class DotTemplateInstanceExp extends UnaExp {
 					// goto L1;
 					if (context.acceptsProblems()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.TemplateIsNotAMemberOf, this, new String[] { ti.toChars(context), e1.toChars(context) }));
+								IProblem.TemplateIsNotAMemberOf, this, ti.toChars(context), e1.toChars(context)));
 					}
 					return new IntegerExp(loc, 0);
 				}
@@ -88,7 +88,7 @@ public class DotTemplateInstanceExp extends UnaExp {
 				// goto L1;
 				if (context.acceptsProblems()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.TemplateIsNotAMemberOf, this, new String[] { ti.toChars(context), e1.toChars(context) }));
+							IProblem.TemplateIsNotAMemberOf, this, ti.toChars(context), e1.toChars(context)));
 				}
 				return new IntegerExp(loc, 0);
 			}
@@ -98,7 +98,7 @@ public class DotTemplateInstanceExp extends UnaExp {
 			// L1:
 			if (context.acceptsProblems()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.TemplateIsNotAMemberOf, this, new String[] { ti.toChars(context), e1.toChars(context) }));
+						IProblem.TemplateIsNotAMemberOf, this, ti.toChars(context), e1.toChars(context)));
 			}
 			// goto Lerr;
 			return new IntegerExp(loc, 0);
@@ -111,12 +111,12 @@ public class DotTemplateInstanceExp extends UnaExp {
 			if (s instanceof TemplateInstance) {
 				if (context.acceptsProblems()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.TemplateIdentifierIsNotAMemberOf, this, new String[] { new String(id), s.kind(), new String(((TemplateInstance) s).name.ident) }));
+							IProblem.TemplateIdentifierIsNotAMemberOf, this, new String(id), s.kind(), new String(((TemplateInstance) s).name.ident)));
 				}
 			} else {
 				if (context.acceptsProblems()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.TemplateIdentifierIsNotAMemberOf, this, new String[] { new String(id), s.kind(), new String(s.ident.ident) }));
+							IProblem.TemplateIdentifierIsNotAMemberOf, this, new String(id), s.kind(), new String(s.ident.ident)));
 				}
 			}
 			// goto Lerr;
@@ -128,7 +128,7 @@ public class DotTemplateInstanceExp extends UnaExp {
 		td = s.isTemplateDeclaration();
 		if (td == null) {
 			if (context.acceptsProblems()) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolNotATemplate, ti.name, new String[] { new String(id) }));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolNotATemplate, ti.name, new String(id)));
 			}
 			// goto Lerr;
 			return new IntegerExp(loc, 0);

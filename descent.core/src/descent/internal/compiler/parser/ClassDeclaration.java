@@ -7,6 +7,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.PROT.PROTnone;
@@ -241,7 +242,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 					&& cd.isInterfaceDeclaration() == null) {
 				if (context.acceptsProblems()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.BaseClassIsForwardReferenced, this, new String[] { toChars(context) }));
+							IProblem.BaseClassIsForwardReferenced, this, toChars(context)));
 				}
 			}
 
@@ -306,8 +307,8 @@ public class ClassDeclaration extends AggregateDeclaration {
 			if (context.acceptsProblems()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.ForwardReferenceWhenLookingFor, this,
-						new String[] { new String(this.ident.ident),
-								new String(ident) }));
+						new String(this.ident.ident),
+								new String(ident)));
 			}
 			return null;
 		}
@@ -328,8 +329,8 @@ public class ClassDeclaration extends AggregateDeclaration {
 					if (b.base.symtab == null) {
 						if (context.acceptsProblems()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
-									IProblem.BaseIsForwardReferenced, this, new String[] { b.base.ident
-											.toChars() }));
+									IProblem.BaseIsForwardReferenced, this, b.base.ident
+											.toChars()));
 						}
 					} else {
 						s = b.base.search(loc, ident, flags, context);
@@ -467,7 +468,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 							BaseClass firstBaseClass = this.baseclasses.get(0);
 							if (context.acceptsProblems()) {
 								context.acceptProblem(Problem.newSemanticTypeError(
-										IProblem.CircularDefinition, firstBaseClass.sourceType, new String[] { toChars(context) }));
+										IProblem.CircularDefinition, firstBaseClass.sourceType, toChars(context)));
 							}
 							baseclasses.remove(0);
 							// goto L7;
@@ -543,8 +544,8 @@ public class ClassDeclaration extends AggregateDeclaration {
 						if (context.acceptsProblems()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.DuplicatedInterfaceInheritance, b.sourceType,
-									new String[] { b.sourceType.toString(),
-											new String(this.ident.ident) }));
+									b.sourceType.toString(),
+											new String(this.ident.ident)));
 						}
 					}
 				}
@@ -612,8 +613,8 @@ public class ClassDeclaration extends AggregateDeclaration {
 			if ((baseClass.storage_class & STCfinal) != 0) {
 				if (context.acceptsProblems()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.CannotInheritFromFinalClass, this, new String[] { baseClass
-									.toString() }));
+							IProblem.CannotInheritFromFinalClass, this, baseClass
+									.toString()));
 				}
 			}
 
@@ -659,15 +660,15 @@ public class ClassDeclaration extends AggregateDeclaration {
 				if ((storage_class & STC.STCstatic) != 0) {
 					if (context.acceptsProblems()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.StaticClassCannotInheritFromNestedClass, this, new String[] { baseClass.toChars(context) }));
+								IProblem.StaticClassCannotInheritFromNestedClass, this, baseClass.toChars(context)));
 					}
 				}
 				if (toParent2() != baseClass.toParent2()) {
 					if (context.acceptsProblems()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.SuperClassIsNestedWithin, this, new String[] { baseClass.toChars(context), baseClass.toParent2()
+								IProblem.SuperClassIsNestedWithin, this, baseClass.toChars(context), baseClass.toParent2()
 										.toChars(context), toParent2().toChars(
-												context) }));
+												context)));
 					}
 				}
 			} else if ((storage_class & STC.STCstatic) == 0) {
@@ -1008,9 +1009,9 @@ public class ClassDeclaration extends AggregateDeclaration {
 	@Override
 	public char getSignaturePrefix() {
 		if (templated) {
-			return ISignatureConstants.TEMPLATED_CLASS;
+			return Signature.C_TEMPLATED_CLASS;
 		} else {
-			return ISignatureConstants.CLASS;
+			return Signature.C_CLASS;
 		}
 	}
 

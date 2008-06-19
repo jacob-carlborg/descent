@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -50,7 +51,7 @@ public class TemplateAliasParameter extends TemplateParameter {
 	}
 
 	@Override
-	public ASTDmdNode defaultArg(Scope sc, SemanticContext context) {
+	public ASTDmdNode defaultArg(Loc loc, Scope sc, SemanticContext context) {
 		Dsymbol s = null;
 
 		if (defaultAlias != null) {
@@ -92,14 +93,14 @@ public class TemplateAliasParameter extends TemplateParameter {
 	@Override
 	public MATCH matchArg(Scope sc, Objects tiargs, int i,
 			TemplateParameters parameters, Objects dedtypes,
-			Declaration[] psparam, SemanticContext context) {
+			Declaration[] psparam, int flags, SemanticContext context) {
 		Dsymbol sa;
 		ASTDmdNode oarg;
 
 		if (i < size(tiargs)) {
 			oarg = tiargs.get(i);
 		} else { // Get default argument instead
-			oarg = defaultArg(sc, context);
+			oarg = defaultArg(loc, sc, context);
 			if (oarg == null) {
 				if (i >= size(dedtypes)) {
 					throw new IllegalStateException("assert(i < dedtypes.dim);");
@@ -214,9 +215,9 @@ public class TemplateAliasParameter extends TemplateParameter {
 	
 	@Override
 	public void appendSignature(StringBuilder sb) {
-		sb.append(ISignatureConstants.TEMPLATE_ALIAS_PARAMETER);
+		sb.append(Signature.C_TEMPLATE_ALIAS_PARAMETER);
 		if (specAliasT != null) {
-			sb.append(ISignatureConstants.TEMPLATE_ALIAS_PARAMETER2);
+			sb.append(Signature.C_TEMPLATE_ALIAS_PARAMETER_SPECIFIC_TYPE);
 			specAliasT.appendSignature(sb);
 		}
 	}

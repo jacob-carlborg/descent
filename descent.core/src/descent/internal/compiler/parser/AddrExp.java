@@ -180,10 +180,9 @@ public class AddrExp extends UnaExp {
 							context.acceptProblem(Problem.newSemanticTypeError(
 					    			IProblem.ArrayIndexOutOfBounds,
 					    			this,
-					    			new String[] {
-					    				String.valueOf(index),
-					    				String.valueOf(dim),
-					    			}));
+				    				String.valueOf(index),
+				    				String.valueOf(dim)
+					    			));
 						}
 					}
 					if (context.isD2()) {
@@ -209,7 +208,7 @@ public class AddrExp extends UnaExp {
 			if (e1.type == null) {
 				if (context.acceptsProblems()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.CannotTakeAddressOf, e1, new String[] { e1.toChars(context) }));
+							IProblem.CannotTakeAddressOf, e1, e1.toChars(context)));
 				}
 				type = Type.tint32;
 				return this;

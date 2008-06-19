@@ -1,12 +1,10 @@
 package descent.internal.compiler.parser;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 import org.eclipse.core.runtime.Assert;
 
@@ -122,6 +120,12 @@ public class SemanticContext {
 
 		Module_init();
 		afterParse(module);
+	}
+	
+	private static int uniqueIdCount = 0;
+	public IdentifierExp uniqueId(String prefix) {
+		uniqueIdCount++;
+		return new IdentifierExp((prefix + uniqueIdCount).toCharArray());
 	}
 
 	private void Module_init() {

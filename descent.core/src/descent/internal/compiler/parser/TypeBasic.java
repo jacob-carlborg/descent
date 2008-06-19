@@ -86,8 +86,12 @@ public class TypeBasic extends Type {
 	}
 
 	@Override
-	public boolean builtinTypeInfo() {
-		return true;
+	public boolean builtinTypeInfo(SemanticContext context) {
+		if (context.isD2()) {
+			return mod != 0 ? false : true;
+		} else {
+			return true;
+		}
 	}
 
 	@Override

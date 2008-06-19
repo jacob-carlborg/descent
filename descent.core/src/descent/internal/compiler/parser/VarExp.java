@@ -18,11 +18,16 @@ public class VarExp extends Expression {
 
 	public Declaration var;
 	public boolean hasOverloads;
-
+	
 	public VarExp(Loc loc, Declaration var) {
+		this(loc, var, false);
+	}
+
+	public VarExp(Loc loc, Declaration var, boolean hasOverloads) {
 		super(loc, TOK.TOKvar);
 		this.var = var;
 		this.type = var.type;
+		this.hasOverloads = hasOverloads;
 		
 		this.var.consumeRestStructure();
 		this.var.consumeRest();

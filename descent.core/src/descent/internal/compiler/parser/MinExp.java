@@ -34,7 +34,7 @@ public class MinExp extends BinExp {
 	}
 
 	@Override
-	public char[] opId() {
+	public char[] opId(SemanticContext context) {
 		return Id.sub;
 	}
 

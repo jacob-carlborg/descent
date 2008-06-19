@@ -104,7 +104,7 @@ public class ArrayInitializer extends Initializer {
 
 		default:
 			if (context.acceptsProblems()) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotUseArrayToInitialize, this, new String[] { type.toChars(context) }));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotUseArrayToInitialize, this, type.toChars(context)));
 			}
 			return this;
 		}
@@ -144,7 +144,7 @@ public class ArrayInitializer extends Initializer {
 		}
 	    if (new integer_t(dim).multiply(t.next.size(context)).compareTo(amax) >= 0) {
 	    	if (context.acceptsProblems()) {
-	    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArrayDimensionExceedsMax, this, new String[] { String.valueOf(dim), amax.divide(t.next.size(context)).toString() }));
+	    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArrayDimensionExceedsMax, this, String.valueOf(dim), amax.divide(t.next.size(context)).toString() ));
 	    	}
 	    }
 		return this;

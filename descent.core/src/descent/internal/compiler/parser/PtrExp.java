@@ -132,6 +132,11 @@ public class PtrExp extends UnaExp {
 	}
 	
 	@Override
+	public char[] opId(SemanticContext context) {
+		return context.isD2() ? Id.opStar : null;
+	}
+	
+	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		Type tb;
 

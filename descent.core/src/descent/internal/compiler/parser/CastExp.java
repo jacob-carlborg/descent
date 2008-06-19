@@ -59,7 +59,7 @@ public class CastExp extends UnaExp {
 				if (!v.isDataseg(context) && !v.isParameter()) {
 					if (context.acceptsProblems()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.EscapingReferenceToLocal, this, new String[] { v.toChars(context) }));
+								IProblem.EscapingReferenceToLocal, this, v.toChars(context)));
 					}
 				}
 			}
@@ -98,7 +98,7 @@ public class CastExp extends UnaExp {
 	}
 
 	@Override
-	public char[] opId() {
+	public char[] opId(SemanticContext context) {
 		return Id.cast;
 	}
 

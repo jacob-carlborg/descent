@@ -14,10 +14,16 @@ import static descent.internal.compiler.parser.TOK.TOKthis;
 public class DotVarExp extends UnaExp {
 
 	public Declaration var;
-
+	public int hasOverloads;
+	
 	public DotVarExp(Loc loc, Expression e, Declaration var) {
+		this(loc, e, var, 0);
+	}
+
+	public DotVarExp(Loc loc, Expression e, Declaration var, int hasOverloads) {
 		super(loc, TOK.TOKdotvar, e);
 		this.var = var;
+		this.hasOverloads = hasOverloads;
 	}
 
 	@Override
@@ -56,7 +62,7 @@ public class DotVarExp extends UnaExp {
 						String p = var.isStatic() ? "static " : "";
 						if (context.acceptsProblems()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
-									IProblem.CanOnlyInitiailizeConstMemberInsideConstructor, this, new String[] { p, var.toChars(context), p }));
+									IProblem.CanOnlyInitiailizeConstMemberInsideConstructor, this, p, var.toChars(context), p));
 						}
 					}
 				}
@@ -84,14 +90,14 @@ public class DotVarExp extends UnaExp {
 					ASTDmdNode o = tup.objects.get(i);
 					if (o.dyncast() != DYNCAST.DYNCAST_EXPRESSION) {
 						if (context.acceptsProblems()) {
-							context.acceptProblem(Problem.newSemanticTypeWarning(IProblem.SymbolNotAnExpression, 0, o.getStart(), o.getLength(), new String[] { o.toChars(context) }));
+							context.acceptProblem(Problem.newSemanticTypeWarning(IProblem.SymbolNotAnExpression, 0, o.getStart(), o.getLength(), o.toChars(context)));
 						}
 					} else {
 						Expression e = (Expression) o;
 						if (e.op != TOKdsymbol) {
 							if (context.acceptsProblems()) {
 								context.acceptProblem(Problem.newSemanticTypeError(
-										IProblem.SymbolIsNotAMember, this, new String[] { e.toChars(context) }));
+										IProblem.SymbolIsNotAMember, this, e.toChars(context)));
 							}
 						} else {
 							DsymbolExp ve = (DsymbolExp) e;

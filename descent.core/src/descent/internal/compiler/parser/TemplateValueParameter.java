@@ -1,14 +1,16 @@
 package descent.internal.compiler.parser;
 
-import melnorme.miscutil.tree.TreeVisitor;
-import descent.core.compiler.IProblem;
-import descent.internal.compiler.parser.ast.IASTVisitor;
-
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
-
 import static descent.internal.compiler.parser.STC.STCconst;
+import static descent.internal.compiler.parser.STC.STCmanifest;
 import static descent.internal.compiler.parser.STC.STCtemplateparameter;
+import static descent.internal.compiler.parser.TOK.TOKdefault;
+import static descent.internal.compiler.parser.TOK.TOKvar;
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.Signature;
+import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
 public class TemplateValueParameter extends TemplateParameter {
@@ -61,7 +63,7 @@ public class TemplateValueParameter extends TemplateParameter {
 	}
 
 	@Override
-	public ASTDmdNode defaultArg(Scope sc, SemanticContext context) {
+	public ASTDmdNode defaultArg(Loc loc, Scope sc, SemanticContext context) {
 		Expression e;
 
 		e = defaultValue;
@@ -69,11 +71,11 @@ public class TemplateValueParameter extends TemplateParameter {
 			e = e.syntaxCopy(context);
 			e = e.semantic(sc, context);
 			if (context.isD2()) {
-				// TODO Semantic D2
-//				if (e.op == TOKdefault)
-//				{   DefaultInitExp de = (DefaultInitExp) e;
-//				    e = de.resolve(loc, sc, context);
-//				}
+				if (e.op == TOKdefault) {
+					DefaultInitExp de = (DefaultInitExp) e;
+					// TODO Semantic didn't find this in the front end
+//					e = de.resolve(loc, sc, context);
+				}
 			}
 		}
 		return e;
@@ -107,7 +109,7 @@ public class TemplateValueParameter extends TemplateParameter {
 	@Override
 	public MATCH matchArg(Scope sc, Objects tiargs, int i,
 			TemplateParameters parameters, Objects dedtypes,
-			Declaration[] psparam, SemanticContext context) {
+			Declaration[] psparam, int flags, SemanticContext context) {
 		Initializer init;
 		Declaration sparam;
 		MATCH m = MATCHexact;
@@ -117,7 +119,7 @@ public class TemplateValueParameter extends TemplateParameter {
 		if (i < tiargs.size()) {
 			oarg = tiargs.get(i);
 		} else { // Get default argument instead
-			oarg = defaultArg(sc, context);
+			oarg = defaultArg(loc, sc, context);
 			if (null == oarg) {
 				if (!(i < dedtypes.size())) {
 					throw new IllegalStateException("assert(i < dedtypes.dim);");
@@ -139,6 +141,13 @@ public class TemplateValueParameter extends TemplateParameter {
 			// goto Lnomatch;
 			psparam = null;
 			return MATCHnomatch;
+		}
+		
+		if (context.isD2()) {
+			if (ei != null && ei.op == TOKvar)
+		    {	// Resolve const variables that we had skipped earlier
+			ei = ei.optimize(WANTvalue | WANTinterpret, context);
+		    }
 		}
 
 		if (specValue != null) {
@@ -184,7 +193,11 @@ public class TemplateValueParameter extends TemplateParameter {
 
 		init = new ExpInitializer(loc, ei);
 		sparam = new VarDeclaration(loc, vt, ident, init);
-		sparam.storage_class = STCconst;
+		if (context.isD2()) {
+			sparam.storage_class = STCmanifest;
+		} else {
+			sparam.storage_class = STCconst;
+		}
 		psparam[0] = sparam;
 		return m;
 	}
@@ -274,13 +287,13 @@ public class TemplateValueParameter extends TemplateParameter {
 	
 	@Override
 	public void appendSignature(StringBuilder sb) {
-		sb.append(ISignatureConstants.TEMPLATE_VALUE_PARAMETER);
+		sb.append(Signature.C_TEMPLATE_VALUE_PARAMETER);
 		valType.appendSignature(sb);
 		if (specValue != null) {
-			sb.append(ISignatureConstants.TEMPLATE_VALUE_PARAMETER2);
+			sb.append(Signature.C_TEMPLATE_VALUE_PARAMETER_SPECIFIC_VALUE);
 			char[] exp = encoder.encodeExpression(specValue);
 			sb.append(exp.length);
-			sb.append(ISignatureConstants.TEMPLATE_VALUE_PARAMETER);
+			sb.append(Signature.C_TEMPLATE_VALUE_PARAMETER);
 			sb.append(exp);
 		}
 	}

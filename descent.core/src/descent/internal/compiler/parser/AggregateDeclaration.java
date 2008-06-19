@@ -8,6 +8,7 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.lookup.SemanticRest;
 import static descent.internal.compiler.parser.PROT.PROTpackage;
 import static descent.internal.compiler.parser.PROT.PROTpublic;
+import static descent.internal.compiler.parser.TY.*;
 
 public abstract class AggregateDeclaration extends ScopeDsymbol {
 
@@ -89,7 +90,7 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 		}
 		if (!result) {
 			if (context.acceptsProblems()) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.MemberIsNotAccessible, reference, new String[] { smember.toChars(context) }));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.MemberIsNotAccessible, reference, smember.toChars(context)));
 			}
 		}
 	}
@@ -103,6 +104,14 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 		Type t = v.type.toBasetype(context);
 		if (t.ty == TY.Tstruct /* && isStructDeclaration() */) {
 			TypeStruct ts = (TypeStruct) t;
+			
+			if (context.isD2()) {
+				if (ts.sym == this) {
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.CannotHaveFieldWithSameStructType, v));
+					}
+				}
+			}
 
 			if (ts.sym.sizeok != 1) {
 				sizeok = 2; // cannot finish; flag as forward referenced
@@ -172,8 +181,103 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 	}
 
 	@Override
-	public Type getType() {
+	public Type getType(SemanticContext context) {
 		return type;
+	}
+	
+	/*****************************************
+	 * Create inclusive destructor for struct/class by aggregating
+	 * all the destructors in dtors[] with the destructors for
+	 * all the members.
+	 * Note the close similarity with StructDeclaration::buildPostBlit(),
+	 * and the ordering changes (runs backward instead of forwards).
+	 */
+
+	public FuncDeclaration buildDtor(Scope sc, SemanticContext context) {
+		Expression e = null;
+
+		for (int i = 0; i < size(fields); i++) {
+			Dsymbol s = (Dsymbol) fields.get(i);
+			VarDeclaration v = s.isVarDeclaration();
+			Type tv = v.type.toBasetype(context);
+			int dim = 1;
+			while (tv.ty == Tsarray) {
+//				TypeSArray ta = (TypeSArray) tv;
+				dim *= ((TypeSArray) tv).dim.toInteger(context).intValue();
+				tv = tv.nextOf().toBasetype(context);
+			}
+			if (tv.ty == Tstruct) {
+				TypeStruct ts = (TypeStruct) tv;
+				StructDeclaration sd = ts.sym;
+				if (sd.dtor != null) {
+					Expression ex;
+
+					// this.v
+					ex = new ThisExp(Loc.ZERO);
+					ex = new DotVarExp(Loc.ZERO, ex, v, 0);
+
+					if (dim == 1) { // this.v.dtor()
+						ex = new DotVarExp(Loc.ZERO, ex, sd.dtor, 0);
+						ex = new CallExp(Loc.ZERO, ex);
+					} else {
+						// Typeinfo.destroy(cast(void*)&this.v);
+						Expression ea = new AddrExp(Loc.ZERO, ex);
+						ea = new CastExp(Loc.ZERO, ea, Type.tvoid
+								.pointerTo(context));
+
+						Expression et = v.type.getTypeInfo(sc, context);
+						et = new DotIdExp(Loc.ZERO, et, new IdentifierExp(Id.destroy));
+
+						ex = new CallExp(Loc.ZERO, et, ea);
+					}
+					e = Expression.combine(ex, e); // combine in reverse order
+				}
+			}
+		}
+
+		/*
+		 * Build our own "destructor" which executes e
+		 */
+		if (e != null) {
+			DtorDeclaration dd = new DtorDeclaration(Loc.ZERO, new IdentifierExp(Id.__fieldDtor));
+			dd.fbody = new ExpStatement(Loc.ZERO, e);
+			if (dtors == null) {
+				dtors = new FuncDeclarations();
+			}
+			dtors.add(0, dd);
+
+			if (members == null) {
+				members = new Dsymbols();
+			}
+			members.add(dd);
+			dd.semantic(sc, context);
+		}
+
+		switch (size(dtors)) {
+		case 0:
+			return null;
+
+		case 1:
+			return (FuncDeclaration) dtors.get(0);
+
+		default:
+			e = null;
+			for (int i = 0; i < size(dtors); i++) {
+				FuncDeclaration fd = (FuncDeclaration) dtors.get(i);
+				Expression ex = new ThisExp(Loc.ZERO);
+				ex = new DotVarExp(Loc.ZERO, ex, fd, 0);
+				ex = new CallExp(Loc.ZERO, ex);
+				e = Expression.combine(ex, e);
+			}
+			DtorDeclaration dd = new DtorDeclaration(Loc.ZERO, new IdentifierExp(Id.__aggrDtor));
+			dd.fbody = new ExpStatement(Loc.ZERO, e);
+			if (members == null) {
+				members = new Dsymbols();
+			}
+			members.add(dd);
+			dd.semantic(sc, context);
+			return dd;
+		}
 	}
 
 	/***************************************************************************
@@ -233,7 +337,7 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 		}
 
 		// Friends if both are in the same module
-		// if (toParent() == cd->toParent())
+		// if (toParent() == cd.toParent())
 		// TODO check reference comparison
 		if (cd != null && this.getModule() == cd.getModule()) {
 			return true;
@@ -251,7 +355,7 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 	public void semantic2(Scope sc, SemanticContext context) {
 		if (scope != null) {
 			if (context.acceptsProblems()) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasForwardReferences, this, new String[] { toChars(context) }));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasForwardReferences, this, toChars(context)));
 			}
 		}
 		if (members != null) {

@@ -17,7 +17,7 @@ public class Problem implements IProblem {
 	
 	private Problem() { }
 	
-	public static Problem newSyntaxError(int id, int line, int start, int length, String[] arguments) {
+	public static Problem newSyntaxError(int id, int line, int start, int length, String ... arguments) {
 		Problem p = new Problem();
 		p.isError = true;
 		p.id = id;
@@ -30,10 +30,10 @@ public class Problem implements IProblem {
 	}
 	
 	public static Problem newSyntaxError(int id, int line, int start, int length) {
-		return newSyntaxError(id, line, start, length, null);
+		return newSyntaxError(id, line, start, length, (String[]) null);
 	}
 	
-	public static Problem newSemanticMemberError(int id, int line, int start, int length, String[] arguments) {
+	public static Problem newSemanticMemberError(int id, int line, int start, int length, String ... arguments) {
 		Problem p = new Problem();
 		p.isError = true;
 		p.id = id;
@@ -46,7 +46,7 @@ public class Problem implements IProblem {
 	}
 	
 	public static Problem newSemanticMemberError(int id, int line, int start, int length) {
-		return newSemanticMemberError(id, line, start, length, null);
+		return newSemanticMemberError(id, line, start, length, (String[]) null);
 	}
 	
 	private static Problem newSemanticTypeProblem(int id, int line, int start, int length, String[] arguments, boolean isError) {
@@ -61,19 +61,19 @@ public class Problem implements IProblem {
 		return p;
 	}
 	
-	public static Problem newSemanticTypeError(int id, int line, int start, int length, String[] arguments) {
+	public static Problem newSemanticTypeError(int id, int line, int start, int length, String ... arguments) {
 		return newSemanticTypeProblem(id, line, start, length, arguments, true);
 	}
 	
-	public static Problem newSemanticTypeError(int id, ASTDmdNode node, String[] arguments) {
+	public static Problem newSemanticTypeError(int id, ASTDmdNode node, String ... arguments) {
 		return newSemanticTypeProblem(id, node.getLineNumber(), node.getStart(), node.getLength(), arguments, true);
 	}
 	
-	public static Problem newSemanticTypeErrorLoc(int id, ASTDmdNode node, String[] arguments) {
+	public static Problem newSemanticTypeErrorLoc(int id, ASTDmdNode node, String ... arguments) {
 		return newSemanticTypeProblem(id, node.getLineNumber(), node.getErrorStart(), node.getErrorLength(), arguments, true);
 	}
 	
-	public static Problem newSemanticTypeError(int id, ASTDmdNode n1, ASTDmdNode n2, String[] arguments) {
+	public static Problem newSemanticTypeError(int id, ASTDmdNode n1, ASTDmdNode n2, String ... arguments) {
 		return newSemanticTypeProblem(id, n1.getLineNumber(), n1.getStart(), n2.getStart()+ n2.getLength() - n1.getStart(), arguments, true);
 	}
 	
@@ -90,23 +90,23 @@ public class Problem implements IProblem {
 	}
 	
 	public static Problem newSemanticTypeError(int id, int line, int start, int length) {
-		return newSemanticTypeError(id, line, start, length, null);
+		return newSemanticTypeError(id, line, start, length, (String[]) null);
 	}
 	
-	public static Problem newSemanticTypeWarning(int id, int line, int start, int length, String[] arguments) {
+	public static Problem newSemanticTypeWarning(int id, int line, int start, int length, String ... arguments) {
 		return newSemanticTypeProblem(id, line, start, length, arguments, false);
 	}
 	
 	public static Problem newSemanticTypeWarning(int id, int line, int start, int length) {
-		return newSemanticTypeWarning(id, line, start, length, null);
+		return newSemanticTypeWarning(id, line, start, length, (String[]) null);
 	}
 	
 	public static Problem newSemanticTypeWarning(int id, ASTDmdNode node) {
-		return newSemanticTypeWarning(id, node.getLineNumber(), node.getStart(), node.getLength(), null);
+		return newSemanticTypeWarning(id, node.getLineNumber(), node.getStart(), node.getLength(), (String[]) null);
 	}
 	
 	public static Problem newSemanticTypeWarningLoc(int id, ASTDmdNode node) {
-		return newSemanticTypeWarning(id, node.getLineNumber(), node.getErrorStart(), node.getErrorLength(), null);
+		return newSemanticTypeWarning(id, node.getLineNumber(), node.getErrorStart(), node.getErrorLength(), (String[]) null);
 	}
 	
 	public static Problem newTask(String message, int line, int start, int length) {

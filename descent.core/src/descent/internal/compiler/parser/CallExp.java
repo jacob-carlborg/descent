@@ -144,11 +144,11 @@ public class CallExp extends UnaExp {
 						} else {
 							if (istate.stackOverflow) {
 								if (context.acceptsProblems()) {
-									context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionLeadsToStackOverflowAtCompileTime, this, new String[] { toChars(context) }));
+									context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionLeadsToStackOverflowAtCompileTime, this, toChars(context)));
 								}
 							} else {
 								if (context.acceptsProblems()) {
-									context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionIsNotEvaluatableAtCompileTime, this, new String[] { toChars(context) }));
+									context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionIsNotEvaluatableAtCompileTime, this, toChars(context)));
 								}
 							}
 						}
@@ -187,7 +187,7 @@ public class CallExp extends UnaExp {
 						e = eresult;
 					} else if ((result & WANTinterpret) != 0) {
 						if (context.acceptsProblems()) {
-							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionIsNotEvaluatableAtCompileTime, this, new String[] { toChars(context) }));
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionIsNotEvaluatableAtCompileTime, this, toChars(context)));
 						}
 					}
 			    }
@@ -216,6 +216,7 @@ public class CallExp extends UnaExp {
 		//int i;
 		Type t1 = null;
 		int istemp;
+		Objects targsi = null;
 
 		if (type != null) {
 			return this; // semantic() already run
@@ -356,7 +357,7 @@ public class CallExp extends UnaExp {
 					
 					if (e1.op != TOKtype) {
 						if (context.acceptsProblems()) {
-							context.acceptProblem(Problem.newSemanticTypeError(IProblem.KindSymbolDoesNotOverload, this, new String[] { ad.kind(), ad.toChars(context) }));
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.KindSymbolDoesNotOverload, this, ad.kind(), ad.toChars(context)));
 						}
 					}
 					
@@ -388,7 +389,7 @@ public class CallExp extends UnaExp {
 
 					f = dve.var.isFuncDeclaration();
 					Assert.isNotNull(f);
-					f = f.overloadResolve(arguments, context, this);
+					f = f.overloadResolve(loc, ue.e1, arguments, context, this);
 
 					ad = f.toParent().isAggregateDeclaration();
 				} else {
@@ -399,7 +400,7 @@ public class CallExp extends UnaExp {
 						// Should fix deduce() so it works on null argument
 						arguments = new Expressions();
 					}
-					f = td.deduceFunctionTemplate(sc, loc, null, arguments, context);
+					f = td.deduceFunctionTemplate(sc, loc, targsi, ue.e1, arguments, context);
 					if (f == null) {
 						type = Type.terror;
 						return this;
@@ -457,7 +458,7 @@ public class CallExp extends UnaExp {
 					f = cd.baseClass.ctor;
 					if (f == null) {
 						if (context.acceptsProblems()) {
-							context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.NoSuperClassConstructor, this, new String[] { cd.baseClass.toChars(context) }));
+							context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.NoSuperClassConstructor, this, cd.baseClass.toChars(context)));
 						}
 						type = Type.terror;
 						return this;
@@ -474,7 +475,7 @@ public class CallExp extends UnaExp {
 						}
 						sc.callSuper |= CSXany_ctor | CSXsuper_ctor;
 
-						f = f.overloadResolve(arguments, context, this);
+						f = f.overloadResolve(loc, null, arguments, context, this);
 						checkDeprecated(sc, f, context);
 						e1 = new DotVarExp(e1.loc, e1, f);
 						e1 = e1.semantic(sc, context);
@@ -508,7 +509,7 @@ public class CallExp extends UnaExp {
 					sc.callSuper |= CSXany_ctor | CSXthis_ctor;
 
 					f = cd.ctor;
-					f = f.overloadResolve(arguments, context, this);
+					f = f.overloadResolve(loc, null, arguments, context, this);
 					checkDeprecated(sc, f, context);
 					e1 = new DotVarExp(e1.loc, e1, f);
 					e1 = e1.semantic(sc, context);
@@ -519,13 +520,13 @@ public class CallExp extends UnaExp {
 					if (f == sc.func) {
 						if (context.acceptsProblems()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
-									IProblem.CyclicConstructorCall, this, new String[] { toChars(context) }));
+									IProblem.CyclicConstructorCall, this, toChars(context)));
 						}
 					}
 				}
 			} else if (t1 == null) {
 				if (context.acceptsProblems()) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionExpectedBeforeCall, this, new String[] { e1.toChars(context) }));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionExpectedBeforeCall, this, e1.toChars(context)));
 				}
 				type = Type.terror;
 				return this;
@@ -552,7 +553,7 @@ public class CallExp extends UnaExp {
 					// appear inside templates, but always on the invocation site
 					context.startTemplateEvaluation(this);
 					try {
-						f = te.td.deduceFunctionTemplate(sc, loc, null, arguments, context);
+						f = te.td.deduceFunctionTemplate(sc, loc, targsi, null, arguments, context);
 					} finally {
 						context.endTemplateEvaluation();
 					}
@@ -577,7 +578,7 @@ public class CallExp extends UnaExp {
 					continue Lagain;
 				} else {
 					if (context.acceptsProblems()) {
-						context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionExpectedBeforeCallNotSymbolOfType, this, new String[] { e1.toChars(context), e1.type.toChars(context) }));
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionExpectedBeforeCallNotSymbolOfType, this, e1.toChars(context), e1.type.toChars(context)));
 					}
 					type = Type.terror;
 					return this;
@@ -611,7 +612,7 @@ public class CallExp extends UnaExp {
 					}
 				}
 
-				f = f.overloadResolve(arguments, context, this);
+				f = f.overloadResolve(loc, null, arguments, context, this);
 				checkDeprecated(sc, f, context);
 				
 				// Descent: for binding resolution

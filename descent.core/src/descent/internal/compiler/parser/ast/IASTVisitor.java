@@ -77,6 +77,7 @@ public interface IASTVisitor extends ITreeVisitor<ASTNode> {
 	boolean visit(Declaration node);
 	boolean visit(DeclarationExp node);
 	boolean visit(DeclarationStatement node);
+	boolean visit(DefaultInitExp node);
 	boolean visit(DefaultStatement node);
 	boolean visit(DelegateExp node);
 	boolean visit(DeleteDeclaration node);
@@ -312,6 +313,7 @@ public interface IASTVisitor extends ITreeVisitor<ASTNode> {
 	void endVisit(Declaration node);
 	void endVisit(DeclarationExp node);
 	void endVisit(DeclarationStatement node);
+	void endVisit(DefaultInitExp node);
 	void endVisit(DefaultStatement node);
 	void endVisit(DelegateExp node);
 	void endVisit(DeleteDeclaration node);

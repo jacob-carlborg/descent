@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -259,13 +260,13 @@ public class TypeInstance extends TypeQualified {
 	
 	@Override
 	protected void appendSignature0(StringBuilder sb) {
-		sb.append(ISignatureConstants.IDENTIFIER);
+		sb.append(Signature.C_IDENTIFIER);
 		tempinst.name.appendSignature(sb);
 		tempinst.appendInstanceSignature(sb);
 		
 		if (idents != null) {
 			for(IdentifierExp ident : idents) {
-				sb.append(ISignatureConstants.IDENTIFIER);
+				sb.append(Signature.C_IDENTIFIER);
 				if (ident == null) {
 					sb.append(0);
 				} else {

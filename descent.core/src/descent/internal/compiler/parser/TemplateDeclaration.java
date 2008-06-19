@@ -1,24 +1,24 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.MATCH.MATCHconvert;
+import static descent.internal.compiler.parser.MATCH.MATCHexact;
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+import static descent.internal.compiler.parser.STC.STCconst;
+import static descent.internal.compiler.parser.STC.STCmanifest;
+import static descent.internal.compiler.parser.TY.Tdelegate;
+import static descent.internal.compiler.parser.TY.Tfunction;
+import static descent.internal.compiler.parser.TY.Tident;
+import static descent.internal.compiler.parser.TY.Tvoid;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.IJavaElement;
+import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.lookup.SemanticRest;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
-import static descent.internal.compiler.parser.MATCH.MATCHconvert;
-import static descent.internal.compiler.parser.MATCH.MATCHexact;
-import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
-
-import static descent.internal.compiler.parser.STC.STCconst;
-
-import static descent.internal.compiler.parser.TY.Tdelegate;
-import static descent.internal.compiler.parser.TY.Tfunction;
-import static descent.internal.compiler.parser.TY.Tident;
-import static descent.internal.compiler.parser.TY.Tvoid;
 
 
 public class TemplateDeclaration extends ScopeDsymbol {
@@ -102,7 +102,11 @@ public class TemplateDeclaration extends ScopeDsymbol {
 
 			VarDeclaration v = new VarDeclaration(loc, tvp.valType,
 					tp.ident, init);
-			v.storage_class = STCconst;
+			if (context.isD2()) {
+				v.storage_class = STCmanifest;
+			} else {
+				v.storage_class = STCconst;
+			}
 			s = v;
 		} else if (va != null) {
 			s = new TupleDeclaration(loc, tp.ident, va.objects);
@@ -118,8 +122,12 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		}
 		s.semantic(sc, context);
 	}
+	
+	public FuncDeclaration deduceFunctionTemplate(Scope sc, Loc loc, Objects targsi, Expression ethis, Expressions fargs, SemanticContext context) {
+		return deduceFunctionTemplate(sc, loc, targsi, ethis, fargs, 0, context);
+	}
 
-	public FuncDeclaration deduceFunctionTemplate(Scope sc, Loc loc, Objects targsi, Expressions fargs, SemanticContext context) {
+	public FuncDeclaration deduceFunctionTemplate(Scope sc, Loc loc, Objects targsi, Expression ethis, Expressions fargs, int flags, SemanticContext context) {
 
 		MATCH m_best = MATCH.MATCHnomatch;
 		TemplateDeclaration td_ambig = null;
@@ -135,7 +143,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 							IProblem.ForwardReferenceToTemplate, this,
 							new String[] { td.toChars(context) }));
 				}
-				return Lerror(fargs, context);
+				return Lerror(fargs, targsi, flags, context);
 			}
 			if (null == td.onemember
 					|| null == td.onemember.toAlias(context)
@@ -145,13 +153,13 @@ public class TemplateDeclaration extends ScopeDsymbol {
 							IProblem.SymbolIsNotAFunctionTemplate, this,
 							new String[] { toChars(context) }));
 				}
-				return Lerror(fargs, context);
+				return Lerror(fargs, targsi, flags, context);
 			}
 
 			MATCH m;
 
 			Objects dedargs = new Objects();
-			m = td.deduceFunctionTemplateMatch(targsi, fargs, dedargs, context);
+			m = td.deduceFunctionTemplateMatch(loc, targsi, ethis, fargs, dedargs, context);
 
 			if (m == MATCH.MATCHnomatch) {
 				continue;
@@ -171,16 +179,14 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			assert (m.ordinal() == m_best.ordinal());
 
 			// Disambiguate by picking the most specialized TemplateDeclaration
-			int c1 = 0;
-			td.leastAsSpecialized(td_best, context);
-			int c2 = 0;
-			td_best.leastAsSpecialized(td, context);
+			MATCH c1 = td.leastAsSpecialized(td_best, context);
+			MATCH c2 = td_best.leastAsSpecialized(td, context);
 
-			if (c1 > c2) {
+			if (c1.ordinal() > c2.ordinal()) {
 				// Ltd:
 				td_ambig = null;
 				continue;
-			} else if (c1 < c2) {
+			} else if (c1.ordinal() < c2.ordinal()) {
 				// Ltd_best:
 				td_ambig = null;
 				td_best = td;
@@ -195,12 +201,21 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		}
 
 		if (null == td_best) {
-			if (context.acceptsProblems()) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.SymbolDoesNotMatchAnyTemplateDeclaration, this,
-						new String[] { toChars(context) }));
+			boolean condition;
+			if (context.isD2()) {
+				condition = true;
+			} else {
+				condition = 0 == (flags & 1);
 			}
-			return Lerror(fargs, context);
+			
+			if (condition) {
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.SymbolDoesNotMatchAnyTemplateDeclaration, this,
+							new String[] { toChars(context) }));
+				}
+			}
+			return Lerror(fargs, targsi, flags, context);
 		}
 		if (null != td_ambig) {
 			if (context.acceptsProblems()) {
@@ -219,7 +234,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		ti.semantic(sc, context);
 		fd = ti.toAlias(context).isFuncDeclaration();
 		if (null == fd) {
-			return Lerror(fargs, context);
+			return Lerror(fargs, targsi, flags, context);
 		}
 		return fd;
 	}
@@ -234,7 +249,10 @@ public class TemplateDeclaration extends ScopeDsymbol {
 	}
 	private static final GotoL2 GOTO_L2 = new GotoL2();
 
-	public MATCH deduceFunctionTemplateMatch(Objects targsi, Expressions fargs,
+	public MATCH deduceFunctionTemplateMatch(Loc loc, 
+			Objects targsi,
+			Expression ethis,
+			Expressions fargs,
 			Objects dedargs, SemanticContext context) {
 		int i;
 		int nfparams;
@@ -248,8 +266,6 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		TemplateTupleParameter tp;
 		Objects dedtypes = new Objects(); // for T:T*, the dedargs is the T*,
 		// dedtypes is the T
-
-		// PERHAPS assert((int)scope > 0x10000);
 
 		dedargs.setDim(parameters.size());
 		dedargs.zero();
@@ -270,7 +286,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			nargsi = targsi.size();
 			if (nargsi > parameters.size()) {
 				if (null == tp) {
-					return Lnomatch(paramscope); // goto Lnomatch;
+					return deduceFunctionTemplateMatch_Lnomatch(paramscope); // goto Lnomatch;
 				}
 				dedargs.setDim(nargsi);
 				dedargs.zero();
@@ -287,15 +303,15 @@ public class TemplateDeclaration extends ScopeDsymbol {
 				Declaration[] sparam = new Declaration[1];
 
 				m = $tp.matchArg(paramscope, dedargs, i, parameters, dedtypes,
-						sparam, context);
+						sparam, 0, context);
 				if (m == MATCHnomatch)
-					return Lnomatch(paramscope); // goto Lnomatch;
+					return deduceFunctionTemplateMatch_Lnomatch(paramscope); // goto Lnomatch;
 				if (m.ordinal() < match.ordinal())
 					match = m;
 
 				sparam[0].semantic(paramscope, context);
 				if (null == paramscope.insert(sparam[0]))
-					return Lnomatch(paramscope); // goto Lnomatch;
+					return deduceFunctionTemplateMatch_Lnomatch(paramscope); // goto Lnomatch;
 			}
 		}
 		
@@ -349,7 +365,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 							continue;
 						}
 						if (fdtype.varargs > 0) // variadic function doesn't
-							return Lnomatch(paramscope); // goto Lnomatch; // go
+							return deduceFunctionTemplateMatch_Lnomatch(paramscope); // goto Lnomatch; // go
 						// with
 						// variadic template
 	
@@ -379,7 +395,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 				;
 			else if (nfargs > nfparams) {
 				if (fdtype.varargs == 0)
-					return Lnomatch(paramscope); // goto Lnomatch; // too
+					return deduceFunctionTemplateMatch_Lnomatch(paramscope); // goto Lnomatch; // too
 				// many
 				// args,
 				// no match
@@ -389,6 +405,30 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			// Fallthrough
 		}
 		// L2:
+		if (context.isD2()) {
+			// Match 'ethis' to any TemplateThisParameter's
+		    if (ethis != null)
+		    {
+			for (int j = 0; j < size(parameters); j++)
+			{   TemplateParameter tp2 = (TemplateParameter) parameters.get(j);
+			    TemplateThisParameter ttp = tp2.isTemplateThisParameter();
+			    if (ttp != null)
+			    {	MATCH m;
+
+				Type t = new TypeIdentifier(Loc.ZERO, ttp.ident);
+				m = ethis.type.deduceType(scope, t, parameters, dedtypes, context);
+				if (m == MATCHnomatch) {
+				    // goto Lnomatch;
+					return deduceFunctionTemplateMatch_Lnomatch(paramscope);
+				}
+				if (m.ordinal() < match.ordinal())
+				    match = m;		// pick worst match
+			    }
+			}
+		    }
+		}
+		
+		
 		// Loop through the function parameters
 		for (i = 0; i < nfparams; i++) {
 			
@@ -413,7 +453,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 					 * Default arguments do not participate in template argument
 					 * deduction.
 					 */
-					return Lmatch(nargsi, dedargs, dedtypes, paramscope, match,
+					return deduceFunctionTemplateMatch_Lmatch(nargsi, dedargs, dedtypes, paramscope, match,
 							context); // goto
 					// Lmatch;
 				}
@@ -451,7 +491,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 				}
 			}
 			if (!(fdtype.varargs == 2 && i + 1 == nfparams))
-				return Lnomatch(paramscope); // goto Lnomatch;
+				return deduceFunctionTemplateMatch_Lnomatch(paramscope); // goto Lnomatch;
 
 			/*
 			 * Check for match with function parameter T...
@@ -464,52 +504,64 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			case Tarray:
 			case Tclass:
 			case Tident:
-				return Lmatch(nargsi, dedargs, dedtypes, paramscope, match,
+				return deduceFunctionTemplateMatch_Lmatch(nargsi, dedargs, dedtypes, paramscope, match,
 						context); // goto
 				// Lmatch;
 
 			default:
-				return Lnomatch(paramscope); // goto Lnomatch;
+				return deduceFunctionTemplateMatch_Lnomatch(paramscope); // goto Lnomatch;
 			}
 		}
 
-		return Lmatch(nargsi, dedargs, dedtypes, paramscope, match, context);
+		return deduceFunctionTemplateMatch_Lmatch(nargsi, dedargs, dedtypes, paramscope, match, context);
 	}
 
 	// return Lmatch(nargsi, dedargs, dedtypes, paramscope, match, context);
 	// Lmatch:
-	private MATCH Lmatch(int nargsi, Objects dedargs, Objects dedtypes,
+	private MATCH deduceFunctionTemplateMatch_Lmatch(int nargsi, Objects dedargs, Objects dedtypes,
 			Scope paramscope, MATCH match, SemanticContext context) {
 		/* Fill in any missing arguments with their defaults.
 		 */
 		for (int i = nargsi; i < dedargs.size(); i++) {
 			TemplateParameter tp = (TemplateParameter) parameters.get(i);
 			ASTDmdNode oarg = (ASTDmdNode) dedargs.get(i);
-			ASTDmdNode o = (ASTDmdNode) dedtypes.get(i);
-			// printf("1dedargs[%d] = %p, dedtypes[%d] = %p\n", i, oarg, i, o);
+			ASTDmdNode oded = (ASTDmdNode) dedtypes.get(i);
 			if (null == oarg) {
-				if (null != o) {
+				if (null != oded) {
 					if (null != tp.specialization()) {
-						if (context.acceptsProblems()) {
-							context
-									.acceptProblem(Problem
-											.newSemanticTypeError(
-													IProblem.SpecializationNotAllowedForDeducedParameter,
-													this, new String[] { tp.ident
-															.toChars() }));
-						}
+						/* The specialization can work as long as afterwards
+					     * the oded == oarg
+					     */
+					    Declaration[] sparam = { null };
+					    dedargs.set(i, oded);
+					    MATCH m2 = tp.matchArg(paramscope, dedargs, i, parameters, dedtypes, sparam, 0, context);
+					    //printf("m2 = %d\n", m2);
+					    if (null == m2) {
+					    	// goto Lnomatch;
+					    	return deduceFunctionTemplateMatch_Lnomatch(paramscope);
+					    }
+					    if (m2.ordinal() < match.ordinal())
+						match = m2;		// pick worst match
+					    if (dedtypes.get(i) != oded) {
+							if (context.acceptsProblems()) {
+								context
+										.acceptProblem(Problem
+												.newSemanticTypeError(
+														IProblem.SpecializationNotAllowedForDeducedParameter,
+														this, new String[] { tp.ident
+																.toChars() }));
+							}
+					    }
 					}
 				} else {
-					o = tp.defaultArg(paramscope, context);
-					if (null == o) {
+					oded = tp.defaultArg(loc, paramscope, context);
+					if (null == oded) {
 						// goto Lnomatch;
-						paramscope.pop();
-						// printf("\tnomatch\n");
-						return MATCHnomatch;
+						return deduceFunctionTemplateMatch_Lnomatch(paramscope);
 					}
 				}
-				declareParameter(paramscope, tp, o, context);
-				dedargs.set(i, o);
+				declareParameter(paramscope, tp, oded, context);
+				dedargs.set(i, oded);
 			}
 		}
 
@@ -519,7 +571,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 
 	// return Lnomatch(paramscope);
 	// Lnomatch:
-	private MATCH Lnomatch(Scope paramscope) {
+	private MATCH deduceFunctionTemplateMatch_Lnomatch(Scope paramscope) {
 		//Lnomatch:
 		paramscope.pop();
 		//printf("\tnomatch\n");
@@ -549,7 +601,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 				: "template";
 	}
 
-	public int leastAsSpecialized(TemplateDeclaration td2, SemanticContext context) {
+	public MATCH leastAsSpecialized(TemplateDeclaration td2, SemanticContext context) {
 		/*
 		 * This works by taking the template parameters to this template
 		 * declaration and feeding them to td2 as if it were a template
@@ -585,32 +637,61 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		dedtypes.setDim(size(td2.parameters));
 
 		// Attempt a type deduction
-		if (td2.matchWithInstance(ti, dedtypes, 1, context) != MATCHnomatch) {
+		MATCH m = td2.matchWithInstance(ti, dedtypes, 1, context);
+		if (m != MATCHnomatch) {
 			/*
 			 * A non-variadic template is more specialized than a variadic one.
 			 */
 			if (isVariadic() != null && null == td2.isVariadic()) {
 				// goto L1;
-				return 0;
+				return MATCHnomatch;
 			}
 
-			return 1;
+			return m;
 		}
 		// L1:
-		return 0;
+		return MATCHnomatch;
 	}
 
 	// Lerror:
-	private FuncDeclaration Lerror(Expressions fargs, SemanticContext context) {
-		OutBuffer buf = new OutBuffer();
-		HdrGenState hgs = new HdrGenState();
-
-		argExpTypesToCBuffer(buf, fargs, hgs, context);
-		// TODO semantic the source range is bad
-		if (context.acceptsProblems()) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.CannotDeduceTemplateFunctionFromArgumentTypes, this,
-					new String[] { buf.toChars() }));
+	private FuncDeclaration Lerror(Expressions fargs, Objects targsi, int flags, SemanticContext context) {
+		boolean condition;
+		if (context.isD2()) {
+			condition = true;
+		} else {
+			condition = 0 == (flags & 1);
+		}
+		
+		if (condition) {
+			OutBuffer buf = new OutBuffer();
+			HdrGenState hgs = new HdrGenState();
+			
+			OutBuffer bufa = new OutBuffer();
+			Objects args = targsi;
+			if (args != null)
+			{   for (int i = 0; i < args.size(); i++)
+			    {
+				if (i != 0) {
+				    bufa.writeByte(',');
+				}
+				ASTDmdNode oarg = (ASTDmdNode) args.get(i);
+				ObjectToCBuffer(bufa, hgs, oarg, context);
+			    }
+			}
+	
+			argExpTypesToCBuffer(buf, fargs, hgs, context);
+			// TODO semantic the source range is bad
+			if (context.acceptsProblems()) {
+				if (context.isD2()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.CannotDeduceTemplateFunctionFromArgumentTypes2, this,
+							new String[] { bufa.toChars(), buf.toChars() }));
+				} else {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.CannotDeduceTemplateFunctionFromArgumentTypes, this,
+							new String[] { buf.toChars() }));
+				}
+			}
 		}
 		return null;
 	}
@@ -654,11 +735,9 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			Declaration[] sparam = { null };
 
 			if (context.isD2()) {
-				// TODO Semantic fix this
-				// m2 = tp.matchArg(paramscope, ti.tiargs, i, parameters, dedtypes, sparam, (flag & 2) != 0 ? 1 : 0, context);
-				m2 = tp.matchArg(paramscope, ti.tiargs, i, parameters, dedtypes, sparam, context);
+				m2 = tp.matchArg(paramscope, ti.tiargs, i, parameters, dedtypes, sparam, (flag & 2) != 0 ? 1 : 0, context);
 			} else {
-				m2 = tp.matchArg(paramscope, ti.tiargs, i, parameters, dedtypes, sparam, context);
+				m2 = tp.matchArg(paramscope, ti.tiargs, i, parameters, dedtypes, sparam, (flag & 2) != 0 ? 1 : 0, context);
 			}
 
 			if (m2 == MATCHnomatch) {
@@ -742,10 +821,14 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		}
 
 		if (sc.func != null) {
-			if (context.acceptsProblems()) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.CannotDeclareTemplateAtFunctionScope, this,
-						new String[] { sc.func.toChars(context) }));
+			if (context.isD2()) {
+				
+			} else {
+				if (context.acceptsProblems()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.CannotDeclareTemplateAtFunctionScope, this,
+							new String[] { sc.func.toChars(context) }));
+				}
 			}
 		}
 
@@ -887,7 +970,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			Dsymbol member = (Dsymbol) members.get(0);
 			return member.getSignaturePrefix();
 		} else {
-			return ISignatureConstants.TEMPLATE;
+			return Signature.C_TEMPLATE;
 		}
 	}
 	

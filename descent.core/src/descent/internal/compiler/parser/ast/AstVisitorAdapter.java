@@ -1656,5 +1656,13 @@ public class AstVisitorAdapter implements IASTVisitor {
 	public boolean visit(XorExp node) {
 		return true;
 	}
+	
+	public void endVisit(DefaultInitExp node) {
+		
+	}
+	
+	public boolean visit(DefaultInitExp node) {
+		return true;
+	}
 
 }

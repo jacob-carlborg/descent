@@ -96,7 +96,7 @@ public abstract class TypeQualified extends Type {
 							resolveHelper_L3(sc, pe, e, context);
 							return;
 						}
-						t = s.getType();
+						t = s.getType(context);
 						
 						if (t == null && s.isDeclaration() != null) {
 							t = s.isDeclaration().type;
@@ -162,7 +162,7 @@ public abstract class TypeQualified extends Type {
 	public void resolveHelper_L1_plus_end(Scope sc, Dsymbol s,
 			Dsymbol scopesym, Expression[] pe, Type[] pt, Dsymbol[] ps,
 			Expression e, Type t, SemanticContext context) {
-		t = s.getType();
+		t = s.getType(context);
 		if (t == null) {
 			// If the symbol is an import, try looking inside the import
 			Import si;

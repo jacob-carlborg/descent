@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -38,7 +39,7 @@ public class TemplateTupleParameter extends TemplateParameter {
 	}
 
 	@Override
-	public ASTDmdNode defaultArg(Scope sc, SemanticContext context) {
+	public ASTDmdNode defaultArg(Loc loc, Scope sc, SemanticContext context) {
 		return null;
 	}
 
@@ -60,7 +61,7 @@ public class TemplateTupleParameter extends TemplateParameter {
 	@Override
 	public MATCH matchArg(Scope sc, Objects tiargs, int i,
 			TemplateParameters parameters, Objects dedtypes,
-			Declaration[] psparam, SemanticContext context) {
+			Declaration[] psparam, int flags, SemanticContext context) {
 		/* The rest of the actual arguments (tiargs[]) form the match
 		 * for the variadic parameter.
 		 */
@@ -119,7 +120,7 @@ public class TemplateTupleParameter extends TemplateParameter {
 	
 	@Override
 	public void appendSignature(StringBuilder sb) {
-		sb.append(ISignatureConstants.TEMPLATE_TUPLE_PARAMETER);
+		sb.append(Signature.C_TEMPLATE_TUPLE_PARAMETER);
 	}
 	
 	@Override

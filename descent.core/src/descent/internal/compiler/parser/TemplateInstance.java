@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -152,10 +153,10 @@ public class TemplateInstance extends ScopeDsymbol {
 			}
 			{
 				// Disambiguate by picking the most specialized TemplateDeclaration
-				int c1 = td.leastAsSpecialized(td_best, context);
-				int c2 = td_best.leastAsSpecialized(td, context);
+				MATCH c1 = td.leastAsSpecialized(td_best, context);
+				MATCH c2 = td_best.leastAsSpecialized(td, context);
 
-				if (c1 > c2) {
+				if (c1.ordinal() > c2.ordinal()) {
 					// goto Ltd;
 					td_ambig = null;
 					td_best = td;
@@ -166,7 +167,7 @@ public class TemplateInstance extends ScopeDsymbol {
 					tdtypes.setDim(dedtypes.size());
 					tdtypes.memcpy(dedtypes);
 					continue;
-				} else if (c1 < c2) {
+				} else if (c1.ordinal() < c2.ordinal()) {
 					// goto Ltd_best;
 					td_ambig = null;
 					continue;
@@ -250,8 +251,8 @@ public class TemplateInstance extends ScopeDsymbol {
 				if (null == s.parent && context.global.errors > 0) {
 					return null;
 				}
-				if (null == s.parent && null != s.getType()) {
-					Dsymbol s2 = s.getType().toDsymbol(sc, context);
+				if (null == s.parent && null != s.getType(context)) {
+					Dsymbol s2 = s.getType(context).toDsymbol(sc, context);
 					if (null == s2) {
 						if (context.acceptsProblems()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
@@ -577,7 +578,9 @@ public class TemplateInstance extends ScopeDsymbol {
 			// WTF assert((size_t)tempdecl.scope > 0x10000);
 			// Deduce tdtypes
 			tdtypes.setDim(tempdecl.parameters.size());
-			if (MATCHnomatch == tempdecl.matchWithInstance(this, tdtypes, 0,
+			
+			int matchWithInstanceNum = context.isD2() ? 2 : 0;
+			if (MATCHnomatch == tempdecl.matchWithInstance(this, tdtypes, matchWithInstanceNum,
 					context)) {
 				if (context.acceptsProblems()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
@@ -1009,7 +1012,7 @@ public class TemplateInstance extends ScopeDsymbol {
 	}
 	
 	public void appendInstanceSignature(StringBuilder sb) {
-		sb.append(ISignatureConstants.TEMPLATE_INSTANCE);
+		sb.append(Signature.C_TEMPLATE_INSTANCE);
 		for (int j = 0; j < size(tiargs); j++) {
 			ASTDmdNode o = tiargs.get(j);
 			Type ta = isType(o);
@@ -1017,23 +1020,23 @@ public class TemplateInstance extends ScopeDsymbol {
 			Dsymbol sa = isDsymbol(o);
 			
 			if (ta != null) {
-				sb.append(ISignatureConstants.TEMPLATE_INSTANCE_TYPE);
+				sb.append(Signature.C_TEMPLATE_INSTANCE_TYPE_PARAMETER);
 				ta.appendSignature(sb);
 			} else if (ea != null) {
-				sb.append(ISignatureConstants.TEMPLATE_INSTANCE_VALUE);
+				sb.append(Signature.C_TEMPLATE_INSTANCE_VALUE_PARAMETER);
 				char[] exp = encoder.encodeExpression(ea);
 				sb.append(exp.length);
-				sb.append(ISignatureConstants.TEMPLATE_INSTANCE_VALUE);
+				sb.append(Signature.C_TEMPLATE_INSTANCE_VALUE_PARAMETER);
 				sb.append(exp);
 			} else if (sa != null) {
-				sb.append(ISignatureConstants.TEMPLATE_INSTANCE_SYMBOL);
+				sb.append(Signature.C_TEMPLATE_INSTANCE_SYMBOL_PARAMETER);
 				sa.appendSignature(sb);
 			} else {
 				// TODO Descent probably tuple
 			}
 			
 		}
-		sb.append(ISignatureConstants.TEMPLATE_PARAMETERS_BREAK);
+		sb.append(Signature.C_TEMPLATE_PARAMETERS_BREAK);
 	}
 	
 	public void tiargs(Objects tiargs) {
@@ -1045,6 +1048,6 @@ public class TemplateInstance extends ScopeDsymbol {
 	
 	@Override
 	public char getSignaturePrefix() {
-		return ISignatureConstants.TEMPLATE_INSTANCE;
+		return Signature.C_TEMPLATE_INSTANCE;
 	}
 }

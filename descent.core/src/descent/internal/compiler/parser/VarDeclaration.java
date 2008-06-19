@@ -5,6 +5,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.IField;
+import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.lookup.SemanticRest;
 import descent.internal.compiler.parser.ast.IASTVisitor;
@@ -46,6 +47,7 @@ public class VarDeclaration extends Declaration {
 	public int inuse;
 	public int offset;
 	public boolean noauto; // no auto semantics
+	public FuncDeclarations nestedrefs;// referenced by these lexically nested functions
 	public int onstack; // 1: it has been allocated on the stack
 		// 2: on stack, run destructor anyway
 	public int canassign;		// it can be assigned to
@@ -791,7 +793,7 @@ public class VarDeclaration extends Declaration {
 	}
 	
 	public char getSignaturePrefix() {
-		return ISignatureConstants.VARIABLE;
+		return Signature.C_VARIABLE;
 	}
 
 	public void setJavaElement(IField field) {

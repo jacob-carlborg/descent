@@ -32,7 +32,7 @@ public class UshrExp extends BinExp {
 	}
 
 	@Override
-	public char[] opId() {
+	public char[] opId(SemanticContext context) {
 		return Id.ushr;
 	}
 

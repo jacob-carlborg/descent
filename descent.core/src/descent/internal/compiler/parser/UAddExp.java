@@ -28,7 +28,7 @@ public class UAddExp extends UnaExp {
 	}
 
 	@Override
-	public char[] opId() {
+	public char[] opId(SemanticContext context) {
 		return Id.uadd;
 	}
 	

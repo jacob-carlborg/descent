@@ -52,7 +52,7 @@ public abstract class UnaExp extends Expression {
 			return null;
 		}
 
-		fd = search_function(ad, opId(), context);
+		fd = search_function(ad, opId(context), context);
 		if (fd != null) {
 			if (op == TOKarray) {
 				Expression e;

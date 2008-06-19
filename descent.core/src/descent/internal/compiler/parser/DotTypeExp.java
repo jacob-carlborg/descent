@@ -7,10 +7,10 @@ public class DotTypeExp extends UnaExp {
 
 	public Dsymbol sym;
 
-	public DotTypeExp(Loc loc, Expression e, Dsymbol s) {
+	public DotTypeExp(Loc loc, Expression e, Dsymbol s, SemanticContext context) {
 		super(loc, TOK.TOKdottype, e);
 		this.sym = s;
-		this.type = s.getType();
+		this.type = s.getType(context);
 	}
 
 	@Override

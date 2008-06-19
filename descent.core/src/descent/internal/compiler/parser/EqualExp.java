@@ -46,7 +46,7 @@ public class EqualExp extends BinExp {
 	}
 
 	@Override
-	public char[] opId() {
+	public char[] opId(SemanticContext context) {
 		return Id.eq;
 	}
 
@@ -104,7 +104,7 @@ public class EqualExp extends BinExp {
 	    if ((e1.type.toBasetype(context).ty == Tclass && e2.op == TOKnull ||
 	    		e2.type.toBasetype(context).ty == Tclass && e1.op == TOKnull)) {
 	    	if (context.acceptsProblems()) {
-	    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.UseTokenInsteadOfTokenWhenComparingWithNull, this, new String[] { op == TOKequal ? "is" : "!is", op.toString() }));
+	    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.UseTokenInsteadOfTokenWhenComparingWithNull, this, op == TOKequal ? "is" : "!is", op.toString()));
 	    	}
 	    }
 
@@ -128,7 +128,7 @@ public class EqualExp extends BinExp {
 			if (!t1.next.equals(t2.next)) {
 				if (context.acceptsProblems()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.ArrayComparisonTypeMismatch, this, new String[] { t1.next.toChars(context), t2.next.toChars(context) }));
+							IProblem.ArrayComparisonTypeMismatch, this, t1.next.toChars(context), t2.next.toChars(context)));
 				}
 			}
 		}

@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.Signature;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
@@ -112,7 +113,7 @@ public class StaticCtorDeclaration extends FuncDeclaration {
 	
 	@Override
 	public char getSignaturePrefix() {
-		return ISignatureConstants.UNIT_TEST_INVARIANT_STATIC_CTOR_STATIC_DTOR;
+		return Signature.C_SPECIAL_FUNCTION;
 	}
 
 }

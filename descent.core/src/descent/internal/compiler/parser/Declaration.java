@@ -1,8 +1,9 @@
 package descent.internal.compiler.parser;
 
-import descent.core.compiler.IProblem;
-
+import static descent.internal.compiler.parser.STC.STCfield;
 import static descent.internal.compiler.parser.STC.STCin;
+import static descent.internal.compiler.parser.STC.STCmanifest;
+import descent.core.compiler.IProblem;
 
 
 public abstract class Declaration extends Dsymbol {
@@ -26,6 +27,66 @@ public abstract class Declaration extends Dsymbol {
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
 
+	}
+	
+	/*************************************
+	 * Check to see if declaration can be modified in this context (sc).
+	 * Issue error if not.
+	 */
+
+	public void checkModify(Loc loc, Scope sc, Type t, SemanticContext context) {
+		if (sc.incontract != 0 && isParameter()) {
+			if (context.acceptsProblems()) {
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotModifyParameterInContract, this, toChars(context)));
+			}
+		}
+
+		if (isCtorinit()) { // It's only modifiable if inside the right
+							// constructor
+			Dsymbol s = sc.func;
+			while (true) {
+				FuncDeclaration fd = null;
+				if (s != null)
+					fd = s.isFuncDeclaration();
+				if (fd != null
+						&& ((fd.isCtorDeclaration() != null && (storage_class & STCfield) != 0) || (fd
+								.isStaticCtorDeclaration() != null && 0 == (storage_class & STCfield)))
+						&& fd.toParent() == toParent()) {
+					VarDeclaration v = isVarDeclaration();
+					v.ctorinit = true;
+				} else {
+					if (s != null) {
+						s = s.toParent2();
+						continue;
+					} else {
+						if (context.acceptsProblems()) {
+							String p = isStatic() ? "static " : "";
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.CanOnlyInitiailizeConstMemberInsideConstructor, this, p, toChars(context), p));
+						}
+					}
+				}
+				break;
+			}
+		} else {
+			VarDeclaration v = isVarDeclaration();
+			if (v != null && v.canassign == 0) {
+				String p = null;
+				if (isConst())
+					p = "const";
+				else if (isInvariant())
+					p = "invariant";
+				else if ((storage_class & STCmanifest) != 0)
+					p = "manifest constant";
+				else if (!t.isAssignable())
+					p = "struct with immutable members";
+				if (p != null) {
+					if (context.acceptsProblems()) {
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotModifySymbol, this, p));
+					}
+					// halt();
+				}
+			}
+		}
 	}
 
 	@Override

@@ -377,7 +377,7 @@ public class TypeFunction extends Type implements Cloneable {
 		inuse--;
 	}
 
-	public MATCH callMatch(Expressions args, SemanticContext context) {
+	public MATCH callMatch(Expression ethis, Expressions args, SemanticContext context) {
 		MATCH match = MATCHexact; // assume exact match
 
 		int nparams = Argument.dim(parameters, context);

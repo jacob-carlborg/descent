@@ -34,7 +34,7 @@ public class CompileExp extends UnaExp {
 		e1 = e1.optimize(WANTvalue | WANTinterpret, context);
 		if (e1.op != TOKstring) {
 			if (context.acceptsProblems()) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArgumentToMixinMustBeString, this, new String[] { e1.toChars(context) }));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArgumentToMixinMustBeString, this, e1.toChars(context)));
 			}
 			type = Type.terror;
 			return this;
@@ -57,7 +57,7 @@ public class CompileExp extends UnaExp {
 		
 		if (p.token.value != TOKeof) {
 			if (context.acceptsProblems()) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.IncompleteMixinDeclaration, this, new String[] { se.toChars(context) }));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.IncompleteMixinDeclaration, this, se.toChars(context)));
 			}
 		}
 		return e.semantic(sc, context);

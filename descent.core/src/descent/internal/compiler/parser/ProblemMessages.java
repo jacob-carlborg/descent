@@ -129,6 +129,7 @@ final class ProblemMessages extends NLS {
 	public static String UndefinedType;
 	public static String IsClassPathCorrect;
 	public static String FunctionsCannotBeConstOrAuto;
+	public static String FunctionsCannotBeScopeOrAuto;
 	public static String NonVirtualFunctionsCannotBeAbstract;
 	public static String CannotBeBothAbstractAndFinal;
 	public static String ModifierCannotBeAppliedToVariables;
@@ -219,6 +220,7 @@ final class ProblemMessages extends NLS {
 	public static String NotEnoughArguments;
 	public static String CanOnlySynchronizeOnClassObjects;
 	public static String CannotDeduceTemplateFunctionFromArgumentTypes;
+	public static String CannotDeduceTemplateFunctionFromArgumentTypes2;
 	public static String ArrayDimensionExceedsMax;
 	public static String AStructIsNotAValidInitializerFor;
 	public static String CannotUseArrayToInitialize;
@@ -415,6 +417,7 @@ final class ProblemMessages extends NLS {
 	public static String CannotUseTemplateToAddVirtualFunctionToClass;
 	public static String OutResultIsAlreadyDefined;
 	public static String MissingInitializerForConstField;
+	public static String MissingInitializerForFinalField;
 	public static String ImportNotFound;
 	public static String SymbolMustBeAnArrayOfPointerType;
 	public static String RvalueOfInExpressionMustBeAnAssociativeArray;
@@ -475,6 +478,9 @@ final class ProblemMessages extends NLS {
 	public static String CannotCreateCppClasses;
 	public static String SwitchAndCaseAreInDifferentFinallyBlocks;
 	public static String SwitchAndDefaultAreInDifferentFinallyBlocks;
+	public static String CannotHaveFieldWithSameStructType;
+	public static String WithoutThisCannotBeConstInvariant;
+	public static String CannotModifySymbol;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

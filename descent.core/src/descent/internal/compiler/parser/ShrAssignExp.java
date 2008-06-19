@@ -32,7 +32,7 @@ public class ShrAssignExp extends BinExp {
 	}
 	
 	@Override
-	public char[] opId() {
+	public char[] opId(SemanticContext context) {
 		return Id.shrass;
 	}
 	

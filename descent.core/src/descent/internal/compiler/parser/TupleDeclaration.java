@@ -34,7 +34,7 @@ public class TupleDeclaration extends Declaration {
 	}
 
 	@Override
-	public Type getType() {
+	public Type getType(SemanticContext context) {
 		/*
 		 * If this tuple represents a type, return that type
 		 */
@@ -62,7 +62,13 @@ public class TupleDeclaration extends Declaration {
 			for (int i = 0; i < size(objects); i++) {
 				Type t = (Type) objects.get(i);
 
-				Argument arg = new Argument(STCin, t, null, null);
+				
+				Argument arg;
+				if (context.isD2()) {
+					arg = new Argument(0, t, null, null);
+				} else {
+					arg = new Argument(STCin, t, null, null);
+				}
 				args.set(i, arg);
 			}
 

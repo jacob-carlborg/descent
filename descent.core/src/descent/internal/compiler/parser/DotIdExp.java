@@ -138,7 +138,7 @@ public class DotIdExp extends UnaExp {
 				if (v != null) {
 					if (v.inuse() != 0) {
 						if (context.acceptsProblems()) {
-							context.acceptProblem(Problem.newSemanticTypeError(IProblem.CircularReferenceTo, this, new String[] { v.toChars(context) }));
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.CircularReferenceTo, this, v.toChars(context)));
 						}
 						type = Type.tint32;
 						return this;
@@ -194,7 +194,7 @@ public class DotIdExp extends UnaExp {
 					return e;
 				}
 
-				Type t = s.getType();
+				Type t = s.getType(context);
 				if (t != null) {
 					return new TypeExp(loc, t);
 				}
@@ -242,7 +242,7 @@ public class DotIdExp extends UnaExp {
 
 			if (context.acceptsProblems()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.UndefinedIdentifier, this, new String[] { toChars(context) }));
+						IProblem.UndefinedIdentifier, this, toChars(context)));
 			}
 			type = Type.tvoid;
 			return this;

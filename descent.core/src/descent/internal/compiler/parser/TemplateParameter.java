@@ -16,7 +16,7 @@ public abstract class TemplateParameter extends ASTDmdNode {
 
 	public abstract void declareParameter(Scope sc, SemanticContext context);
 
-	public abstract ASTDmdNode defaultArg(Scope sc, SemanticContext context);
+	public abstract ASTDmdNode defaultArg(Loc loc, Scope sc, SemanticContext context);
 
 	/**
 	 * Create dummy argument based on parameter.
@@ -48,7 +48,7 @@ public abstract class TemplateParameter extends ASTDmdNode {
 	 */
 	public abstract MATCH matchArg(Scope sc, Objects tiargs, int i,
 			TemplateParameters parameters, Objects dedtypes,
-			Declaration[] psparam, SemanticContext context);
+			Declaration[] psparam, int flags, SemanticContext context);
 
 	/**
 	 * If TemplateParameter's match as far as overloading goes.

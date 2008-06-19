@@ -32,7 +32,7 @@ public class ArrayExp extends UnaExp {
 	}
 
 	@Override
-	public char[] opId() {
+	public char[] opId(SemanticContext context) {
 		return Id.index;
 	}
 
@@ -56,7 +56,7 @@ public class ArrayExp extends UnaExp {
 			if (arguments.size() != 1) {
 				if (context.acceptsProblems()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.OnlyOneIndexAllowedToIndex, this, new String[] { t1.toChars(context) }));
+							IProblem.OnlyOneIndexAllowedToIndex, this, t1.toChars(context)));
 				}
 			}
 			e = new IndexExp(loc, e1, arguments.get(0));
@@ -70,7 +70,7 @@ public class ArrayExp extends UnaExp {
 			e = e.semantic(sc, context);
 			if (null == e.type) {
 				if (context.acceptsProblems()) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, e, new String[] { e.toChars(context) }));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, e, e.toChars(context)));
 				}
 			}
 			arguments.set(i, e);
@@ -83,7 +83,7 @@ public class ArrayExp extends UnaExp {
 		if (null == e) {
 			if (context.acceptsProblems()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.NoOpIndexOperatorOverloadForType, this, new String[] { e1.type.toChars(context) }));
+						IProblem.NoOpIndexOperatorOverloadForType, this, e1.type.toChars(context)));
 			}
 			e = e1;
 		}

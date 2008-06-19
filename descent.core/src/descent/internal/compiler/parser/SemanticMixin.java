@@ -1,5 +1,7 @@
 package descent.internal.compiler.parser;
 
+import descent.core.Signature;
+
 /**
  * Groups a bunch of methods that are shared amongst the source hierarchy
  * and resolved hierarchy.
@@ -150,7 +152,7 @@ public class SemanticMixin {
 				for(TemplateParameter param : tempdecl.parameters) {
 					param.appendSignature(sb);
 				}
-				sb.append(ISignatureConstants.TEMPLATE_PARAMETERS_BREAK);
+				sb.append(Signature.C_TEMPLATE_PARAMETERS_BREAK);
 			}
 			
 			if (aThis instanceof TemplateDeclaration) {
@@ -173,7 +175,7 @@ public class SemanticMixin {
 		if (aThis.templated()) {
 			sb.append(aThis.getSignaturePrefix());
 		} else {
-			sb.append(ISignatureConstants.TEMPLATE);
+			sb.append(Signature.C_TEMPLATE);
 		}
 		sb.append(tempinst.name.ident.length);
 		sb.append(tempinst.name.ident);
@@ -198,7 +200,7 @@ public class SemanticMixin {
 		for(TemplateParameter param : tempdecl.parameters) {
 			param.appendSignature(sb);
 		}
-		sb.append(ISignatureConstants.TEMPLATE_PARAMETERS_BREAK);
+		sb.append(Signature.C_TEMPLATE_PARAMETERS_BREAK);
 	}
 	
 	/*

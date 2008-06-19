@@ -440,7 +440,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		return toLvalue(sc, e, context);
 	}
 
-	public char[] opId() {
+	public char[] opId(SemanticContext context) {
 		throw new IllegalStateException("assert(0);");
 	}
 

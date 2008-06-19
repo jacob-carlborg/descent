@@ -63,7 +63,7 @@ public class TypeClass extends Type {
 			if (tpi.idents.size() != 0) {
 				IdentifierExp id = tpi.idents.get(tpi.idents.size() - 1);
 				if (id.dyncast() == DYNCAST_IDENTIFIER && equals(sym.ident, id)) {
-					Type tparent = sym.parent.getType();
+					Type tparent = sym.parent.getType(context);
 					if (tparent != null) {
 						/* Slice off the .foo in S!(T).foo
 						 */
@@ -149,7 +149,7 @@ public class TypeClass extends Type {
 				ClassDeclaration cbase;
 				for (cbase = sym.baseClass; null != cbase; cbase = cbase.baseClass) {
 					if (equals(ident, cbase.ident)) {
-						e = new DotTypeExp(Loc.ZERO, e, cbase);
+						e = new DotTypeExp(Loc.ZERO, e, cbase, context);
 						return e;
 					}
 				}
@@ -242,8 +242,8 @@ public class TypeClass extends Type {
 				}
 			}
 	
-			if (null != s.getType()) {
-				return new TypeExp(e.loc, s.getType());
+			if (null != s.getType(context)) {
+				return new TypeExp(e.loc, s.getType(context));
 			}
 	
 			EnumMember em = s.isEnumMember();
@@ -308,7 +308,7 @@ public class TypeClass extends Type {
 
 						if (cd == thiscd) {
 							e = new ThisExp(e.loc);
-							e = new DotTypeExp(e.loc, e, cd);
+							e = new DotTypeExp(e.loc, e, cd, context);
 							de = new DotVarExp(e.loc, e, d);
 							e = de.semantic(sc, context);
 							return e;

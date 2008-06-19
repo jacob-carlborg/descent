@@ -93,7 +93,7 @@ public class BreakStatement extends Statement {
 
 					if (!s.hasBreak()) {
 						if (context.acceptsProblems()) {
-							context.acceptProblem(Problem.newSemanticTypeError(IProblem.LabelHasNoBreak, this, new String[] { ident.toChars() }));
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.LabelHasNoBreak, this, ident.toChars()));
 						}
 					}
 					if (ls.tf != sc.tf) {
@@ -105,7 +105,7 @@ public class BreakStatement extends Statement {
 				}
 			}
 			if (context.acceptsProblems()) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.EnclosingLabelForBreakNotFound, ident, new String[] { ident.toChars() }));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.EnclosingLabelForBreakNotFound, ident, ident.toChars()));
 			}
 		} else if (sc.sbreak == null) {
 			if (sc.fes != null) {

@@ -37,8 +37,12 @@ public class TypeDArray extends TypeArray {
 	}
 
 	@Override
-	public boolean builtinTypeInfo() {
-		return next.isTypeBasic() != null;
+	public boolean builtinTypeInfo(SemanticContext context) {
+		if (context.isD2()) {
+			return 0 == mod && next.isTypeBasic() != null && 0 == next.mod;	
+		} else {
+			return next.isTypeBasic() != null;
+		}
 	}
 
 	@Override

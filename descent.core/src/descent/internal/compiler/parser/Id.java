@@ -151,6 +151,7 @@ public interface Id {
 	static final char[] next = { 'o', 'p', 'N', 'e', 'x', 't' };
 	static final char[] opIn = { 'o', 'p', 'I', 'n' };
 	static final char[] opIn_r = { 'o', 'p', 'I', 'n', '_', 'r' };
+	static final char[] opStar = { 'o', 'p', 'S', 't', 'a', 'r' };
 	static final char[] classNew = { 'n', 'e', 'w' };
 	static final char[] classDelete = { 'd', 'e', 'l', 'e', 't', 'e' };
 	static final char[] apply = { 'o', 'p', 'A', 'p', 'p', 'l', 'y' };
@@ -198,6 +199,9 @@ public interface Id {
 	static final char[] getmembers = { 'g', 'e', 't', 'M', 'e', 'm', 'b', 'e', 'r', 's' };
 	static final char[] startaddress = { 's', 't', 'a', 'r', 't', 'a', 'd', 'd', 'r', 'e', 's', 's' };
 	static final char[] _postblit = { '_', 'p', 'o', 's', 't', 'b', 'l', 'i', 't' };
+	static final char[] cpctor = { '_', 'c', 'p', 'c', 't', 'o', 'r' };
+	static final char[] destroy = { 'd', 'e', 's', 't', 'r', 'o', 'y' };
+	static final char[] postblit = { 'p', 'o', 's', 't', 'b', 'l', 'i', 't' };
 	
 	static final char[] std = { 's', 't', 'd' };
 	static final char[] math = { 'm', 'a', 't', 'h' };
@@ -223,5 +227,9 @@ public interface Id {
 	
 	static final char[] isSame = { 'i', 's', 'S', 'a', 'm', 'e' };
 	static final char[] compiles = { 'c', 'o', 'm', 'p', 'i', 'l', 'e', 's' };
+	static final char[] __fieldDtor = { '_', '_', 'f', 'i', 'e', 'l', 'd', 'D', 't', 'o', 'r' };
+	static final char[] __aggrDtor = { '_', '_', 'a', 'g', 'g', 'r', 'D', 't', 'o', 'r' };
+	static final char[] __fieldPostBlit = { '_', '_', 'f', 'i', 'e', 'l', 'd', 'P', 'o', 's', 't', 'B', 'l', 'i', 't' };
+	static final char[] __aggrPostBlit = { '_', '_', 'a', 'g', 'g', 'r', 'P', 'o', 's', 't', 'B', 'l', 'i', 't'  };
 
 }

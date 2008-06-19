@@ -5,6 +5,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.IField;
+import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -60,7 +61,7 @@ public class TypedefDeclaration extends Declaration {
 	}
 
 	@Override
-	public Type getType() {
+	public Type getType(SemanticContext context) {
 		return type;
 	}
 
@@ -169,7 +170,7 @@ public class TypedefDeclaration extends Declaration {
 	}
 	
 	public char getSignaturePrefix() {
-		return ISignatureConstants.TYPEDEF;
+		return Signature.C_TYPEDEF;
 	}
 	
 	public void setJavaElement(IField field) {

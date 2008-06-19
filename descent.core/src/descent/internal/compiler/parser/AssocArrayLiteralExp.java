@@ -282,7 +282,7 @@ public class AssocArrayLiteralExp extends Expression {
 		{
 			if (context.acceptsProblems()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.NumberOfKeysMustMatchNumberOfValues, this, new String[] { String.valueOf(keys.size()), String.valueOf(values.size()) }));
+						IProblem.NumberOfKeysMustMatchNumberOfValues, this, String.valueOf(keys.size()), String.valueOf(values.size())));
 			}
 			keys.clear();
 			values.clear();
@@ -294,12 +294,12 @@ public class AssocArrayLiteralExp extends Expression {
 			
 			if(null == key.type) {
 				if (context.acceptsProblems()) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, key, new String[] { key.toChars(context) }));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, key, key.toChars(context)));
 				}
 			}
 			if(null == value.type) {
 				if (context.acceptsProblems()) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, value, new String[] { value.toChars(context) }));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, value, value.toChars(context)));
 				}
 			}
 			key = resolveProperties(sc, key, context);

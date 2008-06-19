@@ -64,7 +64,7 @@ public class DeleteExp extends UnaExp {
 				 */
 				if (context.acceptsProblems()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.CannotDeleteInstanceOfComInterface, this, new String[] { cd.toChars(context) }));
+							IProblem.CannotDeleteInstanceOfComInterface, this, cd.toChars(context)));
 				}
 			}
 			break;
@@ -99,7 +99,7 @@ public class DeleteExp extends UnaExp {
 				}
 			}
 			if (context.acceptsProblems()) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotDeleteType, this, new String[] { e1.type.toChars(context) }));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotDeleteType, this, e1.type.toChars(context)));
 			}
 			break;
 		}

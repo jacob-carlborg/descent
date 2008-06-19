@@ -2,6 +2,7 @@ package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.IField;
+import descent.core.Signature;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
@@ -98,7 +99,7 @@ public class EnumMember extends Dsymbol {
 	
 	@Override
 	public char getSignaturePrefix() {
-		return ISignatureConstants.ENUM_MEMBER;
+		return Signature.C_ENUM_MEMBER;
 	}
 	
 	public void setJavaElement(IField field) {

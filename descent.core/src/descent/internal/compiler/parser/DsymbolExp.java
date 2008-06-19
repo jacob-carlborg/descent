@@ -88,7 +88,7 @@ public class DsymbolExp extends Expression {
 						if (context.acceptsProblems()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.ForwardReferenceOfSymbol, this,
-									new String[] { v.toString() }));
+									v.toString()));
 						}
 						type = Type.terror;
 					}
@@ -97,7 +97,7 @@ public class DsymbolExp extends Expression {
 					if (v.init() != null) {
 						if (v.inuse() != 0) {
 							if (context.acceptsProblems()) {
-								context.acceptProblem(Problem.newSemanticTypeError(IProblem.CircularReferenceTo, this, new String[] { v.toChars(context) }));
+								context.acceptProblem(Problem.newSemanticTypeError(IProblem.CircularReferenceTo, this, v.toChars(context)));
 							}
 							type = Type.tint32;
 							return this;
@@ -142,7 +142,7 @@ public class DsymbolExp extends Expression {
 				// We need to add an implicit 'this' if cd is this class or a base class.
 				DotTypeExp dte;
 
-				dte = new DotTypeExp(loc, new ThisExp(loc), s);
+				dte = new DotTypeExp(loc, new ThisExp(loc), s, context);
 				return dte.semantic(sc, context);
 			}
 			imp = s.isImport();
@@ -169,7 +169,7 @@ public class DsymbolExp extends Expression {
 				return ie.semantic(sc, context);
 			}
 
-			t = s.getType();
+			t = s.getType(context);
 			if (t != null) {
 				return new TypeExp(loc, t);
 			}
@@ -182,7 +182,7 @@ public class DsymbolExp extends Expression {
 					ASTDmdNode o = tup.objects.get(i);
 					if (o.dyncast() != DYNCAST.DYNCAST_EXPRESSION) {
 						if (context.acceptsProblems()) {
-							context.acceptProblem(Problem.newSemanticTypeWarning(IProblem.SymbolNotAnExpression, 0, o.getStart(), o.getLength(), new String[] { o.toChars(context) }));
+							context.acceptProblem(Problem.newSemanticTypeWarning(IProblem.SymbolNotAnExpression, 0, o.getStart(), o.getLength(), o.toChars(context)));
 						}
 					} else {
 						Expression e2 = (Expression) o;
@@ -222,7 +222,7 @@ public class DsymbolExp extends Expression {
 
 		// Lerr:
 		if (context.acceptsProblems()) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolIsNotAVariable, s, new String[] { s.kind(), s.toChars(context) }));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolIsNotAVariable, s, s.kind(), s.toChars(context)));
 		}
 		type = Type.terror;
 		return this;

@@ -1,5 +1,17 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.LINK.LINKd;
+import static descent.internal.compiler.parser.PROT.PROTnone;
+import static descent.internal.compiler.parser.STC.STCconst;
+import static descent.internal.compiler.parser.STC.STCin;
+import static descent.internal.compiler.parser.STC.STCinvariant;
+import static descent.internal.compiler.parser.STC.STCnodtor;
+import static descent.internal.compiler.parser.STC.STCref;
+import static descent.internal.compiler.parser.STC.STCundefined;
+import static descent.internal.compiler.parser.TOK.TOKblit;
+import static descent.internal.compiler.parser.TY.Tsarray;
+import static descent.internal.compiler.parser.TY.Tstruct;
+
 import java.util.ArrayList;
 
 import melnorme.miscutil.tree.TreeVisitor;
@@ -7,11 +19,9 @@ import melnorme.miscutil.tree.TreeVisitor;
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.Flags;
+import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.PROT.PROTnone;
-
-import static descent.internal.compiler.parser.STC.STCin;
 
 
 public class StructDeclaration extends AggregateDeclaration {
@@ -109,6 +119,11 @@ public class StructDeclaration extends AggregateDeclaration {
 		handle = type.pointerTo(context);
 		structalign = sc.structalign;
 		protection = sc.protection;
+		
+		if (context.isD2()) {
+			 storage_class |= sc.stc;
+		}
+		
 		assert (!isAnonymous());
 		if ((sc.stc & STC.STCabstract) != 0) {
 			if (isUnionDeclaration() != null) {
@@ -123,6 +138,14 @@ public class StructDeclaration extends AggregateDeclaration {
 				}
 			}
 		}
+		
+		if (context.isD2()) {
+			if ((storage_class & STCinvariant) != 0) {
+		        type = type.invariantOf(context);
+			} else if ((storage_class & STCconst) != 0) {
+		        type = type.constOf(context);
+			}
+		}
 
 		if (sizeok == 0) { // if not already done the addMember step
 			for (Dsymbol s : members) {
@@ -132,7 +155,11 @@ public class StructDeclaration extends AggregateDeclaration {
 
 		sizeok = 0;
 		sc2 = sc.push(this);
-		sc2.stc = 0;
+		if (context.isD2()) {
+			sc2.stc &= storage_class & (STCconst | STCinvariant);
+		} else {
+			sc2.stc = 0;
+		}
 		sc2.parent = this;
 		if (isUnionDeclaration() != null) {
 			sc2.inunion = true;
@@ -206,6 +233,13 @@ public class StructDeclaration extends AggregateDeclaration {
 
 			id = Id.cmp;
 		}
+		
+		if (context.isD2()) {
+			dtor = buildDtor(sc2, context);
+			postblit = buildPostBlit(sc2, context);
+			cpctor = buildCpCtor(sc2, context);
+			buildOpAssign(sc2, context);
+		}
 
 		sc2.pop();
 
@@ -266,6 +300,270 @@ public class StructDeclaration extends AggregateDeclaration {
 			semantic2(sc, context);
 			semantic3(sc, context);
 		}
+	}
+	
+	public FuncDeclaration buildPostBlit(Scope sc, SemanticContext context) {
+		Expression e = null;
+
+		for (int i = 0; i < size(fields); i++) {
+			Dsymbol s = (Dsymbol) fields.get(i);
+			VarDeclaration v = s.isVarDeclaration();
+			Type tv = v.type.toBasetype(context);
+			int dim = 1;
+			while (tv.ty == Tsarray) {
+//				TypeSArray ta = (TypeSArray) tv;
+				dim *= ((TypeSArray) tv).dim.toInteger(context).intValue();
+				tv = tv.nextOf().toBasetype(context);
+			}
+			if (tv.ty == Tstruct) {
+				TypeStruct ts = (TypeStruct) tv;
+				StructDeclaration sd = ts.sym;
+				if (sd.postblit != null) {
+					Expression ex;
+
+					// this.v
+					ex = new ThisExp(Loc.ZERO);
+					ex = new DotVarExp(Loc.ZERO, ex, v, 0);
+
+					if (dim == 1) { // this.v.dtor()
+						ex = new DotVarExp(Loc.ZERO, ex, sd.postblit, 0);
+						ex = new CallExp(Loc.ZERO, ex);
+					} else {
+						// Typeinfo.postblit(cast(void*)&this.v);
+						Expression ea = new AddrExp(Loc.ZERO, ex);
+						ea = new CastExp(Loc.ZERO, ea, Type.tvoid
+								.pointerTo(context));
+
+						Expression et = v.type.getTypeInfo(sc, context);
+						et = new DotIdExp(Loc.ZERO, et, new IdentifierExp(
+								Id.postblit));
+
+						ex = new CallExp(Loc.ZERO, et, ea);
+					}
+					e = Expression.combine(e, ex); // combine in forward order
+				}
+			}
+		}
+
+		/*
+		 * Build our own "postblit" which executes e
+		 */
+		if (e != null) {
+			PostBlitDeclaration dd = new PostBlitDeclaration(Loc.ZERO,
+					new IdentifierExp(Id.__fieldPostBlit));
+			dd.fbody = new ExpStatement(Loc.ZERO, e);
+			if (dtors == null) {
+				dtors = new FuncDeclarations();
+			}
+			dtors.add(dd);
+			if (members == null) {
+				members = new Dsymbols();
+			}
+			members.add(dd);
+			dd.semantic(sc, context);
+		}
+
+		switch (size(postblits)) {
+		case 0:
+			return null;
+
+		case 1:
+			return (FuncDeclaration) postblits.get(0);
+
+		default:
+			e = null;
+			for (int i = 0; i < size(postblits); i++) {
+				FuncDeclaration fd = (FuncDeclaration) postblits.get(i);
+				Expression ex = new ThisExp(Loc.ZERO);
+				ex = new DotVarExp(Loc.ZERO, ex, fd, 0);
+				ex = new CallExp(Loc.ZERO, ex);
+				e = Expression.combine(e, ex);
+			}
+			PostBlitDeclaration dd = new PostBlitDeclaration(Loc.ZERO,
+					new IdentifierExp(Id.__aggrPostBlit));
+			dd.fbody = new ExpStatement(Loc.ZERO, e);
+			if (members == null) {
+				members = new Dsymbols();
+			}
+			members.add(dd);
+			dd.semantic(sc, context);
+			return dd;
+		}
+	}
+	
+	public FuncDeclaration buildCpCtor(Scope sc, SemanticContext context) {
+		FuncDeclaration fcp = null;
+
+		/*
+		 * Copy constructor is only necessary if there is a postblit function,
+		 * otherwise the code generator will just do a bit copy.
+		 */
+		if (postblit != null) {
+			Argument param = new Argument(STCref, type,
+					new IdentifierExp(Id.p), null);
+			Arguments fparams = new Arguments();
+			fparams.add(param);
+			Type ftype = new TypeFunction(fparams, Type.tvoid, 0, LINKd);
+
+			fcp = new FuncDeclaration(Loc.ZERO, new IdentifierExp(Id.cpctor), STCundefined, ftype);
+
+			// Build *this = p;
+			Expression e = new ThisExp(Loc.ZERO);
+			e = new PtrExp(Loc.ZERO, e);
+			AssignExp ea = new AssignExp(Loc.ZERO, e, new IdentifierExp(Id.p));
+			ea.op = TOKblit;
+			Statement s = new ExpStatement(Loc.ZERO, ea);
+
+			// Build postBlit();
+			e = new VarExp(Loc.ZERO, postblit, false);
+			e = new CallExp(Loc.ZERO, e);
+
+			s = new CompoundStatement(Loc.ZERO, s,
+					new ExpStatement(Loc.ZERO, e));
+			fcp.fbody = s;
+
+			if (members == null) {
+				members = new Dsymbols();
+			}
+			members.add(fcp);
+
+			sc = sc.push();
+			sc.stc = 0;
+			sc.linkage = LINKd;
+
+			fcp.semantic(sc, context);
+
+			sc.pop();
+		}
+
+		return fcp;
+	}
+	
+	public FuncDeclaration buildOpAssign(Scope sc, SemanticContext context) {
+		if (!needOpAssign(context)) {
+			return null;
+		}
+
+		FuncDeclaration fop = null;
+
+		Argument param = new Argument(STCnodtor, type, new IdentifierExp(Id.p),
+				null);
+		Arguments fparams = new Arguments();
+		fparams.add(param);
+		Type ftype = new TypeFunction(fparams, handle, 0, LINKd);
+
+		fop = new FuncDeclaration(Loc.ZERO, new IdentifierExp(Id.assign),
+				STCundefined, ftype);
+
+		Expression e = null;
+		if (postblit != null) { /*
+								 * Swap: tmp = *this; *this = s; tmp.dtor();
+								 */
+			IdentifierExp idtmp = context.uniqueId("__tmp");
+			VarDeclaration tmp = null;
+			AssignExp ec = null;
+			if (dtor != null) {
+				tmp = new VarDeclaration(Loc.ZERO, type, idtmp,
+						new VoidInitializer(Loc.ZERO));
+				tmp.noauto = true;
+				e = new DeclarationExp(Loc.ZERO, tmp);
+				ec = new AssignExp(Loc.ZERO, new VarExp(Loc.ZERO, tmp),
+						new PtrExp(Loc.ZERO, new ThisExp(Loc.ZERO)));
+				ec.op = TOKblit;
+				e = Expression.combine(e, ec);
+			}
+			ec = new AssignExp(Loc.ZERO, new PtrExp(Loc.ZERO, new ThisExp(
+					Loc.ZERO)), new IdentifierExp(Loc.ZERO, Id.p));
+			ec.op = TOKblit;
+			e = Expression.combine(e, ec);
+			if (dtor != null) {
+				/*
+				 * Instead of running the destructor on s, run it on tmp. This
+				 * avoids needing to copy tmp back in to s.
+				 */
+				Expression ec2 = new DotVarExp(Loc.ZERO, new VarExp(Loc.ZERO,
+						tmp), dtor, 0);
+				ec2 = new CallExp(Loc.ZERO, ec2);
+				e = Expression.combine(e, ec2);
+			}
+		} else {
+			/*
+			 * Do memberwise copy
+			 */
+			for (int i = 0; i < size(fields); i++) {
+				Dsymbol s = (Dsymbol) fields.get(i);
+				VarDeclaration v = s.isVarDeclaration();
+				// this.v = s.v;
+				AssignExp ec = new AssignExp(Loc.ZERO, new DotVarExp(Loc.ZERO,
+						new ThisExp(Loc.ZERO), v, 0), new DotVarExp(Loc.ZERO,
+						new IdentifierExp(Loc.ZERO, Id.p), v, 0));
+				ec.op = TOKblit;
+				e = Expression.combine(e, ec);
+			}
+		}
+		Statement s1 = new ExpStatement(Loc.ZERO, e);
+
+		/*
+		 * Add: return this;
+		 */
+		e = new ThisExp(Loc.ZERO);
+		Statement s2 = new ReturnStatement(Loc.ZERO, e);
+
+		fop.fbody = new CompoundStatement(Loc.ZERO, s1, s2);
+
+		if (members == null) {
+			members = new Dsymbols();
+		}
+		members.add(fop);
+		fop.addMember(sc, this, 1, context);
+
+		sc = sc.push();
+		sc.stc = 0;
+		sc.linkage = LINKd;
+
+		fop.semantic(sc, context);
+
+		sc.pop();
+
+		return fop;
+	}
+	
+	public boolean needOpAssign(SemanticContext context) {
+		if (hasIdentityAssign != 0) {
+			// goto Ldontneed;
+			return false;
+		}
+
+		if (dtor != null || postblit != null) {
+			// goto Lneed;
+			return true;
+		}
+
+		/*
+		 * If any of the fields need an opAssign, then we need it too.
+		 */
+		for (int i = 0; i < size(fields); i++) {
+			Dsymbol s = (Dsymbol) fields.get(i);
+			VarDeclaration v = s.isVarDeclaration();
+			Type tv = v.type.toBasetype(context);
+			while (tv.ty == Tsarray) {
+				// TypeSArray ta = (TypeSArray) tv;
+				tv = tv.nextOf().toBasetype(context);
+			}
+			if (tv.ty == Tstruct) {
+				TypeStruct ts = (TypeStruct) tv;
+				StructDeclaration sd = ts.sym;
+				if (sd.needOpAssign(context)) {
+					// goto Lneed;
+					return true;
+				}
+			}
+		}
+		// Ldontneed:
+		return false;
+
+		// Lneed:
+		// return 1;
 	}
 	
 	@Override
@@ -339,9 +637,9 @@ public class StructDeclaration extends AggregateDeclaration {
 	
 	public char getSignaturePrefix() {
 		if (templated) {
-			return ISignatureConstants.TEMPLATED_STRUCT;
+			return Signature.C_TEMPLATED_STRUCT;
 		} else {
-			return ISignatureConstants.STRUCT;
+			return Signature.C_STRUCT;
 		}
 	}
 	

@@ -178,9 +178,15 @@ public class StringExp extends Expression {
 	@Override
 	public MATCH implicitConvTo(Type t, SemanticContext context) {
 		if (!committed) {
-			boolean comparison = context.isD2() ? t.nextOf().ty == Tvoid : t.next.ty == Tvoid;
-			if (!committed && t.ty == Tpointer && comparison) {
-				return MATCHnomatch;
+			try {
+				boolean comparison = context.isD2() ? 
+						t.ty == Tpointer && t.nextOf().ty == Tvoid : 
+						t.ty == Tpointer && t.next.ty == Tvoid;
+				if (!committed && comparison) {
+					return MATCHnomatch;
+				}
+			} catch (NullPointerException e) {
+				throw e;
 			}
 			if (type.ty == Tsarray || type.ty == Tarray || type.ty == Tpointer) {
 				if (type.next.ty == Tchar) {

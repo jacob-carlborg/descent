@@ -56,7 +56,7 @@ public class AndAndExp extends BinExp {
 			if (context.acceptsProblems()) {
 				context.acceptProblem(Problem.newSemanticTypeWarning(
 						IProblem.SymbolNotAnExpression, 0, e2.start, e2.length,
-						new String[] { e2.toChars(context) }));
+						e2.toChars(context)));
 			}
 		}
 
@@ -125,8 +125,7 @@ public class AndAndExp extends BinExp {
 					&& context.global.errors <= 0) {
 				if (context.acceptsProblems()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.SymbolHasNoValue, this,
-							new String[] { "void" }));
+							IProblem.SymbolHasNoValue, this, "void"));
 				}
 			}
 			if (e1.isConst()) {

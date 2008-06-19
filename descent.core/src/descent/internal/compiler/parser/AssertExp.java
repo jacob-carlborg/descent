@@ -60,8 +60,7 @@ public class AssertExp extends UnaExp {
 				if (context.acceptsProblems()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.AssertionFailed, this,
-							new String[]
-							{ e.toChars(context), }));
+							e.toChars(context)));
 				}
 			}
 			else
@@ -69,7 +68,7 @@ public class AssertExp extends UnaExp {
 				if (context.acceptsProblems()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.AssertionFailedNoMessage, this,
-							new String[] { e1.toChars(context) }));
+							e1.toChars(context)));
 				}
 			}
 			return EXP_CANT_INTERPRET; //goto Lcant;

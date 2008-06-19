@@ -10,12 +10,12 @@ import descent.core.IParent;
 import descent.core.ISourceRange;
 import descent.core.ISourceReference;
 import descent.core.JavaModelException;
+import descent.core.Signature;
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.ASTNodeEncoder;
 import descent.internal.compiler.parser.Argument;
 import descent.internal.compiler.parser.Arguments;
 import descent.internal.compiler.parser.Expression;
-import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.Loc;
@@ -42,7 +42,7 @@ import descent.internal.compiler.parser.TypeSlice;
 import descent.internal.compiler.parser.TypeTypeof;
 import descent.internal.core.util.Util;
 
-public class InternalSignature implements ISignatureConstants {
+public class InternalSignature {
 	
 	private IJavaProject javaProject;
 	
@@ -219,7 +219,7 @@ public class InternalSignature implements ISignatureConstants {
 	}
 	
 	public static void appendPackageName(char[] packageName, StringBuilder sb) {
-		sb.append(MODULE);
+		sb.append(Signature.C_MODULE);
 		
 		char[][] pieces = CharOperation.splitOn('.', packageName);
 		for (int i = 0; i < pieces.length; i++) {

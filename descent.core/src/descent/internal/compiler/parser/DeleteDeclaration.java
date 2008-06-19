@@ -94,14 +94,14 @@ public class DeleteDeclaration extends FuncDeclaration {
 			if (context.acceptsProblems()) {
 				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 						IProblem.OneArgumentOfTypeExpected, this,
-						new String[] { "void*" }));
+						"void*"));
 			}
 		} else {
 			Argument a = Argument.getNth(tf.parameters, 0, context);
 			if (!a.type.equals(Type.tvoid.pointerTo(context))) {
 				if (context.acceptsProblems()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.OneArgumentOfTypeExpected, a.type, new String[] { "void*" }));
+							IProblem.OneArgumentOfTypeExpected, a.type, "void*"));
 				}
 			}
 		}

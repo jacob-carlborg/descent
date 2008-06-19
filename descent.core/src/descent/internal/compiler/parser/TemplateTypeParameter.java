@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -48,7 +49,7 @@ public class TemplateTypeParameter extends TemplateParameter {
 	}
 
 	@Override
-	public ASTDmdNode defaultArg(Scope sc, SemanticContext context) {
+	public ASTDmdNode defaultArg(Loc loc, Scope sc, SemanticContext context) {
 		Type t;
 
 		t = defaultType;
@@ -85,7 +86,7 @@ public class TemplateTypeParameter extends TemplateParameter {
 	@Override
 	public MATCH matchArg(Scope sc, Objects tiargs, int i,
 			TemplateParameters parameters, Objects dedtypes,
-			Declaration[] psparam, SemanticContext context) {
+			Declaration[] psparam, int flags, SemanticContext context) {
 		Type t;
 		ASTDmdNode oarg;
 		MATCH m = MATCHexact;
@@ -95,7 +96,7 @@ public class TemplateTypeParameter extends TemplateParameter {
 			oarg = tiargs.get(i);
 		} else { 
 			// Get default argument instead
-			oarg = defaultArg(sc, context);
+			oarg = defaultArg(loc, sc, context);
 			if (null == oarg) {
 				assert (i < dedtypes.size());
 				// It might have already been deduced
@@ -104,6 +105,9 @@ public class TemplateTypeParameter extends TemplateParameter {
 					// goto Lnomatch;
 					psparam = null;
 					return MATCHnomatch;
+				}
+				if (context.isD2()) {
+					flags |= 1;		// already deduced, so don't to toHeadMutable()
 				}
 			}
 		}
@@ -214,9 +218,9 @@ public class TemplateTypeParameter extends TemplateParameter {
 	}
 	@Override
 	public void appendSignature(StringBuilder sb) {
-		sb.append(ISignatureConstants.TEMPLATE_TYPE_PARAMETER);
+		sb.append(Signature.C_TEMPLATE_TYPE_PARAMETER);
 		if (specType != null) {
-			sb.append(ISignatureConstants.TEMPLATE_TYPE_PARAMETER2);
+			sb.append(Signature.C_TEMPLATE_TYPE_PARAMETER_SPECIFIC_TYPE);
 			specType.appendSignature(sb);
 		}
 	}

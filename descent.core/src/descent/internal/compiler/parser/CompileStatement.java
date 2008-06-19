@@ -41,7 +41,7 @@ public class CompileStatement extends Statement {
 				context);
 		if (exp.op != TOK.TOKstring) {
 			if (context.acceptsProblems()) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArgumentToMixinMustBeString, this, new String[] { exp.toChars(context) }));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArgumentToMixinMustBeString, this, exp.toChars(context)));
 			}
 			return this;
 		}

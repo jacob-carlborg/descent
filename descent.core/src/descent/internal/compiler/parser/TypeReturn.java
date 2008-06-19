@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -54,7 +55,7 @@ public class TypeReturn extends TypeQualified {
 				s = s.searchX(loc, sc, id, context);
 			}
 			if (s != null) {
-				t = s.getType();
+				t = s.getType(context);
 				if (null == t) {
 					if (context.acceptsProblems()) {
 						context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolNotAType, this, new String[] { s.toChars(context) }));
@@ -86,7 +87,7 @@ public class TypeReturn extends TypeQualified {
 
 	@Override
 	protected void appendSignature0(StringBuilder sb) {
-		sb.append(ISignatureConstants.TYPEOF_RETURN);
+		sb.append(Signature.C_TYPEOF_RETURN);
 	}
 
 	@Override

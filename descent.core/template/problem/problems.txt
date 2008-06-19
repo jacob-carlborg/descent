@@ -355,6 +355,9 @@ IsClassPathCorrect
 FunctionsCannotBeConstOrAuto
 	formatString=Functions cannot be const or auto
 	numArgs=0
+FunctionsCannotBeScopeOrAuto
+	formatString=Functions cannot be scope or auto
+	numArgs=0
 NonVirtualFunctionsCannotBeAbstract
 	formatString=Non-virtual functions cannot be abstract
 	numArgs=0
@@ -625,6 +628,9 @@ CanOnlySynchronizeOnClassObjects
 CannotDeduceTemplateFunctionFromArgumentTypes
 	formatString=Cannot deduce template function from argument types (%1$s)
 	numArgs=1
+CannotDeduceTemplateFunctionFromArgumentTypes2
+	formatString=Cannot deduce template function from argument types !(%1$s)(%2$s)
+	numArgs=2
 ArrayDimensionExceedsMax
 	formatString=Array dimension %1$s exceeds max of %2$su
 	numArgs=2
@@ -1213,6 +1219,9 @@ OutResultIsAlreadyDefined
 MissingInitializerForConstField
 	formatString=Missing initializer for const field %1$s
 	numArgs=1
+MissingInitializerForFinalField
+	formatString=Missing initializer for final field %1$s
+	numArgs=1
 ImportNotFound
 	formatString=%1$s not found
 	numArgs=1
@@ -1393,6 +1402,16 @@ SwitchAndCaseAreInDifferentFinallyBlocks
 SwitchAndDefaultAreInDifferentFinallyBlocks
 	formatString=switch and default are in different finally blocks
 	numArgs=0
+CannotHaveFieldWithSameStructType
+	formatString=Cannot have field with same struct type
+	numArgs=0
+WithoutThisCannotBeConstInvariant
+	formatString=Without 'this' cannot be const/invariant
+	numArgs=0
+CannotModifySymbol
+	formatString=Cannot modify %1$s
+	numArgs=1
+
 
 
 

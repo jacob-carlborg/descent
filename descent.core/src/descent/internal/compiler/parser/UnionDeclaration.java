@@ -2,6 +2,7 @@ package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.Flags;
+import descent.core.Signature;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
@@ -77,9 +78,9 @@ public class UnionDeclaration extends StructDeclaration {
 	
 	public char getSignaturePrefix() {
 		if (templated) {
-			return ISignatureConstants.TEMPLATED_UNION;
+			return Signature.C_TEMPLATED_UNION;
 		} else {
-			return ISignatureConstants.UNION;
+			return Signature.C_UNION;
 		}
 	}
 	

@@ -31,7 +31,7 @@ public class ComExp extends UnaExp {
 	}
 
 	@Override
-	public char[] opId() {
+	public char[] opId(SemanticContext context) {
 		return Id.com;
 	}
 

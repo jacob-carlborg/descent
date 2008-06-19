@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.Flags;
 import descent.core.IType;
+import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.lookup.SemanticRest;
 import descent.internal.compiler.parser.ast.IASTVisitor;
@@ -61,7 +62,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 	}
 
 	@Override
-	public Type getType() {
+	public Type getType(SemanticContext context) {
 		return type;
 	}
 
@@ -384,7 +385,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 	
 	@Override
 	public char getSignaturePrefix() {
-		return ISignatureConstants.ENUM;
+		return Signature.C_ENUM;
 	}
 	
 	public void setJavaElement(IType javaElement) {

@@ -110,7 +110,7 @@ public class CaseStatement extends Statement {
 			if (!gotoL1) {
 				if (exp.op != TOKstring && exp.op != TOKint64) {
 					if (context.acceptsProblems()) {
-						context.acceptProblem(Problem.newSemanticTypeError(IProblem.CaseMustBeAnIntegralOrStringConstant, sourceExp, new String[] { exp.toChars(context) }));
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.CaseMustBeAnIntegralOrStringConstant, sourceExp, exp.toChars(context)));
 					}
 					exp = new IntegerExp(0);
 				}
@@ -122,7 +122,7 @@ public class CaseStatement extends Statement {
 
 				if (cs.exp.equals(exp)) {
 					if (context.acceptsProblems()) {
-						context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.DuplicateCaseInSwitchStatement, this, new String[] { exp.toChars(context) }));
+						context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.DuplicateCaseInSwitchStatement, this, exp.toChars(context)));
 					}
 					break;
 				}
