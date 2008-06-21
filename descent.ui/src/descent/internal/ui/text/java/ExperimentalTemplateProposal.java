@@ -41,7 +41,7 @@ public final class ExperimentalTemplateProposal extends JavaTemplateCompletionPr
 		int baseOffset= getReplacementOffset();
 		String replacement= getReplacementString();
 
-		if (fArgumentOffsets != null && getTextViewer() != null) {
+		if (fProposal.wantArguments() && fArgumentOffsets != null && getTextViewer() != null) {
 			try {
 				LinkedModeModel model= new LinkedModeModel();
 				for (int i= 0; i != fArgumentOffsets.length; i++) {
