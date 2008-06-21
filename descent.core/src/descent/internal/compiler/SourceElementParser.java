@@ -523,7 +523,15 @@ public class SourceElementParser extends AstVisitorAdapter {
 			info.typeParameters = NO_TYPE_PARAMETERS;
 		}
 		
-		requestor.enterConstructor(info);
+		if (node.isCtorDeclaration() == null &&
+				node.isDtorDeclaration() == null &&
+				node.isNewDeclaration() == null &&
+				node.isDeleteDeclaration() == null &&
+				node.isPostBlitDeclaration() == null) {
+			requestor.enterMethod(info);
+		} else {
+			requestor.enterConstructor(info);
+		}
 		return true;
 	}
 	

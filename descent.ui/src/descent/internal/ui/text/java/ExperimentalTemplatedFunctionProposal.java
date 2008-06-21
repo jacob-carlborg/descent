@@ -91,80 +91,87 @@ public final class ExperimentalTemplatedFunctionProposal extends JavaTemplatedFu
 	 * @see descent.internal.ui.text.java.LazyJavaCompletionProposal#computeReplacementString()
 	 */
 	protected String computeReplacementString() {
+		try{
+			if (!hasParameters() || !hasArgumentList()) {
+				return super.computeReplacementString();
+			}
 		
-		if (!hasParameters() || !hasArgumentList())
-			return super.computeReplacementString();
-		
-		char[][] tempParameterNames= fProposal.findTemplateParameterNames(null);
-		int tempCount= tempParameterNames.length;
-		fTempArgumentOffsets= new int[tempCount];
-		fTempArgumentLengths= new int[tempCount];
-		
-		char[][] parameterNames= fProposal.findParameterNames(null);
-		int count= parameterNames.length;
-		fArgumentOffsets= new int[count];
-		fArgumentLengths= new int[count];
-		
-		StringBuffer buffer= new StringBuffer(String.valueOf(fProposal.getName()));
-		
-		FormatterPrefs prefs= getFormatterPrefs();
-		if (prefs.beforeOpeningParen)
-			buffer.append(SPACE);
-		buffer.append(EXCLAMATION);
-		buffer.append(LPAREN);
-		
-		if (tempCount > 0) {
-			setCursorPosition(buffer.length());
-		}
-		
-		if (prefs.afterOpeningParen)
-			buffer.append(SPACE);
-		
-		for (int i= 0; i != tempCount; i++) {
-			if (i != 0) {
-				if (prefs.beforeFunctionComma)
-					buffer.append(SPACE);
-				buffer.append(COMMA);
-				if (prefs.afterFunctionComma)
-					buffer.append(SPACE);
+			char[][] tempParameterNames= fProposal.findTemplateParameterNames(null);
+			int tempCount= tempParameterNames.length;
+			fTempArgumentOffsets= new int[tempCount];
+			fTempArgumentLengths= new int[tempCount];
+			
+			char[][] parameterNames= fProposal.findParameterNames(null);
+			int count= parameterNames.length;
+			fArgumentOffsets= new int[count];
+			fArgumentLengths= new int[count];
+			
+			StringBuffer buffer= new StringBuffer(String.valueOf(fProposal.getName()));
+			
+			FormatterPrefs prefs= getFormatterPrefs();
+			if (prefs.beforeOpeningParen)
+				buffer.append(SPACE);
+			buffer.append(EXCLAMATION);
+			buffer.append(LPAREN);
+			
+			if (tempCount > 0) {
+				setCursorPosition(buffer.length());
 			}
 			
-			fTempArgumentOffsets[i]= buffer.length();
-			buffer.append(tempParameterNames[i]);
-			fTempArgumentLengths[i]= tempParameterNames[i].length;
-		}
-		
-		if (prefs.beforeFunctionClosingParen)
-			buffer.append(SPACE);
-
-		buffer.append(RPAREN);
-		
-		buffer.append(LPAREN);
-		
-		if (tempCount == 0) {
-			setCursorPosition(buffer.length());
-		}
-		
-		if (prefs.afterOpeningParen)
-			buffer.append(SPACE);
-		
-		for (int i= 0; i != count; i++) {
-			if (i != 0) {
-				if (prefs.beforeFunctionComma)
-					buffer.append(SPACE);
-				buffer.append(COMMA);
-				if (prefs.afterFunctionComma)
-					buffer.append(SPACE);
+			if (prefs.afterOpeningParen)
+				buffer.append(SPACE);
+			
+			for (int i= 0; i != tempCount; i++) {
+				if (i != 0) {
+					if (prefs.beforeFunctionComma)
+						buffer.append(SPACE);
+					buffer.append(COMMA);
+					if (prefs.afterFunctionComma)
+						buffer.append(SPACE);
+				}
+				
+				fTempArgumentOffsets[i]= buffer.length();
+				buffer.append(tempParameterNames[i]);
+				fTempArgumentLengths[i]= tempParameterNames[i].length;
 			}
 			
-			fArgumentOffsets[i]= buffer.length();
-			buffer.append(parameterNames[i]);
-			fArgumentLengths[i]= parameterNames[i].length;
+			if (prefs.beforeFunctionClosingParen)
+				buffer.append(SPACE);
+	
+			buffer.append(RPAREN);
+			
+			buffer.append(LPAREN);
+			
+			if (tempCount == 0) {
+				setCursorPosition(buffer.length());
+			}
+			
+			if (prefs.afterOpeningParen)
+				buffer.append(SPACE);
+			
+			for (int i= 0; i != count; i++) {
+				if (i != 0) {
+					if (prefs.beforeFunctionComma)
+						buffer.append(SPACE);
+					buffer.append(COMMA);
+					if (prefs.afterFunctionComma)
+						buffer.append(SPACE);
+				}
+				
+				fArgumentOffsets[i]= buffer.length();
+				buffer.append(parameterNames[i]);
+				fArgumentLengths[i]= parameterNames[i].length;
+			}
+			
+			buffer.append(RPAREN);
+	
+			return buffer.toString();
+		} finally {
+			if (!fProposal.wantArguments()) {
+				setCursorPosition(fProposal.getName().length);
+				return new String(fProposal.getName());
+			}
 		}
-		
-		buffer.append(RPAREN);
-
-		return buffer.toString();
 	}
 
 	/**

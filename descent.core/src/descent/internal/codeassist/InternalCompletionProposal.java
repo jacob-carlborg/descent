@@ -53,6 +53,7 @@ public class InternalCompletionProposal {
 	protected ASTDmdNode node;
 	protected int declarationStart = -1;
 	protected boolean isAlias; // Whether the proposal is an alias for another symbol
+	protected boolean wantArguments; // Whether the proposal is intended to be completed with arguments or just the name
 	
 	protected char[][] createDefaultParameterNames(int length) {
 		char[][] parameterNames;
@@ -166,9 +167,12 @@ public class InternalCompletionProposal {
 		return this.parameterPackageNames;
 	}
 	
-	
 	protected char[][] getParameterTypeNames() {
 		return this.parameterTypeNames;
+	}
+	
+	protected boolean wantArguments() {
+		return this.wantArguments;
 	}
 	
 	protected void setDeclarationPackageName(char[] declarationPackageName) {

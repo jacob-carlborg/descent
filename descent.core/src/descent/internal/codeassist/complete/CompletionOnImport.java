@@ -25,6 +25,8 @@ import descent.internal.compiler.parser.Loc;
 public class CompletionOnImport extends Import {
 	
 	public int completePosition;
+	public boolean isSelective;
+	public IdentifierExp selectiveName;
 
 	public CompletionOnImport(Loc loc, Identifiers packages, IdentifierExp id, IdentifierExp aliasId, boolean isstatic, int completePosition) {
 		super(loc, packages, id, aliasId, isstatic);

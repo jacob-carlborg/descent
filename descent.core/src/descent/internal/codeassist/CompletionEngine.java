@@ -268,6 +268,7 @@ public class CompletionEngine extends Engine
 	boolean isCompletingThisCall = false;
 	boolean isCompletingSuperCall = false;
 	boolean isBetweenMethodName = false;
+	boolean wantArguments = true;
 	
 	Scope rootScope;
 	
@@ -443,7 +444,11 @@ public class CompletionEngine extends Engine
 			} else if (assistNode instanceof CompletionOnImport &&
 					!requestor.isIgnored(CompletionProposal.COMPILATION_UNIT_REF)) {
 				CompletionOnImport node = (CompletionOnImport) assistNode;
-				completeImport(node);
+				if (node.isSelective) {
+					completeSelectiveImport(node);
+				} else {
+					completeImport(node);
+				}
 			} else if (assistNode instanceof CompletionOnArgumentName) {
 				CompletionOnArgumentName node = (CompletionOnArgumentName) assistNode;
 				completeArgumentName(node);
@@ -705,6 +710,22 @@ public class CompletionEngine extends Engine
 	private boolean match(char[] prefix, char[] name) {
 		return CharOperation.prefixEquals(prefix, name) || 
 			(options.camelCaseMatch && CharOperation.camelCaseMatch(prefix, name));
+	}
+	
+	private void completeSelectiveImport(CompletionOnImport node) throws JavaModelException {
+		doSemantic();
+		
+		if (node.mod != null) {
+			if (node.selectiveName == null) {
+				this.startPosition = actualCompletionPosition;
+				this.endPosition = actualCompletionPosition;
+				this.currentName = CharOperation.NO_CHAR;
+			} else {
+				this.currentName = computePrefixAndSourceRange(node.selectiveName);
+			}
+			this.wantArguments = false;
+			suggestMembers(node.mod.members, false, new HashtableOfCharArrayAndObject(), INCLUDE_TYPES | INCLUDE_VARIABLES | INCLUDE_FUNCTIONS);
+		}
 	}
 	
 	private void completeImport(CompletionOnImport node) {
@@ -2393,6 +2414,10 @@ public class CompletionEngine extends Engine
 									CompletionProposal.METHOD_REF, 
 								this.actualCompletionPosition, func);
 					
+					if (parser.isInAddrExp) {
+						proposal.wantArguments = false;
+					}
+					
 					if (constructor || opCall) {
 						proposal.setName(currentName);
 						if (wantMethodContextInfo) {
@@ -3010,6 +3035,7 @@ public class CompletionEngine extends Engine
 		proposal.javaProject = javaProject;
 		proposal.nameLookup = this.nameEnvironment.nameLookup;
 		proposal.completionEngine = this;
+		proposal.wantArguments = this.wantArguments;
 		return proposal;
 	}
 
@@ -3239,6 +3265,10 @@ public class CompletionEngine extends Engine
 		
 		CompletionProposal proposal = this.createProposal(CompletionProposal.METHOD_REF, this.actualCompletionPosition, null);
 		
+		if (parser.isInAddrExp) {
+			proposal.wantArguments = false;
+		}
+		
 		int relevance = computeBaseRelevance();
 		relevance += computeRelevanceForCaseMatching(currentName, name);
 		relevance += computeRelevanceForExpectedType(signature);
@@ -3306,6 +3336,10 @@ public class CompletionEngine extends Engine
 				if (type.covariant(expectedType, semanticContext) == 1) {
 					return R_EXPECTED_TYPE;
 				}
+			} else if (expectedType instanceof TypeDelegate) {
+				if (type.covariant(expectedType.next, semanticContext) == 1) {
+					return R_EXPECTED_TYPE;
+				}
 			}
 			
 			return computeRelevanceForExpectedType(type.next);
@@ -3331,15 +3365,17 @@ public class CompletionEngine extends Engine
 			return 0;
 		}
 		
-		if (signature.length > 0 && 
-				(signature[0] == Signature.C_D_LINKAGE || signature[0] == Signature.C_C_LINKAGE ||
-						signature[0] == Signature.C_CPP_LINKAGE || signature[0] == Signature.C_PASCAL_LINKAGE ||
-						signature[0] == Signature.C_WINDOWS_LINKAGE)) {
-			return computeRelevanceForExpectedType(Signature.getReturnType(signature));
+		boolean isFunctionSignature = isFunctionSignature(signature);
+		
+		if (CharOperation.equals(signature, expectedTypeSignature) ||
+				(expectedTypeSignature.length > 0 && expectedTypeSignature[0] == Signature.C_DELEGATE
+						&& isFunctionSignature
+						&& CharOperation.equals(signature, expectedTypeSignature, 1, expectedTypeSignature.length))) {
+			return R_EXACT_EXPECTED_TYPE;
 		}
 		
-		if (CharOperation.equals(expectedTypeSignature, signature)) {
-			return R_EXACT_EXPECTED_TYPE;
+		if (isFunctionSignature) {
+			return computeRelevanceForExpectedType(Signature.getReturnType(signature));
 		}
 		
 		// It may be that the signature is unresolved, so... use
@@ -3371,7 +3407,18 @@ public class CompletionEngine extends Engine
 		return 0;
 	}
 
+	private boolean isFunctionSignature(char[] signature) {
+		return signature.length > 0 && signature[0] == Signature.C_D_LINKAGE || signature[0] == Signature.C_C_LINKAGE ||
+				signature[0] == Signature.C_CPP_LINKAGE || signature[0] == Signature.C_PASCAL_LINKAGE ||
+				signature[0] == Signature.C_WINDOWS_LINKAGE;
+	}
+
 	private boolean isImported(char[] fullyQualifiedName) {
+		// This module is "imported"
+		if (CharOperation.equals(fullyQualifiedName, this.sourceUnitFqn)) {
+			return true;
+		}
+		
 		if (module.aimports != null) {
 			for(Object sym : module.aimports) {
 				if (sym instanceof Module) {

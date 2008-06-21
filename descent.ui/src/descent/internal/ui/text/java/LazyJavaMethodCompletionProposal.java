@@ -109,117 +109,124 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 	 * @see descent.internal.ui.text.java.LazyJavaCompletionProposal#computeReplacementString()
 	 */
 	protected String computeReplacementString() {
-		String replacement= computeReplacementString0();
-		if (replacement.endsWith("()")) { //$NON-NLS-1$
-			replacement = replacement.substring(0, replacement.length() - 2);
-		}
-		
-		if (!hasParameters() || !hasArgumentList()) {
-			if (fProposal.getCompletion().length > 0 && fProposal.getCompletion()[fProposal.getCompletion().length - 1] == ')') {
+		try {
+			String replacement= computeReplacementString0();
+			if (replacement.endsWith("()")) { //$NON-NLS-1$
+				replacement = replacement.substring(0, replacement.length() - 2);
+			}
+			
+			if (!hasParameters() || !hasArgumentList()) {
+				if (fProposal.getCompletion().length > 0 && fProposal.getCompletion()[fProposal.getCompletion().length - 1] == ')') {
+					return replacement + "()"; //$NON-NLS-1$
+				} else {
+					boolean variadic = getVariadic() != IMethod.VARARGS_NO;
+					setCursorPosition(replacement.length() + (variadic ? 1 : 2));
+					return replacement;
+				}
+			}
+			
+			
+			char[][] templateParameterNames = fProposal.findTemplateParameterNames(null);
+			if (templateParameterNames == null) {
+				templateParameterNames = CharOperation.NO_CHAR_CHAR;
+			}
+			
+			char[][] parameterNames= fProposal.findParameterNames(null);
+			if (parameterNames == null) {
 				return replacement + "()"; //$NON-NLS-1$
+			}
+			
+			int count= templateParameterNames.length + parameterNames.length;
+			fArgumentOffsets= new int[count];
+			fArgumentLengths= new int[count];
+			
+			StringBuffer buffer= new StringBuffer(replacement);
+			
+			FormatterPrefs prefs= getFormatterPrefs();
+			
+			if (templateParameterNames.length > 0) {
+				buffer.append(EXCL);
+				buffer.append(LPAREN);
+				
+				setCursorPosition(buffer.length());
+				
+				for (int i= 0; i != templateParameterNames.length; i++) {
+					if (i != 0) {
+						if (prefs.beforeTypeArgumentComma)
+							buffer.append(SPACE);
+						buffer.append(COMMA);
+						if (prefs.afterTypeArgumentComma)
+							buffer.append(SPACE);
+					}
+					
+					fArgumentOffsets[i]= buffer.length();
+					buffer.append(templateParameterNames[i]);
+					fArgumentLengths[i]= templateParameterNames[i].length;
+				}
+				
+				buffer.append(RPAREN);
+			}
+			
+			if (isSetter()) {
+				if (prefs.beforeAssignmentOperator)
+					buffer.append(SPACE);
+				buffer.append(ASSIGN);
+				if (prefs.afterAssignmentOperator)
+					buffer.append(SPACE);
+				
+				if (templateParameterNames.length == 0) {
+					setCursorPosition(buffer.length());
+				}
+				
+				if (fArgumentLengths.length > 0) {
+					fArgumentOffsets[0]= buffer.length();
+					buffer.append(parameterNames[0]);
+					fArgumentLengths[0]= parameterNames[0].length;
+				}
+			} else if (isGetter()) {
+				if (templateParameterNames.length == 0) {
+					setCursorPosition(buffer.length());
+				}
 			} else {
-				boolean variadic = getVariadic() != IMethod.VARARGS_NO;
-				setCursorPosition(replacement.length() + (variadic ? 1 : 2));
-				return replacement;
-			}
-		}
-		
-		
-		char[][] templateParameterNames = fProposal.findTemplateParameterNames(null);
-		if (templateParameterNames == null) {
-			templateParameterNames = CharOperation.NO_CHAR_CHAR;
-		}
-		
-		char[][] parameterNames= fProposal.findParameterNames(null);
-		if (parameterNames == null) {
-			return replacement + "()"; //$NON-NLS-1$
-		}
-		
-		int count= templateParameterNames.length + parameterNames.length;
-		fArgumentOffsets= new int[count];
-		fArgumentLengths= new int[count];
-		
-		StringBuffer buffer= new StringBuffer(replacement);
-		
-		FormatterPrefs prefs= getFormatterPrefs();
-		
-		if (templateParameterNames.length > 0) {
-			buffer.append(EXCL);
-			buffer.append(LPAREN);
-			
-			setCursorPosition(buffer.length());
-			
-			for (int i= 0; i != templateParameterNames.length; i++) {
-				if (i != 0) {
-					if (prefs.beforeTypeArgumentComma)
-						buffer.append(SPACE);
-					buffer.append(COMMA);
-					if (prefs.afterTypeArgumentComma)
-						buffer.append(SPACE);
+				
+				if (prefs.beforeOpeningParen)
+					buffer.append(SPACE);
+				buffer.append(LPAREN);
+				
+				if (templateParameterNames.length == 0) {
+					setCursorPosition(buffer.length());
+				}			
+				
+				if (prefs.afterOpeningParen)
+					buffer.append(SPACE);
+				
+				for (int i= 0; i != parameterNames.length; i++) {
+					if (i != 0) {
+						if (prefs.beforeFunctionComma)
+							buffer.append(SPACE);
+						buffer.append(COMMA);
+						if (prefs.afterFunctionComma)
+							buffer.append(SPACE);
+					}
+					
+					fArgumentOffsets[i + templateParameterNames.length]= buffer.length();
+					buffer.append(parameterNames[i]);
+					fArgumentLengths[i + templateParameterNames.length]= parameterNames[i].length;
 				}
 				
-				fArgumentOffsets[i]= buffer.length();
-				buffer.append(templateParameterNames[i]);
-				fArgumentLengths[i]= templateParameterNames[i].length;
-			}
-			
-			buffer.append(RPAREN);
-		}
+				if (prefs.beforeFunctionClosingParen)
+					buffer.append(SPACE);
 		
-		if (isSetter()) {
-			if (prefs.beforeAssignmentOperator)
-				buffer.append(SPACE);
-			buffer.append(ASSIGN);
-			if (prefs.afterAssignmentOperator)
-				buffer.append(SPACE);
-			
-			if (templateParameterNames.length == 0) {
-				setCursorPosition(buffer.length());
+				buffer.append(RPAREN);
 			}
-			
-			if (fArgumentLengths.length > 0) {
-				fArgumentOffsets[0]= buffer.length();
-				buffer.append(parameterNames[0]);
-				fArgumentLengths[0]= parameterNames[0].length;
-			}
-		} else if (isGetter()) {
-			if (templateParameterNames.length == 0) {
-				setCursorPosition(buffer.length());
-			}
-		} else {
-			
-			if (prefs.beforeOpeningParen)
-				buffer.append(SPACE);
-			buffer.append(LPAREN);
-			
-			if (templateParameterNames.length == 0) {
-				setCursorPosition(buffer.length());
-			}			
-			
-			if (prefs.afterOpeningParen)
-				buffer.append(SPACE);
-			
-			for (int i= 0; i != parameterNames.length; i++) {
-				if (i != 0) {
-					if (prefs.beforeFunctionComma)
-						buffer.append(SPACE);
-					buffer.append(COMMA);
-					if (prefs.afterFunctionComma)
-						buffer.append(SPACE);
-				}
-				
-				fArgumentOffsets[i + templateParameterNames.length]= buffer.length();
-				buffer.append(parameterNames[i]);
-				fArgumentLengths[i + templateParameterNames.length]= parameterNames[i].length;
-			}
-			
-			if (prefs.beforeFunctionClosingParen)
-				buffer.append(SPACE);
 	
-			buffer.append(RPAREN);
+			return buffer.toString();
+		} finally {
+			if (!fProposal.wantArguments()) {
+				setCursorPosition(fProposal.getName().length);
+				return new String(fProposal.getName());
+			}
 		}
-
-		return buffer.toString();
 	}
 	
 	protected String computeReplacementString0() {
@@ -347,7 +354,7 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 				setCursorPosition(getCursorPosition());
 			}
 			
-			if (fArgumentOffsets != null && getTextViewer() != null && !isGetter()) {
+			if (fProposal.wantArguments() && fArgumentOffsets != null && getTextViewer() != null && !isGetter()) {
 				try {
 					LinkedModeModel model= new LinkedModeModel();
 					for (int i= 0; i != fArgumentOffsets.length; i++) {

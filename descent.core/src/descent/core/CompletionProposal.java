@@ -1991,6 +1991,15 @@ public final class CompletionProposal extends InternalCompletionProposal {
 		return isAlias;
 	}
 	
+	/**
+	 * Returns whether the proposal is intended to be written with
+	 * arguments or just the name of the proposal.
+	 */
+	@Override
+	public boolean wantArguments() {
+		return super.wantArguments();
+	}
+	
 	@Override
 	public String toString() {
 		StringBuffer buffer = new StringBuffer();

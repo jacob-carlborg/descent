@@ -85,6 +85,7 @@ public class CompletionParser extends Parser {
 	
 	public boolean inNewExp;
 	public boolean isInExp;
+	public boolean isInAddrExp;
 	
 	public char[] completionToken;
 	public int completionTokenStart;
@@ -201,6 +202,30 @@ public class CompletionParser extends Parser {
 		} else {
 			return super.newImport(loc, packages, module, aliasid, isstatic);
 		}
+	}
+	
+	@Override
+	protected Import addImportAlias(Import s, IdentifierExp name, IdentifierExp alias) {
+		super.addImportAlias(s, name, alias);
+		
+		if (alias != null  && alias.start <= cursorLocation && cursorLocation <= alias.start + alias.length) {
+			wantAssist = false;
+			wantKeywords = false;
+			return s;
+		}
+		
+		if (prevToken.ptr <= cursorLocation && cursorLocation <= token.ptr) {
+			CompletionOnImport coi = new CompletionOnImport(s.loc, s.packages, s.id, s.aliasId, s.isstatic, cursorLocation);
+			if (name != null && name.start <= cursorLocation && cursorLocation <= name.start + name.length) {
+				coi.selectiveName = name;
+			}
+			coi.isSelective = true;
+			assistNode = coi;
+			wantKeywords = false;
+			return coi;
+		}
+		
+		return s;
 	}
 
 	@Override
@@ -690,6 +715,14 @@ public class CompletionParser extends Parser {
 			expectedTypeNode = e1;
 		}
 		return super.newCondExp(loc, e, e1, e2);
+	}
+	
+	@Override
+	protected Expression newAddrExp(Loc loc, Expression e) {
+		if (e == assistNode) {
+			isInAddrExp = true;
+		}
+		return super.newAddrExp(loc, e);
 	}
 	
 	@Override

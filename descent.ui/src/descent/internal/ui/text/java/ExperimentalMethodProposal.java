@@ -85,9 +85,13 @@ public final class ExperimentalMethodProposal extends JavaMethodCompletionPropos
 	 * @see descent.internal.ui.text.java.LazyJavaCompletionProposal#computeReplacementString()
 	 */
 	protected String computeReplacementString() {
+		if (!fProposal.wantArguments()) {
+			return new String(fProposal.getName());
+		}
 		
-		if (!hasParameters() || !hasArgumentList())
+		if (!hasParameters() || !hasArgumentList()) {
 			return super.computeReplacementString();
+		}
 		
 		char[][] parameterNames= fProposal.findParameterNames(null);
 		int count= parameterNames.length;

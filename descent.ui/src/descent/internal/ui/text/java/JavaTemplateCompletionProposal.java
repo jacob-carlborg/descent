@@ -138,37 +138,45 @@ public class JavaTemplateCompletionProposal extends LazyJavaCompletionProposal {
 	 * @see descent.internal.ui.text.java.LazyJavaCompletionProposal#computeReplacementString()
 	 */
 	protected String computeReplacementString() {
-		if (!hasArgumentList())
-			return super.computeReplacementString();
-		
-		// we're inserting a method plus the argument list - respect formatter preferences
-		StringBuffer buffer= new StringBuffer();
-		buffer.append(fProposal.getName());
-
-		FormatterPrefs prefs= getFormatterPrefs();
-		if (prefs.beforeOpeningParen)
-			buffer.append(SPACE);
-		buffer.append(EXCLAMATION);
-		buffer.append(LPAREN);
-		
-		if (hasParameters()) {
-			setCursorPosition(buffer.length());
+		try {
+			if (!hasArgumentList()) {
+				return super.computeReplacementString();
+			}
 			
-			if (prefs.afterOpeningParen)
+			// we're inserting a method plus the argument list - respect formatter preferences
+			StringBuffer buffer= new StringBuffer();
+			buffer.append(fProposal.getName());
+	
+			FormatterPrefs prefs= getFormatterPrefs();
+			if (prefs.beforeOpeningParen)
 				buffer.append(SPACE);
+			buffer.append(EXCLAMATION);
+			buffer.append(LPAREN);
 			
-
-			// don't add the trailing space, but let the user type it in himself - typing the closing paren will exit
-//			if (prefs.beforeClosingParen)
-//				buffer.append(SPACE);
-		} else {
-			if (prefs.inEmptyList)
-				buffer.append(SPACE);
+			if (hasParameters()) {
+				setCursorPosition(buffer.length());
+				
+				if (prefs.afterOpeningParen)
+					buffer.append(SPACE);
+				
+	
+				// don't add the trailing space, but let the user type it in himself - typing the closing paren will exit
+	//			if (prefs.beforeClosingParen)
+	//				buffer.append(SPACE);
+			} else {
+				if (prefs.inEmptyList)
+					buffer.append(SPACE);
+			}
+	
+			buffer.append(RPAREN);
+	
+			return buffer.toString();
+		} finally {
+			if (!fProposal.wantArguments()) {
+				setCursorPosition(fProposal.getName().length);
+				return new String(fProposal.getName());
+			}
 		}
-
-		buffer.append(RPAREN);
-
-		return buffer.toString();
 	}
 	
 	protected ProposalInfo computeProposalInfo() {

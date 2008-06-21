@@ -192,8 +192,13 @@ public class JavaMethodCompletionProposal extends LazyJavaCompletionProposal {
 	 * @see descent.internal.ui.text.java.LazyJavaCompletionProposal#computeReplacementString()
 	 */
 	protected String computeReplacementString() {
-		if (!hasArgumentList())
+		if (!fProposal.wantArguments()) {
+			return new String(fProposal.getName());
+		}
+		
+		if (!hasArgumentList()) {
 			return super.computeReplacementString();
+		}
 		
 		// we're inserting a method plus the argument list - respect formatter preferences
 		StringBuffer buffer= new StringBuffer();

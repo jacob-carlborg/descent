@@ -2222,7 +2222,7 @@ public class Parser extends Lexer {
 				// Get TemplateParameter
 
 				// First, look ahead to see if it is a TypeParameter or a
-				// ValueParameter¿
+				// ValueParameterï¿½
 				
 				t = peek(token);
 				if (token.value == TOKalias) { // AliasParameter
@@ -2594,7 +2594,7 @@ public class Parser extends Lexer {
 				s = newImport(loc(), a, id, aliasid, isstatic);
 				s.preComments = lastComments;
 				s.first = prev == null;
-				decldefs.add(s);
+				//decldefs.add(s);
 				if (prev == null) {
 					s.firstStart = start;
 				} else {
@@ -2612,7 +2612,12 @@ public class Parser extends Lexer {
 						nextToken();
 
 						if (token.value != TOKidentifier) {
-							parsingErrorInsertTokenAfter(prevToken, "Identifier");
+							// Signal an empty alias added
+							s = addImportAlias(s, null, null);
+							
+							parsingErrorInsertTokenAfter(prevToken, "Identifier");							
+							
+							decldefs.add(s);
 							break;
 						}
 						
@@ -2621,7 +2626,12 @@ public class Parser extends Lexer {
 						if (token.value == TOKassign) {
 							nextToken();
 							if (token.value != TOKidentifier) {
+								// Signal an empty alias added
+								s = addImportAlias(s, newIdentifierExp(), null);
+								
 								parsingErrorInsertTokenAfter(prevToken, "Identifier");
+								
+								decldefs.add(s);
 								break;
 							}
 							name = newIdentifierExp();
@@ -2630,11 +2640,13 @@ public class Parser extends Lexer {
 							name = alias;
 							alias = null;
 						}
-						s.addAlias(name, alias);
+						s = addImportAlias(s, name, alias);
+						decldefs.add(s);
 						s.setSourceRange(sStart, prevToken.ptr + prevToken.sourceLen - sStart);
 					} while (token.value == TOKcomma);
 					break; // no comma-separated imports of this form
 				} else {
+					decldefs.add(s);
 					s.setSourceRange(sStart, prevToken.ptr + prevToken.sourceLen - sStart);
 				}
 
@@ -2651,6 +2663,8 @@ public class Parser extends Lexer {
 		return null;
 	}
 	
+	
+
 	public Type parseType() {
 		return parseType(null, null);
 	}
@@ -6609,7 +6623,7 @@ public class Parser extends Lexer {
 		case TOKand:
 			nextToken();
 			e = parseUnaryExp();
-			e = new AddrExp(loc(), e);
+			e = newAddrExp(loc(), e);
 			break;
 
 		case TOKplusplus:
@@ -6831,7 +6845,7 @@ public class Parser extends Lexer {
 		}
 
 		return e;
-	}
+	}	
 
 	private void parsePrimaryExp_case_delegate(Expression[] e, TOK save, boolean isEmptySyntax) {
 		Arguments arguments;
@@ -7894,6 +7908,10 @@ public class Parser extends Lexer {
 		return new MulExp(loc, e, e2);
 	}
 	
+	protected Expression newAddrExp(Loc loc, Expression e) {
+		return new AddrExp(loc, e);
+	}
+	
 	protected VarDeclaration newVarDeclaration(Loc loc, Type type, IdentifierExp ident, Initializer init) {
 		return new VarDeclaration(loc, type, ident, init);
 	}
@@ -7932,6 +7950,13 @@ public class Parser extends Lexer {
 	
 	protected AggregateDeclaration endAggregateDeclaration(AggregateDeclaration a) {
 		return a;
+	}
+	
+	protected Import addImportAlias(Import s, IdentifierExp name, IdentifierExp alias) {
+		if (name != null && alias != null) {
+			s.addAlias(name, alias);
+		}
+		return s;
 	}
 	
 	private Statement dietParseStatement(FuncDeclaration f) {

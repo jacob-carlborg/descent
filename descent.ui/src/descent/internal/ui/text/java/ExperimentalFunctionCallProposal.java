@@ -86,9 +86,13 @@ public final class ExperimentalFunctionCallProposal extends JavaMethodCompletion
 	 * @see descent.internal.ui.text.java.LazyJavaCompletionProposal#computeReplacementString()
 	 */
 	protected String computeReplacementString() {
+		if (!fProposal.wantArguments()) {
+			return new String(fProposal.getName());
+		}
 		
-		if (!hasParameters() || !hasArgumentList())
+		if (!hasParameters() || !hasArgumentList()) {
 			return super.computeReplacementString();
+		}
 		
 		char[][] parameterTypes= Signature.getParameterTypes(fProposal.getTypeSignature());
 		char[][] parameterNames = new char[parameterTypes.length][];
