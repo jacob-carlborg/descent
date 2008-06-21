@@ -1,7 +1,6 @@
 package descent.tests.mangling;
 
 import descent.internal.compiler.parser.ASTNodeEncoder;
-import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.IntegerExp;
 import descent.internal.compiler.parser.TemplateAliasParameter;
 import descent.internal.compiler.parser.TemplateTupleParameter;
@@ -10,7 +9,7 @@ import descent.internal.compiler.parser.TemplateValueParameter;
 import descent.internal.compiler.parser.Type;
 import descent.internal.core.InternalSignature;
 
-public class SignatureToTemplateParameter_Test extends AbstractSignatureTest implements ISignatureConstants {
+public class SignatureToTemplateParameter_Test extends AbstractSignatureTest implements ISignatureTest {
 	
 	public void testTuple() {
 		TemplateTupleParameter param = (TemplateTupleParameter) 

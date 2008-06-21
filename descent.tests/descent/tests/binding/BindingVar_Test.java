@@ -19,8 +19,9 @@ import descent.core.dom.TypedefDeclaration;
 import descent.core.dom.TypedefDeclarationFragment;
 import descent.core.dom.VariableDeclaration;
 import descent.core.dom.VariableDeclarationFragment;
+import descent.tests.mangling.ISignatureTest;
 
-public class BindingVar_Test extends AbstractBinding_Test {
+public class BindingVar_Test extends AbstractBinding_Test implements ISignatureTest {
 	
 	public void testTypeBindingForVar() throws Exception {
 		CompilationUnit unit = createCU("test.d", "class Foo { } Foo f;");

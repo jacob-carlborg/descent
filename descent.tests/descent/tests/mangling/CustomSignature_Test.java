@@ -10,7 +10,6 @@ import descent.internal.compiler.parser.DotVarExp;
 import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.ExpStatement;
 import descent.internal.compiler.parser.FuncDeclaration;
-import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.StructDeclaration;
 import descent.internal.compiler.parser.TemplateDeclaration;
@@ -24,7 +23,7 @@ import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.compiler.parser.VarExp;
 import descent.tests.lookup.AbstractLookupTest;
 
-public class CustomSignature_Test extends AbstractLookupTest implements ISignatureConstants {
+public class CustomSignature_Test extends AbstractLookupTest implements ISignatureTest {
 	
 	public void testClass() throws Exception {
 		one("class Foo { }");

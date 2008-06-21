@@ -5,7 +5,6 @@ import org.jmock.Mockery;
 import org.jmock.Sequence;
 import org.jmock.integration.junit3.MockObjectTestCase;
 
-import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.STC;
 import descent.internal.compiler.parser.Type;
@@ -13,7 +12,7 @@ import descent.internal.compiler.parser.TypeBasic;
 import descent.internal.core.ISignatureRequestor;
 import descent.internal.core.SignatureProcessor;
 
-public class SignatureProcessor_Test extends MockObjectTestCase implements ISignatureConstants {
+public class SignatureProcessor_Test extends MockObjectTestCase implements ISignatureTest {
 	
 	protected Mockery mockery = new Mockery();
 	protected ISignatureRequestor requestor;
@@ -125,13 +124,13 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).enterFunctionType(); inSequence(s);
 			one(requestor).acceptArgumentModifier(STC.STCin); inSequence(s);
 			one(requestor).acceptModule(expectedModule, "@6object");
-			one(requestor).acceptSymbol(CLASS, className, -1, "@6objectC6Object");
+			one(requestor).acceptSymbol(CLASS.charAt(0), className, -1, "@6objectC6Object");
 			one(requestor).acceptArgumentModifier(STC.STCin); inSequence(s);
 			one(requestor).acceptModule(expectedModule, "@6object");
-			one(requestor).acceptSymbol(CLASS, className, -1, "@6objectC6Object");
+			one(requestor).acceptSymbol(CLASS.charAt(0), className, -1, "@6objectC6Object");
 			one(requestor).acceptArgumentBreak('Z'); inSequence(s);
 			one(requestor).acceptModule(expectedModule, "@6object");
-			one(requestor).acceptSymbol(CLASS, className, -1, "@6objectC6Object");
+			one(requestor).acceptSymbol(CLASS.charAt(0), className, -1, "@6objectC6Object");
 			one(requestor).exitFunctionType(LINK.LINKd, 'Z', "F@6objectC6Object@6objectC6ObjectZ@6objectC6Object"); inSequence(s);
 		}});
 		
@@ -154,7 +153,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 	}
 	
 	public void testSymbol() {
-		for(final char type : new char[] { 
+		for(final String type : new String[] { 
 			CLASS, STRUCT, UNION, INTERFACE, ENUM, ENUM_MEMBER, VARIABLE, ALIAS, TYPEDEF 
 			}) {
 			
@@ -162,7 +161,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			
 			checking(new Expectations() {{
 				char[] expected = "test".toCharArray();
-				one(requestor).acceptSymbol(type, expected, -1, sig);
+				one(requestor).acceptSymbol(type.charAt(0), expected, -1, sig);
 			}});
 			
 			SignatureProcessor.process(sig, true, requestor);
@@ -174,7 +173,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 	public void testFunction() {
 		final Sequence s = mockery.sequence("seq");
 		
-		final char type = FUNCTION;
+		final char type = FUNCTION.charAt(0);
 		final String sig = type + "4testFZv";
 		
 		checking(new Expectations() {{
@@ -195,13 +194,13 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 		final Sequence s = mockery.sequence("seq");
 		
 		final String sigModule = MODULE + "4test3foo";
-		final String sigClass = sigModule + CLASS + "3Bar";
+		final String sigClass = sigModule + CLASS.charAt(0) + "3Bar";
 		
 		checking(new Expectations() {{
 			char[][] expectedModule = { "test".toCharArray(), "foo".toCharArray() };
 			char[] expectedClass = "Bar".toCharArray();
 			one(requestor).acceptModule(expectedModule, sigModule); inSequence(s);
-			one(requestor).acceptSymbol(CLASS, expectedClass, -1, sigClass); inSequence(s);
+			one(requestor).acceptSymbol(CLASS.charAt(0), expectedClass, -1, sigClass); inSequence(s);
 		}});
 		
 		SignatureProcessor.process(sigClass, true, requestor);
@@ -213,16 +212,16 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 		final Sequence s = mockery.sequence("seq");
 		
 		final String sigModule = MODULE + "4test3foo";
-		final String sigClass1 = sigModule + CLASS + "3Bar";
-		final String sigClass2 = sigClass1 + CLASS + "4Bazz";
+		final String sigClass1 = sigModule + CLASS.charAt(0) + "3Bar";
+		final String sigClass2 = sigClass1 + CLASS.charAt(0) + "4Bazz";
 		
 		checking(new Expectations() {{
 			char[][] expectedModule = { "test".toCharArray(), "foo".toCharArray() };
 			char[] expectedClass1 = "Bar".toCharArray();
 			char[] expectedClass2 = "Bazz".toCharArray();
 			one(requestor).acceptModule(expectedModule, sigModule); inSequence(s);
-			one(requestor).acceptSymbol(CLASS, expectedClass1, -1, sigClass1); inSequence(s);
-			one(requestor).acceptSymbol(CLASS, expectedClass2, -1, sigClass2); inSequence(s);
+			one(requestor).acceptSymbol(CLASS.charAt(0), expectedClass1, -1, sigClass1); inSequence(s);
+			one(requestor).acceptSymbol(CLASS.charAt(0), expectedClass2, -1, sigClass2); inSequence(s);
 		}});
 		
 		SignatureProcessor.process(sigClass2, true, requestor);
@@ -244,7 +243,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptArgumentBreak('Z'); inSequence(s);
 			one(requestor).acceptPrimitive(TypeBasic.tvoid); inSequence(s);
 			one(requestor).exitFunctionType(LINK.LINKd, 'Z', "FZv"); inSequence(s);
-			one(requestor).acceptSymbol(FUNCTION, expectedFunction, -1, sigFunction); inSequence(s);
+			one(requestor).acceptSymbol(FUNCTION.charAt(0), expectedFunction, -1, sigFunction); inSequence(s);
 		}});
 		
 		SignatureProcessor.process(sigFunction, true, requestor);
@@ -256,7 +255,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 		final Sequence s = mockery.sequence("seq");
 		
 		final String sigModule = MODULE + "4test3foo";
-		final String sigClass = sigModule + CLASS + "3Bar";
+		final String sigClass = sigModule + CLASS.charAt(0) + "3Bar";
 		final String sigFunctionType = "F" + sigClass + "Z" + sigClass;
 		final String sigFunction = sigModule + FUNCTION + "8someFunc" + sigFunctionType;
 		
@@ -268,12 +267,12 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).enterFunctionType(); inSequence(s);
 			one(requestor).acceptArgumentModifier(STC.STCin); inSequence(s);
 			one(requestor).acceptModule(expectedModule, sigModule); inSequence(s);
-			one(requestor).acceptSymbol(CLASS, expectedClass, -1, sigClass); inSequence(s);
+			one(requestor).acceptSymbol(CLASS.charAt(0), expectedClass, -1, sigClass); inSequence(s);
 			one(requestor).acceptArgumentBreak('Z'); inSequence(s);
 			one(requestor).acceptModule(expectedModule, sigModule); inSequence(s);
-			one(requestor).acceptSymbol(CLASS, expectedClass, -1, sigClass); inSequence(s);
+			one(requestor).acceptSymbol(CLASS.charAt(0), expectedClass, -1, sigClass); inSequence(s);
 			one(requestor).exitFunctionType(LINK.LINKd, 'Z', sigFunctionType); inSequence(s);
-			one(requestor).acceptSymbol(FUNCTION, expectedFunction, -1, sigFunction); inSequence(s);
+			one(requestor).acceptSymbol(FUNCTION.charAt(0), expectedFunction, -1, sigFunction); inSequence(s);
 		}});
 		
 		SignatureProcessor.process(sigFunction, true, requestor);
@@ -285,7 +284,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 		final Sequence s = mockery.sequence("seq");
 		
 		final String sigModule = MODULE + "4test3foo";
-		final String sigTemplate = sigModule + TEMPLATE + "3Bar'";
+		final String sigTemplate = sigModule + TEMPLATE.charAt(0) + "3Bar'";
 		
 		checking(new Expectations() {{
 			char[][] expectedModule = { "test".toCharArray(), "foo".toCharArray() };
@@ -293,7 +292,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptModule(expectedModule, sigModule); inSequence(s);
 			one(requestor).enterTemplateParameters(); inSequence(s);
 			one(requestor).exitTemplateParameters(); inSequence(s);
-			one(requestor).acceptSymbol(TEMPLATE, expectedTemplate, -1, sigTemplate); inSequence(s);
+			one(requestor).acceptSymbol(TEMPLATE.charAt(0), expectedTemplate, -1, sigTemplate); inSequence(s);
 		}});
 		
 		SignatureProcessor.process(sigTemplate, true, requestor);
@@ -305,7 +304,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 		final Sequence s = mockery.sequence("seq");
 		
 		final String sigModule = MODULE + "4test3foo";
-		final String sigTemplate = sigModule + TEMPLATE + "3Bar" + TEMPLATE_TUPLE_PARAMETER +"'";
+		final String sigTemplate = sigModule + TEMPLATE.charAt(0) + "3Bar" + TEMPLATE_TUPLE_PARAMETER +"'";
 		
 		checking(new Expectations() {{
 			char[][] expectedModule = { "test".toCharArray(), "foo".toCharArray() };
@@ -314,7 +313,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).enterTemplateParameters(); inSequence(s);
 			one(requestor).acceptTemplateTupleParameter(); inSequence(s);
 			one(requestor).exitTemplateParameters(); inSequence(s);
-			one(requestor).acceptSymbol(TEMPLATE, expectedTemplate, -1, sigTemplate); inSequence(s);
+			one(requestor).acceptSymbol(TEMPLATE.charAt(0), expectedTemplate, -1, sigTemplate); inSequence(s);
 		}});
 		
 		SignatureProcessor.process(sigTemplate, true, requestor);
@@ -326,7 +325,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 		final Sequence s = mockery.sequence("seq");
 		
 		final String sigModule = MODULE + "4test3foo";
-		final String sigTemplate = sigModule + TEMPLATE + "3Bar" + TEMPLATE_ALIAS_PARAMETER + "'";
+		final String sigTemplate = sigModule + TEMPLATE.charAt(0) + "3Bar" + TEMPLATE_ALIAS_PARAMETER + "'";
 		
 		checking(new Expectations() {{
 			char[][] expectedModule = { "test".toCharArray(), "foo".toCharArray() };
@@ -336,7 +335,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).enterTemplateAliasParameter(); inSequence(s);
 			one(requestor).exitTemplateAliasParameter(String.valueOf(TEMPLATE_ALIAS_PARAMETER)); inSequence(s);
 			one(requestor).exitTemplateParameters(); inSequence(s);
-			one(requestor).acceptSymbol(TEMPLATE, expectedTemplate, -1, sigTemplate); inSequence(s);
+			one(requestor).acceptSymbol(TEMPLATE.charAt(0), expectedTemplate, -1, sigTemplate); inSequence(s);
 		}});
 		
 		SignatureProcessor.process(sigTemplate, true, requestor);
@@ -348,7 +347,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 		final Sequence s = mockery.sequence("seq");
 		
 		final String sigModule = MODULE + "4test3foo";
-		final String sigTemplate = sigModule + TEMPLATE + "3Bar" + TEMPLATE_ALIAS_PARAMETER + TEMPLATE_ALIAS_PARAMETER2 + "i'";
+		final String sigTemplate = sigModule + TEMPLATE.charAt(0) + "3Bar" + TEMPLATE_ALIAS_PARAMETER + TEMPLATE_ALIAS_PARAMETER2 + "i'";
 		
 		checking(new Expectations() {{
 			char[][] expectedModule = { "test".toCharArray(), "foo".toCharArray() };
@@ -359,7 +358,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptPrimitive(TypeBasic.tint32); inSequence(s);
 			one(requestor).exitTemplateAliasParameter(String.valueOf(TEMPLATE_ALIAS_PARAMETER) + TEMPLATE_ALIAS_PARAMETER2 + "i"); inSequence(s);
 			one(requestor).exitTemplateParameters(); inSequence(s);
-			one(requestor).acceptSymbol(TEMPLATE, expectedTemplate, -1, sigTemplate); inSequence(s);
+			one(requestor).acceptSymbol(TEMPLATE.charAt(0), expectedTemplate, -1, sigTemplate); inSequence(s);
 		}});
 		
 		SignatureProcessor.process(sigTemplate, true, requestor);
@@ -371,7 +370,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 		final Sequence s = mockery.sequence("seq");
 		
 		final String sigModule = MODULE + "4test3foo";
-		final String sigTemplate = sigModule + TEMPLATE + "3Bar" + TEMPLATE_TYPE_PARAMETER + "'";
+		final String sigTemplate = sigModule + TEMPLATE.charAt(0) + "3Bar" + TEMPLATE_TYPE_PARAMETER + "'";
 		
 		checking(new Expectations() {{
 			char[][] expectedModule = { "test".toCharArray(), "foo".toCharArray() };
@@ -381,7 +380,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).enterTemplateTypeParameter(); inSequence(s);
 			one(requestor).exitTemplateTypeParameter(String.valueOf(TEMPLATE_TYPE_PARAMETER)); inSequence(s);
 			one(requestor).exitTemplateParameters(); inSequence(s);
-			one(requestor).acceptSymbol(TEMPLATE, expectedTemplate, -1, sigTemplate); inSequence(s);
+			one(requestor).acceptSymbol(TEMPLATE.charAt(0), expectedTemplate, -1, sigTemplate); inSequence(s);
 		}});
 		
 		SignatureProcessor.process(sigTemplate, true, requestor);
@@ -393,7 +392,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 		final Sequence s = mockery.sequence("seq");
 		
 		final String sigModule = MODULE + "4test3foo";
-		final String sigTemplate = sigModule + TEMPLATE + "3Bar" + TEMPLATE_TYPE_PARAMETER + TEMPLATE_TYPE_PARAMETER2 + "i'";
+		final String sigTemplate = sigModule + TEMPLATE.charAt(0) + "3Bar" + TEMPLATE_TYPE_PARAMETER + TEMPLATE_TYPE_PARAMETER2 + "i'";
 		
 		checking(new Expectations() {{
 			char[][] expectedModule = { "test".toCharArray(), "foo".toCharArray() };
@@ -404,7 +403,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptPrimitive(TypeBasic.tint32); inSequence(s);
 			one(requestor).exitTemplateTypeParameter(String.valueOf(TEMPLATE_TYPE_PARAMETER) + TEMPLATE_TYPE_PARAMETER2 + "i"); inSequence(s);
 			one(requestor).exitTemplateParameters(); inSequence(s);
-			one(requestor).acceptSymbol(TEMPLATE, expectedTemplate, -1, sigTemplate); inSequence(s);
+			one(requestor).acceptSymbol(TEMPLATE.charAt(0), expectedTemplate, -1, sigTemplate); inSequence(s);
 		}});
 		
 		SignatureProcessor.process(sigTemplate, true, requestor);
@@ -416,7 +415,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 		final Sequence s = mockery.sequence("seq");
 		
 		final String sigModule = MODULE + "4test3foo";
-		final String sigTemplate = sigModule + TEMPLATE + "3Bar" + TEMPLATE_VALUE_PARAMETER + "i'";
+		final String sigTemplate = sigModule + TEMPLATE.charAt(0) + "3Bar" + TEMPLATE_VALUE_PARAMETER + "i'";
 		
 		checking(new Expectations() {{
 			char[][] expectedModule = { "test".toCharArray(), "foo".toCharArray() };
@@ -427,7 +426,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptPrimitive(TypeBasic.tint32); inSequence(s);
 			one(requestor).exitTemplateValueParameter(TEMPLATE_VALUE_PARAMETER + "i"); inSequence(s);
 			one(requestor).exitTemplateParameters(); inSequence(s);
-			one(requestor).acceptSymbol(TEMPLATE, expectedTemplate, -1, sigTemplate); inSequence(s);
+			one(requestor).acceptSymbol(TEMPLATE.charAt(0), expectedTemplate, -1, sigTemplate); inSequence(s);
 		}});
 		
 		SignatureProcessor.process(sigTemplate, true, requestor);
@@ -439,7 +438,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 		final Sequence s = mockery.sequence("seq");
 		
 		final String sigModule = MODULE + "4test3foo";
-		final String sigTemplate = sigModule + TEMPLATED_CLASS + "3Bar" + TEMPLATE_VALUE_PARAMETER + "i'";
+		final String sigTemplate = sigModule + TEMPLATED_CLASS.charAt(0) + "3Bar" + TEMPLATE_VALUE_PARAMETER + "i'";
 		
 		checking(new Expectations() {{
 			char[][] expectedModule = { "test".toCharArray(), "foo".toCharArray() };
@@ -450,7 +449,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptPrimitive(TypeBasic.tint32); inSequence(s);
 			one(requestor).exitTemplateValueParameter(TEMPLATE_VALUE_PARAMETER + "i"); inSequence(s);
 			one(requestor).exitTemplateParameters(); inSequence(s);
-			one(requestor).acceptSymbol(TEMPLATED_CLASS, expectedTemplate, -1, sigTemplate); inSequence(s);
+			one(requestor).acceptSymbol(TEMPLATED_CLASS.charAt(0), expectedTemplate, -1, sigTemplate); inSequence(s);
 		}});
 		
 		SignatureProcessor.process(sigTemplate, true, requestor);
@@ -477,7 +476,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptPrimitive(TypeBasic.tint32); inSequence(s);
 			one(requestor).exitTemplateValueParameter(TEMPLATE_VALUE_PARAMETER + "i"); inSequence(s);
 			one(requestor).exitTemplateParameters(); inSequence(s);
-			one(requestor).acceptSymbol(TEMPLATED_FUNCTION, expectedTemplate, -1, sigTemplate); inSequence(s);
+			one(requestor).acceptSymbol(TEMPLATED_FUNCTION.charAt(0), expectedTemplate, -1, sigTemplate); inSequence(s);
 		}});
 		
 		SignatureProcessor.process(sigTemplate, true, requestor);
@@ -489,7 +488,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 		final Sequence s = mockery.sequence("seq");
 		
 		final String sigModule = MODULE + "4test3foo";
-		final String sigTemplate = sigModule + TEMPLATE + "3Bar" + TEMPLATE_VALUE_PARAMETER + "i" + TEMPLATE_VALUE_PARAMETER2 + "3" + TEMPLATE_VALUE_PARAMETER + "123'";
+		final String sigTemplate = sigModule + TEMPLATE.charAt(0) + "3Bar" + TEMPLATE_VALUE_PARAMETER + "i" + TEMPLATE_VALUE_PARAMETER2 + "3" + TEMPLATE_VALUE_PARAMETER + "123'";
 		
 		checking(new Expectations() {{
 			char[][] expectedModule = { "test".toCharArray(), "foo".toCharArray() };
@@ -501,7 +500,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptTemplateValueParameterSpecificValue("123".toCharArray()); inSequence(s);
 			one(requestor).exitTemplateValueParameter(TEMPLATE_VALUE_PARAMETER + "i" + TEMPLATE_VALUE_PARAMETER2 + "3" + TEMPLATE_VALUE_PARAMETER + "123"); inSequence(s);
 			one(requestor).exitTemplateParameters(); inSequence(s);
-			one(requestor).acceptSymbol(TEMPLATE, expectedTemplate, -1, sigTemplate); inSequence(s);
+			one(requestor).acceptSymbol(TEMPLATE.charAt(0), expectedTemplate, -1, sigTemplate); inSequence(s);
 		}});
 		
 		SignatureProcessor.process(sigTemplate, true, requestor);
@@ -569,7 +568,7 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).enterTemplateInstance(); inSequence(s);
 			one(requestor).enterTemplateInstanceSymbol(); inSequence(s);
 			one(requestor).acceptModule(expectedModule, "@4test"); inSequence(s);
-			one(requestor).acceptSymbol(CLASS, "Bar".toCharArray(), -1, "@4testC3Bar"); inSequence(s);
+			one(requestor).acceptSymbol(CLASS.charAt(0), "Bar".toCharArray(), -1, "@4testC3Bar"); inSequence(s);
 			one(requestor).exitTemplateInstanceSymbol(TEMPLATE_INSTANCE_SYMBOL  + "@4testC3Bar"); inSequence(s);
 			one(requestor).exitTemplateInstance(sigInstance); inSequence(s);
 		}});

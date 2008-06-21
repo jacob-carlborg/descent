@@ -4,8 +4,6 @@ import descent.core.Signature;
 import descent.core.dom.AST;
 import descent.internal.compiler.parser.ASTNodeEncoder;
 import descent.internal.compiler.parser.Argument;
-import descent.internal.compiler.parser.ISignatureConstants;
-import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.IntegerExp;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.Module;
@@ -27,7 +25,7 @@ import descent.internal.compiler.parser.TypeTypeof;
 import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.core.InternalSignature;
 
-public class SignatureToType_Test extends AbstractSignatureTest implements ISignatureConstants {
+public class SignatureToType_Test extends AbstractSignatureTest implements ISignatureTest {
 	
 	public void testPrimitive() {
 		Type actual = InternalSignature.toType(i, new ASTNodeEncoder());

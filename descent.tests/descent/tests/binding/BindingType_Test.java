@@ -8,7 +8,7 @@ import descent.core.dom.FunctionDeclaration;
 import descent.core.dom.ITypeBinding;
 import descent.core.dom.IVariableBinding;
 import descent.core.dom.VariableDeclaration;
-import descent.internal.compiler.parser.ISignatureConstants;
+import descent.tests.mangling.ISignatureTest;
 
 public class BindingType_Test extends AbstractBinding_Test {
 	
@@ -17,7 +17,7 @@ public class BindingType_Test extends AbstractBinding_Test {
 	private final static int UNION = 3;
 	private final static int INTERFACE = 4;
 	
-	private void assertTypeBinding(String keyword, char signatureStart, int type) throws Exception {
+	private void assertTypeBinding(String keyword, String signatureStart, int type) throws Exception {
 		CompilationUnit unit = createCU("test.d", keyword + " Foo { }");
 		AggregateDeclaration agg = (AggregateDeclaration) unit.declarations().get(0);
 		ITypeBinding binding = agg.resolveBinding();
@@ -42,20 +42,20 @@ public class BindingType_Test extends AbstractBinding_Test {
 	}
 	
 	public void testTypeBindingInClassDeclaration() throws Exception {
-		assertTypeBinding("class", ISignatureConstants.CLASS, CLASS);
+		assertTypeBinding("class", ISignatureTest.CLASS, CLASS);
 	}
 	
 	public void testTypeBindingInStructDeclaration() throws Exception {
-		assertTypeBinding("struct", ISignatureConstants.STRUCT, STRUCT);
+		assertTypeBinding("struct", ISignatureTest.STRUCT, STRUCT);
 	}
 
 	public void testTypeBindingInUnionDeclaration() throws Exception {
-		assertTypeBinding("union", ISignatureConstants.UNION, UNION);
+		assertTypeBinding("union", ISignatureTest.UNION, UNION);
 	}
 	
 
 	public void testTypeBindingInInterfaceDeclaration() throws Exception {
-		assertTypeBinding("interface", ISignatureConstants.INTERFACE, INTERFACE);
+		assertTypeBinding("interface", ISignatureTest.INTERFACE, INTERFACE);
 	}
 
 	public void testTypeBindingInEnumDeclaration() throws Exception {

@@ -110,6 +110,8 @@ public class CompilationUnitStructureRequestor extends ReferenceInfoAdapter impl
 	protected Stack<Boolean> hasId = new Stack<Boolean>();
 	protected int topLevelNesting = 0;
 	protected HashtableOfCharArrayAndObject topLevelIdentifiers = new HashtableOfCharArrayAndObject();
+	
+	protected boolean stillAcceptsImportContainer = true;
 
 protected CompilationUnitStructureRequestor(ICompilationUnit unit, CompilationUnitElementInfo unitInfo, Map newElements) {
 	this.unit = unit;
@@ -119,7 +121,8 @@ protected CompilationUnitStructureRequestor(ICompilationUnit unit, CompilationUn
 
 public void acceptImport(int declarationStart, int declarationEnd, String name, String alias, String[] selectiveImportsNames,  String[] selectiveImportsAliases, long modifiers) {
 	JavaElement parentHandle= (JavaElement) this.handleStack.peek();
-	if (parentHandle.getElementType() == IJavaElement.COMPILATION_UNIT) {
+	if (stillAcceptsImportContainer && (modifiers == 0 || Flags.isStatic(modifiers)) && 
+			parentHandle.getElementType() == IJavaElement.COMPILATION_UNIT) {
 		ICompilationUnit parentCU= (ICompilationUnit)parentHandle;
 		//create the import container and its info
 		ImportContainer importContainer= (ImportContainer)parentCU.getImportContainer();
@@ -277,6 +280,8 @@ public void enterField(FieldInfo fieldInfo) {
 
 	this.infoStack.push(info);
 	this.handleStack.push(handle);
+	
+	stillAcceptsImportContainer = false;
 }
 /**
  * @see ISourceElementRequestor
@@ -285,37 +290,39 @@ public void enterInitializer(
 	int declarationSourceStart,
 	long modifiers,
 	char[] displayString) {
-		// If there is a mixin, cancel the identifiers cache
-		if (topLevelNesting == 0 && ((modifiers & Flags.AccMixin) != 0) || (modifiers & Flags.AccTemplateMixin) != 0) {
-			topLevelIdentifiers = null;
-		}
+	// If there is a mixin, cancel the identifiers cache
+	if (topLevelNesting == 0 && ((modifiers & Flags.AccMixin) != 0) || (modifiers & Flags.AccTemplateMixin) != 0) {
+		topLevelIdentifiers = null;
+	}
+
+	JavaElementInfo parentInfo = (JavaElementInfo) this.infoStack.peek();
+	JavaElement parentHandle= (JavaElement) this.handleStack.peek();
+	Initializer handle = null;
 	
-		JavaElementInfo parentInfo = (JavaElementInfo) this.infoStack.peek();
-		JavaElement parentHandle= (JavaElement) this.handleStack.peek();
-		Initializer handle = null;
-		
-		//if (parentHandle.getElementType() == IJavaElement.TYPE) {
-		if (displayString.length == 0) {
-			handle = new Initializer(parentHandle, 1);
-		} else {
-			String displayStringStr = JavaModelManager.getJavaModelManager().intern(new String(displayString));
-			handle = new Initializer(parentHandle, 1, displayStringStr);
-		}
-		//}
-		//else {
-		//Assert.isTrue(false); // Should not happen
-		//}
-		resolveDuplicates(handle);
-		
-		InitializerElementInfo info = new InitializerElementInfo();
-		info.setSourceRangeStart(declarationSourceStart);
-		info.setFlags(modifiers);
+	//if (parentHandle.getElementType() == IJavaElement.TYPE) {
+	if (displayString.length == 0) {
+		handle = new Initializer(parentHandle, 1);
+	} else {
+		String displayStringStr = JavaModelManager.getJavaModelManager().intern(new String(displayString));
+		handle = new Initializer(parentHandle, 1, displayStringStr);
+	}
+	//}
+	//else {
+	//Assert.isTrue(false); // Should not happen
+	//}
+	resolveDuplicates(handle);
+	
+	InitializerElementInfo info = new InitializerElementInfo();
+	info.setSourceRangeStart(declarationSourceStart);
+	info.setFlags(modifiers);
 
-		addToChildren(parentInfo, handle);
-		this.newElements.put(handle, info);
+	addToChildren(parentInfo, handle);
+	this.newElements.put(handle, info);
 
-		this.infoStack.push(info);
-		this.handleStack.push(handle);
+	this.infoStack.push(info);
+	this.handleStack.push(handle);
+	
+	stillAcceptsImportContainer = false;
 }
 
 public void enterConditional(int declarationSourceStart, long modifiers, char[] displayString) {
@@ -345,6 +352,8 @@ public void enterConditional(int declarationSourceStart, long modifiers, char[] 
 
 	this.infoStack.push(info);
 	this.handleStack.push(handle);
+	
+	stillAcceptsImportContainer = false;
 }
 
 public void enterConditionalThen(int declarationSourceStart) {
@@ -361,6 +370,8 @@ public void enterConditionalThen(int declarationSourceStart) {
 
 	this.infoStack.push(info);
 	this.handleStack.push(handle);
+	
+	stillAcceptsImportContainer = false;
 }
 
 public void enterConditionalElse(int declarationSourceStart) {
@@ -377,6 +388,8 @@ public void enterConditionalElse(int declarationSourceStart) {
 
 	this.infoStack.push(info);
 	this.handleStack.push(handle);
+	
+	stillAcceptsImportContainer = false;
 }
 
 /**
@@ -452,6 +465,8 @@ public void enterMethod(MethodInfo methodInfo) {
 			exitMember(typeParameterInfo.declarationEnd);
 		}
 	}
+	
+	stillAcceptsImportContainer = false;
 }
 /**
  * @see ISourceElementRequestor
@@ -510,6 +525,8 @@ public void enterType(TypeInfo typeInfo) {
 			exitMember(typeParameterInfo.declarationEnd);
 		}
 	}
+	
+	stillAcceptsImportContainer = false;
 }
 protected void enterTypeParameter(TypeParameterInfo typeParameterInfo) {
 	JavaElementInfo parentInfo = (JavaElementInfo) this.infoStack.peek();
@@ -544,6 +561,8 @@ protected void enterTypeParameter(TypeParameterInfo typeParameterInfo) {
 	this.newElements.put(handle, info);
 	this.infoStack.push(info);
 	this.handleStack.push(handle);
+	
+	stillAcceptsImportContainer = false;
 }
 /**
  * @see ISourceElementRequestor

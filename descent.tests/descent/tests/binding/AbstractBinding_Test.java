@@ -4,10 +4,10 @@ import descent.core.ICompilationUnit;
 import descent.core.dom.AST;
 import descent.core.dom.ASTParser;
 import descent.core.dom.CompilationUnit;
-import descent.internal.compiler.parser.ISignatureConstants;
+import descent.tests.mangling.ISignatureTest;
 import descent.tests.model.AbstractModelTest;
 
-public abstract class AbstractBinding_Test extends AbstractModelTest implements ISignatureConstants {
+public abstract class AbstractBinding_Test extends AbstractModelTest implements ISignatureTest {
 	
 	protected ICompilationUnit lastCompilationUnit;
 	protected CompilationUnit createCU(String filename, String source) throws Exception {

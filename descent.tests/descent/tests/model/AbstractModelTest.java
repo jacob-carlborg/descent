@@ -49,7 +49,8 @@ public abstract class AbstractModelTest extends TestCase {
 	}
 	
 	protected String getPhobosPath() {
-		return "c:\\ary\\programacion\\d\\1.020\\dmd\\src\\phobos";
+//		return "c:\\ary\\programacion\\d\\1.020\\dmd\\src\\phobos";
+		return "/home/asterite/programming/d/dmd.1.030/dmd/src/phobos";
 	}
 	
 	@Override

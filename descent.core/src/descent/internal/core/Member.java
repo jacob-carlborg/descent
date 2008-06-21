@@ -13,11 +13,11 @@ package descent.internal.core;
 import java.util.ArrayList;
 import java.util.List;
 
-import descent.core.Flags;
 import descent.core.IBuffer;
 import descent.core.IClassFile;
 import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
+import descent.core.IJavaProject;
 import descent.core.IMember;
 import descent.core.IMethod;
 import descent.core.ISourceRange;
@@ -286,7 +286,16 @@ public ISourceRange[] getJavadocRanges() throws JavaModelException {
 	final int start= range.getOffset();
 	final int length= range.getLength();
 	
-	Parser parser = new Parser(AST.D2, buf.getText(start, length));
+	IJavaProject activeProject = getJavaModel().getActiveProject();
+	int apiLevel = activeProject == null ? AST.D2 : activeProject.getApiLevel();
+	
+	String source = buf.getText(start, length);
+	Parser parser = new Parser(source.toCharArray(), 0, source.length(), 
+			true, false, 
+			false, false, 
+			apiLevel, 
+			null, null, false, 
+			null);
 	Module module = parser.parseModuleObj();
 	if (module.members == null || module.members.size() == 0) {
 		return null;

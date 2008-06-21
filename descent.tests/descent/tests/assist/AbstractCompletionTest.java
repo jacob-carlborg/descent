@@ -19,7 +19,8 @@ public abstract class AbstractCompletionTest extends AbstractModelTest {
 	
 	@Override
 	protected String getPhobosPath() {
-		return "C:\\ary\\programacion\\java\\descent\\descent.tests\\phobos";
+		//return "C:\\ary\\programacion\\java\\descent\\descent.tests\\phobos";
+		return "/home/asterite/programming/descent/descent.tests/phobos";
 	}
 	
 	/**

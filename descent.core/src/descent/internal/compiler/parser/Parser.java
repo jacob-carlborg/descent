@@ -1874,7 +1874,7 @@ public class Parser extends Lexer {
 					} else {
 						type = parseType(ident, null);
 						if (id != null || t != null) {
-							error(IProblem.TypeOnlyAllowedIfAnonymousEnumAndNoEnumType, t.start, t.length, t.getLineNumber());
+							error(IProblem.TypeOnlyAllowedIfAnonymousEnumAndNoEnumType, t == null ? id.start : t.start, t == null ? id.length : t.length, t == null ? id.getLineNumber() : t.getLineNumber());
 						}
 					}
 					
@@ -1885,7 +1885,7 @@ public class Parser extends Lexer {
 					} else {
 						value = null;
 						if (type != null) {
-							error(IProblem.IfTypeThereMustBeAnInitializer, t.start, t.length, t.getLineNumber());
+							error(IProblem.IfTypeThereMustBeAnInitializer, type.start, type.length, type.getLineNumber());
 						}
 					}
 					
@@ -1903,7 +1903,11 @@ public class Parser extends Lexer {
 							value = parseAssignExp();
 						}
 						
-						lastComments = getLastComments();
+						if (token.value != TOK.TOKrcurly) {
+							lastComments = getLastComments();
+						} else {
+							lastComments = null;
+						}
 						
 						em = new EnumMember(loc(), ident, value);
 					} else {
@@ -7682,11 +7686,14 @@ public class Parser extends Lexer {
 	}
 	
 	private void attachCommentToCurrentToken(Comment comment) {
-		if ((!appendLeadingComments || 
-					//!comment.isDDocComment() || 
-					(prevToken.value != TOKsemicolon && 
-						prevToken.value != TOKrcurly &&
-						prevToken.value != TOKcomma))) {
+		if ((!appendLeadingComments 
+//				|| 
+//					//!comment.isDDocComment() || 
+//					(prevToken.value != TOKsemicolon && 
+//						prevToken.value != TOKrcurly &&
+//						prevToken.value != TOKcomma &&
+//						prevToken.value != TOKidentifier))
+						)) {
 			return;
 		}
 		

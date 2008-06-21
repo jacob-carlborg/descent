@@ -18,6 +18,7 @@ import descent.core.IBuffer;
 import descent.core.ICompilationUnit;
 import descent.core.IField;
 import descent.core.IJavaElement;
+import descent.core.IJavaProject;
 import descent.core.ISourceRange;
 import descent.core.IType;
 import descent.core.JavaModelException;
@@ -265,9 +266,17 @@ public ISourceRange[] getJavadocRanges() throws JavaModelException {
 		final int start= range.getOffset();
 		final int length= range.getLength();
 		
-		String text = "enum Foo{" + buf.getText(start, length) + "}";
+		String source = "enum Foo{" + buf.getText(start, length) + "\n}";
 		
-		Parser parser = new Parser(AST.D2, text);
+		IJavaProject activeProject = getJavaModel().getActiveProject();
+		int apiLevel = activeProject == null ? AST.D2 : activeProject.getApiLevel();
+		
+		Parser parser = new Parser(source.toCharArray(), 0, source.length(), 
+				true, false, 
+				false, false, 
+				apiLevel, 
+				null, null, false, 
+				null);
 		Module module = parser.parseModuleObj();
 		if (module.members == null || module.members.size() == 0) {
 			return null;

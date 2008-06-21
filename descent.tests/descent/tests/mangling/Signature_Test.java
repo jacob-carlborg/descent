@@ -2,7 +2,6 @@ package descent.tests.mangling;
 
 import descent.core.Signature;
 import descent.internal.compiler.parser.ASTNodeEncoder;
-import descent.internal.compiler.parser.ISignatureConstants;
 import descent.internal.compiler.parser.IntegerExp;
 import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.TypeAArray;
@@ -13,7 +12,7 @@ import descent.internal.compiler.parser.TypeSArray;
 import descent.internal.compiler.parser.TypeSlice;
 import descent.internal.compiler.parser.TypeTypeof;
 
-public class Signature_Test extends AbstractSignatureTest implements ISignatureConstants {
+public class Signature_Test extends AbstractSignatureTest implements ISignatureTest {
 	
 	public void testPointer() {
 		assertEquals(new TypePointer(TypeBasic.tint32).getSignature(), 

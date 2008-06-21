@@ -1,5 +1,6 @@
 package descent.tests.format;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,6 +18,7 @@ import descent.core.formatter.CodeFormatter;
 public abstract class AbstractFormatter_Test extends TestCase {
 	
 	protected final static Map EMPTY_MAP = new HashMap();
+	public final static String LINE_SEPARATOR = System.getProperty("line.separator");
 	
 	/**
 	 * Formats "original" with the default options (see {@link #getDefaultOptions()})
@@ -32,6 +34,10 @@ public abstract class AbstractFormatter_Test extends TestCase {
 	 * and compares the resulting string with the expected string.
 	 */
 	protected void assertFormat(String expected, String original, Map overrideOptions) throws Exception {
+		// Write tests for Windows, but make them work in other OSs two
+		expected = expected.replaceAll("\r\n", LINE_SEPARATOR);
+		original = original.replaceAll("\r\n", LINE_SEPARATOR);
+		
 		Document document = new Document(original);
 		
 		Map mergedOptions = getDefaultOptions();
