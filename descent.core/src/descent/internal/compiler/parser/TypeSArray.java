@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.DYNCAST.DYNCAST_DSYMBOL;
@@ -490,13 +491,13 @@ public class TypeSArray extends TypeArray {
 	
 	@Override
 	protected void appendSignature0(StringBuilder sb) {
-		sb.append('G');
+		sb.append(Signature.C_STATIC_ARRAY);
 		next.appendSignature(sb);
-		sb.append('G');
+		sb.append(Signature.C_STATIC_ARRAY2);
 		
 		char[] expc = encoder.encodeExpression(dim);
 		sb.append(expc.length);
-		sb.append('G');
+		sb.append(Signature.C_STATIC_ARRAY);
 		sb.append(expc);
 	}
 

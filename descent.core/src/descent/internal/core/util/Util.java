@@ -1268,7 +1268,7 @@ public class Util {
 	}
 	
 	public static void log(Throwable e) {
-		log(e, "");
+		log(e, e.getMessage() == null ? e.getClass().getName() : e.getClass().getName() + ": " + e.getMessage());
 	}
 	
 	/*

@@ -82,7 +82,7 @@ import descent.internal.core.SignatureRequestorAdapter;
  *   "A" TypeSignature
  *     
  * StaticArrayTypeSignature ::=
- *   "G" TypeSignature "G" Number "G" Chars // Number == Chars.length
+ *   "G" TypeSignature "&" Number "G" Chars // Number == Chars.length
  *   
  * AssociativeArrayTypeSignature ::=
  *   "H" TypeSignature TypeSignature  // key value
@@ -94,9 +94,9 @@ import descent.internal.core.SignatureRequestorAdapter;
  *   "Q"
  *   
  * SliceTypeSignature ::=
- *   "" TypeSignature ""
- *   Number "" Chars // Number == Chars.length --> lower
- *   Number "" Chars // Number == Chars.length --> upper
+ *   "." TypeSignature "~"
+ *   Number "." Chars // Number == Chars.length --> lower
+ *   Number "." Chars // Number == Chars.length --> upper
  *   
  * FunctionTypeSignature ::=
  *   ( "F"  // D linkage
@@ -128,11 +128,11 @@ import descent.internal.core.SignatureRequestorAdapter;
  *   ( 
  *     ( "C"  // class
  *     | "S"  // struct
- *     | "&"  // union
- *     | "|"  // interface
+ *     | "U"  // union
+ *     | "I"  // interface
  *     | "E"  // enum
- *     | "~"  // enum member
- *     | ""  // variable
+ *     | "M"  // enum member
+ *     | "B"  // variable
  *     | "="  // alias
  *     | "T"  // typedef
  *     )
@@ -378,6 +378,12 @@ public final class Signature {
 	public static final char C_STATIC_ARRAY								= 'G';
 	
 	/**
+	 * Character constant indicating a static array type after it's type in a signature.
+	 * Value is <code>'&'</code>.
+	 */
+	public static final char C_STATIC_ARRAY2								= '&';
+	
+	/**
 	 * Character constant indicating an associative array type in a signature.
 	 * Value is <code>'H'</code>.
 	 */
@@ -387,7 +393,7 @@ public final class Signature {
 	 * Character constant indicating a typeof type in a signature.
 	 * Value is <code>'>'</code>.
 	 */
-	public static final char C_TYPEOF									= '>';
+	public static final char C_TYPEOF									= 'O';
 	
 	/**
 	 * Character constant indicating a typeof return in a signature.
@@ -397,9 +403,15 @@ public final class Signature {
 	
 	/**
 	 * Character constant indicating a slice type in a signature.
-	 * Value is <code>''</code>.
+	 * Value is <code>'.'</code>.
 	 */
-	public static final char C_SLICE									= '¬';
+	public static final char C_SLICE									= '.';
+	
+	/**
+	 * Character constant indicating a slice type after it's type in a signature.
+	 * Value is <code>'~'</code>.
+	 */
+	public static final char C_SLICE2									= '~';
 	
 	/**
 	 * Character constant indicating a D linkage in a function signature.
@@ -477,13 +489,13 @@ public final class Signature {
 	 * Character constant indicating a union type in a signature.
 	 * Value is <code>'&'</code>.
 	 */
-	public static final char C_UNION									= '&';
+	public static final char C_UNION									= 'N';
 	
 	/**
 	 * Character constant indicating an interface type in a signature.
 	 * Value is <code>'|'</code>.
 	 */
-	public static final char C_INTERFACE								= '|';
+	public static final char C_INTERFACE								= 'I';
 	
 	/**
 	 * Character constant indicating an enum type in a signature.
@@ -495,13 +507,13 @@ public final class Signature {
 	 * Character constant indicating an enum member in a signature.
 	 * Value is <code>'~'</code>.
 	 */
-	public static final char C_ENUM_MEMBER										= '~';
+	public static final char C_ENUM_MEMBER										= 'M';
 	
 	/**
 	 * Character constant indicating a variable in a signature.
-	 * Value is <code>''</code>.
+	 * Value is <code>'B'</code>.
 	 */
-	public static final char C_VARIABLE									= '¡';
+	public static final char C_VARIABLE									= 'B';
 	
 	/**
 	 * Character constant indicating an alias type in a signature.
@@ -617,7 +629,7 @@ public final class Signature {
 	 * value in a signature.
 	 * Value is <code>'\\'</code>.
 	 */
-	public static final char C_TEMPLATE_VALUE_PARAMETER_SPECIFIC_VALUE					= '\\';
+	public static final char C_TEMPLATE_VALUE_PARAMETER_SPECIFIC_VALUE	= '\\';
 	
 	/**
 	 * Character constant indicating a template instance in a signature.

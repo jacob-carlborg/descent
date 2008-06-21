@@ -193,7 +193,7 @@ public class TypeSlice extends Type {
 	protected void appendSignature0(StringBuilder sb) {
 		sb.append(Signature.C_SLICE);
 		next.appendSignature(sb);
-		sb.append(Signature.C_SLICE);
+		sb.append(Signature.C_SLICE2);
 		
 		char[] expc = encoder.encodeExpression(lwr);
 		sb.append(expc.length);

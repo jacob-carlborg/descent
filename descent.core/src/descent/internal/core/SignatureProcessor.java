@@ -392,6 +392,9 @@ public class SignatureProcessor {
 				localPosition = n;
 				requestor.acceptPosition(localPosition);
 				continue;
+			case Signature.C_STATIC_ARRAY2:
+			case Signature.C_SLICE2:
+				return i;
 			default:
 				// Try with type basic
 				TypeBasic type = TypeBasic.fromSignature(first);

@@ -358,7 +358,6 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		try {
 			module.semantic(context);
 		} catch (Throwable t) {
-			t.printStackTrace();
 			Util.log(t);
 		}
 		

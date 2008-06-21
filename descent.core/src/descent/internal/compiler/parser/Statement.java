@@ -12,7 +12,9 @@ public abstract class Statement extends ASTDmdNode {
 	}
 	
 	public int blockExit(SemanticContext context) {
-		throw new IllegalStateException("assert(0)");
+		// TODO Semantic
+//		throw new IllegalStateException("assert(0)");
+		return 0;
 	}
 
 	public boolean comeFrom() {
