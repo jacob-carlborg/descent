@@ -219,7 +219,7 @@ public final class Flags {
 	 * Postblit property flag.
 	 * @since 2.0
 	 */
-	public static final int AccPostBlit = 0x00100000;
+	public static final int AccPostBlit = 0x00200000; // 0x00100000 is already taken by AccTemplate
 	
 	// Extensions for fields (can reuse flags)
 	

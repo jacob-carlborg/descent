@@ -100,7 +100,7 @@ public class FormatEnumDeclaration_Test extends AbstractFormatter_Test {
 					"\tx, // comment\r\n" +
 					"\ty, // comment\r\n" +
 					"\tz // comment\r\n" +
-				"}", 
+				"}",
 				
 				"/*\r\n" +
 				" * Some\r\n" +

@@ -75,6 +75,10 @@ public class Token {
 	}
 	
 	public void setString(char[] input, int start, int length) {
+		if (start + length >= input.length) {
+			length = input.length - start;
+		}
+		
 		this.sourceString = new char[length];
 		System.arraycopy(input, start, this.sourceString, 0, length);
 	}

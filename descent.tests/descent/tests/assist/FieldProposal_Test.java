@@ -11,7 +11,7 @@ public class FieldProposal_Test extends AbstractCompletionTest  {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.FIELD_REF,
 				new int[] { SIGNATURE, TYPE_SIGNATURE, DECLARATION_SIGNATURE, LABEL }, 
-				"wxyz", pos, pos, "@4test/4wxyz", "i", "@4test", "wxyz    int - test");
+				"wxyz", pos, pos, "@4testB4wxyz", "i", "@4test", "wxyz    int - test");
 	}
 	
 	public void testVarWithBasicTypeInFunctionFQN() throws Exception {
@@ -23,7 +23,7 @@ public class FieldProposal_Test extends AbstractCompletionTest  {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.FIELD_REF,
 				new int[] { SIGNATURE, TYPE_SIGNATURE, DECLARATION_SIGNATURE, LABEL }, 
-				"wxyz", pos, pos, "@3one3two5three/4wxyz", "i", "@3one3two5three", "wxyz    int - one.two.three");
+				"wxyz", pos, pos, "@3one3two5threeB4wxyz", "i", "@3one3two5three", "wxyz    int - one.two.three");
 	}
 	
 	public void testVarWithBasicTypeInFunctionSome() throws Exception {
@@ -33,7 +33,7 @@ public class FieldProposal_Test extends AbstractCompletionTest  {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.FIELD_REF,
 				new int[] { SIGNATURE, TYPE_SIGNATURE, DECLARATION_SIGNATURE, LABEL }, 
-				"wxyz", pos - 1, pos, "@4test/4wxyz", "i", "@4test", "wxyz    int - test");
+				"wxyz", pos - 1, pos, "@4testB4wxyz", "i", "@4test", "wxyz    int - test");
 	}
 	
 	public void testVarWithClassTypeInFunction() throws Exception {
@@ -43,7 +43,7 @@ public class FieldProposal_Test extends AbstractCompletionTest  {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.FIELD_REF,
 				new int[] { SIGNATURE, TYPE_SIGNATURE, DECLARATION_SIGNATURE, LABEL }, 
-				"wxyz", pos, pos, "@4test/4wxyz", "@4testC9SomeClass", "@4test", "wxyz    SomeClass - test");
+				"wxyz", pos, pos, "@4testB4wxyz", "@4testC9SomeClass", "@4test", "wxyz    SomeClass - test");
 	}
 	
 	public void testFieldInFunction() throws Exception {
@@ -69,7 +69,7 @@ public class FieldProposal_Test extends AbstractCompletionTest  {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.FIELD_REF,
 				new int[] { SIGNATURE, TYPE_SIGNATURE, DECLARATION_SIGNATURE, LABEL },
-				"wxyz", pos - 1, pos, "@4testC9SomeClass/4wxyz", "i", "@4testC9SomeClass", "wxyz    int - SomeClass"
+				"wxyz", pos - 1, pos, "@4testC9SomeClassB4wxyz", "i", "@4testC9SomeClass", "wxyz    int - SomeClass"
 				);
 	}
 	
@@ -116,7 +116,7 @@ public class FieldProposal_Test extends AbstractCompletionTest  {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.FIELD_REF,
 				new int[] { SIGNATURE, TYPE_SIGNATURE, DECLARATION_SIGNATURE, LABEL }, 
-				"wxyz", pos, pos, "@4test/4wxyz", "@4test<9SomeClass#'!^i'", "@4test", "wxyz    SomeClass!(int) - test");
+				"wxyz", pos, pos, "@4testB4wxyz", "@4test<9SomeClass#'!^i'", "@4test", "wxyz    SomeClass!(int) - test");
 	}
 	
 	public void testVarWithBasicTypeInModuleScope() throws Exception {

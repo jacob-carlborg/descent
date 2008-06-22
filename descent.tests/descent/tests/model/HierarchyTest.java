@@ -65,13 +65,13 @@ public class HierarchyTest extends AbstractModelTest {
 		IImportDeclaration imp;
 		
 		imp = (IImportDeclaration) imports[0];		
-		assertEquals("foo = one", imp.getElementName());
+		assertEquals("one", imp.getElementName());
 		assertEquals("import foo = one", imp.getSource());
 		assertEquals(1, imp.getSourceRange().getOffset());
 		assertEquals(16, imp.getSourceRange().getLength());
 
 		imp = (IImportDeclaration) imports[1];		
-		assertEquals("two : three", imp.getElementName());
+		assertEquals("two", imp.getElementName());
 		assertEquals("two : three;", imp.getSource());
 		assertEquals(19, imp.getSourceRange().getOffset());
 		assertEquals(12, imp.getSourceRange().getLength());
@@ -126,7 +126,7 @@ public class HierarchyTest extends AbstractModelTest {
 		assertFalse(type.isInterface());
 		assertFalse(type.isStruct());
 		assertFalse(type.isUnion());
-		assertFalse(type.isTemplate());
+		assertTrue(type.isTemplate());
 		assertEquals("Clazz1", type.getElementName());
 		assertEquals(1, type.getSourceRange().getOffset());
 		assertEquals(31, type.getSourceRange().getLength());
@@ -248,6 +248,7 @@ public class HierarchyTest extends AbstractModelTest {
 		assertFalse(method.isDestructor());
 		assertFalse(method.isNew());
 		assertFalse(method.isDelete());
+		assertTrue(method.isTemplate());
 		assertEquals(16, method.getSourceRange().getOffset());
 		assertEquals(34, method.getSourceRange().getLength());
 		assertEquals(16, method.getJavadocRanges()[0].getOffset());
@@ -340,7 +341,7 @@ public class HierarchyTest extends AbstractModelTest {
 		assertEquals(26, method.getSourceRange().getLength());
 		assertEquals(16, method.getJavadocRanges()[0].getOffset());
 		assertEquals(11, method.getJavadocRanges()[0].getLength());
-		assertEquals("", method.getElementName());
+		assertEquals("new", method.getElementName());
 		assertEquals(1, method.getNumberOfParameters());
 		assertEquals(1, method.getParameterNames().length);
 		assertEquals(1, method.getParameterTypes().length);
@@ -370,7 +371,7 @@ public class HierarchyTest extends AbstractModelTest {
 		assertEquals(29, method.getSourceRange().getLength());
 		assertEquals(16, method.getJavadocRanges()[0].getOffset());
 		assertEquals(11, method.getJavadocRanges()[0].getLength());
-		assertEquals("", method.getElementName());
+		assertEquals("delete", method.getElementName());
 		assertEquals(1, method.getNumberOfParameters());
 		assertEquals(1, method.getParameterNames().length);
 		assertEquals(1, method.getParameterTypes().length);

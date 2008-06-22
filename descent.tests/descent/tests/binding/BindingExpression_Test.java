@@ -10,7 +10,7 @@ import descent.core.dom.VariableDeclaration;
 import descent.core.dom.VariableDeclarationFragment;
 
 
-public class BindingExpression_Test extends AbstractBinding_Test {
+public class BindingExpression_Test extends AbstractBinding_Test  {
 	
 	public void testExpression(String expString, String expectedSignature) throws Exception {
 		testExpression("auto", expString, expectedSignature);
@@ -46,11 +46,11 @@ public class BindingExpression_Test extends AbstractBinding_Test {
 	}
 	
 	public void testString() throws Exception {
-		testExpression("\"hey\"", "GaG1G3");
+		testExpression("\"hey\"", "Ga&1G3");
 	}
 	
 	public void testStrings() throws Exception {
-		testExpression("\"hey\" \"you\"", "GaG1G6");
+		testExpression("\"hey\" \"you\"", "Ga&1G6");
 	}
 	
 	public void testParenthesis() throws Exception {

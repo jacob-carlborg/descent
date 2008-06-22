@@ -1807,6 +1807,18 @@ public class FuncDeclaration extends Declaration {
 
 				// Descent: for binding resolution
 				arg.var = v;
+				if (type instanceof TypeFunction) {
+					TypeFunction tf = (TypeFunction) type;
+					if (tf.parameters != null && i < tf.parameters.size()) {
+						tf.parameters.get(i).var = v;
+					}
+				}
+				if (sourceType instanceof TypeFunction) {
+					TypeFunction tf = (TypeFunction) sourceType;
+					if (tf.parameters != null && i < tf.parameters.size()) {
+						tf.parameters.get(i).var = v;
+					}
+				}
 
 				v.storage_class |= STCparameter;
 				if (f.varargs == 2 && i + 1 == nparams) {

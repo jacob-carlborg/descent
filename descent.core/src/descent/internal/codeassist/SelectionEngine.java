@@ -43,6 +43,7 @@ import descent.internal.compiler.parser.StructDeclaration;
 import descent.internal.compiler.parser.TemplateDeclaration;
 import descent.internal.compiler.parser.Token;
 import descent.internal.compiler.parser.Type;
+import descent.internal.compiler.parser.TypeClass;
 import descent.internal.compiler.parser.TypeExp;
 import descent.internal.compiler.parser.TypedefDeclaration;
 import descent.internal.compiler.parser.UnionDeclaration;
@@ -437,6 +438,12 @@ public class SelectionEngine extends AstVisitorAdapter {
 					addJavaElement(ctor.getJavaElement());
 				} else {
 					addBinarySearch(ctor);
+				}
+			} else if (node.newtype != null) {
+				if (node.newtype.getJavaElement() != null) {
+					addJavaElement(node.newtype.getJavaElement());
+				} else if (node.newtype instanceof TypeClass){
+					addBinarySearch(((TypeClass) node.newtype).sym);
 				}
 			}
 			return false;

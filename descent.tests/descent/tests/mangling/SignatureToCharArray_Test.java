@@ -57,7 +57,7 @@ public class SignatureToCharArray_Test extends AbstractSignatureTest {
 	}
 	
 	public void testIdentifier() {
-		tca("Bar.Buzz", IDENTIFIER + "3Bar4Buzz");
+		tca("Buzz", IDENTIFIER + "3Bar4Buzz");
 	}
 	
 	public void testFunction() {
@@ -141,23 +141,23 @@ public class SignatureToCharArray_Test extends AbstractSignatureTest {
 	}
 	
 	public void testTemplateInstance() {
-		tca("Bar.Buzz!()", IDENTIFIER + "3Bar4Buzz" + TEMPLATE_INSTANCE + TEMPLATE_PARAMETERS_BREAK);
+		tca("Buzz!()", IDENTIFIER + "3Bar4Buzz" + TEMPLATE_INSTANCE + TEMPLATE_PARAMETERS_BREAK);
 	}
 	
 	public void testTemplateInstanceSymbol() {
-		tca("Bar.Buzz!(int)", IDENTIFIER + "3Bar4Buzz" + TEMPLATE_INSTANCE + TEMPLATE_INSTANCE_SYMBOL + i + TEMPLATE_PARAMETERS_BREAK);
+		tca("Buzz!(int)", IDENTIFIER + "3Bar4Buzz" + TEMPLATE_INSTANCE + TEMPLATE_INSTANCE_SYMBOL + i + TEMPLATE_PARAMETERS_BREAK);
 	}
 	
 	public void testTemplateInstanceType() {
-		tca("Bar.Buzz!(int)", IDENTIFIER + "3Bar4Buzz" + TEMPLATE_INSTANCE + TEMPLATE_INSTANCE_TYPE + i + TEMPLATE_PARAMETERS_BREAK);
+		tca("Buzz!(int)", IDENTIFIER + "3Bar4Buzz" + TEMPLATE_INSTANCE + TEMPLATE_INSTANCE_TYPE + i + TEMPLATE_PARAMETERS_BREAK);
 	}
 	
 	public void testTemplateInstanceValue() {
-		tca("Bar.Buzz!(3)", IDENTIFIER + "3Bar4Buzz" + TEMPLATE_INSTANCE + TEMPLATE_INSTANCE_VALUE + '1' + TEMPLATE_INSTANCE_VALUE + '3' + i + TEMPLATE_PARAMETERS_BREAK);
+		tca("Buzz!(3)", IDENTIFIER + "3Bar4Buzz" + TEMPLATE_INSTANCE + TEMPLATE_INSTANCE_VALUE + '1' + TEMPLATE_INSTANCE_VALUE + '3' + i + TEMPLATE_PARAMETERS_BREAK);
 	}
 	
 	public void testTemplateInstanceManyTypes() {
-		tca("Bar.Buzz!(int, char)", IDENTIFIER + "3Bar4Buzz" + TEMPLATE_INSTANCE + TEMPLATE_INSTANCE_TYPE + i + TEMPLATE_INSTANCE_TYPE + a + TEMPLATE_PARAMETERS_BREAK);
+		tca("Buzz!(int, char)", IDENTIFIER + "3Bar4Buzz" + TEMPLATE_INSTANCE + TEMPLATE_INSTANCE_TYPE + i + TEMPLATE_INSTANCE_TYPE + a + TEMPLATE_PARAMETERS_BREAK);
 	}
 	
 	public void testFunctionWithName() {

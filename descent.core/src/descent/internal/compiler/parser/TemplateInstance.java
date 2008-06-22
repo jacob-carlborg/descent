@@ -44,7 +44,9 @@ public class TemplateInstance extends ScopeDsymbol {
 		super(null);
 		this.loc = loc;
 		this.name = id;
-		this.name.templateInstance = this;
+		if (this.name != null) {
+			this.name.templateInstance = this;
+		}
 		this.encoder = encoder;
 	}
 

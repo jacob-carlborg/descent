@@ -1019,7 +1019,7 @@ public static String createStaticArraySignature(String type, String dimension) {
 	StringBuilder sb = new StringBuilder();
 	sb.append(C_STATIC_ARRAY);
 	sb.append(type);
-	sb.append(C_STATIC_ARRAY);
+	sb.append(C_STATIC_ARRAY2);
 	sb.append(dimension.length());
 	sb.append(C_STATIC_ARRAY);
 	sb.append(dimension);
@@ -1039,7 +1039,7 @@ public static char[] createStaticArraySignature(char[] type, char[] dimension) {
 	char[] ret = new char[3 + type.length + dimensionLengthStringLength + dimensionLength];
 	ret[0] = C_STATIC_ARRAY;
 	System.arraycopy(type, 0, ret, 1, type.length);
-	ret[type.length + 1] = C_STATIC_ARRAY;
+	ret[type.length + 1] = C_STATIC_ARRAY2;
 	copyNumber(dimensionLength, dimensionLengthStringLength, ret, 2 + type.length);
 	ret[2 + type.length + dimensionLengthStringLength] = C_STATIC_ARRAY;
 	System.arraycopy(dimension, 0, ret, 3 + type.length + dimensionLengthStringLength, dimensionLength);
@@ -1142,7 +1142,7 @@ public static String createSliceSignature(String type, String lower, String uppe
 	StringBuilder sb = new StringBuilder();
 	sb.append(C_SLICE);
 	sb.append(type);
-	sb.append(C_SLICE);
+	sb.append(C_SLICE2);
 	sb.append(lower.length());
 	sb.append(C_SLICE);
 	sb.append(lower);
@@ -1169,7 +1169,7 @@ public static char[] createSliceSignature(char[] type, char[] lower, char[] uppe
 	char[] ret = new char[4 + type.length + lowerLengthStringLength + lowerLength + upperLengthStringLength + upperLength];
 	ret[0] = C_SLICE;
 	System.arraycopy(type, 0, ret, 1, type.length);
-	ret[type.length + 1] = C_SLICE;
+	ret[type.length + 1] = C_SLICE2;
 	
 	copyNumber(lowerLength, lowerLengthStringLength, ret, 2 + type.length);
 	ret[2 + lowerLengthStringLength + type.length] = C_SLICE;

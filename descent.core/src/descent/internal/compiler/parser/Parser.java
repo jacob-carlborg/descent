@@ -2207,7 +2207,7 @@ public class Parser extends Lexer {
 		expect(aliasExpectations);
 
 		// Get array of TemplateParameters
-		if ((apiLevel < D2 && token.value != TOKrparen) || (apiLevel == D2 && flag != 0 && token.value != TOKrparen)) {
+		if ((apiLevel < D2 && token.value != TOKrparen) || (apiLevel == D2 && (flag != 0 || token.value != TOKrparen))) {
 			
 			boolean isvariadic = false;
 			TemplateParameter tp = null;
@@ -2645,9 +2645,11 @@ public class Parser extends Lexer {
 							alias = null;
 						}
 						s = addImportAlias(s, name, alias);
-						decldefs.add(s);
 						s.setSourceRange(sStart, prevToken.ptr + prevToken.sourceLen - sStart);
 					} while (token.value == TOKcomma);
+					
+					decldefs.add(s);
+					
 					break; // no comma-separated imports of this form
 				} else {
 					decldefs.add(s);
@@ -7672,6 +7674,17 @@ public class Parser extends Lexer {
 		
 		return tok;
 	}
+	
+	@Override
+	public Token peek(Token ct) {
+		Token tok = super.peek(ct);
+		while(tok != null && 
+				(tok.value == TOK.TOKlinecomment || tok.value == TOK.TOKblockcomment || tok.value == TOKpluscomment ||
+						tok.value == TOK.TOKdoclinecomment || tok.value == TOK.TOKdocblockcomment || tok.value == TOKdocpluscomment)) {
+			tok = super.peek(tok);
+		}
+		return tok;
+	}
 
 	@Override
 	protected void newline(boolean inComment) {
@@ -7686,14 +7699,8 @@ public class Parser extends Lexer {
 	}
 	
 	private void attachCommentToCurrentToken(Comment comment) {
-		if ((!appendLeadingComments 
-//				|| 
-//					//!comment.isDDocComment() || 
-//					(prevToken.value != TOKsemicolon && 
-//						prevToken.value != TOKrcurly &&
-//						prevToken.value != TOKcomma &&
-//						prevToken.value != TOKidentifier))
-						)) {
+		if (!appendLeadingComments || prevToken.value == null ||
+				prevToken.value == TOK.TOKlcurly) {
 			return;
 		}
 		
@@ -7960,7 +7967,7 @@ public class Parser extends Lexer {
 	}
 	
 	protected Import addImportAlias(Import s, IdentifierExp name, IdentifierExp alias) {
-		if (name != null && alias != null) {
+		if (name != null || alias != null) {
 			s.addAlias(name, alias);
 		}
 		return s;

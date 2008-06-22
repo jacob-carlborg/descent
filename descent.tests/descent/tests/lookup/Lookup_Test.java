@@ -1,10 +1,23 @@
 package descent.tests.lookup;
 
+import java.util.Hashtable;
+
+import descent.core.JavaCore;
+
 /*
  * Tests to check that the implementation of the resolved part of the
  * semantic analysis is working as expected.
  */
 public class Lookup_Test extends AbstractLookupTest {
+	
+	@Override
+	protected void setUp() throws Exception {
+		Hashtable opts = JavaCore.getOptions();
+		opts.put(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS, "2");
+		JavaCore.setOptions(opts);
+		
+		super.setUp();
+	}
 	
 	public void testExtern() throws Exception {
 		one("extern { class Bar; }");

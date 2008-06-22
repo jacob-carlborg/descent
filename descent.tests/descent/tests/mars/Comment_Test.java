@@ -4,13 +4,12 @@ import java.util.List;
 
 import descent.core.dom.AggregateDeclaration;
 import descent.core.dom.AliasDeclaration;
-import descent.core.dom.DDocComment;
 import descent.core.dom.CompilationUnit;
+import descent.core.dom.DDocComment;
 import descent.core.dom.Declaration;
 import descent.core.dom.ModuleDeclaration;
 import descent.core.dom.TypedefDeclaration;
 import descent.core.dom.VariableDeclaration;
-import descent.internal.compiler.parser.VarDeclaration;
 
 public class Comment_Test extends Parser_Test {
 	

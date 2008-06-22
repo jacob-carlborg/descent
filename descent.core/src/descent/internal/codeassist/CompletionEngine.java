@@ -271,14 +271,15 @@ public class CompletionEngine extends Engine
 	boolean wantArguments = true;
 	
 	Scope rootScope;
+	int includesFilter;
 	
-	int INCLUDE_TYPES = 1;
-	int INCLUDE_VARIABLES = 2;
-	int INCLUDE_FUNCTIONS = 4;
-	int INCLUDE_CONSTRUCTORS = 8;
-	int INCLUDE_OPCALL = 16;
-	int INCLUDE_IMPORTS = 32;
-	int INCLUDE_ALL = INCLUDE_TYPES | INCLUDE_VARIABLES | INCLUDE_FUNCTIONS | INCLUDE_IMPORTS;
+	private final static int INCLUDE_TYPES = 1;
+	private final static int INCLUDE_VARIABLES = 2;
+	private final static int INCLUDE_FUNCTIONS = 4;
+	private final static int INCLUDE_CONSTRUCTORS = 8;
+	private final static int INCLUDE_OPCALL = 16;
+	private final static int INCLUDE_IMPORTS = 32;
+	private final static int INCLUDE_ALL = INCLUDE_TYPES | INCLUDE_VARIABLES | INCLUDE_FUNCTIONS | INCLUDE_IMPORTS;
 	
 	/**
 	 * The CompletionEngine is responsible for computing source completions.
@@ -1369,7 +1370,9 @@ public class CompletionEngine extends Engine
 				startPosition = actualCompletionPosition;
 				endPosition = actualCompletionPosition;
 				
+				includesFilter = INCLUDE_VARIABLES;
 				completeScope(rootScope, INCLUDE_ALL);
+				includesFilter = 0;
 				
 				if (wantOverrides) {
 					List<FuncDeclaration> funcs = new ArrayList<FuncDeclaration>();
@@ -1410,7 +1413,9 @@ public class CompletionEngine extends Engine
 					}
 				}
 			} else {
+				includesFilter = INCLUDE_VARIABLES;
 				completeNode(node.baseclasses.get(baseClassIndex).type);
+				includesFilter = 0;
 			}
 		}
 	}
@@ -2003,6 +2008,10 @@ public class CompletionEngine extends Engine
 	}
 	
 	private void suggestMember(Dsymbol member, char[] ident, boolean onlyStatics, long flags, HashtableOfCharArrayAndObject funcSignatures, int includes, boolean isAliased) {
+		if (includesFilter != 0) {
+			includes &= ~includesFilter;
+		}
+		
 		// The member may not have it's semantic pass done
 		member.consumeRestStructure();
 		member.consumeRest();
@@ -2357,7 +2366,7 @@ public class CompletionEngine extends Engine
 			}
 		}
 		
-		if (!parser.inNewExp && (includes & INCLUDE_FUNCTIONS) != 0 || 
+		if (!isCompletingTypeIdentifier && !parser.inNewExp && (includes & INCLUDE_FUNCTIONS) != 0 || 
 				((includes & (INCLUDE_CONSTRUCTORS | INCLUDE_OPCALL)) != 0 && wantConstructorsAndOpCall)) {
 			// See if it's a function
 			FuncDeclaration func = member.isFuncDeclaration();

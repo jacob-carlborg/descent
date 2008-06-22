@@ -443,7 +443,7 @@ public void enterMethod(MethodInfo methodInfo) {
 	for (int i = 0, length = parameterNames.length; i < length; i++)
 		parameterNames[i] = manager.intern(parameterNames[i]);
 	info.setArgumentNames(parameterNames);
-	char[] returnType = methodInfo.returnType == null ? new char[]{'v', 'o','i', 'd'} : methodInfo.returnType;
+	char[] returnType = methodInfo.returnType == null ? new char[]{'v'} : methodInfo.returnType;
 	info.setReturnType(manager.intern(returnType));
 	info.setParameterDefaultValues(methodInfo.parameterDefaultValues);
 //	char[][] exceptionTypes = methodInfo.exceptionTypes;

@@ -77,6 +77,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 			compilationUnit.accept(this);
 		} catch (AbortFormatting e)
 		{
+			e.printStackTrace();
 			return failedToFormat(e);
 		}
 		return scribe.getRootEdit();

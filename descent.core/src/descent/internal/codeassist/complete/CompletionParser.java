@@ -467,20 +467,25 @@ public class CompletionParser extends Parser {
 	
 	@Override
 	protected DotIdExp newDotIdExp(Loc loc, Expression e, IdentifierExp id) {
+		Token pivot;
 		if (prevToken.ptr <= cursorLocation && cursorLocation <= prevToken.ptr + prevToken.sourceLen) {
-			if (cursorLocation <= id.start) {
-				assistNode = new CompletionOnDotIdExp(loc, e, new IdentifierExp(CharOperation.NO_CHAR));
-				return (DotIdExp) assistNode;
-			} else {
-				completionTokenStart = prevToken.ptr;
-				completionTokenEnd = prevToken.ptr + prevToken.sourceLen;
-				completionToken = CharOperation.subarray(input, completionTokenStart, cursorLocation);
-				
-				assistNode = new CompletionOnDotIdExp(loc, e, id);
-				return (DotIdExp) assistNode;
-			}
+			pivot = prevToken;
+		} else if (token.ptr <= cursorLocation && cursorLocation <= token.ptr + token.sourceLen) {
+			pivot = token;
 		} else {
 			return super.newDotIdExp(loc, e, id);
+		}
+		
+		if (cursorLocation <= id.start) {
+			assistNode = new CompletionOnDotIdExp(loc, e, new IdentifierExp(CharOperation.NO_CHAR));
+			return (DotIdExp) assistNode;
+		} else {
+			completionTokenStart = pivot.ptr;
+			completionTokenEnd = pivot.ptr + pivot.sourceLen;
+			completionToken = CharOperation.subarray(input, completionTokenStart, cursorLocation);
+			
+			assistNode = new CompletionOnDotIdExp(loc, e, id);
+			return (DotIdExp) assistNode;
 		}
 	}
 	
@@ -868,6 +873,13 @@ public class CompletionParser extends Parser {
 			return (AggregateDeclaration) assistNode;
 		}
 		
+		// If it's class NOT_IDENTIFIER and the cursor is after class, we don't want assist
+		if (prevToken.value == TOK.TOKclass && token.value != TOK.TOKidentifier) {
+			this.wantAssist = false;
+			this.wantKeywords = false;
+			return super.newClassDeclaration(loc, id, baseClasses);
+		}
+		
 		if (baseClasses != null) {
 			int i = 0;
 			for(BaseClass bc : baseClasses) {
@@ -910,6 +922,13 @@ public class CompletionParser extends Parser {
 			
 			assistNode = new CompletionOnInterfaceDeclaration(loc, id, baseClasses);
 			return (AggregateDeclaration) assistNode;
+		}
+		
+		// If it's interface NOT_IDENTIFIER and the cursor is after class, we don't want assist
+		if (prevToken.value == TOK.TOKinterface && token.value != TOK.TOKidentifier) {
+			this.wantAssist = false;
+			this.wantKeywords = false;
+			return super.newClassDeclaration(loc, id, baseClasses);
 		}
 		
 		if (baseClasses != null) {

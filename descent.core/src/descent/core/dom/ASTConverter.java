@@ -1472,7 +1472,9 @@ public class ASTConverter {
 					IdentifierExp alias = a.aliases.get(i);
 					IdentifierExp name = a.names.get(i);
 					SelectiveImport selective = new SelectiveImport(ast);
-					selective.setName((SimpleName) convert(name));
+					if (name != null && name.ident != null) {
+						selective.setName((SimpleName) convert(name));
+					}
 					if (alias == null) {
 						setSourceRange(selective, name.start, name.length);
 					} else {
