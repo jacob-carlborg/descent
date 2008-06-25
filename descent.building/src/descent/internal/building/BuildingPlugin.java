@@ -21,22 +21,22 @@ public class BuildingPlugin extends AbstractUIPlugin
 	/**
 	 * The plug-in ID
 	 */
-	public static final String PLUGIN_ID = "descent.building";
+	public static final String PLUGIN_ID = "descent.building"; //$NON-NLS-1$
 	
 	/**
      * Identifier for 'dBuilders' extension point
      */
-    public static final String ID_EXTENSION_POINT_D_BUILDERS = "dBuilders";
+    public static final String ID_EXTENSION_POINT_D_BUILDERS = "dBuilders"; //$NON-NLS-1$
     
     /**
      * Identifier for the 'compilerInterfaces' extension point
      */
-    public static final String ID_EXTENSION_POINT_COMPILER_INTERFACES = "compilerInterfaces";
+    public static final String ID_EXTENSION_POINT_COMPILER_INTERFACES = "compilerInterfaces"; //$NON-NLS-1$
     
     /**
      * The build group identifier
      */
-    public static final String ID_BUILD_GROUP = "descent.building.builders";
+    public static final String ID_BUILD_GROUP = "descent.building.builders"; //$NON-NLS-1$
     
 	/**
 	 * The shared instance

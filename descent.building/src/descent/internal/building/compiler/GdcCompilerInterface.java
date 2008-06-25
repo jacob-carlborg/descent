@@ -5,7 +5,7 @@ import static descent.internal.building.compiler.ui.GdcUIOptions.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import descent.building.compiler.CompilerOption;
+import descent.building.compiler.ui.CompilerOption;
 
 public final class GdcCompilerInterface extends DmdfeCompilerInterface
 {

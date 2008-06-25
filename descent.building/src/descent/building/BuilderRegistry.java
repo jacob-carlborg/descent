@@ -21,9 +21,9 @@ public final class BuilderRegistry
     private static final class DBuilderType implements IDBuilderType
     {
         // Attributes defined in the schema
-        private static final String ATTR_ID = "id";
-        private static final String ATTR_CLASS = "class";
-        private static final String ATTR_LAUNCH_CONFIGURATION_TYPE = "launchConfigurationType";
+        private static final String ATTR_ID = "id"; //$NON-NLS-1$
+        private static final String ATTR_CLASS = "class"; //$NON-NLS-1$
+        private static final String ATTR_LAUNCH_CONFIGURATION_TYPE = "launchConfigurationType"; //$NON-NLS-1$
         
         private final IConfigurationElement info;
 

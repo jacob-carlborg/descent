@@ -23,9 +23,9 @@ public final class CompilerInterfaceRegistry
     private static final class CompilerInterfaceType 
             implements ICompilerInterfaceType
     {
-        private static final String ATTR_ID = "id";
-        private static final String ATTR_CLASS = "class";
-        private static final String ATTR_VM_INSTALL_TYPE = "vmInstallType";
+        private static final String ATTR_ID = "id"; //$NON-NLS-1$
+        private static final String ATTR_CLASS = "class"; //$NON-NLS-1$
+        private static final String ATTR_VM_INSTALL_TYPE = "vmInstallType"; //$NON-NLS-1$
         
         private final IConfigurationElement info;
         private ICompilerInterface compilerInterfaceInstance;
@@ -98,7 +98,7 @@ public final class CompilerInterfaceRegistry
         return null;
     }
     
-    private void loadCompilerInterfaces()
+    private synchronized void loadCompilerInterfaces()
     {
         if(null != compilerInterfaces)
             return;

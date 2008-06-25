@@ -1,41 +1,25 @@
 package descent.building.compiler;
 
+import descent.building.compiler.ui.CompilerOption;
+
+
 /**
  * Gets information about a compiler (or a compiler suite/tool chain) used in
  * building. For example, gets info about how the commands are constructed
  * for that particular compiler, how to parse the output, etc. Generally,
  * implementations of this will be a singleton, since only one compiler of a
- * given type exists.
+ * given type exists, and only a single instance of this will be constructed by
+ * the building plugin.
  * 
- * Clients may discovr the compiler interface for a given compiler by calling
- * {@link IVMInstall#getCompilerInterface()}
+ * To get the shared instances of compiler interfaces, use the
+ * {@link descent.building.CompilerInterfaceRegistry} class.
+ * 
+ * TODO document how it is used
  * 
  * @author Robert Fraser
  */
 public interface ICompilerInterface
 {
-	/**
-	 * Creates a new compile command of the correct type for this compiler.
-	 */
-	public ICompileCommand createCompileCommand();
-	
-	/**
-	 * Creates a new link command of the correct type for this compiler.
-	 */
-	public ILinkCommand createLinkCommand();
-	
-	/**
-	 * Creates a new response interpreter of the correct type for
-	 * this compiler.
-	 */
-	public IResponseInterpreter createCompileResponseInterpreter();
-	
-	/**
-	 * Creates a new response interpreter of the correct type for this
-	 * linker.
-	 */
-	public IResponseInterpreter createLinkResponseInterpreter();
-	
 	/**
 	 * Gets the compiler options which should be presented in the UI.
 	 * 

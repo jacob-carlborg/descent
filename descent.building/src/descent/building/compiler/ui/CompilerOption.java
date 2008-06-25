@@ -1,4 +1,6 @@
-package descent.building.compiler;
+package descent.building.compiler.ui;
+
+import descent.internal.building.compiler.ui.CompilerUIMessages;
 
 public abstract class CompilerOption
 {
@@ -38,6 +40,6 @@ public abstract class CompilerOption
     
     public String getHelpText()
     {
-        return "No description is available for this option.";
+        return CompilerUIMessages.CompilerOption_no_description;
     }
 }

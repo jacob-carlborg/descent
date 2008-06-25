@@ -1,4 +1,4 @@
-package descent.building.compiler;
+package descent.building.compiler.ui;
 
 public class FileOption extends StringOption
 {
@@ -41,6 +41,6 @@ public class FileOption extends StringOption
     
     public String[] getExtensions()
     {
-        return new String[] { "*.*" };
+        return new String[] { "*.*" }; //$NON-NLS-1$
     }
 }

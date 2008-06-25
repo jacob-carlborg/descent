@@ -8,8 +8,8 @@ package descent.internal.building.compiler;
  */
 public interface IDmdfeCompilerConstants
 {
-    public static final String ATTR_ALLOW_DEPRECATED = "descent.building.compiler.dmdfe.allow_deprectaed";
-    public static final String ATTR_SHOW_WARNINGS = "descent.building.compiler.dmdfe.show_warnings";
-    public static final String ATTR_INLINE_CODE = "descent.building.compiler.dmdfe.inline_code";
-    public static final String ATTR_OPTIMIZE_CODE = "descent.building.compiler.dmdfe.optimize_code";
+    public static final String ATTR_ALLOW_DEPRECATED = "descent.building.compiler.dmdfe.allow_deprectaed"; //$NON-NLS-1$
+    public static final String ATTR_SHOW_WARNINGS = "descent.building.compiler.dmdfe.show_warnings"; //$NON-NLS-1$
+    public static final String ATTR_INLINE_CODE = "descent.building.compiler.dmdfe.inline_code"; //$NON-NLS-1$
+    public static final String ATTR_OPTIMIZE_CODE = "descent.building.compiler.dmdfe.optimize_code"; //$NON-NLS-1$
 }

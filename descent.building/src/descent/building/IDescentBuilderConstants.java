@@ -22,14 +22,14 @@ public interface IDescentBuilderConstants
     /**
      * The ID of the default descent builder.
      */
-    public static final String ID_DESCENT_BUILDER = "descent.building.builders.debuildBuilder";
+    public static final String ID_DESCENT_BUILDER = "descent.building.builders.debuildBuilder"; //$NON-NLS-1$
     
     /**
      * The launch configuration type associated with default descent builder.
      * These attributes should be used in launch configurations of this type
      * only.
      */
-    public static final String ID_LAUNCH_CONFIGURATION_TYPE = "descent.building.builders.debuild";
+    public static final String ID_LAUNCH_CONFIGURATION_TYPE = "descent.building.builders.debuild"; //$NON-NLS-1$
     
     //--------------------------------------------------------------------------
     // Launch configuration attributes
@@ -41,7 +41,7 @@ public interface IDescentBuilderConstants
      * 
      * Type: String
      */
-    public static final String ATTR_PROJECT_NAME = "descent.building.debuild.project_name";
+    public static final String ATTR_PROJECT_NAME = "descent.building.debuild.project_name"; //$NON-NLS-1$
     
     /**
      * A list containing the fully-qualified names of all modules which should
@@ -52,7 +52,7 @@ public interface IDescentBuilderConstants
      * 
      * Type: List&lt;String&gt;
      */
-    public static final String ATTR_MODULES_LIST = "descent.building.debuild.modules_list";
+    public static final String ATTR_MODULES_LIST = "descent.building.debuild.modules_list"; //$NON-NLS-1$
     
     /**
      * The ID of the {@link descent.launching.IVMInstallType} of the type of 
@@ -61,7 +61,7 @@ public interface IDescentBuilderConstants
      * 
      * Type: String
      */
-    public static final String ATTR_COMPILER_TYPE_ID = "descent.building.debuild.compiler_type_id";
+    public static final String ATTR_COMPILER_TYPE_ID = "descent.building.debuild.compiler_type_id"; //$NON-NLS-1$
     
     /**
      * The ID of the {@link descent.launching.IVMInstall} to use for the
@@ -69,7 +69,7 @@ public interface IDescentBuilderConstants
      * 
      * Type: String
      */
-    public static final String ATTR_COMPILER_ID = "descent.building.debuild.compiler_id";
+    public static final String ATTR_COMPILER_ID = "descent.building.debuild.compiler_id"; //$NON-NLS-1$
     
     /**
      * Specifies the target output type. Must be one of {@link #OUTPUT_TYPE_EXECUTABLE}
@@ -78,21 +78,21 @@ public interface IDescentBuilderConstants
      * 
      * Type: String
      */
-    public static final String ATTR_OUTPUT_TYPE = "descent.building.debuild.output_type";
+    public static final String ATTR_OUTPUT_TYPE = "descent.building.debuild.output_type"; //$NON-NLS-1$
     
     /**
      * Specifies the target output file location.
      * 
      * Type: String
      */
-    public static final String ATTR_OUTPUT_FILE = "descent.building.debuild.output_file";
+    public static final String ATTR_OUTPUT_FILE = "descent.building.debuild.output_file"; //$NON-NLS-1$
     
     /**
      * Add unit tests to the generated executable?
      * 
      * Type: String of "true" or "false"
      */
-    public static final String ATTR_ADD_UNITTESTS = "descent.building.debuild.add_unittests";
+    public static final String ATTR_ADD_UNITTESTS = "descent.building.debuild.add_unittests"; //$NON-NLS-1$
     
     /**
      * Disable asserts and contracts (in DMD this is called "release mode"). In
@@ -108,7 +108,7 @@ public interface IDescentBuilderConstants
      * 
      * Type: String of "true" or "false"
      */
-    public static final String ATTR_DISABLE_ASSERTS = "descent.building.debuild.disable_asserts";
+    public static final String ATTR_DISABLE_ASSERTS = "descent.building.debuild.disable_asserts"; //$NON-NLS-1$
     
     /**
      * Include debugging symbols in the generated executable. 
@@ -119,7 +119,7 @@ public interface IDescentBuilderConstants
      * 
      * Type: String of "true" or "false"
      */
-    public static final String ATTR_ADD_DEBUG_INFO = "descent.building.debuild.add_debug_info";
+    public static final String ATTR_ADD_DEBUG_INFO = "descent.building.debuild.add_debug_info"; //$NON-NLS-1$
     
     /**
      * Include code allowing code coverage to be tracked in the generated
@@ -129,7 +129,7 @@ public interface IDescentBuilderConstants
      * 
      * Type: String of "true" or "false"
      */
-    public static final String ATTR_INSTRUMENT_FOR_COVERAGE = "descent.building.debuild.instrument_for_coverage";
+    public static final String ATTR_INSTRUMENT_FOR_COVERAGE = "descent.building.debuild.instrument_for_coverage"; //$NON-NLS-1$
     
     /**
      * Include code for profiling the executable.
@@ -140,7 +140,7 @@ public interface IDescentBuilderConstants
      * 
      * Type: String of "true" or "false"
      */
-    public static final String ATTR_INSTRUMENT_FOR_PROFILE = "descent.building.debuild.instrument_for_profile";
+    public static final String ATTR_INSTRUMENT_FOR_PROFILE = "descent.building.debuild.instrument_for_profile"; //$NON-NLS-1$
     
     /**
      * A set of additional compiler arguments that should be added to
@@ -148,7 +148,7 @@ public interface IDescentBuilderConstants
      * 
      * Type: String
      */
-    public static final String ATTR_ADDITIONAL_COMPILER_ARGS = "descent.building.debuild.compiler_args";
+    public static final String ATTR_ADDITIONAL_COMPILER_ARGS = "descent.building.debuild.compiler_args"; //$NON-NLS-1$
     
     /**
      * A set of additional linker arguments that should be added to
@@ -156,7 +156,7 @@ public interface IDescentBuilderConstants
      * 
      * Type: String
      */
-    public static final String ATTR_ADDITIONAL_LINKER_ARGS = "descent.building.debuild.linker_args";
+    public static final String ATTR_ADDITIONAL_LINKER_ARGS = "descent.building.debuild.linker_args"; //$NON-NLS-1$
     
     /**
      * Identifies the source from which version/debug arguments should be taken.
@@ -168,7 +168,7 @@ public interface IDescentBuilderConstants
      * 
      * Type: String
      */
-    public static final String ATTR_VERSION_SOURCE = "descent.building.debuild.version_source";
+    public static final String ATTR_VERSION_SOURCE = "descent.building.debuild.version_source"; //$NON-NLS-1$
     
     /**
      * Turn on code in unqualified debug {} blocks? This corresponds to the "-debug"
@@ -176,7 +176,7 @@ public interface IDescentBuilderConstants
      * 
      * Type: Boolean
      */
-    public static final String ATTR_DEBUG_MODE = "descent.building.debuild.debug_mode";
+    public static final String ATTR_DEBUG_MODE = "descent.building.debuild.debug_mode"; //$NON-NLS-1$
     
     /**
      * Level to be used in version= or the empty string if no such level should
@@ -185,7 +185,7 @@ public interface IDescentBuilderConstants
      * 
      * Type: String
      */
-    public static final String ATTR_VERSION_LEVEL = "descent.building.debuild.version_level";
+    public static final String ATTR_VERSION_LEVEL = "descent.building.debuild.version_level"; //$NON-NLS-1$
     
     /**
      * Level to be used in debug= or the empty string if no such level should
@@ -194,7 +194,7 @@ public interface IDescentBuilderConstants
      * 
      * Type: String
      */
-    public static final String ATTR_DEBUG_LEVEL = "descent.building.debuild.debug_level";
+    public static final String ATTR_DEBUG_LEVEL = "descent.building.debuild.debug_level"; //$NON-NLS-1$
     
     /**
      * A list of (non-predefined) version identifiers to be specified in version=
@@ -202,7 +202,7 @@ public interface IDescentBuilderConstants
      * 
      * Type: List&lt;String&gt;
      */
-    public static final String ATTR_VERSION_IDENTS = "descent.building.debuild.version_idents";
+    public static final String ATTR_VERSION_IDENTS = "descent.building.debuild.version_idents"; //$NON-NLS-1$
     
     /**
      * A list of (non-predefined) debug identifiers to be specified in debug=
@@ -210,7 +210,7 @@ public interface IDescentBuilderConstants
      * 
      * Type: List&lt;String&gt;
      */
-    public static final String ATTR_DEBUG_IDENTS = "descent.building.debuild.debug_idents";
+    public static final String ATTR_DEBUG_IDENTS = "descent.building.debuild.debug_idents"; //$NON-NLS-1$
     
     //--------------------------------------------------------------------------
     // Output types
@@ -219,13 +219,13 @@ public interface IDescentBuilderConstants
      * Constant used for {@link #ATTR_OUTPUT_TYPE} to specify the output target
      * should be an executable file.
      */
-    public static final String OUTPUT_TYPE_EXECUTABLE = "executable";
+    public static final String OUTPUT_TYPE_EXECUTABLE = "executable"; //$NON-NLS-1$
     
     /**
      * Constant used for {@link #ATTR_OUTPUT_TYPE} to specify the output target
      * should be a static library (.lib or .a)
      */
-    public static final String OUTPUT_TYPE_STATIC_LIBRARY = "static_library";
+    public static final String OUTPUT_TYPE_STATIC_LIBRARY = "static_library"; //$NON-NLS-1$
     
     //--------------------------------------------------------------------------
     // Version sources
@@ -235,17 +235,17 @@ public interface IDescentBuilderConstants
      * be taken from the project specified in {@link #ATTR_PROJECT_NAME} and the
      * launch configuration.
      */
-    public static final String SOURCE_SELECTED_PROJECT = "selected_project";
+    public static final String SOURCE_SELECTED_PROJECT = "selected_project"; //$NON-NLS-1$
     
     /**
      * Constant used for {@link #ATTR_VERSION_SOURCE} to indicate versions should
      * be taken from the workspace active project and the launch configuration.
      */
-    public static final String SOURCE_ACTIVE_PROJECT = "active_project";
+    public static final String SOURCE_ACTIVE_PROJECT = "active_project"; //$NON-NLS-1$
     
     /**
      * Constant used for {@link #ATTR_VERSION_SOURCE} to indicate versions should
      * only be taken from the launch configuration.
      */
-    public static final String SOURCE_LAUNCH_CONFIG = "launch_configuration";
+    public static final String SOURCE_LAUNCH_CONFIG = "launch_configuration"; //$NON-NLS-1$
 }

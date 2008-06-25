@@ -1,20 +1,23 @@
 package descent.internal.building.debuild;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
 
+import descent.core.ICompilationUnit;
+import descent.core.IJavaElement;
 import descent.core.IJavaProject;
+import descent.core.IPackageFragment;
 import descent.core.JavaCore;
-import descent.internal.building.compiler.DmdCompilerInterface;
+import descent.core.JavaModelException;
+import descent.internal.building.BuilderUtil;
 import descent.launching.IVMInstall;
-import descent.launching.JavaRuntime;
-import descent.building.compiler.ICompileCommand;
 import descent.building.compiler.ICompilerInterface;
-import descent.building.compiler.ILinkCommand;
+
+import static descent.building.IDescentBuilderConstants.*;
 
 /**
  * Wrapper for information about a build request. Exactly one object
@@ -24,215 +27,218 @@ import descent.building.compiler.ILinkCommand;
  *
  * @author Robert Fraser
  */
+@SuppressWarnings("unchecked")
 /* package */ class BuildRequest
 {
 	private final ILaunchConfiguration config;
     private final IJavaProject project;
-    private final IVMInstall compilerType;
+    private final IVMInstall compilerInstall;
+    private final ICompilerInterface compilerInterface;
+    
+    private final IJavaProject sourceProject;
+    
+    private final Integer versionLevel;
+    private final List<String> versionIdents;
+    private final Integer debugLevel;
+    private final List<String> debugIdents;
+    private final boolean debugMode;
 	
 	public BuildRequest(ILaunchConfiguration config)
 	{
 		this.config = config;
-        this.project = null; // TODO config.getProject();
-        
-        IVMInstall compilerType = null;
-        try
-        {
-            compilerType = JavaRuntime.getVMInstall(project);
-        }
-        catch(CoreException e)
-        {
-            // compilerType remains null...
-        }
-        
-        if(null == compilerType)
-        {
-            compilerType = JavaRuntime.getDefaultVMInstall();
-            if(null == compilerType)
-                throw new DebuildException("No compiler has been defined for this project");
-        }
-        
-        this.compilerType = compilerType;
+		project = initializeProject();
+		try
+		{
+		    compilerInstall = BuilderUtil.getVMInstall(project);
+		}
+		catch(CoreException e)
+		{
+		    throw new DebuildException("Could not get compiler for project " +
+		            project.getElementName());
+		}
+		compilerInterface = BuilderUtil.getCompilerInterface(compilerInstall);
+		
+		// Set debug/version settings
+		sourceProject = getSourceProject();
+		
+		debugLevel = getLevel(ATTR_DEBUG_LEVEL, JavaCore.COMPILER_DEBUG_LEVEL);
+		versionLevel = getLevel(ATTR_VERSION_LEVEL, JavaCore.COMPILER_VERSION_LEVEL);
+		debugIdents = getIdents(ATTR_DEBUG_IDENTS, JavaCore.COMPILER_DEBUG_IDENTIFIERS, false);
+		versionIdents = getIdents(ATTR_VERSION_IDENTS, JavaCore.COMPILER_VERSION_IDENTIFIERS, true);
+		debugMode = BuilderUtil.getAttribute(config, ATTR_DEBUG_MODE, true);
 	}
 	
 	/**
-	 * Gets the Java project being built
-	 */
-	public IJavaProject getProject()
-	{
-		return project;
-	}
-	
-	/**
-	 * Gets all the modules that must be built for this target
-	 */
-	public String[] getModules()
-	{
-		// TODO return config.getModules();
-	    return null;
-	}
-    
-    /**
-     * Gets the default include path
+     * Gets the Java project being built
      */
-    public String[] getDefaultImportPath()
+    public IJavaProject getProject()
     {
-        // TODO return config.getDefaultImportPath();
-        return null;
-    }
-	
-	/**
-	 * Gets the list of modules that should be ignored for this build.
-	 * Generally, this is standard-library dependant. The ignore list
-	 * should be an array of strings of modules to ignore. If anything
-	 * in a package or all subpackages should be ignored, end it with
-	 * a ".".
-	 */
-	public String[] getIgnoreList()
-	{
-		//TODO
-		return phobosIgnored;
-	}
-    
-    /**
-     * Gets the compile options that affect the generated object code.
-     */
-    public CompileOptions getCompileOptions()
-    {
-        CompileOptions opts = new CompileOptions();
-        
-        // Set the executable-target-specific options
-     // TODO opts.addDebugInfo = config.getAddDebugInfo();
-     // TODO opts.addUnittests = config.getAddUnittests();
-     // TODO opts.addAssertsAndContracts = config.getAddAssertsAndContracts();
-     // TODO opts.inlineFunctions = config.getInlineFunctions();
-     // TODO opts.optimizeCode = config.getOptimizeCode();
-     // TODO opts.instrumentForCoverage = config.getInstrumentForCoverage();
-     // TODO opts.instrumentForProfile = config.getInstrumentForProfile();
-     // TODO for(String ident : config.getDefaultVersionIdents())
-     // TODO opts.debugIdents.add(ident);
-     // TODO for(String ident : config.getDefaultDebugIdents())
-     // TODO opts.debugIdents.add(ident);
-        
-        // Set the project-specific options
-        opts.insertDebugCode = true; // WAITING_ON_CORE
-        opts.versionLevel = getVersionLevel();
-        opts.debugLevel = getDebugLevel();
-        opts.versionIdents = getVersionIdents();
-        opts.debugIdents = getDebugIdents();
-        
-        return opts;
+        return project;
     }
     
     /**
-     * Gets a new compile command with request-sepcific defaults set for options
-     * that don't affect code generation (that is, will warnings be shown? will
-     * deprecaated features be allowed? etc.). Also sets the compiler executable
-     * path. Other options (such as the import path and code generation options)
-     * must be set elsewhere. These options may be overriden, of course.
+     * Gets the compiler interface to use
      */
-    public ICompileCommand getCompileCommand()
-    {
-        ICompileCommand cmd = getCompilerInterface().createCompileCommand();
-        
-        cmd.setExecutableFile(compilerType.getBinaryLocation());
-        cmd.setShowWarnings(false);
-        cmd.setAllowDeprecated(true);
-        
-        return cmd;
-    }
-    
-    public ILinkCommand getLinkCommand()
-    {
-        ILinkCommand cmd = getCompilerInterface().createLinkCommand();
-        
-        cmd.setExecutableFile(compilerType.getBinaryLocation());
-        
-        return cmd;
-    }
-	
     public ICompilerInterface getCompilerInterface()
     {
-        // TODO return compilerType.getCompilerInterface();
-        return new DmdCompilerInterface();
+        return compilerInterface;
     }
     
-    //--------------------------------------------------------------------------
-    // CACHE MANAGEMENT
-    //--------------------------------------------------------------------------
-    class Level
+    /**
+     * Gets the base modules that should be built; dependancies may also need to
+     * be built
+     */
+    public ICompilationUnit[] getModules()
     {
-        Integer value;
-    }
-    
-    // Cached information
-    private Level debugLevel;
-    private Integer getDebugLevel()
-    {
-        if(null == debugLevel)
+        List<String> handles = BuilderUtil.getAttribute(config, ATTR_MODULES_LIST, 
+                BuilderUtil.EMPTY_LIST);
+        
+        if(handles.isEmpty())
+            throw new DebuildException("No target modules defined");
+        
+        List<ICompilationUnit> modules = 
+            new ArrayList<ICompilationUnit>(handles.size());
+        for(String handle : handles)
         {
-            debugLevel = new Level();
-            debugLevel.value = getLevel(JavaCore.COMPILER_DEBUG_LEVEL);
+            IJavaElement element = JavaCore.create(handle);
+            if(null != element)
+            {
+                if(element instanceof IPackageFragment)
+                {
+                    if(!element.exists())
+                    {
+                        // TODO mark a warning condition
+                        continue;
+                    }
+                    
+                    IPackageFragment pkg = (IPackageFragment) element;
+                    try
+                    {
+                    for(IJavaElement child : pkg.getChildren())
+                        if(child instanceof ICompilationUnit && child.exists())
+                            modules.add((ICompilationUnit) child);
+                    }
+                    catch(JavaModelException e)
+                    {
+                        // TODO mark a warning condition
+                    }
+                }
+                else if(element instanceof ICompilationUnit)
+                {
+                    modules.add((ICompilationUnit) element);
+                }
+            }
         }
-        return debugLevel.value;
+        
+        if(modules.isEmpty())
+            throw new DebuildException("None of the modules to be built exist in the project.");
+        
+        return modules.toArray(new ICompilationUnit[modules.size()]);
     }
-    
-    private Level versionLevel;
-    private Integer getVersionLevel()
-    {
-        if(null == versionLevel)
-        {
-            versionLevel = new Level();
-            versionLevel.value = getLevel(JavaCore.COMPILER_VERSION_LEVEL);
-        }
-        return versionLevel.value;
-    }
-    
-    private List<String> debugIdents;
-    private List<String> getDebugIdents()
-    {
-        if(null == debugIdents)
-        {
-            debugIdents = getIdentifiers(JavaCore.COMPILER_DEBUG_IDENTIFIERS, false);
-        }
-        return debugIdents;
-    }
-    
-    private List<String> versionIdents;
-    private List<String> getVersionIdents()
-    {
-        if(null == versionIdents)
-        {
-            versionIdents = getIdentifiers(JavaCore.COMPILER_DEBUG_IDENTIFIERS, true);
-        }
+	
+	public final List<String> getVersionIdents() {
         return versionIdents;
     }
-    
-    private Integer getLevel(String preference)
+
+    public final Integer getDebugLevel()
     {
-        String level = project.getOption(preference, true);
-        if(null == level || "" == level)
-            return null;
-        
-        try
-        {
-            return new Integer(level);
-        }
-        catch(NumberFormatException e)
-        {
-            return null;
-        }
+        return debugLevel;
+    }
+
+    public final List<String> getDebugIdents()
+    {
+        return debugIdents;
+    }
+
+    public final Integer getVersionLevel()
+    {
+        return versionLevel;
     }
     
-    private List<String> getIdentifiers(String preference, boolean removePredefined)
+    public final boolean isDebugMode()
     {
-        String[] option = project.getOption(preference, true).split(",");
-        List<String> idents = new ArrayList<String>();
+        return debugMode;
+    }
+    
+    //--------------------------------------------------------------------------
+    // Private methods
+    
+    private final IJavaProject initializeProject()
+    {
+        String projectName = BuilderUtil.getAttribute(config, ATTR_PROJECT_NAME, "");
+        IJavaProject project = null;
+        if(!"".equals(projectName))
+        {
+            project = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot()).
+                getJavaProject(projectName);
+        }
+        
+        if(null == project)
+            throw new DebuildException(String.format("Cannot find project %1$s", project.getElementName()));
+        
+        return project;
+    }
+    
+    private IJavaProject getSourceProject()
+    {
+        String source = BuilderUtil.getAttribute(config, ATTR_VERSION_SOURCE, SOURCE_ACTIVE_PROJECT);
+        if(SOURCE_SELECTED_PROJECT.equals(source))
+            return project;
+        else if(SOURCE_ACTIVE_PROJECT.equals(source))
+            return project; // TODO
+        else
+            return null;
+    }
+    
+    private Integer getLevel(String configId, String optionsId)
+    {
+        String levelStr = BuilderUtil.getAttribute(config, configId, "");
+        if(null == levelStr || "".equals(levelStr))
+        {
+            levelStr = getLevelFromProject(optionsId);
+        }
+        if(null != levelStr && !("".equals(levelStr)))
+        {
+            try
+            {
+                return new Integer(levelStr);
+            }
+            catch(NumberFormatException e) { }
+        }
+        return null;
+    }
+    
+    private List<String> getIdents(String configId, String optionsId, boolean removePredefined)
+    {
+        List<String> idents = BuilderUtil.getAttribute(config, configId, BuilderUtil.EMPTY_LIST);
+        addIdentifiersFromProject(idents, optionsId);
+        
+        if(removePredefined)
+        {
+            for(String ident : idents)
+                if(BuilderUtil.isPredefinedVersion(ident))
+                    idents.remove(ident);
+        }
+        return idents;
+    }
+    
+    private String getLevelFromProject(String optionId)
+    {
+        if(null == sourceProject)
+            return null;
+        return sourceProject.getOption(optionId, true);
+        
+    }
+    
+    private void addIdentifiersFromProject(List<String> idents, String preference)
+    {
+        if(null == sourceProject)
+            return;
+        
+        String[] option = sourceProject.getOption(preference, true).split(",");
         csv: for(String val : option)
         {
             val = val.trim();
-            if(removePredefined && predefinedVersions.contains(val))
-                continue csv;
             if(val.equals(""))
                 continue csv;
             for(int i = 0; i < val.length(); i++)
@@ -246,15 +252,14 @@ import descent.building.compiler.ILinkCommand;
                 ))
                     continue csv;
             }
-            idents.add(val);
+            if(!idents.contains(val))
+                idents.add(val);
         }
-        return idents;
     }
     
     //--------------------------------------------------------------------------
-    // CONSTANTS
+    // Private constants
     // PERHAPS these shouldn't be hardcoded
-    //--------------------------------------------------------------------------
     
     // Ignored modules
 	private static final String[] phobosIgnored = new String[]
@@ -269,28 +274,5 @@ import descent.building.compiler.ILinkCommand;
     {
         "object",
         "gcc.",
-    };
-    
-	// TODO use BuilderUtil.predefinedversions instead
-    // Predefined identifiers
-    private static final HashSet<String> predefinedVersions = new HashSet<String>();
-    
-    static
-    {
-        predefinedVersions.add("DigitalMars");
-        predefinedVersions.add("X86");
-        predefinedVersions.add("X86_64");
-        predefinedVersions.add("Windows");
-        predefinedVersions.add("Win32");
-        predefinedVersions.add("Win64");
-        predefinedVersions.add("linux");
-        predefinedVersions.add("LittleEndian");
-        predefinedVersions.add("BigEndian");
-        predefinedVersions.add("D_Coverage");
-        predefinedVersions.add("D_InlineAsm");
-        predefinedVersions.add("D_InlineAsm_X86");
-        predefinedVersions.add("D_Version2");
-        predefinedVersions.add("none");
-        predefinedVersions.add("all");
     };
 }

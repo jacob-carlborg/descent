@@ -60,19 +60,19 @@ import static descent.building.IDescentBuilderConstants.*;
             GridData gd = new GridData();
             gd.horizontalSpan = 1;
             label.setLayoutData(gd);
-            label.setText("Include versions from:");
+            label.setText(BuilderUIMessages.VersionTab_version_source_label);
             
             fSelectedProjRadio = createRadioButton(comp, 1,
-                    "Selected project", 25, null);
+                    BuilderUIMessages.VersionTab_option_selected_project, 25, null);
             fActiveProjRadio = createRadioButton(comp, 1,
-                    "Workspace active project", 25, null); 
+                    BuilderUIMessages.VersionTab_option_workspace_project, 25, null); 
             fNoneRadio = createRadioButton(comp, 1,
-                    "None (only use versions selected below)", 25, null);
+                    BuilderUIMessages.VersionTab_option_none, 25, null);
         }
 
         public void initializeFrom(ILaunchConfiguration config)
         {
-            String mode = getAttribute(config, ATTR_VERSION_SOURCE, 
+            String mode = BuilderUtil.getAttribute(config, ATTR_VERSION_SOURCE, 
                     SOURCE_SELECTED_PROJECT);
             
             if(mode.equals(SOURCE_ACTIVE_PROJECT))
@@ -127,7 +127,7 @@ import static descent.building.IDescentBuilderConstants.*;
         public void addToControl(Composite comp)
         {
             fCheckbox = new Button(comp, SWT.CHECK);
-            fCheckbox.setText("Debug mode (-debug)");
+            fCheckbox.setText(BuilderUIMessages.VersionTab_debug_mode);
             GridData gd = new GridData();
             gd.horizontalSpan = 1;
             fCheckbox.setLayoutData(gd);
@@ -143,7 +143,7 @@ import static descent.building.IDescentBuilderConstants.*;
 
         public void initializeFrom(ILaunchConfiguration config)
         {
-            fCheckbox.setSelection(getAttribute(config, ATTR_DEBUG_MODE, true));
+            fCheckbox.setSelection(BuilderUtil.getAttribute(config, ATTR_DEBUG_MODE, true));
         }
 
         public void performApply(ILaunchConfigurationWorkingCopy config)
@@ -166,7 +166,7 @@ import static descent.building.IDescentBuilderConstants.*;
     //--------------------------------------------------------------------------
     // Identifiers and levels setting
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked") //$NON-NLS-1$
     private final class DVSetting implements ISetting
     {
         private final String fName;
@@ -228,7 +228,7 @@ import static descent.building.IDescentBuilderConstants.*;
             });
             
             fLevelLabel = new Label(comp, SWT.LEFT);
-            fLevelLabel.setText(String.format("%1$s level:", fName));
+            fLevelLabel.setText(String.format(BuilderUIMessages.VersionTab_level, fName));
             gd = new GridData();
             gd.horizontalSpan = 1;
             fLevelLabel.setLayoutData(gd);
@@ -259,7 +259,7 @@ import static descent.building.IDescentBuilderConstants.*;
             fIdents = new TreeSet();
             
             Label listLabel = new Label(comp, SWT.NONE);
-            listLabel.setText(String.format("%1$s identifiers:", fName));
+            listLabel.setText(String.format(BuilderUIMessages.VersionTab_identifiers, fName));
             GridData gd = new GridData();
             gd.horizontalSpan = 4;
             listLabel.setLayoutData(gd);
@@ -364,7 +364,7 @@ import static descent.building.IDescentBuilderConstants.*;
                 protected void setValue(Object element, Object value)
                 {
                     fIdents.remove(element);
-                    if(!"".equals(value));
+                    if(!"".equals(value)); //$NON-NLS-1$
                         fIdents.add(value);
                     updateList();
                     fViewer.setSelection(new StructuredSelection(value));
@@ -387,8 +387,8 @@ import static descent.building.IDescentBuilderConstants.*;
                 {
                     if(fAddButton == e.widget)
                     {
-                        fViewer.add("");
-                        fViewer.editElement("", 0);
+                        fViewer.add(""); //$NON-NLS-1$
+                        fViewer.editElement("", 0); //$NON-NLS-1$
                     }
                     else if(fRemoveButton == e.widget)
                     {
@@ -410,8 +410,8 @@ import static descent.building.IDescentBuilderConstants.*;
             layout.marginHeight = 0;
             comp.setLayout(layout);
             
-            fAddButton = createButton(comp, listener, "Add");
-            fRemoveButton = createButton(comp, listener, "Remove");
+            fAddButton = createButton(comp, listener, BuilderUIMessages.VersionTab_button_add);
+            fRemoveButton = createButton(comp, listener, BuilderUIMessages.VersionTab_button_remove);
         }
         
         private Button createButton(Composite comp, SelectionListener listener, String label)
@@ -455,8 +455,8 @@ import static descent.building.IDescentBuilderConstants.*;
         
         public void initializeFrom(ILaunchConfiguration config)
         {
-            String level = getAttribute(config, fLevelAttr, "");
-            if("".equals(level))
+            String level = BuilderUtil.getAttribute(config, fLevelAttr, ""); //$NON-NLS-1$
+            if("".equals(level)) //$NON-NLS-1$
             {
                 fLevelCheckbox.setSelection(false);
                 fLevelSpinner.setSelection(0);
@@ -468,22 +468,22 @@ import static descent.building.IDescentBuilderConstants.*;
             }
             updateSpinnerEnablement();
             
-            fIdents = new TreeSet(getAttribute(config, fIdentsAttr, EMPTY_LIST));
+            fIdents = new TreeSet(BuilderUtil.getAttribute(config, fIdentsAttr, BuilderUtil.EMPTY_LIST));
             updateList();
         }
 
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings("unchecked") //$NON-NLS-1$
         public void performApply(ILaunchConfigurationWorkingCopy config)
         {
             config.setAttribute(fLevelAttr, fLevelCheckbox.getSelection() ?
-                    Integer.toString(fLevelSpinner.getSelection()) : "");
+                    Integer.toString(fLevelSpinner.getSelection()) : ""); //$NON-NLS-1$
             config.setAttribute(fIdentsAttr, new ArrayList(fIdents));
         }
 
         public void setDefaults(ILaunchConfigurationWorkingCopy config)
         {
-            config.setAttribute(fLevelAttr, "");
-            config.setAttribute(fIdentsAttr, EMPTY_LIST);
+            config.setAttribute(fLevelAttr, ""); //$NON-NLS-1$
+            config.setAttribute(fIdentsAttr, BuilderUtil.EMPTY_LIST);
         }
         
         private boolean isValidIdentifier(String id)
@@ -501,10 +501,10 @@ import static descent.building.IDescentBuilderConstants.*;
                     String id = (String) element;
                     
                     if(!BuilderUtil.isValidIdentifier(id))
-                        return String.format("%1$s is not a valid identifier", id);
+                        return String.format(BuilderUIMessages.VersionTab_error_invalid_identifier, id);
                     
                     if(!fAllowPredefined && BuilderUtil.isPredefinedVersion(id))
-                        return String.format("Cannot use predefined version %1$s", id);
+                        return String.format(BuilderUIMessages.VersionTab_error_predefined_version, id);
                 }
             }
             return null;
@@ -530,7 +530,7 @@ import static descent.building.IDescentBuilderConstants.*;
     @Override
     protected String getIconPath()
     {
-        return "obj16/builders.gif";
+        return "obj16/builders.gif"; //$NON-NLS-1$
     }
     
     @Override
@@ -540,11 +540,11 @@ import static descent.building.IDescentBuilderConstants.*;
         {
             new VersionSourceSetting(),
             new DebugModeSetting(),
-            new GroupSetting("Additional versions", 1, 2, GridData.FILL_BOTH,
+            new GroupSetting(BuilderUIMessages.VersionTab_group_additional_versions, 1, 2, GridData.FILL_BOTH,
                 new ISetting[]
                 {
-                    new DVSetting("Version", false, ATTR_VERSION_LEVEL, ATTR_VERSION_IDENTS),
-                    new DVSetting("Debug", true, ATTR_DEBUG_LEVEL, ATTR_DEBUG_IDENTS),
+                    new DVSetting(BuilderUIMessages.VersionTab_version, false, ATTR_VERSION_LEVEL, ATTR_VERSION_IDENTS),
+                    new DVSetting(BuilderUIMessages.VersionTab_debug, true, ATTR_DEBUG_LEVEL, ATTR_DEBUG_IDENTS),
                 }),
         };
     }
@@ -559,7 +559,7 @@ import static descent.building.IDescentBuilderConstants.*;
     
     public String getName()
     {
-        return "Version";
+        return BuilderUIMessages.VersionTab_tab_name;
     }
 
 }

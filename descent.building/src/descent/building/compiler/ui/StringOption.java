@@ -1,6 +1,7 @@
-package descent.building.compiler;
+package descent.building.compiler.ui;
 
-public abstract class StringOption extends CompilerOption implements IValidatableOption
+
+public class StringOption extends CompilerOption implements IValidatableOption
 {
     public StringOption(String attributeId, String defaultValue,
             String label, String groupLabel)

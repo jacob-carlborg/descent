@@ -1,6 +1,6 @@
 package descent.internal.building.compiler.ui;
 
-import descent.building.compiler.BooleanOption;
+import descent.building.compiler.ui.BooleanOption;
 import static descent.internal.building.compiler.IDmdCompilerConstants.*;
 
 /* package */ interface DmdfeUIOptions extends CompilerUIOptions
@@ -9,15 +9,14 @@ import static descent.internal.building.compiler.IDmdCompilerConstants.*;
     {
         protected AllowDeprecatedOption(String onText)
         {
-            super(ATTR_ALLOW_DEPRECATED, true, "Allow deprecated code",
-                    GROUP_WARNINGS, onText, "");
+            super(ATTR_ALLOW_DEPRECATED, true, CompilerUIMessages.DmdfeUIOptions_deprecated_label,
+                    GROUP_WARNINGS, onText, NO_TEXT);
         }
 
         @Override
         public String getHelpText()
         {
-            return "Allows code marked with the \"deprecated\" tags to be included "
-                    + "in your program.";
+            return CompilerUIMessages.DmdfeUIOptions_deprecated_help;
         }
     }
 
@@ -25,16 +24,14 @@ import static descent.internal.building.compiler.IDmdCompilerConstants.*;
     {
         protected ShowWarningsOption(String onText)
         {
-            super(ATTR_SHOW_WARNINGS, false, "Show warnings", GROUP_WARNINGS,
-                    onText, "");
+            super(ATTR_SHOW_WARNINGS, false, CompilerUIMessages.DmdfeUIOptions_warnings_label, GROUP_WARNINGS,
+                    onText, NO_TEXT);
         }
 
         @Override
         public String getHelpText()
         {
-            return "Adds warnings for potentially unsafe or error-prone code. In "
-                    + "DMD, if warnings are encountered, the program will not be "
-                    + "compiled.";
+            return CompilerUIMessages.DmdfeUIOptions_warnings_help;
         }
     }
 
@@ -42,14 +39,14 @@ import static descent.internal.building.compiler.IDmdCompilerConstants.*;
     {
         protected OptimizeCodeOption(String onText)
         {
-            super(ATTR_OPTIMIZE_CODE, false, "Optimize code",
-                    GROUP_GENERATED_CODE, onText, "");
+            super(ATTR_OPTIMIZE_CODE, false, CompilerUIMessages.DmdfeUIOptions_optimize_label,
+                    GROUP_GENERATED_CODE, onText, NO_TEXT);
         }
 
         @Override
         public String getHelpText()
         {
-            return "Optimizes the generated code for best efficiency.";
+            return CompilerUIMessages.DmdfeUIOptions_optimize_help;
         }
     }
 
@@ -57,15 +54,14 @@ import static descent.internal.building.compiler.IDmdCompilerConstants.*;
     {
         protected InlineCodeOption(String onText)
         {
-            super(ATTR_INLINE_CODE, false, "Inline functions",
-                    GROUP_GENERATED_CODE, onText, "");
+            super(ATTR_INLINE_CODE, false, CompilerUIMessages.DmdfeUIOptions_inline_label,
+                    GROUP_GENERATED_CODE, onText, NO_TEXT);
         }
 
         @Override
         public String getHelpText()
         {
-            return "Allows inlining of short functions for increased code efficiency. "
-                    + "This may cause issues with some debuggers.";
+            return CompilerUIMessages.DmdfeUIOptions_inline_help;
         }
     }
 }

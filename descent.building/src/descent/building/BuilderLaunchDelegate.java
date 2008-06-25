@@ -8,7 +8,8 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 
-import descent.internal.building.BuildingPlugin;;
+import descent.internal.building.BuildingPlugin;
+import descent.internal.building.debuild.DebuildMessages;
 
 /**
  * The launch configuration delegate which should be used for all D builders.
@@ -27,11 +28,11 @@ public final class BuilderLaunchDelegate implements
         String configTypeId = config.getType().getIdentifier();
         IDBuilderType builderType = BuilderRegistry.getInstance().getBuilderForLaunchConfigurationType(configTypeId);
         if(null == builderType)
-            throw error("Could not find builder for launch configuration type " + configTypeId);
+            throw error(String.format(DebuildMessages.BuilderLaunchDelegate_error_could_not_find_builder, configTypeId));
         
         IDBuilder builder = builderType.getBuilder();
         if(null == builder)
-            throw error("Could not create builder for builder type " + builderType.getIdentifier());
+            throw error(String.format(DebuildMessages.BuilderLaunchDelegate_error_could_not_instantiate_builder, builderType.getIdentifier()));
         
         builder.build(config, pm);
     }

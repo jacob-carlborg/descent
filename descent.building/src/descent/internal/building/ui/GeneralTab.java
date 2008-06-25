@@ -51,6 +51,7 @@ import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.internal.building.BuilderUtil;
 import descent.internal.building.BuildingPlugin;
+import descent.internal.ui.util.PixelConverter;
 import descent.internal.ui.wizards.dialogfields.DialogField;
 import descent.internal.ui.wizards.dialogfields.IDialogFieldListener;
 import descent.internal.ui.wizards.dialogfields.IListAdapter;
@@ -60,7 +61,7 @@ import descent.ui.JavaElementSorter;
 
 import static descent.building.IDescentBuilderConstants.*;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings("unchecked") //$NON-NLS-1$
 /* package */ final class GeneralTab extends AbstractBuilderTab
 {   
     //--------------------------------------------------------------------------
@@ -70,7 +71,7 @@ import static descent.building.IDescentBuilderConstants.*;
     {
         ProjectSetting()
         {
-            super(ATTR_PROJECT_NAME, "Project:", 3, true, false);
+            super(ATTR_PROJECT_NAME, BuilderUIMessages.GeneralTab_project_text_label, 3, true, false);
         }
         
         /**
@@ -114,8 +115,8 @@ import static descent.building.IDescentBuilderConstants.*;
             ILabelProvider labelProvider = new JavaElementLabelProvider(JavaElementLabelProvider.SHOW_DEFAULT);
             ElementListSelectionDialog dialog = new ElementListSelectionDialog(
                     getShell(), labelProvider);
-            dialog.setTitle("Select Project");
-            dialog.setMessage("Select the project in which to place output files");
+            dialog.setTitle(BuilderUIMessages.GeneralTab_project_dialog_title);
+            dialog.setMessage(BuilderUIMessages.GeneralTab_project_dialog_text);
             dialog.setElements(projects);
     
             IJavaProject javaProject = getJavaProject();
@@ -163,21 +164,21 @@ import static descent.building.IDescentBuilderConstants.*;
         {
             String projectName = fText.getText().trim();
             if (projectName.length() == 0)
-                return "Project not defined";
+                return BuilderUIMessages.GeneralTab_error_no_project;
 
             IStatus status = ResourcesPlugin.getWorkspace().validatePath(
                     IPath.SEPARATOR + projectName, IResource.PROJECT);
             if (!status.isOK())
-                return String.format("Invalid project name: %$1s", projectName);
+                return String.format(BuilderUIMessages.GeneralTab_error_invalid_project_name, projectName);
 
             IProject project = getWorkspaceRoot().getProject(projectName);
             if (!project.exists())
-                return "Project does not exist";
+                return BuilderUIMessages.GeneralTab_error_project_does_not_exist;
 
             try
             {
                 if (!project.hasNature(JavaCore.NATURE_ID))
-                    return "Not a D project";
+                    return BuilderUIMessages.GeneralTab_error_not_a_d_project;
             }
             catch (Exception e)
             {
@@ -202,12 +203,12 @@ import static descent.building.IDescentBuilderConstants.*;
         public void addToControl(Composite comp)
         {   
             Label label = new Label(comp, SWT.LEFT);
-            label.setText("Target type:");
+            label.setText(BuilderUIMessages.GeneralTab_target_type_label);
             GridData gd = new GridData();
             gd.horizontalSpan = 3;
             label.setLayoutData(gd);
             
-            fExecutableRadio = createRadioButton(comp, 3, "Executable", 25, 
+            fExecutableRadio = createRadioButton(comp, 3, BuilderUIMessages.GeneralTab_option_executable, 25, 
                     new SelectionAdapter()
                     {
                         public void widgetSelected(SelectionEvent e)
@@ -223,7 +224,7 @@ import static descent.building.IDescentBuilderConstants.*;
                             }
                         }
                     });
-            fStaticLibRadio = createRadioButton(comp, 3, "Static library", 25, 
+            fStaticLibRadio = createRadioButton(comp, 3, BuilderUIMessages.GeneralTab_option_static_library, 25, 
                     new SelectionAdapter()
                     {
                         public void widgetSelected(SelectionEvent e)
@@ -243,7 +244,7 @@ import static descent.building.IDescentBuilderConstants.*;
 
         public void initializeFrom(ILaunchConfiguration config)
         {
-            String outputType = getAttribute(config, ATTR_OUTPUT_TYPE,
+            String outputType = BuilderUtil.getAttribute(config, ATTR_OUTPUT_TYPE,
                     OUTPUT_TYPE_EXECUTABLE);
             
             if(outputType.equals(OUTPUT_TYPE_STATIC_LIBRARY))
@@ -300,7 +301,7 @@ import static descent.building.IDescentBuilderConstants.*;
     { 
         OutputFileSetting()
         {
-            super(ATTR_OUTPUT_FILE, "Output file:", 3, true, true);
+            super(ATTR_OUTPUT_FILE, BuilderUIMessages.GeneralTab_output_file_label, 3, true, true);
         }
         
         @Override
@@ -312,10 +313,10 @@ import static descent.building.IDescentBuilderConstants.*;
                 defaultLocation = null;
             
             FileDialog dialog = new FileDialog(getShell(), SWT.SAVE);
-            dialog.setText("Output file location");
+            dialog.setText(BuilderUIMessages.GeneralTab_output_file_dialog_title);
             dialog.setFilterExtensions((defaultExtension.length()) > 0 ?
-                    new String[] { "*" + getExtension(), "*.*" } :
-                    new String[] { "*.*" });
+                    new String[] { "*" + getExtension(), "*.*" } : //$NON-NLS-1$ //$NON-NLS-2$
+                    new String[] { "*.*" }); //$NON-NLS-1$
             dialog.setFilterPath(toFilterPath(defaultLocation));
             
             return normalizeFilename(dialog.open());
@@ -344,7 +345,7 @@ import static descent.building.IDescentBuilderConstants.*;
         {
             String pathText = fText.getText().trim();
             if (pathText.length() == 0)
-                return "Output path not defined";
+                return BuilderUIMessages.GeneralTab_error_no_output_path;
             
             // No way to check if a file is a valid filename since that's
             // file-system (NTFS/FAT/whatever) dependent :-(. I guess some small
@@ -375,7 +376,7 @@ import static descent.building.IDescentBuilderConstants.*;
         private String getDefaultLocationForProject(IJavaProject project)
         {
             if(null == project || !project.exists())
-                return "";
+                return ""; //$NON-NLS-1$
             
             try
             {
@@ -388,7 +389,7 @@ import static descent.building.IDescentBuilderConstants.*;
             }
             catch(JavaModelException e)
             {
-                return "";
+                return ""; //$NON-NLS-1$
             }
         }
         
@@ -407,7 +408,7 @@ import static descent.building.IDescentBuilderConstants.*;
             // input of XYZ if the type is static library...?
             
             if(null == filename || 0 == filename.length())
-                return "";
+                return ""; //$NON-NLS-1$
             return filenameWithoutExtension(filename) + getExtension();
         }
         
@@ -455,11 +456,13 @@ import static descent.building.IDescentBuilderConstants.*;
             // able to refresh and generlaly being a bitch of an API to work with.
             private abstract class AbstractModuleFilter extends ItemsFilter
             {   
+                @Override
                 public boolean isConsistentItem(Object item)
                 {
                     return true;
                 }
                 
+                @Override
                 public boolean matchItem(Object item)
                 {
                     return matches(getName(item));
@@ -502,7 +505,7 @@ import static descent.building.IDescentBuilderConstants.*;
                 fOnlyMain = onlyMain;
                 
                 final ILabelProvider labelProvider = new JavaElementLabelProvider();
-                setTitle("Select included module/package");
+                setTitle(BuilderUIMessages.GeneralTab_module_search_dialog_title);
                 setListLabelProvider(labelProvider);
                 setSelectionHistory(new SelectionHistory()
                 {
@@ -539,7 +542,7 @@ import static descent.building.IDescentBuilderConstants.*;
                     public String getText(Object element)
                     {
                         IPackageFragment pkg = getPackage(element);
-                        return null == pkg ? "" : labelProvider.getText(pkg);
+                        return null == pkg ? "" : labelProvider.getText(pkg); //$NON-NLS-1$
                     }
                     
                     private IPackageFragment getPackage(Object element)
@@ -564,7 +567,7 @@ import static descent.building.IDescentBuilderConstants.*;
                 comp.setLayout(layout);
                 
                 fOnlyMainCheckbox = new Button(comp, SWT.CHECK);
-                fOnlyMainCheckbox.setText("Show only modules with main function");
+                fOnlyMainCheckbox.setText(BuilderUIMessages.GeneralTab_only_main_filter_label);
                 GridData gd = new GridData();
                 gd.horizontalSpan = 1;
                 fOnlyMainCheckbox.setLayoutData(gd);
@@ -729,8 +732,8 @@ import static descent.building.IDescentBuilderConstants.*;
             final int IDX_REMOVE = 1;
             final String[] buttonLabels = new String[]
             {
-                "Add...",
-                "Remove",
+                BuilderUIMessages.GeneralTab_button_add,
+                BuilderUIMessages.GeneralTab_button_remove,
             };
             
             // Define the listener class
@@ -766,14 +769,14 @@ import static descent.building.IDescentBuilderConstants.*;
             }
             
             // Create the group
-            comp = createGroup(comp, "Included modules", 3, 3, GridData.FILL_HORIZONTAL);
+            comp = createGroup(comp, BuilderUIMessages.GeneralTab_group_included_modules, 3, 3, GridData.FILL_HORIZONTAL);
             
             // Add the help labels
-            // PERHAPS is this the best way to convey this information? This has
-            // fairly complicated semantics for a new user
-            newHelpLabel(comp, "- For an executable, choose the module containing main()");
-            newHelpLabel(comp, "- For a library, choose all exported modules");
-            newHelpLabel(comp, "- Dependancies will be built automatically");
+            Label label = new Label(comp, SWT.LEFT | SWT.WRAP);
+            label.setText(BuilderUIMessages.GeneralTab_included_modules_help);
+            GridData gd = new GridData(GridData.FILL_BOTH);
+            gd.horizontalSpan = 3;
+            label.setLayoutData(gd);
             createSpacer(comp, 3);
             
             // Create the list
@@ -784,16 +787,18 @@ import static descent.building.IDescentBuilderConstants.*;
             fList.setViewerSorter(new JavaElementSorter());
             fList.setRemoveButtonIndex(IDX_REMOVE);
             
-            fList.doFillIntoGrid(comp, 3);
-        }
-        
-        private void newHelpLabel(Composite comp, String text)
-        {
-            Label label = new Label(comp, SWT.LEFT);
-            label.setText(text);
-            GridData gd = new GridData();
-            gd.horizontalSpan = 3;
-            label.setLayoutData(gd);
+            Control list = fList.getListControl(comp);
+            gd = new GridData(GridData.FILL_VERTICAL);
+            gd.horizontalSpan = 1;
+            PixelConverter conv = new PixelConverter(comp);
+            gd.widthHint = conv.convertWidthInCharsToPixels(50);
+            gd.heightHint = conv.convertHeightInCharsToPixels(6);
+            list.setLayoutData(gd);
+            
+            Composite buttonBox = fList.getButtonBox(comp);
+            gd= new GridData(GridData.FILL_VERTICAL);
+            gd.horizontalSpan = 1;
+            buttonBox.setLayoutData(gd);
         }
         
         private void performAdd()
@@ -819,7 +824,7 @@ import static descent.building.IDescentBuilderConstants.*;
             ModuleSearchDialog dialog = new ModuleSearchDialog(getShell(),
                     outputTypeSetting.isExecutable() && 
                     fList.getElementsNoCopy().isEmpty());
-            dialog.setInitialPattern(seed == null ? "**" : seed.getElementName());
+            dialog.setInitialPattern(seed == null ? "**" : seed.getElementName()); //$NON-NLS-1$
             int status = dialog.open();
             if(status != IDialogConstants.OK_ID)
                 return null;
@@ -833,7 +838,7 @@ import static descent.building.IDescentBuilderConstants.*;
 
         public void initializeFrom(ILaunchConfiguration config)
         {
-            List<String> handles = getAttribute(config, ATTR_MODULES_LIST, EMPTY_LIST);
+            List<String> handles = BuilderUtil.getAttribute(config, ATTR_MODULES_LIST, BuilderUtil.EMPTY_LIST);
             List<IJavaElement> elements = 
                 new ArrayList<IJavaElement>(handles.size());
             for(String handle : handles)
@@ -866,7 +871,7 @@ import static descent.building.IDescentBuilderConstants.*;
             }
             else
             {
-                config.setAttribute(ATTR_MODULES_LIST, EMPTY_LIST);
+                config.setAttribute(ATTR_MODULES_LIST, BuilderUtil.EMPTY_LIST);
             }
         }
         
@@ -895,17 +900,17 @@ import static descent.building.IDescentBuilderConstants.*;
             List<IJavaElement> elements = fList.getElementsNoCopy();
             
             if(elements.isEmpty())
-                return "Must specify at least one included module";
+                return BuilderUIMessages.GeneralTab_error_no_modules;
             
             for(IJavaElement element : elements)
             {
                 if(!(element instanceof ICompilationUnit) &&
                    !(element instanceof IPackageFragment)) 
-                    return String.format("Element %1s is not a module or package",
+                    return String.format(BuilderUIMessages.GeneralTab_error_invalid_element,
                             element.getElementName());
                 
                 if(!element.exists())
-                    return String.format("Element %1$s does not exist",
+                    return String.format(BuilderUIMessages.GeneralTab_error_element_does_not_exist,
                             element.getElementName());
             }
             
@@ -917,7 +922,7 @@ import static descent.building.IDescentBuilderConstants.*;
     // Constants
     
     private static final String MODULES_SEARCH_DIALOG_SETTINGS_ID =
-        BuildingPlugin.PLUGIN_ID + "MODULES_SEARCH_DIALOG_SETTINGS";
+        BuildingPlugin.PLUGIN_ID + "MODULES_SEARCH_DIALOG_SETTINGS"; //$NON-NLS-1$
     
     //--------------------------------------------------------------------------
     // Tab
@@ -928,13 +933,13 @@ import static descent.building.IDescentBuilderConstants.*;
     
     public String getName()
     {
-        return "General";
+        return BuilderUIMessages.GeneralTab_tab_name;
     }
     
     @Override
     protected String getIconPath()
     {
-        return "obj16/builders.gif";
+        return "obj16/builders.gif"; //$NON-NLS-1$
     }
     
     @Override
@@ -946,7 +951,7 @@ import static descent.building.IDescentBuilderConstants.*;
         return new ISetting[]
         {
             projectSetting,
-            new GroupSetting("Output target", 3, 3, GridData.FILL_HORIZONTAL,
+            new GroupSetting(BuilderUIMessages.GeneralTab_group_output_target, 3, 3, GridData.FILL_HORIZONTAL,
                 new ISetting[]
                 {
                     outputTypeSetting,
@@ -962,5 +967,13 @@ import static descent.building.IDescentBuilderConstants.*;
         GridLayout layout = new GridLayout();
         layout.numColumns = 3;
         return layout;
+    }
+    
+    //--------------------------------------------------------------------------
+    // External interface
+    
+    /* package */ IJavaProject getJavaProject()
+    {
+        return null != projectSetting ? projectSetting.getJavaProject() : null;
     }
 }

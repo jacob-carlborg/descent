@@ -1,4 +1,4 @@
-package descent.building.compiler;
+package descent.building.compiler.ui;
 
 public interface IValidatableOption
 {

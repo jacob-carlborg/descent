@@ -1,6 +1,6 @@
-package descent.building.compiler;
+package descent.building.compiler.ui;
 
-public abstract class BooleanOption extends CompilerOption
+public class BooleanOption extends CompilerOption
 {
     private final String onText;
     private final String offText;
@@ -8,7 +8,7 @@ public abstract class BooleanOption extends CompilerOption
     public BooleanOption(String attributeId, boolean defaultValue,
             String label, String groupLabel, String onText, String offText)
     {
-        super(attributeId, defaultValue ? "true" : "false", label, groupLabel);
+        super(attributeId, defaultValue ? "true" : "false", label, groupLabel); //$NON-NLS-1$ //$NON-NLS-2$
         this.onText = onText;
         this.offText = offText;
     }

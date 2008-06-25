@@ -1,30 +1,30 @@
 package descent.internal.building.compiler.ui;
 
 import static descent.building.IDescentBuilderConstants.*;
-import descent.building.compiler.BooleanOption;
+import descent.building.compiler.ui.BooleanOption;
 
 /* package */ interface CompilerUIOptions
 {
-    public static final String GROUP_FEATURES = "Features";
-    public static final String GROUP_WARNINGS = "Warnings";
-    public static final String GROUP_GENERATED_CODE = "Generated code";
-    public static final String GROUP_LINKER = "Linker";
-    public static final String GROUP_COMPATABILITY = "Compatability";
+    public static final String GROUP_FEATURES = CompilerUIMessages.CompilerUIOptions_group_features;
+    public static final String GROUP_WARNINGS = CompilerUIMessages.CompilerUIOptions_group_warnings;
+    public static final String GROUP_GENERATED_CODE = CompilerUIMessages.CompilerUIOptions_group_generated_code;
+    public static final String GROUP_LINKER = CompilerUIMessages.CompilerUIOptions_group_linker;
+    public static final String GROUP_COMPATABILITY = CompilerUIMessages.CompilerUIOptions_group_compatibility;
+    
+    public static final String NO_TEXT = ""; //$NON-NLS-1$
     
     /* package */ static final class AddDebugInfoOption extends BooleanOption
     {
         protected AddDebugInfoOption(String onText)
         {
-            super(ATTR_ADD_DEBUG_INFO, true, "Add debugging symbols",
-                    GROUP_FEATURES, onText, "");
+            super(ATTR_ADD_DEBUG_INFO, true, CompilerUIMessages.CompilerUIOptions_debug_info_label,
+                    GROUP_FEATURES, onText, NO_TEXT);
         }
 
         @Override
         public String getHelpText()
         {
-            return "Adds debugging symbols. These make the generated objects "
-                    + "slightly larger but is needed to use a debugger with the "
-                    + "program.";
+            return CompilerUIMessages.CompilerUIOptions_debug_info_help;
         }
     }
 
@@ -32,17 +32,14 @@ import descent.building.compiler.BooleanOption;
     {
         protected DisableAssertsOption(String onText)
         {
-            super(ATTR_DISABLE_ASSERTS, false, "Release mode", GROUP_FEATURES,
-                    onText, "");
+            super(ATTR_DISABLE_ASSERTS, false, CompilerUIMessages.CompilerUIOptions_release_label, GROUP_FEATURES,
+                    onText, NO_TEXT);
         }
 
         @Override
         public String getHelpText()
         {
-            return "Turns off assert() statements in the code, in {} and out {} "
-                    + "blocks on functions, and checking for array bounds errors. This "
-                    + "makes the code run faster, so is a good choice for releasing the "
-                    + "application, but are often useful for development.";
+            return CompilerUIMessages.CompilerUIOptions_release_help;
         }
     }
 
@@ -50,15 +47,14 @@ import descent.building.compiler.BooleanOption;
     {
         protected AddUnittestsOption(String onText)
         {
-            super(ATTR_ADD_UNITTESTS, false, "Add unit tests", GROUP_FEATURES,
-                    onText, "");
+            super(ATTR_ADD_UNITTESTS, false, CompilerUIMessages.CompilerUIOptions_unittest_label, GROUP_FEATURES,
+                    onText, NO_TEXT);
         }
 
         @Override
         public String getHelpText()
         {
-            return "Adds code so that unittest {} blocks in your code are run before "
-                    + "the program launches and enables version(unitttest) {} blocks.";
+            return CompilerUIMessages.CompilerUIOptions_unittest_help;
         }
     }
 
@@ -67,17 +63,14 @@ import descent.building.compiler.BooleanOption;
         protected InstrumentForCoverageOption(String onText)
         {
             super(ATTR_INSTRUMENT_FOR_COVERAGE, false,
-                    "Instrument for coverage analysis", GROUP_FEATURES, onText,
-                    "");
+                    CompilerUIMessages.CompilerUIOptions_coverage_label, GROUP_FEATURES, onText,
+                    NO_TEXT);
         }
 
         @Override
         public String getHelpText()
         {
-            return "Adds code to the generated objects so that they will generate "
-                    + "a file containing code coverage information after the program "
-                    + "has been run. This is useful for seeing if unit tests execute "
-                    + "all paths in your code.";
+            return CompilerUIMessages.CompilerUIOptions_coverage_help;
         }
     }
 
@@ -86,15 +79,13 @@ import descent.building.compiler.BooleanOption;
         protected InstrumentForProfileOption(String onText)
         {
             super(ATTR_INSTRUMENT_FOR_PROFILE, false,
-                    "Instrument for profiling", GROUP_FEATURES, onText, "");
+                    CompilerUIMessages.CompilerUIOptions_profile_label, GROUP_FEATURES, onText, NO_TEXT);
         }
 
         @Override
         public String getHelpText()
         {
-            return "Adds code to the generated objects so they can be profiled. "
-                    + "This helps find bottlenecks that could be slowing down your "
-                    + "application.";
+            return CompilerUIMessages.CompilerUIOptions_profile_help;
         }
     }
 }

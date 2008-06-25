@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jface.viewers.CellEditor;
@@ -41,16 +40,14 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.forms.widgets.ScrolledFormText;
 
-import descent.building.CompilerInterfaceRegistry;
-import descent.building.ICompilerInterfaceType;
 import descent.building.IDescentBuilderConstants;
-import descent.building.compiler.BooleanOption;
-import descent.building.compiler.CompilerOption;
-import descent.building.compiler.EnumOption;
 import descent.building.compiler.ICompilerInterface;
-import descent.building.compiler.IValidatableOption;
-import descent.building.compiler.StringOption;
-import descent.internal.building.BuildingPlugin;
+import descent.building.compiler.ui.BooleanOption;
+import descent.building.compiler.ui.CompilerOption;
+import descent.building.compiler.ui.EnumOption;
+import descent.building.compiler.ui.IValidatableOption;
+import descent.building.compiler.ui.StringOption;
+import descent.internal.building.BuilderUtil;
 import descent.launching.IVMInstall;
 import descent.launching.IVMInstallType;
 import descent.launching.JavaRuntime;
@@ -81,8 +78,7 @@ import descent.launching.JavaRuntime;
             comp.setLayout(layout);
             
             fHelpText = new Link(comp, SWT.LEFT | SWT.WRAP);
-            fHelpText.setText("Use the <a>Compilers preference page</a> to set up " +
-            		"compiler/standard library configurations");
+            fHelpText.setText(BuilderUIMessages.CompilerTab_compilers_preference_page_link);
             gd = new GridData(GridData.FILL_BOTH);
             gd.horizontalSpan = 2;
             fHelpText.setLayoutData(gd);
@@ -91,7 +87,7 @@ import descent.launching.JavaRuntime;
                 public void widgetSelected(SelectionEvent e)
                 {
                     PreferencesUtil.createPreferenceDialogOn(getShell(),
-                            "descent.debug.ui.preferences.VMPreferencePage",
+                            "descent.debug.ui.preferences.VMPreferencePage", //$NON-NLS-1$
                             null, null).open();
                     
                     // Reset stuff so new changes are reflected in this dialog
@@ -160,9 +156,9 @@ import descent.launching.JavaRuntime;
         {
             StringBuilder label = new StringBuilder();
             label.append(compiler.getName());
-            label.append(" (");
+            label.append(" ("); //$NON-NLS-1$
             label.append(compiler.getVMInstallType().getName());
-            label.append(")");
+            label.append(")"); //$NON-NLS-1$
             return label.toString();
         }
         
@@ -184,10 +180,10 @@ import descent.launching.JavaRuntime;
         private int getCompilerIndex(ILaunchConfiguration config)
         {
             initializeCompilers();
-            String compilerTypeId = getAttribute(config, 
-                    IDescentBuilderConstants.ATTR_COMPILER_TYPE_ID, "");
-            String compilerId = getAttribute(config, 
-                    IDescentBuilderConstants.ATTR_COMPILER_ID, "");
+            String compilerTypeId = BuilderUtil.getAttribute(config, 
+                    IDescentBuilderConstants.ATTR_COMPILER_TYPE_ID, ""); //$NON-NLS-1$
+            String compilerId = BuilderUtil.getAttribute(config, 
+                    IDescentBuilderConstants.ATTR_COMPILER_ID, ""); //$NON-NLS-1$
             
             for(int i = 0; i < fCompilers.length; i++)
             {
@@ -213,8 +209,8 @@ import descent.launching.JavaRuntime;
             }
             else
             {
-                config.setAttribute(IDescentBuilderConstants.ATTR_COMPILER_TYPE_ID, "");
-                config.setAttribute(IDescentBuilderConstants.ATTR_COMPILER_ID, "");
+                config.setAttribute(IDescentBuilderConstants.ATTR_COMPILER_TYPE_ID, ""); //$NON-NLS-1$
+                config.setAttribute(IDescentBuilderConstants.ATTR_COMPILER_ID, ""); //$NON-NLS-1$
             }
         }
 
@@ -228,8 +224,8 @@ import descent.launching.JavaRuntime;
             }
             else
             {
-                config.setAttribute(IDescentBuilderConstants.ATTR_COMPILER_TYPE_ID, "");
-                config.setAttribute(IDescentBuilderConstants.ATTR_COMPILER_ID, "");
+                config.setAttribute(IDescentBuilderConstants.ATTR_COMPILER_TYPE_ID, ""); //$NON-NLS-1$
+                config.setAttribute(IDescentBuilderConstants.ATTR_COMPILER_ID, ""); //$NON-NLS-1$
             }
         }
         
@@ -244,7 +240,7 @@ import descent.launching.JavaRuntime;
             int selectedIndex = fCombo.getSelectionIndex();
             
             if(selectedIndex < 0)
-                return "You must select a compiler to use";
+                return BuilderUIMessages.CompilerTab_error_no_compiler;
             
             return null;
         }
@@ -321,7 +317,7 @@ import descent.launching.JavaRuntime;
             @Override
             public String getStringValue()
             {
-                return selected ? "true" : "false";
+                return selected ? "true" : "false"; //$NON-NLS-1$ //$NON-NLS-2$
             }
         }
         
@@ -396,7 +392,7 @@ import descent.launching.JavaRuntime;
         private class TextUIOption extends CompilerUIOption
         {
             protected StringOption option;
-            public String selected = "";
+            public String selected = ""; //$NON-NLS-1$
             
             public TextUIOption(StringOption option)
             {
@@ -474,7 +470,7 @@ import descent.launching.JavaRuntime;
             public Object[] getChildren(Object parentElement)
             {
                 if(!(parentElement instanceof TreeEntry))
-                    return EMPTY_ARRAY;
+                    return BuilderUtil.EMPTY_ARRAY;
                 return ((TreeEntry) parentElement).children;
             }
 
@@ -546,7 +542,7 @@ import descent.launching.JavaRuntime;
             
             TreeViewerColumn column = new TreeViewerColumn(fViewer, SWT.NONE);
             column.getColumn().setWidth(250);
-            column.getColumn().setText("Option");
+            column.getColumn().setText(BuilderUIMessages.CompilerTab_column_option);
             column.setLabelProvider(new ColumnLabelProvider()
             {
                 @Override
@@ -561,7 +557,7 @@ import descent.launching.JavaRuntime;
             
             column = new TreeViewerColumn(fViewer, SWT.NONE);
             column.getColumn().setWidth(175);
-            column.getColumn().setText("Value");
+            column.getColumn().setText(BuilderUIMessages.CompilerTab_column_value);
             column.setLabelProvider(new ColumnLabelProvider()
             {
                 @Override
@@ -580,7 +576,7 @@ import descent.launching.JavaRuntime;
                     if(element instanceof CompilerUIOption)
                         return ((CompilerUIOption) element).getText();
                     else
-                        return "";
+                        return ""; //$NON-NLS-1$
                 }
             });
             column.setEditingSupport(new EditingSupport(fViewer)
@@ -632,7 +628,7 @@ import descent.launching.JavaRuntime;
             helpGroup.setLayout(layout);
             
             final ScrolledFormText helpForm = new ScrolledFormText(helpGroup, true);
-            final String NO_TEXT = "<form></form>";
+            final String NO_TEXT = "<form></form>"; //$NON-NLS-1$
             gd = new GridData(GridData.FILL_BOTH);
             gd.horizontalSpan = 1;
             helpForm.setLayoutData(gd);
@@ -666,11 +662,11 @@ import descent.launching.JavaRuntime;
                 private String makeFormText(String label, String helpText)
                 {
                     StringBuilder content = new StringBuilder();
-                    content.append("<form><p><b>");
+                    content.append("<form><p><b>"); //$NON-NLS-1$
                     content.append(label);
-                    content.append("</b></p><br></br>");
+                    content.append("</b></p><br></br>"); //$NON-NLS-1$
                     content.append(helpText);
-                    content.append("</form>");
+                    content.append("</form>"); //$NON-NLS-1$
                     return content.toString();
                 }
             });
@@ -681,8 +677,7 @@ import descent.launching.JavaRuntime;
         
         public void initializeInput(IVMInstall compiler)
         {
-            ICompilerInterface compilerInterface = 
-                getCompilerInterface(compiler);
+            ICompilerInterface compilerInterface = BuilderUtil.getCompilerInterface(compiler);
             if(compilerInterface == fCurrentInterface)
             {
                 if(null == fEntries)
@@ -750,7 +745,7 @@ import descent.launching.JavaRuntime;
                 {
                     CompilerOption opt = uiOpt.getOption();
                     String defaultValue = opt.getDefaultValue();
-                    String value = getAttribute(config, opt.getAttributeId(), defaultValue);
+                    String value = BuilderUtil.getAttribute(config, opt.getAttributeId(), defaultValue);
                     uiOpt.initializeTo(value);
                     fViewer.update(uiOpt, null);
                 }
@@ -821,10 +816,10 @@ import descent.launching.JavaRuntime;
             layout.numColumns = 2;
             comp.setLayout(layout);
             
-            addLabel(comp, "Additional compiler args:");
+            addLabel(comp, BuilderUIMessages.CompilerTab_label_additional_compiler_args);
             fCompilerText = addText(comp);
             
-            addLabel(comp, "Additional linker args:");
+            addLabel(comp, BuilderUIMessages.CompilerTab_label_additional_linker_args);
             fLinkerText = addText(comp);
         }
         
@@ -857,14 +852,14 @@ import descent.launching.JavaRuntime;
         
         public void setDefaults(ILaunchConfigurationWorkingCopy config)
         {
-            config.setAttribute(IDescentBuilderConstants.ATTR_ADDITIONAL_COMPILER_ARGS, "");
-            config.setAttribute(IDescentBuilderConstants.ATTR_ADDITIONAL_LINKER_ARGS, "");
+            config.setAttribute(IDescentBuilderConstants.ATTR_ADDITIONAL_COMPILER_ARGS, ""); //$NON-NLS-1$
+            config.setAttribute(IDescentBuilderConstants.ATTR_ADDITIONAL_LINKER_ARGS, ""); //$NON-NLS-1$
         }
         
         public void initializeFrom(ILaunchConfiguration config)
         {
-            fCompilerText.setText(getAttribute(config, IDescentBuilderConstants.ATTR_ADDITIONAL_COMPILER_ARGS, ""));
-            fLinkerText.setText(getAttribute(config, IDescentBuilderConstants.ATTR_ADDITIONAL_LINKER_ARGS, ""));
+            fCompilerText.setText(BuilderUtil.getAttribute(config, IDescentBuilderConstants.ATTR_ADDITIONAL_COMPILER_ARGS, "")); //$NON-NLS-1$
+            fLinkerText.setText(BuilderUtil.getAttribute(config, IDescentBuilderConstants.ATTR_ADDITIONAL_LINKER_ARGS, "")); //$NON-NLS-1$
         }
 
         public void performApply(ILaunchConfigurationWorkingCopy config)
@@ -886,8 +881,8 @@ import descent.launching.JavaRuntime;
     
     // This needs to be done at the tab level to allow for disposing)
     
-    private Image fCheckedIcon = createImage("obj16/checked.png");
-    private Image fUncheckedIcon = createImage("obj16/unchecked.png"); 
+    private Image fCheckedIcon = createImage("obj16/checked.png"); //$NON-NLS-1$
+    private Image fUncheckedIcon = createImage("obj16/unchecked.png");  //$NON-NLS-1$
     
     public void dispose()
     {
@@ -897,40 +892,22 @@ import descent.launching.JavaRuntime;
     }
     
     //--------------------------------------------------------------------------
-    // Shared convience methods
-    
-    private final CompilerInterfaceRegistry registry = 
-        CompilerInterfaceRegistry.getInstance();
-    
-    private ICompilerInterface getCompilerInterface(IVMInstall compiler)
-    {
-        if(null == compiler)
-            return null;
-        
-        try
-        {
-            ICompilerInterfaceType type = registry.
-                    getCompilerInterfaceByVMInstallType(compiler.
-                    getVMInstallType());
-            return null != type ? type.getCompilerInterface() : null;
-        }
-        catch(CoreException e)
-        {
-            BuildingPlugin.log(e);
-            return null;
-        }
-    }
-    
-    //--------------------------------------------------------------------------
     // Tab
+    
+    private final GeneralTab generalTab;
     
     private CompilerSetting compilerSetting;
     private CompilerOptions compilerOptions;
     
+    public CompilerTab(GeneralTab generalTab)
+    {
+        this.generalTab = generalTab;
+    }
+    
     @Override
     protected String getIconPath()
     {
-        return "obj16/builders.gif";
+        return "obj16/builders.gif"; //$NON-NLS-1$
     }
 
     @Override
@@ -956,6 +933,6 @@ import descent.launching.JavaRuntime;
 
     public String getName()
     {
-        return "Compiler";
+        return BuilderUIMessages.CompilerTab_tab_name;
     }
 }

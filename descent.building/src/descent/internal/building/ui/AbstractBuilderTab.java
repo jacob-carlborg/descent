@@ -40,6 +40,7 @@ import descent.core.IJavaElement;
 import descent.core.IJavaModel;
 import descent.core.IJavaProject;
 import descent.core.JavaCore;
+import descent.internal.building.BuilderUtil;
 import descent.internal.building.BuildingPlugin;
 import descent.internal.ui.util.PixelConverter;
 
@@ -256,7 +257,7 @@ import descent.internal.ui.util.PixelConverter;
             if(fBrowseButton)
             {
                 Button button = new Button(comp, SWT.PUSH);
-                button.setText("Browse...");
+                button.setText(BuilderUIMessages.AbstractBuilderTab_browse_label);
                 gd = new GridData();
                 gd.horizontalSpan = 1;
                 button.setLayoutData(gd);
@@ -286,7 +287,7 @@ import descent.internal.ui.util.PixelConverter;
 
         public final void initializeFrom(ILaunchConfiguration config)
         {   
-            fText.setText(getAttribute(config, fAttribute, ""));
+            fText.setText(BuilderUtil.getAttribute(config, fAttribute, "")); //$NON-NLS-1$
         }
 
         public final void performApply(ILaunchConfigurationWorkingCopy config)
@@ -414,19 +415,6 @@ import descent.internal.ui.util.PixelConverter;
     
     //--------------------------------------------------------------------------
     // Convenience/utility methods and fields
-    
-    /**
-     * An empty list to use as a default for list-typed constants (there's no
-     * similar constant here for the empty string since the empty string is
-     * internalized by the JVM).
-     */
-    protected static final List<?> EMPTY_LIST = new ArrayList<Object>(0);
-    
-    /**
-     * An empty array object to be used by content providers for elements
-     * that are barren and childless.
-     */
-    protected static final Object[] EMPTY_ARRAY = new Object[] {};
     
     /**
      * Creates a group in a grid layout, using columnsUsed columns and having
@@ -588,84 +576,5 @@ import descent.internal.ui.util.PixelConverter;
     protected static IWorkspaceRoot getWorkspaceRoot()
     {
         return ResourcesPlugin.getWorkspace().getRoot();
-    }
-    
-    //--------------------------------------------------------------------------
-    // Wrappers for ILaunchConfiguration methods which hide the exceptions,
-    // since the exception will never be thrown
-    
-    protected static String getAttribute(ILaunchConfiguration config, String id,
-            String defaultValue)
-    {
-        String value = defaultValue;
-        try
-        {
-            value = config.getAttribute(id, defaultValue);
-        }
-        catch(CoreException e) { }
-        return value;
-    }
-    
-    protected static boolean getAttribute(ILaunchConfiguration config, String id,
-            boolean defaultValue)
-    {
-        boolean value = defaultValue;
-        try
-        {
-            value = config.getAttribute(id, defaultValue);
-        }
-        catch(CoreException e) { }
-        return value;
-    }
-    
-    protected static int getAttribute(ILaunchConfiguration config, String id,
-            int defaultValue)
-    {
-        int value = defaultValue;
-        try
-        {
-            value = config.getAttribute(id, defaultValue);
-        }
-        catch(CoreException e) { }
-        return value;
-    }
-    
-    @SuppressWarnings("unchecked")
-    protected static List getAttribute(ILaunchConfiguration config, String id,
-            List defaultValue)
-    {
-        List value = defaultValue;
-        try
-        {
-            value = config.getAttribute(id, defaultValue);
-        }
-        catch(CoreException e) { }
-        return value;
-    }
-    
-    @SuppressWarnings("unchecked")
-    protected static Map getAttribute(ILaunchConfiguration config, String id,
-            Map defaultValue)
-    {
-        Map value = defaultValue;
-        try
-        {
-            value = config.getAttribute(id, defaultValue);
-        }
-        catch(CoreException e) { }
-        return value;
-    }
-    
-    @SuppressWarnings("unchecked")
-    protected static Set getAttribute(ILaunchConfiguration config, String id,
-            Set defaultValue)
-    {
-        Set value = defaultValue;
-        try
-        {
-            value = config.getAttribute(id, defaultValue);
-        }
-        catch(CoreException e) { }
-        return value;
     }
 }
