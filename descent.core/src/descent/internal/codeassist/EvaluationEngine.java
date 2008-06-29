@@ -19,6 +19,7 @@ import descent.internal.compiler.parser.ArrayInitializer;
 import descent.internal.compiler.parser.ArrayLiteralExp;
 import descent.internal.compiler.parser.CallExp;
 import descent.internal.compiler.parser.ComplexExp;
+import descent.internal.compiler.parser.Declaration;
 import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.EnumMember;
 import descent.internal.compiler.parser.ExpInitializer;
@@ -31,10 +32,12 @@ import descent.internal.compiler.parser.NegExp;
 import descent.internal.compiler.parser.RealExp;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.StringExp;
+import descent.internal.compiler.parser.StructInitializer;
 import descent.internal.compiler.parser.StructLiteralExp;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeEnum;
 import descent.internal.compiler.parser.VarDeclaration;
+import descent.internal.compiler.parser.VarExp;
 import descent.internal.compiler.parser.integer_t;
 import descent.internal.compiler.parser.real_t;
 import descent.internal.compiler.parser.ast.AstVisitorAdapter;
@@ -143,6 +146,23 @@ public class EvaluationEngine extends AstVisitorAdapter {
 		} else if (init.isExpInitializer() != null) {
 			ExpInitializer expInit = (ExpInitializer) init;
 			evalExp(expInit.exp);
+		} else if (init.isStructInitializer() != null) {
+			StructInitializer structInit = (StructInitializer) init;
+			
+			String name = structInit.ad.ident.toChars();
+			String[] names = new String[structInit.ad.fields.size()]; 
+			for (int i = 0; i < names.length; i++) {
+				names[i] = structInit.ad.fields.get(i).ident.toChars();
+			}
+			IEvaluationResult[] values = new IEvaluationResult[structInit.value.size()];
+			for (int i = 0; i < values.length; i++) {
+				evalInit(structInit.value.get(i));
+				values[i] = result;
+			}
+			
+			StructLiteral sl = new StructLiteral(name, names, values);
+			result = new EvaluationResult(sl, IEvaluationResult.STRUCT_LITERAL);
+			
 		} else if (init.isArrayInitializer() != null) {
 			ArrayInitializer arrayInit = (ArrayInitializer) init;
 			
@@ -168,6 +188,14 @@ public class EvaluationEngine extends AstVisitorAdapter {
 			evalString((StringExp) exp);
 		} else if (exp instanceof NegExp) {
 			// evalExp(((NegExp) exp).e1);
+		} else if (exp instanceof VarExp) {
+			Declaration decl = ((VarExp) exp).var;
+			if (decl instanceof VarDeclaration) {
+				VarDeclaration var = (VarDeclaration) decl;
+				if (var.isConst()) { 
+					evalInit(var.init);
+				}
+			}
 		} else if (exp instanceof StructLiteralExp) {
 			StructLiteralExp sle = (StructLiteralExp) exp;
 			String name = sle.sd.ident.toChars();

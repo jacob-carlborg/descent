@@ -90,7 +90,7 @@ public class ModuleBuilder {
 	/*
 	 * Whether to make surface Module semantic.
 	 */
-	public boolean LAZY_MODULES = true;
+	public boolean LAZY_MODULES = false;
 	
 	/*
 	 * Whether to make surface ClassDeclaration semantic lazy.

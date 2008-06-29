@@ -10,8 +10,8 @@ import descent.core.compiler.CharOperation;
  */
 public class ASTNodeEncoder {
 	
-	private char[] nastyChar = { '/' };
-	private char[] nastyCharSoltuion = { '*', '!', '_', '!', '*' };
+	private final static char[] nastyChar = { '/' };
+	private final static char[] nastyCharSoltuion = { '*', '!', '_', '!', '*' };
 	
 	private Parser parser;
 	private Parser initParser(char[] source) {
@@ -32,7 +32,7 @@ public class ASTNodeEncoder {
 	// the '/' character in it, so replace it with some very improbable
 	// string, and then replace it back later
 	
-	private char[] encoderForIndexer(char[] value) {
+	public static char[] encoderForIndexer(char[] value) {
 		if (CharOperation.indexOf('/', value) != -1) {
 			return CharOperation.replace(value, nastyChar, nastyCharSoltuion);
 		} else {

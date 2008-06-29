@@ -32,7 +32,7 @@ public class ArrayInitializer extends Initializer {
 
 	public void addInit(Expression index, Initializer value) {
 		if (value == null) {
-			System.out.println();
+			System.out.println(123456);
 		}
 		
 		if (this.index == null) {
@@ -142,6 +142,7 @@ public class ArrayInitializer extends Initializer {
 				dim = length;
 			}
 		}
+		
 	    if (new integer_t(dim).multiply(t.next.size(context)).compareTo(amax) >= 0) {
 	    	if (context.acceptsProblems()) {
 	    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArrayDimensionExceedsMax, this, String.valueOf(dim), amax.divide(t.next.size(context)).toString() ));
@@ -171,6 +172,9 @@ public class ArrayInitializer extends Initializer {
 			ai.index.set(i, e);
 
 			Initializer init = value.get(i);
+			if (init == null) {
+				System.out.println(123456);
+			}
 			init = init.syntaxCopy(context);
 			ai.value.set(i, init);
 		}

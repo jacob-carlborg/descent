@@ -24,6 +24,7 @@ import descent.internal.compiler.ISourceElementRequestor.TypeInfo;
 import descent.internal.compiler.ISourceElementRequestor.TypeParameterInfo;
 import descent.internal.compiler.impl.CompilerOptions;
 import descent.internal.compiler.parser.*;
+import descent.internal.compiler.parser.ast.ASTNode;
 import descent.internal.compiler.parser.ast.AstVisitorAdapter;
 import descent.internal.compiler.parser.ast.NaiveASTFlattener;
 
@@ -619,13 +620,23 @@ public class SourceElementParser extends AstVisitorAdapter {
 		}
 		
 		info.type = getSignature(node.type);
-		info.initializationSource = encoder.encodeInitializer(node.init);
+		info.initializationSource = encode(node.init);
 		
 		requestor.enterField(info);
 		
 		return true;
 	}
 	
+	private char[] encode(ASTDmdNode node) {
+		if (node == null) {
+			return null;
+		}
+		
+		char[] value = new char[node.length];
+		System.arraycopy(source, node.start, value, 0, node.length);
+		return ASTNodeEncoder.encoderForIndexer(value);
+	}
+
 	@Override
 	public boolean visit(AliasDeclaration node) {
 		if (insideFunction()) {
@@ -688,7 +699,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 	
 	@Override
 	public boolean visit(StaticAssert node) {
-		requestor.enterInitializer(startOfDeclaration(node), getFlags(node, node.modifiers) | Flags.AccStaticAssert, encoder.encodeExpression(node.exp));
+		requestor.enterInitializer(startOfDeclaration(node), getFlags(node, node.modifiers) | Flags.AccStaticAssert, encode(node.exp));
 		return false;
 	}
 	
@@ -787,7 +798,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 			info.name = CharOperation.NO_CHAR;
 		}
 		
-		info.initializationSource = encoder.encodeExpression(node.value);
+		info.initializationSource = encode(node.value);
 		
 		requestor.enterField(info);
 		
@@ -819,7 +830,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 	
 	@Override
 	public boolean visit(CompileDeclaration node) {
-		requestor.enterInitializer(startOf(node), getFlags(node, node.modifiers) | Flags.AccMixin, encoder.encodeExpression(node.exp));
+		requestor.enterInitializer(startOf(node), getFlags(node, node.modifiers) | Flags.AccMixin, encode(node.exp));
 		return false;
 	}
 	
