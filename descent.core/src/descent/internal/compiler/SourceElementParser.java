@@ -366,6 +366,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 				info.nameSourceEnd = info.declarationStart + 5; // class
 			}
 		}
+		info.isForwardDeclaration = node.members == null;
 		//info.secondary = !foundType;
 		
 		info.superinterfaces = getTokens(baseClasses);
@@ -764,7 +765,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 			info.nameSourceStart = node.start;
 			info.nameSourceEnd = node.start + 3; // enum
 		}
-		
+		info.isForwardDeclaration = node.members == null;
 		info.superinterfaces = node.memtype == null ? CharOperation.NO_CHAR_CHAR : new char[][] { getSignature(node.memtype) };
 		
 		requestor.enterType(info);

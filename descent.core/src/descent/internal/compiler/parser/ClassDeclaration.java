@@ -145,6 +145,9 @@ public class ClassDeclaration extends AggregateDeclaration {
 			for (i = 0; i < this.baseclasses.size(); i++) {
 				BaseClass b = this.baseclasses.get(i);
 
+				if (b == null || b.base == null) {
+					System.out.println(123456);
+				}
 				access = b.base.getAccess(smember);
 				switch (access) {
 				case PROTnone:
@@ -349,6 +352,10 @@ public class ClassDeclaration extends AggregateDeclaration {
 	
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
+		if ("FilePath".equals(new String(ident.ident))) {
+			System.out.println(123456);
+		}
+		
 		if (rest != null && !rest.isConsumed()) {
 			if (rest.getScope() == null) { 
 				rest.setSemanticContext(sc, context);

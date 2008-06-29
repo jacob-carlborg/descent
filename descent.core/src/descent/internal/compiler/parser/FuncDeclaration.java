@@ -369,10 +369,11 @@ public class FuncDeclaration extends Declaration {
 				return null;
 			}
 			if (materialized == null) {
-				materialized = materialize();
-				materialized.semantic(scope.enclosing, context);
-				materialized.semantic2(scope.enclosing, context);
-				materialized.semantic3(scope.enclosing, context);
+				Dsymbol sym = internalMaterialize();
+				sym.semantic(scope.enclosing, context);
+				sym.semantic2(scope.enclosing, context);
+				sym.semantic3(scope.enclosing, context);
+				materialized = extractFunction(sym);
 			}
 			return materialized.interpret(istate, arguments, context);
 		}
@@ -566,6 +567,17 @@ public class FuncDeclaration extends Declaration {
 	}
 	
 	public FuncDeclaration materialize() {
+		Dsymbol sym = internalMaterialize();
+		if (sym == null) {
+			return null;
+		}
+		
+		sym = extractFunction(sym);
+
+		return (FuncDeclaration) sym;
+	}
+	
+	private Dsymbol internalMaterialize() {
 		try {
 			String source = javaElement.getSource();
 			// TODO api level
@@ -573,28 +585,31 @@ public class FuncDeclaration extends Declaration {
 					.length(), false, false, false, false, Lexer.D1,
 					null, null, false, null);
 			parser.nextToken();
-
+	
 			Module module = parser.parseModuleObj();
-
-			Dsymbol sym = module.members.get(0);
-			while (sym instanceof StorageClassDeclaration
-					|| sym instanceof ProtDeclaration) {
-				if (sym instanceof StorageClassDeclaration) {
-					sym = ((StorageClassDeclaration) sym).decl.get(0);
-				} else {
-					sym = ((ProtDeclaration) sym).decl.get(0);
-				}
-			}
-
-			if (sym instanceof TemplateDeclaration) {
-				sym = ((TemplateDeclaration) sym).members.get(0);
-			}
-
-			return (FuncDeclaration) sym;
+	
+			return module.members.get(0);
 		} catch (JavaModelException e1) {
 			Util.log(e1);
 			return null;
 		}
+	}
+	
+	private FuncDeclaration extractFunction(Dsymbol sym) {
+		while (sym instanceof StorageClassDeclaration
+				|| sym instanceof ProtDeclaration) {
+			if (sym instanceof StorageClassDeclaration) {
+				sym = ((StorageClassDeclaration) sym).decl.get(0);
+			} else {
+				sym = ((ProtDeclaration) sym).decl.get(0);
+			}
+		}
+
+		if (sym instanceof TemplateDeclaration) {
+			sym = ((TemplateDeclaration) sym).members.get(0);
+		}
+		
+		return (FuncDeclaration) sym;
 	}
 
 	@Override
@@ -1307,9 +1322,17 @@ public class FuncDeclaration extends Declaration {
 				if (cd.baseClass != null) {
 					Dsymbol s = cd.baseClass.search(loc, ident, 0, context);
 					if (s != null) {
-						FuncDeclaration f2 = s.isFuncDeclaration();
+						FuncDeclaration f2;
+						
+						// TODO added for Descent, see if it's correct
+						FuncAliasDeclaration fad = s.isFuncAliasDeclaration();
+						if (fad != null) {
+							f2 = fad.funcalias;
+						} else {
+							f2 = s.isFuncDeclaration();
+						}
 						if (f2 == null) {
-							cd.baseClass.search(loc, ident, 0, context);
+							System.out.println(123456);
 						}
 						f2 = f2.overloadExactMatch(type, context);
 						if (f2 != null && f2.isFinal()

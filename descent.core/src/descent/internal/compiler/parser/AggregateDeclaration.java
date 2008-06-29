@@ -324,6 +324,11 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 
 	@Override
 	public boolean isDeprecated() {
+		if (rest != null && rest.getScope() != null) {
+			return (rest.getScope().stc & STC.STCdeprecated) != 0;
+		}
+		
+		consumeRest();
 		return isdeprecated;
 	}
 

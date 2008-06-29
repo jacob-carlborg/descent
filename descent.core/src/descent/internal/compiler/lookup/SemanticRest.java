@@ -42,6 +42,7 @@ public class SemanticRest {
 		runnable.run();
 	}
 	
+	private static int nest = 0;
 	public void consume(Dsymbol symbol) {
 		if (sc == null && !skipScopeCheck) {
 			return;
@@ -49,11 +50,39 @@ public class SemanticRest {
 		
 		this.consumed = true;
 		
+		long buildStructureTime = -1;
+		
 		if (!structureKnown) {
+			long time = System.currentTimeMillis();
+			
 			buildStructure();
+			
+			buildStructureTime = System.currentTimeMillis() - time;
 		}
 		
+		long time = System.currentTimeMillis();
+		
+		nest++;
+		
 		symbol.semantic(sc, context);
+		
+		nest--;
+		
+		time = System.currentTimeMillis() - time;
+		
+		if (buildStructureTime > 10) {
+			for (int i = 0; i < nest; i++) {
+				System.out.print("  ");
+			}
+			System.out.println("SemanticRest#buildStructure(" + symbol.ident + ") = " + buildStructureTime);
+		}
+		
+		if (time > 10) {
+			for (int i = 0; i < nest; i++) {
+				System.out.print("  ");
+			}
+			System.out.println("SemanticRest#semantic(" + symbol.getModule().moduleName + "." + symbol.ident + ") = " + time);
+		}
 	}
 	
 

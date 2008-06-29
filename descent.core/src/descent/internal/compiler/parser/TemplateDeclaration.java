@@ -379,7 +379,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 						tuple_dim = nfargs - (nfparams - 1);
 						t.objects.setDim(tuple_dim);
 						for (i = 0; i < tuple_dim; i++) {
-							Expression farg = (Expression) fargs.get(fptupindex + 1);
+							Expression farg = (Expression) fargs.get(fptupindex + i);
 							t.objects.set(i, farg.type);
 						}
 						throw GOTO_L2;
@@ -800,6 +800,10 @@ public class TemplateDeclaration extends ScopeDsymbol {
 
 		if (beforePf == null) {
 			throw new IllegalStateException("assert(beforeBf)");
+		}
+		
+		if (f == beforePf) {
+			System.out.println(123456);
 		}
 
 		beforePf.overnext = f;

@@ -40,6 +40,12 @@ public class JavaPartitionScanner extends RuleBasedPartitionScanner implements I
 	 * Detector for empty comments.
 	 */
 	static class EmptyCommentDetector implements IWordDetector {
+		
+		private final char relevantChar;
+
+		public EmptyCommentDetector(char relevantChar) {
+			this.relevantChar = relevantChar;
+		}
 
 		/*
 		 * @see IWordDetector#isWordStart
@@ -52,7 +58,7 @@ public class JavaPartitionScanner extends RuleBasedPartitionScanner implements I
 		 * @see IWordDetector#isWordPart
 		 */
 		public boolean isWordPart(char c) {
-			return (c == '*' || c == '/');
+			return (c == relevantChar || c == '/');
 		}
 	}
 
@@ -67,10 +73,17 @@ public class JavaPartitionScanner extends RuleBasedPartitionScanner implements I
 		 * Constructor for EmptyCommentRule.
 		 * @param successToken
 		 */
-		public EmptyCommentRule(IToken successToken) {
-			super(new EmptyCommentDetector());
+		public EmptyCommentRule(char relevantChar, IToken successToken) {
+			super(new EmptyCommentDetector(relevantChar));
 			fSuccessToken= successToken;
-			addWord("/**/", fSuccessToken); //$NON-NLS-1$
+			
+			StringBuilder sb = new StringBuilder();
+			sb.append('/');
+			sb.append(relevantChar);
+			sb.append(relevantChar);
+			sb.append('/');
+			
+			addWord(sb.toString(), fSuccessToken); //$NON-NLS-1$
 		}
 
 		/*
@@ -109,8 +122,11 @@ public class JavaPartitionScanner extends RuleBasedPartitionScanner implements I
 		
 		rules.add(new EndOfLineRule("#", pragma)); //$NON-NLS-1$
 		
+		rules.add(new EmptyCommentRule('+', multiLinePlusComment));
 		rules.add(new NestedCommentRule("/++", "/+", "+/", multiLinePlusDocComment, (char) 0, true)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		rules.add(new NestedCommentRule("/+", "/+", "+/", multiLinePlusComment, (char) 0, true)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		
+		rules.add(new EmptyCommentRule('*', javaDoc));
 		rules.add(new MultiLineRule("/**", "*/", javaDoc, (char) 0, true)); //$NON-NLS-1$ //$NON-NLS-2$
 		rules.add(new MultiLineRule("/*", "*/", multiLineComment, (char) 0, true)); //$NON-NLS-1$ //$NON-NLS-2$
 

@@ -46,7 +46,7 @@ public class CompoundStatement extends Statement {
 				if (0 == (result & BEfallthru) && !s.comeFrom()) {
 					if (context.global.params.warnings) {
 						if (context.acceptsProblems()) {
-							context.acceptProblem(Problem.newSemanticTypeError(IProblem.StatementIsNotReachable, this));
+							context.acceptProblem(Problem.newSemanticTypeWarning(IProblem.StatementIsNotReachable, s));
 						}
 					}
 				}
@@ -230,8 +230,10 @@ public class CompoundStatement extends Statement {
 									a2.add(statements.get(j));
 								}
 								body = new CompoundStatement(loc, a2);
-								s = new TryFinallyStatement(loc, body,
-										sfinally[0]);
+								body.copySourceRange(a2.get(0), a2.get(a2.size() - 1));
+								
+								s = new TryFinallyStatement(loc, body, sfinally[0]);
+								s.copySourceRange(body, sfinally[0]);
 								s = s.semantic(sc, context);
 								statements.add(s);
 								break;

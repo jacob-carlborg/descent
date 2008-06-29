@@ -154,7 +154,10 @@ public class CodeFormatterVisitor extends ASTVisitor
 					prefs.alignment_for_base_class_lists);
 		}
 		
-		formatDeclarationBlock(node.declarations(), prefs.brace_position_for_type_declaration, prefs.indent_body_declarations_compare_to_type_header);
+		
+		if(!isNextToken(TOK.TOKsemicolon)) {
+			formatDeclarationBlock(node.declarations(), prefs.brace_position_for_type_declaration, prefs.indent_body_declarations_compare_to_type_header);
+		}
 		
 		if(isNextToken(TOK.TOKsemicolon)) {
 			scribe.printNextToken(TOK.TOKsemicolon, prefs.insert_space_before_semicolon);
@@ -937,6 +940,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 				if(prefs.insert_space_after_opening_paren_in_extern_declarations)
 					scribe.space();
 				scribe.printNextToken(TOK.TOKidentifier);
+				if (node.getLinkage() == ExternDeclaration.Linkage.CPP) {
+					scribe.printNextToken(TOK.TOKplusplus);
+				}
 				if(prefs.insert_space_before_closing_paren_in_extern_declarations)
 					scribe.space();
 			}

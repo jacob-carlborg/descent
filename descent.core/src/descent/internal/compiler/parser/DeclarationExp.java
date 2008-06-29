@@ -138,12 +138,13 @@ public class DeclarationExp extends Expression {
 			declaration.semantic(sc, context);
 			s.parent = sc.parent;
 		}
-		if (context.global.errors == 0) {
+		// Commented this for Descent: we want semantic even if there are errors
+//		if (context.global.errors == 0) {
 			declaration.semantic2(sc, context);
-			if (context.global.errors == 0) {
+//			if (context.global.errors == 0) {
 				declaration.semantic3(sc, context);
-			}
-		}
+//			}
+//		}
 
 		type = Type.tvoid;
 		return this;

@@ -1020,10 +1020,28 @@ public class JavaElementLabels {
 				buf.append('.');
 			}
 			int parentType= type.getParent().getElementType();
-			if (parentType == IJavaElement.METHOD || parentType == IJavaElement.FIELD || parentType == IJavaElement.INITIALIZER) { // anonymous or local
+			if (parentType == IJavaElement.METHOD || parentType == IJavaElement.FIELD) { // anonymous or local
 				getElementLabel(type.getParent(), 0, buf);
 				buf.append('.');
-			}
+			} 
+			// TODO enable showing if the declaration is extern, but put an option in the UI first
+//			else if (parentType == IJavaElement.INITIALIZER) {
+//				IInitializer init = (IInitializer) type.getParent();
+//				try {
+//					if (init.isExtern()) {
+//						String elementName = init.getElementName();
+//						if (elementName != null && elementName.length() > 0) {
+//							StringBuffer s2 = new StringBuffer();
+//							s2.append("extern(");
+//							s2.append(elementName);
+//							s2.append(") ");
+//							buf.insert(0, s2);
+//						}
+//					}
+//				} catch (JavaModelException e) {
+//					
+//				}
+//			}
 		}
 		
 		String typeName= type.getElementName();

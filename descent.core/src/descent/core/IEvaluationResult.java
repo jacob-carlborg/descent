@@ -169,7 +169,6 @@ public interface IEvaluationResult {
 	/**
 	 * An array result (which is not char[], dchar[] or wchar[]).
 	 * {@link #getValue()} can be safely cast to {@link IEvaluationResult[]}.
-	 * TODO: implement this
 	 */
 	int ARRAY = CREAL + 1;
 	
@@ -178,6 +177,12 @@ public interface IEvaluationResult {
 	 * {@link #getValue()} can be safely cast to {@link CompilationUnit}.
 	 */
 	int COMPILATION_UNIT = ARRAY + 1;
+	
+	/**
+	 * A struct literal result.
+	 * {@link #getValue()} can be safely cast to IStructLiteral.
+	 */
+	int STRUCT_LITERAL = COMPILATION_UNIT + 1;
 	
 	/**
 	 * Returns the kind of this evaluation result. This is one of this

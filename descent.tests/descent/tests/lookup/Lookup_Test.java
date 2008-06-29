@@ -74,7 +74,7 @@ public class Lookup_Test extends AbstractLookupTest {
 	}
 	
 	public void testInterfaceDefinedOk() throws Exception {
-		one("interface Bar { a }");
+		one("interface Bar { }");
 		two("Bar b;");
 		assertNoErrors();
 	}

@@ -910,6 +910,11 @@ public String[][] resolveType(String typeName, WorkingCopyOwner owner) throws Ja
 	*/
 	return new String[0][];
 }
+
+public boolean isForwardDeclaration() throws JavaModelException {
+	SourceTypeElementInfo info = (SourceTypeElementInfo) getElementInfo();
+	return info.isForwardDeclaration();
+}
 /**
  * @private Debugging purposes
  */

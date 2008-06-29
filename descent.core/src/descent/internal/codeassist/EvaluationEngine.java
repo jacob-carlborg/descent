@@ -15,6 +15,8 @@ import descent.core.dom.CompilationUnitResolver.ParseResult;
 import descent.internal.compiler.env.ICompilationUnit;
 import descent.internal.compiler.impl.CompilerOptions;
 import descent.internal.compiler.parser.ASTDmdNode;
+import descent.internal.compiler.parser.ArrayInitializer;
+import descent.internal.compiler.parser.ArrayLiteralExp;
 import descent.internal.compiler.parser.CallExp;
 import descent.internal.compiler.parser.ComplexExp;
 import descent.internal.compiler.parser.EnumDeclaration;
@@ -29,6 +31,7 @@ import descent.internal.compiler.parser.NegExp;
 import descent.internal.compiler.parser.RealExp;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.StringExp;
+import descent.internal.compiler.parser.StructLiteralExp;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeEnum;
 import descent.internal.compiler.parser.VarDeclaration;
@@ -140,6 +143,17 @@ public class EvaluationEngine extends AstVisitorAdapter {
 		} else if (init.isExpInitializer() != null) {
 			ExpInitializer expInit = (ExpInitializer) init;
 			evalExp(expInit.exp);
+		} else if (init.isArrayInitializer() != null) {
+			ArrayInitializer arrayInit = (ArrayInitializer) init;
+			
+			IEvaluationResult[] er = new IEvaluationResult[arrayInit.value.size()];
+			for (int i = 0; i < er.length; i++) {
+				Initializer subInit = arrayInit.value.get(i);
+				evalInit(subInit);
+				er[i] = result;
+			}
+			
+			result = new EvaluationResult(er, IEvaluationResult.ARRAY);
 		}
 	}
 	
@@ -154,6 +168,31 @@ public class EvaluationEngine extends AstVisitorAdapter {
 			evalString((StringExp) exp);
 		} else if (exp instanceof NegExp) {
 			// evalExp(((NegExp) exp).e1);
+		} else if (exp instanceof StructLiteralExp) {
+			StructLiteralExp sle = (StructLiteralExp) exp;
+			String name = sle.sd.ident.toChars();
+			String[] names = new String[sle.sd.fields.size()]; 
+			for (int i = 0; i < names.length; i++) {
+				names[i] = sle.sd.fields.get(i).ident.toChars();
+			}
+			IEvaluationResult[] values = new IEvaluationResult[sle.elements.size()];
+			for (int i = 0; i < values.length; i++) {
+				evalExp(sle.elements.get(i));
+				values[i] = result;
+			}
+			
+			StructLiteral sl = new StructLiteral(name, names, values);
+			result = new EvaluationResult(sl, IEvaluationResult.STRUCT_LITERAL);
+		} else if (exp instanceof ArrayLiteralExp) {
+			ArrayLiteralExp ale = (ArrayLiteralExp) exp;
+			
+			IEvaluationResult[] er = new IEvaluationResult[ale.elements.size()];
+			for (int i = 0; i < er.length; i++) {
+				evalExp(ale.elements.get(i));
+				er[i] = result;
+			}
+			
+			result = new EvaluationResult(er, IEvaluationResult.ARRAY);
 		}
 	}
 	

@@ -17,6 +17,15 @@ import descent.internal.core.CompilerConfiguration;
 import descent.internal.core.util.Util;
 
 public class SemanticContext {
+	
+	public static class ModuleMissingSemantic {
+		public Module module;
+		public Dsymbol symbol;
+		public ModuleMissingSemantic(Module module, Dsymbol symbol) {
+			this.module = module;
+			this.symbol = symbol;
+		}
+	}
 
 	public boolean BREAKABI = true;
 	public boolean IN_GCC = false;
@@ -68,7 +77,6 @@ public class SemanticContext {
 	public int apiLevel;
 	
 	public StringTable stringTable;
-
 	public DsymbolTable st;
 	
 	/*
@@ -282,8 +290,10 @@ public class SemanticContext {
 		// If we're in object.d, assign the well known class declarations
 		if (compoundName.length == 1 && CharOperation.equals(compoundName[0], Id.object)) {
 			m.consumeRestStructure();
-			for (Dsymbol symbol : m.members) {
-				checkObjectMember(symbol);
+			if (m.members != null) {
+				for (Dsymbol symbol : m.members) {
+					checkObjectMember(symbol);
+				}
 			}
 		}
 		

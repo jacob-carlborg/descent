@@ -216,6 +216,7 @@ public class Import extends Dsymbol {
 			}
 
 			sc = sc.push(mod);
+			
 			for (int i = 0; i < size(aliasdecls); i++) {
 				Dsymbol s = (Dsymbol) aliasdecls.get(i);
 

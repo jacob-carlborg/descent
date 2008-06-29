@@ -109,7 +109,7 @@ public class CompilationUnitStructureRequestor extends ReferenceInfoAdapter impl
 	private static Object dummy = new Object();
 	protected Stack<Boolean> hasId = new Stack<Boolean>();
 	protected int topLevelNesting = 0;
-	protected HashtableOfCharArrayAndObject topLevelIdentifiers = new HashtableOfCharArrayAndObject();
+	protected boolean hasTopLevelCompileTimeDifficulties = false;
 	
 	protected boolean stillAcceptsImportContainer = true;
 
@@ -247,8 +247,6 @@ public void enterConstructor(MethodInfo methodInfo) {
  * @see ISourceElementRequestor
  */
 public void enterField(FieldInfo fieldInfo) {
-	addToTopLevel(fieldInfo.name);
-	
 	JavaElementInfo parentInfo = (JavaElementInfo) this.infoStack.peek();
 	JavaElement parentHandle= (JavaElement) this.handleStack.peek();
 	SourceField handle = null;
@@ -290,9 +288,13 @@ public void enterInitializer(
 	int declarationSourceStart,
 	long modifiers,
 	char[] displayString) {
-	// If there is a mixin, cancel the identifiers cache
-	if (topLevelNesting == 0 && ((modifiers & Flags.AccMixin) != 0) || (modifiers & Flags.AccTemplateMixin) != 0) {
-		topLevelIdentifiers = null;
+	
+	if (topLevelNesting == 0 && (
+			(modifiers & Flags.AccMixin) != 0 ||
+			(modifiers & Flags.AccDebugAssignment) != 0 ||
+			(modifiers & Flags.AccVersionAssignment) != 0
+			)) {
+		hasTopLevelCompileTimeDifficulties = true;
 	}
 
 	JavaElementInfo parentInfo = (JavaElementInfo) this.infoStack.peek();
@@ -326,6 +328,10 @@ public void enterInitializer(
 }
 
 public void enterConditional(int declarationSourceStart, long modifiers, char[] displayString) {
+	if (topLevelNesting == 0 && (modifiers & Flags.AccStaticIfDeclaration) != 0) {
+		hasTopLevelCompileTimeDifficulties = true;
+	}
+	
 	JavaElementInfo parentInfo = (JavaElementInfo) this.infoStack.peek();
 	JavaElement parentHandle= (JavaElement) this.handleStack.peek();
 	Conditional handle = null;
@@ -396,8 +402,6 @@ public void enterConditionalElse(int declarationSourceStart) {
  * @see ISourceElementRequestor
  */
 public void enterMethod(MethodInfo methodInfo) {
-	addToTopLevel(methodInfo.name);
-	
 	JavaElementInfo parentInfo = (JavaElementInfo) this.infoStack.peek();
 	JavaElement parentHandle= (JavaElement) this.handleStack.peek();
 	SourceMethod handle = null;
@@ -472,7 +476,6 @@ public void enterMethod(MethodInfo methodInfo) {
  * @see ISourceElementRequestor
  */
 public void enterType(TypeInfo typeInfo) {
-	addToTopLevel(typeInfo.name);
 	if (typeInfo.name != null && typeInfo.name.length > 0) {
 		hasId.push(true);
 		topLevelNesting++;
@@ -491,6 +494,7 @@ public void enterType(TypeInfo typeInfo) {
 	info.setHandle(handle);
 	info.setSourceRangeStart(typeInfo.declarationStart);
 	info.setFlags(typeInfo.modifiers);
+	info.setForwardDeclaration(typeInfo.isForwardDeclaration);
 	// Added to allow annonymous enums, structs and unions
 	if (typeInfo.name != null) {
 		info.setNameSourceStart(typeInfo.nameSourceStart);
@@ -576,7 +580,8 @@ public void exitCompilationUnit(int declarationEnd) {
 	// set children
 	setChildren(this.unitInfo);
 	
-	this.unitInfo.topLevelIdentifiers = topLevelIdentifiers;
+//	System.out.println("Module " + this.unit.getElementName() + " has top level compile time difficulties: " + hasTopLevelCompileTimeDifficulties);
+	this.unitInfo.hasTopLevelCompileTimeDifficulties = hasTopLevelCompileTimeDifficulties;
 	
 	this.unitInfo.setSourceLength(declarationEnd + 1);
 
@@ -694,12 +699,6 @@ private void setChildren(JavaElementInfo info) {
 		IJavaElement[] elements = new IJavaElement[length];
 		childrenList.toArray(elements);
 		info.children = elements;
-	}
-}
-
-private void addToTopLevel(char[] name) {
-	if (topLevelIdentifiers != null && topLevelNesting == 0 && name != null && name.length > 0) {
-		topLevelIdentifiers.put(name, dummy);	
 	}
 }
 

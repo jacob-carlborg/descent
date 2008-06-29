@@ -70,6 +70,8 @@ public class JavaEvaluateHover extends AbstractJavaEditorTextHover implements
 		case IEvaluationResult.CHAR:
 		case IEvaluationResult.WCHAR:
 		case IEvaluationResult.DCHAR:
+		case IEvaluationResult.STRUCT_LITERAL:
+		case IEvaluationResult.ARRAY:
 			return result.toString();
 		case IEvaluationResult.CHAR_ARRAY:
 		case IEvaluationResult.WCHAR_ARRAY:

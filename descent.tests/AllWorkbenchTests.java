@@ -1,5 +1,6 @@
 import junit.framework.Test;
 import junit.framework.TestSuite;
+import descent.tests.assist.CompletionBugs_Test;
 import descent.tests.assist.CompletionOnBreakStatement_Test;
 import descent.tests.assist.CompletionOnCaseStatement_Test;
 import descent.tests.assist.CompletionOnContinueStatement_Test;
@@ -111,6 +112,7 @@ public class AllWorkbenchTests {
 			suite.addTestSuite(CompletionOnModule_Test.class);
 			suite.addTestSuite(CompletionOnScope_Test.class);
 			suite.addTestSuite(CompletionOnTypeDotIdExp_Test.class);
+			suite.addTestSuite(CompletionBugs_Test.class);
 		}
 		
 		if (isEnabled(CODE_EVALUATE)) {

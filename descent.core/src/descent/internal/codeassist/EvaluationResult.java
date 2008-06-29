@@ -22,6 +22,20 @@ public class EvaluationResult implements IEvaluationResult {
 	
 	@Override
 	public String toString() {
+		if (value instanceof IEvaluationResult[]) {
+			IEvaluationResult[] results = (IEvaluationResult[]) value;
+			
+			StringBuilder sb = new StringBuilder();
+			sb.append("[");
+			for (int i = 0; i < results.length; i++) {
+				if (i != 0) {
+					sb.append(", ");
+				}
+				sb.append(results[i]);
+			}
+			sb.append("]");
+			return sb.toString();
+		}
 		return value.toString();
 	}
 

@@ -899,16 +899,16 @@ public class CompletionParser extends Parser {
 	
 	@Override
 	protected AggregateDeclaration endAggregateDeclaration(AggregateDeclaration a) {
-		if (a instanceof ClassDeclaration && a.start < cursorLocation && cursorLocation < a.start + a.length) {
-			ClassDeclaration original = (ClassDeclaration) a;
-			CompletionOnClassDeclaration cc = new CompletionOnClassDeclaration(original.loc, original.ident, original.baseclasses);
-			cc.members = original.members;
-			cc.sourceMembers = original.sourceMembers;
-			cc.isCompletingScope = true;
-			
-			assistNode = cc;
-			return cc;
-		}
+//		if (a instanceof ClassDeclaration && a.start < cursorLocation && cursorLocation < a.start + a.length) {
+//			ClassDeclaration original = (ClassDeclaration) a;
+//			CompletionOnClassDeclaration cc = new CompletionOnClassDeclaration(original.loc, original.ident, original.baseclasses);
+//			cc.members = original.members;
+//			cc.sourceMembers = original.sourceMembers;
+//			cc.isCompletingScope = true;
+//			
+//			assistNode = cc;
+//			return cc;
+//		}
 		return super.endAggregateDeclaration(a);
 	}
 	

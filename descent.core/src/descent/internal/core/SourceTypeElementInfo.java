@@ -64,19 +64,11 @@ public class SourceTypeElementInfo extends MemberElementInfo implements ISourceT
 	protected HashMap categories;
 	
 	/*
-	 * The default, min and max values of this enum.
+	 * Whether this type was declared like:
+	 * class Bar;
+	 * enum Foo;
 	 */
-	protected integer_t[] enumValues;
-	
-	/*
-	 * The sizeof property.
-	 */
-	protected int sizeof;
-	
-	/*
-	 * The alignof property.
-	 */
-	protected int alignof;
+	protected boolean isForwardDeclaration;
 	
 protected void addCategories(IJavaElement element, char[][] elementCategories) {
 	if (elementCategories == null) return;
@@ -291,9 +283,6 @@ public char[][] getTypeParameterNames() {
 	}
 	return typeParameterNames;
 }
-public integer_t[] getEnumValues() {
-	return enumValues;
-}
 /**
  * @see ISourceType
  */
@@ -318,23 +307,11 @@ protected void setSuperclassName(char[] superclassName) {
 protected void setSuperInterfaceNames(char[][] superInterfaceNames) {
 	this.superInterfaceNames = superInterfaceNames;
 }
-/**
- * Sets the default, min and max values of this enum.
- */
-protected void setEnumValues(integer_t[] enumValues) {
-	this.enumValues = enumValues;
+public void setForwardDeclaration(boolean isForwardDeclaration) {
+	this.isForwardDeclaration = isForwardDeclaration;
 }
-public void setSizeof(int sizeof) {
-	this.sizeof = sizeof;
-}
-public int getSizeof() {
-	return sizeof;
-}
-public void setAlignof(int alignof) {
-	this.alignof = alignof;
-}
-public int getAlignof() {
-	return alignof;
+public boolean isForwardDeclaration() {
+	return isForwardDeclaration;
 }
 public String toString() {
 	return "Info for " + this.handle.toString(); //$NON-NLS-1$

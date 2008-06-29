@@ -1073,4 +1073,10 @@ public interface IType extends IMember, ITemplated {
 	 * @since 3.0
 	 */
 	String[][] resolveType(String typeName, WorkingCopyOwner owner) throws JavaModelException;
+	
+	/**
+	 * Determines whether this type was declared like "class Bar;", that
+	 * is, it is just a forward declaration definition.
+	 */
+	boolean isForwardDeclaration() throws JavaModelException;
 }

@@ -46,6 +46,7 @@ public interface ISourceElementRequestor {
 		public int nameSourceEnd;
 		public char[][] superinterfaces;
 		public TypeParameterInfo[] typeParameters;
+		public boolean isForwardDeclaration;
 	}
 	
 	public static class TypeParameterInfo {

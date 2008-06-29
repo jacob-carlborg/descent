@@ -432,7 +432,7 @@ public class CompletionEngine extends Engine
 			this.requestor.endReporting();
 			
 			time = System.currentTimeMillis() - time;
-//			System.out.println("Completion took " + time + " milliseconds to complete.");
+			System.out.println("Completion took " + time + " milliseconds to complete.");
 		}
 	}
 
@@ -715,6 +715,10 @@ public class CompletionEngine extends Engine
 	
 	private void completeSelectiveImport(CompletionOnImport node) throws JavaModelException {
 		doSemantic();
+		
+		node.semantic(Scope.createGlobal(node.mod, semanticContext), semanticContext);
+		node.mod.consumeRestStructure();
+		node.mod.consumeRest();
 		
 		if (node.mod != null) {
 			if (node.selectiveName == null) {
@@ -1374,6 +1378,7 @@ public class CompletionEngine extends Engine
 				completeScope(rootScope, INCLUDE_ALL);
 				includesFilter = 0;
 				
+				wantOverrides = false;
 				if (wantOverrides) {
 					List<FuncDeclaration> funcs = new ArrayList<FuncDeclaration>();
 					
@@ -2284,6 +2289,7 @@ public class CompletionEngine extends Engine
 			if (isType) {
 				if (currentName.length == 0 || match(currentName, ident)) {
 					if (member.getSignature() == null) {
+						member.consumeRest();
 						member.getSignature();
 					}
 					
