@@ -802,10 +802,6 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			throw new IllegalStateException("assert(beforeBf)");
 		}
 		
-		if (f == beforePf) {
-			System.out.println(123456);
-		}
-
 		beforePf.overnext = f;
 		f.overprevious = beforePf;
 		return true;

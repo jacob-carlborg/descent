@@ -88,8 +88,6 @@ public abstract class ASTNode
 	
 	/** {@inheritDoc} */
 	public final void accept(IASTVisitor visitor) {
-		AssertIn.isNotNull(visitor);
-
 		// begin with the generic pre-visit
 		visitor.preVisit(this);
 		// dynamic dispatch to internal method for type-specific visit/endVisit

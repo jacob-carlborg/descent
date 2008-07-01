@@ -952,7 +952,9 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		Type t = (Type) o;
 
 		// deco strings are unique and semantic() has been run
-		if (this.singleton == t.singleton || (t != null && singleton.deco != null && singleton.deco.equals(t.singleton.deco))) {
+		if (this.singleton == t.singleton ||
+				(t != null && deco != null && t.deco != null && deco.equals(t.deco)) ||
+				(t != null && singleton.deco != null && singleton.deco.equals(t.singleton.deco))) {
 			return true;
 		}
 		return false;

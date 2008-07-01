@@ -342,8 +342,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 			} else {
 				if (isLocal(sym)) {
 					addLocal((Declaration) sym, sym.getFlags());
-				} else if (!(sym instanceof descent.internal.compiler.parser.Package)
-						&& !(sym instanceof descent.internal.compiler.parser.Import)) {
+				} else if (!(sym instanceof descent.internal.compiler.parser.Package)) {
 					addBinarySearch(sym);
 				}
 			}

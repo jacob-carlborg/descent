@@ -388,10 +388,6 @@ public class Module extends Package {
 		 * need to stop infinite recursive searches.
 		 */
 		
-		if ("_P_WAIT".equals(new String(ident))) {
-			System.out.println(123456);
-		}
-
 		Dsymbol s = null;
 		if (insearch) {
 			s = null;

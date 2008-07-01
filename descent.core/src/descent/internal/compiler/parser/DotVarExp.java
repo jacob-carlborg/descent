@@ -15,6 +15,7 @@ public class DotVarExp extends UnaExp {
 
 	public Declaration var;
 	public int hasOverloads;
+	public IdentifierExp ident; // Descent: for better error reporting
 	
 	public DotVarExp(Loc loc, Expression e, Declaration var) {
 		this(loc, e, var, 0);
@@ -128,7 +129,7 @@ public class DotVarExp extends UnaExp {
 				AggregateDeclaration ad = var.toParent()
 						.isAggregateDeclaration();
 			    e1 = getRightThis(loc, sc, ad, e1, var, context);
-				accessCheck(sc, e1, var, context);
+				accessCheck(sc, e1, var, context, ident);
 			}
 		}
 		return this;

@@ -672,10 +672,10 @@ public class ForeachStatement extends Statement {
 								IProblem.ForeachIndexCannotBeRef, arg));
 					}
 				}
-				if (!arg.type.equals(taa.nextOf())) {
+				if (!arg.type.equals(taa.index)) {
 					if (context.acceptsProblems()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.ForeachIndexMustBeType, this, new String[] { taa.index.toChars(context), arg.type.toChars(context) }));
+								IProblem.ForeachIndexMustBeType, arg, new String[] { taa.index.toChars(context), arg.type.toChars(context) }));
 					}
 				}
 				arg = arguments.get(1);
@@ -683,7 +683,7 @@ public class ForeachStatement extends Statement {
 			if (!arg.type.equals(taa.next)) {
 				if (context.acceptsProblems()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.ForeachValueMustBeType, this, new String[] { taa.next.toChars(context), arg.type.toChars(context) }));
+							IProblem.ForeachValueMustBeType, arg, new String[] { taa.next.toChars(context), arg.type.toChars(context) }));
 				}
 			}
 

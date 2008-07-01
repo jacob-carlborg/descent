@@ -21,6 +21,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 
 import descent.core.ICompilationUnit;
+import descent.core.IImportDeclaration;
 import descent.core.IJavaElement;
 import descent.core.IMember;
 import descent.core.IPackageDeclaration;
@@ -184,6 +185,9 @@ public class JavadocHover extends AbstractJavaEditorTextHover implements IInform
 				} catch (JavaModelException ex) {
 					return null;
 				}
+			} else if (curr instanceof IImportDeclaration) {
+				HTMLPrinter.addSmallHeader(buffer, "import " + ((IImportDeclaration) curr).getElementName());
+				hasContents= true;
 			}
 		}
 		

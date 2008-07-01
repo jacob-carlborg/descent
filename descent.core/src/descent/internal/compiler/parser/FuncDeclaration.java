@@ -1331,9 +1331,6 @@ public class FuncDeclaration extends Declaration {
 						} else {
 							f2 = s.isFuncDeclaration();
 						}
-						if (f2 == null) {
-							System.out.println(123456);
-						}
 						f2 = f2.overloadExactMatch(type, context);
 						if (f2 != null && f2.isFinal()
 								&& f2.prot() != PROTprivate) {

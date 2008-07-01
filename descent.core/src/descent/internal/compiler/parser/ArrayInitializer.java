@@ -31,10 +31,6 @@ public class ArrayInitializer extends Initializer {
 	}
 
 	public void addInit(Expression index, Initializer value) {
-		if (value == null) {
-			System.out.println(123456);
-		}
-		
 		if (this.index == null) {
 			this.index = new Expressions();
 			this.value = new Initializers();
@@ -172,9 +168,6 @@ public class ArrayInitializer extends Initializer {
 			ai.index.set(i, e);
 
 			Initializer init = value.get(i);
-			if (init == null) {
-				System.out.println(123456);
-			}
 			init = init.syntaxCopy(context);
 			ai.value.set(i, init);
 		}

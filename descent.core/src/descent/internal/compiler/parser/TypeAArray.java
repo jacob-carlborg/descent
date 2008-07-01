@@ -27,8 +27,8 @@ public class TypeAArray extends TypeArray {
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, sourceIndex);
-			TreeVisitor.acceptChildren(visitor, key);
+			TreeVisitor.acceptChildren(visitor, sourceNext);
+			TreeVisitor.acceptChildren(visitor, sourceIndex);			
 		}
 		visitor.endVisit(this);
 	}

@@ -622,9 +622,14 @@ public abstract class ASTDmdNode extends ASTNode {
 	 * them, so we can then go to this creator when doing code-selection.
 	 */
 	public Dsymbol creator;
-
+	
 	public void accessCheck(Scope sc, Expression e, Declaration d,
 			SemanticContext context) {
+		accessCheck(sc, e, d, context, null);
+	}
+
+	public void accessCheck(Scope sc, Expression e, Declaration d,
+			SemanticContext context, ASTDmdNode reference) {
 		if (e == null) {
 			if ((d.prot() == PROTprivate && d.getModule() != sc.module
 					|| d.prot() == PROTpackage && !hasPackageAccess(sc, d))) {
@@ -646,12 +651,12 @@ public abstract class ASTDmdNode extends ASTNode {
 					cd = cd2;
 				}
 			}
-			cd.accessCheck(sc, d, context, e);
+			cd.accessCheck(sc, d, context, reference != null ? reference : e);
 		} else if (e.type.ty == Tstruct) { // Do access check
 			StructDeclaration cd;
 
 			cd = (((TypeStruct) e.type).sym);
-			cd.accessCheck(sc, d, context, e);
+			cd.accessCheck(sc, d, context, reference != null ? reference : e);
 		}
 	}
 
