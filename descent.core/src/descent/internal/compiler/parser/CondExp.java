@@ -107,7 +107,7 @@ public class CondExp extends BinExp {
 	@Override
 	public Expression modifiableLvalue(Scope sc, Expression e,
 			SemanticContext context) {
-		if (context.acceptsProblems()) {
+		if (context.acceptsErrors()) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.ConditionalExpressionIsNotAModifiableLvalue, this, toChars(context)));
 		}

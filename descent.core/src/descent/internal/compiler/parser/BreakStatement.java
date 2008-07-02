@@ -2,6 +2,9 @@ package descent.internal.compiler.parser;
 
 import static descent.internal.compiler.parser.BE.BEbreak;
 import static descent.internal.compiler.parser.BE.BEgoto;
+
+import java.util.ArrayList;
+
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
@@ -79,6 +82,9 @@ public class BreakStatement extends Statement {
 						 * and 1 is break.
 						 */
 						Statement s;
+						if (sc.fes.cases == null) {
+							sc.fes.cases = new ArrayList();
+						}
 						sc.fes.cases.add(this);
 						s = new ReturnStatement(Loc.ZERO, new IntegerExp(
 								sc.fes.cases.size() + 1));
@@ -92,19 +98,19 @@ public class BreakStatement extends Statement {
 					Statement s = ls.statement;
 
 					if (!s.hasBreak()) {
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(IProblem.LabelHasNoBreak, this, ident.toChars()));
 						}
 					}
 					if (ls.tf != sc.tf) {
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotBreakOutOfFinallyBlock, this));
 						}
 					}
 					return this;
 				}
 			}
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.EnclosingLabelForBreakNotFound, ident, ident.toChars()));
 			}
 		} else if (sc.sbreak == null) {
@@ -115,7 +121,7 @@ public class BreakStatement extends Statement {
 				s = new ReturnStatement(0, new IntegerExp(1));
 				return s;
 			}
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.BreakIsNotInsideALoopOrSwitch, this));
 			}
 		}

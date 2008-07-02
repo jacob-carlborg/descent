@@ -200,7 +200,7 @@ public class TraitsExp extends Expression {
 	    	int dim = null != args ? args.size() : 0;
 			if(dim != 2)
 			{
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.WrongNumberOfArguments, this, new String[] { String.valueOf(dim) }));
 				}
@@ -211,7 +211,7 @@ public class TraitsExp extends Expression {
 			Expression e = isExpression((ASTDmdNode) args.get(1));
 			if(null == e)
 			{ 
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.StringExpectedAsSecondArgument, this));
 				}
@@ -221,7 +221,7 @@ public class TraitsExp extends Expression {
 			e = e.optimize(WANTvalue | WANTinterpret, context);
 			if(e.op != TOK.TOKstring)
 			{
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.StringExpectedAsSecondArgument, this));
 				}
@@ -232,7 +232,7 @@ public class TraitsExp extends Expression {
 			se = se.toUTF8(sc, context);
 			if (se.sz != 1)
 			{
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.StringMustBeChars, this));
 				}
@@ -254,7 +254,7 @@ public class TraitsExp extends Expression {
 			}
 			else
 			{
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.InvalidFirstArgument, this));
 				}
@@ -326,7 +326,7 @@ public class TraitsExp extends Expression {
 	    	int dim = null != args ? args.size() : 0;
 			if (dim != 1)
 			{
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.WrongNumberOfArguments, this, new String[] { String.valueOf(dim) }));
 				}
@@ -337,7 +337,7 @@ public class TraitsExp extends Expression {
 			Dsymbol s = getDsymbol(o, context);
 			if(null == s)
 			{
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.FirstArgumentIsNotAClass, this));
 				}
@@ -347,7 +347,7 @@ public class TraitsExp extends Expression {
 			ClassDeclaration cd = s.isClassDeclaration();
 			if (null == cd)
 			{
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.FirstArgumentIsNotAClass, this));
 				}
@@ -362,7 +362,7 @@ public class TraitsExp extends Expression {
 	    	int dim = null != args ? args.size() : 0;
 			if (dim != 1)
 			{
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.WrongNumberOfArguments, this, new String[] { String.valueOf(dim) }));
 				}
@@ -373,7 +373,7 @@ public class TraitsExp extends Expression {
 			Dsymbol s = getDsymbol(o, context);
 			if (null == s)
 			{
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.ArgumentHasNoMembers, this));
 				}
@@ -383,7 +383,7 @@ public class TraitsExp extends Expression {
 			ScopeDsymbol sd = s.isScopeDsymbol();
 			if(null == sd)
 			{
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.KindSymbolHasNoMembers, this, new String[] { s.kind(), s.toChars(context) }));
 				}
@@ -429,7 +429,7 @@ public class TraitsExp extends Expression {
 	    
 	    else
 	    {
-	    	if (context.acceptsProblems()) {
+	    	if (context.acceptsErrors()) {
 		    	context.acceptProblem(Problem.newSemanticTypeError(
 		    			IProblem.UnrecongnizedTrait, this.ident, new String[] { new String(ident) }));
 	    	}

@@ -69,7 +69,7 @@ public class IndexExp extends BinExp {
 			SemanticContext context) {
 		modifiable = 1;
 		if (e1.op == TOK.TOKstring) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.StringLiteralsAreImmutable, this));
 			}
@@ -137,7 +137,7 @@ public class IndexExp extends BinExp {
 
 		e2 = e2.semantic(sc, context);
 		if (null == e2.type) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.SymbolHasNoValue, e2,
 						new String[] { e2.toChars(context) }));
@@ -206,7 +206,7 @@ public class IndexExp extends BinExp {
 			}
 
 			else {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.ArrayIndexOutOfBounds, this, new String[] { index.toString(),
 									length.toString() }));
@@ -217,7 +217,7 @@ public class IndexExp extends BinExp {
 		}
 
 		default: {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.SymbolMustBeAnArrayOfPointerType, this, new String[] { e1.toChars(context),
 								e1.type.toChars(context) }));

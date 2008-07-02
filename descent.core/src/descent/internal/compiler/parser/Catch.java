@@ -46,7 +46,7 @@ public class Catch extends ASTDmdNode {
 
 		if (context.IN_GCC) {
 			if (sc.tf != null) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.CannotPutCatchStatementInsideFinallyBlock, this));
 				}
 			}
@@ -62,7 +62,7 @@ public class Catch extends ASTDmdNode {
 		}
 		type = type.semantic(loc, sc, context);
 		if (type.toBasetype(context).isClassHandle() == null) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.CanOnlyCatchClassObjects, sourceType, type.toChars(context)));
 			}

@@ -60,7 +60,7 @@ public class SynchronizedStatement extends Statement {
 			exp = resolveProperties(sc, exp, context);
 			cd = exp.type.isClassHandle();
 			if (null == cd) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CanOnlySynchronizeOnClassObjects, exp, new String[] { exp.type.toChars(context) }));
 				}
 			} else if (cd.isInterfaceDeclaration() != null) {

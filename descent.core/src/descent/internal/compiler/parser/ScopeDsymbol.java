@@ -114,13 +114,13 @@ public class ScopeDsymbol extends Dsymbol {
 	
 	public static void multiplyDefined(Loc loc, Dsymbol s1, Dsymbol s2, SemanticContext context) {
 		if (loc != null && loc.filename != null) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 						IProblem.SymbolAtLocationConflictsWithSymbolAtLocation, 
 						s2, new String[] { s1.toPrettyChars(context), s1.locToChars(context), s2.toPrettyChars(context), s2.locToChars(context) }));
 			}
 		} else {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 						IProblem.SymbolConflictsWithSymbolAtLocation, 
 						s1, new String[] { s1.toChars(context), s2.kind(),
@@ -249,7 +249,7 @@ public class ScopeDsymbol extends Dsymbol {
 					condition &= 0 == (flags & 2);
 				}
 				if (condition) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.MemberIsPrivate, d, new String[] { new String(d.ident.ident) }));
 					}

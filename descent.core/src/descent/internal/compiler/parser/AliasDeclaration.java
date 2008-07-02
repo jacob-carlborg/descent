@@ -182,7 +182,7 @@ public class AliasDeclaration extends Declaration {
 					return;
 				}
 
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotAliasAnExpression, sourceType, e[0].toChars(context)));
 				}
 				t[0] = e[0].type;
@@ -198,7 +198,7 @@ public class AliasDeclaration extends Declaration {
 					semantic_L2(sc, context, s[0]); // it's a symbolic alias
 					return;
 				} else {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotAliasAnExpression, sourceType, e[0].toChars(context)));
 					}
 					t[0] = e[0].type;
@@ -228,7 +228,7 @@ public class AliasDeclaration extends Declaration {
 		type = null;
 		VarDeclaration v = s.isVarDeclaration();
 		if (v != null && v.linkage == LINK.LINKdefault) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.ForwardReferenceOfSymbol, tempType, tempType.toString()));
 				context
@@ -300,7 +300,7 @@ public class AliasDeclaration extends Declaration {
 		
 		Assert.isTrue(this != aliassym);
 		if (inSemantic != 0) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.CircularDefinition, ident, toChars(context)));
 			}

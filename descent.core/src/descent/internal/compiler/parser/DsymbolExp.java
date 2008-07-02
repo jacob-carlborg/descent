@@ -85,7 +85,7 @@ public class DsymbolExp extends Expression {
 				if (type == null) {
 					type = v.type;
 					if (v.type == null) {
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.ForwardReferenceOfSymbol, this,
 									v.toString()));
@@ -96,7 +96,7 @@ public class DsymbolExp extends Expression {
 				if (v.isConst() && type.toBasetype(context).ty != Tsarray) {
 					if (v.init() != null) {
 						if (v.inuse() != 0) {
-							if (context.acceptsProblems()) {
+							if (context.acceptsErrors()) {
 								context.acceptProblem(Problem.newSemanticTypeError(IProblem.CircularReferenceTo, this, v.toChars(context)));
 							}
 							type = Type.tint32;
@@ -181,7 +181,7 @@ public class DsymbolExp extends Expression {
 				for (int i = 0; i < tup.objects.size(); i++) {
 					ASTDmdNode o = tup.objects.get(i);
 					if (o.dyncast() != DYNCAST.DYNCAST_EXPRESSION) {
-						if (context.acceptsProblems()) {
+						if (context.acceptsWarnings()) {
 							context.acceptProblem(Problem.newSemanticTypeWarning(IProblem.SymbolNotAnExpression, 0, o.getStart(), o.getLength(), o.toChars(context)));
 						}
 					} else {
@@ -221,7 +221,7 @@ public class DsymbolExp extends Expression {
 		}
 
 		// Lerr:
-		if (context.acceptsProblems()) {
+		if (context.acceptsErrors()) {
 			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolIsNotAVariable, s, s.kind(), s.toChars(context)));
 		}
 		type = Type.terror;

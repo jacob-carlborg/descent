@@ -737,6 +737,10 @@ class DefaultBindingResolver extends BindingResolver {
 	}
 	
 	IBinding resolveType(Type type) {
+		if (type.alias != null) {
+			return resolveDsymbol(type.alias);
+		}
+		
 		String key = type.getSignature();
 		if (key == null) {
 			return null;
@@ -793,6 +797,9 @@ class DefaultBindingResolver extends BindingResolver {
 		}
 		
 		if (binding != null) {
+			if ("@5tango3sys5win325Types=6HANDLE".equals(binding)) {
+				System.out.println(123456);
+			}
 			bindingTables.bindingKeysToBindings.put(key, binding);
 		}
 		

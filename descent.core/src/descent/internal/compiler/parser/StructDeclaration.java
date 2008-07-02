@@ -127,12 +127,12 @@ public class StructDeclaration extends AggregateDeclaration {
 		assert (!isAnonymous());
 		if ((sc.stc & STC.STCabstract) != 0) {
 			if (isUnionDeclaration() != null) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 							IProblem.UnionsCannotBeAbstract, this));
 				}
 			} else {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 							IProblem.StructsCannotBeAbstract, this));
 				}

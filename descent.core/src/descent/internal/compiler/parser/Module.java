@@ -66,6 +66,7 @@ public class Module extends Package {
 	
 	public ModuleBuilder builder;
 	public HashtableOfCharArrayAndObject javaElementMembersCache;
+	public List<Dsymbol> pendingImports;
 	
 	private Scope semanticScope;
 	private Scope semantic2Scope;
@@ -198,9 +199,9 @@ public class Module extends Package {
 		semanticdone = semanticstarted;
 		
 		time = System.currentTimeMillis() - time;
-		if (time > 10) {
-			System.out.println("Module#semantic(" + moduleName + ") = " + time);
-		}
+//		if (time > 10) {
+//			System.out.println("Module#semantic(" + moduleName + ") = " + time);
+//		}
 		
 //		nest--;
 	}
@@ -221,7 +222,7 @@ public class Module extends Package {
 		if (context.Module_deferred != null
 				&& context.Module_deferred.size() > 0) {
 			for (Dsymbol sd : context.Module_deferred) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.CannotResolveForwardReference, sd.getLineNumber(), sd.getErrorStart(), sd.getErrorLength()));
 				}
@@ -257,9 +258,9 @@ public class Module extends Package {
 		semanticdone = semanticstarted;
 		
 		time = System.currentTimeMillis() - time;
-		if (time > 10) {
-			System.out.println("Module#semantic2(" + moduleName + ") = " + time);
-		}
+//		if (time > 10) {
+//			System.out.println("Module#semantic2(" + moduleName + ") = " + time);
+//		}
 	}
 
 	@Override
@@ -411,10 +412,7 @@ public class Module extends Package {
 					// First process imports, because the other symbols may need
 					// them for their semantic analysis
 					if (!imports.isEmpty()) {
-						for(Dsymbol imp : imports) {
-							imp.addMember(semanticScope, this, 0, context);
-							runMissingSemantic(imp, context);
-						}
+						pendingImports = imports;	
 					}
 					
 					if (anon) {
@@ -482,13 +480,21 @@ public class Module extends Package {
 				}
 			}
 			
-			this.insearch = true;
-			
 			if (s == null) {
-				s = super.search(loc, ident, flags, context);
+				if (pendingImports != null) {
+					for(Dsymbol imp : pendingImports) {
+						imp.addMember(semanticScope, this, 0, context);
+						runMissingSemantic(imp, context);
+					}
+					pendingImports = null;
+				}
 			}
 			
-			this.insearch = false;
+			if (s == null) {
+				this.insearch = true;
+				s = super.search(loc, ident, flags, context);
+				this.insearch = false;
+			}
 
 			this.searchCacheIdent = ident;			
 			this.searchCacheSymbol = s;

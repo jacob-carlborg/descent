@@ -176,7 +176,7 @@ public class AddrExp extends UnaExp {
 					integer_t dim = ts.dim.toInteger(context);
 					if ((index.compareTo(0) < 0 || index.compareTo(dim) >= 0)) {
 						// PERHAPS test this error
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
 					    			IProblem.ArrayIndexOutOfBounds,
 					    			this,
@@ -206,7 +206,7 @@ public class AddrExp extends UnaExp {
 			super.semantic(sc, context);
 			e1 = e1.toLvalue(sc, null, context);
 			if (e1.type == null) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.CannotTakeAddressOf, e1, e1.toChars(context)));
 				}

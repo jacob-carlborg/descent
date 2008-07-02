@@ -185,7 +185,7 @@ public class TypeClass extends Type {
 								 * first entry is always pointer to QueryInterface().
 								 * We can't get a .classinfo for it.
 								 */
-								if (context.acceptsProblems()) {
+								if (context.acceptsErrors()) {
 									context.acceptProblem(Problem.newSemanticTypeError(
 											IProblem.NoClassInfoForComInterfaceObjects, this));
 								}
@@ -207,7 +207,7 @@ public class TypeClass extends Type {
 	
 				else if (equals(ident, Id.typeinfo)) {
 					if (!context.global.params.useDeprecated) {
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.DeprecatedProperty, ident, new String[] { "typeinfo",
 											".typeid(type)" }));
@@ -287,7 +287,7 @@ public class TypeClass extends Type {
 
 		d = s.isDeclaration();
 		if (null == d) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.SymbolDotSymbolIsNotADeclaration, this, new String[] { e.toChars(context), ident.toChars() }));
 			}
@@ -315,7 +315,7 @@ public class TypeClass extends Type {
 						} else if ((null == cd || !cd.isBaseOf(thiscd, null,
 								context))
 								&& null == d.isFuncDeclaration()) {
-							if (context.acceptsProblems()) {
+							if (context.acceptsErrors()) {
 								context.acceptProblem(Problem.newSemanticTypeError(
 										IProblem.ThisIsRequiredButIsNotABaseClassOf, this, new String[] { e.type.toChars(context), thiscd.toChars(context) }));
 							}

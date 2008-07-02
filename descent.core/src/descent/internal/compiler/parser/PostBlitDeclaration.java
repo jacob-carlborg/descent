@@ -29,7 +29,7 @@ public class PostBlitDeclaration extends FuncDeclaration {
 		Dsymbol parent = toParent();
 		StructDeclaration ad = parent.isStructDeclaration();
 		if (null == ad) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.PostBlitsAreOnlyForStructUnionDefinitions, this));
 			}
 		} else if (equals(ident, Id._postblit)) {

@@ -62,7 +62,7 @@ public class DefaultStatement extends Statement {
 	public Statement semantic(Scope sc, SemanticContext context) {
 		if (sc.sw != null) {
 			if (sc.sw.sdefault != null) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SwitchAlreadyHasDefault, this));
 				}
 			}
@@ -70,13 +70,13 @@ public class DefaultStatement extends Statement {
 			
 			if (context.isD2()) {
 				if (sc.sw.tf != sc.tf) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(IProblem.SwitchAndDefaultAreInDifferentFinallyBlocks, this));	
 					}
 				}
 			}
 		} else {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.DefaultNotInSwitch, this));
 			}
 		}

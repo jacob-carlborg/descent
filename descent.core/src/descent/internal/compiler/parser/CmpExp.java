@@ -79,7 +79,7 @@ public class CmpExp extends BinExp {
 	    if (e1.type.toBasetype(context).ty == Tclass && e2.op == TOKnull ||
 	    		e2.type.toBasetype(context).ty == Tclass && e1.op == TOKnull)
 	    {
-	    	if (context.acceptsProblems()) {
+	    	if (context.acceptsErrors()) {
 	    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.DoNotUseNullWhenComparingClassTypes, this));
 	    	}
 	    }
@@ -100,7 +100,7 @@ public class CmpExp extends BinExp {
 		if ((t1.ty == TY.Tarray || t1.ty == TY.Tsarray)
 				&& (t2.ty == TY.Tarray || t2.ty == TY.Tsarray)) {
 			if (!t1.next.equals(t2.next)) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.ArrayComparisonTypeMismatch, this, t1.next.toChars(context), t2.next.toChars(context)));
 				}
@@ -109,19 +109,19 @@ public class CmpExp extends BinExp {
 		} else if (t1.ty == TY.Tstruct || t2.ty == TY.Tstruct
 				|| (t1.ty == TY.Tclass && t2.ty == TY.Tclass)) {
 			if (t2.ty == TY.Tstruct) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.NeedMemberFunctionOpCmpForSymbolToCompare, this, t2
 							.toDsymbol(sc, context).kind(), t2.toChars(context)));
 				}
 			} else {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.NeedMemberFunctionOpCmpForSymbolToCompare, this, t1
 							.toDsymbol(sc, context).kind(), t1.toChars(context)));
 				}
 			}
 			e = this;
 		} else if (t1.iscomplex() || t2.iscomplex()) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CompareNotDefinedForComplexOperands, this));
 			}
 			e = new IntegerExp(loc, 0);

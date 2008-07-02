@@ -31,7 +31,7 @@ public class DeleteExp extends UnaExp {
 
 	@Override
 	public Expression checkToBoolean(SemanticContext context) {
-		if (context.acceptsProblems()) {
+		if (context.acceptsErrors()) {
 			context
 					.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.ExpressionDoesNotGiveABooleanResult, this));
@@ -62,7 +62,7 @@ public class DeleteExp extends UnaExp {
 			if (cd.isCOMinterface()) {
 			    /* Because COM classes are deleted by IUnknown.Release()
 				 */
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.CannotDeleteInstanceOfComInterface, this, cd.toChars(context)));
 				}
@@ -98,7 +98,7 @@ public class DeleteExp extends UnaExp {
 					break;
 				}
 			}
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotDeleteType, this, e1.type.toChars(context)));
 			}
 			break;
@@ -109,7 +109,7 @@ public class DeleteExp extends UnaExp {
 			Type tb1 = ae.e1.type.toBasetype(context);
 			if (tb1.ty == Taarray) {
 				if (!context.global.params.useDeprecated) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(IProblem.DeleteAAKeyDeprecated, this));
 					}
 				}

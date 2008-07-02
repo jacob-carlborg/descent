@@ -79,7 +79,7 @@ public class CtorDeclaration extends FuncDeclaration {
 		Dsymbol parent = toParent();
 		cd = parent.isClassDeclaration();
 		if (cd == null) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 						IProblem.ConstructorsOnlyForClass, this));
 			}

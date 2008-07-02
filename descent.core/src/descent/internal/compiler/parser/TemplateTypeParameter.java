@@ -42,7 +42,7 @@ public class TemplateTypeParameter extends TemplateParameter {
 		((AliasDeclaration) sparam).isTemplateParameter = true;
 		
 		if (null == sc.insert(sparam)) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ParameterMultiplyDefined, ident, new String[] { new String(ident.ident) }));
 			}
 		}

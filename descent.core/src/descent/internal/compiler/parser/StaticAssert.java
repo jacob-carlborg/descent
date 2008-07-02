@@ -69,13 +69,13 @@ public class StaticAssert extends Dsymbol {
 				msg = msg.optimize(WANTvalue | WANTinterpret, context);
 				hgs.console = 1;
 				msg.toCBuffer(buf, hgs, context);
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.AssertionFailed, exp,
 							new String[] { buf.toChars() }));
 				}
 			} else {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.AssertionFailedNoMessage, exp, new String[] { exp.toChars(context) }));
 				}
@@ -84,7 +84,7 @@ public class StaticAssert extends Dsymbol {
 				fatal(context);
 			}
 		} else if (!e.isBool(true)) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.ExpressionIsNotEvaluatableAtCompileTime, exp,
 						new String[] { exp.toChars(context) }));

@@ -49,7 +49,7 @@ public class ForeachRangeStatement extends Statement {
 		lwr = lwr.semantic(sc, context);
 		lwr = resolveProperties(sc, lwr, context);
 		if (null == lwr.type) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.InvalidRangeLowerBound, this, new String[] { lwr.toChars(context) }));
 			}
@@ -59,7 +59,7 @@ public class ForeachRangeStatement extends Statement {
 		upr = upr.semantic(sc, context);
 		upr = resolveProperties(sc, upr, context);
 		if (null == upr.type) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.InvalidRangeUpperBound, this, new String[] { upr.toChars(context) }));
 			}
@@ -80,7 +80,7 @@ public class ForeachRangeStatement extends Statement {
 		}
 
 		if (!arg.type.isscalar(context)) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.SymbolIsNotAnArithmeticType, this, new String[] { arg.type.toChars(context) }));
 			}
@@ -97,7 +97,7 @@ public class ForeachRangeStatement extends Statement {
 		de.semantic(sc, context);
 
 		if (0 < key.storage_class) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.ForeachRangeKeyCannotHaveStorageClass, this));
 			}

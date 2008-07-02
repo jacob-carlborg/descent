@@ -488,7 +488,7 @@ public abstract class ASTDmdNode extends ASTNode {
 					break;
 				}
 			} else {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.DivisionByZero, d));
 				}
@@ -566,7 +566,7 @@ public abstract class ASTDmdNode extends ASTNode {
 			}
 
 			else if (e.op == TOKdotexp) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.SymbolHasNoValue, e,
 							e.toChars(context)));
@@ -633,7 +633,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		if (e == null) {
 			if ((d.prot() == PROTprivate && d.getModule() != sc.module
 					|| d.prot() == PROTpackage && !hasPackageAccess(sc, d))) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolIsNotAccessible, this, d.kind(), d
 							.getModule().toChars(context), d.toChars(context),
 							sc.module.toChars(context)));
@@ -778,7 +778,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		int nparams = Argument.dim(tf.parameters, context);
 
 		if (nargs > nparams && tf.varargs == 0) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.ExpectedNumberArguments, this, String.valueOf(nparams), String.valueOf(nargs)));
 			}
@@ -807,7 +807,7 @@ public abstract class ASTDmdNode extends ASTNode {
 							gotoL2 = true;
 						}
 						if (!gotoL2) {
-							if (context.acceptsProblems()) {
+							if (context.acceptsErrors()) {
 								context.acceptProblem(Problem.newSemanticTypeError(
 										IProblem.ExpectedNumberArguments, this, String.valueOf(nparams), String.valueOf(nargs)));
 							}
@@ -893,7 +893,7 @@ public abstract class ASTDmdNode extends ASTNode {
 						}
 						default:
 							if (arg == null) {
-								if (context.acceptsProblems()) {
+								if (context.acceptsErrors()) {
 									context.acceptProblem(Problem.newSemanticTypeError(IProblem.NotEnoughArguments, this));
 								}
 								return;
@@ -922,7 +922,7 @@ public abstract class ASTDmdNode extends ASTNode {
 					// Don't have a way yet to do a pointer to a bit in array
 					if (arg.op == TOKarray && 
 							arg.type.toBasetype(context).ty == Tbit) {
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.CannotHaveOutOrInoutArgumentOfBitInArray, this));
 						}
@@ -1062,7 +1062,7 @@ public abstract class ASTDmdNode extends ASTNode {
 				Expression arg = exps.get(i);
 
 				if (arg.type == null) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsWarnings()) {
 						context.acceptProblem(Problem.newSemanticTypeWarning(
 								IProblem.SymbolNotAnExpression, 0, arg.start,
 								arg.length, arg.toChars(context)));
@@ -1490,7 +1490,7 @@ public abstract class ASTDmdNode extends ASTNode {
 				} else {
 					f = d.isFuncDeclaration();
 					if (null == f) {
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.SymbolIsAliasedToAFunction, a, a.toChars(context)));
 						}
@@ -1636,7 +1636,7 @@ public abstract class ASTDmdNode extends ASTNode {
             {
                 e = v.value();
                 if (null == e) {
-                	if (context.acceptsProblems()) {
+                	if (context.acceptsErrors()) {
 	                	context.acceptProblem(Problem.newSemanticTypeError(
 	        					IProblem.VariableIsUsedBeforeInitialization, v, v.toChars(context)));
                 	}
@@ -1737,7 +1737,7 @@ public abstract class ASTDmdNode extends ASTNode {
 				if (ti1 != null && ti1.tempdecl == tempdecl) {
 					for (Scope sc1 = sc; sc1 != null; sc1 = sc1.enclosing) {
 						if (sc1.scopesym == ti1) {
-							if (context.acceptsProblems()) {
+							if (context.acceptsErrors()) {
 								context.acceptProblem(Problem.newSemanticTypeError(
 										IProblem.RecursiveTemplateExpansionForTemplateArgument, t1, t1.toChars(context)));
 							}
@@ -2060,7 +2060,7 @@ public abstract class ASTDmdNode extends ASTNode {
 						gotoL1 = true;
 						continue L1;
 					}
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(IProblem.ThisForSymbolNeedsToBeType, var, var
 								.toChars(context), ad.toChars(context), t.toChars(context)));
 					}
@@ -2076,7 +2076,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		if (modifiers != null) {
 			for (Modifier modifier : modifiers) {
 				if (modifier.tok == tok) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								problemId, modifier));
 					}
@@ -2088,7 +2088,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		if (extraModifiers != null) {
 			for (Modifier modifier : extraModifiers) {
 				if (modifier.tok == tok) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								problemId, modifier));
 					}
@@ -2098,7 +2098,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		}
 		
 		if (!reported) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 						problemId, this));
 			}

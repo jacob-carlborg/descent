@@ -62,7 +62,7 @@ public class ThisExp extends Expression {
 				StructDeclaration sd;
 
 				if (s == null) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.ThisNotInClassOrStruct, this));
 					}
@@ -100,7 +100,7 @@ public class ThisExp extends Expression {
 	}
 
 	public Expression semantic_Lerr(Scope sc, SemanticContext context) {
-		if (context.acceptsProblems()) {
+		if (context.acceptsErrors()) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.ThisOnlyAllowedInNonStaticMemberFunctions, this));
 		}

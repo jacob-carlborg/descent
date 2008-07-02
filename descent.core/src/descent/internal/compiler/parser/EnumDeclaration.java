@@ -122,7 +122,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 			EnumDeclaration sym = (EnumDeclaration) memtype.toDsymbol(sc,
 					context);
 			if (sym.memtype == null) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.BaseEnumIsForwardReference, sourceMemtype));
 				}
@@ -131,7 +131,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 		}
 
 		if (!memtype.isintegral()) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.EnumBaseTypeMustBeOfIntegralType, sourceMemtype));
 			}
@@ -148,7 +148,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 		}
 
 		if (members.size() == 0) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 						IProblem.EnumMustHaveAtLeastOneMember, this));
 			}
@@ -359,7 +359,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 	}
 	
 	private final void enumValueOverflow(EnumMember em, SemanticContext context) {
-		if (context.acceptsProblems()) {
+		if (context.acceptsErrors()) {
 			context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 					IProblem.EnumValueOverflow, em));
 		}

@@ -44,12 +44,12 @@ public class VersionSymbol extends Dsymbol {
 		if (ident != null) {
 			VersionCondition.checkPredefined(loc, ident, context);
 			if (m == null) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.VersionDeclarationMustBeAtModuleLevel, this));
 				}
 			} else {
 				if (findCondition(m.versionidsNot, ident)) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(IProblem.VersionDefinedAfterUse, this, new String[] { ident.toString() } ));
 					}
 				}
@@ -60,7 +60,7 @@ public class VersionSymbol extends Dsymbol {
 			}
 		} else {
 			if (m == null) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.VersionDeclarationMustBeAtModuleLevel, this));
 				}
 			} else {

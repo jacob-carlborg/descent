@@ -57,13 +57,13 @@ public class InvariantDeclaration extends FuncDeclaration {
 		Dsymbol parent = toParent();
 		ad = parent.isAggregateDeclaration();
 		if (ad == null) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 						IProblem.InvariantsOnlyForClassStructUnion, this));
 			}
 			return;
 		} else if (ad.inv != null && ad.inv != this) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 						IProblem.MoreThanOneInvariant, this,
 						new String[] { new String(ad.ident.ident) }));

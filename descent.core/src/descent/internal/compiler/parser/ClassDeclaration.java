@@ -239,7 +239,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 			 */
 			if (cd.baseClass == null && cd.baseclasses.size() > 0
 					&& cd.isInterfaceDeclaration() == null) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.BaseClassIsForwardReferenced, this, toChars(context)));
 				}
@@ -303,7 +303,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		consumeRest();
 
 		if (members == null || symtab == null || scope != null) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.ForwardReferenceWhenLookingFor, this,
 						new String(this.ident.ident),
@@ -326,7 +326,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 					b.base.consumeRest();
 					
 					if (b.base.symtab == null) {
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.BaseIsForwardReferenced, this, b.base.ident
 											.toChars()));
@@ -396,7 +396,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 	    }
 	    
 	    if (sc.linkage == LINK.LINKcpp) {
-	    	if (context.acceptsProblems()) {
+	    	if (context.acceptsErrors()) {
 	    		context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.CannotCreateCppClasses, this));
 	    	}
 	    }
@@ -441,7 +441,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 			if (tb.ty != TY.Tclass) {
 				// If already reported error, don't report it twice
 				if (tb.ty != TY.Terror) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.BaseTypeMustBeClassOrInterface, b.sourceType));
 					}
@@ -465,7 +465,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 					for (ClassDeclaration cdb = tc.sym; cdb != null; cdb = cdb.baseClass) {
 						if (SemanticMixin.equals(cdb, this)) {
 							BaseClass firstBaseClass = this.baseclasses.get(0);
-							if (context.acceptsProblems()) {
+							if (context.acceptsErrors()) {
 								context.acceptProblem(Problem.newSemanticTypeError(
 										IProblem.CircularDefinition, firstBaseClass.sourceType, toChars(context)));
 							}
@@ -519,7 +519,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 			if (tc == null || tc.sym.isInterfaceDeclaration() == null) {
 				// If already reported error, don't report it twice
 				if (tb.ty != TY.Terror) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.BaseTypeMustBeClassOrInterface, b.sourceType));
 					}
@@ -540,7 +540,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 				for (int j = (baseClass != null ? 1 : 0); j < i; j++) {
 					BaseClass b2 = baseclasses.get(j);
 					if (b2.base == tc.sym) {
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.DuplicatedInterfaceInheritance, b.sourceType,
 									b.sourceType.toString(),
@@ -577,7 +577,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 			Type bt;
 
 			if (context.ClassDeclaration_object == null) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 							IProblem.MissingOrCurruptObjectDotD, this));
 				}
@@ -610,7 +610,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 
 		if (baseClass != null) {
 			if ((baseClass.storage_class & STCfinal) != 0) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.CannotInheritFromFinalClass, this, baseClass
 									.toString()));
@@ -657,13 +657,13 @@ public class ClassDeclaration extends AggregateDeclaration {
 			{ // Use the base class's 'this' member
 				isnested = true;
 				if ((storage_class & STC.STCstatic) != 0) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.StaticClassCannotInheritFromNestedClass, this, baseClass.toChars(context)));
 					}
 				}
 				if (toParent2() != baseClass.toParent2()) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.SuperClassIsNestedWithin, this, baseClass.toChars(context), baseClass.toParent2()
 										.toChars(context), toParent2().toChars(

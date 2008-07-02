@@ -166,7 +166,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 
 	public Expression checkArithmetic(SemanticContext context) {
 		if (!type.isintegral() && !type.isfloating()) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.SymbolIsNotAnArithmeticTypeItIs, this,
 						new String[] { toChars(context), type.toChars(context) }));
@@ -186,7 +186,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 
 	public Expression checkIntegral(SemanticContext context) {
 		if (!type.isintegral()) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.SymbolIsNotOfIntegralType, this, new String[] {
 								toChars(context), type.toChars(context) }));
@@ -198,7 +198,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 
 	public void checkNoBool(SemanticContext context) {
 		if (type.toBasetype(context).ty == Tbool) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.OperationNotAllowedOnBool, this,
 						new String[] { toChars(context) }));
@@ -208,7 +208,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 
 	public void checkScalar(SemanticContext context) {
 		if (!type.isscalar(context)) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.SymbolIsNotAScalar, this, new String[] {
 								toChars(context), type.toChars(context) }));
@@ -218,7 +218,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 
 	public int checkSideEffect(int flag, SemanticContext context) {
 		if (flag == 0) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.ExpressionHasNoEffect, this));
 			}
@@ -228,7 +228,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 
 	public Expression checkToBoolean(SemanticContext context) {
 		if (!type.checkBoolean(context)) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.ExpressionOfTypeDoesNotHaveABooleanValue, this,
 						new String[] { toChars(context), type.toChars(context) }));
@@ -301,7 +301,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 					return e.implicitCastTo(sc, t, context);
 				}
 
-				if (context.acceptsProblems()) {
+				if (context.acceptsWarnings()) {
 					context.acceptProblem(Problem.newSemanticTypeWarning(
 							IProblem.ImplicitConversionCanCauseLossOfData, 0,
 							start, length, new String[] { toChars(context),
@@ -329,20 +329,20 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		 * void delegate(E) EDG; } Should eventually
 		 * make it work.
 		 */
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.ForwardReferenceToType, this, new String[] { t
 								.toChars(context) }));
 			}
 		} else if (t.reliesOnTident() != null) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.ForwardReferenceToType, this, new String[] { t
 								.reliesOnTident().toChars(context) }));
 			}
 		}
 
-		if (context.acceptsProblems()) {
+		if (context.acceptsErrors()) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.CannotImplicitlyConvert, this, new String[] {
 							toChars(context), type.toChars(context),
@@ -354,7 +354,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 
 	public MATCH implicitConvTo(Type t, SemanticContext context) {
 		if (type == null) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsWarnings()) {
 				context.acceptProblem(Problem.newSemanticTypeWarning(
 						IProblem.SymbolNotAnExpression, 0, start, length,
 						new String[] { toChars(context) }));
@@ -390,7 +390,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		e = this;
 		switch (type.toBasetype(context).ty) {
 		case Tvoid:
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.SymbolHasNoValue, this, new String[] { "void" }));
 			}
@@ -454,7 +454,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 
 	public void rvalue(SemanticContext context) {
 		if (type != null && type.toBasetype(context).ty == Tvoid) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.ExpressionIsVoidAndHasNoValue, this,
 						new String[] { toChars(context) }));
@@ -493,7 +493,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	}
 
 	public complex_t toComplex(SemanticContext context) {
-		if (context.acceptsProblems()) {
+		if (context.acceptsErrors()) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.FloatingPointConstantExpressionExpected, this,
 					new String[] { toChars(context) }));
@@ -519,7 +519,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	}
 
 	public real_t toImaginary(SemanticContext context) {
-		if (context.acceptsProblems()) {
+		if (context.acceptsErrors()) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.FloatingPointConstantExpressionExpected, this,
 					new String[] { toChars(context) }));
@@ -528,7 +528,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	}
 
 	public integer_t toInteger(SemanticContext context) {
-		if (context.acceptsProblems()) {
+		if (context.acceptsErrors()) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.IntegerConstantExpressionExpected, this));
 		}
@@ -541,7 +541,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		} else if (loc.filename == null) {
 			loc = e.loc;
 		}
-		if (context.acceptsProblems()) {
+		if (context.acceptsErrors()) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.NotAnLvalue, e, new String[] { e.toChars(context) }));
 		}
@@ -549,7 +549,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	}
 
 	public void toMangleBuffer(OutBuffer buf, SemanticContext context) {
-		if (context.acceptsProblems()) {
+		if (context.acceptsErrors()) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.ExpressionIsNotAValidTemplateValueArgument, this,
 					new String[] { toChars(context) }));
@@ -557,7 +557,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	}
 
 	public real_t toReal(SemanticContext context) {
-		if (context.acceptsProblems()) {
+		if (context.acceptsErrors()) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.FloatingPointConstantExpressionExpected, this,
 					new String[] { toChars(context) }));
@@ -579,7 +579,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 			integer_t i2 = e.e2.toInteger(context);
 			integer_t sz = new integer_t(e.e1.type.size(context)).multiply(8);
 			if (i2.compareTo(0) < 0 || i2.compareTo(sz) > 0) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.ShiftAssignIsOutsideTheRange, e,
 							new String[] { i2.toString(), sz.toString() }));

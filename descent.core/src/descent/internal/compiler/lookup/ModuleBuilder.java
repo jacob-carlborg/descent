@@ -85,12 +85,12 @@ public class ModuleBuilder {
 	/*
 	 * One ring to rule them all. 
 	 */
-	private final static boolean LAZY = false;
+	private final static boolean LAZY = true;
 	
 	/*
 	 * Whether to make surface Module semantic.
 	 */
-	public boolean LAZY_MODULES = false;
+	public boolean LAZY_MODULES = true;
 	
 	/*
 	 * Whether to make surface ClassDeclaration semantic lazy.
@@ -136,7 +136,7 @@ public class ModuleBuilder {
 	 * Whether to make surface VarDeclaration semantic lazy.
 	 * Currently doesn't work.
 	 */
-	public boolean LAZY_VARS = LAZY & true;
+	public boolean LAZY_VARS = LAZY & false;
 	
 	/*
 	 * We want to skip things like:
@@ -200,7 +200,7 @@ public class ModuleBuilder {
 	 * @return the module representing the unit
 	 */
 	public Module build(final ICompilationUnit unit) {
-//		long time = System.currentTimeMillis();
+		long time = System.currentTimeMillis();
 		
 		final Module module = new Module(unit.getElementName(), new IdentifierExp(unit.getModuleName().toCharArray()));
 		module.setJavaElement(unit);
@@ -270,7 +270,7 @@ public class ModuleBuilder {
 		
 //		}
 //		
-//		time = System.currentTimeMillis() - time;
+		time = System.currentTimeMillis() - time;
 //		if (time > 10) {
 //			System.out.println("ModuleBuilder#build(" + module.moduleName + ") = " + time);
 //		}
@@ -489,7 +489,7 @@ public class ModuleBuilder {
 			members.add(wrap(member, method));	
 		} else { 
 			final FuncDeclaration member;
-			if (LAZY_FUNCTIONS && surface) {
+			if (LAZY_FUNCTIONS && surface && module.builder == null) {
 				member = new FuncDeclaration(getLoc(module, method), getIdent(method), getStorageClass(method), null);
 				member.rest = new SemanticRest(new Runnable() {
 					public void run() {
@@ -517,7 +517,7 @@ public class ModuleBuilder {
 		if (type.isClass()) {
 			final ClassDeclaration member;
 			
-			if (LAZY_CLASSES && surface) {
+			if (LAZY_CLASSES && surface && module.builder == null) {
 				member = new ClassDeclaration(getLoc(module, type), getIdent(type));
 				member.rest = new SemanticRest(new Runnable() {
 					public void run() {
@@ -552,7 +552,7 @@ public class ModuleBuilder {
 		} else if (type.isInterface()) {
 			final InterfaceDeclaration member;
 			
-			if (LAZY_INTERFACES && surface) {
+			if (LAZY_INTERFACES && surface && module.builder == null) {
 				member = new InterfaceDeclaration(getLoc(module, type), getIdent(type), null);
 				member.rest = new SemanticRest(new Runnable() {
 					public void run() {
@@ -592,7 +592,7 @@ public class ModuleBuilder {
 			} else {
 				final StructDeclaration member;
 				
-				if (LAZY_STRUCTS && surface) {
+				if (LAZY_STRUCTS && surface && module.builder == null) {
 					member = new StructDeclaration(getLoc(module, type), id);
 					member.rest = new SemanticRest(new Runnable() {
 						public void run() {
@@ -629,7 +629,7 @@ public class ModuleBuilder {
 			} else {
 				final UnionDeclaration member;
 				
-				if (LAZY_UNIONS && surface) {
+				if (LAZY_UNIONS && surface && module.builder == null) {
 					member = new UnionDeclaration(getLoc(module, type), id);
 					member.rest = new SemanticRest(new Runnable() {
 						public void run() {
@@ -664,7 +664,7 @@ public class ModuleBuilder {
 		} else if (type.isTemplate()) {
 			final TemplateDeclaration member;
 			
-			if (LAZY_TEMPLATES && surface) {
+			if (LAZY_TEMPLATES && surface && module.builder == null) {
 				member = new TemplateDeclaration(getLoc(module, type), getIdent(type), null, null);
 				member.rest = new SemanticRest(new Runnable() {
 					public void run() {
@@ -700,7 +700,7 @@ public class ModuleBuilder {
 		final EnumDeclaration member;
 		
 		// For anonymous enums we can do it lazily 
-		if (LAZY_ENUMS && surface && ident != null) {
+		if (LAZY_ENUMS && surface && ident != null && module.builder == null) {
 			member = new EnumDeclaration(getLoc(module, type), ident, null);
 			member.rest = new SemanticRest(new Runnable() {
 				public void run() {
@@ -759,7 +759,7 @@ public class ModuleBuilder {
 	public void fillField(Module module, Dsymbols members, final IField field, State state) throws JavaModelException {
 		if (field.isVariable()) {
 			final VarDeclaration member;
-			if (LAZY_VARS && state.surface) {
+			if (LAZY_VARS && state.surface && module.builder == null) {
 				member = new VarDeclaration(getLoc(module, field), null, getIdent(field), null);
 				member.rest = new SemanticRest(new Runnable() {
 					public void run() {
@@ -779,7 +779,7 @@ public class ModuleBuilder {
 			members.add(wrap(member, field));
 		} else if (field.isAlias()) {
 			final AliasDeclaration member;
-			if (LAZY_ALIASES && state.surface) {
+			if (LAZY_ALIASES && state.surface && module.builder == null) {
 				member = new AliasDeclaration(getLoc(module, field), getIdent(field), (Type) null);
 				member.rest = new SemanticRest(new Runnable() {
 					public void run() {
@@ -871,7 +871,7 @@ public class ModuleBuilder {
 		if (templated.isTemplate()) {
 			final TemplateDeclaration temp;
 			
-			if (LAZY_TEMPLATES && surface) {
+			if (LAZY_TEMPLATES && surface && module.builder == null) {
 				temp = new TemplateDeclaration(getLoc(module, (ISourceReference) templated), getIdent((IJavaElement) templated), null, toDsymbols(symbol));
 				temp.wrapper = true;
 				

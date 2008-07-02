@@ -62,7 +62,7 @@ public class PragmaDeclaration extends AttribDeclaration {
 					e = e.optimize(WANTvalue | WANTinterpret, context);
 					if (e.op == TOKstring) {
 					} else {
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.StringExpectedForPragmaMsg, e));
 						}
@@ -73,7 +73,7 @@ public class PragmaDeclaration extends AttribDeclaration {
 			return;
 		} else if (equals(ident, Id.lib)) {
 			if (args == null || args.size() != 1) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context
 							.acceptProblem(Problem
 									.newSemanticTypeErrorLoc(
@@ -87,7 +87,7 @@ public class PragmaDeclaration extends AttribDeclaration {
 				e = e.optimize(WANTvalue | WANTinterpret, context);
 				args.set(0, e);
 				if (e.op != TOKstring) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.StringExpectedForPragmaLib, e));
 					}
@@ -97,7 +97,7 @@ public class PragmaDeclaration extends AttribDeclaration {
 			return;
 		} else if (context.isD2() && equals(ident, Id.startaddress)) {
 			if (args == null || args.size() != 1) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.FunctionNameExpectedForStartAddress, this));
 				}
@@ -108,7 +108,7 @@ public class PragmaDeclaration extends AttribDeclaration {
 				args.set(0, e);
 				Dsymbol sa = getDsymbol(e, context);
 				if (null == sa || null == sa.isFuncDeclaration()) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.FunctionNameExpectedForStartAddress, e));
 					}
@@ -118,7 +118,7 @@ public class PragmaDeclaration extends AttribDeclaration {
 			return;
 		} else {
 			if (!context.global.ignoreUnsupportedPragmas) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.UnrecognizedPragma, ident));
 				}
@@ -135,7 +135,7 @@ public class PragmaDeclaration extends AttribDeclaration {
 
 	private void semantic_Lnodecl(SemanticContext context) {
 		if (decl != null) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 						IProblem.PragmaIsMissingClosingSemicolon, this));
 			}

@@ -43,12 +43,12 @@ public class DebugSymbol extends Dsymbol {
 		m = sd.isModule();
 		if (ident != null) {
 			if (null == m) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.DebugDeclarationMustBeAtModuleLevel, this));
 				}
 			} else {
 				if (findCondition(m.debugidsNot, ident)) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(IProblem.DebugDefinedAfterUse, this, ident.toString()));
 					}
 				}
@@ -59,7 +59,7 @@ public class DebugSymbol extends Dsymbol {
 			}
 		} else {
 			if (null == m) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.DebugDeclarationMustBeAtModuleLevel, this));
 				}
 			} else {

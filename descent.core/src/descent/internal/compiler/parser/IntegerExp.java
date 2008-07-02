@@ -529,7 +529,7 @@ public class IntegerExp extends Expression {
 		} else if (loc != null && loc.filename == null) {
 			loc = e.loc;
 		}
-		if (context.acceptsProblems()) {
+		if (context.acceptsErrors()) {
 			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ConstantIsNotAnLValue, 
 					e, new String[] { e.toChars(context) }));
 		}

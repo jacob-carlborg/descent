@@ -36,7 +36,7 @@ public abstract class Declaration extends Dsymbol {
 
 	public void checkModify(Loc loc, Scope sc, Type t, SemanticContext context) {
 		if (sc.incontract != 0 && isParameter()) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotModifyParameterInContract, this, toChars(context)));
 			}
 		}
@@ -59,7 +59,7 @@ public abstract class Declaration extends Dsymbol {
 						s = s.toParent2();
 						continue;
 					} else {
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							String p = isStatic() ? "static " : "";
 							context.acceptProblem(Problem.newSemanticTypeError(IProblem.CanOnlyInitiailizeConstMemberInsideConstructor, this, p, toChars(context), p));
 						}
@@ -80,7 +80,7 @@ public abstract class Declaration extends Dsymbol {
 				else if (!t.isAssignable())
 					p = "struct with immutable members";
 				if (p != null) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotModifySymbol, this, p));
 					}
 					// halt();
@@ -206,7 +206,7 @@ public abstract class Declaration extends Dsymbol {
 				return ident.toChars();
 
 			case LINKdefault:
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.ForwardDeclaration, this));
 				}

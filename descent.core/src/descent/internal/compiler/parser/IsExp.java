@@ -54,7 +54,7 @@ public class IsExp extends Expression {
 
 		//printf("IftypeExp.semantic()\n");
 		if (null != id && ((sc.flags & Scope.SCOPEstaticif) == 0)) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.CanOnlySliceTupleTypes, this));
 			}

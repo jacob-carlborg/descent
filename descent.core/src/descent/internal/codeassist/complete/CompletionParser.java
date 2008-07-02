@@ -62,6 +62,7 @@ public class CompletionParser extends Parser {
 	private boolean wantNames = false;
 	private boolean wantAssist = true;
 	private boolean wantOnlyType = false;
+	private boolean wantAssitNode = true;
 	
 	// Javadoc completion, and other ddocs found, in order to
 	// provide autocompletion for macros in other places
@@ -142,6 +143,10 @@ public class CompletionParser extends Parser {
 	
 	public boolean wantOnlyType() {
 		return wantOnlyType;
+	}
+	
+	public boolean wantAssitNode() {
+		return wantAssitNode;
 	}
 	
 	public List<ICompletionOnKeyword> getKeywordCompletions() {
@@ -379,6 +384,10 @@ public class CompletionParser extends Parser {
 			
 			if (toks == contractsExpectations) {
 				acceptMoreKeywords = false;
+			}
+			if (toks == scopeArgsExpectations) {
+				acceptMoreKeywords = false;
+				wantAssitNode = false;
 			}
 		}
 	}

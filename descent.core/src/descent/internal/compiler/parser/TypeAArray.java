@@ -158,7 +158,7 @@ public class TypeAArray extends TypeArray {
 			} else if (t[0] != null) {
 				index = t[0];
 			} else {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.IndexIsNotATypeOrExpression, this));
 				}
@@ -179,7 +179,7 @@ public class TypeAArray extends TypeArray {
 		case Tfunction:
 		case Tvoid:
 		case Tnone:
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotHaveAssociativeArrayOfKey, this, new String[] { key.toChars(context) }));
 			}
 			break;
@@ -188,13 +188,13 @@ public class TypeAArray extends TypeArray {
 		switch (next.toBasetype(context).ty) {
 		case Tfunction:
 		case Tnone:
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotHaveAssociativeArrayOf, this, new String[] { next.toChars(context) }));
 			}
 			break;
 		}
 		if (next.isauto()) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotHaveArrayOfAuto, this, new String[] { next.toChars(context) }));
 			}
 		}
@@ -258,7 +258,7 @@ public class TypeAArray extends TypeArray {
 			} else if (t != null) {
 				index = t[0];
 			} else {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.IndexIsNotATypeOrExpression, index));
 				}
 			}

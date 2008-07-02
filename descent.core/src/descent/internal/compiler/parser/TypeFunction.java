@@ -220,26 +220,26 @@ public class TypeFunction extends Type implements Cloneable {
 		}
 		tf.next = tf.next.semantic(loc, sc, context);
 		if (tf.next.toBasetype(context).ty == Tsarray) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.FunctionsCannotReturnStaticArrays, this));
 			}
 			tf.next = Type.terror;
 		}
 		if (tf.next.toBasetype(context).ty == Tfunction) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionsCannotReturnAFunction, this));
 			}
 			tf.next = Type.terror;
 		}
 		if (tf.next.toBasetype(context).ty == Ttuple) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionsCannotReturnATuple, this));
 			}
 			tf.next = Type.terror;
 		}
 		if (tf.next.isauto() && (sc.flags & SCOPEctor) == 0) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionsCannotReturnAuto, this, new String[] { tf.next.toChars(context) }));
 			}
 		}
@@ -260,7 +260,7 @@ public class TypeFunction extends Type implements Cloneable {
 
 				if ((arg.storageClass & (STCout | STCref | STClazy)) != 0) {
 					if (t.ty == Tsarray) {
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context
 									.acceptProblem(Problem
 											.newSemanticTypeError(
@@ -270,7 +270,7 @@ public class TypeFunction extends Type implements Cloneable {
 					}
 				}
 				if ((arg.storageClass & STClazy) == 0 && t.ty == Tvoid) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.CannotHaveParameterOfTypeVoid, arg.sourceType));
 					}
@@ -305,7 +305,7 @@ public class TypeFunction extends Type implements Cloneable {
 		}
 
 		if (tf.inuse != 0) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.RecursiveType, this));
 			}
 			tf.inuse = 0;
@@ -314,7 +314,7 @@ public class TypeFunction extends Type implements Cloneable {
 
 		if (tf.varargs != 0 && tf.linkage != LINK.LINKd
 				&& Argument.dim(tf.parameters, context) == 0) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.VariadicFunctionsWithNonDLinkageMustHaveAtLeastOneParameter, this));
 			}
 		}

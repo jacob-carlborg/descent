@@ -27,7 +27,7 @@ public class VersionCondition extends DVCondition {
 			if (ident.ident != null
 					&& equals(ident, resevered[i])) {
 				// goto Lerror;
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context
 							.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.VersionIdentifierReserved, ident,
@@ -39,7 +39,7 @@ public class VersionCondition extends DVCondition {
 		if (ident.ident != null && ident.ident[0] == 'D'
 				&& ident.ident[1] == '_') {
 			// goto Lerror;
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.VersionIdentifierReserved, ident, new String[] { new String(ident.ident) }));
 			}

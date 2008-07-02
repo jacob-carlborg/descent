@@ -20,6 +20,8 @@ import descent.internal.compiler.parser.ArrayLiteralExp;
 import descent.internal.compiler.parser.CallExp;
 import descent.internal.compiler.parser.ComplexExp;
 import descent.internal.compiler.parser.Declaration;
+import descent.internal.compiler.parser.Dsymbol;
+import descent.internal.compiler.parser.Dsymbols;
 import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.EnumMember;
 import descent.internal.compiler.parser.ExpInitializer;
@@ -34,6 +36,8 @@ import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.StringExp;
 import descent.internal.compiler.parser.StructInitializer;
 import descent.internal.compiler.parser.StructLiteralExp;
+import descent.internal.compiler.parser.TemplateInstance;
+import descent.internal.compiler.parser.TemplateMixin;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeEnum;
 import descent.internal.compiler.parser.VarDeclaration;
@@ -128,9 +132,18 @@ public class EvaluationEngine extends AstVisitorAdapter {
 				converter.setAST(AST.newAST(Util.getApiLevel(javaProject)));
 				converter.init(javaProject, context, null);
 				
+				
+				
 				Module module = new Module(null, null);
-				module.members = node.templateInstance.members;
-				module.sourceMembers = node.templateInstance.members;
+				module.members = new Dsymbols();
+				for(Dsymbol sym : node.templateInstance.members) {
+					if (sym instanceof TemplateInstance && !(sym instanceof TemplateMixin)) {
+						continue;
+					}
+					module.members.add(sym);
+				}
+				
+				module.sourceMembers = module.members;
 				
 				CompilationUnit unit = converter.convert(module, null);
 				result = new EvaluationResult(unit, IEvaluationResult.COMPILATION_UNIT);

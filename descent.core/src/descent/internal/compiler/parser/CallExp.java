@@ -143,11 +143,11 @@ public class CallExp extends UnaExp {
 							e = EXP_VOID_INTERPRET;
 						} else {
 							if (istate.stackOverflow) {
-								if (context.acceptsProblems()) {
+								if (context.acceptsErrors()) {
 									context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionLeadsToStackOverflowAtCompileTime, this, toChars(context)));
 								}
 							} else {
-								if (context.acceptsProblems()) {
+								if (context.acceptsErrors()) {
 									context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionIsNotEvaluatableAtCompileTime, this, toChars(context)));
 								}
 							}
@@ -186,7 +186,7 @@ public class CallExp extends UnaExp {
 					if (eresult != null && eresult != EXP_VOID_INTERPRET) {
 						e = eresult;
 					} else if ((result & WANTinterpret) != 0) {
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionIsNotEvaluatableAtCompileTime, this, toChars(context)));
 						}
 					}
@@ -246,7 +246,7 @@ public class CallExp extends UnaExp {
 				if (e1ty == Taarray
 						&& equals(dotid.ident, Id.remove)) {
 					if (arguments == null || arguments.size() != 1) {
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.ExpectedKeyAsArgumentToRemove, this));
 						}
@@ -356,7 +356,7 @@ public class CallExp extends UnaExp {
 					}
 					
 					if (e1.op != TOKtype) {
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(IProblem.KindSymbolDoesNotOverload, this, ad.kind(), ad.toChars(context)));
 						}
 					}
@@ -446,7 +446,7 @@ public class CallExp extends UnaExp {
 				}
 				if (cd == null || cd.baseClass == null
 						|| sc.func.isCtorDeclaration() == null) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.SuperClassConstructorCallMustBeInAConstructor, this));
 					}
 					type = Type.terror;
@@ -457,19 +457,19 @@ public class CallExp extends UnaExp {
 					
 					f = cd.baseClass.ctor;
 					if (f == null) {
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.NoSuperClassConstructor, this, cd.baseClass.toChars(context)));
 						}
 						type = Type.terror;
 						return this;
 					} else {
 						if (sc.noctor != 0 || (sc.callSuper & CSXlabel) != 0) {
-							if (context.acceptsProblems()) {
+							if (context.acceptsErrors()) {
 								context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.ConstructorCallsNotAllowedInLoopsOrAfterLabels, this));
 							}
 						}
 						if ((sc.callSuper & (CSXsuper_ctor | CSXthis_ctor)) != 0) {
-							if (context.acceptsProblems()) {
+							if (context.acceptsErrors()) {
 								context.acceptProblem(Problem.newSemanticTypeError(IProblem.MultipleConstructorCalls, this));
 							}
 						}
@@ -490,19 +490,19 @@ public class CallExp extends UnaExp {
 					cd = sc.func.toParent().isClassDeclaration();
 				}
 				if (cd == null || sc.func.isCtorDeclaration() == null) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(IProblem.ClassConstructorCallMustBeInAConstructor, getLineNumber(), getErrorStart(), getErrorLength()));
 					}
 					type = Type.terror;
 					return this;
 				} else {
 					if (sc.noctor != 0 || (sc.callSuper & CSXlabel) != 0) {
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ConstructorCallsNotAllowedInLoopsOrAfterLabels, getLineNumber(), getErrorStart(), getErrorLength()));
 						}
 					}
 					if ((sc.callSuper & (CSXsuper_ctor | CSXthis_ctor)) != 0) {
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(IProblem.MultipleConstructorCalls, this));
 						}
 					}
@@ -518,14 +518,14 @@ public class CallExp extends UnaExp {
 					// BUG: this should really be done by checking the static
 					// call graph
 					if (f == sc.func) {
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.CyclicConstructorCall, this, toChars(context)));
 						}
 					}
 				}
 			} else if (t1 == null) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionExpectedBeforeCall, this, e1.toChars(context)));
 				}
 				type = Type.terror;
@@ -577,7 +577,7 @@ public class CallExp extends UnaExp {
 					loopLagain = true;
 					continue Lagain;
 				} else {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionExpectedBeforeCallNotSymbolOfType, this, e1.toChars(context), e1.type.toChars(context)));
 					}
 					type = Type.terror;

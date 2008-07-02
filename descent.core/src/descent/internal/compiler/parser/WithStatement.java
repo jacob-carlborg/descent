@@ -77,7 +77,7 @@ public class WithStatement extends Statement {
 
 			sym = es.type.toDsymbol(sc, context).isScopeDsymbol();
 			if (sym == null) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.SymbolHasNoMembers, this, new String[] { es.toChars(context) }));
 				}
@@ -106,7 +106,7 @@ public class WithStatement extends Statement {
 				sym = new WithScopeSymbol(this);
 				sym.parent = sc.scopesym;
 			} else {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.WithExpressionsMustBeClassObject, sourceExp, new String[] { exp.type.toChars(context) }));
 				}
 				return null;

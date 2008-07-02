@@ -45,7 +45,7 @@ public class CompoundStatement extends Statement {
 			if (s != null) {
 				if (0 == (result & BEfallthru) && !s.comeFrom()) {
 					if (context.global.params.warnings) {
-						if (context.acceptsProblems()) {
+						if (context.acceptsWarnings()) {
 							context.acceptProblem(Problem.newSemanticTypeWarning(IProblem.StatementIsNotReachable, s));
 						}
 					}
@@ -86,7 +86,7 @@ public class CompoundStatement extends Statement {
 			}
 
 			if (!falloff && context.global.params.warnings && !s.comeFrom()) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsWarnings()) {
 					context
 						.acceptProblem(Problem.newSemanticTypeWarning(
 								IProblem.StatementIsNotReachable, s));
@@ -212,6 +212,7 @@ public class CompoundStatement extends Statement {
 											sfinally[0]);
 								}
 								s = s.semantic(sc, context);
+								statements.setDim(i + 1);
 								statements.add(s);
 								break;
 							}
@@ -235,6 +236,7 @@ public class CompoundStatement extends Statement {
 								s = new TryFinallyStatement(loc, body, sfinally[0]);
 								s.copySourceRange(body, sfinally[0]);
 								s = s.semantic(sc, context);
+								statements.setDim(i + 1);
 								statements.add(s);
 								break;
 							}

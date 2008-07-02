@@ -58,7 +58,7 @@ public class FileExp extends UnaExp {
 	    e1 = e1.optimize(WANTvalue, context);
 	    if (e1.op != TOK.TOKstring)
 	    {
-	    	if (context.acceptsProblems()) {
+	    	if (context.acceptsErrors()) {
 		    	context.acceptProblem(Problem.newSemanticTypeError(
 		    			IProblem.FileNameMustBeString,
 		    			e1,
@@ -90,7 +90,7 @@ public class FileExp extends UnaExp {
 	    
 	    if(file == null)
 	    {
-	    	if (context.acceptsProblems()) {
+	    	if (context.acceptsErrors()) {
 		    	context.acceptProblem(Problem.newSemanticTypeError(
 		    			IProblem.FileNotFound,
 		    			e1,
@@ -106,7 +106,7 @@ public class FileExp extends UnaExp {
 	    }
 	    catch(IOException e)
 	    {
-	    	if (context.acceptsProblems()) {
+	    	if (context.acceptsErrors()) {
 		    	context.acceptProblem(Problem.newSemanticTypeError(
 		    			IProblem.ErrorReadingFile,
 		    			e1,

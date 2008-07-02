@@ -126,13 +126,13 @@ public class ReturnStatement extends Statement {
 		}
 
 		if (sc.incontract != 0 || scx.incontract != 0) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.ReturnStatementsCannotBeInContracts, this));
 			}
 		}
 		if (sc.tf != null || scx.tf != null) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ReturnStatementsCannotBeInFinallyScopeExitOrScopeSuccessBodies, this));
 			}
 		}
@@ -141,7 +141,7 @@ public class ReturnStatement extends Statement {
 			// Constructors implicitly do:
 			//	return this;
 			if (exp != null && exp.op != TOKthis) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotReturnExpressionFromConstructor, this));
 				}
 			}
@@ -186,7 +186,7 @@ public class ReturnStatement extends Statement {
 			} else if (fd.inferRetType) {
 				if (fd.type.nextOf() != null) {
 					if (!exp.type.equals(fd.type.nextOf())) {
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.MismatchedFunctionReturnTypeInference, sourceExp, new String[] { exp.type.toChars(context), fd.type.nextOf().toChars(context) }));
 						}
@@ -205,7 +205,7 @@ public class ReturnStatement extends Statement {
 		} else if (fd.inferRetType) {
 			if (fd.type.nextOf() != null) {
 				if (fd.type.nextOf().ty != Tvoid) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.MismatchedFunctionReturnTypeInference, this, new String[] { "void", fd.type.nextOf().toChars(context) }));
 					}
@@ -219,7 +219,7 @@ public class ReturnStatement extends Statement {
 				}
 			}
 		} else if (tbret.ty != Tvoid) { // if non-void return
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.ReturnExpressionExpected, this));
 			}
@@ -314,7 +314,7 @@ public class ReturnStatement extends Statement {
 
 		if ((sc.callSuper & CSXany_ctor) != 0
 				&& (sc.callSuper & (CSXthis_ctor | CSXsuper_ctor)) == 0) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.ReturnWithoutCallingConstructor, this, new String[] { toChars(context) }));
 			}

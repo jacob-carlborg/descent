@@ -783,7 +783,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		if (equals(ident, Id.__sizeof)) {
 			e = new IntegerExp(loc, size(loc, context), Type.tsize_t);
 		} else if (equals(ident, Id.size)) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.DeprecatedProperty, lineNumber, start, length,
 						new String[] { ".size", ".sizeof" }));
@@ -793,7 +793,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 			e = new IntegerExp(loc, alignsize(context), Type.tsize_t);
 		} else if (equals(ident, Id.typeinfo)) {
 			if (!context.global.params.useDeprecated) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.DeprecatedProperty, lineNumber, start, length,
 							new String[] { "typeinfo", ".typeid(type)" }));
@@ -802,7 +802,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 			e = getTypeInfo(null, context);
 		} else if (equals(ident, Id.init)) {
 			if (ty == Tvoid) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.VoidDoesNotHaveAnInitializer, lineNumber, start, length));
 				}
 			}
@@ -818,7 +818,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 			Scope sc = new Scope(context);
 			e = e.semantic(sc, context);
 		} else {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.UndefinedProperty, lineNumber, start, length, new String[] {
 								new String(ident), toChars(context) }));
@@ -874,7 +874,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		if (null != v) {
 			if (equals(ident, Id.offset)) {
 				if (!context.global.params.useDeprecated) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.DotOffsetDeprecated, this));
 					}
@@ -898,7 +898,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 
 		if (equals(ident, Id.typeinfo)) {
 			if (!context.global.params.useDeprecated) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.DeprecatedProperty, ident, new String[] { ".typeinfo",
 									"typeid(type)" }));
@@ -920,7 +920,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	}
 
 	public int size(Loc loc, SemanticContext context) {
-		if (context.acceptsProblems()) {
+		if (context.acceptsErrors()) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.NoSizeForType, this, new String[] { toChars(context) }));
 		}

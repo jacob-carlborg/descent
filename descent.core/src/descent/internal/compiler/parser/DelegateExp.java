@@ -43,7 +43,7 @@ public class DelegateExp extends UnaExp {
 						if (f.tintro() != null
 								&& f.tintro().next.isBaseOf(f.type.next, offset,
 										context) && offset[0] != 0) {
-							if (context.acceptsProblems()) {
+							if (context.acceptsErrors()) {
 								context.acceptProblem(Problem.newSemanticTypeError(
 										IProblem.CannotFormDelegateDueToCovariantReturnType, this));
 							}
@@ -53,7 +53,7 @@ public class DelegateExp extends UnaExp {
 						return e;
 					}
 					if (func.tintro() != null) {
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.CannotFormDelegateDueToCovariantReturnType, this));
 						}
@@ -67,7 +67,7 @@ public class DelegateExp extends UnaExp {
 			if (func.tintro() != null
 					&& func.tintro().next.isBaseOf(func.type.next, offset,
 							context) && offset[0] != 0) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.CannotFormDelegateDueToCovariantReturnType, this));
 				}

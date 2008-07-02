@@ -137,7 +137,7 @@ public class DotIdExp extends UnaExp {
 				VarDeclaration v = s.isVarDeclaration();
 				if (v != null) {
 					if (v.inuse() != 0) {
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(IProblem.CircularReferenceTo, this, v.toChars(context)));
 						}
 						type = Type.tint32;
@@ -203,7 +203,7 @@ public class DotIdExp extends UnaExp {
 			    if (tup != null)
 			    {
 				if (eleft != null) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotHaveEDotTuple, this));
 					}
 				}
@@ -240,7 +240,7 @@ public class DotIdExp extends UnaExp {
 			    return e;
 			}
 
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.UndefinedIdentifier, this, toChars(context)));
 			}

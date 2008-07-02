@@ -90,7 +90,7 @@ public class TryCatchStatement extends Statement {
 
 				if (c.type.toBasetype(context).implicitConvTo(
 						cj.type.toBasetype(context), context) != MATCHnomatch) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.CatchHidesCatch, cj, new String[] { sj, si }));
 					}
 				}

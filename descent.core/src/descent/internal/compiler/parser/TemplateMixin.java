@@ -130,7 +130,7 @@ public class TemplateMixin extends TemplateInstance {
 				s = s.searchX(loc, sc, id, context);
 			}
 			if (null == s) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolNotDefined, loc.linnum, typeStart, typeLength, new String[] { toChars(context) }));
 				}
 				inst = this;
@@ -138,7 +138,7 @@ public class TemplateMixin extends TemplateInstance {
 			}
 			tempdecl = s.toAlias(context).isTemplateDeclaration();
 			if (null == tempdecl) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolNotATemplate, loc.linnum, typeStart, typeLength, new String[] { s.toChars(context) }));
 				}
 				inst = this;
@@ -230,7 +230,7 @@ public class TemplateMixin extends TemplateInstance {
 					throw new IllegalStateException("assert(0);");
 				}
 			}
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.RecursiveMixinInstantiation, this));
 			}
@@ -315,7 +315,7 @@ public class TemplateMixin extends TemplateInstance {
 		    // Give additional context info if error occurred during instantiation
 		    if (context.global.errors != errorsave)
 		    {
-		    	if (context.acceptsProblems()) {
+		    	if (context.acceptsErrors()) {
 		    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.ErrorInstantiating, this));
 		    	}
 		    }

@@ -213,13 +213,13 @@ public class StructLiteralExp extends Expression {
 			}
 
 			if (null == e.type) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, e, new String[] { e.toChars(context) }));
 				}
 			}
 			e = resolveProperties(sc, e, context);
 			if (i >= sd.fields.size()) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.MoreInitiailizersThanFields, this, new String[] { sd.toChars(context) }));
 				}
@@ -231,7 +231,7 @@ public class StructLiteralExp extends Expression {
 				throw new IllegalStateException("assert(v);");
 			}
 			if (v.offset() < offset) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.OverlappingInitiailization, this, new String[] { v.toChars(context) }));
 				}
@@ -267,7 +267,7 @@ public class StructLiteralExp extends Expression {
 				if (v.init() != null) {
 					e = v.init().toExpression(context);
 					if (null == e) {
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.CannotMakeExpressionOutOfInitializer, this, new String[] { v.toChars(context) }));
 						}

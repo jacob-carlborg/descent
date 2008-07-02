@@ -101,7 +101,7 @@ public class NewExp extends Expression {
 					type = newtype.semantic(loc, sc, context);
 					sc = sc.pop();
 				} else {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.ThisForNestedClassMustBeAClassType, this, new String[] { thisexp.type.toChars(context) }));
 					}
@@ -119,7 +119,7 @@ public class NewExp extends Expression {
 			preFunctionArguments(loc, sc, arguments, context);
 
 			if (thisexp != null && tb.ty != Tclass) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.ExpressionDotNewIsOnlyForAllocatingNestedClasses, this, new String[] { tb
 									.toChars(context) }));
@@ -136,16 +136,16 @@ public class NewExp extends Expression {
 				cd.consumeRest();
 				
 				if (cd.isInterfaceDeclaration() != null) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotCreateInstanceOfInterface, sourceNewtype, new String[] { cd.toChars(context) }));
 					}
 				} else if (cd.isAbstract()) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotCreateInstanceOfAbstractClass, sourceNewtype, new String[] { cd.toChars(context) }));
 						for(int i = 0; i < size(cd.vtbl); i++) {
 						    FuncDeclaration fd = ((Dsymbol) cd.vtbl.get(i)).isFuncDeclaration();
 							if (fd != null && fd.isAbstract()) {
-								if (context.acceptsProblems()) {
+								if (context.acceptsErrors()) {
 									context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionIsAbstract, this, new String[] { fd.toChars(context)} ));
 								}
 							}
@@ -166,7 +166,7 @@ public class NewExp extends Expression {
 							thisexp = new ThisExp(loc);
 							for (Dsymbol sp = sc.parent; true; sp = sp.parent) {
 								if (sp == null) {
-									if (context.acceptsProblems()) {
+									if (context.acceptsErrors()) {
 										context.acceptProblem(Problem.newSemanticTypeError(
 												IProblem.OuterClassThisNeededToNewNestedClass, this, new String[] { cdn.toChars(context), cd.toChars(context) }));
 									}
@@ -193,20 +193,20 @@ public class NewExp extends Expression {
 						if (cdthis != null) {
 							if (cdthis != cdn
 									&& !cdn.isBaseOf(cdthis, null, context)) {
-								if (context.acceptsProblems()) {
+								if (context.acceptsErrors()) {
 									context.acceptProblem(Problem.newSemanticTypeError(
 											IProblem.ThisForNestedClassMustBeOfType, this, new String[] { cdn.toChars(context), thisexp.type.toChars(context) }));
 								}
 							}
 						}
 					} else if (thisexp != null) {
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.ExpressionDotNewIsOnlyForAllocatingNestedClasses, this));
 						}
 					}
 				} else if (thisexp != null) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.ExpressionDotNewIsOnlyForAllocatingNestedClasses, this));
 					}
@@ -230,7 +230,7 @@ public class NewExp extends Expression {
 					functionArguments(loc, sc, tf, arguments, context);
 				} else {
 					if (arguments != null && arguments.size() > 0) {
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.NoConstructorForSymbol, this, new String[] { cd.toChars(context) }));
 						}
@@ -257,7 +257,7 @@ public class NewExp extends Expression {
 					functionArguments(loc, sc, tf, newargs, context);
 				} else {
 					if (newargs != null && newargs.size() > 0) {
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.NoAllocatorForSymbol, this, new String[] { cd.toChars(context) }));
 						}
@@ -271,7 +271,7 @@ public class NewExp extends Expression {
 				TypeFunction tf;
 
 				if (arguments != null && arguments.size() > 0) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.NoConstructorForSymbol, this, new String[] { type.toChars(context) }));
 					}
@@ -306,7 +306,7 @@ public class NewExp extends Expression {
 					&& (arguments != null && arguments.size() > 0)) {
 				for (int i = 0; i < arguments.size(); i++) {
 					if (tb.ty != Tarray) {
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.TooManyArgumentsForArray, this));
 						}
@@ -320,7 +320,7 @@ public class NewExp extends Expression {
 					if (arg.op == TOKint64
 							&& arg.toInteger(context)
 									.compareTo(BigInteger.ZERO) < 0) {
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.NegativeArrayIndex, this, new String[] { arg.toChars(context) }));
 						}
@@ -330,7 +330,7 @@ public class NewExp extends Expression {
 				}
 			} else if (tb.isscalar(context)) {
 				if (arguments != null && arguments.size() > 0) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.NoConstructorForSymbol, this, new String[] { type.toChars(context) }));
 					}
@@ -338,7 +338,7 @@ public class NewExp extends Expression {
 
 				type = type.pointerTo(context);
 			} else {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.NewCanOnlyCreateStructsDynamicArraysAndClassObjects, this, new String[] { type.toChars(context) }));
 				}

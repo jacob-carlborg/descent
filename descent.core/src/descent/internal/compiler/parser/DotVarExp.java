@@ -61,7 +61,7 @@ public class DotVarExp extends UnaExp {
 						continue;
 					} else {
 						String p = var.isStatic() ? "static " : "";
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.CanOnlyInitiailizeConstMemberInsideConstructor, this, p, var.toChars(context), p));
 						}
@@ -90,13 +90,13 @@ public class DotVarExp extends UnaExp {
 				for (int i = 0; i < tup.objects.size(); i++) {
 					ASTDmdNode o = tup.objects.get(i);
 					if (o.dyncast() != DYNCAST.DYNCAST_EXPRESSION) {
-						if (context.acceptsProblems()) {
+						if (context.acceptsWarnings()) {
 							context.acceptProblem(Problem.newSemanticTypeWarning(IProblem.SymbolNotAnExpression, 0, o.getStart(), o.getLength(), o.toChars(context)));
 						}
 					} else {
 						Expression e = (Expression) o;
 						if (e.op != TOKdsymbol) {
-							if (context.acceptsProblems()) {
+							if (context.acceptsErrors()) {
 								context.acceptProblem(Problem.newSemanticTypeError(
 										IProblem.SymbolIsNotAMember, this, e.toChars(context)));
 							}

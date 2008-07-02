@@ -103,7 +103,7 @@ public class TypeIdentifier extends TypeQualified {
 				TypeTypedef tt = (TypeTypedef) t[0];
 
 				if (tt.sym.sem == 1) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.CircularReferenceOfTypedef, tt.sym.ident, new String[] { tt.sym.ident.toString() }));
 					}
@@ -111,12 +111,12 @@ public class TypeIdentifier extends TypeQualified {
 			}
 		} else {
 			if (s[0] != null) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.UsedAsAType, this, new String[] { toChars(context) }));
 				}
 			} else {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.UsedAsAType, this, new String[] { toChars(context) }));
 				}

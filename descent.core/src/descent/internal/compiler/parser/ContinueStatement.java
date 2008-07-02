@@ -99,13 +99,13 @@ public class ContinueStatement extends Statement {
 					Statement s = ls.statement;
 
 					if (!s.hasContinue()) {
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.LabelHasNoContinue, this, ident.toChars()));
 						}
 					}
 					if (ls.tf != sc.tf) {
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.CannotContinueOutOfFinallyBlock, this));
 						}
@@ -113,7 +113,7 @@ public class ContinueStatement extends Statement {
 					return this;
 				}
 			}
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.EnclosingLabelForContinueNotFound, ident, ident.toChars()));
 			}
 		} else if (null == sc.scontinue) {
@@ -124,7 +124,7 @@ public class ContinueStatement extends Statement {
 				s = new ReturnStatement(0, new IntegerExp(0));
 				return s;
 			}
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ContinueNotInLoop, this));
 			}
 		}

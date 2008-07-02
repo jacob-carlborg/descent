@@ -14,7 +14,7 @@ public class TypeReference extends Type {
 		super(Treference, t);
 		this.context = context;
 		if (t.ty == Tbit) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.CannotMakeReferenceToABit, this));
 			}

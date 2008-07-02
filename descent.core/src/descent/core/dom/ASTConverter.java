@@ -2330,8 +2330,8 @@ public class ASTConverter {
 				break;
 			}
 		}
-		if (a.ifbody != null) {
-			descent.core.dom.Statement convertedBody = convert(a.ifbody);
+		if (a.sourceIfbody != null) {
+			descent.core.dom.Statement convertedBody = convert(a.sourceIfbody);
 			if (convertedBody != null) {
 				ret.setThenBody(convertedBody);
 			}
@@ -3134,6 +3134,7 @@ public class ASTConverter {
 				b.setName(convertedIdent);
 			}
 		}
+		
 		if (a.tempinst.sourceTiargs != null) {
 			for(ASTDmdNode node : a.tempinst.sourceTiargs) {
 				ASTNode convertedNode = convert(node);

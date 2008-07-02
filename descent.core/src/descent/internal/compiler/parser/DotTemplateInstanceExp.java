@@ -72,7 +72,7 @@ public class DotTemplateInstanceExp extends UnaExp {
 					s = ((TypeStruct) t1).sym;
 				} else {
 					// goto L1;
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.TemplateIsNotAMemberOf, this, ti.toChars(context), e1.toChars(context)));
 					}
@@ -86,7 +86,7 @@ public class DotTemplateInstanceExp extends UnaExp {
 			t1 = t1.next.toBasetype(context);
 			if (t1.ty != Tstruct) {
 				// goto L1;
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.TemplateIsNotAMemberOf, this, ti.toChars(context), e1.toChars(context)));
 				}
@@ -96,7 +96,7 @@ public class DotTemplateInstanceExp extends UnaExp {
 			eleft = e1;
 		} else {
 			// L1:
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.TemplateIsNotAMemberOf, this, ti.toChars(context), e1.toChars(context)));
 			}
@@ -109,12 +109,12 @@ public class DotTemplateInstanceExp extends UnaExp {
 		s2 = s.search(loc, id, 0, context);
 		if (s2 == null) {
 			if (s instanceof TemplateInstance) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.TemplateIdentifierIsNotAMemberOf, this, new String(id), s.kind(), new String(((TemplateInstance) s).name.ident)));
 				}
 			} else {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.TemplateIdentifierIsNotAMemberOf, this, new String(id), s.kind(), new String(s.ident.ident)));
 				}
@@ -127,7 +127,7 @@ public class DotTemplateInstanceExp extends UnaExp {
 		s = s.toAlias(context);
 		td = s.isTemplateDeclaration();
 		if (td == null) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolNotATemplate, ti.name, new String(id)));
 			}
 			// goto Lerr;

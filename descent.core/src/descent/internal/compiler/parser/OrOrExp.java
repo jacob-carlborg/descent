@@ -88,7 +88,7 @@ public class OrOrExp extends BinExp {
 			e2 = e2.optimize(WANTflags | (result & WANTinterpret), context);
 			if (result != 0 && e2.type.toBasetype(context).ty == Tvoid
 					&& 0 == context.global.errors) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, this, new String[] { "void" }));
 				}
 			}
@@ -132,7 +132,7 @@ public class OrOrExp extends BinExp {
 			type = Type.tvoid;
 		}
 		if (e2.op == TOK.TOKtype || e2.op == TOK.TOKimport) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsWarnings()) {
 				context.acceptProblem(Problem.newSemanticTypeWarning(IProblem.SymbolNotAnExpression, 0, e2.start, e2.length, new String[] { e2.toChars(context) }));
 			}
 		}

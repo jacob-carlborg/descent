@@ -122,7 +122,7 @@ public class TypeStruct extends Type {
 		sym.consumeRest();
 
 		if (null == sym.members) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.StructIsForwardReferenced, this, new String[] { sym.toChars(context) }));
 			}
@@ -265,7 +265,7 @@ public class TypeStruct extends Type {
 
 		if (null != v) {
 			if (v.toParent() != sym) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.SymbolIsNotAMember, this, new String[] { v.toChars(context) }));
 				}

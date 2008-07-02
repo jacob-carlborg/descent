@@ -49,7 +49,7 @@ public abstract class TypeQualified extends Type {
 						id.resolvedSymbol = sm;
 						
 						if (sm == null) {
-							if (context.acceptsProblems()) {
+							if (context.acceptsErrors()) {
 								context.acceptProblem(Problem.newSemanticTypeError(
 										IProblem.NotAMember, id, new String[] { new String(
 												id.ident) }));
@@ -59,7 +59,7 @@ public abstract class TypeQualified extends Type {
 						sm = sm.toAlias(context);
 						td = sm.isTemplateDeclaration();
 						if (td == null) {
-							if (context.acceptsProblems()) {
+							if (context.acceptsErrors()) {
 								context.acceptProblem(Problem.newSemanticTypeError(
 										IProblem.SymbolIsNotATemplate, this, new String[] { id.toChars() }));
 							}
@@ -151,7 +151,7 @@ public abstract class TypeQualified extends Type {
 			return;
 		}
 		if (s == null) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.UndefinedIdentifier, this,
 						new String[] { this.toString() }));
@@ -182,7 +182,7 @@ public abstract class TypeQualified extends Type {
 			return;
 		}
 		if (t.ty == TY.Tinstance && t != this && t.deco == null) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.ForwardReferenceToSymbol, this, new String[] { t.toChars(context) }));
 			}
@@ -195,7 +195,7 @@ public abstract class TypeQualified extends Type {
 
 				for (scx = sc; true; scx = scx.enclosing) {
 					if (scx == null) {
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.ForwardReferenceToSymbol, this, new String[] { t.toChars(context) }));
 						}
@@ -215,7 +215,7 @@ public abstract class TypeQualified extends Type {
 			pt[0] = t.merge(context);
 		}
 		if (s == null) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.UndefinedIdentifier, this, new String[] { toChars(context) }));
 			}
@@ -231,7 +231,7 @@ public abstract class TypeQualified extends Type {
 	}
 
 	public void resolveHelper_Lerror(IdentifierExp id, SemanticContext context) {
-		if (context.acceptsProblems()) {
+		if (context.acceptsErrors()) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.IdentifierOfSymbolIsNotDefined, this, new String[] { id.toChars(), toChars(context) }));
 		}
@@ -239,7 +239,7 @@ public abstract class TypeQualified extends Type {
 
 	@Override
 	public int size(Loc loc, SemanticContext context) {
-		if (context.acceptsProblems()) {
+		if (context.acceptsErrors()) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.SizeOfTypeIsNotKnown, this, new String[] { toChars(context) }));
 		}

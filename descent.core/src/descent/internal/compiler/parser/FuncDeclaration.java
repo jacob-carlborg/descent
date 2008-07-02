@@ -309,7 +309,7 @@ public class FuncDeclaration extends Declaration {
 			if (thisfd != null) {
 				if (!thisfd.isNested() && null == thisfd.vthis()) {
 					// goto Lerr;
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 								IProblem.CannotAccessFrameOfFunction, this,
 								new String[] { fd.toChars(context) }));
@@ -321,7 +321,7 @@ public class FuncDeclaration extends Declaration {
 				if (thiscd != null) {
 					if (!thiscd.isNested()) {
 						// goto Lerr;
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context
 									.acceptProblem(Problem
 											.newSemanticTypeErrorLoc(
@@ -333,7 +333,7 @@ public class FuncDeclaration extends Declaration {
 					}
 				} else {
 					// goto Lerr;
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 								IProblem.CannotAccessFrameOfFunction, this,
 								new String[] { fd.toChars(context) }));
@@ -904,7 +904,7 @@ public class FuncDeclaration extends Declaration {
 				
 				tf = (TypeFunction) this.type;
 
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.ParametersDoesNotMatchParameterTypes,
 							caller, new String[] {
@@ -918,7 +918,7 @@ public class FuncDeclaration extends Declaration {
 				TypeFunction t1 = (TypeFunction) m.lastf.type;
 				TypeFunction t2 = (TypeFunction) m.nextf.type;
 
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.CalledWithArgumentTypesMatchesBoth,
 							caller, new String[] {
@@ -993,7 +993,7 @@ public class FuncDeclaration extends Declaration {
 			}
 	
 			if (type.ty != Tfunction) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 							IProblem.SymbolMustBeAFunction, this,
 							new String[] { toChars(context) }));
@@ -1037,7 +1037,7 @@ public class FuncDeclaration extends Declaration {
 				}
 			}
 			if (type.ty != Tfunction) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolMustBeAFunction, this, new String[] { toChars(context) }));
 				}
 				return;
@@ -1059,14 +1059,14 @@ public class FuncDeclaration extends Declaration {
 
 		if (context.isD2()) {
 			if (isAuto() || isScope()) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 							IProblem.FunctionsCannotBeScopeOrAuto, this));
 				}
 			}
 		} else {
 			if (isConst() || isAuto() || isScope()) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 							IProblem.FunctionsCannotBeConstOrAuto, this));
 				}
@@ -1074,7 +1074,7 @@ public class FuncDeclaration extends Declaration {
 		}
 
 		if (isAbstract() && !isVirtual(context)) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 						IProblem.NonVirtualFunctionsCannotBeAbstract, this));
 			}
@@ -1082,7 +1082,7 @@ public class FuncDeclaration extends Declaration {
 		
 		if (context.isD2()) {
 			if ((f.isConst() || f.isInvariant()) && null == isThis()) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 							IProblem.WithoutThisCannotBeConstInvariant, this));
 				}
@@ -1090,7 +1090,7 @@ public class FuncDeclaration extends Declaration {
 		}
 
 		if (isAbstract() && isFinal()) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 						IProblem.CannotBeBothAbstractAndFinal, this));
 			}
@@ -1108,7 +1108,7 @@ public class FuncDeclaration extends Declaration {
 			
 			// Verify no constructors, destructors, etc.
 			if (condition) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 							IProblem.SpecialMemberFunctionsNotAllowedForSymbol,
 							this, new String[] { sd.kind() }));
@@ -1137,14 +1137,14 @@ public class FuncDeclaration extends Declaration {
 			}
 
 			if (condition) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 							IProblem.SpecialFunctionsNotAllowedInInterface,
 							this, new String[] { id.toChars(context) }));
 				}
 			}
 			if (fbody != null) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 							IProblem.FunctionBodyIsNotAbstractInInterface,
 							this, new String[] { id.toChars(context) }));
@@ -1201,7 +1201,7 @@ public class FuncDeclaration extends Declaration {
 						int cov = type.covariant(fdv.type, context);
 
 						if (cov == 2) {
-							if (context.acceptsProblems()) {
+							if (context.acceptsErrors()) {
 								context
 										.acceptProblem(Problem
 												.newSemanticTypeErrorLoc(
@@ -1219,7 +1219,7 @@ public class FuncDeclaration extends Declaration {
 						}
 						if (cov == 1) {
 							if (fdv.isFinal()) {
-								if (context.acceptsProblems()) {
+								if (context.acceptsErrors()) {
 									context
 											.acceptProblem(Problem
 													.newSemanticTypeErrorLoc(
@@ -1242,7 +1242,7 @@ public class FuncDeclaration extends Declaration {
 								if (!gotoL1) {
 									if (context.BREAKABI) {
 										if (this.parent.isClassDeclaration() == null) {
-											if (context.acceptsProblems()) {
+											if (context.acceptsErrors()) {
 												context
 														.acceptProblem(Problem
 																.newSemanticTypeErrorLoc(
@@ -1253,7 +1253,7 @@ public class FuncDeclaration extends Declaration {
 									} else {
 										if (this.parent.isClassDeclaration() == null
 												&& isDtorDeclaration() == null) {
-											if (context.acceptsProblems()) {
+											if (context.acceptsErrors()) {
 												context
 														.acceptProblem(Problem
 																.newSemanticTypeErrorLoc(
@@ -1262,7 +1262,7 @@ public class FuncDeclaration extends Declaration {
 											}
 										}
 									}
-									if (context.acceptsProblems()) {
+									if (context.acceptsErrors()) {
 										context
 												.acceptProblem(Problem
 														.newSemanticTypeErrorLoc(
@@ -1331,20 +1331,25 @@ public class FuncDeclaration extends Declaration {
 						} else {
 							f2 = s.isFuncDeclaration();
 						}
-						f2 = f2.overloadExactMatch(type, context);
-						if (f2 != null && f2.isFinal()
-								&& f2.prot() != PROTprivate) {
-							if (context.acceptsProblems()) {
-								context
-										.acceptProblem(Problem
-												.newSemanticTypeErrorLoc(
-														IProblem.CannotOverrideFinalFunctions,
-														this,
-														new String[] {
-																new String(
-																		ident.ident),
-																new String(
-																		cd.ident.ident) }));
+						
+						// XXX Descent this check was added because I don't know why it
+						// gets to this point. FIXME
+						if (f2 != null) {
+							f2 = f2.overloadExactMatch(type, context);
+							if (f2 != null && f2.isFinal()
+									&& f2.prot() != PROTprivate) {
+								if (context.acceptsErrors()) {
+									context
+											.acceptProblem(Problem
+													.newSemanticTypeErrorLoc(
+															IProblem.CannotOverrideFinalFunctions,
+															this,
+															new String[] {
+																	new String(
+																			ident.ident),
+																	new String(
+																			cd.ident.ident) }));
+								}
 							}
 						}
 					}
@@ -1374,7 +1379,7 @@ public class FuncDeclaration extends Declaration {
 					if (fdv != null && equals(fdv.ident, ident)) {
 						int cov = type.covariant(fdv.type, context);
 						if (cov == 2) {
-							if (context.acceptsProblems()) {
+							if (context.acceptsErrors()) {
 								context
 										.acceptProblem(Problem
 												.newSemanticTypeErrorLoc(
@@ -1409,7 +1414,7 @@ public class FuncDeclaration extends Declaration {
 							}
 							if (ti != null) {
 								if (tintro != null && !tintro.equals(ti)) {
-									if (context.acceptsProblems()) {
+									if (context.acceptsErrors()) {
 										context
 												.acceptProblem(Problem
 														.newSemanticTypeErrorLoc(
@@ -1440,7 +1445,7 @@ public class FuncDeclaration extends Declaration {
 
 			if (!gotoL2) {
 				if (introducing && isOverride()) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 								IProblem.FunctionDoesNotOverrideAny, this,
 								new String[] { new String(ident.ident),
@@ -1474,7 +1479,7 @@ public class FuncDeclaration extends Declaration {
 				// If it's a member template
 				ClassDeclaration cd2 = ti.tempdecl.isClassMember();
 				if (cd2 != null) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context
 								.acceptProblem(Problem
 										.newSemanticTypeErrorLoc(
@@ -1511,7 +1516,7 @@ public class FuncDeclaration extends Declaration {
 
 			if (!gotoLmainerr) {
 				if (f.nextOf().ty != Tint32 && f.nextOf().ty != Tvoid) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.MustReturnIntOrVoidFromMainFunction,
 								type));
@@ -1520,7 +1525,7 @@ public class FuncDeclaration extends Declaration {
 			}
 			if (f.varargs != 0 || gotoLmainerr) {
 				// Lmainerr: 
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 							IProblem.IllegalMainParameters, this));
 				}
@@ -1584,7 +1589,7 @@ public class FuncDeclaration extends Declaration {
 		    }
 		}
 		
-		if (context.acceptsProblems()) {
+		if (context.acceptsErrors()) {
 			context
 					.acceptProblem(Problem
 							.newSemanticTypeErrorLoc(
@@ -1683,7 +1688,7 @@ public class FuncDeclaration extends Declaration {
 			VarDeclaration v;
 
 			if (isFuncLiteralDeclaration() != null && isNested()) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 							IProblem.LiteralsCannotBeClassMembers, this));
 				}
@@ -1856,7 +1861,7 @@ public class FuncDeclaration extends Declaration {
 				}
 				v.semantic(sc2, context);
 				if (sc2.insert(v) == null) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.ParameterIsAlreadyDefined, arg.ident,
 								new String[] { toChars(context),
@@ -1899,7 +1904,7 @@ public class FuncDeclaration extends Declaration {
 							exps);
 					v.isexp = true;
 					if (sc2.insert(v) == null) {
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem
 									.newSemanticTypeErrorLoc(
 											IProblem.ParameterIsAlreadyDefined,
@@ -1934,7 +1939,7 @@ public class FuncDeclaration extends Declaration {
 			Assert.isNotNull(type.nextOf());
 			if (type.nextOf().ty == Tvoid) {
 				if (outId != null) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.VoidFunctionsHaveNoResult, outId));
 					}
@@ -1960,7 +1965,7 @@ public class FuncDeclaration extends Declaration {
 				v.semantic(sc2, context);
 				sc2.incontract++;
 				if (sc2.insert(v) == null) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 								IProblem.OutResultIsAlreadyDefined, this,
 								new String[] { v.toChars(context) }));
@@ -2072,7 +2077,7 @@ public class FuncDeclaration extends Declaration {
 				Dsymbol p = toParent();
 				ScopeDsymbol ad2 = p.isScopeDsymbol();
 				if (null == ad2) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context
 								.acceptProblem(Problem
 										.newSemanticTypeErrorLoc(
@@ -2096,7 +2101,7 @@ public class FuncDeclaration extends Declaration {
 						VarDeclaration v = cd.fields.get(i);
 
 						if (!v.ctorinit() && v.isCtorinit()) {
-							if (context.acceptsProblems()) {
+							if (context.acceptsErrors()) {
 								context
 										.acceptProblem(Problem
 												.newSemanticTypeErrorLoc(
@@ -2128,7 +2133,7 @@ public class FuncDeclaration extends Declaration {
 						// I may be a synthetic node. In that case, mark
 						// the error in the class' name
 						if (this.synthetic) {
-							if (context.acceptsProblems()) {
+							if (context.acceptsErrors()) {
 								context
 										.acceptProblem(Problem
 												.newSemanticTypeErrorLoc(
@@ -2136,7 +2141,7 @@ public class FuncDeclaration extends Declaration {
 														parent));
 							}
 						} else {
-							if (context.acceptsProblems()) {
+							if (context.acceptsErrors()) {
 								context
 										.acceptProblem(Problem
 												.newSemanticTypeErrorLoc(
@@ -2156,7 +2161,7 @@ public class FuncDeclaration extends Declaration {
 				fbody = new CompoundStatement(loc, fbody, s);
 				Assert.isTrue(returnLabel == null);
 			} else if (hasReturnExp == 0 && type.nextOf().ty != Tvoid) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 							IProblem.FunctionMustReturnAResultOfType, this,
 							new String[] { type.nextOf().toString() }));
@@ -2175,7 +2180,7 @@ public class FuncDeclaration extends Declaration {
 						Expression e;
 
 						if (context.global.params.warnings) {
-							if (context.acceptsProblems()) {
+							if (context.acceptsWarnings()) {
 								context
 										.acceptProblem(Problem
 												.newSemanticTypeWarning(

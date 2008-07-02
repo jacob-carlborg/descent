@@ -25,6 +25,7 @@ import descent.internal.compiler.parser.Statement;
 import descent.internal.compiler.parser.StorageClassDeclaration;
 import descent.internal.compiler.parser.TypeClass;
 import descent.internal.compiler.parser.TypeIdentifier;
+import descent.internal.compiler.parser.TypeInstance;
 import descent.internal.compiler.parser.TypeStruct;
 import descent.internal.compiler.parser.TypeTypedef;
 
@@ -165,6 +166,14 @@ public class EvaluationASTConverter extends ASTConverter {
 		if (a.decl != null) {
 			convertDeclarations(toAdd, a.decl);
 		}
+	}
+	
+	@Override
+	public Type convert(TypeInstance a) {
+		if (a.tempinst.sourceTiargs == null && a.tempinst.tiargs != null) {
+			a.tempinst.sourceTiargs = a.tempinst.tiargs;
+		}
+		return super.convert(a);
 	}
 	
 	@Override

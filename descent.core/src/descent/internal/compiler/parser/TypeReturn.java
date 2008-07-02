@@ -32,7 +32,7 @@ public class TypeReturn extends TypeQualified {
 	public Type semantic(Loc loc, Scope sc, SemanticContext context) {
 		Type t;
 		if (null == sc.func) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.TypeofReturnMustBeInsideFunction, this));
 			}
 			// goto Lerr;
@@ -57,14 +57,14 @@ public class TypeReturn extends TypeQualified {
 			if (s != null) {
 				t = s.getType(context);
 				if (null == t) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolNotAType, this, new String[] { s.toChars(context) }));
 					}
 					// goto Lerr;
 					return terror;
 				}
 			} else {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotResolveDotProperty, this, new String[] { toChars(context) }));
 				}
 				// goto Lerr;

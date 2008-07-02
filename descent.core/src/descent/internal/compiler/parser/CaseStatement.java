@@ -109,7 +109,7 @@ public class CaseStatement extends Statement {
 			
 			if (!gotoL1) {
 				if (exp.op != TOKstring && exp.op != TOKint64) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(IProblem.CaseMustBeAnIntegralOrStringConstant, sourceExp, exp.toChars(context)));
 					}
 					exp = new IntegerExp(0);
@@ -121,7 +121,7 @@ public class CaseStatement extends Statement {
 				CaseStatement cs = (CaseStatement) sw.cases.get(i);
 
 				if (cs.exp.equals(exp)) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.DuplicateCaseInSwitchStatement, this, exp.toChars(context)));
 					}
 					break;
@@ -144,13 +144,13 @@ public class CaseStatement extends Statement {
 			
 			if (context.isD2()) {
 				if (sc.sw.tf != sc.tf) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.SwitchAndCaseAreInDifferentFinallyBlocks, this));
 					}
 				}
 			}
 		} else {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CaseIsNotInSwitch, this));
 			}
 		}

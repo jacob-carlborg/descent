@@ -147,7 +147,7 @@ public class ArrayLiteralExp extends Expression {
 			e = elements.get(i);
 
 			if (e.type == null) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, e, e.toChars(context)));
 				}
 			}

@@ -280,7 +280,7 @@ public class AssocArrayLiteralExp extends Expression {
 		expandTuples(values, context);
 		if(keys.size() != values.size())
 		{
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.NumberOfKeysMustMatchNumberOfValues, this, String.valueOf(keys.size()), String.valueOf(values.size())));
 			}
@@ -293,12 +293,12 @@ public class AssocArrayLiteralExp extends Expression {
 			Expression value = values.get(i);
 			
 			if(null == key.type) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, key, key.toChars(context)));
 				}
 			}
 			if(null == value.type) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, value, value.toChars(context)));
 				}
 			}

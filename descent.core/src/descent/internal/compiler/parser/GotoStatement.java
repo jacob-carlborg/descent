@@ -91,7 +91,7 @@ public class GotoStatement extends Statement {
 			return s;
 		}
 		if (label.statement != null && label.statement.tf != sc.tf) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotGotoInOrOutOfFinallyBlock, this));
 			}
 		}

@@ -106,7 +106,7 @@ public class Dsymbol extends ASTDmdNode {
 				if (equals(ident, Id.__sizeof)
 						|| equals(ident, Id.alignof)
 						|| equals(ident, Id.mangleof)) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticMemberError(
 								IProblem.PropertyCanNotBeRedefined, 0, ident.start,
 								ident.length,
@@ -139,7 +139,7 @@ public class Dsymbol extends ASTDmdNode {
 				}
 			}
 
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolIsDeprecated, reference, this.toChars(context)));
 			}
 		}
@@ -496,7 +496,7 @@ public class Dsymbol extends ASTDmdNode {
 			id = ti.name;
 			sm = s.search(loc, id, 0, context);
 			if (null == sm) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.TemplateIdentifierIsNotAMemberOf, this, id.toChars(), s.kind(), s.toChars(context)));
 				}
@@ -505,7 +505,7 @@ public class Dsymbol extends ASTDmdNode {
 			sm = sm.toAlias(context);
 			TemplateDeclaration td = sm.isTemplateDeclaration();
 			if (null == td) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.SymbolIsNotATemplate, this, id.toChars(), sm.kind()));
 				}
@@ -538,7 +538,7 @@ public class Dsymbol extends ASTDmdNode {
 	}
 
 	public int size(SemanticContext context) {
-		if (context.acceptsProblems()) {
+		if (context.acceptsErrors()) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.DSymbolHasNoSize, this, toChars(context)));
 		}

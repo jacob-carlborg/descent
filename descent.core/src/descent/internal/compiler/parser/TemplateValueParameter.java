@@ -55,7 +55,7 @@ public class TemplateValueParameter extends TemplateParameter {
 		VarDeclaration v = new VarDeclaration(loc, valType, ident, null);
 		v.storage_class = STCtemplateparameter;
 		if (null == sc.insert(v)) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ParameterMultiplyDefined, ident, new String[] { new String(ident.ident) }));
 			}
 		}
@@ -232,7 +232,7 @@ public class TemplateValueParameter extends TemplateParameter {
 		if (!(valType.isintegral() || valType.isfloating() || valType
 				.isString(context))
 				&& valType.ty != TY.Tident) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArithmeticOrStringTypeExpectedForValueParameter, this, new String[] { valType.toChars(context) }));
 			}
 		}

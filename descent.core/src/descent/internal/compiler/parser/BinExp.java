@@ -88,7 +88,7 @@ public abstract class BinExp extends Expression {
 		sourceE1.resolvedExpression = e1;
 		
 		if (e1.type == null) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, e1, e1.toChars(context)));
 			}
 			e1.type = Type.terror;
@@ -99,7 +99,7 @@ public abstract class BinExp extends Expression {
 		sourceE2.resolvedExpression = e2;
 		
 		if (e2.type == null) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, e2, e2.toChars(context)));
 			}
 			e2.type = Type.terror;
@@ -166,7 +166,7 @@ public abstract class BinExp extends Expression {
 			e1.checkScalar(context);
 			type = e1.type;
 			if (type.toBasetype(context).ty == Tbool) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.OperatorNotAllowedOnBoolExpression, this, toChars(context)));
 				}
@@ -176,7 +176,7 @@ public abstract class BinExp extends Expression {
 			e2.checkArithmetic(context);
 
 			if (op == TOKmodass && e2.type.iscomplex()) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.CannotPerformModuloComplexArithmetic, this));
 				}
@@ -188,7 +188,7 @@ public abstract class BinExp extends Expression {
 	}
 
 	public void incompatibleTypes(SemanticContext context) {
-		if (context.acceptsProblems()) {
+		if (context.acceptsErrors()) {
 			context.acceptProblem(Problem.newSemanticTypeError(IProblem.IncompatibleTypesForOperator, e1, e2, e1.type.toChars(context), e2.type.toChars(context), op.toString()));
 		}
 	}
@@ -681,7 +681,7 @@ public abstract class BinExp extends Expression {
 
 				Expression ev = v.value();
 				if (null != fp && null == ev) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.VariableIsUsedBeforeInitialization, v, v.toChars(context)));
 					}
@@ -727,7 +727,7 @@ public abstract class BinExp extends Expression {
 			if (v.isDataseg(context))
 				return EXP_CANT_INTERPRET;
 			if (null != fp && null == v.value()) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.VariableIsUsedBeforeInitialization, v, v.toChars(context)));
 				}
@@ -791,7 +791,7 @@ public abstract class BinExp extends Expression {
 				return EXP_CANT_INTERPRET;
 			if (null == v.value()) {
 				if (null != fp) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.VariableIsUsedBeforeInitialization, v, v.toChars(context)));
 					}
@@ -1029,7 +1029,7 @@ public abstract class BinExp extends Expression {
 
 			if (m.count > 1) {
 				// Error, ambiguous
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.BothOverloadsMuchArgumentList, this, m.lastf.type.toChars(context), m.nextf.type
 									.toChars(context), m.lastf.toChars(context)));
 				}
@@ -1105,7 +1105,7 @@ public abstract class BinExp extends Expression {
 
 				if (m.count > 1) {
 					// Error, ambiguous
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.BothOverloadsMuchArgumentList, this, m.lastf.type.toChars(context), m.nextf.type.toChars(context), m.lastf.toChars(context)));
 					}
@@ -1175,7 +1175,7 @@ public abstract class BinExp extends Expression {
 				integer_t i2 = e2.toInteger(context);
 				integer_t sz = new integer_t(e1.type.size(context)).multiply(8);
 				if (i2.compareTo(0) < 0 || i2.compareTo(sz) > 0) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.ShiftAssignIsOutsideTheRange,
 								sourceE1, sourceE2, 

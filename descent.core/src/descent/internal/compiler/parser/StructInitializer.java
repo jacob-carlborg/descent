@@ -79,7 +79,7 @@ public class StructInitializer extends Initializer {
 
 				if (id == null) {
 					if (fieldi >= ad.fields.size()) {
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(IProblem.TooManyInitializers, this, new String[] { ad.toChars(context) }));
 						}
 						field.remove(i);
@@ -92,7 +92,7 @@ public class StructInitializer extends Initializer {
 					//s = ad.symtab.lookup(id);
 					s = ad.search(loc, id, 0, context);
 					if (null == s) {
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.SymbolIsNotAMemberOf, id, new String[] { id.toChars(), t.toChars(context) }));
 						}
@@ -102,7 +102,7 @@ public class StructInitializer extends Initializer {
 					// Find out which field index it is
 					for (fieldi = 0; true; fieldi++) {
 						if (fieldi >= ad.fields.size()) {
-							if (context.acceptsProblems()) {
+							if (context.acceptsErrors()) {
 								context.acceptProblem(Problem.newSemanticTypeError(
 										IProblem.SymbolIsNotAPreInstanceInitializableField, s, new String[] { s.toChars(context) }));
 							}
@@ -121,7 +121,7 @@ public class StructInitializer extends Initializer {
 					}
 					vars.set(i, v);
 				} else {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.SymbolIsNotAFieldOfSymbol, this, new String[] { id != null ? id
 										.toChars() : s.toChars(context), ad
@@ -142,7 +142,7 @@ public class StructInitializer extends Initializer {
 			ExpInitializer ie = new ExpInitializer(loc, e);
 			return ie.semantic(sc, t, context);
 		} else {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.AStructIsNotAValidInitializerFor, this, new String[] { t.toChars(context) }));
 			}
 			errors = 1;

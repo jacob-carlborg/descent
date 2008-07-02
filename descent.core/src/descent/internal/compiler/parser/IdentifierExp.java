@@ -165,7 +165,7 @@ public class IdentifierExp extends Expression {
 			// Descent: for binding resolution
 			return resolvedExpression = e.semantic(sc, context);
 		}
-		if (context.acceptsProblems()) {
+		if (context.acceptsErrors()) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.UndefinedIdentifier, this,
 					new String[] { new String(ident) }));

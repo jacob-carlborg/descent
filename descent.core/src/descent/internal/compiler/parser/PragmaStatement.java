@@ -67,7 +67,7 @@ public class PragmaStatement extends Statement {
 					if (e.op == TOK.TOKstring) {
 
 					} else {
-						if (context.acceptsProblems()) {
+						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.StringExpectedForPragmaMsg, e));
 						}
@@ -76,7 +76,7 @@ public class PragmaStatement extends Statement {
 			}
 		} else if (equals(ident, Id.lib)) {
 			if (args == null || args.size() != 1) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context
 							.acceptProblem(Problem
 									.newSemanticTypeErrorLoc(
@@ -89,7 +89,7 @@ public class PragmaStatement extends Statement {
 				e = e.optimize(WANTvalue | WANTinterpret, context);
 				args.set(0, e);
 				if (e.op != TOK.TOKstring) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.StringExpectedForPragmaLib, e));
 					}
@@ -98,7 +98,7 @@ public class PragmaStatement extends Statement {
 			}
 		} else if (context.isD2() && equals(ident, Id.startaddress)) {
 			if (null == args || args.size() != 1) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionNameExpectedForStartAddress, this));
 				}
 			} else {
@@ -108,7 +108,7 @@ public class PragmaStatement extends Statement {
 				args.set(0, e);
 				Dsymbol sa = getDsymbol(e, context);
 				if (null == sa || null == sa.isFuncDeclaration()) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionNameExpectedForStartAddress, e));
 					}
 				}
@@ -118,7 +118,7 @@ public class PragmaStatement extends Statement {
 				return this;
 			}
 		} else {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.UnrecognizedPragma, ident));
 			}

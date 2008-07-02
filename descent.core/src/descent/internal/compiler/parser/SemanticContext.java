@@ -158,18 +158,18 @@ public class SemanticContext {
 		// Update global list of modules
 		if (null == dst.insert(module)) {
 			if (module.md != null) {
-				if (acceptsProblems()) {
+				if (acceptsErrors()) {
 					acceptProblem(Problem.newSemanticTypeError(
 							IProblem.ModuleIsInMultiplePackages, module.md, new String[] { module.md.toChars(this) }));
 				}
 			} else {
 				if (module.md == null) {
-					if (acceptsProblems()) {
+					if (acceptsErrors()) {
 						acceptProblem(Problem.newSemanticTypeError(
 								IProblem.ModuleIsInMultipleDefined, 0, 0, 1));
 					}
 				} else {
-					if (acceptsProblems()) {
+					if (acceptsErrors()) {
 						acceptProblem(Problem.newSemanticTypeError(
 								IProblem.ModuleIsInMultipleDefined, module.md));
 					}
@@ -183,7 +183,7 @@ public class SemanticContext {
 		}
 	}
 	
-	public final boolean acceptsProblems() {
+	public final boolean acceptsErrors() {
 		if (fatalWasSignaled) {
 			return false;
 		}
@@ -195,6 +195,18 @@ public class SemanticContext {
 			// global.errors is incremented, so...
 			
 			global.errors++;
+			return false;
+		}
+	}
+	
+	public final boolean acceptsWarnings() {
+		if (fatalWasSignaled) {
+			return false;
+		}
+		
+		if (global.gag == 0 && muteProblems == 0 && problemRequestor != null) {
+			return true;
+		} else {
 			return false;
 		}
 	}
@@ -217,7 +229,9 @@ public class SemanticContext {
 			problemRequestor.acceptProblem(problem);
 		}
 		
-		global.errors++;
+		if (problem.isError()) {
+			global.errors++;
+		}
 	}
 
 	private int generatedIds;	
@@ -279,7 +293,7 @@ public class SemanticContext {
 			int start = packages == null || packages.size() == 0 ? ident.start : packages.get(0).start;
 			int length = ident.start + ident.length - start;
 			
-			if (acceptsProblems()) {
+			if (acceptsErrors()) {
 				acceptProblem(Problem.newSemanticTypeError(IProblem.ImportCannotBeResolved, ident.getLineNumber(), start, length, new String[] { CharOperation.toString(compoundName) }));
 			}
 			return null;

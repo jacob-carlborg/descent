@@ -58,7 +58,7 @@ public class IftypeCondition extends Condition {
 	public boolean include(Scope sc, ScopeDsymbol sd, SemanticContext context) {
 		if (inc == 0) {
 			if (null == sc) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.IftypeConditionCannotBeAtGlobalScope, this));
 				}

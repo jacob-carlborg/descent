@@ -64,7 +64,7 @@ public class GotoCaseStatement extends Statement {
 		}
 
 		if (null == sc.sw) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.GotoCaseNotInSwitch, this));
 			}
 		} else {

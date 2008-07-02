@@ -23,7 +23,7 @@ public class SymOffExp extends Expression {
 		this.offset = offset;
 		VarDeclaration v = var.isVarDeclaration();
 		if (v != null && v.needThis()) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.NeedThisForAddressOfSymbol, this, new String[] { v.toChars(context) }));
 			}
 		}
@@ -81,7 +81,7 @@ public class SymOffExp extends Expression {
 		VarDeclaration v = var.isVarDeclaration();
 		if (v != null) {
 			if (!v.isDataseg(context)) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.EscapingReferenceToLocalVariable, this, new String[] { toChars(context) }));
 				}

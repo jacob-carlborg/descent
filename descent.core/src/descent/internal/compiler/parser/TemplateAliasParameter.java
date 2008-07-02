@@ -44,7 +44,7 @@ public class TemplateAliasParameter extends TemplateParameter {
 		((AliasDeclaration) sparam).isTemplateParameter = true;
 		
 		if (sc.insert(sparam) == null) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ParameterMultiplyDefined, ident, new String[] { new String(ident.ident) }));
 			}
 		}
@@ -57,7 +57,7 @@ public class TemplateAliasParameter extends TemplateParameter {
 		if (defaultAlias != null) {
 			s = defaultAlias.toDsymbol(sc, context);
 			if (null == s) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.SymbolIsNotASymbol, this, new String[] { defaultAlias.toChars(context) }));
 				}
@@ -171,7 +171,7 @@ public class TemplateAliasParameter extends TemplateParameter {
 		if (specAliasT != null) {
 			specAlias = specAliasT.toDsymbol(sc, context);
 			if (specAlias == null) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.SymbolNotFound, specAliasT,
 							new String[] { specAliasT.toString() }));

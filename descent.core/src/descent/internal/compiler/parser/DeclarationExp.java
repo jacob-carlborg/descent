@@ -105,14 +105,14 @@ public class DeclarationExp extends Expression {
 		// Must be unique in both.
 		if (s.ident != null) {
 			if (sc.insert(s) == null) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.DeclarationIsAlreadyDefined, s, s.toChars(context)));
 				}
 			} else if (sc.func != null) {
 				//VarDeclaration v = s.isVarDeclaration();
 				if ((s.isFuncDeclaration() != null /*|| v && v.storage_class & STCstatic*/)
 						&& sc.func.localsymtab.insert(s) == null) {
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.DeclarationIsAlreadyDefinedInAnotherScope, this, s.toPrettyChars(context), sc.func.toChars(context)));
 					}
@@ -126,7 +126,7 @@ public class DeclarationExp extends Expression {
 								&& scx.scopesym.symtab != null
 								&& (s2 = scx.scopesym.symtab.lookup(s.ident)) != null
 								&& s != s2) {
-							if (context.acceptsProblems()) {
+							if (context.acceptsErrors()) {
 								context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.ShadowingDeclarationIsDeprecated, s, s.toPrettyChars(context)));
 							}
 						}

@@ -388,17 +388,19 @@ public class CompletionEngine extends Engine
 			}
 			
 			// If there's an expected type, doSemantic to find it out
-			if (parser.expectedTypeNode != null) {
-				doSemantic();
-				computeExpectedType();
-			}
-			
-			// First the assist node
-			completeNode(assistNode);
-			
-			// For new |, don't suggest keywords or ddoc
-			if (parser.inNewExp) {
-				return;
+			if (parser.wantAssitNode()) {
+				if (parser.expectedTypeNode != null) {
+					doSemantic();
+					computeExpectedType();
+				}
+				
+				// First the assist node
+				completeNode(assistNode);
+				
+				// For new |, don't suggest keywords or ddoc
+				if (parser.inNewExp) {
+					return;
+				}
 			}
 			
 			// Then the keywords

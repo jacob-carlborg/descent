@@ -114,7 +114,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			throw new IllegalStateException("assert(0);");
 		}
 		if (null == sc.insert(s)) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 						IProblem.DeclarationIsAlreadyDefined, s,
 						new String[] { tp.ident.toChars(context) }));
@@ -138,7 +138,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 
 		for (TemplateDeclaration td = this; null != td; td = td.overnext) {
 			if (null == td.scope) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.ForwardReferenceToTemplate, this,
 							new String[] { td.toChars(context) }));
@@ -148,7 +148,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			if (null == td.onemember
 					|| null == td.onemember.toAlias(context)
 							.isFuncDeclaration()) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.SymbolIsNotAFunctionTemplate, this,
 							new String[] { toChars(context) }));
@@ -209,7 +209,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			}
 			
 			if (condition) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.SymbolDoesNotMatchAnyTemplateDeclaration, this,
 							new String[] { toChars(context) }));
@@ -218,7 +218,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			return Lerror(fargs, targsi, flags, context);
 		}
 		if (null != td_ambig) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.SymbolMatchesMoreThanOneTemplateDeclaration, this,
 						new String[] { toChars(context), td_best.toChars(context),
@@ -543,7 +543,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 					    if (m2.ordinal() < match.ordinal())
 						match = m2;		// pick worst match
 					    if (dedtypes.get(i) != oded) {
-							if (context.acceptsProblems()) {
+							if (context.acceptsErrors()) {
 								context
 										.acceptProblem(Problem
 												.newSemanticTypeError(
@@ -681,7 +681,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 	
 			argExpTypesToCBuffer(buf, fargs, hgs, context);
 			// TODO semantic the source range is bad
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				if (context.isD2()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.CannotDeduceTemplateFunctionFromArgumentTypes2, this,
@@ -824,7 +824,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			if (context.isD2()) {
 				
 			} else {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.CannotDeclareTemplateAtFunctionScope, this,
 							new String[] { sc.func.toChars(context) }));
@@ -867,7 +867,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			tp.semantic(paramscope, context);
 			
 			if (i + 1 != parameters.size() && tp.isTemplateTupleParameter() != null) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.TemplateTupleParameterMustBeLastOne, tp));
 				}
 			}

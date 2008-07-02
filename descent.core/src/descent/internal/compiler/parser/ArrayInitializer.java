@@ -56,7 +56,7 @@ public class ArrayInitializer extends Initializer {
 			for (int i = 0; i < value.size(); i++) {
 				if (index.get(i) != null) {
 					// goto Lno;
-					if (context.acceptsProblems()) {
+					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.CannotInferTypeFromThisArrayInitializer, this));
 					}
@@ -74,7 +74,7 @@ public class ArrayInitializer extends Initializer {
 			}
 		}
 
-		if (context.acceptsProblems()) {
+		if (context.acceptsErrors()) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.CannotInferTypeFromThisArrayInitializer, this));
 		}
@@ -99,7 +99,7 @@ public class ArrayInitializer extends Initializer {
 			break;
 
 		default:
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotUseArrayToInitialize, this, type.toChars(context)));
 			}
 			return this;
@@ -129,7 +129,7 @@ public class ArrayInitializer extends Initializer {
 			// This was length == 0 in DMD, with length
 			// an unsigned. So in a long, it's:
 			if (length == (Integer.MAX_VALUE + 1) * 2) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.ArrayDimensionOverflow, this));
 				}
@@ -140,7 +140,7 @@ public class ArrayInitializer extends Initializer {
 		}
 		
 	    if (new integer_t(dim).multiply(t.next.size(context)).compareTo(amax) >= 0) {
-	    	if (context.acceptsProblems()) {
+	    	if (context.acceptsErrors()) {
 	    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArrayDimensionExceedsMax, this, String.valueOf(dim), amax.divide(t.next.size(context)).toString() ));
 	    	}
 	    }
@@ -209,7 +209,7 @@ public class ArrayInitializer extends Initializer {
 	}
 
 	private Initializer toAssocArrayInitializer_Lno(SemanticContext context) {
-		if (context.acceptsProblems()) {
+		if (context.acceptsErrors()) {
 			context.acceptProblem(Problem.newSemanticTypeError(IProblem.NotAnAssociativeArrayInitializer, this));
 		}
 		return this;
@@ -266,7 +266,7 @@ public class ArrayInitializer extends Initializer {
 	}
 	
 	private Expression toExpression_Lno(SemanticContext context) {
-		if (context.acceptsProblems()) {
+		if (context.acceptsErrors()) {
 			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArrayInitializersAsExpressionsNotAllowed, this));
 		}
 		return null;

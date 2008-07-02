@@ -103,7 +103,7 @@ public class EqualExp extends BinExp {
 		
 	    if ((e1.type.toBasetype(context).ty == Tclass && e2.op == TOKnull ||
 	    		e2.type.toBasetype(context).ty == Tclass && e1.op == TOKnull)) {
-	    	if (context.acceptsProblems()) {
+	    	if (context.acceptsErrors()) {
 	    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.UseTokenInsteadOfTokenWhenComparingWithNull, this, op == TOKequal ? "is" : "!is", op.toString()));
 	    	}
 	    }
@@ -126,7 +126,7 @@ public class EqualExp extends BinExp {
 		if ((t1.ty == TY.Tarray || t1.ty == TY.Tsarray)
 				&& (t2.ty == TY.Tarray || t2.ty == TY.Tsarray)) {
 			if (!t1.next.equals(t2.next)) {
-				if (context.acceptsProblems()) {
+				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.ArrayComparisonTypeMismatch, this, t1.next.toChars(context), t2.next.toChars(context)));
 				}

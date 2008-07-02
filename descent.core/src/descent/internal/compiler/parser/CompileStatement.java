@@ -40,7 +40,7 @@ public class CompileStatement extends Statement {
 		exp = exp.optimize(ASTDmdNode.WANTvalue | ASTDmdNode.WANTinterpret,
 				context);
 		if (exp.op != TOK.TOKstring) {
-			if (context.acceptsProblems()) {
+			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArgumentToMixinMustBeString, this, exp.toChars(context)));
 			}
 			return this;

@@ -6,25 +6,25 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class ConditionalStatement extends Statement {
 
-	public Condition condition;
-	public Statement ifbody;
-	public Statement elsebody;
+	public Condition condition, sourceCondition;
+	public Statement ifbody, sourceIfbody;
+	public Statement elsebody, sourceElsebody;
 
 	public ConditionalStatement(Loc loc, Condition condition, Statement ifbody,
 			Statement elsebody) {
 		super(loc);
-		this.condition = condition;
-		this.ifbody = ifbody;
-		this.elsebody = elsebody;
+		this.condition = this.sourceCondition = condition;
+		this.ifbody = this.sourceIfbody = ifbody;
+		this.elsebody = this.sourceElsebody = elsebody;
 	}
 
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, condition);
-			TreeVisitor.acceptChildren(visitor, ifbody);
-			TreeVisitor.acceptChildren(visitor, elsebody);
+			TreeVisitor.acceptChildren(visitor, sourceCondition);
+			TreeVisitor.acceptChildren(visitor, sourceIfbody);
+			TreeVisitor.acceptChildren(visitor, sourceElsebody);
 		}
 		visitor.endVisit(this);
 	}
