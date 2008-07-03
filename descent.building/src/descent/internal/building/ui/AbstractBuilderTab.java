@@ -1,13 +1,7 @@
 package descent.internal.building.ui;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
@@ -264,6 +258,7 @@ import descent.internal.ui.util.PixelConverter;
                 setButtonDimensionHint(button);
                 button.addSelectionListener(new SelectionAdapter()
                 {
+                    @Override
                     public void widgetSelected(SelectionEvent evt)
                     {
                         String text = browse();
@@ -551,6 +546,7 @@ import descent.internal.ui.util.PixelConverter;
         if(null == listener)
             listener = new SelectionAdapter()
             {
+                @Override
                 public void widgetSelected(SelectionEvent e)
                 {
                     if(button.getSelection())

@@ -211,6 +211,7 @@ import static descent.building.IDescentBuilderConstants.*;
             fExecutableRadio = createRadioButton(comp, 3, BuilderUIMessages.GeneralTab_option_executable, 25, 
                     new SelectionAdapter()
                     {
+                        @Override
                         public void widgetSelected(SelectionEvent e)
                         {
                             if(fExecutableRadio.getSelection())
@@ -227,6 +228,7 @@ import static descent.building.IDescentBuilderConstants.*;
             fStaticLibRadio = createRadioButton(comp, 3, BuilderUIMessages.GeneralTab_option_static_library, 25, 
                     new SelectionAdapter()
                     {
+                        @Override
                         public void widgetSelected(SelectionEvent e)
                         {
                             if(fStaticLibRadio.getSelection())

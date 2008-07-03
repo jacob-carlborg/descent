@@ -84,6 +84,7 @@ import descent.launching.JavaRuntime;
             fHelpText.setLayoutData(gd);
             fHelpText.addSelectionListener(new SelectionAdapter()
             {
+                @Override
                 public void widgetSelected(SelectionEvent e)
                 {
                     PreferencesUtil.createPreferenceDialogOn(getShell(),
@@ -884,6 +885,7 @@ import descent.launching.JavaRuntime;
     private Image fCheckedIcon = createImage("obj16/checked.png"); //$NON-NLS-1$
     private Image fUncheckedIcon = createImage("obj16/unchecked.png");  //$NON-NLS-1$
     
+    @Override
     public void dispose()
     {
         super.dispose();
@@ -894,15 +896,8 @@ import descent.launching.JavaRuntime;
     //--------------------------------------------------------------------------
     // Tab
     
-    private final GeneralTab generalTab;
-    
     private CompilerSetting compilerSetting;
     private CompilerOptions compilerOptions;
-    
-    public CompilerTab(GeneralTab generalTab)
-    {
-        this.generalTab = generalTab;
-    }
     
     @Override
     protected String getIconPath()

@@ -9,11 +9,10 @@ public class DebuildTabGroup extends AbstractLaunchConfigurationTabGroup
 {
     public void createTabs(ILaunchConfigurationDialog dialog, String mode)
     {
-        final GeneralTab generalTab = new GeneralTab();
         ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[]
         {
-            generalTab,
-             new CompilerTab(generalTab),
+             new GeneralTab(),
+             new CompilerTab(),
              new VersionTab(),
              new EnvironmentTab(),
         };

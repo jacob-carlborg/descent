@@ -174,7 +174,7 @@ import static descent.building.IDescentBuilderConstants.*;
         }
         
         if(null == project)
-            throw new DebuildException(String.format("Cannot find project %1$s", project.getElementName()));
+            throw new DebuildException(String.format("Cannot find project %1$s", projectName));
         
         return project;
     }

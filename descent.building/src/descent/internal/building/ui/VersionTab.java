@@ -364,7 +364,7 @@ import static descent.building.IDescentBuilderConstants.*;
                 protected void setValue(Object element, Object value)
                 {
                     fIdents.remove(element);
-                    if(!"".equals(value)); //$NON-NLS-1$
+                    if(!"".equals(value)) //$NON-NLS-1$
                         fIdents.add(value);
                     updateList();
                     fViewer.setSelection(new StructuredSelection(value));
