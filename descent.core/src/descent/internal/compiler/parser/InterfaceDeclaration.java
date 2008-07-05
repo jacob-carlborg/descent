@@ -1,15 +1,6 @@
 package descent.internal.compiler.parser;
 
-import melnorme.miscutil.tree.TreeVisitor;
-
-import org.eclipse.core.runtime.Assert;
-
-import descent.core.Flags;
-import descent.core.Signature;
-import descent.core.compiler.IProblem;
-import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.LINK.LINKwindows;
-
 import static descent.internal.compiler.parser.STC.STCabstract;
 import static descent.internal.compiler.parser.STC.STCauto;
 import static descent.internal.compiler.parser.STC.STCconst;
@@ -19,9 +10,16 @@ import static descent.internal.compiler.parser.STC.STCinvariant;
 import static descent.internal.compiler.parser.STC.STCscope;
 import static descent.internal.compiler.parser.STC.STCstatic;
 import static descent.internal.compiler.parser.STC.STCtls;
-
 import static descent.internal.compiler.parser.TY.Tclass;
 import static descent.internal.compiler.parser.TY.Ttuple;
+import melnorme.miscutil.tree.TreeVisitor;
+
+import org.eclipse.core.runtime.Assert;
+
+import descent.core.Flags;
+import descent.core.Signature;
+import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
 public class InterfaceDeclaration extends ClassDeclaration {
@@ -84,8 +82,6 @@ public class InterfaceDeclaration extends ClassDeclaration {
 		
 		Assert.isTrue(baseClass == null);
 		
-		cd.consumeRest();
-		
 		if (cd != null && cd.interfaces != null) {
 			for (j = 0; j < cd.interfaces.size(); j++) {
 				BaseClass b = cd.interfaces.get(j);
@@ -131,13 +127,6 @@ public class InterfaceDeclaration extends ClassDeclaration {
 
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-		if (rest != null && !rest.isConsumed()) {
-			if (rest.getScope() == null) {
-				rest.setSemanticContext(sc, context);
-			}
-			return;
-		}
-		
 		int i;
 
 		if (scope == null) {
@@ -171,7 +160,13 @@ public class InterfaceDeclaration extends ClassDeclaration {
 		// Expand any tuples in baseclasses[]
 		for (i = 0; i < baseclasses.size();) {
 			BaseClass b = baseclasses.get(0);
+			
 			b.type = b.type.semantic(loc, sc, context);
+			
+			if (getModule() == context.Module_rootModule && b.type instanceof TypeClass) {
+				unlazy(b, context);
+			}
+			
 			Type tb = b.type.toBasetype(context);
 
 			if (tb.ty == Ttuple) {
@@ -211,8 +206,6 @@ public class InterfaceDeclaration extends ClassDeclaration {
 				baseclasses.remove(i);
 				continue;
 			} else {
-				tc.sym.consumeRest();
-				
 				// Check for duplicate interfaces
 				for (int j = 0; j < i; j++) {
 					BaseClass b2 = baseclasses.get(j);
@@ -304,21 +297,18 @@ public class InterfaceDeclaration extends ClassDeclaration {
 		sc.structalign = 8;
 		structalign = sc.structalign;
 		sc.offset = 8;
+		
+		semanticScope(sc);
 
 		for (int j = 0; j < size(members); j++) {
 			Dsymbol s = members.get(j);
 			s.semantic(sc, context);
-			
-			// Need this for vtbl
-			s.consumeRest();
 		}
 		sc.pop();
 	}
 
 	@Override
 	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
-		consumeRestStructure();
-		
 		InterfaceDeclaration id;
 
 		if (s != null) {
@@ -365,6 +355,11 @@ public class InterfaceDeclaration extends ClassDeclaration {
 	@Override
 	public long getFlags() {
 		return super.getFlags() | Flags.AccInterface;
+	}
+	
+	@Override
+	public InterfaceDeclaration unlazy(SemanticContext context) {
+		return this;
 	}
 
 }

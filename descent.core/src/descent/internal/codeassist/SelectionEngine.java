@@ -330,11 +330,18 @@ public class SelectionEngine extends AstVisitorAdapter {
 		if (sym == null && node.templateInstance != null) {
 			sym = node.templateInstance.tempdecl;
 		}
-
+		
 		if (sym != null) {
 			// See if this symbols was created at compile-time
 			while (sym.creator != null) {
 				sym = sym.creator;
+			}
+			
+			if (sym instanceof AliasDeclaration) {
+				AliasDeclaration alias = (AliasDeclaration) sym;
+				if (alias.isImportAlias) {
+					sym = alias.aliassym;
+				}
 			}
 			
 			if (sym.getJavaElement() != null) {

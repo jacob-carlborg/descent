@@ -336,7 +336,7 @@ public class CompletionEngine extends Engine
 			System.out.println(sourceUnit.getContents());
 		}
 		
-		long time = System.currentTimeMillis();
+//		long time = System.currentTimeMillis();
 		
 		this.requestor.beginReporting();
 		try {
@@ -433,8 +433,8 @@ public class CompletionEngine extends Engine
 		} finally {
 			this.requestor.endReporting();
 			
-			time = System.currentTimeMillis() - time;
-			System.out.println("Completion took " + time + " milliseconds to complete.");
+//			time = System.currentTimeMillis() - time;
+//			System.out.println("Completion took " + time + " milliseconds to complete.");
 		}
 	}
 
@@ -719,8 +719,6 @@ public class CompletionEngine extends Engine
 		doSemantic();
 		
 		node.semantic(Scope.createGlobal(node.mod, semanticContext), semanticContext);
-		node.mod.consumeRestStructure();
-		node.mod.consumeRest();
 		
 		if (node.mod != null) {
 			if (node.selectiveName == null) {
@@ -1083,6 +1081,7 @@ public class CompletionEngine extends Engine
 				suggestConstructorsAndOpCall(node.ident.resolvedSymbol, node.ident.resolvedExpression);
 			}
 		} else if (node.ident != null) {
+			isCompletingTypeIdentifier = false;
 			completeIdentDot(node.ident);
 		}
 	}
@@ -1096,6 +1095,8 @@ public class CompletionEngine extends Engine
 		
 		if (sym instanceof ClassDeclaration) {
 			ClassDeclaration cd = (ClassDeclaration) sym;
+			cd = cd.unlazy(semanticContext);
+			
 			Declaration func = cd.ctor;
 			
 			// First constructors, only if in new
@@ -1126,10 +1127,11 @@ public class CompletionEngine extends Engine
 				suggestMembers(cd.members, onlyStatics, 0, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
 			}
 		} else if (sym instanceof StructDeclaration) {
-			suggestMembers(((StructDeclaration) sym).members, onlyStatics, 0, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
+			StructDeclaration struct = ((StructDeclaration) sym).unlazy(semanticContext);
+			suggestMembers(struct.members, onlyStatics, 0, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
 		}
 	}
-	
+
 	private void completeExpStatement(CompletionOnExpStatement node) throws JavaModelException {
 		doSemantic();
 		
@@ -1542,10 +1544,14 @@ public class CompletionEngine extends Engine
 			completeTypeClass((TypeClass) sd.type(), onlyStatics);
 		} else if (sd.members != null && !sd.members.isEmpty()) {
 			// If the members are from a Module, don't restrict to "static" symbols
+			if (sd instanceof Module) {
+				sd = ((Module) sd).unlazy(semanticContext);
+			}
+			
 			suggestMembers(sd.members, sd instanceof Module ? false : onlyStatics, 0, new HashtableOfCharArrayAndObject(), includes);
 		}
 	}
-	
+
 	private Dsymbol getScopeSymbol(Scope scope) {
 		if (scope.scopesym == null || scope.scopesym.members == null
 				|| scope.scopesym.members.isEmpty()) {
@@ -1592,7 +1598,8 @@ public class CompletionEngine extends Engine
 			ScopeExp se = (ScopeExp) e1;
 			if (se.sds instanceof Module) {
 				currentName = computePrefixAndSourceRange(ident);
-				suggestMembers(((Module) se.sds).members, false /* not only statics */, 
+				suggestMembers((((Module) se.sds)).unlazy(semanticContext).members, 
+						false /* not only statics */, 
 						new HashtableOfCharArrayAndObject(), INCLUDE_ALL);
 			} else if (se.sds instanceof Package) {
 				char[] name = ident.ident;
@@ -1641,7 +1648,7 @@ public class CompletionEngine extends Engine
 			return;
 		}
 	}
-
+	
 	private void completePackage(Package sds, char[] name, IdentifierExp ident) {
 		Stack<char[]> pieces = new Stack<char[]>();
 		while(true) {
@@ -1869,7 +1876,7 @@ public class CompletionEngine extends Engine
 	}
 	
 	private void completeTypeClassRecursively(TypeClass type, boolean onlyStatics, HashtableOfCharArrayAndObject funcSignatures) {
-		ClassDeclaration decl = type.sym;
+		ClassDeclaration decl = type.sym == null ? null : type.sym.unlazy(semanticContext);
 		if (decl == null) {
 			return;
 		}
@@ -1893,7 +1900,7 @@ public class CompletionEngine extends Engine
 	}
 	
 	private void completeTypeStruct(TypeStruct type, boolean onlyStatics) {
-		StructDeclaration decl = type.sym;
+		StructDeclaration decl = type.sym == null ? null : type.sym.unlazy(semanticContext);
 		if (decl == null) {
 			return;
 		}
@@ -2019,10 +2026,6 @@ public class CompletionEngine extends Engine
 			includes &= ~includesFilter;
 		}
 		
-		// The member may not have it's semantic pass done
-		member.consumeRestStructure();
-		member.consumeRest();
-		
 		if (member instanceof Import /* && member.getModule() == module */) {
 			Import imp = ((Import) member);
 			
@@ -2036,6 +2039,8 @@ public class CompletionEngine extends Engine
 				char[] fqn = mod.getFullyQualifiedName().toCharArray();
 				if (!suggestedModules.containsKey(fqn)) {
 					suggestedModules.put(fqn, this);
+					
+					mod = mod.unlazy(semanticContext);
 					
 					suggestMembers(mod.members, false, funcSignatures, includes & (~INCLUDE_IMPORTS));
 				}
@@ -2226,7 +2231,7 @@ public class CompletionEngine extends Engine
 					
 					if (parser.inNewExp) {
 						if (type instanceof TypeClass) {
-							ClassDeclaration cd = ((TypeClass) type).sym;
+							ClassDeclaration cd = ((TypeClass) type).sym.unlazy(semanticContext);
 							if (cd.isClassDeclaration() != null && cd.isInterfaceDeclaration() == null) {
 								// If it's abstract, skip
 								if ((cd.getFlags() & Flags.AccAbstract) != 0) {
@@ -2290,11 +2295,6 @@ public class CompletionEngine extends Engine
 			
 			if (isType) {
 				if (currentName.length == 0 || match(currentName, ident)) {
-					if (member.getSignature() == null) {
-						member.consumeRest();
-						member.getSignature();
-					}
-					
 					char[] sigChars = member.getSignature().toCharArray();
 					
 					int relevance = computeBaseRelevance();
@@ -2538,17 +2538,13 @@ public class CompletionEngine extends Engine
 			
 		// opCall
 		case ASTDmdNode.TYPE_STRUCT: {
-			StructDeclaration sym = ((TypeStruct) type).sym;
-			sym.consumeRestStructure();
-			sym.consumeRest();
+			StructDeclaration sym = (((TypeStruct) type).sym).unlazy(semanticContext);
 			currentName = ident;
 			suggestMembers(sym.members, onlyStatics, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
 			break;
 		}
 		case ASTDmdNode.TYPE_CLASS: {			
-			ClassDeclaration sym = ((TypeClass) type).sym;
-			sym.consumeRestStructure();
-			sym.consumeRest();
+			ClassDeclaration sym = (((TypeClass) type).sym).unlazy(semanticContext);
 			currentName = ident;
 			suggestMembers(sym.members, onlyStatics, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
 			
@@ -3425,9 +3421,9 @@ public class CompletionEngine extends Engine
 	}
 
 	private boolean isFunctionSignature(char[] signature) {
-		return signature.length > 0 && signature[0] == Signature.C_D_LINKAGE || signature[0] == Signature.C_C_LINKAGE ||
+		return signature.length > 0 && (signature[0] == Signature.C_D_LINKAGE || signature[0] == Signature.C_C_LINKAGE ||
 				signature[0] == Signature.C_CPP_LINKAGE || signature[0] == Signature.C_PASCAL_LINKAGE ||
-				signature[0] == Signature.C_WINDOWS_LINKAGE;
+				signature[0] == Signature.C_WINDOWS_LINKAGE);
 	}
 
 	private boolean isImported(char[] fullyQualifiedName) {

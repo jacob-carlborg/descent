@@ -75,9 +75,6 @@ public class TypeEnum extends Type {
 	    	}
 	        return new IntegerExp(Loc.ZERO, 0, this);
 	    }
-		
-		// Descent: lazy initialization
-		sym.consumeRest();
 
 		s = sym.symtab.lookup(ident);
 		
@@ -210,9 +207,6 @@ public class TypeEnum extends Type {
 
 	@Override
 	public Type toBasetype(SemanticContext context) {
-		// Descent: lazy initialization
-		sym.consumeRest();
-		
 		if (sym.memtype == null) {
 			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeErrorLoc(

@@ -1,5 +1,29 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.LINK.LINKc;
+import static descent.internal.compiler.parser.LINK.LINKcpp;
+import static descent.internal.compiler.parser.LINK.LINKd;
+import static descent.internal.compiler.parser.LINK.LINKdefault;
+import static descent.internal.compiler.parser.LINK.LINKpascal;
+import static descent.internal.compiler.parser.LINK.LINKsystem;
+import static descent.internal.compiler.parser.LINK.LINKwindows;
+import static descent.internal.compiler.parser.STC.STCconst;
+import static descent.internal.compiler.parser.STC.STCextern;
+import static descent.internal.compiler.parser.STC.STCfinal;
+import static descent.internal.compiler.parser.STC.STCin;
+import static descent.internal.compiler.parser.STC.STCinvariant;
+import static descent.internal.compiler.parser.STC.STClazy;
+import static descent.internal.compiler.parser.STC.STCmanifest;
+import static descent.internal.compiler.parser.STC.STCout;
+import static descent.internal.compiler.parser.STC.STCref;
+import static descent.internal.compiler.parser.STC.STCscope;
+import static descent.internal.compiler.parser.STC.STCstatic;
+import static descent.internal.compiler.parser.STC.STCundefined;
+import static descent.internal.compiler.parser.TOK.*;
+import static descent.internal.compiler.parser.TY.Taarray;
+import static descent.internal.compiler.parser.TY.Tfunction;
+import static descent.internal.compiler.parser.TY.Tsarray;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -8,32 +32,6 @@ import java.util.StringTokenizer;
 
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
-import descent.internal.compiler.lookup.SemanticRest;
-import static descent.internal.compiler.parser.LINK.LINKc;
-import static descent.internal.compiler.parser.LINK.LINKcpp;
-import static descent.internal.compiler.parser.LINK.LINKd;
-import static descent.internal.compiler.parser.LINK.LINKdefault;
-import static descent.internal.compiler.parser.LINK.LINKpascal;
-import static descent.internal.compiler.parser.LINK.LINKsystem;
-import static descent.internal.compiler.parser.LINK.LINKwindows;
-
-import static descent.internal.compiler.parser.STC.STCconst;
-import static descent.internal.compiler.parser.STC.STCextern;
-import static descent.internal.compiler.parser.STC.STCfinal;
-import static descent.internal.compiler.parser.STC.STCin;
-import static descent.internal.compiler.parser.STC.STCinvariant;
-import static descent.internal.compiler.parser.STC.STClazy;
-import static descent.internal.compiler.parser.STC.STCout;
-import static descent.internal.compiler.parser.STC.STCref;
-import static descent.internal.compiler.parser.STC.STCscope;
-import static descent.internal.compiler.parser.STC.*;
-import static descent.internal.compiler.parser.STC.STCundefined;
-
-import static descent.internal.compiler.parser.TOK.*;
-
-import static descent.internal.compiler.parser.TY.Taarray;
-import static descent.internal.compiler.parser.TY.Tfunction;
-import static descent.internal.compiler.parser.TY.Tsarray;
 
 public class Parser extends Lexer {
 	
@@ -164,7 +162,7 @@ public class Parser extends Lexer {
 	public boolean diet;
 	private boolean inDiet;
 
-	private Module module;
+	Module module;
 	private ModuleDeclaration md;
 	private int inBrackets;	
 	
@@ -3683,17 +3681,7 @@ public class Parser extends Lexer {
 				
 				// Diet successful
 				if (body == null) {
-					final int endSkip = p;
-					final Module moduleSkip = module;
-					f.rest = new SemanticRest(new Runnable() {
-						public void run() {
-							Parser parser = new Parser(apiLevel, CharOperation.subarray(input, startSkip, endSkip));
-							parser.module = moduleSkip;
-							
-							Statement body = parser.dietParseStatement(f); 
-							f.fbody = body;
-						}
-					});
+					f.setDiet(input, startSkip, p);
 				}
 				
 				break;
@@ -7265,6 +7253,10 @@ public class Parser extends Lexer {
 	}
 
 	public Expression parseExpression() {
+		if (token.value == null) {
+			nextToken();
+		}
+		
 		Expression e;
 		Expression e2;
 
@@ -7973,7 +7965,7 @@ public class Parser extends Lexer {
 		return s;
 	}
 	
-	private Statement dietParseStatement(FuncDeclaration f) {
+	Statement dietParseStatement(FuncDeclaration f) {
 		if (diet) {
 			int saveP = p;
 			Token saveToken = new Token(token);

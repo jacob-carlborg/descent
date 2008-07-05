@@ -1,14 +1,15 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.PROT.PROTpackage;
+import static descent.internal.compiler.parser.PROT.PROTpublic;
+import static descent.internal.compiler.parser.TY.Tsarray;
+import static descent.internal.compiler.parser.TY.Tstruct;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.IType;
 import descent.core.compiler.IProblem;
-import descent.internal.compiler.lookup.SemanticRest;
-import static descent.internal.compiler.parser.PROT.PROTpackage;
-import static descent.internal.compiler.parser.PROT.PROTpublic;
-import static descent.internal.compiler.parser.TY.*;
 
 public abstract class AggregateDeclaration extends ScopeDsymbol {
 
@@ -47,8 +48,6 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 	public boolean templated;
 	
 	protected IType javaElement;
-	
-	public SemanticRest rest;
 
 	public AggregateDeclaration(Loc loc, IdentifierExp id) {
 		super(id);
@@ -324,11 +323,6 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 
 	@Override
 	public boolean isDeprecated() {
-		if (rest != null && rest.getScope() != null) {
-			return (rest.getScope().stc & STC.STCdeprecated) != 0;
-		}
-		
-		consumeRest();
 		return isdeprecated;
 	}
 
@@ -365,6 +359,9 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 		}
 		if (members != null) {
 			sc = sc.push(this);
+			
+			semantic2Scope(sc);
+			
 			for (int i = 0; i < members.size(); i++) {
 				Dsymbol s = members.get(i);
 				s.semantic2(sc, context);
@@ -379,6 +376,9 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 
 		if (members != null) {
 			sc = sc.push(this);
+			
+			semantic3Scope(sc);
+			
 			for (i = 0; i < members.size(); i++) {
 				Dsymbol s = members.get(i);
 				s.semantic3(sc, context);
@@ -386,11 +386,21 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 			sc.pop();
 		}
 	}
+	
+	protected void semanticScope(Scope sc) {
+		
+	}
+	
+	protected void semantic2Scope(Scope sc) {
+		
+	}
+	
+	protected void semantic3Scope(Scope sc) {
+		
+	}
 
 	@Override
 	public int size(SemanticContext context) {
-		consumeRest();
-		
 		if (null == members) {
 			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
@@ -446,16 +456,8 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 		return type;
 	}
 	
-	public void consumeRestStructure() {
-		if (rest != null && !rest.isStructureKnown()) {
-			rest.buildStructure();
-		}
-	}
-	
-	public void consumeRest() {
-		if (rest != null && !rest.isConsumed()) {
-			rest.consume(this);
-		}
+	public AggregateDeclaration unlazy(SemanticContext context) {
+		return this;
 	}
 	
 }

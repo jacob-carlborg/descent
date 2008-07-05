@@ -13,7 +13,6 @@ import descent.internal.compiler.parser.BaseClasses;
 import descent.internal.compiler.parser.BreakStatement;
 import descent.internal.compiler.parser.CaseStatement;
 import descent.internal.compiler.parser.Chars;
-import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.CompoundStatement;
 import descent.internal.compiler.parser.ContinueStatement;
 import descent.internal.compiler.parser.DebugCondition;
@@ -481,6 +480,9 @@ public class CompletionParser extends Parser {
 			pivot = prevToken;
 		} else if (token.ptr <= cursorLocation && cursorLocation <= token.ptr + token.sourceLen) {
 			pivot = token;
+		} else if (e.start + e.length < cursorLocation && cursorLocation < id.start) {
+			assistNode = new CompletionOnDotIdExp(loc, e, new IdentifierExp(CharOperation.NO_CHAR));
+			return (DotIdExp) assistNode;
 		} else {
 			return super.newDotIdExp(loc, e, id);
 		}
@@ -489,9 +491,15 @@ public class CompletionParser extends Parser {
 			assistNode = new CompletionOnDotIdExp(loc, e, new IdentifierExp(CharOperation.NO_CHAR));
 			return (DotIdExp) assistNode;
 		} else {
-			completionTokenStart = pivot.ptr;
-			completionTokenEnd = pivot.ptr + pivot.sourceLen;
-			completionToken = CharOperation.subarray(input, completionTokenStart, cursorLocation);
+			if (pivot.value == TOK.TOKdot) {
+				completionTokenStart = pivot.ptr + pivot.sourceLen;
+				completionTokenEnd = pivot.ptr + pivot.sourceLen;
+				completionToken = CharOperation.subarray(input, completionTokenStart, cursorLocation);
+			} else {
+				completionTokenStart = pivot.ptr;
+				completionTokenEnd = pivot.ptr + pivot.sourceLen;
+				completionToken = CharOperation.subarray(input, completionTokenStart, cursorLocation);
+			}
 			
 			assistNode = new CompletionOnDotIdExp(loc, e, id);
 			return (DotIdExp) assistNode;

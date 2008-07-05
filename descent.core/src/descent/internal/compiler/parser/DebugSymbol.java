@@ -1,7 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
-
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
@@ -53,9 +51,9 @@ public class DebugSymbol extends Dsymbol {
 					}
 				}
 				if (null == m.debugids) {
-					m.debugids = new ArrayList<char[]>();
+					m.debugids = new HashtableOfCharArrayAndObject();
 				}
-				m.debugids.add(ident.ident);
+				m.debugids.put(ident.ident, this);
 			}
 		} else {
 			if (null == m) {

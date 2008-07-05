@@ -1,6 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -40,18 +39,18 @@ public class Param {
 	public List<String> fileImppath;	// array of char*'s of where to look for file import modules
 
 	public long debuglevel;	// debug level
-	public List<char[]> debugids;		// debug identifiers
+	public HashtableOfCharArrayAndObject debugids;		// debug identifiers
 
 	public long versionlevel;	// version level
-	public List<char[]> versionids;		// version identifiers
+	public HashtableOfCharArrayAndObject versionids;		// version identifiers
 
 	public char run;		// run resulting executable
 	public int runargs_length;
 	public  String[] runargs;	// arguments for executable
 	
 	public Param() {
-		versionids = new ArrayList<char[]>();
-		debugids = new ArrayList<char[]>();
+		versionids = new HashtableOfCharArrayAndObject();
+		debugids = new HashtableOfCharArrayAndObject();
 	}
 	
 }

@@ -1,7 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
-
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
@@ -21,9 +19,9 @@ public class DebugCondition extends DVCondition {
 
 	public void addGlobalIdent(IdentifierExp ident, SemanticContext context) {
 		if (null == context.global.params.debugids) {
-			context.global.params.debugids = new ArrayList<char[]>();
+			context.global.params.debugids = new HashtableOfCharArrayAndObject();
 		}
-		context.global.params.debugids.add(ident.ident);
+		context.global.params.debugids.put(ident.ident, this);
 	}
 
 	@Override
@@ -42,9 +40,9 @@ public class DebugCondition extends DVCondition {
 					inc = 1;
 				} else {
 					if (null == mod.debugidsNot) {
-						mod.debugidsNot = new ArrayList<char[]>();
+						mod.debugidsNot = new HashtableOfCharArrayAndObject();
 					}
-					mod.debugidsNot.add(ident);
+					mod.debugidsNot.put(ident, this);
 				}
 			} else if (level <= context.global.params.debuglevel
 					|| level <= mod.debuglevel) {

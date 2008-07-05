@@ -559,6 +559,14 @@ class DefaultBindingResolver extends BindingResolver {
 	private IBinding resolveIdentifierExp(ASTNode node, IdentifierExp id) {
 		if (id.resolvedSymbol != null) {
 			Dsymbol sym = id.resolvedSymbol;
+			
+			if (sym instanceof AliasDeclaration) {
+				AliasDeclaration alias = (AliasDeclaration) sym;
+				if (alias.isImportAlias) {
+					sym = alias.aliassym;
+				}
+			}
+			
 			IBinding binding = resolveDsymbol(sym);
 			if (binding != null) {
 				return binding;
@@ -797,9 +805,6 @@ class DefaultBindingResolver extends BindingResolver {
 		}
 		
 		if (binding != null) {
-			if ("@5tango3sys5win325Types=6HANDLE".equals(binding)) {
-				System.out.println(123456);
-			}
 			bindingTables.bindingKeysToBindings.put(key, binding);
 		}
 		

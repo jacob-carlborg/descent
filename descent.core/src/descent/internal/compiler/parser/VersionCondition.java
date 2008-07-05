@@ -1,7 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
-
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -66,9 +64,9 @@ public class VersionCondition extends DVCondition {
 	public void addPredefinedGlobalIdent(IdentifierExp ident,
 			SemanticContext context) {
 		if (null == context.global.params.versionids) {
-			context.global.params.versionids = new ArrayList<char[]>();
+			context.global.params.versionids = new HashtableOfCharArrayAndObject();
 		}
-		context.global.params.versionids.add(ident.ident);
+		context.global.params.versionids.put(ident.ident, this);
 	}
 
 	@Override
@@ -88,9 +86,9 @@ public class VersionCondition extends DVCondition {
 					inc = 1;
 				} else {
 					if (null == mod.versionidsNot) {
-						mod.versionidsNot = new ArrayList<char[]>();
+						mod.versionidsNot = new HashtableOfCharArrayAndObject();
 					}
-					mod.versionidsNot.add(ident);
+					mod.versionidsNot.put(ident, this);
 				}
 			} else if (level <= context.global.params.versionlevel
 					|| level <= mod.versionlevel) {

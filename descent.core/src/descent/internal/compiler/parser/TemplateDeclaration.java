@@ -17,7 +17,6 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.IJavaElement;
 import descent.core.Signature;
 import descent.core.compiler.IProblem;
-import descent.internal.compiler.lookup.SemanticRest;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
@@ -47,8 +46,6 @@ public class TemplateDeclaration extends ScopeDsymbol {
 	
 	private IJavaElement javaElement;
 	
-	public SemanticRest rest;
-
 	public TemplateDeclaration(Loc loc, IdentifierExp id,
 			TemplateParameters parameters, Dsymbols decldefs) {
 		super(id);
@@ -314,10 +311,6 @@ public class TemplateDeclaration extends ScopeDsymbol {
 					return deduceFunctionTemplateMatch_Lnomatch(paramscope); // goto Lnomatch;
 			}
 		}
-		
-		// Descent: lazy initialization
-		fd.consumeRestStructure();
-		fd.consumeRest();
 
 		assert (fd.type.ty == Tfunction);
 		fdtype = (TypeFunction) fd.type;
@@ -585,8 +578,6 @@ public class TemplateDeclaration extends ScopeDsymbol {
 
 	@Override
 	public TemplateDeclaration isTemplateDeclaration() {
-		consumeRest();
-		
 		return this;
 	}
 
@@ -809,13 +800,6 @@ public class TemplateDeclaration extends ScopeDsymbol {
 
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-		if (rest != null && !rest.isConsumed()) {
-			if (rest.getScope() == null) {
-				rest.setSemanticContext(sc, context);
-			}
-			return;
-		}
-		
 		if (scope != null) {
 			return; // semantic() already run
 		}
@@ -889,8 +873,6 @@ public class TemplateDeclaration extends ScopeDsymbol {
 
 	@Override
 	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
-		consumeRestStructure();
-		
 		TemplateDeclaration td;
 		TemplateParameters p;
 		Dsymbols d;
@@ -988,21 +970,6 @@ public class TemplateDeclaration extends ScopeDsymbol {
 	@Override
 	public IJavaElement getJavaElement() {
 		return javaElement;
-	}
-	
-	public void consumeRestStructure() {
-		if (rest != null && !rest.isStructureKnown()) {
-			rest.buildStructure();
-		}
-		if (wrapper && members.get(0) != null) {
-			members.get(0).consumeRestStructure();
-		}
-	}
-	
-	public void consumeRest() {
-		if (rest != null && !rest.isConsumed()) {
-			rest.consume(this);
-		}
 	}
 
 }

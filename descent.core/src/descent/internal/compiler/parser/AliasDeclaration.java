@@ -1,5 +1,7 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.TOK.TOKfunction;
+import static descent.internal.compiler.parser.TOK.TOKvar;
 import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
@@ -7,10 +9,7 @@ import org.eclipse.core.runtime.Assert;
 import descent.core.IField;
 import descent.core.Signature;
 import descent.core.compiler.IProblem;
-import descent.internal.compiler.lookup.SemanticRest;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.TOK.TOKfunction;
-import static descent.internal.compiler.parser.TOK.TOKvar;
 
 public class AliasDeclaration extends Declaration {
 
@@ -23,6 +22,8 @@ public class AliasDeclaration extends Declaration {
 	public Dsymbol overnext; // next in overload list
 	public int inSemantic;
 	
+	public boolean isImportAlias;
+	
 	/*
 	 * Descent: true if this alias is just for a template parameter. This
 	 * is useful to not use these aliases when showing nice stuff.
@@ -31,8 +32,6 @@ public class AliasDeclaration extends Declaration {
 	public boolean isTemplateParameter;
 	
 	private IField javaElement;
-	
-	public SemanticRest rest;
 
 	public AliasDeclaration(Loc loc, IdentifierExp id, Dsymbol s) {
 		super(id);
@@ -85,8 +84,6 @@ public class AliasDeclaration extends Declaration {
 
 	@Override
 	public AliasDeclaration isAliasDeclaration() {
-		consumeRest();
-		
 		return this;
 	}
 
@@ -113,13 +110,6 @@ public class AliasDeclaration extends Declaration {
 	
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-		if (rest != null && !rest.isConsumed()) {
-			if (rest.getScope() == null) {
-				rest.setSemanticContext(sc, context);
-			}
-			return;
-		}
-		
 		if (aliassym != null) {
 			if (aliassym.isTemplateInstance() != null) {
 				aliassym.semantic(sc, context);
@@ -296,8 +286,6 @@ public class AliasDeclaration extends Declaration {
 
 	@Override
 	public Dsymbol toAlias(SemanticContext context) {
-		consumeRest();
-		
 		Assert.isTrue(this != aliassym);
 		if (inSemantic != 0) {
 			if (context.acceptsErrors()) {
@@ -335,12 +323,6 @@ public class AliasDeclaration extends Declaration {
 	@Override
 	public IField getJavaElement() {
 		return javaElement;
-	}
-
-	public void consumeRest() {
-		if (rest != null && !rest.isConsumed()) {
-			rest.consume(this);
-		}
 	}
 
 }

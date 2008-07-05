@@ -139,8 +139,6 @@ public class SemanticMixin {
 				TemplateDeclaration temp = (TemplateDeclaration) aThis;				
 				if (temp.wrapper && temp.members.size() == 1 && temp.members.get(0) instanceof FuncDeclaration) {
 					Dsymbol dsymbol = temp.members.get(0);
-					dsymbol.consumeRestStructure();
-					dsymbol.consumeRest();
 					dsymbol.type().appendSignature(sb);
 				}
 			}
@@ -196,7 +194,6 @@ public class SemanticMixin {
 	}
 	
 	private static void appendTemplateParameters(TemplateDeclaration tempdecl, StringBuilder sb) {
-		tempdecl.consumeRest();
 		for(TemplateParameter param : tempdecl.parameters) {
 			param.appendSignature(sb);
 		}

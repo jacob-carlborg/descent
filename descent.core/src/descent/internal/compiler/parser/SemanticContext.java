@@ -303,7 +303,6 @@ public class SemanticContext {
 		
 		// If we're in object.d, assign the well known class declarations
 		if (compoundName.length == 1 && CharOperation.equals(compoundName[0], Id.object)) {
-			m.consumeRestStructure();
 			if (m.members != null) {
 				for (Dsymbol symbol : m.members) {
 					checkObjectMember(symbol);

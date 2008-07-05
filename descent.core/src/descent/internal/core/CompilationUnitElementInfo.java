@@ -11,6 +11,8 @@
 package descent.internal.core;
 
 import descent.core.ISourceRange;
+import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
+import descent.internal.compiler.util.HashtableOfObject;
 
 public class CompilationUnitElementInfo extends OpenableElementInfo {
 
@@ -25,6 +27,8 @@ public class CompilationUnitElementInfo extends OpenableElementInfo {
 	 */
 	protected long timestamp;
 	protected boolean hasTopLevelCompileTimeDifficulties;
+	protected HashtableOfCharArrayAndObject topLevelIdentifiers;
+	protected int lastImportLocation;
 	
 //	/*
 //	 * The positions of annotations for each element in this compilation unit.
@@ -53,6 +57,18 @@ public void setHasTopLevelCompileTimeDifficulties(
 }
 public boolean hasTopLevelCompileTimeDifficulties() {
 	return hasTopLevelCompileTimeDifficulties;
+}
+public void setTopLevelIdentifiers(HashtableOfCharArrayAndObject topLevelIdentifiers) {
+	this.topLevelIdentifiers = topLevelIdentifiers;
+}
+public HashtableOfCharArrayAndObject getTopLevelIdentifiers() {
+	return topLevelIdentifiers;
+}
+public void setLastImportLocation(int lastImportLocation) {
+	this.lastImportLocation = lastImportLocation;
+}
+public int getLastImportLocation() {
+	return lastImportLocation;
 }
 /**
  * Sets the length of the source string.

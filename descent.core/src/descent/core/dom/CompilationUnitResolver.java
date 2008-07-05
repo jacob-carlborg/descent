@@ -10,7 +10,6 @@
  *******************************************************************************/
 package descent.core.dom;
 
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -44,7 +43,7 @@ import descent.internal.core.util.Util;
 public class CompilationUnitResolver extends descent.internal.compiler.Compiler {
 	
 	private final static boolean RESOLVE = true;
-	private final static boolean STATS = true;
+	private final static boolean STATS = false;
 	
 	public static class ParseResult {
 		public Module module;
@@ -358,7 +357,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		try {
 			module.semantic(context);
 		} catch (Throwable t) {
-			Util.log(t);
+			Util.log(t, "In module " + module.moduleName + ": " + t.getClass().getName() + ":" + t.getMessage());
 		}
 		
 		if (STATS) {
@@ -399,10 +398,10 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		return global;
 	}
 	
-	private static void addIdentifiers(HashtableOfCharArrayAndObject hash, List<char[]> list) {
+	private static void addIdentifiers(HashtableOfCharArrayAndObject hash, HashtableOfCharArrayAndObject list) {
 		for(char[] key : hash.keys()) {
 			if (key != null) {
-				list.add(key);
+				list.put(key, CompilationUnitResolver.class);
 			}
 		}
 	}

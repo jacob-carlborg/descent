@@ -1,5 +1,8 @@
 package descent.internal.compiler.lookup;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import descent.core.Flags;
 import descent.core.ICompilationUnit;
 import descent.core.IConditional;
@@ -11,13 +14,14 @@ import descent.core.IJavaElement;
 import descent.core.IMember;
 import descent.core.IMethod;
 import descent.core.IPackageDeclaration;
+import descent.core.IParent;
+import descent.core.ISourceRange;
 import descent.core.ISourceReference;
 import descent.core.ITemplated;
 import descent.core.IType;
 import descent.core.ITypeParameter;
 import descent.core.JavaModelException;
 import descent.internal.compiler.parser.ASTNodeEncoder;
-import descent.internal.compiler.parser.AggregateDeclaration;
 import descent.internal.compiler.parser.AliasDeclaration;
 import descent.internal.compiler.parser.AlignDeclaration;
 import descent.internal.compiler.parser.AnonDeclaration;
@@ -55,6 +59,7 @@ import descent.internal.compiler.parser.NewDeclaration;
 import descent.internal.compiler.parser.PROT;
 import descent.internal.compiler.parser.ProtDeclaration;
 import descent.internal.compiler.parser.STC;
+import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.StaticIfCondition;
 import descent.internal.compiler.parser.StaticIfDeclaration;
 import descent.internal.compiler.parser.StorageClassDeclaration;
@@ -82,61 +87,7 @@ import descent.internal.core.util.Util;
  */
 public class ModuleBuilder {
 	
-	/*
-	 * One ring to rule them all. 
-	 */
-	private final static boolean LAZY = true;
-	
-	/*
-	 * Whether to make surface Module semantic.
-	 */
-	public boolean LAZY_MODULES = true;
-	
-	/*
-	 * Whether to make surface ClassDeclaration semantic lazy.
-	 */
-	private final static boolean LAZY_CLASSES = LAZY & true;
-	
-	/*
-	 * Whether to make surface InterfaceDeclaration semantic lazy.
-	 */
-	private final static boolean LAZY_INTERFACES = LAZY & true;
-	
-	/*
-	 * Whether to make surface StructDeclaration semantic lazy.
-	 */
-	private final static boolean LAZY_STRUCTS = LAZY & true;
-	
-	/*
-	 * Whether to make surface UnionDeclaration semantic lazy.
-	 */
-	private final static boolean LAZY_UNIONS = LAZY & true;
-	
-	/*
-	 * Whether to make surface AliasDeclaration semantic lazy.
-	 */
-	private final static boolean LAZY_ALIASES = LAZY & true;
-	
-	/*
-	 * Whether to make surface EnumDeclaration semantic lazy.
-	 */
-	private final static boolean LAZY_ENUMS = LAZY & true;
-	
-	/*
-	 * Whether to make surface TemplateDeclaration semantic lazy.
-	 */
-	private final static boolean LAZY_TEMPLATES = LAZY & true;
-	
-	/*
-	 * Whether to make surface FuncDeclaration semantic lazy.
-	 */
-	private final static boolean LAZY_FUNCTIONS = LAZY & true;
-	
-	/*
-	 * Whether to make surface VarDeclaration semantic lazy.
-	 * Currently doesn't work.
-	 */
-	public boolean LAZY_VARS = LAZY & false;
+	public boolean LAZY = true;
 	
 	/*
 	 * We want to skip things like:
@@ -166,7 +117,6 @@ public class ModuleBuilder {
 	public static class State {
 		HashtableOfCharArrayAndObject versions = new HashtableOfCharArrayAndObject();
 		HashtableOfCharArrayAndObject debugs = new HashtableOfCharArrayAndObject();
-		boolean surface = true;
 	}
 	
 	private final ASTNodeEncoder encoder;	
@@ -180,18 +130,6 @@ public class ModuleBuilder {
 	public ModuleBuilder(CompilerConfiguration config, ASTNodeEncoder encoder) {
 		this.config = config;
 		this.encoder = encoder;
-		
-//		switch(config.semanticAnalysisLevel) {
-//		case 0: // None
-//			LAZY_MODULES = LAZY & true;
-//			LAZY_VARS = LAZY & true;
-//			break;
-//		case 1: // Some
-//		case 2: // All
-//			LAZY_MODULES = false;
-//			LAZY_VARS = false;
-//			break;
-//		}
 	}
 	
 	/**
@@ -200,39 +138,54 @@ public class ModuleBuilder {
 	 * @return the module representing the unit
 	 */
 	public Module build(final ICompilationUnit unit) {
-		long time = System.currentTimeMillis();
+		CompilationUnitElementInfo info = null;
+		try {
+			info = (CompilationUnitElementInfo) ((CompilationUnit) unit).getElementInfo();
+		} catch (JavaModelException e) {
+			Util.log(e);
+		}
+		
+		String moduleName = unit.getFullyQualifiedName();
+		
+		final Module module;
+		if (!LAZY || "object".equals(moduleName) || (info != null && info.hasTopLevelCompileTimeDifficulties())) {
+			module = new Module(unit.getElementName(), new IdentifierExp(unit.getModuleName().toCharArray()));
+			assignMembers(unit, moduleName, module);
+		} else {
+			module = new LazyModule(unit.getElementName(), new IdentifierExp(unit.getModuleName().toCharArray()), this, info.getTopLevelIdentifiers(), info.getLastImportLocation());
+			module.moduleName = moduleName;
+		}
+		module.setJavaElement(unit);
+		
+		assignPackageDeclaration(unit, module);
+		
+		return module;
+	}
+	
+	public Module buildNonLazyModule(ICompilationUnit unit) {
+		String moduleName = unit.getFullyQualifiedName();
 		
 		final Module module = new Module(unit.getElementName(), new IdentifierExp(unit.getModuleName().toCharArray()));
+		assignMembers(unit, moduleName, module);
 		module.setJavaElement(unit);
-		module.moduleName = unit.getFullyQualifiedName();
 		
-//		if (LAZY_MODULES) {
-//			module.setJavaElement(unit);
-//			module.rest = new SemanticRest(new Runnable() {
-//				public void run() {
-//					try {
-//						IPackageDeclaration[] packageDeclarations = unit.getPackageDeclarations();
-//						if (packageDeclarations.length == 1) {
-//							String elementName = packageDeclarations[0].getElementName();
-//							Identifiers packages = new Identifiers();
-//							IdentifierExp name = splitName(elementName, packages);	
-//							module.md = new ModuleDeclaration(packages, name);
-//						}
-//						
-//						State state = new State();
-//						
-//						module.members = new Dsymbols();
-////						fill(module, module.members, unit.getChildren(), state);
-//						
-//						state.surface = false;
-//					} catch (JavaModelException e) {
-//						Util.log(e);
-//					}
-//				}
-//			});
-//			module.rest.skipScopeCheck = true;
-//		} else {
+		assignPackageDeclaration(unit, module);
 		
+		return module;
+	}
+
+	private void assignMembers(ICompilationUnit unit, String moduleName, final Module module) {
+		try {
+			State state = new State();
+			module.moduleName = moduleName;
+			module.members = new Dsymbols();
+			fill(module, module.members, unit.getChildren(), state);
+		} catch (JavaModelException e) {
+			Util.log(e);
+		}
+	}
+
+	private void assignPackageDeclaration(ICompilationUnit unit, final Module module) {
 		IPackageDeclaration[] packageDeclarations;
 		try {
 			packageDeclarations = unit.getPackageDeclarations();
@@ -245,37 +198,6 @@ public class ModuleBuilder {
 		} catch (JavaModelException e) {
 			Util.log(e);
 		}
-		
-		CompilationUnitElementInfo info = null;
-		try {
-			info = (CompilationUnitElementInfo) ((CompilationUnit) unit).getElementInfo();
-		} catch (JavaModelException e) {
-			Util.log(e);
-		}
-		
-		if (!LAZY_MODULES || "object".equals(module.moduleName) || (info != null && info.hasTopLevelCompileTimeDifficulties())) {
-			try {
-				State state = new State();
-				
-				module.members = new Dsymbols();
-				fill(module, module.members, unit.getChildren(), state);
-				
-				state.surface = false;
-			} catch (JavaModelException e) {
-				Util.log(e);
-			}
-		} else {
-			module.builder = this;
-		}
-		
-//		}
-//		
-		time = System.currentTimeMillis() - time;
-//		if (time > 10) {
-//			System.out.println("ModuleBuilder#build(" + module.moduleName + ") = " + time);
-//		}
-		
-		return module;
 	}
 	
 	public void fill(Module module, Dsymbols members, IJavaElement[] elements, 
@@ -297,7 +219,7 @@ public class ModuleBuilder {
 			break;
 		case IJavaElement.FIELD:
 			IField field = (IField) elem;
-			fillField(module, members, field, state);
+			fillField(module, members, field);
 			break;
 		case IJavaElement.TYPE:
 			IType type = (IType) elem;
@@ -305,7 +227,7 @@ public class ModuleBuilder {
 			break;
 		case IJavaElement.METHOD:
 			IMethod method = (IMethod) elem;
-			fillMethod(module, members, method, state.surface);
+			fillMethod(module, members, method);
 			break;
 		case IJavaElement.INITIALIZER:
 			IInitializer init = (IInitializer) elem;
@@ -336,22 +258,21 @@ public class ModuleBuilder {
 			String name = cond.getElementName();
 			char[] nameC = name.toCharArray();
 			try {
-				long value = Long.parseLong(name);
-				
-				if (state.versions.containsKey(nameC)) {
+				long value = Long.parseLong(name);				
+				if ((state != null && state.versions.containsKey(nameC))) {
 					buildConditional(module, members, cond, state, nameC, value, false /* not debug */);
 				} else {
-					if (config.isVersionEnabled(value)) {
+					if (config.isVersionEnabled(value) || value >= module.versionlevel) {
 						fill(module, members, cond.getThenChildren(), state);
 					} else {
 						fill(module, members, cond.getElseChildren(), state);
 					}
 				}
 			} catch(NumberFormatException e) {
-				if (state.versions.containsKey(nameC)) {
+				if ((state != null && state.versions.containsKey(nameC))) {
 					buildConditional(module, members, cond, state, nameC, 0, false /* not debug */);
 				} else {
-					if (config.isVersionEnabled(name.toCharArray())) {
+					if (config.isVersionEnabled(name.toCharArray()) || (module.versionids != null && module.versionids.containsKey(nameC))) {
 						fill(module, members, cond.getThenChildren(), state);
 					} else {
 						fill(module, members, cond.getElseChildren(), state);
@@ -363,20 +284,20 @@ public class ModuleBuilder {
 			char[] nameC = name.toCharArray();
 			try {
 				long value = Long.parseLong(name);
-				if (state.debugs.containsKey(nameC)) {
+				if (state != null && state.debugs.containsKey(nameC)) {
 					buildConditional(module, members, cond, state, nameC, value, true /* debug */);
 				} else {					
-					if (config.isDebugEnabled(value)) {
+					if (config.isDebugEnabled(value) || value >= module.debuglevel) {
 						fill(module, members, cond.getThenChildren(), state);
 					} else {
 						fill(module, members, cond.getElseChildren(), state);
 					}
 				}
 			} catch(NumberFormatException e) {
-				if (state.debugs.containsKey(nameC)) {
+				if (state != null && state.debugs.containsKey(nameC)) {
 					buildConditional(module, members, cond, state, nameC, 0, true /* debug */);
 				} else {	
-					if (config.isDebugEnabled(name.toCharArray())) {
+					if (config.isDebugEnabled(name.toCharArray()) || (module.debugids != null && module.debugids.containsKey(nameC))) {
 						fill(module, members, cond.getThenChildren(), state);
 					} else {
 						fill(module, members, cond.getElseChildren(), state);
@@ -409,9 +330,6 @@ public class ModuleBuilder {
 
 	private void fillInitializer(Module module, Dsymbols members, IInitializer init, 
 			State state) throws JavaModelException {
-		boolean surface = state.surface;		
-		state.surface = false;
-		
 		if (init.isAlign()) {
 			Dsymbols sub = new Dsymbols();
 			fill(module, sub, init.getChildren(), state);
@@ -419,58 +337,62 @@ public class ModuleBuilder {
 			AlignDeclaration member = new AlignDeclaration(Integer.parseInt(init.getElementName()), sub);
 			members.add(member);
 		} else if (init.isDebugAssignment()) {
-			char[] ident = init.getElementName().toCharArray();
-			
-			state.debugs.put(ident, this);
-			
-			Version version = new Version(getLoc(module, init), ident);
-			try {
-				long level = Long.parseLong(init.getElementName());
-				DebugSymbol member = new DebugSymbol(getLoc(module, init), level, version);
-				members.add(member);
-			} catch(NumberFormatException e) {
-				DebugSymbol member = new DebugSymbol(getLoc(module, init), new IdentifierExp(ident), version);
-				members.add(member);
-			}
+			fillDebugAssignment(module, members, init, state);
 		} else if (init.isVersionAssignment()) {
-			char[] ident = init.getElementName().toCharArray();
-			
-			state.versions.put(ident, this);
-			
-			Version version = new Version(getLoc(module, init), ident);
-			try {
-				long level = Long.parseLong(init.getElementName());
-				VersionSymbol member = new VersionSymbol(getLoc(module, init), level, version);
-				members.add(member);
-			} catch(NumberFormatException e) {
-				VersionSymbol member = new VersionSymbol(getLoc(module, init), new IdentifierExp(ident), version);
-				members.add(member);
-			}
+			fillVersionAssignment(module, members, init, state);
 		} else if (init.isMixin()) {
 			Expression exp = encoder.decodeExpression(init.getElementName().toCharArray());
 			CompileDeclaration member = new CompileDeclaration(getLoc(module, init), exp);
 			member.setJavaElement(init);
 			members.add(member);
 		} else if (init.isExtern()) {
-			// Also try to lazily initialize things inside:
-			// extern(C) {
-			//   // ...
-			// }
-			if (surface) {
-				state.surface = surface;
-			}
-			
 			Dsymbols symbols = new Dsymbols();
 			fill(module, symbols, init.getChildren(), state);
 			
 			LinkDeclaration member = new LinkDeclaration(getLink(init), symbols);
 			members.add(wrap(member, init));
 		}
-		
-		state.surface = surface;
 	}
 
-	private void fillMethod(Module module, Dsymbols members, final IMethod method, boolean surface) throws JavaModelException {
+	public DebugSymbol fillDebugAssignment(Module module, Dsymbols members, IInitializer init, State state) {
+		char[] ident = init.getElementName().toCharArray();
+		
+		if (state != null) {
+			state.debugs.put(ident, this);
+		}
+		
+		Version version = new Version(getLoc(module, init), ident);
+		DebugSymbol member;
+		try {
+			long level = Long.parseLong(init.getElementName());
+			member = new DebugSymbol(getLoc(module, init), level, version);
+		} catch(NumberFormatException e) {
+			member = new DebugSymbol(getLoc(module, init), new IdentifierExp(ident), version);
+		}
+		members.add(member);
+		return member;
+	}
+
+	public VersionSymbol fillVersionAssignment(Module module, Dsymbols members, IInitializer init, State state) {
+		char[] ident = init.getElementName().toCharArray();
+		
+		if (state != null) {
+			state.versions.put(ident, this);
+		}
+		
+		Version version = new Version(getLoc(module, init), ident);
+		VersionSymbol member;
+		try {
+			long level = Long.parseLong(init.getElementName());
+			member = new VersionSymbol(getLoc(module, init), level, version);
+		} catch(NumberFormatException e) {
+			member = new VersionSymbol(getLoc(module, init), new IdentifierExp(ident), version);
+		}
+		members.add(member);
+		return member;
+	}
+
+	private void fillMethod(Module module, Dsymbols members, final IMethod method) throws JavaModelException {
 		if (method.isConstructor()) {
 			CtorDeclaration member = new CtorDeclaration(getLoc(module, method), getArguments(method), getVarargs(method));
 			member.setJavaElement(method);
@@ -488,257 +410,87 @@ public class ModuleBuilder {
 			member.setJavaElement(method);
 			members.add(wrap(member, method));	
 		} else { 
-			final FuncDeclaration member;
-			if (LAZY_FUNCTIONS && surface && module.builder == null) {
-				member = new FuncDeclaration(getLoc(module, method), getIdent(method), getStorageClass(method), null);
-				member.rest = new SemanticRest(new Runnable() {
-					public void run() {
-						try {
-							member.type = member.sourceType = getType(method);
-						} catch (JavaModelException e) {
-							Util.log(e);
-						}
-					}
-				});
-			} else {
-				member = new FuncDeclaration(getLoc(module, method), getIdent(method), getStorageClass(method), getType(method));
-			}
-			
+			FuncDeclaration member = new FuncDeclaration(getLoc(module, method), getIdent(method), getStorageClass(method), getType(method));
 			member.setJavaElement(method);
-			members.add(wrapWithTemplate(module, member, method, surface));
+			members.add(wrapWithTemplate(module, member, method));
 		}
 	}
 
 	public void fillType(final Module module, Dsymbols members, final IType type, 
 			final State state) throws JavaModelException {
-		boolean surface = state.surface;
-		state.surface = false;
-		
 		if (type.isClass()) {
-			final ClassDeclaration member;
-			
-			if (LAZY_CLASSES && surface && module.builder == null) {
-				member = new ClassDeclaration(getLoc(module, type), getIdent(type));
-				member.rest = new SemanticRest(new Runnable() {
-					public void run() {
-						try {
-							member.baseclasses = getBaseClasses(type);
-							if (member.baseclasses != null) {
-								member.sourceBaseclasses = new BaseClasses(member.baseclasses);
-							}
-							if (type.isForwardDeclaration()) {
-								return;
-							}
-							member.members = new Dsymbols();
-							fill(module, member.members, type.getChildren(), state);
-							member.sourceMembers = new Dsymbols(member.members);
-						} catch (JavaModelException e) {
-							Util.log(e);
-						}
-					};
-				});
-			} else {
-				member = new ClassDeclaration(getLoc(module, type), getIdent(type), getBaseClasses(type));
-				
-				if (!type.isForwardDeclaration()) {
-					member.members = new Dsymbols();
-					fill(module, member.members, type.getChildren(), state);
-					member.sourceMembers = new Dsymbols(member.members);
-				}
+			ClassDeclaration member = new ClassDeclaration(getLoc(module, type), getIdent(type), getBaseClasses(type));
+			if (!type.isForwardDeclaration()) {
+				member.members = new Dsymbols();
+				fill(module, member.members, type.getChildren(), state);
+				member.sourceMembers = new Dsymbols(member.members);
 			}
-
 			member.setJavaElement(type);
-			members.add(wrapWithTemplate(module, member, type, surface));
+			members.add(wrapWithTemplate(module, member, type));
 		} else if (type.isInterface()) {
-			final InterfaceDeclaration member;
-			
-			if (LAZY_INTERFACES && surface && module.builder == null) {
-				member = new InterfaceDeclaration(getLoc(module, type), getIdent(type), null);
-				member.rest = new SemanticRest(new Runnable() {
-					public void run() {
-						try {
-							member.baseclasses = getBaseClasses(type);
-							if (member.baseclasses != null) {
-								member.sourceBaseclasses = new BaseClasses(member.baseclasses);
-							}
-							if (type.isForwardDeclaration()) {
-								return;
-							}
-							member.members = new Dsymbols();
-							fill(module, member.members, type.getChildren(), state);
-							member.sourceMembers = new Dsymbols(member.members);
-						} catch (JavaModelException e) {
-							Util.log(e);
-						}	
-					};
-				});
-				
-			} else {
-				member = new InterfaceDeclaration(getLoc(module, type), getIdent(type), getBaseClasses(type));
-				
-				if (!type.isForwardDeclaration()) {
-					member.members = new Dsymbols();
-					fill(module, member.members, type.getChildren(), state);
-					member.sourceMembers = new Dsymbols(member.members);
-				}
+			InterfaceDeclaration member = new InterfaceDeclaration(getLoc(module, type), getIdent(type), getBaseClasses(type));
+			if (!type.isForwardDeclaration()) {
+				member.members = new Dsymbols();
+				fill(module, member.members, type.getChildren(), state);
+				member.sourceMembers = new Dsymbols(member.members);
 			}
-			
 			member.setJavaElement(type);
-			members.add(wrapWithTemplate(module, member, type, surface));
+			members.add(wrapWithTemplate(module, member, type));
 		} else if (type.isStruct()) {
 			IdentifierExp id = getIdent(type);
 			if (id == null) {
 				fillAnon(module, members, type, false /* is not union, is struct */, state);
 			} else {
-				final StructDeclaration member;
-				
-				if (LAZY_STRUCTS && surface && module.builder == null) {
-					member = new StructDeclaration(getLoc(module, type), id);
-					member.rest = new SemanticRest(new Runnable() {
-						public void run() {
-							try {
-								if (type.isForwardDeclaration()) {
-									return;
-								}
-								
-								member.members = new Dsymbols();
-								fill(module, member.members, type.getChildren(), state);
-								member.sourceMembers = new Dsymbols(member.members);
-							} catch (JavaModelException e) {
-								Util.log(e);
-							}
-						}
-					});
-				} else {
-					member = new StructDeclaration(getLoc(module, type), id);
-					
-					if (!type.isForwardDeclaration()) {
-						member.members = new Dsymbols();
-						fill(module, member.members, type.getChildren(), state);
-						member.sourceMembers = new Dsymbols(member.members);
-					}
+				StructDeclaration member = new StructDeclaration(getLoc(module, type), id);
+				if (!type.isForwardDeclaration()) {
+					member.members = new Dsymbols();
+					fill(module, member.members, type.getChildren(), state);
+					member.sourceMembers = new Dsymbols(member.members);
 				}
-				
 				member.setJavaElement(type);
-				members.add(wrapWithTemplate(module, member, type, surface));
+				members.add(wrapWithTemplate(module, member, type));
 			}
 		} else if (type.isUnion()) {
 			IdentifierExp id = getIdent(type);
 			if (id == null) {
 				fillAnon(module, members, type, true /* is union */, state);
 			} else {
-				final UnionDeclaration member;
-				
-				if (LAZY_UNIONS && surface && module.builder == null) {
-					member = new UnionDeclaration(getLoc(module, type), id);
-					member.rest = new SemanticRest(new Runnable() {
-						public void run() {
-							try {
-								if (type.isForwardDeclaration()) {
-									return;
-								}
-
-								member.members = new Dsymbols();
-								fill(module, member.members, type.getChildren(), state);
-								member.sourceMembers = new Dsymbols(member.members);
-							} catch (JavaModelException e) {
-								Util.log(e);
-							}
-						}
-					});
-				} else {
-					member = new UnionDeclaration(getLoc(module, type), id);
-					
-					if (!type.isForwardDeclaration()) {
-						member.members = new Dsymbols();
-						fill(module, member.members, type.getChildren(), state);
-						member.sourceMembers = new Dsymbols(member.members);
-					}
+				UnionDeclaration member = new UnionDeclaration(getLoc(module, type), id);
+				if (!type.isForwardDeclaration()) {
+					member.members = new Dsymbols();
+					fill(module, member.members, type.getChildren(), state);
+					member.sourceMembers = new Dsymbols(member.members);
 				}
-				
 				member.setJavaElement(type);
-				members.add(wrapWithTemplate(module, member, type, surface));
+				members.add(wrapWithTemplate(module, member, type));
 			}
 		} else if (type.isEnum()) {
-			fillEnum(module, members, type, surface);
+			fillEnum(module, members, type);
 		} else if (type.isTemplate()) {
-			final TemplateDeclaration member;
-			
-			if (LAZY_TEMPLATES && surface && module.builder == null) {
-				member = new TemplateDeclaration(getLoc(module, type), getIdent(type), null, null);
-				member.rest = new SemanticRest(new Runnable() {
-					public void run() {
-						try {
-							Dsymbols symbols = new Dsymbols();
-							fill(module, symbols, type.getChildren(), state);
-							
-							member.members = symbols;
-							member.sourceMembers = new Dsymbols(member.members);
-							member.parameters = getTemplateParameters(type);
-						} catch (JavaModelException e) {
-							Util.log(e);
-						}
-					}
-				});
-			} else {
-				Dsymbols symbols = new Dsymbols();
-				fill(module, symbols, type.getChildren(), state);
+			Dsymbols symbols = new Dsymbols();
+			fill(module, symbols, type.getChildren(), state);
 				
-				member = new TemplateDeclaration(getLoc(module, type), getIdent(type), getTemplateParameters(type), symbols);
-			}
-			
+			TemplateDeclaration member = new TemplateDeclaration(getLoc(module, type), getIdent(type), getTemplateParameters(type), symbols);
 			member.setJavaElement(type);
 			members.add(wrap(member, type));
 		}
-		
-		state.surface = surface;
 	}
 
-	public Dsymbol fillEnum(final Module module, Dsymbols members, final IType type, boolean surface) throws JavaModelException {
+	public Dsymbol fillEnum(final Module module, Dsymbols members, final IType type) throws JavaModelException {
 		IdentifierExp ident = getIdent(type);
 		
-		final EnumDeclaration member;
+		BaseClasses baseClasses = getBaseClasses(type);
+		EnumDeclaration member = new EnumDeclaration(getLoc(module, type), ident, baseClasses.isEmpty() ? Type.tint32 : baseClasses.get(0).type);
 		
-		// For anonymous enums we can do it lazily 
-		if (LAZY_ENUMS && surface && ident != null && module.builder == null) {
-			member = new EnumDeclaration(getLoc(module, type), ident, null);
-			member.rest = new SemanticRest(new Runnable() {
-				public void run() {
-					try {
-						BaseClasses baseClasses = getBaseClasses(type);
-						member.memtype = baseClasses.isEmpty() ? Type.tint32 : baseClasses.get(0).type;
-						
-						if (type.isForwardDeclaration()) {
-							return;
-						}
-						
-						member.members = new Dsymbols();
-						for(IJavaElement sub : type.getChildren()) {
-							IField field = (IField) sub;
-							EnumMember enumMember = new EnumMember(getLoc(module, field), getIdent(field), getExpression(field));
-							enumMember.setJavaElement(field);
-							member.members.add(enumMember);
-						}
-						member.sourceMembers = new Dsymbols(member.members);
-					} catch (JavaModelException e) {
-						Util.log(e);
-					}
-				}
-			});
-		} else {
-			BaseClasses baseClasses = getBaseClasses(type);
-			member = new EnumDeclaration(getLoc(module, type), ident, baseClasses.isEmpty() ? Type.tint32 : baseClasses.get(0).type);
-			
-			if (!type.isForwardDeclaration()) {
-				member.members = new Dsymbols();
-				for(IJavaElement sub : type.getChildren()) {
-					IField field = (IField) sub;
-					EnumMember enumMember = new EnumMember(getLoc(module, field), getIdent(field), getExpression(field));
-					enumMember.setJavaElement(field);
-					member.members.add(enumMember);
-				}
-				member.sourceMembers = new Dsymbols(member.members);
+		if (!type.isForwardDeclaration()) {
+			member.members = new Dsymbols();
+			for(IJavaElement sub : type.getChildren()) {
+				IField field = (IField) sub;
+				EnumMember enumMember = new EnumMember(getLoc(module, field), getIdent(field), getExpression(field));
+				enumMember.setJavaElement(field);
+				member.members.add(enumMember);
 			}
+			member.sourceMembers = new Dsymbols(member.members);
 		}
 		
 		member.setJavaElement(type);
@@ -756,44 +508,13 @@ public class ModuleBuilder {
 		members.add(wrap(member, type));
 	}
 
-	public void fillField(Module module, Dsymbols members, final IField field, State state) throws JavaModelException {
+	public void fillField(Module module, Dsymbols members, final IField field) throws JavaModelException {
 		if (field.isVariable()) {
-			final VarDeclaration member;
-			if (LAZY_VARS && state.surface && module.builder == null) {
-				member = new VarDeclaration(getLoc(module, field), null, getIdent(field), null);
-				member.rest = new SemanticRest(new Runnable() {
-					public void run() {
-						try {
-							member.type = member.sourceType = getType(field.getTypeSignature());
-							member.init = member.sourceInit = getInitializer(field);
-						} catch (JavaModelException e) {
-							Util.log(e);
-						}
-					}
-				});
-			} else {
-				member = new VarDeclaration(getLoc(module, field), getType(field.getTypeSignature()), getIdent(field), getInitializer(field));
-			}
-			
+			VarDeclaration member = new VarDeclaration(getLoc(module, field), getType(field.getTypeSignature()), getIdent(field), getInitializer(field));
 			member.setJavaElement(field);
 			members.add(wrap(member, field));
 		} else if (field.isAlias()) {
-			final AliasDeclaration member;
-			if (LAZY_ALIASES && state.surface && module.builder == null) {
-				member = new AliasDeclaration(getLoc(module, field), getIdent(field), (Type) null);
-				member.rest = new SemanticRest(new Runnable() {
-					public void run() {
-						try {
-							member.type = member.sourceType = getType(field.getTypeSignature());
-						} catch (JavaModelException e) {
-							Util.log(e);
-						}
-					}
-				});
-			} else {
-				member = new AliasDeclaration(getLoc(module, field), getIdent(field), getType(field.getTypeSignature()));
-			}
-			
+			AliasDeclaration member = new AliasDeclaration(getLoc(module, field), getIdent(field), getType(field.getTypeSignature()));
 			member.setJavaElement(field);
 			members.add(wrap(member, field));
 		} else if (field.isTypedef()) {
@@ -867,33 +588,9 @@ public class ModuleBuilder {
 		}
 	}
 
-	private Dsymbol wrapWithTemplate(Module module, Dsymbol symbol, final ITemplated templated, boolean surface) throws JavaModelException {
+	private Dsymbol wrapWithTemplate(Module module, Dsymbol symbol, final ITemplated templated) throws JavaModelException {
 		if (templated.isTemplate()) {
-			final TemplateDeclaration temp;
-			
-			if (LAZY_TEMPLATES && surface && module.builder == null) {
-				temp = new TemplateDeclaration(getLoc(module, (ISourceReference) templated), getIdent((IJavaElement) templated), null, toDsymbols(symbol));
-				temp.wrapper = true;
-				
-				if (symbol instanceof AggregateDeclaration) {
-					((AggregateDeclaration) symbol).templated = true;
-				} else if (symbol instanceof FuncDeclaration) {
-					((FuncDeclaration) symbol).templated = true;
-				}
-				
-				temp.rest = new SemanticRest(new Runnable() {
-					public void run() {
-						try {
-							temp.parameters = getTemplateParameters(templated);
-						} catch (JavaModelException e) {
-							Util.log(e);
-						}
-					}
-				});
-			} else {
-				temp = new TemplateDeclaration(getLoc(module, (ISourceReference) templated), getIdent((IJavaElement) templated), getTemplateParameters(templated), toDsymbols(symbol));
-			}
-			
+			TemplateDeclaration temp = new TemplateDeclaration(getLoc(module, (ISourceReference) templated), getIdent((IJavaElement) templated), getTemplateParameters(templated), toDsymbols(symbol));
 			temp.setJavaElement((IJavaElement) templated);
 			return wrap(temp, (IMember) templated);
 		} else {
@@ -937,7 +634,7 @@ public class ModuleBuilder {
 		}
 	}
 
-	private IdentifierExp getIdent(IJavaElement element) {
+	public static IdentifierExp getIdent(IJavaElement element) {
 		String name = element.getElementName();
 		if (name.length() == 0) {
 			return null;
@@ -946,7 +643,7 @@ public class ModuleBuilder {
 		}
 	}
 	
-	private BaseClasses getBaseClasses(IType type) throws JavaModelException {
+	public BaseClasses getBaseClasses(IType type) throws JavaModelException {
 		BaseClasses baseClasses = new BaseClasses();
 		BaseClass baseClass = getBaseClass(type.getSuperclassTypeSignature());
 		if (baseClass != null) {
@@ -962,7 +659,7 @@ public class ModuleBuilder {
 		return baseClasses;
 	}
 	
-	private BaseClass getBaseClass(String signature) {
+	public BaseClass getBaseClass(String signature) {
 		if (signature == null) {
 			return null;
 		}
@@ -1102,6 +799,239 @@ public class ModuleBuilder {
 		// TODO line number
 		Loc loc = new Loc(module.moduleName.toCharArray(), 0);
 		return loc;
+	}
+	
+	public static class FillResult {
+		public boolean hasAnonEnum;
+		public boolean hasStaticIf;
+		public boolean hasMixinDeclaration;
+	}
+	
+	public FillResult fillJavaElementMembersCache(ILazy lazy, IJavaElement[] elements, HashtableOfCharArrayAndObject javaElementMembersCache, Dsymbols symbols, List<Dsymbol> privateImports, List<Dsymbol> publicImports, SemanticContext context) {
+		FillResult result = new FillResult();
+		
+		internalFillJavaElementMembersCache(lazy, elements, javaElementMembersCache, symbols, privateImports, publicImports, context, result);
+		
+		return result;
+	}
+	
+	// true if we encountered an anonymous enum
+	public void internalFillJavaElementMembersCache(ILazy lazy, IJavaElement[] elements, HashtableOfCharArrayAndObject javaElementMembersCache, Dsymbols symbols, List<Dsymbol> privateImports, List<Dsymbol> publicImports, SemanticContext context, FillResult result) {
+		try {
+			for(IJavaElement child : elements) {
+				switch(child.getElementType()) {
+				case IJavaElement.IMPORT_CONTAINER:
+					internalFillJavaElementMembersCache(lazy, ((IParent) child).getChildren(), javaElementMembersCache, symbols, privateImports, publicImports, context, result);
+					break;
+				case IJavaElement.IMPORT_DECLARATION:
+					IImportDeclaration imp = (IImportDeclaration) child;
+					Dsymbol s = fillImportDeclaration(lazy.getModule(), symbols, imp);
+					symbols.add(s);
+					if (Flags.isPublic(imp.getFlags())) {
+						publicImports.add(s);
+					} else {
+						privateImports.add(s);
+					}
+					break;
+				case IJavaElement.CONDITIONAL:
+					IConditional cond = (IConditional) child;
+					if (cond.isStaticIfDeclaration()) {
+						result.hasStaticIf = true;
+					} else if (cond.isVersionDeclaration()) {
+						String name = cond.getElementName();
+						char[] nameC = name.toCharArray();
+						try {
+							long value = Long.parseLong(name);
+							if (config.isVersionEnabled(value) || value >= lazy.getModule().versionlevel) {
+								internalFillJavaElementMembersCache(lazy, cond.getThenChildren(), javaElementMembersCache, symbols, privateImports, publicImports, context, result);
+							} else {
+								internalFillJavaElementMembersCache(lazy, cond.getElseChildren(), javaElementMembersCache, symbols, privateImports, publicImports, context, result);
+							}
+						} catch(NumberFormatException e) {
+							if (config.isVersionEnabled(nameC) || (lazy.getModule().versionids != null && lazy.getModule().versionids.containsKey(nameC))) {
+								internalFillJavaElementMembersCache(lazy, cond.getThenChildren(), javaElementMembersCache, symbols, privateImports, publicImports, context, result);
+							} else {
+								internalFillJavaElementMembersCache(lazy, cond.getElseChildren(), javaElementMembersCache, symbols, privateImports, publicImports, context, result);
+							}
+						}
+					} else if (cond.isDebugDeclaration()) {
+						String name = cond.getElementName();
+						char[] nameC = name.toCharArray();
+						try {
+							long value = Long.parseLong(name);
+							if (config.isDebugEnabled(value) || value >= lazy.getModule().debuglevel) {
+								internalFillJavaElementMembersCache(lazy, cond.getThenChildren(), javaElementMembersCache, symbols, privateImports, publicImports, context, result);
+							} else {
+								internalFillJavaElementMembersCache(lazy, cond.getElseChildren(), javaElementMembersCache, symbols, privateImports, publicImports, context, result);
+							}
+						} catch(NumberFormatException e) {
+							if (config.isDebugEnabled(nameC) || (lazy.getModule().debugids != null && lazy.getModule().debugids.containsKey(nameC))) {
+								internalFillJavaElementMembersCache(lazy, cond.getThenChildren(), javaElementMembersCache, symbols, privateImports, publicImports, context, result);
+							} else {
+								internalFillJavaElementMembersCache(lazy, cond.getElseChildren(), javaElementMembersCache, symbols, privateImports, publicImports, context, result);
+							}
+						}
+					}
+					break;
+				case IJavaElement.INITIALIZER:
+					IInitializer init = (IInitializer) child;
+					if (init.isAlign()) {
+						Dsymbols sub = new Dsymbols();
+						internalFillJavaElementMembersCache(lazy, init.getChildren(), javaElementMembersCache, sub, privateImports, publicImports, context, result);
+						
+						AlignDeclaration member = new AlignDeclaration(Integer.parseInt(init.getElementName()), sub);
+						symbols.add(member);
+					} else if (init.isDebugAssignment()) {
+						DebugSymbol symbol = fillDebugAssignment(lazy.getModule(), symbols, init, new ModuleBuilder.State());
+						symbol.addMember(lazy.getSemanticScope(), lazy.asScopeDsymbol(), 0, context);
+					} else if (init.isVersionAssignment()) {
+						VersionSymbol symbol = fillVersionAssignment(lazy.getModule(), symbols, init, new ModuleBuilder.State());
+						symbol.addMember(lazy.getSemanticScope(), lazy.asScopeDsymbol(), 0, context);
+					} else if (init.isMixin()) {
+						result.hasMixinDeclaration = true;
+					} else if (init.isExtern()) {
+						Dsymbols sub = new Dsymbols();
+						internalFillJavaElementMembersCache(lazy, init.getChildren(), javaElementMembersCache, sub, privateImports, publicImports, context, result);
+						
+						LinkDeclaration member = new LinkDeclaration(ModuleBuilder.getLink(init), sub);
+						symbols.add(wrap(member, init));
+					}
+					break;
+				case IJavaElement.FIELD:
+				case IJavaElement.METHOD:
+				case IJavaElement.TYPE:
+					char[] ident = child.getElementName().toCharArray();
+					if (ident == null || ident.length == 0) {
+						// Anonymous: it must be an enum, at the top level there
+						// isn't a use for an annonymous class, template, etc.
+						IType type = (IType) child;
+						if (type.isEnum()) {
+							Dsymbol sym = fillEnum(lazy.getModule(), symbols, type);
+							sym.addMember(lazy.getSemanticScope(), lazy.asScopeDsymbol(), 0, context);
+							lazy.runMissingSemantic(sym, context);
+							result.hasAnonEnum = true;
+						}
+					} else {
+						if (javaElementMembersCache.containsKey(ident)) {
+							Object object = javaElementMembersCache.get(ident);
+							
+							if (object instanceof IJavaElement) {
+								List<IJavaElement> elemsList = new ArrayList<IJavaElement>();
+								elemsList.add((IJavaElement) object);
+								elemsList.add(child);
+								javaElementMembersCache.put(ident, elemsList);
+							} else {
+								List<IJavaElement> elemsList = (List<IJavaElement>) object;
+								elemsList.add(child);
+							}
+						} else {
+							javaElementMembersCache.put(ident, child);
+						}
+					}
+					break;
+				case IJavaElement.PACKAGE_DECLARATION:
+					break;
+				default:
+					throw new IllegalStateException("Unknown type: " + child.getElementType());
+				}
+			}
+		} catch (JavaModelException e) {
+			Util.log(e);
+		}
+	}
+	
+	public void fillImports(ILazy lazy, IJavaElement[] elements, List<Dsymbol> privateImports, List<Dsymbol> publicImports, SemanticContext context, int lastImportLocation) {
+		try {
+			for(IJavaElement child : elements) {
+				if (child instanceof ISourceReference) {
+					ISourceReference sr = (ISourceReference) child;
+					ISourceRange srg = sr.getSourceRange();
+					if (srg != null && srg.getOffset() + srg.getLength() > lastImportLocation) {
+						break;
+					}
+				}
+				
+				switch(child.getElementType()) {
+				case IJavaElement.IMPORT_CONTAINER:
+					fillImports(lazy, ((IParent) child).getChildren(), privateImports, publicImports, context, lastImportLocation);
+					break;
+				case IJavaElement.IMPORT_DECLARATION:
+					IImportDeclaration imp = (IImportDeclaration) child;
+					Dsymbol s = fillImportDeclaration(lazy.getModule(), new Dsymbols(), imp);
+					lazy.getModule().members.add(s);
+					if (Flags.isPublic(imp.getFlags())) {
+						publicImports.add(s);
+					} else {
+						privateImports.add(s);
+					}
+					break;
+				case IJavaElement.CONDITIONAL:
+					IConditional cond = (IConditional) child;
+					if (cond.isStaticIfDeclaration()) {
+						
+					} else if (cond.isVersionDeclaration()) {
+						String name = cond.getElementName();
+						char[] nameC = name.toCharArray();
+						try {
+							long value = Long.parseLong(name);
+							if (config.isVersionEnabled(value) || value >= lazy.getModule().versionlevel) {
+								fillImports(lazy, cond.getThenChildren(), privateImports, publicImports, context, lastImportLocation);
+							} else {
+								fillImports(lazy, cond.getElseChildren(), privateImports, publicImports, context, lastImportLocation);
+							}
+						} catch(NumberFormatException e) {
+							if (config.isVersionEnabled(nameC) || (lazy.getModule().versionids != null && lazy.getModule().versionids.containsKey(nameC))) {
+								fillImports(lazy, cond.getThenChildren(), privateImports, publicImports, context, lastImportLocation);
+							} else {
+								fillImports(lazy, cond.getElseChildren(), privateImports, publicImports, context, lastImportLocation);
+							}
+						}
+					} else if (cond.isDebugDeclaration()) {
+						String name = cond.getElementName();
+						char[] nameC = name.toCharArray();
+						try {
+							long value = Long.parseLong(name);
+							if (config.isDebugEnabled(value) || value >= lazy.getModule().debuglevel) {
+								fillImports(lazy, cond.getThenChildren(), privateImports, publicImports, context, lastImportLocation);
+							} else {
+								fillImports(lazy, cond.getElseChildren(), privateImports, publicImports, context, lastImportLocation);
+							}
+						} catch(NumberFormatException e) {
+							if (config.isDebugEnabled(nameC) || (lazy.getModule().debugids != null && lazy.getModule().debugids.containsKey(nameC))) {
+								fillImports(lazy, cond.getThenChildren(), privateImports, publicImports, context, lastImportLocation);
+							} else {
+								fillImports(lazy, cond.getElseChildren(), privateImports, publicImports, context, lastImportLocation);
+							}
+						}
+					}
+					break;
+				case IJavaElement.INITIALIZER:
+					IInitializer init = (IInitializer) child;
+					if (init.isAlign()) {
+						fillImports(lazy, init.getChildren(), privateImports, publicImports, context, lastImportLocation);
+					} else if (init.isDebugAssignment()) {
+						DebugSymbol symbol = fillDebugAssignment(lazy.getModule(), lazy.getModule().members, init, new ModuleBuilder.State());
+						symbol.addMember(lazy.getSemanticScope(), lazy.asScopeDsymbol(), 0, context);
+					} else if (init.isVersionAssignment()) {
+						VersionSymbol symbol = fillVersionAssignment(lazy.getModule(), lazy.getModule().members, init, new ModuleBuilder.State());
+						symbol.addMember(lazy.getSemanticScope(), lazy.asScopeDsymbol(), 0, context);
+					} else if (init.isMixin()) {
+					} else if (init.isExtern()) {
+						fillImports(lazy, init.getChildren(), privateImports, publicImports, context, lastImportLocation);
+					}
+					break;
+				case IJavaElement.FIELD:
+				case IJavaElement.METHOD:
+				case IJavaElement.TYPE:
+				case IJavaElement.PACKAGE_DECLARATION:
+					break;
+				default:
+					throw new IllegalStateException("Unknown type: " + child.getElementType());
+				}
+			}
+		} catch (JavaModelException e) {
+			Util.log(e);
+		}
 	}
 
 }

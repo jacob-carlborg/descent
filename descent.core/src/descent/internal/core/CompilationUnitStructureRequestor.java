@@ -12,15 +12,22 @@ package descent.internal.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Stack;
 
 import org.eclipse.core.runtime.Assert;
-import descent.core.*;
-import descent.core.compiler.IProblem;
+
+import descent.core.Flags;
+import descent.core.ICompilationUnit;
+import descent.core.IJavaElement;
+import descent.core.IType;
+import descent.core.ITypeParameter;
+import descent.core.Signature;
 import descent.core.compiler.CharOperation;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.ISourceElementRequestor;
+import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
 import descent.internal.compiler.util.HashtableOfObject;
 import descent.internal.core.util.ReferenceInfoAdapter;
@@ -106,10 +113,11 @@ public class CompilationUnitStructureRequestor extends ReferenceInfoAdapter impl
 	protected HashtableOfObject typeRefCache;
 	protected HashtableOfObject unknownRefCache;
 
-	private static Object dummy = new Object();
 	protected Stack<Boolean> hasId = new Stack<Boolean>();
 	protected int topLevelNesting = 0;
 	protected boolean hasTopLevelCompileTimeDifficulties = false;
+	protected HashtableOfCharArrayAndObject topLevelIdentifiers = new HashtableOfCharArrayAndObject();
+	protected int lastImportLocation = -1;
 	
 	protected boolean stillAcceptsImportContainer = true;
 
@@ -120,6 +128,10 @@ protected CompilationUnitStructureRequestor(ICompilationUnit unit, CompilationUn
 } 
 
 public void acceptImport(int declarationStart, int declarationEnd, String name, String alias, String[] selectiveImportsNames,  String[] selectiveImportsAliases, long modifiers) {
+	if (declarationStart + declarationEnd > lastImportLocation) {
+		lastImportLocation = declarationStart + declarationEnd; 
+	}
+	
 	JavaElement parentHandle= (JavaElement) this.handleStack.peek();
 	if (stillAcceptsImportContainer && (modifiers == 0 || Flags.isStatic(modifiers)) && 
 			parentHandle.getElementType() == IJavaElement.COMPILATION_UNIT) {
@@ -259,6 +271,8 @@ public void enterField(FieldInfo fieldInfo) {
 	//}
 	resolveDuplicates(handle);
 	
+	addToTopLevel(fieldInfo.name, handle);
+	
 	SourceFieldElementInfo info = new SourceFieldElementInfo();
 	info.setNameSourceStart(fieldInfo.nameSourceStart);
 	info.setNameSourceEnd(fieldInfo.nameSourceEnd);
@@ -290,9 +304,7 @@ public void enterInitializer(
 	char[] displayString) {
 	
 	if (topLevelNesting == 0 && (
-			(modifiers & Flags.AccMixin) != 0 ||
-			(modifiers & Flags.AccDebugAssignment) != 0 ||
-			(modifiers & Flags.AccVersionAssignment) != 0
+			(modifiers & Flags.AccMixin) != 0
 			)) {
 		hasTopLevelCompileTimeDifficulties = true;
 	}
@@ -428,6 +440,8 @@ public void enterMethod(MethodInfo methodInfo) {
 	//}
 	resolveDuplicates(handle);
 	
+	addToTopLevel(methodInfo.name, handle);
+	
 	SourceMethodElementInfo info;
 //	if (Flags.isConstructor(methodInfo.modifiers))
 //		info = new SourceConstructorInfo();
@@ -476,19 +490,20 @@ public void enterMethod(MethodInfo methodInfo) {
  * @see ISourceElementRequestor
  */
 public void enterType(TypeInfo typeInfo) {
-	if (typeInfo.name != null && typeInfo.name.length > 0) {
-		hasId.push(true);
-		topLevelNesting++;
-	} else {
-		hasId.push(false);
-	}
-	
 	JavaElementInfo parentInfo = (JavaElementInfo) this.infoStack.peek();
 	JavaElement parentHandle= (JavaElement) this.handleStack.peek();
 	// Changed to allow annonymous enums, structs and unions
 	String nameString= new String(typeInfo.name == null ? ANNONYMOUS_NAME : typeInfo.name);
 	SourceType handle = new SourceType(parentHandle, nameString); //NB: occurenceCount is computed in resolveDuplicates
 	resolveDuplicates(handle);
+	
+	addToTopLevel(typeInfo.name, handle);
+	if (typeInfo.name != null && typeInfo.name.length > 0) {
+		hasId.push(true);
+		topLevelNesting++;
+	} else {
+		hasId.push(false);
+	}
 	
 	SourceTypeElementInfo info = new SourceTypeElementInfo();
 	info.setHandle(handle);
@@ -580,8 +595,11 @@ public void exitCompilationUnit(int declarationEnd) {
 	// set children
 	setChildren(this.unitInfo);
 	
-//	System.out.println("Module " + this.unit.getElementName() + " has top level compile time difficulties: " + hasTopLevelCompileTimeDifficulties);
 	this.unitInfo.hasTopLevelCompileTimeDifficulties = hasTopLevelCompileTimeDifficulties;
+	if (!hasTopLevelCompileTimeDifficulties) {
+		this.unitInfo.topLevelIdentifiers = topLevelIdentifiers;
+		this.unitInfo.lastImportLocation = lastImportLocation;
+	}
 	
 	this.unitInfo.setSourceLength(declarationEnd + 1);
 
@@ -699,6 +717,26 @@ private void setChildren(JavaElementInfo info) {
 		IJavaElement[] elements = new IJavaElement[length];
 		childrenList.toArray(elements);
 		info.children = elements;
+	}
+}
+
+private void addToTopLevel(char[] ident, IJavaElement element) {
+	if (topLevelIdentifiers != null && topLevelNesting == 0 && ident != null && ident.length > 0) {
+		if (topLevelIdentifiers.containsKey(ident)) {
+			Object object = topLevelIdentifiers.get(ident);
+			
+			if (object instanceof IJavaElement) {
+				List<IJavaElement> elemsList = new ArrayList<IJavaElement>();
+				elemsList.add((IJavaElement) object);
+				elemsList.add(element);
+				topLevelIdentifiers.put(ident, elemsList);
+			} else {
+				List<IJavaElement> elemsList = (List<IJavaElement>) object;
+				elemsList.add(element);
+			}
+		} else {
+			topLevelIdentifiers.put(ident, element);
+		}	
 	}
 }
 

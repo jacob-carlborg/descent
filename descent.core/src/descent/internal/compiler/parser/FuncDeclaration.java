@@ -54,8 +54,10 @@ import org.eclipse.core.runtime.Assert;
 import descent.core.IMethod;
 import descent.core.JavaModelException;
 import descent.core.Signature;
+import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
-import descent.internal.compiler.lookup.SemanticRest;
+import descent.internal.compiler.lookup.LazyClassDeclaration;
+import descent.internal.compiler.lookup.LazyInterfaceDeclaration;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import descent.internal.core.util.Util;
 
@@ -124,7 +126,10 @@ public class FuncDeclaration extends Declaration {
 	protected IMethod javaElement;
 	private FuncDeclaration materialized; // in case the body is yet unknown
 
-	public SemanticRest rest;
+	// Diet data
+	private char[] input;
+	private int startSkip;
+	private int endSkip;
 
 	public FuncDeclaration(Loc loc, IdentifierExp ident, int storage_class,
 			Type type) {
@@ -137,6 +142,24 @@ public class FuncDeclaration extends Declaration {
 		this.vtblIndex = -1;
 		this.inferRetType = (type != null && type.nextOf() == null);
 		this.builtin = BUILTINunknown;
+	}
+	
+	public void setDiet(char[] input, int startSkip, int endSkip) {
+		this.input = input;
+		this.startSkip = startSkip;
+		this.endSkip = endSkip;		
+	}
+	
+	private void resolveDiet(SemanticContext context) {
+		if (input != null) {
+			Parser parser = new Parser(context.apiLevel, CharOperation.subarray(input, startSkip, endSkip));
+			parser.module = getModule();
+			
+			Statement body = parser.dietParseStatement(this); 
+			fbody = body;
+			
+			input = null;
+		}
 	}
 
 	@Override
@@ -361,6 +384,8 @@ public class FuncDeclaration extends Declaration {
 		if (context.global.errors != 0) {
 			return null;
 		}
+		
+		resolveDiet(context);
 
 		// If no body is avaiable (this FuncDeclaration was created from
 		// an IMethod) materialize the body and interpret
@@ -634,8 +659,6 @@ public class FuncDeclaration extends Declaration {
 
 	@Override
 	public FuncDeclaration isFuncDeclaration() {
-		consumeRest();
-
 		return this;
 	}
 
@@ -970,13 +993,6 @@ public class FuncDeclaration extends Declaration {
 
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-		if (rest != null && !rest.isConsumed()) {
-			if (rest.getScope() == null) {
-				rest.setSemanticContext(sc, context);
-			}
-			return;
-		}
-
 		boolean gotoL1 = false;
 		boolean gotoL2 = false;
 		boolean gotoLmainerr = false;
@@ -1154,9 +1170,6 @@ public class FuncDeclaration extends Declaration {
 
 		cd = parent.isClassDeclaration();
 		if (cd != null) {
-			// Descent: lazy initialization
-			cd.consumeRest();
-
 			int vi;
 
 			if (isCtorDeclaration() != null) {
@@ -1605,13 +1618,6 @@ public class FuncDeclaration extends Declaration {
 
 	@Override
 	public void semantic3(Scope sc, SemanticContext context) {
-		if (rest != null && !rest.isConsumed()) {
-			if (rest.getScope() == null) {
-				rest.setSemanticContext(sc, context);
-			}
-			return;
-		}
-
 		TypeFunction f;
 		AggregateDeclaration ad;
 		VarDeclaration argptr = null;
@@ -2409,8 +2415,6 @@ public class FuncDeclaration extends Declaration {
 
 	@Override
 	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
-		consumeRestStructure();
-
 		FuncDeclaration f;
 
 		if (s != null) {
@@ -2547,20 +2551,6 @@ public class FuncDeclaration extends Declaration {
 	@Override
 	public IMethod getJavaElement() {
 		return javaElement;
-	}
-
-	@Override
-	public void consumeRestStructure() {
-		if (rest != null && !rest.isStructureKnown()) {
-			rest.buildStructure();
-		}
-	}
-
-	@Override
-	public void consumeRest() {
-		if (rest != null && !rest.isConsumed()) {
-			rest.consume(this);
-		}
 	}
 
 }

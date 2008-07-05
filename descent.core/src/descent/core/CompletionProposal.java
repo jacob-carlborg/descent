@@ -1713,8 +1713,6 @@ public final class CompletionProposal extends InternalCompletionProposal {
 					return this.parameterNames;
 				}
 				
-				func.consumeRestStructure();
-				
 				TypeFunction tf = (TypeFunction) func.type; 
 				
 				this.parameterNames = new char[tf.parameters.size()][];

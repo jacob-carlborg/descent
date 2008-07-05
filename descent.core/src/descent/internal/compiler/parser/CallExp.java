@@ -452,9 +452,6 @@ public class CallExp extends UnaExp {
 					type = Type.terror;
 					return this;
 				} else {
-					cd.consumeRest();
-					cd.baseClass.consumeRest();
-					
 					f = cd.baseClass.ctor;
 					if (f == null) {
 						if (context.acceptsErrors()) {
@@ -545,9 +542,6 @@ public class CallExp extends UnaExp {
 					e1 = e;
 				} else if (e1.op == TOKtemplate) {
 					TemplateExp te = (TemplateExp) e1;
-					
-					// Descent: lazy initialization
-					te.td.consumeRest();
 					
 					// Descent: temporary adjust error position so errors doesn't
 					// appear inside templates, but always on the invocation site

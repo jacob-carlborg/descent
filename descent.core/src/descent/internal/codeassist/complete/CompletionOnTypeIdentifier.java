@@ -44,5 +44,10 @@ public class CompletionOnTypeIdentifier extends TypeIdentifier {
 		
 		this.scope = ScopeCopy.copy(sc, context);
 	}
+	
+	@Override
+	public void addIdent(IdentifierExp ident) {
+		
+	}
 
 }

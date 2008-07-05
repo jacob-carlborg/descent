@@ -86,13 +86,6 @@ public class StructDeclaration extends AggregateDeclaration {
 
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-		if (rest != null && !rest.isConsumed()) {
-			if (rest.getScope() == null) {
-				rest.setSemanticContext(sc, context);
-			}
-			return;
-		}
-		
 		Scope sc2;
 
 		Assert.isNotNull(type);
@@ -166,6 +159,8 @@ public class StructDeclaration extends AggregateDeclaration {
 		}
 		sc2.protection = PROT.PROTpublic;
 		sc2.explicitProtection = 0;
+		
+		semanticScope(sc2);
 
 		int members_dim = members.size();
 		for (int i = 0; i < members_dim; i++) {
@@ -565,17 +560,9 @@ public class StructDeclaration extends AggregateDeclaration {
 		// Lneed:
 		// return 1;
 	}
-	
-	@Override
-	public Dsymbol search(Loc loc, char[] ident, int flags, SemanticContext context) {
-		consumeRest();
-		return super.search(loc, ident, flags, context);
-	}
 
 	@Override
 	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
-		consumeRestStructure();
-		
 		StructDeclaration sd;
 
 		if (s != null) {
@@ -589,7 +576,7 @@ public class StructDeclaration extends AggregateDeclaration {
 		sd.javaElement = javaElement;
 		sd.templated = templated;
 		
-		return sd;
+		return sd;		
 	}
 	
 	@Override
@@ -646,6 +633,11 @@ public class StructDeclaration extends AggregateDeclaration {
 	@Override
 	public long getFlags() {
 		return super.getFlags() | Flags.AccStruct;
+	}
+	
+	@Override
+	public StructDeclaration unlazy(SemanticContext context) {
+		return this;
 	}
 
 }

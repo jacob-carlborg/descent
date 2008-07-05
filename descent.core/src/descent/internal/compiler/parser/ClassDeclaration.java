@@ -1,17 +1,6 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import melnorme.miscutil.tree.TreeVisitor;
-
-import org.eclipse.core.runtime.Assert;
-
-import descent.core.Signature;
-import descent.core.compiler.IProblem;
-import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.PROT.PROTnone;
-
 import static descent.internal.compiler.parser.STC.STCabstract;
 import static descent.internal.compiler.parser.STC.STCauto;
 import static descent.internal.compiler.parser.STC.STCconst;
@@ -21,8 +10,19 @@ import static descent.internal.compiler.parser.STC.STCinvariant;
 import static descent.internal.compiler.parser.STC.STCscope;
 import static descent.internal.compiler.parser.STC.STCstatic;
 import static descent.internal.compiler.parser.STC.STCtls;
-
 import static descent.internal.compiler.parser.TY.Tclass;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import melnorme.miscutil.tree.TreeVisitor;
+
+import org.eclipse.core.runtime.Assert;
+
+import descent.core.Signature;
+import descent.core.compiler.IProblem;
+import descent.internal.compiler.lookup.ModuleBuilder;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
 public class ClassDeclaration extends AggregateDeclaration {
@@ -53,6 +53,8 @@ public class ClassDeclaration extends AggregateDeclaration {
 	public List vtbl; // Array of FuncDeclaration's making up the vtbl[]
 	public List vtblFinal; // More FuncDeclaration's that aren't in vtbl[]
 	public boolean cpp;				// !=0 if this is a C++ interface
+	
+	public ModuleBuilder builder;
 
 	public ClassDeclaration(Loc loc, char[] id) { 
 		this(loc, id, null);
@@ -228,8 +230,6 @@ public class ClassDeclaration extends AggregateDeclaration {
 			poffset[0] = 0;
 		}
 		while (cd != null) {
-			cd.consumeRest();
-			
 			if (this == cd.baseClass) {
 				return true;
 			}
@@ -298,9 +298,6 @@ public class ClassDeclaration extends AggregateDeclaration {
 		if (scope != null) {
 			semantic(scope, context);
 		}
-		
-		// Descent: lazy initailization
-		consumeRest();
 
 		if (members == null || symtab == null || scope != null) {
 			if (context.acceptsErrors()) {
@@ -322,9 +319,6 @@ public class ClassDeclaration extends AggregateDeclaration {
 				BaseClass b = baseclasses.get(i);
 
 				if (b.base != null) {
-					// Descent: lazy initailization
-					b.base.consumeRest();
-					
 					if (b.base.symtab == null) {
 						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
@@ -348,13 +342,6 @@ public class ClassDeclaration extends AggregateDeclaration {
 	
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-		if (rest != null && !rest.isConsumed()) {
-			if (rest.getScope() == null) { 
-				rest.setSemanticContext(sc, context);
-			}
-			return;
-		}
-		
 		int i;
 		// int offset;
 
@@ -404,7 +391,13 @@ public class ClassDeclaration extends AggregateDeclaration {
 		// Expand any tuples in baseclasses[]
 		for (i = 0; i < baseclasses.size();) {
 			BaseClass b = baseclasses.get(i);
+			
 			b.type = b.type.semantic(loc, sc, context);
+			
+			if (getModule() == context.Module_rootModule) {
+				unlazy(b, context);	
+			}
+			
 			Type tb = b.type.toBasetype(context);
 
 			if (tb.ty == TY.Ttuple) {
@@ -476,9 +469,6 @@ public class ClassDeclaration extends AggregateDeclaration {
 						}
 					}
 					if (!gotoL7) {
-						// Descent: lazy initialization
-						tc.sym.consumeRest();
-						
 						if (tc.sym.symtab == null || tc.sym.scope != null
 								|| tc.sym.sizeok == 0) {
 							// error("forward reference of base class %s",
@@ -549,9 +539,6 @@ public class ClassDeclaration extends AggregateDeclaration {
 					}
 				}
 				
-				// Descent: lazy instantiation
-				tc.sym.consumeRest();
-
 				b.base = tc.sym;
 				if (b.base.symtab == null || b.base.scope != null) {
 					// error("forward reference of base class %s",
@@ -596,7 +583,6 @@ public class ClassDeclaration extends AggregateDeclaration {
 			}
 			tc = (TypeClass) (b.type);
 			baseClass = tc.sym;
-			baseClass.consumeRest();
 			
 			if (baseClass.isInterfaceDeclaration() != null) {
 				throw new IllegalStateException(
@@ -745,15 +731,15 @@ public class ClassDeclaration extends AggregateDeclaration {
 			alignsize = 4;
 		}
 		structsize = sc.offset;
+		
+		semanticScope(sc);
+		
 		Scope scsave = sc;
 		int members_dim = members.size();
 		sizeok = 0;
 		for (i = 0; i < members_dim; i++) {
 			Dsymbol s = members.get(i);
 			s.semantic(sc, context);
-			
-			// Need this for vtbl
-			s.consumeRest();
 		}
 
 		if (sizeok == 2) { // semantic() failed because of forward
@@ -857,6 +843,24 @@ public class ClassDeclaration extends AggregateDeclaration {
 		sc.pop();
 	}
 	
+	protected void unlazy(BaseClass bc, SemanticContext context) {
+		if (bc.type instanceof TypeClass) {
+			unlazy((TypeClass) bc.type, context);
+		}
+		bc.base = bc.base == null ? null : bc.base.unlazy(context);
+	}
+
+	protected void unlazy(TypeClass type, SemanticContext context) {
+		type.sym = type.sym.unlazy(context);
+		type.sym.baseClass = type.sym.baseClass == null ? null : type.sym.baseClass.unlazy(context);
+		
+		if (type.sym.baseclasses != null) {
+			for(BaseClass bc : type.sym.baseclasses) {
+				unlazy(bc, context);
+			}
+		}
+	}
+
 	/**********************************************************
 	 * fd is in the vtbl[] for this class.
 	 * Return 1 if function is hidden (not findable through search).
@@ -906,8 +910,6 @@ public class ClassDeclaration extends AggregateDeclaration {
 
 	@Override
 	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
-		consumeRestStructure();
-		
 		ClassDeclaration cd;
 
 		if (s != null) {
@@ -1012,6 +1014,11 @@ public class ClassDeclaration extends AggregateDeclaration {
 		} else {
 			return Signature.C_CLASS;
 		}
+	}
+	
+	@Override
+	public ClassDeclaration unlazy(SemanticContext context) {
+		return this;
 	}
 
 }

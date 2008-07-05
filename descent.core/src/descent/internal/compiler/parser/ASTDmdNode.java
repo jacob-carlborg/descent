@@ -755,16 +755,15 @@ public abstract class ASTDmdNode extends ASTNode {
 		context.fatalWasSignaled = true;
 	}
 
-	public boolean findCondition(List<char[]> ids, char[] ident) {
-		if (ids != null) {
-			for (char[] id : ids) {
-				if (equals(id, ident)) {
-					return true;
-				}
-			}
+	public static boolean findCondition(HashtableOfCharArrayAndObject ids, char[] ident) {
+		return ids != null && ids.containsKey(ident);
+	}
+	
+	public static boolean findCondition(HashtableOfCharArrayAndObject ids, IdentifierExp ident) {
+		if (ident == null || ident.ident == null) {
+			return false;
 		}
-
-		return false;
+		return ids != null && ids.containsKey(ident.ident);
 	}
 
 	public void functionArguments(Loc loc, Scope sc, TypeFunction tf,
@@ -1349,20 +1348,6 @@ public abstract class ASTDmdNode extends ASTNode {
 
 		sc.pop();
 		return exp;
-	}
-
-	public static boolean findCondition(List<char[]> ids, IdentifierExp ident) {
-		if (ids != null) {
-			for (int i = 0; i < ids.size(); i++) {
-				char[] id = ids.get(i);
-
-				if (equals(id, ident)) {
-					return true;
-				}
-			}
-		}
-
-		return false;
 	}
 
 	public static void overloadResolveX(Match m, FuncDeclaration fstart,

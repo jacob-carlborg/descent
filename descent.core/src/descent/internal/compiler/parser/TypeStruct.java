@@ -118,8 +118,6 @@ public class TypeStruct extends Type {
 		Dsymbol s;
 		DotVarExp de;
 		Declaration d;
-		
-		sym.consumeRest();
 
 		if (null == sym.members) {
 			if (context.acceptsErrors()) {

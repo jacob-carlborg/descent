@@ -2,6 +2,7 @@ package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.lookup.LazyStructDeclaration;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.LINK.LINKd;
 import static descent.internal.compiler.parser.TOK.TOKdelegate;
@@ -58,7 +59,7 @@ public class StructInitializer extends Initializer {
 	@Override
 	public Initializer semantic(Scope sc, Type t, SemanticContext context) {
 		TypeStruct ts;
-		int errors = 0;
+		int errors = 0;		
 
 		t = t.toBasetype(context);
 		if (t.ty == Tstruct) {
@@ -66,10 +67,16 @@ public class StructInitializer extends Initializer {
 			int fieldi = 0;
 
 			ts = (TypeStruct) t;
+			
+			// Descent: remove lazy initalization
+			ts.sym = ts.sym.unlazy(context);
+			
 			ad = ts.sym;
 			
-			// Descent: lazy initialization
-			ad.consumeRest();
+			if (ad instanceof LazyStructDeclaration) {
+				ts.sym =  ((LazyStructDeclaration) ad).unlazy(context);
+				ad = ts.sym;
+			}
 			
 			for (i = 0; i < size(field); i++) {
 				IdentifierExp id = field.get(i);
@@ -130,7 +137,7 @@ public class StructInitializer extends Initializer {
 					errors = 1;
 				}
 				fieldi++;
-			}
+			}		
 		} else if (t.ty == Tdelegate && value.size() == 0) { //  Rewrite as empty delegate literal { }
 			Arguments arguments = new Arguments();
 			Type tf = new TypeFunction(arguments, null, 0, LINKd);
@@ -147,6 +154,9 @@ public class StructInitializer extends Initializer {
 			}
 			errors = 1;
 		}
+		
+		
+		
 		if (errors != 0) {
 			if (field != null) {
 				field.clear();
@@ -178,6 +188,7 @@ public class StructInitializer extends Initializer {
 			init = init.syntaxCopy(context);
 			ai.value.set(i, init);
 		}
+		
 		return ai;
 	}
 
@@ -210,9 +221,6 @@ public class StructInitializer extends Initializer {
 			return null;
 		}
 		StructDeclaration sd = ad.isStructDeclaration();
-		if (null == sd) {
-			return null;
-		}
 		Expressions elements = new Expressions();
 		for (int i = 0; i < value.size(); i++) {
 			if (field.get(i) != null) {

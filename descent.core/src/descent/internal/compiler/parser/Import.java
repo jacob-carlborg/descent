@@ -91,6 +91,7 @@ public class Import extends Dsymbol {
 
 			TypeIdentifier tname = new TypeIdentifier(loc, name);
 			AliasDeclaration ad = new AliasDeclaration(loc, alias, tname);
+			ad.isImportAlias = true;
 			result |= ad.addMember(sc, sd, memnum, context);
 
 			if (aliasdecls == null) {

@@ -28,9 +28,6 @@ public class VarExp extends Expression {
 		this.var = var;
 		this.type = var.type;
 		this.hasOverloads = hasOverloads;
-		
-		this.var.consumeRestStructure();
-		this.var.consumeRest();
 	}
 
 	@Override

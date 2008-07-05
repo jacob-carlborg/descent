@@ -1,16 +1,6 @@
 package descent.internal.compiler.parser;
 
-import melnorme.miscutil.tree.TreeVisitor;
-
-import org.eclipse.core.runtime.Assert;
-
-import descent.core.IField;
-import descent.core.Signature;
-import descent.core.compiler.IProblem;
-import descent.internal.compiler.lookup.SemanticRest;
-import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.PROT.PROTexport;
-
 import static descent.internal.compiler.parser.STC.STCauto;
 import static descent.internal.compiler.parser.STC.STCconst;
 import static descent.internal.compiler.parser.STC.STCctorinit;
@@ -26,12 +16,18 @@ import static descent.internal.compiler.parser.STC.STCscope;
 import static descent.internal.compiler.parser.STC.STCstatic;
 import static descent.internal.compiler.parser.STC.STCtemplateparameter;
 import static descent.internal.compiler.parser.STC.STCundefined;
-
 import static descent.internal.compiler.parser.TOK.TOKconstruct;
 import static descent.internal.compiler.parser.TOK.TOKint64;
 import static descent.internal.compiler.parser.TOK.TOKstring;
-
 import static descent.internal.compiler.parser.TY.Taarray;
+import melnorme.miscutil.tree.TreeVisitor;
+
+import org.eclipse.core.runtime.Assert;
+
+import descent.core.IField;
+import descent.core.Signature;
+import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
 public class VarDeclaration extends Declaration {
@@ -61,8 +57,6 @@ public class VarDeclaration extends Declaration {
 	
 	private IField javaElement;
 	
-	public SemanticRest rest;
-
 	public VarDeclaration(Loc loc, Type type, char[] ident, Initializer init) {
 		this(loc, type, new IdentifierExp(Loc.ZERO, ident), init);
 	}
@@ -215,9 +209,6 @@ public class VarDeclaration extends Declaration {
 
 	@Override
 	public VarDeclaration isVarDeclaration() {
-		consumeRestStructure();
-		consumeRest();
-		
 		return this;
 	}
 
@@ -233,13 +224,6 @@ public class VarDeclaration extends Declaration {
 	
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-		if (rest != null && !rest.isConsumed()) {
-			if (rest.getScope() == null) {
-				rest.setSemanticContext(sc, context);
-			}
-			return;
-		}
-		
 		semantic0(sc, context);
 		
 		// Descent: for code evaluate
@@ -313,8 +297,6 @@ public class VarDeclaration extends Declaration {
 		}
 		if (tb.ty == TY.Tstruct) {
 			TypeStruct ts = (TypeStruct) tb;
-			
-			ts.sym.consumeRest();
 
 			if (ts.sym.members == null) {
 				if (context.acceptsErrors()) {
@@ -634,13 +616,6 @@ public class VarDeclaration extends Declaration {
 	
 	@Override
 	public void semantic2(Scope sc, SemanticContext context) {
-		if (rest != null && !rest.isConsumed()) {
-			if (rest.getScope() == null) {
-				rest.setSemanticContext(sc, context);
-			}
-			return;
-		}
-		
 		semantic20(sc, context);
 		
 		// Descent: for code evaluate
@@ -660,8 +635,6 @@ public class VarDeclaration extends Declaration {
 
 	@Override
 	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
-		consumeRestStructure();
-		
 		VarDeclaration sv;
 		if (s != null) {
 			sv = (VarDeclaration) s;
@@ -803,20 +776,6 @@ public class VarDeclaration extends Declaration {
 	@Override
 	public IField getJavaElement() {
 		return javaElement;
-	}
-	
-	@Override
-	public void consumeRestStructure() {
-		if (rest != null && !rest.isStructureKnown()) {
-			rest.buildStructure();
-		}
-	}
-	
-	@Override
-	public void consumeRest() {
-		if (rest != null && !rest.isConsumed()) {
-			rest.consume(this);
-		}
 	}
 
     // PERHAPS Symbol *toSymbol();

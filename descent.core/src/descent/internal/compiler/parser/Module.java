@@ -1,25 +1,14 @@
 package descent.internal.compiler.parser;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.ICompilationUnit;
-import descent.core.IConditional;
-import descent.core.IImportDeclaration;
-import descent.core.IInitializer;
-import descent.core.IJavaElement;
-import descent.core.IParent;
-import descent.core.IType;
-import descent.core.JavaModelException;
 import descent.core.Signature;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
-import descent.internal.compiler.lookup.ModuleBuilder;
-import descent.internal.compiler.lookup.SemanticRest;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import descent.internal.core.util.Util;
 
 
 public class Module extends Package {
@@ -44,12 +33,12 @@ public class Module extends Package {
 	public Dsymbol searchCacheSymbol;
 
 	public long debuglevel; // debug level
-	public List<char[]> debugids; // debug identifiers
-	public List<char[]> debugidsNot; // forward referenced debug identifiers
+	public HashtableOfCharArrayAndObject debugids; // debug identifiers
+	public HashtableOfCharArrayAndObject debugidsNot; // forward referenced debug identifiers
 
 	public long versionlevel;
-	public List<char[]> versionids; // version identifiers
-	public List<char[]> versionidsNot; // forward referenced version identifiers
+	public HashtableOfCharArrayAndObject versionids; // version identifiers
+	public HashtableOfCharArrayAndObject versionidsNot; // forward referenced version identifiers
 
 	public Array aimports; // all imported modules
 
@@ -60,17 +49,7 @@ public class Module extends Package {
 	// if signatures are to be requested
 	public String moduleName; // foo.bar 
 	private String signature; // Descent signature
-	private ICompilationUnit javaElement;
-	
-	public SemanticRest rest;
-	
-	public ModuleBuilder builder;
-	public HashtableOfCharArrayAndObject javaElementMembersCache;
-	public List<Dsymbol> pendingImports;
-	
-	private Scope semanticScope;
-	private Scope semantic2Scope;
-	private Scope semantic3Scope;
+	protected ICompilationUnit javaElement;
 
 	public Module(String filename, IdentifierExp ident) {
 		super(ident);
@@ -130,30 +109,17 @@ public class Module extends Package {
 
 	@Override
 	public void semantic(Scope scope, SemanticContext context) {
-		long time = System.currentTimeMillis();
-		
-		if (rest != null && !rest.isConsumed()) {
-			rest.setSemanticContext(null, context);
-			return;
-		}
-		
 		if (semanticstarted != 0) {
 			return;
 		}
 		
-//		for (int i = 0; i < nest; i++) {
-//			System.out.print("  ");
-//		}
-//		System.out.println(this.moduleName);
-//		nest++;
-
 		semanticstarted = 1;
 
 		// Note that modules get their own scope, from scratch.
 		// This is so regardless of where in the syntax a module
 		// gets imported, it is unaffected by context.
 		Scope sc = Scope.createGlobal(this, context);
-		semanticScope = sc;
+		semanticScope(sc);
 
 		if (ident == null || ident.ident != Id.object) {
 			Import im = new Import(Loc.ZERO, null,
@@ -189,7 +155,9 @@ public class Module extends Package {
 		// Pass 1 semantic routines: do public side of the definition
 		for (int i = 0; i < size(members); i++) {
 			Dsymbol s = members.get(i);
+			
 			s.semantic(sc, context);
+			
 			runDeferredSemantic(context);
 		}
 
@@ -198,24 +166,11 @@ public class Module extends Package {
 
 		semanticdone = semanticstarted;
 		
-		time = System.currentTimeMillis() - time;
-//		if (time > 10) {
-//			System.out.println("Module#semantic(" + moduleName + ") = " + time);
-//		}
-		
-//		nest--;
 	}
 
 	@Override
 	public void semantic2(Scope scope, SemanticContext context) {
 		if (javaElement != null && FAST_SEARCH) {
-			return;
-		}
-		
-		long time = System.currentTimeMillis();
-		
-		if (rest != null && !rest.isConsumed()) {
-			rest.setSemanticContext(null, context);
 			return;
 		}
 		
@@ -242,7 +197,7 @@ public class Module extends Package {
 		// This is so regardless of where in the syntax a module
 		// gets imported, it is unaffected by context.
 		Scope sc = Scope.createGlobal(this, context); // create root scope
-		semantic2Scope = sc;
+		semantic2Scope(sc);
 
 		// Pass 2 semantic routines: do initializers and function bodies
 		if (members != null) {
@@ -256,23 +211,11 @@ public class Module extends Package {
 		sc = sc.pop();
 		sc.pop();
 		semanticdone = semanticstarted;
-		
-		time = System.currentTimeMillis() - time;
-//		if (time > 10) {
-//			System.out.println("Module#semantic2(" + moduleName + ") = " + time);
-//		}
 	}
 
 	@Override
 	public void semantic3(Scope scope, SemanticContext context) {
 		if (javaElement != null && FAST_SEARCH) {
-			return;
-		}
-		
-		long time = System.currentTimeMillis();
-		
-		if (rest != null && !rest.isConsumed()) {
-			rest.setSemanticContext(null, context);
 			return;
 		}
 		
@@ -291,7 +234,7 @@ public class Module extends Package {
 		// This is so regardless of where in the syntax a module
 		// gets imported, it is unaffected by context.
 		Scope sc = Scope.createGlobal(this, context); // create root scope
-		semantic3Scope = sc;
+		semantic3Scope(sc);
 
 		// Pass 3 semantic routines: do initializers and function bodies
 		if (members != null) {
@@ -305,11 +248,18 @@ public class Module extends Package {
 		sc = sc.pop();
 		sc.pop();
 		semanticdone = semanticstarted;
+	}
+	
+	protected void semanticScope(Scope sc) {
 		
-		time = System.currentTimeMillis() - time;
-		if (time > 10) {
-			System.out.println("Module#semantic3(" + moduleName + ") = " + time);
-		}
+	}
+	
+	protected void semantic2Scope(Scope sc) {
+		
+	}
+	
+	protected void semantic3Scope(Scope sc) {
+		
 	}
 
 	public void addDeferredSemantic(Dsymbol s, SemanticContext context) {
@@ -396,105 +346,11 @@ public class Module extends Package {
 				&& this.searchCacheFlags == flags) {
 			s = this.searchCacheSymbol;
 		} else {
-			s = symtab != null ? symtab.lookup(ident) : null;
+			this.insearch = true;
 			
-			if (s == null && builder != null) {
-				if (javaElementMembersCache == null) {
-					javaElementMembersCache = new HashtableOfCharArrayAndObject();
-					List<Dsymbol> imports = new ArrayList<Dsymbol>();
-					boolean anon = false;
-					try {						
-						anon = fillJavaElementMembersCache(this.javaElement.getChildren(), members, imports, context);
-					} catch (JavaModelException e) {
-						Util.log(e);
-					}
-					
-					// First process imports, because the other symbols may need
-					// them for their semantic analysis
-					if (!imports.isEmpty()) {
-						pendingImports = imports;	
-					}
-					
-					if (anon) {
-						return search(loc, ident, flags, context);
-					}
-				}
-				
-				Object target = javaElementMembersCache.get(ident);
-				if (target != null) {
-					if (this.symtab == null) {
-						this.symtab = new DsymbolTable();
-					}
-					
-					if (target instanceof IJavaElement) {
-						try {
-							builder.fill(this, members, new ModuleBuilder.State(), (IJavaElement) target);
-						} catch (JavaModelException e) {
-							Util.log(e);
-						}
-						
-						s = members.get(members.size() - 1);
-						s.addMember(this.semanticScope, this, 0, context);
-						runMissingSemantic(s, context);
-					} else {
-						Dsymbols symbols = new Dsymbols();
-						
-						List<IJavaElement> elemsList = (List<IJavaElement>) target;
-						for(IJavaElement elem : elemsList) {
-							try {
-								builder.fill(this, members, new ModuleBuilder.State(), (IJavaElement) elem);
-							} catch (JavaModelException e) {
-								Util.log(e);
-							}
-							
-							s = members.get(members.size() - 1);
-							if (semanticScope != null) {
-								s.addMember(semanticScope, this, 0, context);
-							}
-							
-							symbols.add(s);
-						}
-						
-						for(Dsymbol sym : symbols) {
-							if (semanticScope != null) {
-								sym.semantic(semanticScope, context);
-							}
-							if (semantic2Scope != null) {
-								sym.semantic2(semantic2Scope, context);
-							}
-							if (semantic3Scope != null) {
-								sym.semantic3(semantic3Scope, context);
-							}
-						}
-						
-						s = symbols.get(0);
-					}
-					
-					while(s.isAttribDeclaration() != null) {
-						if (s instanceof ProtDeclaration) {
-							s = ((ProtDeclaration) s).decl.get(0);
-						} else if (s instanceof StorageClassDeclaration){
-							s = ((StorageClassDeclaration) s).decl.get(0);
-						}
-					}
-				}
-			}
+			s = super.search(loc, ident, flags, context);
 			
-			if (s == null) {
-				if (pendingImports != null) {
-					for(Dsymbol imp : pendingImports) {
-						imp.addMember(semanticScope, this, 0, context);
-						runMissingSemantic(imp, context);
-					}
-					pendingImports = null;
-				}
-			}
-			
-			if (s == null) {
-				this.insearch = true;
-				s = super.search(loc, ident, flags, context);
-				this.insearch = false;
-			}
+			this.insearch = false;
 
 			this.searchCacheIdent = ident;			
 			this.searchCacheSymbol = s;
@@ -502,145 +358,6 @@ public class Module extends Package {
 		}
 		
 		return s;
-	}
-
-	private void runMissingSemantic(Dsymbol sym, SemanticContext context) {
-		if (semanticScope != null) {
-//			sym.addMember(semanticScope, this, 0, context);
-			sym.semantic(semanticScope, context);
-		}
-		if (semantic2Scope != null) {
-			sym.semantic2(semantic2Scope, context);
-		}
-		if (semantic3Scope != null) {
-			sym.semantic3(semantic3Scope, context);
-		}
-	}
-
-	// true if we encountered an anonymous enum
-	private boolean fillJavaElementMembersCache(IJavaElement[] elements, Dsymbols symbols, List<Dsymbol> imports, SemanticContext context) {
-		boolean anon = false;
-		
-		try {
-			for(IJavaElement child : elements) {
-				switch(child.getElementType()) {
-				case IJavaElement.IMPORT_CONTAINER:
-					anon |= fillJavaElementMembersCache(((IParent) child).getChildren(), symbols, imports, context);
-					break;
-				case IJavaElement.IMPORT_DECLARATION:
-					Dsymbol s = builder.fillImportDeclaration(this, symbols, (IImportDeclaration) child);
-					imports.add(s);
-					break;
-				case IJavaElement.CONDITIONAL:
-					IConditional cond = (IConditional) child;
-					if (cond.isStaticIfDeclaration()) {
-						throw new IllegalStateException("Shouldn't reach this point");
-					} else if (cond.isVersionDeclaration()) {
-						String name = cond.getElementName();
-						char[] nameC = name.toCharArray();
-						try {
-							long value = Long.parseLong(name);
-							if (builder.config.isVersionEnabled(value)) {
-								anon |= fillJavaElementMembersCache(cond.getThenChildren(), symbols, imports, context);
-							} else {
-								anon |= fillJavaElementMembersCache(cond.getElseChildren(), symbols, imports, context);
-							}
-						} catch(NumberFormatException e) {
-							if (builder.config.isVersionEnabled(nameC)) {
-								anon |= fillJavaElementMembersCache(cond.getThenChildren(), symbols, imports, context);
-							} else {
-								anon |= fillJavaElementMembersCache(cond.getElseChildren(), symbols, imports, context);
-							}
-						}
-					} else if (cond.isDebugDeclaration()) {
-						String name = cond.getElementName();
-						char[] nameC = name.toCharArray();
-						try {
-							long value = Long.parseLong(name);
-							if (builder.config.isDebugEnabled(value)) {
-								anon |= fillJavaElementMembersCache(cond.getThenChildren(), symbols, imports, context);
-							} else {
-								anon |= fillJavaElementMembersCache(cond.getElseChildren(), symbols, imports, context);
-							}
-						} catch(NumberFormatException e) {
-							if (builder.config.isDebugEnabled(nameC)) {
-								anon |= fillJavaElementMembersCache(cond.getThenChildren(), symbols, imports, context);
-							} else {
-								anon |= fillJavaElementMembersCache(cond.getElseChildren(), symbols, imports, context);
-							}
-						}
-					}
-					break;
-				case IJavaElement.INITIALIZER:
-					IInitializer init = (IInitializer) child;
-					if (init.isAlign()) {
-						Dsymbols sub = new Dsymbols();
-						anon |= fillJavaElementMembersCache(init.getChildren(), sub, imports, context);
-						
-						AlignDeclaration member = new AlignDeclaration(Integer.parseInt(init.getElementName()), sub);
-						symbols.add(member);
-					} else if (init.isDebugAssignment()) {
-						throw new IllegalStateException("Shouldn't reach this point");
-					} else if (init.isVersionAssignment()) {
-						throw new IllegalStateException("Shouldn't reach this point");
-					} else if (init.isMixin()) {
-						throw new IllegalStateException("Shouldn't reach this point");
-					} else if (init.isExtern()) {
-						// Also try to lazily initialize things inside:
-						// extern(C) {
-						//   // ...
-						// }
-						
-						Dsymbols sub = new Dsymbols();
-						anon |= fillJavaElementMembersCache(init.getChildren(), sub, imports, context);
-						
-						LinkDeclaration member = new LinkDeclaration(ModuleBuilder.getLink(init), sub);
-						members.add(builder.wrap(member, init));
-					}
-					break;
-				case IJavaElement.FIELD:
-				case IJavaElement.METHOD:
-				case IJavaElement.TYPE:
-					char[] ident = child.getElementName().toCharArray();
-					if (ident == null || ident.length == 0) {
-						// Anonymous: it must be an enum, at the top level there
-						// isn't a use for an annonymous class, template, etc.
-						IType type = (IType) child;
-						if (type.isEnum()) {
-							Dsymbol sym = builder.fillEnum(this, members, type, true /* surface */);
-							sym.addMember(this.semanticScope, this, 0, context);
-							runMissingSemantic(sym, context);
-							anon = true;
-						}
-					} else {
-						if (javaElementMembersCache.containsKey(ident)) {
-							Object object = javaElementMembersCache.get(ident);
-							
-							if (object instanceof IJavaElement) {
-								List<IJavaElement> elemsList = new ArrayList<IJavaElement>();
-								elemsList.add((IJavaElement) object);
-								elemsList.add(child);
-								javaElementMembersCache.put(ident, elemsList);
-							} else {
-								List<IJavaElement> elemsList = (List<IJavaElement>) object;
-								elemsList.add(child);
-							}
-						} else {
-							javaElementMembersCache.put(ident, child);
-						}
-					}
-					break;
-				case IJavaElement.PACKAGE_DECLARATION:
-					break;
-				default:
-					throw new IllegalStateException("Unknown type: " + child.getElementType());
-				}
-			}
-		} catch (JavaModelException e) {
-			Util.log(e);
-		}
-		
-		return anon;
 	}
 
 	public static Module load(Loc loc, Identifiers packages,
@@ -682,16 +399,8 @@ public class Module extends Package {
 		return javaElement;
 	}
 	
-	public void consumeRestStructure() {
-		if (rest != null && !rest.isStructureKnown()) {
-			rest.buildStructure();
-		}
-	}
-	
-	public void consumeRest() {
-		if (rest != null && !rest.isConsumed()) {
-			rest.consume(this);
-		}
+	public Module unlazy(SemanticContext context) {
+		return this;
 	}
 
 }
