@@ -41,10 +41,8 @@ public interface Symbols {
 	int TokenCATCH= 1016;
 	int TokenWHILE= 1017;
 	int TokenRETURN= 1018;
-	int TokenSTATIC= 1019;
 	int TokenSWITCH= 1020;
 	int TokenFINALLY= 1021;
-	int TokenSYNCHRONIZED= 1022;
 	int TokenGOTO= 1023;
 	int TokenDEFAULT= 1024;
 	int TokenNEW= 1025;
@@ -52,4 +50,20 @@ public interface Symbols {
 	int TokenINTERFACE= 1027;
 	int TokenENUM= 1028;
 	int TokenIDENT= 2000;
+	int TokenPRIVATE = 3001; 
+	int TokenPACKAGE = 3002;
+	int TokenPROTECTED = 3003;
+	int TokenPUBLIC = 3004;
+	int TokenEXPORT = 3005;
+	int TokenSTATIC= 1019;
+	int TokenFINAL = 3006;
+	int TokenABSTRACT = 3007;
+	int TokenOVERRIDE = 3008;
+	int TokenAUTO = 3009;
+	int TokenSYNCHRONIZED= 1022;
+	int TokenDEPRECATED = 3011;
+	int TokenEXTERN = 3012;
+	int TokenCONST = 3013;
+	int TokenSCOPE = 3014;
+	int TokenINVARIANT = 3015;
 }

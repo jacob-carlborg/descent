@@ -950,7 +950,7 @@ CyclicConstructorCall
 	formatString=Cyclic constructor call
 	numArgs=0
 MissingOrCurruptObjectDotD
-	formatString=Missing or corrupt object.d
+	formatString=Missing or corrupt object.d. Make sure you have an "object.d" or "object.di" module in your include path. The easiest way to solve this is to add "Phobos" or "Tango" to the include path.
 	numArgs=0
 CannotContinueOutOfFinallyBlock
 	formatString=Cannot continue out of finally block

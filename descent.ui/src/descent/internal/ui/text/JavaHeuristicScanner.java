@@ -464,6 +464,8 @@ public final class JavaHeuristicScanner implements Symbols {
 					return TokenENUM;
 				if ("goto".equals(s)) //$NON-NLS-1$
 					return TokenGOTO;
+				if ("auto".equals(s)) //$NON-NLS-1$
+					return TokenAUTO;
 				break;
 			case 5:
 				if ("break".equals(s)) //$NON-NLS-1$
@@ -474,6 +476,12 @@ public final class JavaHeuristicScanner implements Symbols {
 					return TokenCLASS;
 				if ("while".equals(s)) //$NON-NLS-1$
 					return TokenWHILE;
+				if ("final".equals(s)) //$NON-NLS-1$
+					return TokenFINAL;
+				if ("const".equals(s)) //$NON-NLS-1$
+					return TokenCONST;
+				if ("scope".equals(s)) //$NON-NLS-1$
+					return TokenSCOPE;
 				break;
 			case 6:
 				if ("return".equals(s)) //$NON-NLS-1$
@@ -482,16 +490,40 @@ public final class JavaHeuristicScanner implements Symbols {
 					return TokenSTATIC;
 				if ("switch".equals(s)) //$NON-NLS-1$
 					return TokenSWITCH;
+				if ("public".equals(s)) //$NON-NLS-1$
+					return TokenPUBLIC;
+				if ("export".equals(s)) //$NON-NLS-1$
+					return TokenEXPORT;
+				if ("extern".equals(s)) //$NON-NLS-1$
+					return TokenEXTERN;
 				break;
 			case 7:
 				if ("default".equals(s)) //$NON-NLS-1$
 					return TokenDEFAULT;
 				if ("finally".equals(s)) //$NON-NLS-1$
 					return TokenFINALLY;
+				if ("private".equals(s)) //$NON-NLS-1$
+					return TokenPRIVATE;
+				if ("package".equals(s)) //$NON-NLS-1$
+					return TokenPACKAGE;
+				break;
+			case 8:
+				if ("abstract".equals(s)) //$NON-NLS-1$
+					return TokenABSTRACT;
+				if ("override".equals(s)) //$NON-NLS-1$
+					return TokenOVERRIDE;
 				break;
 			case 9:
 				if ("interface".equals(s)) //$NON-NLS-1$
 					return TokenINTERFACE;
+				if ("protected".equals(s)) //$NON-NLS-1$
+					return TokenPROTECTED;
+				if ("invariant".equals(s)) //$NON-NLS-1$
+					return TokenINVARIANT;
+				break;
+			case 10:
+				if ("deprecated".equals(s)) //$NON-NLS-1$
+					return TokenDEPRECATED;
 				break;
 			case 12:
 				if ("synchronized".equals(s)) //$NON-NLS-1$

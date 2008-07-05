@@ -1154,6 +1154,23 @@ public final class JavaIndenter {
 					continue;
 				case Symbols.TokenCASE:
 					return false;
+				case Symbols.TokenPRIVATE: 
+				case Symbols.TokenPACKAGE:
+				case Symbols.TokenPROTECTED:
+				case Symbols.TokenPUBLIC:
+				case Symbols.TokenEXPORT:
+				case Symbols.TokenSTATIC:
+				case Symbols.TokenFINAL:
+				case Symbols.TokenABSTRACT:
+				case Symbols.TokenOVERRIDE:
+				case Symbols.TokenAUTO:
+				case Symbols.TokenSYNCHRONIZED:
+				case Symbols.TokenDEPRECATED:
+				case Symbols.TokenEXTERN:
+				case Symbols.TokenCONST:
+				case Symbols.TokenSCOPE:
+				case Symbols.TokenINVARIANT:
+					return false;
 
 				default:
 					return true;
