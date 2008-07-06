@@ -188,6 +188,18 @@ public class AssignExp extends BinExp {
 
 			e = new CallExp(loc, e1, e2);
 			e = e.semantic(sc, context);
+			
+			if (e instanceof CallExp) {
+				CallExp callExp = (CallExp) e;
+				if (callExp.e1 instanceof DotVarExp) {
+					DotVarExp dve = (DotVarExp) callExp.e1;
+					sourceE1.setResolvedSymbol(dve.var);
+				} else if (callExp.e1 instanceof VarExp) {
+					VarExp dve = (VarExp) callExp.e1;
+					sourceE1.setResolvedSymbol(dve.var);
+				}
+			}
+			
 			return e;
 		}
 

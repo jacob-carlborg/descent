@@ -2972,8 +2972,10 @@ public class CodeFormatterVisitor extends ASTVisitor
 			boolean insertNewLineAfterLastStatement, boolean unIndentAtBreak)
 	{
 		int statementsLength = statements.size();
-		if (statementsLength == 0)
+		if (statementsLength == 0) {
+			scribe.printComment();
 			return;
+		}
 		else if (statementsLength == 1) {
 			if (statements.get(0) instanceof BreakStatement && unIndentAtBreak)
 				scribe.unIndent();

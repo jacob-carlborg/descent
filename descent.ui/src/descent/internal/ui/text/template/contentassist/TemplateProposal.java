@@ -248,7 +248,7 @@ public class TemplateProposal implements IJavaCompletionProposal, ICompletionPro
 			openErrorDialog(viewer.getTextWidget().getShell(), e);
 			fSelectedRegion= fRegion;
 		}
-
+		
 	}
 
 	/**

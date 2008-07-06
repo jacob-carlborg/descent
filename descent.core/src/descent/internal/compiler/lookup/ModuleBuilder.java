@@ -805,6 +805,7 @@ public class ModuleBuilder {
 		public boolean hasAnonEnum;
 		public boolean hasStaticIf;
 		public boolean hasMixinDeclaration;
+		public boolean hasAnon;
 	}
 	
 	public FillResult fillJavaElementMembersCache(ILazy lazy, IJavaElement[] elements, HashtableOfCharArrayAndObject javaElementMembersCache, Dsymbols symbols, List<Dsymbol> privateImports, List<Dsymbol> publicImports, SemanticContext context) {
@@ -904,12 +905,18 @@ public class ModuleBuilder {
 					if (ident == null || ident.length == 0) {
 						// Anonymous: it must be an enum, at the top level there
 						// isn't a use for an annonymous class, template, etc.
-						IType type = (IType) child;
-						if (type.isEnum()) {
-							Dsymbol sym = fillEnum(lazy.getModule(), symbols, type);
-							sym.addMember(lazy.getSemanticScope(), lazy.asScopeDsymbol(), 0, context);
-							lazy.runMissingSemantic(sym, context);
-							result.hasAnonEnum = true;
+						if (child instanceof IType) {
+							IType type = (IType) child;
+							if (type.isEnum()) {
+								Dsymbol sym = fillEnum(lazy.getModule(), symbols, type);
+								sym.addMember(lazy.getSemanticScope(), lazy.asScopeDsymbol(), 0, context);
+								lazy.runMissingSemantic(sym, context);
+								result.hasAnonEnum = true;
+							} else {
+								result.hasAnon = true;
+							}
+						} else {
+							result.hasAnon = true;
 						}
 					} else {
 						if (javaElementMembersCache.containsKey(ident)) {

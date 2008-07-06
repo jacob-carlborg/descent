@@ -30,6 +30,9 @@ public class EvaluationResult implements IEvaluationResult {
 			for (int i = 0; i < results.length; i++) {
 				if (i != 0) {
 					sb.append(", ");
+					if (results[i].getKind() == IEvaluationResult.ARRAY) {
+						sb.append("\n  ");
+					}
 				}
 				sb.append(results[i]);
 			}

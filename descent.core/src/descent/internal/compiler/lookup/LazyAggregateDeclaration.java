@@ -47,7 +47,7 @@ public class LazyAggregateDeclaration {
 					Util.log(e);
 				}
 				
-				if (result.hasMixinDeclaration || result.hasStaticIf) {
+				if (result.hasMixinDeclaration || result.hasStaticIf || result.hasAnon) {
 					cancelLazyness = true;
 					lazy.members(new Dsymbols());
 					try {

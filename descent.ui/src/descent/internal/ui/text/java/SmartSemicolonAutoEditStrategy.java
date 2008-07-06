@@ -279,8 +279,8 @@ public class SmartSemicolonAutoEditStrategy implements IAutoEditStrategy {
 
 		} else if (character == SEMICHAR) {
 
-			if (isForStatement(text, offset)) {
-				insertPos= -1; // don't do anything in for statements, as semis are vital part of these
+			if (isForStatement(text, offset) || isForeachStatement(text, offset)) {
+				insertPos= -1; // don't do anything in for or foreach statements, as semis are vital part of these
 			} else {
 				int nextPartitionPos= nextPartitionOrLineEnd(document, line, offset, partitioning);
 				insertPos= startOfWhitespaceBeforeOffset(text, nextPartitionPos);
@@ -999,6 +999,25 @@ public class SmartSemicolonAutoEditStrategy implements IAutoEditStrategy {
 		int forPos= line.indexOf("for"); //$NON-NLS-1$
 		if (forPos != -1) {
 			if ((forPos == 0 || !Character.isJavaIdentifierPart(line.charAt(forPos - 1))) && (line.length() == forPos + 3 || !Character.isJavaIdentifierPart(line.charAt(forPos + 3))))
+				return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Determines whether the current line contains a for statement.
+	 * Algorithm: any "for" word in the line is a positive, "for" contained in a string literal will
+	 * produce a false positive.
+	 *
+	 * @param line the line where the change is being made
+	 * @param offset the position of the caret
+	 * @return <code>true</code> if <code>line</code> contains <code>for</code>, <code>false</code> otherwise
+	 */
+	private static boolean isForeachStatement(String line, int offset) {
+		/* searching for (^|\s)foreach(\s|$) */
+		int forPos= line.indexOf("foreach"); //$NON-NLS-1$
+		if (forPos != -1) {
+			if ((forPos == 0 || !Character.isJavaIdentifierPart(line.charAt(forPos - 1))) && (line.length() == forPos + 7 || !Character.isJavaIdentifierPart(line.charAt(forPos + 7))))
 				return true;
 		}
 		return false;
