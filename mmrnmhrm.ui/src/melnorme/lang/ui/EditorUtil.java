@@ -2,9 +2,7 @@ package melnorme.lang.ui;
 
 
 
-import static melnorme.miscutil.Assert.assertNotNull;
-import mmrnmhrm.core.dltk.DeeModuleDeclaration;
-import mmrnmhrm.core.dltk.ParsingUtil;
+import mmrnmhrm.core.dltk.DeeParserUtil;
 import mmrnmhrm.ui.ActualPlugin;
 
 import org.eclipse.core.resources.IProject;
@@ -102,9 +100,8 @@ public class EditorUtil {
 		if(!(element instanceof ISourceModule))
 			return null;
 		ISourceModule modUnit = (ISourceModule) element;
-		DeeModuleDeclaration modDec = ParsingUtil.parseModule(modUnit);
-		Module neoModule = ParsingUtil.getNeoASTModule(modDec);
-		assertNotNull(neoModule.getModuleUnit());
+		Module neoModule = DeeParserUtil.getNeoASTModule(modUnit);
+		//assertNotNull(neoModule.getModuleUnit());
 		return neoModule;
 	}
 

@@ -7,7 +7,7 @@
        point="org.eclipse.dltk.ui.language">
     <language
           class="mmrnmhrm.ui.DeeUILanguageToolkit"
-          nature="mmrnmhrm.core.deenature"
+          nature="mmrnmhrm.core.nature"
           priority="0"/>
  </extension>
    <extension
@@ -37,7 +37,7 @@
       <image
             icon="icons/ovr16/d-dark_ovr.gif"
             id="mmrnmhrm.ui.deeProjectNatureImage"
-            natureId="mmrnmhrm.core.deenature"/>
+            natureId="mmrnmhrm.core.nature"/>
    </extension>
    <extension
          point="org.eclipse.ui.newWizards">
@@ -90,19 +90,19 @@
 	    <page
 	          category="mmrnmhrm.ui.preferences.Editor"
 	          class="mmrnmhrm.ui.preferences.pages.DeeSourceColoringPreferencePage"
-	          id="mmrnmhrm.ui.preferences.Editor"
+	          id="mmrnmhrm.ui.preferences.editor.SourceColoring"
 	          name="%LangEditorSyntaxColoringPreferencePage.name"/>
      	<page
               category="mmrnmhrm.ui.preferences.Editor"
               class="mmrnmhrm.ui.preferences.pages.DeeTemplatePreferencePage"
-              id="mmrnmhrm.ui.preferences.Editor"
+              id="mmrnmhrm.ui.preferences.editor.CodeTemplates"
               name="%LangCodeTemplatesPreferencePage.name">      
             
       </page>
       <page
             category="mmrnmhrm.ui.preferences.DeeRootPreferencePage"
             class="mmrnmhrm.ui.preferences.pages.DeeCompilersPreferencePage"
-            id="mmrnmhrm.ui.preferences.editor.SourceColoring"
+            id="mmrnmhrm.ui.preferences.DeeCompilers"
             name="%LangCompilersPreferencePage.name">
       </page>
    </extension>
@@ -185,6 +185,10 @@
           id="DeeUniversalTemplateContextType"
           name="%LangTemplateContext.name">
     </contextType>
+    <include
+          file="default-templates.xml"
+          translations="default-templates.properties">
+    </include>
     <!--<include
           file="templates/templates.xml"
           translations="templates/templates.properties">
@@ -569,7 +573,7 @@
             class="mmrnmhrm.ui.wizards.DeeCompilerContainerWizardPage"
             id="mmrnmrhm.core.launching.INTERPRETER_CONTAINER"
             name="D System Libraries"
-            nature="mmrnmhrm.core.deenature">
+            nature="mmrnmhrm.core.nature">
       </buildpathContainerPath>
    </extension>
    <extension
@@ -604,7 +608,7 @@
                 <count value="1"/>
                 <iterate>
                   <!--
-                  <test args="mmrnmhrm.core.deenature"
+                  <test args="mmrnmhrm.core.nature"
                     property="org.eclipse.dltk.launching.hasProjectNature">
                   </test>
                   -->
@@ -614,7 +618,7 @@
                     </adapt>
                     <adapt type="org.eclipse.core.resources.IProject">
                       <test property="org.eclipse.core.resources.projectNature"
-                        value="mmrnmhrm.core.deenature"/>
+                        value="mmrnmhrm.core.nature"/>
                     </adapt>
                	  </or>
                 </iterate>
@@ -728,10 +732,18 @@
 	<extension point="org.eclipse.dltk.debug.scriptDebugModel">
       <debugModel
             debugModelId="descent.debug.core.model"
-            natureId="mmrnmhrm.core.deenature"
+            natureId="mmrnmhrm.core.nature"
             typeFactory="mmrnmhrm.ui.launch.RubyTypeFactory">
       </debugModel>
 	</extension>
+ <extension
+       point="org.eclipse.dltk.ui.scriptDocumentationProviders">
+    <provider
+          class="mmrnmhrm.ui.editor.doc.DeeDocumentationProvider"
+          id="mmrnmhrm.ui.DeeDocumentationProvider"
+          nature="mmrnmhrm.core.nature">
+    </provider>
+ </extension>
    
 
 </plugin>

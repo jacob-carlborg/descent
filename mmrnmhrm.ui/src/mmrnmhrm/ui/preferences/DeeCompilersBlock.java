@@ -11,9 +11,8 @@ public class DeeCompilersBlock extends InterpretersBlock {
 
 	@Override
 	protected AddScriptInterpreterDialog createInterpreterDialog(IInterpreterInstall standin) {
-		DialogAddDeeCompiler dialog = new DialogAddDeeCompiler(this, 
-				getShell(), ScriptRuntime.getInterpreterInstallTypes(getCurrentNature()), 
-				standin);
+		DialogAddDeeCompiler dialog = new DialogAddDeeCompiler(this, getShell(), ScriptRuntime
+				.getInterpreterInstallTypes(getCurrentNature()), standin);
 		return dialog;
 	}
 
@@ -21,5 +20,6 @@ public class DeeCompilersBlock extends InterpretersBlock {
 	protected String getCurrentNature() {
 		return DeeNature.NATURE_ID;
 	}
+	
 }
  

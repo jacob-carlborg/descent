@@ -57,8 +57,7 @@ public class DeeEditor extends DeeBaseEditor {
 	}
 	
 	@Override
-	protected void connectPartitioningToElement(IEditorInput input,
-			IDocument document) {
+	protected void connectPartitioningToElement(IEditorInput input, IDocument document) {
 		if (document instanceof IDocumentExtension3) {
 			IDocumentExtension3 extension = (IDocumentExtension3) document;
 			if (extension.getDocumentPartitioner(DeePartitions.DEE_PARTITIONING) == null) {

@@ -22,7 +22,7 @@ public class DeeHyperlinkDetector extends AbstractHyperlinkDetector {
 	public IHyperlink[] detectHyperlinks(ITextViewer textViewer,
 			IRegion region, boolean canShowMultipleHyperlinks) {
 		ITextEditor textEditor= (ITextEditor)getAdapter(ITextEditor.class);
-		if (region == null || canShowMultipleHyperlinks || !(textEditor instanceof DeeEditor))
+		if (region == null || !(textEditor instanceof DeeEditor))
 			return null;
 		
 		ASTNeoNode module = EditorUtil.getNeoModuleFromEditor(textEditor);

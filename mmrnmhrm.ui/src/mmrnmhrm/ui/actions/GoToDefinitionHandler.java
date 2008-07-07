@@ -44,7 +44,7 @@ public class GoToDefinitionHandler extends AbstractHandler  {
 	public static final String COMMAND_ID = DeePlugin.PLUGIN_ID+".commands.openDefinition";
 	private static final String GO_TO_DEFINITION_OPNAME = "Go to Definition";
 
-	@Override
+	//@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		
 		IEditorPart editor = HandlerUtil.getActiveEditorChecked(event);

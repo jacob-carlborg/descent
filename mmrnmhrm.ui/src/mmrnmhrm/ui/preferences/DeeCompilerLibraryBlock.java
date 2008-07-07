@@ -23,18 +23,18 @@ import org.eclipse.jface.viewers.IBaseLabelProvider;
  */
 public class DeeCompilerLibraryBlock extends AbstractInterpreterLibraryBlock {
 
-	/**
-	 * the prefix for dialog setting pertaining to this block
-	 */
+	/** the prefix for dialog setting pertaining to this block */
 	protected static final String DIALOG_SETTINGS_PREFIX = "DeeCompilerLibraryBlock"; //$NON-NLS-1$
 
 	public DeeCompilerLibraryBlock(AddScriptInterpreterDialog dialog) {
 	    super(dialog);
 	}
+	
 	@Override
 	protected IBaseLabelProvider getLabelProvider() {
 		return new LibraryLabelProvider();
 	}
+	
 	@Override
 	protected IDialogSettings getDialogSettions() {
 		return DeePlugin.getDefault().getDialogSettings();

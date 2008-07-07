@@ -1,9 +1,6 @@
 package mmrnmhrm.ui.wizards;
 
 
-import mmrnmhrm.org.eclipse.dltk.ui.wizards.ProjectWizardFirstPage_;
-import mmrnmhrm.org.eclipse.dltk.ui.wizards.ProjectWizardSecondPage_;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -11,12 +8,15 @@ import org.eclipse.dltk.core.DLTKCore;
 import org.eclipse.dltk.core.IModelElement;
 import org.eclipse.dltk.ui.DLTKUIPlugin;
 import org.eclipse.dltk.ui.wizards.NewElementWizard;
+import org.eclipse.dltk.ui.wizards.ProjectWizardFirstPage;
+import org.eclipse.dltk.ui.wizards.ProjectWizardSecondPage;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 
+// TODO: DTLK: use GenericDLTKProjectWizard?
 public class DeeNewProjectCreationWizard extends NewElementWizard {
 
-	protected ProjectWizardFirstPage_ fFirstPage;
-    protected ProjectWizardSecondPage_ fSecondPage;
+	protected ProjectWizardFirstPage fFirstPage;
+    protected ProjectWizardSecondPage fSecondPage;
     protected DeeProjectWizardPage3 fThirdPage;
     
 	private IConfigurationElement fConfigElement;

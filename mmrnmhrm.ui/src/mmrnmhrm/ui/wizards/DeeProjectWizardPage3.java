@@ -3,25 +3,24 @@
  */
 package mmrnmhrm.ui.wizards;
 
+import static melnorme.miscutil.Assert.assertFail;
 import mmrnmhrm.core.model.DeeProjectOptions;
-import mmrnmhrm.org.eclipse.dltk.ui.wizards.ProjectWizardSecondPage_;
 import mmrnmhrm.ui.preferences.DeeProjectOptionsBlock;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.dltk.core.DLTKCore;
+import org.eclipse.dltk.ui.wizards.ProjectWizardSecondPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.widgets.Composite;
-
-import static melnorme.miscutil.Assert.assertFail;
 
 public class DeeProjectWizardPage3 extends WizardPage {
 
 	private static final String PAGE_NAME = "DeeProjectWizardPage3";
-	protected ProjectWizardSecondPage_ fSecondPage;
+	protected ProjectWizardSecondPage fSecondPage;
 	protected DeeProjectOptionsBlock fProjCfg;
 
-	public DeeProjectWizardPage3(ProjectWizardSecondPage_ secondPage) {
+	public DeeProjectWizardPage3(ProjectWizardSecondPage secondPage) {
 		super(PAGE_NAME);
 		setPageComplete(false);
 		setTitle("Setup");

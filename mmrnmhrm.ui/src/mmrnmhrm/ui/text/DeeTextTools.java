@@ -27,11 +27,10 @@ public class DeeTextTools extends ScriptTextTools {
 	
 	@Override
 	public ScriptSourceViewerConfiguration createSourceViewerConfiguraton(
-			IPreferenceStore preferenceStore, ITextEditor editor,
-			String partitioning) {
+			IPreferenceStore preferenceStore, ITextEditor editor, String partitioning) {
 		Assert.isTrue(partitioning.equals(DeePartitions.DEE_PARTITIONING));
-		return new DeeSourceViewerConfiguration(getColorManager(),
-				preferenceStore, editor, DeePartitions.DEE_PARTITIONING);
+		return new DeeSourceViewerConfiguration(getColorManager(), preferenceStore, editor,
+				DeePartitions.DEE_PARTITIONING);
 	}
 
 

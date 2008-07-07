@@ -11,7 +11,7 @@ public class DeeTabGroup extends AbstractLaunchConfigurationTabGroup {
 	//@Override
 	public void createTabs(ILaunchConfigurationDialog dialog, String mode) {
 		ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[] {
-				new DeeMainLaunchConfigurationTab(),
+				new DeeMainLaunchConfigurationTab(mode),
 				new DeeScriptArgumentsTab(),
 				//new RubyInterpreterTab(),
 				new EnvironmentTab(),
@@ -20,6 +20,5 @@ public class DeeTabGroup extends AbstractLaunchConfigurationTabGroup {
 		
 		setTabs(tabs);
 	}
-
-
+	
 }

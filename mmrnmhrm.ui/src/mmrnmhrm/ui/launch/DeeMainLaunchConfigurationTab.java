@@ -1,56 +1,21 @@
 package mmrnmhrm.ui.launch;
 
-import melnorme.miscutil.ExceptionAdapter;
 import mmrnmhrm.core.dltk.DeeLanguageToolkit;
-import mmrnmhrm.core.launch.DeeLaunchConfigurationDelegate;
-import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.core.model.DeeNature;
-import mmrnmhrm.core.model.DeeProjectOptions;
+import mmrnmhrm.ui.DeePlugin;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
-import org.eclipse.dltk.core.DLTKLanguageManager;
 import org.eclipse.dltk.core.IDLTKLanguageToolkit;
-import org.eclipse.dltk.core.IScriptProject;
+import org.eclipse.dltk.core.PreferencesLookupDelegate;
+import org.eclipse.dltk.debug.core.DLTKDebugPreferenceConstants;
 import org.eclipse.dltk.debug.ui.launchConfigurations.MainLaunchConfigurationTab;
-import org.eclipse.dltk.ui.DLTKPluginImages;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Text;
+
 
 public class DeeMainLaunchConfigurationTab extends MainLaunchConfigurationTab {
 
-	@Override
-	protected boolean validateProject(IScriptProject project) {
-		if (project == null)
-			return false;
-		// check project nature		
-		try {
-			IDLTKLanguageToolkit ltk = DLTKLanguageManager.getLanguageToolkit(project);
-			if (ltk instanceof DeeLanguageToolkit)
-				return true;
-		} catch (CoreException e) {
-		}
-		return false;
-	}
-	@Override
-	protected String getLanguageName () {
-		return "DEE";
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.eclipse.debug.ui.AbstractLaunchConfigurationTab#getImage()
-	 */
-	@Override
-	public Image getImage() {
-		return DLTKPluginImages.get(DLTKPluginImages.IMG_OBJS_CLASS);
+	public DeeMainLaunchConfigurationTab(String mode) {
+		super(mode);
 	}
 	
 	@Override
@@ -59,53 +24,55 @@ public class DeeMainLaunchConfigurationTab extends MainLaunchConfigurationTab {
 	}
 	
 	@Override
-	protected void createMainModuleEditor(Composite parent, String text) {
-		//super.createMainModuleEditor(parent, text);
-		Font font = parent.getFont();
-		Group mainGroup = new Group(parent, SWT.NONE);
-		mainGroup.setText(text);
-		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-		mainGroup.setLayoutData(gd);
-		GridLayout layout = new GridLayout();
-		layout.numColumns = 2;
-		mainGroup.setLayout(layout);
-		mainGroup.setFont(font);
-		fMainText = new Text(mainGroup, SWT.SINGLE | SWT.BORDER);
-		gd = new GridData(GridData.FILL_HORIZONTAL);
-		fMainText.setLayoutData(gd);
-		fMainText.setFont(font);
-		fMainText.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				updateLaunchConfigurationDialog();
-			}
-		});
-		/*fSearchButton = createPushButton(mainGroup, DLTKLaunchConfigurationsMessages.mainTab_searchButton, null);
-		fSearchButton.addSelectionListener(new SelectionListener() {
-			public void widgetDefaultSelected(SelectionEvent e) {}
+	protected boolean breakOnFirstLinePrefEnabled(PreferencesLookupDelegate delegate) {
+		return delegate.getBoolean(DeePlugin.PLUGIN_ID,
+				DLTKDebugPreferenceConstants.PREF_DBGP_BREAK_ON_FIRST_LINE);
+	}
 
-			public void widgetSelected(SelectionEvent e) {
-				handleSearchButtonSelected();
-			}
-		});*/
+	@Override
+	protected boolean dbpgLoggingPrefEnabled(PreferencesLookupDelegate delegate) {
+		return delegate.getBoolean(DeePlugin.PLUGIN_ID,
+				DLTKDebugPreferenceConstants.PREF_DBGP_ENABLE_LOGGING);
+	}
 
-		fMainText.setEnabled(false);
+	@Override
+	protected boolean isValidToolkit(IDLTKLanguageToolkit toolkit) {
+		return (toolkit instanceof DeeLanguageToolkit) ? true : false;
 	}
 	
 	@Override
-	public void initializeFrom(ILaunchConfiguration config) {
-		super.initializeFrom(config);
+	protected void createMainModuleEditor(Composite parent, String text) {
+		super.createMainModuleEditor(parent, text);
+	}
+	
+	// Don't do any custom GUI controls for now
+	@Override
+	protected void updateProjectFromConfig(ILaunchConfiguration config) {
+		super.updateProjectFromConfig(config);
+		
+		/*		
 		IScriptProject deeProj;
 		try {
 			deeProj = DeeLaunchConfigurationDelegate.getScriptProject(config);
 		} catch (CoreException e) {
-			// TO DO: check the exception
-			throw ExceptionAdapter.unchecked(e);
+			throw ExceptionAdapter.uncheckedTODO(e);
 		}
 		if(deeProj != null) {
 			DeeProjectOptions deeProjectInfo = DeeModel.getDeeProjectInfo(deeProj);
-			fMainText.setText(deeProjectInfo.getArtifactRelPath());
+			setProjectName(deeProjectInfo.getArtifactRelPath());
 		}
-
+	*/
 	}
+	
+	@Override
+	protected void doInitializeForm(ILaunchConfiguration config) {
+		super.doInitializeForm(config);
+	}
+	
+	@Override
+	protected void updateMainModuleFromConfig(ILaunchConfiguration config) {
+		super.updateMainModuleFromConfig(config);
+	}
+	
 
 }

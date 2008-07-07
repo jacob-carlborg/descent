@@ -75,7 +75,6 @@ public class DeePlugin extends LangPlugin {
 		if (fTextTools == null) {
 			fTextTools = new DeeTextTools(true);
 		}
-
 		return fTextTools;
 	}
 

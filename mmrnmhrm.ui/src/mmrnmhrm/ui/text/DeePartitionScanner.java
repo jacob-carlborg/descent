@@ -42,7 +42,8 @@ public class DeePartitionScanner extends RuleBasedPartitionScanner {
 		
 		rules.add(new SingleLineRule("\"", "\"", tkString, '\\'));
 
-		setPredicateRules(rules.toArray(new IPredicateRule[rules.size()]));
+		IPredicateRule[] resultRules = rules.toArray(new IPredicateRule[rules.size()]);
+		setPredicateRules(resultRules);
 		//setDefaultReturnToken(new Token(DeePartitions.DEE_CODE));
 	}
 

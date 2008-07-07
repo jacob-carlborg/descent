@@ -4,7 +4,7 @@ import melnorme.miscutil.Assert;
 import melnorme.miscutil.tree.IElement;
 import melnorme.util.ui.swt.SWTUtilExt;
 import mmrnmhrm.core.dltk.DeeModuleDeclaration;
-import mmrnmhrm.core.dltk.ParsingUtil;
+import mmrnmhrm.core.dltk.DeeParserUtil;
 
 import org.eclipse.dltk.core.DLTKCore;
 import org.eclipse.dltk.core.IElementChangedListener;
@@ -98,9 +98,9 @@ public class DeeOutlinePage extends ScriptOutlinePage {
 		public Object[] getElements(Object parent) {
 			if(parent instanceof ISourceModule) {
 				ISourceModule sourceModule = (ISourceModule) parent;
-				DeeModuleDeclaration moduleDec = ParsingUtil.parseModule(sourceModule);
+				DeeModuleDeclaration moduleDec = DeeParserUtil.parseModule(sourceModule);
 				if(moduleDec != null)
-					return super.getElements(ParsingUtil.getNeoASTModule(moduleDec));
+					return super.getElements(DeeParserUtil.getNeoASTModule(moduleDec));
 			}
 			return ASTNode.NO_ELEMENTS;
 		}

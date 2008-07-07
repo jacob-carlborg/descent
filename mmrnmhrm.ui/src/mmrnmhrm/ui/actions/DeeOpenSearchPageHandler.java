@@ -15,7 +15,7 @@ public class DeeOpenSearchPageHandler extends AbstractHandler {
 			shell.getDisplay().beep();
 	}
 	
-	@Override
+	//@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		DeeOpenSearchPageAction action = new DeeOpenSearchPageAction();
 		action.init(HandlerUtil.getActiveWorkbenchWindow(event));

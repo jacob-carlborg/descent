@@ -24,6 +24,7 @@ import dtool.refmodel.PrefixSearchOptions;
 import dtool.refmodel.PrefixDefUnitSearch.CompletionSession;
 import dtool.refmodel.PrefixDefUnitSearch.IDefUnitMatchAccepter;
 
+// TODO: DTLK: Start using ScriptCompletionProposal ?
 public class DeeCodeContentAssistProcessor implements IContentAssistProcessor {
 
 	private static final ICompletionProposal[] RESULTS_EMPTY_ARRAY = new ICompletionProposal[0];

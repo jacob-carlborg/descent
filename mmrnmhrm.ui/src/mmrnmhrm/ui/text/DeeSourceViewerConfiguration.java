@@ -4,11 +4,12 @@ import java.util.Map;
 
 import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.editor.text.DeeCodeContentAssistProcessor;
-import mmrnmhrm.ui.editor.text.DeeHyperlinkDetector;
 import mmrnmhrm.ui.editor.text.DeeDocTextHover;
+import mmrnmhrm.ui.editor.text.DeeHyperlinkDetector;
 import mmrnmhrm.ui.text.color.IDeeColorConstants;
 
 import org.eclipse.dltk.internal.ui.editor.EditorUtility;
+import org.eclipse.dltk.internal.ui.editor.ModelElementHyperlinkDetector;
 import org.eclipse.dltk.internal.ui.editor.ScriptSourceViewer;
 import org.eclipse.dltk.internal.ui.typehierarchy.HierarchyInformationControl;
 import org.eclipse.dltk.ui.text.AbstractScriptScanner;
@@ -17,15 +18,18 @@ import org.eclipse.dltk.ui.text.ScriptOutlineInformationControl;
 import org.eclipse.dltk.ui.text.ScriptPresentationReconciler;
 import org.eclipse.dltk.ui.text.ScriptSourceViewerConfiguration;
 import org.eclipse.dltk.ui.text.SingleTokenScriptScanner;
+import org.eclipse.dltk.ui.text.completion.ContentAssistPreference;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.AbstractInformationControlManager;
 import org.eclipse.jface.text.DefaultInformationControl;
+import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
+import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.jface.text.information.IInformationPresenter;
 import org.eclipse.jface.text.information.IInformationProvider;
 import org.eclipse.jface.text.information.InformationPresenter;
@@ -38,8 +42,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-public class DeeSourceViewerConfiguration extends
-		ScriptSourceViewerConfiguration {
+public class DeeSourceViewerConfiguration extends ScriptSourceViewerConfiguration {
 
 	private AbstractScriptScanner fCodeScanner;
 	private AbstractScriptScanner fStringScanner;
@@ -53,6 +56,11 @@ public class DeeSourceViewerConfiguration extends
 	}
 	
 	@Override
+	public String[] getConfiguredContentTypes(ISourceViewer sourceViewer) {
+		return DeePartitions.DEE_PARTITION_TYPES;
+	}
+	
+	@Override
 	protected void initializeScanners() {
 		fCodeScanner = new DeeCodeScanner(getColorManager(), fPreferenceStore);
 		fStringScanner = new SingleTokenScriptScanner(getColorManager(),
@@ -63,11 +71,44 @@ public class DeeSourceViewerConfiguration extends
 				fPreferenceStore, IDeeColorConstants.DEE_DOCCOMMENT);
 	}
 
-	
 	@Override
-	public String[] getConfiguredContentTypes(ISourceViewer sourceViewer) {
-		return DeePartitions.DEE_PARTITION_TYPES;
+	public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
+		PresentationReconciler reconciler = new ScriptPresentationReconciler();
+		reconciler.setDocumentPartitioning(getConfiguredDocumentPartitioning(sourceViewer));
+
+		DefaultDamagerRepairer dr;
+
+		dr = new DefaultDamagerRepairer(fCodeScanner);
+		reconciler.setDamager(dr, DeePartitions.DEE_CODE);
+		reconciler.setRepairer(dr, DeePartitions.DEE_CODE);
+
+		dr = new DefaultDamagerRepairer(fStringScanner);
+		reconciler.setDamager(dr, DeePartitions.DEE_STRING);
+		reconciler.setRepairer(dr, DeePartitions.DEE_STRING);
+
+		dr = new DefaultDamagerRepairer(fCommentScanner);
+		reconciler.setDamager(dr, DeePartitions.DEE_SINGLE_COMMENT);
+		reconciler.setRepairer(dr, DeePartitions.DEE_SINGLE_COMMENT);
+		dr = new DefaultDamagerRepairer(fCommentScanner);
+		reconciler.setDamager(dr, DeePartitions.DEE_MULTI_COMMENT);
+		reconciler.setRepairer(dr, DeePartitions.DEE_MULTI_COMMENT);
+		dr = new DefaultDamagerRepairer(fCommentScanner);
+		reconciler.setDamager(dr, DeePartitions.DEE_NESTED_COMMENT);
+		reconciler.setRepairer(dr, DeePartitions.DEE_NESTED_COMMENT);
+
+		dr = new DefaultDamagerRepairer(fDocScanner);
+		reconciler.setDamager(dr, DeePartitions.DEE_SINGLE_DOCCOMMENT);
+		reconciler.setRepairer(dr, DeePartitions.DEE_SINGLE_DOCCOMMENT);
+		dr = new DefaultDamagerRepairer(fDocScanner);
+		reconciler.setDamager(dr, DeePartitions.DEE_MULTI_DOCCOMMENT);
+		reconciler.setRepairer(dr, DeePartitions.DEE_MULTI_DOCCOMMENT);
+		dr = new DefaultDamagerRepairer(fDocScanner);
+		reconciler.setDamager(dr, DeePartitions.DEE_NESTED_DOCCOMMENT);
+		reconciler.setRepairer(dr, DeePartitions.DEE_NESTED_DOCCOMMENT);
+		
+		return reconciler;
 	}
+
 	
 	@Override
 	public boolean affectsTextPresentation(PropertyChangeEvent event) {
@@ -89,84 +130,60 @@ public class DeeSourceViewerConfiguration extends
 			fDocScanner.adaptToPreferenceChange(event);
 	}
 	
-	@Override
-	public IPresentationReconciler getPresentationReconciler(
-			ISourceViewer sourceViewer) {
-		PresentationReconciler reconciler = new ScriptPresentationReconciler();
-		reconciler.setDocumentPartitioning(getConfiguredDocumentPartitioning(sourceViewer));
-
-		DefaultDamagerRepairer dr;
-
-		dr = new DefaultDamagerRepairer(fCodeScanner);
-		reconciler.setDamager(dr, DeePartitions.DEE_CODE);
-		reconciler.setRepairer(dr, DeePartitions.DEE_CODE);
-
-		dr = new DefaultDamagerRepairer(fStringScanner);
-		reconciler.setDamager(dr, DeePartitions.DEE_STRING);
-		reconciler.setRepairer(dr, DeePartitions.DEE_STRING);
-
-		dr = new DefaultDamagerRepairer(fCommentScanner);
-		reconciler.setDamager(dr, DeePartitions.DEE_SINGLE_COMMENT);
-		reconciler.setRepairer(dr, DeePartitions.DEE_SINGLE_COMMENT);
-		dr = new DefaultDamagerRepairer(fDocScanner);
-		reconciler.setDamager(dr, DeePartitions.DEE_SINGLE_DOCCOMMENT);
-		reconciler.setRepairer(dr, DeePartitions.DEE_SINGLE_DOCCOMMENT);
-
-		dr = new DefaultDamagerRepairer(fCommentScanner);
-		reconciler.setDamager(dr, DeePartitions.DEE_MULTI_COMMENT);
-		reconciler.setRepairer(dr, DeePartitions.DEE_MULTI_COMMENT);
-		dr = new DefaultDamagerRepairer(fDocScanner);
-		reconciler.setDamager(dr, DeePartitions.DEE_MULTI_DOCCOMMENT);
-		reconciler.setRepairer(dr, DeePartitions.DEE_MULTI_DOCCOMMENT);
-
-		dr = new DefaultDamagerRepairer(fCommentScanner);
-		reconciler.setDamager(dr, DeePartitions.DEE_NESTED_COMMENT);
-		reconciler.setRepairer(dr, DeePartitions.DEE_NESTED_COMMENT);
-		dr = new DefaultDamagerRepairer(fDocScanner);
-		reconciler.setDamager(dr, DeePartitions.DEE_NESTED_DOCCOMMENT);
-		reconciler.setRepairer(dr, DeePartitions.DEE_NESTED_DOCCOMMENT);
-		
-		return reconciler;
-	}
 	
-	@Override
-	public ITextHover getTextHover(ISourceViewer sourceViewer,
-			String contentType, int stateMask) {
-		return new DeeDocTextHover(getEditor());
-	}
 	
-	@Override @SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked")
+	@Override 
 	protected Map getHyperlinkDetectorTargets(ISourceViewer sourceViewer) {
-		Map targets= super.getHyperlinkDetectorTargets(sourceViewer);
+		Map<String, ITextEditor> targets= super.getHyperlinkDetectorTargets(sourceViewer);
 		targets.put(DeeHyperlinkDetector.DEE_EDITOR_TARGET, getEditor()); 
 		return targets;
 	}
+
+	@Override
+	public IHyperlinkDetector[] getHyperlinkDetectors(ISourceViewer sourceViewer) {
+		IHyperlinkDetector[] hyperlinkDetectors = super.getHyperlinkDetectors(sourceViewer);
+		for (int i = 0; i < hyperlinkDetectors.length; i++) {
+			if(hyperlinkDetectors[i] instanceof ModelElementHyperlinkDetector) {
+				// Remove ModelElementHyperlinkDetector cause it sucks
+				// Creating a new array is not necessary I think
+				hyperlinkDetectors[i] = null; 
+			}
+		}
+		return hyperlinkDetectors;
+	}
+	
 	
 	@Override
 	public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
-		if (getEditor() == null)
-			return null;
-		
-		ContentAssistant assistant = new ContentAssistant();
-		assistant.setDocumentPartitioning(getConfiguredDocumentPartitioning(sourceViewer));
-
-		assistant.setRestoreCompletionProposalSize(getSettings("completion_proposal_size")); //$NON-NLS-1$
-
-		IContentAssistProcessor deeContentAssistProcessor 
-			= new DeeCodeContentAssistProcessor(assistant, getEditor());
-		//= new RubyCompletionProcessor(getEditor(), assistant, IDocument.DEFAULT_CONTENT_TYPE);
+		return super.getContentAssistant(sourceViewer);
+	}
+	
+	@Override
+	protected void alterContentAssistant(ContentAssistant assistant) {
+		super.alterContentAssistant(assistant);
+		IContentAssistProcessor deeContentAssistProcessor = new DeeCodeContentAssistProcessor(
+				assistant, getEditor());
 		assistant.setContentAssistProcessor(deeContentAssistProcessor, DeePartitions.DEE_CODE);
 
-
-		DeeContentAssistPreference.getDefault().configure(assistant,
-				fPreferenceStore);
-
-		assistant.setContextInformationPopupOrientation(IContentAssistant.CONTEXT_INFO_ABOVE);
-		assistant.setInformationControlCreator(getInformationControlCreator(sourceViewer));
-
 		// assistant.setStatusLineVisible(true);
-
-		return assistant;
+	}
+	
+	@Override
+	protected ContentAssistPreference getContentAssistPreference() {
+		return DeeContentAssistPreference.getDefault();
+	}
+	
+	@Override
+	public IAutoEditStrategy[] getAutoEditStrategies(ISourceViewer sourceViewer, String contentType) {
+		// TODO improve auto edit strategy
+		return super.getAutoEditStrategies(sourceViewer, contentType);
+	}
+	
+	@Override
+	public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType, int stateMask) {
+		// TODO: Note: we are currently using own TextHover, not DLTK's. maybe can change
+		return new DeeDocTextHover(getEditor());
 	}
 	
 	@Override
@@ -187,8 +204,7 @@ public class DeeSourceViewerConfiguration extends
 	}
 	
 	@Override
-	public IInformationPresenter getInformationPresenter(
-			ISourceViewer sourceViewer) {
+	public IInformationPresenter getInformationPresenter(ISourceViewer sourceViewer) {
 		return super.getInformationPresenter(sourceViewer);
 	}
 	
@@ -217,7 +233,6 @@ public class DeeSourceViewerConfiguration extends
 	
 
 	
-	@SuppressWarnings("restriction")
 	@Override
 	public IInformationPresenter getHierarchyPresenter(
 			ScriptSourceViewer sourceViewer, boolean doCodeResolve) {
@@ -231,6 +246,7 @@ public class DeeSourceViewerConfiguration extends
 				getHierarchyPresenterControlCreator());
 		presenter.setDocumentPartitioning(getConfiguredDocumentPartitioning(sourceViewer));
 		presenter.setAnchor(AbstractInformationControlManager.ANCHOR_GLOBAL);
+		@SuppressWarnings("restriction")
 		IInformationProvider provider = new org.eclipse.dltk.internal.ui.text. 
 				ScriptElementProvider(getEditor(), doCodeResolve);
 		presenter.setInformationProvider(provider, DeePartitions.DEE_CODE);
@@ -240,16 +256,17 @@ public class DeeSourceViewerConfiguration extends
 	}
 
 	
+	// XXX: use DTLK default method?
 	@Override
 	public IInformationControlCreator getInformationControlCreator(ISourceViewer sourceViewer) {
 		return new IInformationControlCreator() {
 			@SuppressWarnings("restriction")
 			public IInformationControl createInformationControl(Shell parent) {
-				return new DefaultInformationControl(parent, SWT.NONE, 
-						new org.eclipse.jface.internal.text.html.
-						HTMLTextPresenter(true));
+				return new DefaultInformationControl(parent,
+						new org.eclipse.jface.internal.text.html.HTMLTextPresenter(true));
 			}
 		};
 	}
+
 
 }

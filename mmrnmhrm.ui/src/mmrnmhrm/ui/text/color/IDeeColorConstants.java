@@ -1,13 +1,16 @@
 package mmrnmhrm.ui.text.color;
 
+
 /**
  * Color preference constants used in the Dee preference store. 
  */
 public interface IDeeColorConstants {
+	
 
 	/** Prefix for D preference keys. */
 	String PREFIX = "dee.coloring."; 
 
+	// XXX: DLTK: use DLTKColorConstants constants?
 	String DEE_SPECIAL = PREFIX + "special";
 	String DEE_STRING = PREFIX + "string";
 	String DEE_LITERALS = PREFIX + "literals";

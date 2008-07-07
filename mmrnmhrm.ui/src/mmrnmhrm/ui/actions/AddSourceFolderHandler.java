@@ -23,7 +23,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
  */
 public class AddSourceFolderHandler extends AbstractHandler {
 
-	@Override
+	//@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 
 		ISelection selection = HandlerUtil.getCurrentSelection(event);

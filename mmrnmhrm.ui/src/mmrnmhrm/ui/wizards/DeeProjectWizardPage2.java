@@ -4,21 +4,19 @@
 package mmrnmhrm.ui.wizards;
 
 import mmrnmhrm.core.model.DeeNature;
-import mmrnmhrm.org.eclipse.dltk.ui.wizards.ProjectWizardFirstPage_;
-import mmrnmhrm.org.eclipse.dltk.ui.wizards.ProjectWizardSecondPage_;
 import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.preferences.DeeBuildpathsBlock;
 
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.dltk.ui.util.BusyIndicatorRunnableContext;
 import org.eclipse.dltk.ui.util.IStatusChangeListener;
 import org.eclipse.dltk.ui.wizards.BuildpathsBlock;
+import org.eclipse.dltk.ui.wizards.ProjectWizardFirstPage;
+import org.eclipse.dltk.ui.wizards.ProjectWizardSecondPage;
 import org.eclipse.jface.preference.IPreferenceStore;
 
-public class DeeProjectWizardPage2 extends ProjectWizardSecondPage_ {
+public class DeeProjectWizardPage2 extends ProjectWizardSecondPage {
 
-	public DeeProjectWizardPage2(ProjectWizardFirstPage_ mainPage) {
+	public DeeProjectWizardPage2(ProjectWizardFirstPage mainPage) {
 		super(mainPage);
 	}
 
@@ -38,10 +36,5 @@ public class DeeProjectWizardPage2 extends ProjectWizardSecondPage_ {
 		return DeeNature.NATURE_ID;
 	}
 	
-	@Override
-	public void performFinish(IProgressMonitor monitor) throws CoreException,
-			InterruptedException {
-		super.performFinish(monitor);;
-	}
 	
 }

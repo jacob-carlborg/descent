@@ -3,6 +3,9 @@ package mmrnmhrm.ui;
 import mmrnmhrm.core.dltk.DeeLanguageToolkit;
 import mmrnmhrm.ui.editor.DeeEditor;
 import mmrnmhrm.ui.preferences.pages.DeeCompilersPreferencePage;
+import mmrnmhrm.ui.preferences.pages.DeeEditorPreferencePage;
+import mmrnmhrm.ui.preferences.pages.DeeSourceColoringPreferencePage;
+import mmrnmhrm.ui.preferences.pages.DeeTemplatePreferencePage;
 import mmrnmhrm.ui.text.DeeSimpleSourceViewerConfiguration;
 
 import org.eclipse.dltk.core.IDLTKLanguageToolkit;
@@ -12,7 +15,6 @@ import org.eclipse.dltk.ui.ScriptElementLabels;
 import org.eclipse.dltk.ui.text.ScriptSourceViewerConfiguration;
 import org.eclipse.dltk.ui.text.ScriptTextTools;
 import org.eclipse.dltk.ui.viewsupport.ScriptUILabelProvider;
-import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 public class DeeUILanguageToolkit implements IDLTKUILanguageToolkit {
@@ -31,9 +33,10 @@ public class DeeUILanguageToolkit implements IDLTKUILanguageToolkit {
 	}
 	
 	//@Override
-	public IDialogSettings getDialogSettings() {
+	/** XXX: @deprecated DLTK orphan */
+	/*public IDialogSettings getDialogSettings() {
 		return DeePlugin.getInstance().getDialogSettings();
-	}
+	}*/
 	
 	//@Override
 	public String getEditorId(Object inputElement) {
@@ -45,6 +48,7 @@ public class DeeUILanguageToolkit implements IDLTKUILanguageToolkit {
 		return DeePlugin.getInstance().getPreferenceStore();
 	}
 	
+	//XXX: DLTK: use DLTK partitioning?
 	//@Override
 	public String getPartitioningId() {
 		return DeeConstants.PARTITIONING_ID;
@@ -56,14 +60,13 @@ public class DeeUILanguageToolkit implements IDLTKUILanguageToolkit {
 	}
 	
 	//@Override
-	public ScriptSourceViewerConfiguration createSourceViwerConfiguration() {
-		return new DeeSimpleSourceViewerConfiguration(getTextTools()
-				.getColorManager(), getPreferenceStore(), null,
-				getPartitioningId(), false);
+	public ScriptSourceViewerConfiguration createSourceViewerConfiguration() {
+		return new DeeSimpleSourceViewerConfiguration(getTextTools().getColorManager(),
+				getPreferenceStore(), null, getPartitioningId(), false);
 	}
 	
 	//@Override
-	public ScriptUILabelProvider createScripUILabelProvider() {
+	public ScriptUILabelProvider createScriptUILabelProvider() {
 		return new DeeScriptUILabelProvider();
 	}
 	
@@ -76,6 +79,20 @@ public class DeeUILanguageToolkit implements IDLTKUILanguageToolkit {
 	public String getInterpreterPreferencePage() {
 		return DeeCompilersPreferencePage.PAGE_ID;
 	}
+	
+	public String[] getEditorPreferencePages() {
+		return new String[]{ 
+				DeeEditorPreferencePage.PAGE_ID, 
+				DeeTemplatePreferencePage.PAGE_ID,
+				DeeSourceColoringPreferencePage.PAGE_ID};
+	}
+	
+	//@Override
+	public String getDebugPreferencePage() {
+		// TODO DLTK getDebugPreferencePage
+		return null;
+	}
+	
 
 	//@Override
 	public String getInterpreterContainerId() {
@@ -87,5 +104,7 @@ public class DeeUILanguageToolkit implements IDLTKUILanguageToolkit {
 	public boolean getProvideMembers(ISourceModule element) {
 		return true;
 	}
+
+
 
 }

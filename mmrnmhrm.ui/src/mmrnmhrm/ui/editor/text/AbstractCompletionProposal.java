@@ -3,6 +3,7 @@ package mmrnmhrm.ui.editor.text;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.dltk.internal.ui.BrowserInformationControl;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jface.text.AbstractReusableInformationControlCreator;
 import org.eclipse.jface.text.BadLocationException;
@@ -240,26 +241,26 @@ public abstract class AbstractCompletionProposal implements
 	
 	@SuppressWarnings("restriction")
 	public IInformationControlCreator getInformationControlCreator() {
-		Shell shell= JavaPlugin.getActiveWorkbenchShell();
+		Shell shell = JavaPlugin.getActiveWorkbenchShell();
 		if (shell == null
 				|| !org.eclipse.jface.internal.text.html.BrowserInformationControl
 						.isAvailable(shell))
 			return null;
 		
 		if (fCreator == null) {
-			fCreator= new ControlCreator();
+			fCreator = new AbstractReusableInformationControlCreator() {
+
+				@Override
+				public IInformationControl doCreateInformationControl(Shell parent) {
+					return new BrowserInformationControl(parent, SWT.NO_TRIM | SWT.TOOL, SWT.NONE,
+							null);
+				}
+			};
 		}
+		
 		return fCreator;
 	}
-
-	private static final class ControlCreator extends AbstractReusableInformationControlCreator {
-		@SuppressWarnings("restriction")
-		@Override
-		public IInformationControl doCreateInformationControl(Shell parent) {
-			return new org.eclipse.jface.internal.text.html.BrowserInformationControl(
-					parent, SWT.NO_TRIM | SWT.TOOL, SWT.NONE, null);
-		}
-	}
+	
 
 	public Object getAdditionalProposalInfo(IProgressMonitor monitor) {
 		//if (getProposalInfo() != null) {

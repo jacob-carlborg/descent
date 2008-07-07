@@ -18,7 +18,7 @@ public interface DeePartitions {
 
 	
 	public static final String[] DEE_PARTITION_TYPES = {
-		IDocument.DEFAULT_CONTENT_TYPE,
+		DEE_CODE,
 		DEE_STRING,
 		DEE_SINGLE_COMMENT,
 		DEE_SINGLE_DOCCOMMENT,
@@ -28,7 +28,7 @@ public interface DeePartitions {
 		DEE_NESTED_DOCCOMMENT,
 	};
 	
-	/* Some IDE's use a LEGAL_CONTENT_TYPES without a 
+	/* Bruno: Some IDEs use a LEGAL_CONTENT_TYPES without a 
 	IDocument.DEFAULT_CONTENT_TYPE , but I have no idea why. */ 
 	public static final String[] LEGAL_CONTENT_TYPES = DEE_PARTITION_TYPES;
 

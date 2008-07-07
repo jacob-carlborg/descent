@@ -57,10 +57,10 @@ public class DeeElementHyperlink implements IHyperlink {
 	}
 
 	public String getTypeLabel() {
-		return null;
+		return "Open Dee Definition";
 	}
 
 	public String getHyperlinkText() {
-		return null;
+		return "Open Dee Definition";
 	}
 }

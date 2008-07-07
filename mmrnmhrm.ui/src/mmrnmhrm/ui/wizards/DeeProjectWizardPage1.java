@@ -6,15 +6,13 @@ package mmrnmhrm.ui.wizards;
 import java.util.Observable;
 
 import mmrnmhrm.core.model.DeeNature;
-import mmrnmhrm.org.eclipse.dltk.ui.wizards.ProjectWizardFirstPage_;
 import mmrnmhrm.ui.preferences.pages.DeeCompilersPreferencePage;
 
-import org.eclipse.dltk.debug.ui.DLTKDebugUIPlugin;
 import org.eclipse.dltk.launching.IInterpreterInstall;
-import org.eclipse.jface.preference.IPreferencePage;
+import org.eclipse.dltk.ui.wizards.ProjectWizardFirstPage;
 import org.eclipse.swt.widgets.Composite;
 
-public class DeeProjectWizardPage1 extends ProjectWizardFirstPage_ {
+public class DeeProjectWizardPage1 extends ProjectWizardFirstPage {
 
 	DeeInterpreterGroup fInterpreterGroup;
 	
@@ -30,9 +28,8 @@ public class DeeProjectWizardPage1 extends ProjectWizardFirstPage_ {
 		}
 
 		@Override
-		protected void showInterpreterPreferencePage() {
-			IPreferencePage page = new DeeCompilersPreferencePage(); 
-			DLTKDebugUIPlugin.showPreferencePage(DeeCompilersPreferencePage.PAGE_ID, page); 					
+		protected String getIntereprtersPreferencePageId() {
+			return DeeCompilersPreferencePage.PAGE_ID;
 		}
     	
     };

@@ -1,12 +1,11 @@
 package mmrnmhrm.ui.editor;
 
-import mmrnmhrm.core.dltk.DeeSourceParser;
+import mmrnmhrm.core.model.DeeNature;
 import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.text.DeePartitions;
 
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.dltk.ast.ASTNode;
-import org.eclipse.dltk.ast.declarations.ISourceParser;
 import org.eclipse.dltk.ui.text.folding.AbstractASTFoldingStructureProvider;
 import org.eclipse.jface.text.rules.IPartitionTokenScanner;
 
@@ -14,14 +13,18 @@ import dtool.ast.definitions.DefinitionAggregate;
 import dtool.ast.definitions.DefinitionFunction;
 
 // TODO finish
-public class DeeFoldingStructureProvider extends
-		AbstractASTFoldingStructureProvider {
+public class DeeFoldingStructureProvider extends AbstractASTFoldingStructureProvider {
 
 	@Override
 	protected ILog getLog() {
 		return DeePlugin.getInstance().getLog();
 	}
 
+
+	@Override
+	protected String getNatureId() {
+		return DeeNature.NATURE_ID;
+	}
 
 	@Override
 	protected String getPartition() {
@@ -46,19 +49,12 @@ public class DeeFoldingStructureProvider extends
 	}
 
 	@Override
-	protected ISourceParser getSourceParser() {
-		return DeeSourceParser.getInstance();
-	}
-
-	@Override
-	protected boolean initiallyCollapse(ASTNode s,
-			FoldingStructureComputationContext ctx) {
+	protected boolean initiallyCollapse(ASTNode s, FoldingStructureComputationContext ctx) {
 		return false;
 	}
 
 	@Override
-	protected boolean initiallyCollapseComments(
-			FoldingStructureComputationContext ctx) {
+	protected boolean initiallyCollapseComments(FoldingStructureComputationContext ctx) {
 		return false;
 	}
 	
@@ -67,26 +63,26 @@ public class DeeFoldingStructureProvider extends
 		return new FoldingASTVisitor(offset) {
 			@Override
 			public boolean visit(ASTNode node) throws Exception {
-				if(node instanceof DefinitionAggregate) {
+				if (node instanceof DefinitionAggregate) {
 					add(node);
 				} else if (node instanceof DefinitionFunction) {
 					add(node);
 				}
 				return super.visit(node);
 			}
-			
+
 		};
 	}
 
 	@Override
-	protected boolean mayCollapse(ASTNode node,
-			FoldingStructureComputationContext ctx) {
-		if(node instanceof DefinitionAggregate) {
+	protected boolean mayCollapse(ASTNode node, FoldingStructureComputationContext ctx) {
+		if (node instanceof DefinitionAggregate) {
 			return true;
-		} else if(node instanceof DefinitionFunction) {
+		} else if (node instanceof DefinitionFunction) {
 			return true;
 		}
 		return false;
 	}
+
 
 }

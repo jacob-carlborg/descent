@@ -30,7 +30,6 @@ implements ITextHoverExtension {
 		//super(sourceViewer);
 	}
 
-	@SuppressWarnings("restriction")
 	protected String getCSSStyles() {
 		if(false)
 			return getStyleSheet() + HoverUtil.CODE_CSS_CLASS;

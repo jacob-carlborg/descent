@@ -8,7 +8,7 @@ import org.eclipse.core.commands.ExecutionException;
 @Deprecated
 public class RefreshModelHandler extends AbstractHandler {
 
-	@Override
+	//@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		/*try {
 			IWorkspaceRunnable op = new IWorkspaceRunnable() {
