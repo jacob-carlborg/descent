@@ -718,9 +718,10 @@ public class CompletionEngine extends Engine
 	private void completeSelectiveImport(CompletionOnImport node) throws JavaModelException {
 		doSemantic();
 		
-		node.semantic(Scope.createGlobal(node.mod, semanticContext), semanticContext);
+//		node.semantic(Scope.createGlobal(node.mod, semanticContext), semanticContext);
 		
 		if (node.mod != null) {
+			node.mod = node.mod.unlazy(semanticContext);
 			if (node.selectiveName == null) {
 				this.startPosition = actualCompletionPosition;
 				this.endPosition = actualCompletionPosition;
@@ -1094,8 +1095,7 @@ public class CompletionEngine extends Engine
 		boolean onlyStatics = resolvedExpression instanceof TypeExp;
 		
 		if (sym instanceof ClassDeclaration) {
-			ClassDeclaration cd = (ClassDeclaration) sym;
-			cd = cd.unlazy(semanticContext);
+			ClassDeclaration cd = ((ClassDeclaration) sym).unlazy(semanticContext);
 			
 			Declaration func = cd.ctor;
 			
@@ -1404,7 +1404,7 @@ public class CompletionEngine extends Engine
 					for(BaseClass bc : node.vtblInterfaces) {
 						TypeClass tc = (TypeClass) bc.type;
 					loop:
-						for(Dsymbol member : tc.sym.members) {
+						for(Dsymbol member : tc.sym.unlazy(semanticContext).members) {
 							if (member instanceof FuncDeclaration) {
 								FuncDeclaration fd = (FuncDeclaration) member;
 								for(FuncDeclaration old : funcs) {
@@ -1500,7 +1500,7 @@ public class CompletionEngine extends Engine
 			}
 		} else {
 			if (sym instanceof ScopeDsymbol) {
-				ScopeDsymbol scopeDsymbol = (ScopeDsymbol) sym;
+				ScopeDsymbol scopeDsymbol = ((ScopeDsymbol) sym).unlazy(semanticContext);
 				if (scopeDsymbol.members != null) {
 					completeScopeDsymbol(scopeDsymbol, false /* not only statics */, includes);
 				}
@@ -1540,6 +1540,7 @@ public class CompletionEngine extends Engine
 	}
 	
 	private void completeScopeDsymbol(ScopeDsymbol sd, boolean onlyStatics, int includes) {
+		sd = sd.unlazy(semanticContext);
 		if (sd instanceof ClassDeclaration) {
 			completeTypeClass((TypeClass) sd.type(), onlyStatics);
 		} else if (sd.members != null && !sd.members.isEmpty()) {
@@ -1553,6 +1554,7 @@ public class CompletionEngine extends Engine
 	}
 
 	private Dsymbol getScopeSymbol(Scope scope) {
+		scope.scopesym = scope.scopesym == null ? null : scope.scopesym.unlazy(semanticContext);
 		if (scope.scopesym == null || scope.scopesym.members == null
 				|| scope.scopesym.members.isEmpty()) {
 			return null;
@@ -2001,7 +2003,7 @@ public class CompletionEngine extends Engine
 			// Suggest member of anynoymous symbols
 			if (member instanceof StructDeclaration ||
 				member instanceof EnumDeclaration) {
-				suggestMembers(((ScopeDsymbol) member).members, onlyStatics, flags, funcSignatures, includes);
+				suggestMembers(((ScopeDsymbol) member).unlazy(semanticContext).members, onlyStatics, flags, funcSignatures, includes);
 			}
 			return;
 		}

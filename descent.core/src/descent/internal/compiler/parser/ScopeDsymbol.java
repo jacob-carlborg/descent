@@ -344,5 +344,9 @@ public class ScopeDsymbol extends Dsymbol {
 		}
 		return null;
 	}
+	
+	public ScopeDsymbol unlazy(SemanticContext context) {
+		return this;
+	}
 
 }
