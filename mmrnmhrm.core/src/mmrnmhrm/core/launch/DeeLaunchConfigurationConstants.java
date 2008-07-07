@@ -2,11 +2,9 @@ package mmrnmhrm.core.launch;
 
 import org.eclipse.dltk.launching.ScriptLaunchConfigurationConstants;
 
-public class DeeLaunchConfigurationConstants extends
-		ScriptLaunchConfigurationConstants {
+public class DeeLaunchConfigurationConstants extends ScriptLaunchConfigurationConstants {
 
 	protected DeeLaunchConfigurationConstants() {
-
 	}
 
 	public static final String ID_DEE_SCRIPT 

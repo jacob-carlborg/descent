@@ -1,6 +1,5 @@
 package mmrnmhrm.core.launch;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -10,48 +9,53 @@ import java.util.Map;
 import mmrnmhrm.core.model.DeeNature;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.debug.core.DebugPlugin;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.dltk.core.IScriptProject;
+import org.eclipse.dltk.core.environment.EnvironmentManager;
+import org.eclipse.dltk.core.environment.IEnvironment;
+import org.eclipse.dltk.core.environment.IExecutionEnvironment;
 import org.eclipse.dltk.launching.AbstractScriptLaunchConfigurationDelegate;
+import org.eclipse.dltk.launching.IInterpreterInstall;
 import org.eclipse.dltk.launching.InterpreterConfig;
 
 public class DeeLaunchConfigurationDelegate extends AbstractScriptLaunchConfigurationDelegate {
 
+	/** This specialized InterpreterConfig ignores the interpreter (which in this case
+	 * is the DMD compiler) and runs the executable directly. */
 	public static class DeeInterpreterConfig extends InterpreterConfig {
 		
-		IScriptProject deeProj;
+		public DeeInterpreterConfig(IEnvironment scriptEnvironment, IPath mainScript, IPath workingDirectory) {
+			super(scriptEnvironment, mainScript, workingDirectory);
+		}
 		
-		public DeeInterpreterConfig(File mainScript, File workingDirectory, 
-				IScriptProject deeProj) {
-			super(mainScript, workingDirectory);
-			this.deeProj = deeProj;
+		@Override
+		public String[] renderCommandLine(IInterpreterInstall interpreter) {
+			return renderCommandLine();
+		}
+		
+		@Override
+		public String[] renderCommandLine(IEnvironment environment, String interpreter) {
+			return renderCommandLine(null);
+		}
+		
+		@Override
+		protected String[] renderCommandLine(IEnvironment environment, IPath interpreter) {
+			return renderCommandLine(null);
 		}
 
 		@SuppressWarnings("unchecked")
-		@Override
-		public String[] renderCommandLine(String exe) {
+		private String[] renderCommandLine() {
 			List<String> items = new ArrayList<String>();
 
-			//items.add(exe);
-
-			Iterator<String> it;
-			/*// Interpreter arguments
-			Iterator it = interpreterArgs.iterator();
-			while (it.hasNext()) {
-				items.add(it.next());
-			}*/
-
-			// Script file
-			items.add(getScriptFile().toString());
+			items.add(getScriptFilePath().toString());
 
 			// Script arguments
-			it = ((List<String>) getScriptArgs()).iterator();
-			while (it.hasNext()) {
-				items.add(it.next());
-			}
+			List<String> scriptArgs = (List<String>) getScriptArgs();
+			items.addAll(scriptArgs);
 
 			return (String[]) items.toArray(new String[items.size()]);
 		}
@@ -64,17 +68,27 @@ public class DeeLaunchConfigurationDelegate extends AbstractScriptLaunchConfigur
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	protected InterpreterConfig createInterpreterConfig(
-			ILaunchConfiguration configuration, ILaunch launch)
-			throws CoreException {
+	// Note: this is code copied from DLTK super.createInterpreterConfig
+	protected InterpreterConfig createInterpreterConfig(ILaunchConfiguration configuration,
+			ILaunch launch) throws CoreException {
 
 		// Validation already included
-		final File mainScript = new File(getScriptLaunchPath(configuration));
-		final File workingDirectory = getWorkingDirectory(configuration);
+		IEnvironment scriptEnvironment = getScriptEnvironment(configuration);
+		IExecutionEnvironment scriptExecEnvironment = (IExecutionEnvironment) scriptEnvironment
+				.getAdapter(IExecutionEnvironment.class);
+		String scriptLaunchPath = getScriptLaunchPath(configuration, scriptEnvironment);
+		// if (scriptLaunchPath == null) {
+		// return null;
+		// }
+		final IPath workingDirectory = new Path(getWorkingDirectory(configuration,
+				scriptEnvironment));
 
-		IScriptProject deeProj = getScriptProject(configuration);
-		InterpreterConfig config = new DeeInterpreterConfig(mainScript,
-				workingDirectory, deeProj);
+		IPath mainScript = null;//
+		if (scriptLaunchPath != null) {
+			mainScript = new Path(scriptLaunchPath);
+		}
+		InterpreterConfig config = new DeeInterpreterConfig(scriptEnvironment, mainScript,
+				workingDirectory);
 
 		// Script arguments
 		String[] scriptArgs = getScriptArguments(configuration);
@@ -85,18 +99,16 @@ public class DeeLaunchConfigurationDelegate extends AbstractScriptLaunchConfigur
 		config.addInterpreterArgs(interpreterArgs);
 
 		// Environment
-//		config.addEnvVars(DebugPlugin.getDefault().getLaunchManager()
-//				.getNativeEnvironmentCasePreserved());
-		Map configEnv = configuration.getAttribute(
-				ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, new HashMap());
+		// config.addEnvVars(DebugPlugin.getDefault().getLaunchManager()
+		// .getNativeEnvironmentCasePreserved());
+		Map configEnv = configuration.getAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES,
+				new HashMap());
 		// build base environment
-		Map env = DebugPlugin.getDefault().getLaunchManager()
-				.getNativeEnvironmentCasePreserved();
+		Map env = scriptExecEnvironment.getEnvironmentVariables(false);
 		boolean append = configuration.getAttribute(
 				ILaunchManager.ATTR_APPEND_ENVIRONMENT_VARIABLES, true);
 		if (configEnv != null) {
-			for (Iterator iterator = configEnv.keySet().iterator(); iterator
-					.hasNext();) {
+			for (Iterator iterator = configEnv.keySet().iterator(); iterator.hasNext();) {
 				String name = (String) iterator.next();
 				if (!env.containsKey(name) || !append) {
 					env.put(name, configEnv.get(name));
@@ -108,5 +120,11 @@ public class DeeLaunchConfigurationDelegate extends AbstractScriptLaunchConfigur
 		return config;
 	}
 
+	protected IEnvironment getScriptEnvironment(ILaunchConfiguration configuration)
+			throws CoreException {
+		IScriptProject scriptProject = AbstractScriptLaunchConfigurationDelegate
+				.getScriptProject(configuration);
+		return EnvironmentManager.getEnvironment(scriptProject);
+	}
 
 }

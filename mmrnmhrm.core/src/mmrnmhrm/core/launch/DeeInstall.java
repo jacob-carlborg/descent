@@ -1,10 +1,9 @@
 package mmrnmhrm.core.launch;
 
-import java.io.File;
-
 import mmrnmhrm.core.model.DeeNature;
 
 import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.dltk.core.environment.IFileHandle;
 import org.eclipse.dltk.launching.AbstractInterpreterInstall;
 import org.eclipse.dltk.launching.IInterpreterInstallType;
 import org.eclipse.dltk.launching.IInterpreterRunner;
@@ -21,7 +20,7 @@ public class DeeInstall extends AbstractInterpreterInstall {
 	}
 	
 	@Override
-	public void setInstallLocation(File installLocation) {
+	public void setInstallLocation(IFileHandle installLocation) {
 		super.setInstallLocation(installLocation);
 		if(getName() == null) {
 		}
@@ -40,6 +39,5 @@ public class DeeInstall extends AbstractInterpreterInstall {
 
 		return null;
 	}
-
 
 }

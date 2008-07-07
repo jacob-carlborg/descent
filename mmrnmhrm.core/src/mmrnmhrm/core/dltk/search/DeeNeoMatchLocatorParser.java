@@ -2,12 +2,14 @@ package mmrnmhrm.core.dltk.search;
 
 
 import mmrnmhrm.core.DeeCore;
-import mmrnmhrm.core.dltk.ParsingUtil;
+import mmrnmhrm.core.dltk.DeeModuleDeclaration;
+import mmrnmhrm.core.dltk.DeeParserUtil;
 
 import org.eclipse.dltk.ast.ASTNode;
 import org.eclipse.dltk.ast.ASTVisitor;
 import org.eclipse.dltk.ast.declarations.ModuleDeclaration;
 import org.eclipse.dltk.core.ISourceModule;
+import org.eclipse.dltk.core.SourceParserUtil;
 import org.eclipse.dltk.core.search.matching.MatchLocator;
 import org.eclipse.dltk.core.search.matching.MatchLocatorParser;
 import org.eclipse.dltk.core.search.matching.PossibleMatch;
@@ -25,12 +27,14 @@ public class DeeNeoMatchLocatorParser extends MatchLocatorParser {
 	}
 
 	public ModuleDeclaration parse(PossibleMatch possibleMatch) {
-		// ModuleDeclaration module =
-		// parser.parse(possibleMatch.getSourceContents());
-		ISourceModule sourceModule = 
-		(org.eclipse.dltk.core.ISourceModule) possibleMatch.getModelElement();
-		
-		return ParsingUtil.parseModule(sourceModule);
+		ISourceModule sourceModule = (ISourceModule) possibleMatch.getModelElement();
+		ModuleDeclaration module = SourceParserUtil.getModuleDeclaration(
+				sourceModule, null);
+		DeeModuleDeclaration deeModuleDecl = DeeParserUtil.getFixedDeeModuleDeclaration(module,
+				sourceModule);
+		if(deeModuleDecl != null)
+			return deeModuleDecl;
+		return module;
 	}
 
 	private ASTVisitor visitor = new ASTVisitor() {
@@ -49,6 +53,7 @@ public class DeeNeoMatchLocatorParser extends MatchLocatorParser {
 			// return super.visitGeneral(node);
 		}
 	};
+	
 	
 	//@Override
 	public void parseBodies(ModuleDeclaration unit) {

@@ -4,7 +4,7 @@ import static melnorme.miscutil.Assert.assertTrue;
 
 import java.util.Map;
 
-import melnorme.miscutil.Assert;
+import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.core.model.DeeProjectOptions;
 
@@ -35,16 +35,18 @@ public class DeeProjectBuilder extends IncrementalProjectBuilder {
 	
 	@Override
 	protected void startupOnInitialize() {
-		assertTrue(getModelProject() != null);
+		assertTrue(getProject() != null);
 	}
 
-	private IScriptProject getModelProject() {
+	private IScriptProject getModelProject() throws CoreException {
 		IScriptProject scriptProject = DLTKCore.create(getProject());
-		Assert.isTrue(scriptProject.exists());
+		if(!scriptProject.exists())
+			throw DeeCore.createCoreException("Project: " + scriptProject.getElementName()
+					+ " does not exist, or is not a DLTK project.", null);
 		return scriptProject;
 	}
 	
-	private DeeProjectOptions getProjectOptions() {
+	private DeeProjectOptions getProjectOptions() throws CoreException {
 		return DeeModel.getDeeProjectInfo(getModelProject());
 	}
 	

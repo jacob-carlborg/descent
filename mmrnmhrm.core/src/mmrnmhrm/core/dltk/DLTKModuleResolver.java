@@ -8,6 +8,7 @@ import melnorme.miscutil.StringUtil;
 import mmrnmhrm.core.model.DeeNameRules;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.dltk.core.IExternalSourceModule;
 import org.eclipse.dltk.core.IModelElement;
 import org.eclipse.dltk.core.IProjectFragment;
@@ -15,6 +16,7 @@ import org.eclipse.dltk.core.IScriptFolder;
 import org.eclipse.dltk.core.IScriptProject;
 import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.dltk.core.ModelException;
+import org.eclipse.dltk.core.environment.EnvironmentPathUtils;
 
 import dtool.ast.definitions.Module;
 import dtool.refmodel.pluginadapters.IModuleResolver;
@@ -48,8 +50,8 @@ public class DLTKModuleResolver implements IModuleResolver {
 					String fileext = DeeNameRules.VALID_EXTENSIONS[i];
 					ISourceModule modUnit = pkgFrag.getSourceModule(modName+fileext);
 				 	if(exists(modUnit)) { 
-					 	DeeModuleDeclaration modDecl = ParsingUtil.parseModule(modUnit);
-					 	return ParsingUtil.getNeoASTModule(modDecl);
+					 	DeeModuleDeclaration modDecl = DeeParserUtil.parseModule(modUnit);
+					 	return DeeParserUtil.getNeoASTModule(modDecl);
 				 	}
 				}
 			
@@ -61,7 +63,7 @@ public class DLTKModuleResolver implements IModuleResolver {
 	private boolean exists(ISourceModule modUnit) {
 		return modUnit != null && modUnit.exists()
 		// XXX: DLTK bug workaround: 
-		// modUnit.exists() true on external source modules of libraries
+		// modUnit.exists() true on ANY external source modules of libraries
 		// we should make a test case for this
 			&& externalReallyExists(modUnit)
 		;
@@ -70,7 +72,9 @@ public class DLTKModuleResolver implements IModuleResolver {
 	private boolean externalReallyExists(ISourceModule modUnit) {
 		if(!(modUnit instanceof IExternalSourceModule))
 			return true;
-		return new File(modUnit.getPath().toOSString()).exists();
+		//modUnit.getUnderlyingResource() of externals is allways null
+		IPath localPath = EnvironmentPathUtils.getLocalPath(modUnit.getPath());
+		return new File(localPath.toOSString()).exists();
 	}
 
 	//@Override

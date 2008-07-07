@@ -2,7 +2,7 @@
 <?eclipse version="3.2"?>
 <plugin>
    <extension
-         id="deenature"
+         id="nature"
          name="Dee nature"
          point="org.eclipse.core.resources.natures">
       <runtime>
@@ -10,19 +10,48 @@
       </runtime>
    </extension>
    <extension
+         point="org.eclipse.core.runtime.contentTypes">
+      <content-type
+            base-type="org.eclipse.core.runtime.text"
+            default-charset="UTF-8"
+            file-extensions="d, di, dh"
+            id="mmrnmhrm.core.content.dsource"
+            name="D Source (Mmrnmhrm)"
+            priority="high"/>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="mmrnmhrm.core.DeeCorePreferenceInitializer">
+      </initializer>
+   </extension>
+   <extension
          point="org.eclipse.dltk.core.language">
       <language
             class="mmrnmhrm.core.dltk.DeeLanguageToolkit"
-            nature="mmrnmhrm.core.deenature">
+            nature="mmrnmhrm.core.nature">
       </language>
    </extension>
    <extension
          point="org.eclipse.dltk.core.sourceElementParsers">
       <parser
             class="mmrnmhrm.core.dltk.DeeSourceElementParser"
-            nature="mmrnmhrm.core.deenature"
+            nature="mmrnmhrm.core.nature"
             priority="0">
       </parser>
+   </extension>
+   <extension
+         point="org.eclipse.dltk.core.sourceParsers">
+      <parserContribution
+            natureId="mmrnmhrm.core.nature">
+         <parser
+               class="mmrnmhrm.core.dltk.DeeSourceParserFactory"
+               description="%sourceParser.description"
+               id="mmrnmhrm.core.SourceParser"
+               name="%sourceParser.name"
+               priority="1">
+         </parser>
+      </parserContribution>
    </extension>
    <extension
          id="deebuilder"
@@ -45,16 +74,6 @@
       <persistent value="true"/>
    </extension>
    <extension
-         point="org.eclipse.core.runtime.contentTypes">
-      <content-type
-            base-type="org.eclipse.core.runtime.text"
-            default-charset="UTF-8"
-            file-extensions="d, di, dh"
-            id="mmrnmhrm.core.content.dsource"
-            name="D Source (Mmrnmhrm)"
-            priority="normal"/>
-   </extension>
-   <extension
          point="org.eclipse.core.expressions.definitions">
       <definition
             id="mmrnmhrm.core.expressions.isDeeNature">
@@ -62,7 +81,7 @@
                type="org.eclipse.core.resources.IProject">
             <test
                   property="org.eclipse.core.resources.projectNature"
-                  value="mmrnmhrm.core.deenature">
+                  value="mmrnmhrm.core.nature">
             </test>
          </adapt>
       </definition>
@@ -72,29 +91,32 @@
                type="org.eclipse.core.resources.IContainer">
             <test
                   property="org.eclipse.core.resources.projectNature"
-                  value="mmrnmhrm.core.deenature">
+                  value="mmrnmhrm.core.nature">
             </test>
          </adapt>
       </definition>
    </extension>
    <extension
-         point="org.eclipse.core.runtime.preferences">
-      <initializer
-            class="mmrnmhrm.core.DeeCorePreferenceInitializer">
-      </initializer>
+         name="TODO"
+         point="org.eclipse.dltk.core.selectionEngine">
+      <selectionEngine
+            class="mmrnmhrm.core.codeassist.DeeSelectionEngine"
+            nature="mmrnmhrm.core.nature"
+            priority="0">
+      </selectionEngine>
    </extension>
    <extension
          point="org.eclipse.dltk.core.search">
       <seachFactory
             class="mmrnmhrm.core.dltk.search.DeeSearchFactory"
-            nature="mmrnmhrm.core.deenature">
+            nature="mmrnmhrm.core.nature">
       </seachFactory>
    </extension>
    <extension
          point="org.eclipse.dltk.launching.interpreterInstallTypes">
       <interpreterInstallType
             class="mmrnmhrm.core.launch.DeeDmdInstallType"
-            id="mmrnmhrm.core.launching.interpreterInstallType1">
+            id="mmrnmhrm.core.launching.deeDmdInstallType">
       </interpreterInstallType>
    </extension>
    <!--
@@ -102,7 +124,7 @@
          point="org.eclipse.dltk.core.builder">
       <builder
             class="mmrnmhrm.core.build.DeeDLTKScriptBuilder"
-            nature="mmrnmhrm.core.deenature">
+            nature="mmrnmhrm.core.nature">
       </builder>
    </extension>
    -->

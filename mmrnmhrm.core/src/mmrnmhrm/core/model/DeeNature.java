@@ -11,7 +11,7 @@ import org.eclipse.dltk.core.ScriptNature;
 
 public class DeeNature extends ScriptNature  {
 
-	private static final String NATURE_BASEID = "deenature";
+	private static final String NATURE_BASEID = "nature";
 	public static final String NATURE_ID = DeeCore.PLUGIN_ID +"."+ NATURE_BASEID;
 
 

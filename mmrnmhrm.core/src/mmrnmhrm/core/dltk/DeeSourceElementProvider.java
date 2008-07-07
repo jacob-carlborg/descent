@@ -27,8 +27,11 @@ import dtool.ast.references.NamedReference;
 
 public final class DeeSourceElementProvider extends ASTNeoUpTreeVisitor {
 
-	private ISourceElementRequestor requestor;
-	public static final String[] EMPTY_STRING = new String[0];
+	protected static final String[] EMPTY_STRING = new String[0];
+	protected static final String OBJECT = "Object"; //$NON-NLS-1$
+	protected static final String[] OBJECT_SUPER_CLASS_LIST = new String[] {OBJECT};
+
+	protected ISourceElementRequestor requestor;
 
 	public DeeSourceElementProvider(ISourceElementRequestor requestor) {
 		this.requestor = requestor;
@@ -45,18 +48,116 @@ public final class DeeSourceElementProvider extends ASTNeoUpTreeVisitor {
 		requestor.exitModule(moduleDecl.dmdModule.getEndPos());
 	}
 	
-
-	protected static String[] processClassNames(DefinitionClass defClass) {
-		List<BaseClass> coll = defClass.baseClasses;
-		if(coll == null) 
-			return DeeSourceElementProvider.EMPTY_STRING;
-		String[] strs = new String[coll.size()];
-		Iterator<BaseClass> iter = coll.iterator();
-		for (int i = 0; i < strs.length; i++) {
-			strs[i] = iter.next().type.toStringAsElement();
-		}
-		return strs;
+	@Override
+	public boolean visit(Module node) {
+		//requestor.enterModule();
+		requestor.enterType(createTypeInfoForModule(node));
+		/*DeclarationModule md = node.md;
+		String pkgName = "";
+		if(md != null) {
+			for (int i = 0; i < md.packages.length; i++) {
+				RefIdentifier id = md.packages[i];
+				if(i == 0)
+					pkgName = pkgName + id.toString();
+				else
+					pkgName = pkgName + "." + id.toString();
+			}
+			requestor.acceptPackage(md.getStartPos(), md.getEndPos()-1, pkgName.toCharArray());
+		} else {
+			//requestor.acceptPackage(0, 0-1, "".toCharArray());
+		}*/
+		return true;
 	}
+
+	@Override
+	public void endVisit(Module node) {
+		requestor.exitType(node.sourceEnd() -1);
+		//requestor.exitModule(node.sourceEnd() -1);
+	}
+	
+	@Override
+	public boolean visit(DefinitionAggregate elem) {
+		requestor.enterType(createTypeInfoForDefinition(elem));
+		return true;
+	}
+	@Override
+	public void endVisit(DefinitionAggregate elem) {
+		requestor.exitType(elem.sourceEnd() -1);
+	}
+	
+	@Override
+	public boolean visit(DefinitionTemplate elem) {
+		requestor.enterType(createTypeInfoForDefinition(elem));
+		return true;
+	}
+	@Override
+	public void endVisit(DefinitionTemplate elem) {
+		requestor.exitType(elem.sourceEnd() -1);
+	}		
+	
+	@Override
+	public boolean visit(DefinitionClass elem) {
+		requestor.enterType(createTypeInfoForClass(elem));
+		return true;
+	}
+	@Override
+	public void endVisit(DefinitionClass elem) {
+		requestor.exitType(elem.sourceEnd() -1);
+	}	
+	
+	@Override
+	public boolean visit(DefinitionFunction elem) {
+		requestor.enterMethod(createMethodInfo(elem));
+		return true;
+	}
+	@Override
+	public void endVisit(DefinitionFunction elem) {
+		requestor.exitMethod(elem.sourceEnd() -1);
+	}	
+
+	/* ---------------------------------- */
+
+	@Override
+	public boolean visit(DefinitionVariable elem) {
+		requestor.enterField(createFieldInfo(elem));
+		return true;
+	}
+	
+	@Override
+	public void endVisit(DefinitionVariable elem) {
+		requestor.exitField(elem.sourceEnd()-1);
+	}	
+	
+	@Override
+	public boolean visit(DefinitionEnum elem) {
+		requestor.acceptFieldReference(elem.getName().toCharArray(), elem.sourceStart());
+		return true;
+	}
+	
+	@Override
+	public boolean visit(DefinitionTypedef elem) {
+		requestor.acceptFieldReference(elem.getName().toCharArray(), elem.sourceStart());
+		return true;
+	}
+	
+	@Override
+	public boolean visit(DefinitionAlias elem) {
+		requestor.acceptFieldReference(elem.getName().toCharArray(), elem.sourceStart());
+		return true;
+	}
+	
+
+	@Override
+	public boolean visit(NamedReference elem) {
+		requestor.acceptTypeReference(elem.toStringAsElement().toCharArray(), 
+				elem.sourceStart() /*-1*/);
+		return true;
+	}
+
+	/* ================================== */
+
+	
+
 
 	protected static void setupDefUnitTypeInfo(DefUnit defAggr,
 			ISourceElementRequestor.ElementInfo elemInfo) {
@@ -140,6 +241,21 @@ public final class DeeSourceElementProvider extends ASTNeoUpTreeVisitor {
 		return typeInfo;
 	}
 	
+
+	protected static String[] processClassNames(DefinitionClass defClass) {
+		List<BaseClass> coll = defClass.baseClasses;
+		if(coll == null || coll.isEmpty())
+			//return DeeSourceElementProvider.EMPTY_STRING;
+			return DeeSourceElementProvider.OBJECT_SUPER_CLASS_LIST;
+		String[] strs = new String[coll.size()];
+		//Collections.reverse(coll); // XXX: DLTK: dunno why, but reversing works better
+		Iterator<BaseClass> iter = coll.iterator();
+		for (int i = 0; i < strs.length; i++) {
+			strs[i] = iter.next().type.toStringAsElement();
+		}
+		return strs;
+	}
+	
 	private ISourceElementRequestor.MethodInfo createMethodInfo(DefinitionFunction elem) {
 		ISourceElementRequestor.MethodInfo methodInfo = new ISourceElementRequestor.MethodInfo();
 		setupDefUnitTypeInfo(elem, methodInfo);
@@ -165,115 +281,6 @@ public final class DeeSourceElementProvider extends ASTNeoUpTreeVisitor {
 		setupDefinitionTypeInfo(elem, fieldInfo);
 		return fieldInfo;
 	}
-
-	/* ================================== */
 	
-	
-	
-	@Override
-	public boolean visit(Module node) {
-		requestor.enterModule();
-		requestor.enterType(createTypeInfoForModule(node));
-		/*DeclarationModule md = node.md;
-		String pkgName = "";
-		if(md != null) {
-			for (int i = 0; i < md.packages.length; i++) {
-				RefIdentifier id = md.packages[i];
-				if(i == 0)
-					pkgName = pkgName + id.toString();
-				else
-					pkgName = pkgName + "." + id.toString();
-			}
-			requestor.acceptPackage(md.getStartPos(), md.getEndPos()-1, pkgName.toCharArray());
-		} else {
-			//requestor.acceptPackage(0, 0-1, "".toCharArray());
-		}*/
-		return true;
-	}
-
-	@Override
-	public void endVisit(Module node) {
-		requestor.exitType(node.sourceEnd() -1);
-		requestor.exitModule(node.sourceEnd() -1);
-	}
-	
-	@Override
-	public boolean visit(DefinitionAggregate elem) {
-		requestor.enterType(createTypeInfoForDefinition(elem));
-		return true;
-	}
-	@Override
-	public void endVisit(DefinitionAggregate elem) {
-		requestor.exitType(elem.sourceEnd() -1);
-	}
-	
-	@Override
-	public boolean visit(DefinitionTemplate elem) {
-		requestor.enterType(createTypeInfoForDefinition(elem));
-		return true;
-	}
-	@Override
-	public void endVisit(DefinitionTemplate elem) {
-		requestor.exitType(elem.sourceEnd() -1);
-	}		
-	
-	@Override
-	public boolean visit(DefinitionClass elem) {
-		requestor.enterType(createTypeInfoForClass(elem));
-		return true;
-	}
-	@Override
-	public void endVisit(DefinitionClass elem) {
-		requestor.exitType(elem.sourceEnd() -1);
-	}	
-	
-	@Override
-	public boolean visit(DefinitionFunction elem) {
-		requestor.enterMethod(createMethodInfo(elem));
-		return true;
-	}
-	@Override
-	public void endVisit(DefinitionFunction elem) {
-		requestor.exitMethod(elem.sourceEnd() -1);
-	}	
-
-	/* ---------------------------------- */
-
-	@Override
-	public boolean visit(DefinitionVariable elem) {
-		requestor.enterField(createFieldInfo(elem));
-		return true;
-	}
-	
-	@Override
-	public void endVisit(DefinitionVariable elem) {
-		requestor.exitField(elem.sourceEnd()-1);
-	}	
-	
-	@Override
-	public boolean visit(DefinitionEnum elem) {
-		//requestor.acceptFieldReference(elem.getName().toCharArray(), elem.sourceStart());
-		return true;
-	}
-	
-	@Override
-	public boolean visit(DefinitionTypedef elem) {
-		//requestor.acceptFieldReference(elem.getName().toCharArray(), elem.sourceStart());
-		return true;
-	}
-	
-	@Override
-	public boolean visit(DefinitionAlias elem) {
-		//requestor.acceptFieldReference(elem.getName().toCharArray(), elem.sourceStart());
-		return true;
-	}
-	
-
-	@Override
-	public boolean visit(NamedReference elem) {
-		requestor.acceptTypeReference(elem.toStringAsElement().toCharArray(), 
-				elem.sourceStart()-1);
-		return true;
-	}
 
 }

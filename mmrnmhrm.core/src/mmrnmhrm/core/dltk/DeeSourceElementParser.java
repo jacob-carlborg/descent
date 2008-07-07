@@ -1,120 +1,59 @@
 package mmrnmhrm.core.dltk;
 
-import melnorme.miscutil.ExceptionAdapter;
 import mmrnmhrm.core.DeeCore;
-import mmrnmhrm.core.DeeCorePreferences;
-import mmrnmhrm.core.LangCore;
+import mmrnmhrm.core.model.DeeNature;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.dltk.ast.declarations.ModuleDeclaration;
-import org.eclipse.dltk.compiler.ISourceElementRequestor;
-import org.eclipse.dltk.compiler.problem.IProblemReporter;
-import org.eclipse.dltk.core.DLTKCore;
-import org.eclipse.dltk.core.ISourceElementParser;
-import org.eclipse.dltk.core.ISourceModule;
-import org.eclipse.dltk.core.ModelException;
+import org.eclipse.dltk.compiler.task.ITaskReporter;
+import org.eclipse.dltk.compiler.task.TodoTaskAstParser;
+import org.eclipse.dltk.compiler.task.TodoTaskPreferences;
+import org.eclipse.dltk.core.AbstractSourceElementParser;
+import org.eclipse.dltk.core.SourceParserUtil;
 import org.eclipse.dltk.core.ISourceModuleInfoCache.ISourceModuleInfo;
 
-import dtool.Logg;
-import dtool.ast.definitions.Module;
-
-public class DeeSourceElementParser implements ISourceElementParser {
+public class DeeSourceElementParser extends AbstractSourceElementParser {
  
-	private static final String AST_CACHE_KEY = "AST";
-	
-	private ISourceElementRequestor fRequestor = null;
-	private IProblemReporter fReporter = null;
-
-	public DeeSourceElementParser(
-/*			ISourceElementRequestor requestor,
-			IProblemReporter problemReporter*/) {
-		//this.fRequestor = requestor;
-		//this.fReporter = problemReporter;
+	public DeeSourceElementParser() {
 	}
 
-	//@Override
-	public void setReporter(IProblemReporter reporter) {
-		this.fReporter = reporter;
+	@Override
+	protected String getNatureId() {
+		return DeeNature.NATURE_ID;
 	}
 	
-	public void setRequestor(ISourceElementRequestor requestor ) {
-		this.fRequestor = requestor;
-	}
+	public void parseSourceModule(char[] contents, ISourceModuleInfo astCache, char[] filename) {
 
-	@SuppressWarnings("restriction")
-	//@Override
-	public ModuleDeclaration parseSourceModule(
-			char[] contents, ISourceModuleInfo astCache, char[] filename) {
-
-		IPath path = new Path(new String(filename));
-		ISourceModule module = null;
-		if(!path.isAbsolute()) {
-			IFile file = DeeCore.getWorkspaceRoot().getFile(path);
-			module = DLTKCore.createSourceModuleFrom(file);
-		}
+		ModuleDeclaration moduleDeclaration = SourceParserUtil.getModuleDeclaration(filename,
+				contents, getNatureId(), getProblemReporter(), astCache);
 		
-		//assertNotNull(module);
-		//assertTrue(module.exists());
-		// create a parser, that gives us an AST
-		DeeModuleDeclaration moduleDeclaration = parseModule(astCache, module, contents, fReporter, filename);
-		
-		DeeSourceElementProvider provider = new DeeSourceElementProvider(fRequestor);
-		provider.provide(moduleDeclaration);
-		return null;
-		//return moduleDeclaration;
-	}
-	
+		DeeModuleDeclaration deeModuleDecl = (DeeModuleDeclaration) moduleDeclaration;
 
-	/** Obtains an AST from the given module, possibly using a cached value. 
-	 * Must supply either sourceModule or source */
-	public static DeeModuleDeclaration parseModule(ISourceModuleInfo astCache,
-			ISourceModule modUnit, char[] source, IProblemReporter reporter, char[] filename) {
-		DeeModuleDeclaration moduleDecl = getCachedModule(astCache);
-		if(moduleDecl != null) {
-			String str = (modUnit == null) ? "<null>" : modUnit.getElementName();
-			Logg.model.println("ParseModule (got AST cache): " + str);
-			// setup the moduleUnit nonetheless, cause it can be null
-			if(modUnit != null) {
-				moduleDecl.neoModule.setModuleUnit(modUnit);
+		DeeSourceElementProvider provider = new DeeSourceElementProvider(getRequestor());
+		provider.provide(deeModuleDecl);
+
+		if (getProblemReporter() != null) {
+			final ITaskReporter taskReporter = (ITaskReporter) getProblemReporter()
+					.getAdapter(ITaskReporter.class);
+			if (taskReporter != null) {
+				taskReporter.clearTasks();
+				parseTasks(taskReporter, contents, moduleDeclaration);
 			}
-			return moduleDecl;
 		}
-		
-		if(source == null)
-		try {
-			source = modUnit.getSourceAsCharArray();
-		} catch (ModelException e) {
-			LangCore.log(e);
-			throw ExceptionAdapter.unchecked(e);
-		}
-
-		// FIXME use project specific settings
-		int langVersion = DeeCorePreferences.getInt(DeeCorePreferences.LANG_VERSION);
-		
-		moduleDecl = DeeSourceParser.parseModule(source, langVersion, reporter, filename);
-		String str = (filename == null) ? "<null>" : new String(filename);
-		Logg.model.println("ParseModule parsed: ", str);
-		Module neoModule = ParsingUtil.getNeoASTModule(moduleDecl);
-		//Assert.isNotNull(modUnit);
-		if(neoModule != null && modUnit != null)
-			neoModule.setModuleUnit(modUnit);
-
-		if(astCache != null) {
-			astCache.put(AST_CACHE_KEY, moduleDecl);
-		}
-		return moduleDecl;
 	}
 
-	public static DeeModuleDeclaration getCachedModule(ISourceModuleInfo astCache) {
-		if(astCache != null) {
-			DeeModuleDeclaration moduleDeclaration;
-			moduleDeclaration = (DeeModuleDeclaration) astCache.get(AST_CACHE_KEY);
-			if(moduleDeclaration != null)
-				return moduleDeclaration;
+	// TODO, make our own tasks parser.
+	protected void parseTasks(ITaskReporter taskReporter, char[] content,
+			ModuleDeclaration moduleDeclaration) {
+		final TodoTaskPreferences preferences = new TodoTaskPreferences(DeeCore.getInstance()
+				.getPluginPreferences());
+		if (preferences.isEnabled()) {
+			final TodoTaskAstParser taskParser = new TodoTaskAstParser(taskReporter, preferences,
+					moduleDeclaration);
+			if (taskParser.isValid()) {
+				taskParser.parse(content);
+			}
 		}
-		return null;
 	}
+
 
 }

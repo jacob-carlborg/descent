@@ -1,7 +1,7 @@
 package mmrnmhrm.core.model;
 
 import mmrnmhrm.core.dltk.DeeModuleDeclaration;
-import mmrnmhrm.core.dltk.ParsingUtil;
+import mmrnmhrm.core.dltk.DeeParserUtil;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.dltk.core.DLTKCore;
@@ -33,14 +33,14 @@ public class CompilationUnit {
 	}
 	
 	public IASTNode getModule() {
-		DeeModuleDeclaration deeModule = ParsingUtil.parseModule(modUnit);
+		DeeModuleDeclaration deeModule = DeeParserUtil.parseModule(modUnit);
 		if(deeModule.neoModule == null)
 			return deeModule.dmdModule;
 		return deeModule.neoModule;
 	}
 
 	public DeeModuleDeclaration getDeeModuleDeclaration() {
-		return ParsingUtil.parseModule(modUnit);
+		return DeeParserUtil.parseModule(modUnit);
 	}
 
 }

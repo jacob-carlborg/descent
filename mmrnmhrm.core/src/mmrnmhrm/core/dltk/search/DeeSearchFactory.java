@@ -1,33 +1,28 @@
 package mmrnmhrm.core.dltk.search;
 
 import org.eclipse.core.runtime.SubProgressMonitor;
-import org.eclipse.dltk.core.ISearchFactory;
-import org.eclipse.dltk.core.search.DLTKSearchParticipant;
+import org.eclipse.dltk.core.ISearchPatternProcessor;
+import org.eclipse.dltk.core.search.AbstractSearchFactory;
 import org.eclipse.dltk.core.search.IDLTKSearchScope;
 import org.eclipse.dltk.core.search.IMatchLocatorParser;
 import org.eclipse.dltk.core.search.SearchPattern;
 import org.eclipse.dltk.core.search.SearchRequestor;
-import org.eclipse.dltk.core.search.indexing.SourceIndexerRequestor;
 import org.eclipse.dltk.core.search.matching.MatchLocator;
 
-public class DeeSearchFactory implements ISearchFactory {
+public class DeeSearchFactory extends AbstractSearchFactory {
 
-	public SourceIndexerRequestor createSourceRequestor() {
-		return new SourceIndexerRequestor();
-	}
-
-	public DLTKSearchParticipant createSearchParticipant() {
-		return null; // Use default DLTKSearchParticipant
-	}
-
-	public MatchLocator createMatchLocator(SearchPattern pattern,
-			SearchRequestor requestor, IDLTKSearchScope scope,
-			SubProgressMonitor monitor) {
+	public MatchLocator createMatchLocator(SearchPattern pattern, SearchRequestor requestor,
+			IDLTKSearchScope scope, SubProgressMonitor monitor) {
 		return new DeeNeoMatchLocator(pattern, requestor, scope, monitor);
 	}
 
 	public IMatchLocatorParser createMatchParser(MatchLocator locator) {
 		return new DeeNeoMatchLocatorParser(locator);
+	}
+
+	public ISearchPatternProcessor createSearchPatternProcessor() {
+		// XXX: DLTK: this does what?
+		return super.createSearchPatternProcessor();
 	}
 
 }

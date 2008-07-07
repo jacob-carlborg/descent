@@ -4,33 +4,26 @@ import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.DeeNameRules;
 import mmrnmhrm.core.model.DeeNature;
 
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.dltk.core.AbstractLanguageToolkit;
 import org.eclipse.dltk.core.IDLTKLanguageToolkit;
-import org.eclipse.dltk.core.IModelElement;
+import org.eclipse.dltk.core.environment.IEnvironment;
 
 public class DeeLanguageToolkit extends AbstractLanguageToolkit  {
 
-	private static final String[] DEE_LANGUAGE_FILE_EXTENSIONS = new String[] {
-		"d", "di", "dh"
-	};
+	private static final String DEE_LANGUAGE_CONTENT_DSOURCE = "mmrnmhrm.core.content.dsource";
 
 	private static final IDLTKLanguageToolkit instance = new DeeLanguageToolkit();
 	
 	public static IDLTKLanguageToolkit getDefault() {
 		return instance ;
 	}
-
-
-	@Override
-	protected String getCorePluginID() {
-		return DeeCore.PLUGIN_ID;
-	}
-
-	@Override
-	public String[] getLanguageFileExtensions() {
-		return DEE_LANGUAGE_FILE_EXTENSIONS;
+	
+	public boolean languageSupportZIPBuildpath() {
+		return true;
 	}
 
 	//@Override
@@ -43,21 +36,25 @@ public class DeeLanguageToolkit extends AbstractLanguageToolkit  {
 		return DeeNature.NATURE_ID;
 	}
 	
-	public IStatus validateSourceModule(IModelElement parent, String name) {
+	//@Override
+	public String getLanguageContentType() {
+		return DEE_LANGUAGE_CONTENT_DSOURCE;
+	}
+	
+	@Override
+	public IStatus validateSourceModule(IResource resource) {
+		String name = resource.getName();
 		if(DeeNameRules.isValidCompilationUnitName(name)) {
-			return new Status(IStatus.OK, DeeCore.PLUGIN_ID, null);
+			return Status.OK_STATUS;
 		} else {
-			return new Status(IStatus.ERROR, DeeCore.PLUGIN_ID, 
-					"Invalid resource name:" + name);
+			return new Status(IStatus.ERROR, DeeCore.PLUGIN_ID, "Invalid resource name:" + name);
 		}
 	}
 	
-	
-	
-	/* TODO: when DLTK supports is, validate packages
 	@Override
-	public boolean validateSourcePackage(IPath path) {
-		return DeeNameRules.isValidPackageName(path.lastSegment());
-	}*/
+	public boolean validateSourcePackage(IPath path, IEnvironment environment) {
+		return true;
+		//return DeeNameRules.isValidPackagePathName(path.toString());
+	}
 
 }

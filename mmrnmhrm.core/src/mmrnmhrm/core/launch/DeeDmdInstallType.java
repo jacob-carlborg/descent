@@ -1,32 +1,36 @@
 package mmrnmhrm.core.launch;
 
-import java.io.BufferedReader;
-import java.io.File;
+import static melnorme.miscutil.Assert.assertFail;
+
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 
 import melnorme.miscutil.Assert;
 import mmrnmhrm.core.DeeCore;
-import mmrnmhrm.core.LangCore;
 import mmrnmhrm.core.model.DeeNature;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.dltk.core.IBuildpathEntry;
+import org.eclipse.dltk.core.environment.EnvironmentPathUtils;
+import org.eclipse.dltk.core.environment.IDeployment;
+import org.eclipse.dltk.core.environment.IEnvironment;
+import org.eclipse.dltk.core.environment.IFileHandle;
 import org.eclipse.dltk.internal.launching.AbstractInterpreterInstallType;
+import org.eclipse.dltk.launching.EnvironmentVariable;
 import org.eclipse.dltk.launching.IInterpreterInstall;
 import org.eclipse.dltk.launching.LibraryLocation;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 
 public class DeeDmdInstallType extends AbstractInterpreterInstallType {
 
+	private static final Path DMD_INSTALL_LIBRARY_PATH = new Path("src/phobos");
+
+	public static class DeeLaunchingPlugin extends DeeCore {
+	}
 	private static String[] interpreterNames = { "dmd" };
 	
 	public static boolean isStandardLibraryEntry(IBuildpathEntry entry) {
@@ -37,8 +41,6 @@ public class DeeDmdInstallType extends AbstractInterpreterInstallType {
 			&& entry.getPath().segment(numSegs-2).matches("src");
 	}
 	
-	public static class DeeLaunchingPlugin extends DeeCore {
-	}
 
 	//@Override
 	public String getNatureId() {
@@ -57,7 +59,7 @@ public class DeeDmdInstallType extends AbstractInterpreterInstallType {
 
 	//@Override
 	public String getName() {
-		return "DMD + Phobos";
+		return "DMD Install";
 	}
 
 	@Override
@@ -71,46 +73,60 @@ public class DeeDmdInstallType extends AbstractInterpreterInstallType {
 	}
 	
 	@Override
-	public synchronized LibraryLocation[] getDefaultLibraryLocations(File installLocation) {
-		return super.getDefaultLibraryLocations(installLocation);
+	public synchronized LibraryLocation[] getDefaultLibraryLocations(IFileHandle installLocation,
+			EnvironmentVariable[] variables, IProgressMonitor monitor) {
+		//return super.getDefaultLibraryLocations(installLocation, variables, monitor);
+		List<LibraryLocation> locations = new ArrayList<LibraryLocation>();
+		addDefaultLibraryLocations(installLocation, locations);
+		return locations.toArray(new LibraryLocation[0]);
 	}
 	
+	/** Unlike the parent class, this InstallType does not find library paths by
+	 * running some kind of external executable, like Ruby or Python.
+	 * It just adds some predefined path. */
 	@Override
-	@SuppressWarnings("unchecked")
-	protected IRunnableWithProgress createLookupRunnable(
-			final File installLocation, final List locations) {
+	@Deprecated
+	protected ILookupRunnable createLookupRunnable(
+			final IFileHandle installLocation, final List locations,
+			final EnvironmentVariable[] variables) {
+		assertFail();
+	
 		//return super.createLookupRunnable(installLocation, locations);
+		@SuppressWarnings("unchecked")
 		final List<LibraryLocation> locs = locations;
 		
-		return new IRunnableWithProgress() {
-			public void run(IProgressMonitor monitor) {
+
+		return new ILookupRunnable() {
+			public void run(IProgressMonitor monitor)
+					throws InvocationTargetException, InterruptedException {
 				//String[] env = extractEnvironment();
 				
-				IPath path;
-				try {
-					path = new Path(installLocation.getCanonicalPath());
-					path = path.removeLastSegments(2);
-					path = path.append(new Path("src/phobos"));
-					LibraryLocation loc = new LibraryLocation(path);
-					locs.add(loc);
-				} catch (IOException e) {
-					getLog().log(createStatus(IStatus.ERROR,
-									"Unable to lookup library paths", e));
-				}
+//				try {
+					addDefaultLibraryLocations(installLocation, locs);
+//				} catch (IOException e) {
+//					getLog().log(createStatus(IStatus.ERROR, "Unable to lookup library paths", e));
+//				}
 			}
+
 		};
+	}
+	
+	private void addDefaultLibraryLocations(IFileHandle installLocation, List<LibraryLocation> locs) {
+		IPath path = new Path(installLocation.getCanonicalPath());
+		path = path.removeLastSegments(2);
+		path = path.append(DMD_INSTALL_LIBRARY_PATH);
+		IEnvironment env = installLocation.getEnvironment();
+		LibraryLocation loc = new LibraryLocation(EnvironmentPathUtils.getFullPath(env, path));
+		locs.add(loc);
 	}
 
 	@Override
-	protected File createPathFile() throws IOException {
+	protected IPath createPathFile(IDeployment deployment) throws IOException {
 		Assert.fail("Not Used"); return null;
 	}
 
-	@Override
-	public IStatus validateInstallLocation(File installLocation) {
-		return super.validateInstallLocation(installLocation);
-	}
-	
+	// Generating the InstallName not supported yet
+	/*
 	public String generateAutomaticInstallName(File installLocation) {
 		Process process = null;
 		String[] env = extractEnvironment();
@@ -148,6 +164,6 @@ public class DeeDmdInstallType extends AbstractInterpreterInstallType {
 			br.close(); br.close();
 		}
 	}
-
+	*/
 
 }
