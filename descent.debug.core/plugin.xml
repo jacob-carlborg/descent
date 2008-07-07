@@ -59,6 +59,12 @@
             class="descent.internal.debug.core.model.gdb.GdbDebugger"
             id="descent.debug.core.debugger.gdb"
             name="Gdb"/>
+            <!--
+      <debugger
+            class="descent.internal.debug.core.model.zeroBugs.ZeroBugsDebugger"
+            id="descent.debug.core.debugger.zeroBugs"
+            name="ZeroBUGS"/>
+            -->
    </extension>
 
 </plugin>

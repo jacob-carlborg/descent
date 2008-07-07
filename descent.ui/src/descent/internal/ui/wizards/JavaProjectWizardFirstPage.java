@@ -543,7 +543,7 @@ public class JavaProjectWizardFirstPage extends WizardPage {
 			} else {
 				fHintText.setVisible(false);
 			}
-			¨*/
+			*/
 		}
 		
 		public void update(Observable o, Object arg) {
