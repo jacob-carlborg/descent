@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import melnorme.miscutil.ExceptionAdapter;
-import mmrnmhrm.core.dltk.ParsingUtil;
+import mmrnmhrm.core.dltk.DeeParserUtil;
 import mmrnmhrm.core.model.CompilationUnit;
 
 import org.eclipse.core.resources.IFile;
@@ -98,7 +98,7 @@ public abstract class SampleMainProject {
 	
 	public static Module getModule(String filepath) throws CoreException {
 		CompilationUnit cunit = new CompilationUnit(getFile(filepath));
-		return ParsingUtil.getNeoASTModule(cunit.modUnit);
+		return DeeParserUtil.getNeoASTModule(cunit.modUnit);
 	}
 	
 }

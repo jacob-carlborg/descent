@@ -1,8 +1,9 @@
 package mmrnmhrm.ui.wizards;
 
+import static melnorme.miscutil.Assert.assertTrue;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.ModelUtil;
-import mmrnmhrm.org.eclipse.dltk.ui.wizards.TestAccessor;
+import mmrnmhrm.org.eclipse.dltk.ui.wizards.ProjectWizardFirstPage__Accessor;
 import mmrnmhrm.tests.BaseUITest;
 import mmrnmhrm.tests.SampleMainProject;
 import mmrnmhrm.tests.adapters.TestAccessor_WizardDialog;
@@ -18,8 +19,6 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import static melnorme.miscutil.Assert.assertTrue;
 
 
 
@@ -80,8 +79,7 @@ public class DeeProjectWizardTest extends BaseUITest {
 	
 	@Test
 	public void test_P1Validation() throws Throwable {
-		//wizard.fFirstPage.fNameGroup.setName(SampleMainProject.SAMPLEPROJNAME);
-		TestAccessor.TestAccessor_NameGroup._setName(wizard.fFirstPage, SampleMainProject.SAMPLEPROJNAME);
+		ProjectWizardFirstPage__Accessor.access_fNameGroup(wizard.fFirstPage)._setName(SampleMainProject.SAMPLEPROJNAME);
 		assertTrue(!wizard.canFinish());
 
 		simulatePressCancel();
@@ -91,7 +89,7 @@ public class DeeProjectWizardTest extends BaseUITest {
 	@Test
 	public void test_P1_Finish() throws Throwable {
 		wizard.fFirstPage.getProjectName();
-		TestAccessor.TestAccessor_NameGroup._setName(wizard.fFirstPage, NEWPROJNAME);
+		ProjectWizardFirstPage__Accessor.access_fNameGroup(wizard.fFirstPage)._setName(NEWPROJNAME);
 		assertTrue(wizard.canFinish());
 
 		simulatePressFinish();
@@ -119,7 +117,7 @@ public class DeeProjectWizardTest extends BaseUITest {
 	
 	@Test
 	public void test_P1_P2_P1_Finish() throws Throwable {
-		TestAccessor.TestAccessor_NameGroup._setName(wizard.fFirstPage, NEWPROJNAME);
+		ProjectWizardFirstPage__Accessor.access_fNameGroup(wizard.fFirstPage)._setName(NEWPROJNAME);
 		assertTrue(wizard.canFinish());
 		simulateEnterPage2();
 		
@@ -134,7 +132,7 @@ public class DeeProjectWizardTest extends BaseUITest {
 	
 	@Test
 	public void test_P1_Cancel() throws Throwable {
-		TestAccessor.TestAccessor_NameGroup._setName(wizard.fFirstPage, NEWPROJNAME);
+		ProjectWizardFirstPage__Accessor.access_fNameGroup(wizard.fFirstPage)._setName(NEWPROJNAME);
 		assertTrue(wizard.canFinish());
 		
 		

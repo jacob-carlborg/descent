@@ -5,7 +5,7 @@ import static melnorme.miscutil.Assert.assertTrue;
 
 import java.util.Collection;
 
-import mmrnmhrm.core.dltk.ParsingUtil;
+import mmrnmhrm.core.dltk.DeeParserUtil;
 
 import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.dltk.core.ModelException;
@@ -50,7 +50,7 @@ public class FindDef__Common {
 		System.out.print("Find ref case #"+counter+": "+offset+": ");
 		System.out.println(modUnit.getBuffer().getContents().substring(offset).split("\\s")[0]);
 		
-		ASTNeoNode node = ASTNodeFinder.findElement(ParsingUtil.getNeoASTModule(modUnit), offset);
+		ASTNeoNode node = ASTNodeFinder.findElement(DeeParserUtil.getNeoASTModule(modUnit), offset);
 
 		Reference ref = (Reference) node;
 		
