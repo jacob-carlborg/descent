@@ -30,12 +30,16 @@ public abstract class Expression extends Resolvable implements IDefUnitReference
 	}
 
 	public static Expression[] convertMany(descent.internal.compiler.parser.Expression[] elements) {
+		if(elements == null)
+			return null;
 		Expression[] rets = new Expression[elements.length];
 		DescentASTConverter.convertMany(elements, rets);
 		return rets;
 	}
 	
 	public static Expression[] convertMany(List<descent.internal.compiler.parser.Expression> elements) {
+		if(elements == null)
+			return null;
 		Expression[] rets = new Expression[elements.size()];
 		
 		DescentASTConverter.convertMany(elements, rets);
