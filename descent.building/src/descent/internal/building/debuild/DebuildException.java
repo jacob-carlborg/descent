@@ -13,4 +13,9 @@ package descent.internal.building.debuild;
     {
         super(msg);
     }
+    
+    public DebuildException(Exception e)
+    {
+        super(e);
+    }
 }

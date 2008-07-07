@@ -1,10 +1,14 @@
 package descent.internal.building.debuild;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.debug.core.ILaunchConfiguration;
 
 import descent.core.ICompilationUnit;
@@ -34,9 +38,10 @@ import static descent.building.IDescentBuilderConstants.*;
     private final IJavaProject project;
     private final IVMInstall compilerInstall;
     private final ICompilerInterface compilerInterface;
+    private final IFolder outputResource;
     
+    // For version/debug settings
     private final IJavaProject sourceProject;
-    
     private final Integer versionLevel;
     private final List<String> versionIdents;
     private final Integer debugLevel;
@@ -57,10 +62,10 @@ import static descent.building.IDescentBuilderConstants.*;
 		            project.getElementName());
 		}
 		compilerInterface = BuilderUtil.getCompilerInterface(compilerInstall);
+		outputResource = setOutputResource();
 		
 		// Set debug/version settings
 		sourceProject = getSourceProject();
-		
 		debugLevel = getLevel(ATTR_DEBUG_LEVEL, JavaCore.COMPILER_DEBUG_LEVEL);
 		versionLevel = getLevel(ATTR_VERSION_LEVEL, JavaCore.COMPILER_VERSION_LEVEL);
 		debugIdents = getIdents(ATTR_DEBUG_IDENTS, JavaCore.COMPILER_DEBUG_IDENTIFIERS, false);
@@ -82,6 +87,15 @@ import static descent.building.IDescentBuilderConstants.*;
     public ICompilerInterface getCompilerInterface()
     {
         return compilerInterface;
+    }
+    
+    /**
+     * Gets the associated launch configuration. Using the specific methods
+     * should be preferred to this for getting information from the config.
+     */
+    public ILaunchConfiguration getLaunchConfig()
+    {
+        return config;
     }
     
     /**
@@ -160,8 +174,33 @@ import static descent.building.IDescentBuilderConstants.*;
         return debugMode;
     }
     
+    public IFolder getOutputResource()
+    {
+        return outputResource;
+    }
+    
+    public File getOutputLocation()
+    {
+        return new File(BuilderUtil.getAbsolutePath(outputResource.getFullPath()));
+    }
+    
     //--------------------------------------------------------------------------
     // Private methods
+    
+    private IFolder setOutputResource()
+    {
+        try
+        {
+            IPath outputLoc = project.getOutputLocation().addTrailingSeparator()
+                    .append(config.getName());
+            return project.getCorrespondingResource().getWorkspace().getRoot().
+                getFolder(outputLoc);
+        }
+        catch(JavaModelException e)
+        {
+            throw new DebuildException(e);
+        }
+    }
     
     private final IJavaProject initializeProject()
     {
@@ -215,9 +254,13 @@ import static descent.building.IDescentBuilderConstants.*;
         
         if(removePredefined)
         {
-            for(String ident : idents)
+            Iterator<String> iter = idents.iterator();
+            while(iter.hasNext())
+            {
+                String ident = iter.next();
                 if(BuilderUtil.isPredefinedVersion(ident))
-                    idents.remove(ident);
+                    iter.remove();
+            }
         }
         return idents;
     }

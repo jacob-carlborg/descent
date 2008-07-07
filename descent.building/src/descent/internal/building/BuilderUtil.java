@@ -120,8 +120,10 @@ public class BuilderUtil
         if(0 == len)
             return false;
         
-        for(int i = 0; i < len; i++)
-            if(!isValidIdChar(id.charAt(i)))
+        if(!isValidIdStart(id.charAt(0)))
+            return false;
+        for(int i = 1; i < len; i++)
+            if(!isValidIdPart(id.charAt(i)))
                 return false;
         return true;
     }
@@ -155,14 +157,14 @@ public class BuilderUtil
         }
     }
     
-    private static boolean isValidIdChar(char c)
+    private static boolean isValidIdStart(char c)
     {
-        return 
-            (c >= 'a' && c <= 'z') || 
-            (c >= 'A' && c <= 'Z') || 
-            (c >= '0' && c <= '9') ||
-            c == '_' ||
-            c >= 128; // Assume anything in unicode is OK
+        return Character.isJavaIdentifierStart(c) && !(c == '$');
+    }
+    
+    private static boolean isValidIdPart(char c)
+    {
+        return Character.isJavaIdentifierPart(c) && !(c == '$');
     }
     
     /**
@@ -260,5 +262,19 @@ public class BuilderUtil
         if(null == project)
             return null;
         return JavaRuntime.getVMInstall(project);
+    }
+    
+    /**
+     * This method is needed since 
+     * {@link ILaunchConfiguration#contentsEqual(ILaunchConfiguration)} compares
+     * the paths of launch configurations as well, and the getInfo method is not
+     * publicly available.
+     */
+    public static boolean launchConfigsEqual(ILaunchConfiguration config,
+            ILaunchConfiguration other) throws CoreException
+    {
+        return config.getName().equals(other.getName()) &&
+                config.getType().equals(other.getType()) &&
+                config.getAttributes().equals(other.getAttributes());
     }
 }

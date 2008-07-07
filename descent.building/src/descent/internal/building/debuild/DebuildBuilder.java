@@ -6,10 +6,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 
 import descent.core.IClasspathEntry;
 import descent.core.IJavaModel;
@@ -18,11 +23,15 @@ import descent.core.JavaModelException;
 import descent.internal.building.BuilderUtil;
 import descent.building.IDBuilder;
 
-// TODO recomment
 public class DebuildBuilder implements IDBuilder
 {   
     /* package */ static final boolean DEBUG = true;
-    /* package */ static final String EXECUTABLE_FILE_PREFIX = "-";
+    
+    /**
+     * Note: don't use this as the main null progress monitor, since its 
+     * canceleld state is not garunteed.
+     */
+    private static final IProgressMonitor NO_MONITOR = new NullProgressMonitor();
     
 	private BuildRequest req;
 	private ErrorReporter err;
@@ -30,11 +39,7 @@ public class DebuildBuilder implements IDBuilder
 	
     public String build(ILaunchConfiguration config, IProgressMonitor pm)
             throws CoreException
-	{
-        // TODO remove
-        if(true)
-            return null;
-        
+	{   
 		if(null == pm)
 			pm = new NullProgressMonitor();
 		
@@ -43,17 +48,20 @@ public class DebuildBuilder implements IDBuilder
 		
 		try
 		{   
+		    // Create the build request & error reporter
 			pm.beginTask("Building D application", 100);
-			
 			req = new BuildRequest(config);
 	        err = new ErrorReporter(req.getProject());
 			pm.worked(5); // 5
-			
-            IJavaProject project = req.getProject();
             
-			// First, create the import path from the project properties, etc.
+			// If the launch configuration has changed, clear the output folder
+			// to do a full rebuild
+			managePrecomiledResources();
+			pm.worked(5); // 10
+			
+			// Create the import path 
 			createImportPath();
-            pm.worked(10); // 15
+            pm.worked(5); // 15
             
 			if(pm.isCanceled())
 				return null;
@@ -64,8 +72,7 @@ public class DebuildBuilder implements IDBuilder
         catch(DebuildException e)
         {
             err.projectError(e.getMessage());
-            return null;
-            
+            throw e; // TODO remove
         }
         catch(Exception e)
         {
@@ -82,7 +89,99 @@ public class DebuildBuilder implements IDBuilder
 		}
 	}
 	
-	private void createImportPath()
+    /**
+     * If the launch configuration has changed, all pre-compiled resources need to
+     * be removed and a full rebuild done (PERHAPS a more selective mechanism -- if
+     * the user just changed the output file, for example, no rebuild is needed).
+     * This method detects if the current launch configuration is different than the
+     * existing launch configuration and if so deletes everything in the folder.
+     * 
+     * @param config
+     */
+	private void managePrecomiledResources()
+    {
+	    // TODO this doesn't work (it adds a new launch). FInd out if there's a way
+	    // not to, alternatively a new serialization mechanism needs to be created
+	    // (or maybe just somehow store the age/revision of the last change).
+        try
+        {
+            // Check if the folder exists
+            IFolder folder = req.getOutputResource();
+            if(!folder.exists())
+            {
+                folder.create(true, true, NO_MONITOR);
+                createConfigFile();
+                return;
+            }
+
+            folder.refreshLocal(IResource.DEPTH_INFINITE, NO_MONITOR);
+            IResource launchConfigFile = folder.findMember(getLaunchConfigFilename());
+            if(null == launchConfigFile || !(launchConfigFile instanceof IFile))
+            {
+                System.out.println("File doesn't exist!");
+                clearOutputFolder();
+                createConfigFile();
+                return;
+            }
+            
+            ILaunchConfiguration launchConfig = DebugPlugin.getDefault().
+                    getLaunchManager().getLaunchConfiguration((IFile) launchConfigFile);
+            if(!BuilderUtil.launchConfigsEqual(launchConfig, req.getLaunchConfig()))
+            {
+                System.out.println("Not equal!");
+                clearOutputFolder();
+                createConfigFile();
+                return;
+            }
+            
+            // If we get here, we can safely use any object files already
+            // generated for incremental compilation.
+            System.out.println("Contents saved!!!");
+        }
+        catch(CoreException e)
+        {
+            throw new DebuildException(String.format(
+                    "Error preparing output folder: %1$s", e.getMessage()));
+        }
+        
+    }
+	
+	private String getLaunchConfigFilename()
+    {
+        return req.getLaunchConfig().getName().concat(".").
+                concat(ILaunchConfiguration.LAUNCH_CONFIGURATION_FILE_EXTENSION);
+    }
+
+    private void createConfigFile() throws CoreException
+	{
+	    ILaunchConfiguration config = req.getLaunchConfig();
+	    ILaunchConfigurationWorkingCopy copy = config.copy(config.getName());
+	    copy.setContainer(req.getOutputResource());
+	    copy.doSave();
+	}
+	
+	private void clearOutputFolder() throws CoreException
+	{
+	    System.out.println("Folder cleared!!!");
+	    
+	    IFolder outputFolder = req.getOutputResource();
+	    IResource[] members = outputFolder.members();
+	    for(IResource file : members)
+	    {
+	        try
+	        {
+	            file.delete(true, NO_MONITOR);
+	        }
+	        catch(CoreException e)
+	        {
+	            throw new DebuildException(String.format(
+	                    "Error deleting resource %1$s: %2$s", 
+	                    file.getFullPath().toString(), e.getMessage()));
+	        }
+	    }
+	}
+
+    private void createImportPath()
 	{
         try
         {
