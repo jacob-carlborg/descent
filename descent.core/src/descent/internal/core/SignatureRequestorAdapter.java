@@ -140,5 +140,13 @@ public class SignatureRequestorAdapter implements ISignatureRequestor {
 	public void acceptSlice(char[] lwr, char[] upr, String signature) {
 		
 	}
+	
+	public void acceptConst(String signature) {
+		
+	}
+	
+	public void acceptInvariant(String signature) {
+		
+	}
 
 }

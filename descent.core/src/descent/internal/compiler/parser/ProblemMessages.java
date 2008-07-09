@@ -72,6 +72,8 @@ final class ProblemMessages extends NLS {
 	public static String DelimitedStringMustEndInValue;
 	public static String TypeOnlyAllowedIfAnonymousEnumAndNoEnumType;
 	public static String IfTypeThereMustBeAnInitializer;
+	public static String InvariantAsAttributeIsOnlySupportedInD2;
+	public static String ConstAsAttributeIsOnlySupportedInD2;
 	public static String SymbolConflictsWithSymbolAtLocation;
 	public static String SymbolAtLocationConflictsWithSymbolAtLocation;
 	public static String PropertyCanNotBeRedefined;

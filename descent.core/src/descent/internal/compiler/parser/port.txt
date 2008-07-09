@@ -30,7 +30,6 @@ idgen.c
 impcnvgen.c
 init.c
 inline.c
-mangle.c
 mars.c
 module.c
 mtype.c

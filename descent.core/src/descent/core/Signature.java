@@ -680,6 +680,18 @@ public final class Signature {
 	public static final char C_POSITION 									= '$';
 	
 	/**
+	 * Character constant indicating a const type in a signature.
+	 * Value is <code>'x'</code>.
+	 */
+	public static final char C_CONST 									= 'x';
+	
+	/**
+	 * Character constant indicating an invariant type in a signature.
+	 * Value is <code>'y'</code>.
+	 */
+	public static final char C_INVARIANT 									= 'y';
+	
+	/**
 	 * String constant for the signature of the primitive type void.
 	 * Value is <code>"v"</code>.
 	 */
@@ -1352,6 +1364,14 @@ public static String[] getParameterTypes(String methodSignature) throws IllegalA
 				replace(signature);
 			}
 			@Override
+			public void acceptConst(String signature) {
+				replace(signature);
+			}
+			@Override
+			public void acceptInvariant(String signature) {
+				replace(signature);
+			}
+			@Override
 			public void acceptDynamicArray(String signature) {
 				replace(signature);
 			}
@@ -1498,6 +1518,14 @@ public static String getReturnType(String methodSignature) throws IllegalArgumen
 				copy(signature);
 			}
 			@Override
+			public void acceptConst(String signature) {
+				copy(signature);
+			}
+			@Override
+			public void acceptInvariant(String signature) {
+				copy(signature);
+			}
+			@Override
 			public void acceptModule(char[][] compoundName, String signature) {
 				copy(signature);
 			}
@@ -1626,6 +1654,22 @@ public static String toString(String signature, final boolean fqn) throws Illega
 				StringBuilder sb = st.peek();
 				sb.append('[');
 				sb.append(']');
+			}
+			@Override
+			public void acceptConst(String signature) {
+				Stack<StringBuilder> st = stack.peek();
+				
+				StringBuilder sb = st.peek();
+				sb.insert(0, "const(");
+				sb.append(')');
+			}
+			@Override
+			public void acceptInvariant(String signature) {
+				Stack<StringBuilder> st = stack.peek();
+				
+				StringBuilder sb = st.peek();
+				sb.insert(0, "invariant(");
+				sb.append(')');
 			}
 			@Override
 			public void acceptStaticArray(char[] dimension, String signature) {

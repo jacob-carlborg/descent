@@ -242,7 +242,10 @@ public class Import extends Dsymbol {
 			return;
 		}
 		
+		context.muteProblems++;
 		mod.semantic2(sc, context);
+		context.muteProblems--;
+		
 		if (mod.needmoduleinfo) {
 			sc.module.needmoduleinfo = true;
 		}

@@ -104,7 +104,7 @@ public final class Flags {
 	 * Const property flag.
 	 * @since 2.0
 	 */
-	public static final int AccConst = 0x2000;
+	public static final int AccConst = 0x80000000;
 	/**
 	 * Scope property flag.
 	 * @since 2.0
@@ -251,7 +251,7 @@ public final class Flags {
 	 * Invariant property flag.
 	 * @since 2.0
 	 */
-	public static final int AccInvariant = 0x00020000;
+	public static final int AccInvariant = 0x40000000;
 	
 	/**
 	 * UnitTest property flag.

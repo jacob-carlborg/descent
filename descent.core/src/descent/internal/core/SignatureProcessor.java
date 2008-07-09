@@ -395,6 +395,14 @@ public class SignatureProcessor {
 			case Signature.C_STATIC_ARRAY2:
 			case Signature.C_SLICE2:
 				return i;
+			case Signature.C_CONST:
+				i = process0(signature, i + 1, wantSignature, requestor);
+				requestor.acceptConst(substring(signature, start, i, wantSignature));
+				return i;
+			case Signature.C_INVARIANT:
+				i = process0(signature, i + 1, wantSignature, requestor);
+				requestor.acceptInvariant(substring(signature, start, i, wantSignature));
+				return i;
 			default:
 				// Try with type basic
 				TypeBasic type = TypeBasic.fromSignature(first);

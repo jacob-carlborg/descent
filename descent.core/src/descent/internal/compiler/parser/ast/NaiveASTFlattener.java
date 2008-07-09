@@ -2738,7 +2738,11 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	public boolean visit(TypeFunction node) {
 		appendStartCompilerNode();
 		this.buffer.append("TypeFunction: ");
-		node.next.accept(this);
+		if (node.next == null) {
+			this.buffer.append("?");
+		} else {
+			node.next.accept(this);
+		}
 		this.buffer.append(", ");
 		visitList(node.parameters, ", ");
 		appendEndCompilerNode();

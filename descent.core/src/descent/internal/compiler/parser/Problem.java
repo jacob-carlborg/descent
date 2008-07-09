@@ -251,6 +251,10 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.TypeOnlyAllowedIfAnonymousEnumAndNoEnumType);
 		case IfTypeThereMustBeAnInitializer:
 			return String.format(ProblemMessages.IfTypeThereMustBeAnInitializer);
+		case InvariantAsAttributeIsOnlySupportedInD2:
+			return String.format(ProblemMessages.InvariantAsAttributeIsOnlySupportedInD2);
+		case ConstAsAttributeIsOnlySupportedInD2:
+			return String.format(ProblemMessages.ConstAsAttributeIsOnlySupportedInD2);
 		case SymbolConflictsWithSymbolAtLocation:
 			return String.format(ProblemMessages.SymbolConflictsWithSymbolAtLocation, arguments[0], arguments[1], arguments[2], arguments[3]);
 		case SymbolAtLocationConflictsWithSymbolAtLocation:

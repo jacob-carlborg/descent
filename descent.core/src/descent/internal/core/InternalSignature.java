@@ -86,6 +86,34 @@ public class InternalSignature {
 					sub.push(new TypeAArray(sub.pop(), sub.pop()));
 				}
 				@Override
+				public void acceptConst(String signature) {
+					Stack<Type> sub = stack.peek();
+					Type type = sub.peek();
+					// TypeBasic is like a singleton, and we don't want to modify all of them
+					if (type instanceof TypeBasic) {
+						type = new TypeBasic(type.singleton);
+						type.mod |= Type.MODconst;
+						sub.pop();
+						sub.push(type);
+					} else {
+						type.mod |= Type.MODconst;
+					}
+				}
+				@Override
+				public void acceptInvariant(String signature) {
+					Stack<Type> sub = stack.peek();
+					Type type = sub.peek();
+					// TypeBasic is like a singleton, and we don't want to modify all of them
+					if (type instanceof TypeBasic) {
+						type = new TypeBasic(type.singleton);
+						type.mod |= Type.MODinvariant;
+						sub.pop();
+						sub.push(type);
+					} else {
+						type.mod |= Type.MODinvariant;
+					}
+				}
+				@Override
 				public void acceptTypeof(char[] expression, String signature) {
 					Stack<Type> sub = stack.peek();
 					sub.push(new TypeTypeof(Loc.ZERO, encoder.decodeExpression(expression), encoder));
@@ -277,6 +305,34 @@ public class InternalSignature {
 				public void acceptTypeofReturn() {
 					Stack<Type> sub = stack.peek();
 					sub.push(new TypeReturn(Loc.ZERO));
+				}
+				@Override
+				public void acceptConst(String signature) {
+					Stack<Type> sub = stack.peek();
+					Type type = sub.peek();
+					// TypeBasic is like a singleton, and we don't want to modify all of them
+					if (type instanceof TypeBasic) {
+						type = new TypeBasic(type.singleton);
+						type.mod |= Type.MODconst;
+						sub.pop();
+						sub.push(type);
+					} else {
+						type.mod |= Type.MODconst;
+					}
+				}
+				@Override
+				public void acceptInvariant(String signature) {
+					Stack<Type> sub = stack.peek();
+					Type type = sub.peek();
+					// TypeBasic is like a singleton, and we don't want to modify all of them
+					if (type instanceof TypeBasic) {
+						type = new TypeBasic(type.singleton);
+						type.mod |= Type.MODinvariant;
+						sub.pop();
+						sub.push(type);
+					} else {
+						type.mod |= Type.MODinvariant;
+					}
 				}
 				@Override
 				public void acceptSlice(char[] lwr, char[] upr, String signature) {

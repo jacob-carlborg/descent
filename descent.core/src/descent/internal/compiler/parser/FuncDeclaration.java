@@ -1028,7 +1028,7 @@ public class FuncDeclaration extends Declaration {
 			protection = sc.protection;
 		}
 		
-		storage_class |= sc.stc;
+		storage_class |= sc.stc;		
 		
 		if (context.isD2()) {
 			if (null == originalType)
@@ -1199,11 +1199,10 @@ public class FuncDeclaration extends Declaration {
 			if (cd.baseClass != null) {
 				for (vi = 0; vi < cd.baseClass.vtbl.size() && !gotoL1; vi++) {
 					// Descent workarround
-					// TODO fix this
+					// XXX fix this
 					if (vi >= cd.vtbl.size()) {
 						break;
 					}
-
 					FuncDeclaration fdv = ((Dsymbol) cd.vtbl.get(vi))
 							.isFuncDeclaration();
 

@@ -12,6 +12,7 @@ import descent.internal.compiler.parser.Dsymbols;
 import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
 import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.ProtDeclaration;
+import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.StorageClassDeclaration;
 import descent.internal.core.util.Util;
@@ -161,13 +162,13 @@ public class LazyAggregateDeclaration {
 	public void runMissingSemantic(Dsymbol sym, SemanticContext context) {
 		context.muteProblems++;
 		if (lazy.semanticScope() != null) {			
-			sym.semantic(lazy.semanticScope(), context);
+			sym.semantic(Scope.copy(lazy.semanticScope()), context);
 		}
 		if (lazy.semantic2Scope() != null) {
-			sym.semantic2(lazy.semantic2Scope(), context);
+			sym.semantic2(Scope.copy(lazy.semantic2Scope()), context);
 		}
 		if (lazy.semantic3Scope() != null) {
-			sym.semantic3(lazy.semantic3Scope(), context);
+			sym.semantic3(Scope.copy(lazy.semantic3Scope()), context);
 		}
 		context.muteProblems--;
 	}

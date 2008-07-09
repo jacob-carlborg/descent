@@ -8,7 +8,6 @@ import descent.core.IType;
 import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.lookup.ModuleBuilder.FillResult;
-import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.DsymbolTable;
@@ -37,12 +36,22 @@ import descent.internal.core.util.Util;
  * - members are initialized to empty
  * - in each semantic pass the scope is saved
  * - when a search is requested we do the following:
- *   - build a cache of char[] -> List<IJavaElement>
- *   - search in that cache
- *   - if we found it, construct a Dsymbol from it, run semantic on it (using the scope we saved)
- *     and return it
- *   - if we didn't find it, we might need to search in imports if the search started in
- *     this module. If that is so, the imports are resolved and search is run as usual
+ *   - I search it in my symbol table (symtab)
+ *     - If it's there, I'm done
+ *     - If not
+ *       - If my imports are not initialized
+ *         - I initialize my imports (to speed things up, CompilationUnitStructureRequestor stores the position of the last import location)
+ *         - Run the semantic for them
+ *       - Search in my cache (ident x IJavaElement[]) 
+ *         - If no search was found, do normal search (super.search)
+ *         - If a search was found
+ *           - If it's not a top level element (hard)
+ *             - act as if this module is not lazy: load members, run semantic, etc.
+ *             - except for anonymous enums
+ *           - If it's a top level member
+ *             - I convert it to a Dsymbol
+ *             - run semantic for it
+ *             - return it
  *     
  * This process is only feasible for "easy" modules: modules which don't contain
  * mixin declartions or static if declarations (how do we know if a symbol is actually
@@ -51,6 +60,10 @@ import descent.internal.core.util.Util;
  * it will be a Module. This is determined by the ModuleBuilder class.
  */
 public class LazyModule extends Module implements ILazy {
+	
+	public boolean LAZY_CLASSES = true;
+	public boolean LAZY_INTERFACES = true;
+	public boolean LAZY_STRUCTS = true;
 
 	private final ModuleBuilder builder;
 	private HashtableOfCharArrayAndObject javaElementMembersCache;
@@ -97,122 +110,102 @@ public class LazyModule extends Module implements ILazy {
 	@Override
 	public Dsymbol search(Loc loc, char[] ident, int flags,
 			SemanticContext context) {
+		Dsymbol s = symtab != null ? symtab.lookup(ident) : null;
 		
-		/* Since modules can be circularly referenced,
-		 * need to stop infinite recursive searches.
-		 */
-		
-		Dsymbol s = null;
-		if (insearch) {
-			s = null;
-		} else if (ASTDmdNode.equals(this.searchCacheIdent, ident)
-				&& this.searchCacheFlags == flags) {
-			s = this.searchCacheSymbol;
-		} else {
-			// If I have it in symtab, I'm donw
-			s = symtab != null ? symtab.lookup(ident) : null;
+		if (s == null) {
 			
-			if (s == null) {
-				
-				// Only build my imports at first
-				if (!importsWereInitialized) {
-					importsWereInitialized = true;
-					List<Dsymbol> privateImports = new ArrayList<Dsymbol>();
-					List<Dsymbol> publicImports = new ArrayList<Dsymbol>();
-					try {
-						builder.fillImports(this, this.javaElement.getChildren(), privateImports, publicImports, context, lastImportLocation);
-					} catch (JavaModelException e) {
-						Util.log(e);
-					}
-					
-					for(Dsymbol imp : privateImports) {
-						imp.addMember(semanticScope, this, 0, context);
-						runMissingSemantic(imp, context);
-					}
-					
-					for(Dsymbol imp : publicImports) {
-						imp.addMember(semanticScope, this, 0, context);
-						runMissingSemantic(imp, context);
-					}
+			// Only build my imports at first
+			if (!importsWereInitialized) {
+				importsWereInitialized = true;
+				List<Dsymbol> privateImports = new ArrayList<Dsymbol>();
+				List<Dsymbol> publicImports = new ArrayList<Dsymbol>();
+				try {
+					builder.fillImports(this, this.javaElement.getChildren(), privateImports, publicImports, context, lastImportLocation);
+				} catch (JavaModelException e) {
+					Util.log(e);
 				}
 				
-				boolean easy = true;
-				if (javaElementMembersCache == null) {
-					Object target = topLevelIdentifiers.get(ident);
-					
-					if (target != null) {
-						if (target instanceof IJavaElement) {
-							IJavaElement element = (IJavaElement) target;
-							if (isEasy(element)) {
-								s = processTarget(context, target);
-							} else {
-								easy = false;
-							}
+				for(Dsymbol imp : privateImports) {
+					imp.addMember(semanticScope, this, 0, context);
+					runMissingSemantic(imp, context);
+				}
+				
+				for(Dsymbol imp : publicImports) {
+					imp.addMember(semanticScope, this, 0, context);
+					runMissingSemantic(imp, context);
+				}
+			}
+			
+			boolean easy = true;
+			if (javaElementMembersCache == null) {
+				Object target = topLevelIdentifiers.get(ident);
+				
+				if (target != null) {
+					if (target instanceof IJavaElement) {
+						IJavaElement element = (IJavaElement) target;
+						if (isEasy(element)) {
+							s = processTarget(context, target);
 						} else {
-							List<IJavaElement> list = (List<IJavaElement>) target;
-							for(IJavaElement element : list) {
-								if (!isEasy(element)) {
-									easy = false;
-									break;
-								}
-							}
-							
-							if (easy) {
-								s = processTarget(context, target);
-							}
+							easy = false;
 						}
 					} else {
-						easy = false;
+						List<IJavaElement> list = (List<IJavaElement>) target;
+						for(IJavaElement element : list) {
+							if (!isEasy(element)) {
+								easy = false;
+								break;
+							}
+						}
+						
+						if (easy) {
+							s = processTarget(context, target);
+						}
 					}
 				} else {
 					easy = false;
 				}
-				
-				if (!easy) {
-					if (topLevelIdentifiers.containsKey(ident)) {
-						if (javaElementMembersCache == null) {
-							javaElementMembersCache = new HashtableOfCharArrayAndObject();
-							List<Dsymbol> privateImports = new ArrayList<Dsymbol>();
-							List<Dsymbol> publicImports = new ArrayList<Dsymbol>();
-							FillResult result = null;
-							try {
-								result = builder.fillJavaElementMembersCache(this, this.javaElement.getChildren(), javaElementMembersCache, members, privateImports, publicImports, context);
-							} catch (JavaModelException e) {
-								Util.log(e);
-							}
-							
-							// Anonymous enums are "hard" for me :-P
-							if (result.hasAnonEnum) {
-								return search(loc, ident, flags, context);
-							}
+			} else {
+				easy = false;
+			}
+			
+			if (!easy) {
+				if (topLevelIdentifiers.containsKey(ident)) {
+					if (javaElementMembersCache == null) {
+						javaElementMembersCache = new HashtableOfCharArrayAndObject();
+						List<Dsymbol> privateImports = new ArrayList<Dsymbol>();
+						List<Dsymbol> publicImports = new ArrayList<Dsymbol>();
+						FillResult result = null;
+						try {
+							result = builder.fillJavaElementMembersCache(this, this.javaElement.getChildren(), javaElementMembersCache, members, privateImports, publicImports, context);
+						} catch (JavaModelException e) {
+							Util.log(e);
 						}
 						
-						Object target = javaElementMembersCache.get(ident);
-						if (target != null) {
-							s = processTarget(context, target);
+						// Anonymous enums are "hard" for me :-P
+						if (result != null && result.hasAnonEnum) {
+							return search(loc, ident, flags, context);
 						}
+					}
+					
+					Object target = javaElementMembersCache.get(ident);
+					if (target != null) {
+						s = processTarget(context, target);
 					}
 				}
 			}
-			
-			// Optimization for the well know type Object:
-			// If we are a lazy module and we don't define Object and we are request to search for Object
-			// by this module (allowing search in other modules), then it's the well known Object.
-			// This optimization is here because if only Object needs to be searched and we don't
-			// do this, all private imports will be resolved, thus slowing everything unnecessarily
-			if (s == null && builder != null && (flags & 1) == 0 && CharOperation.equals(Id.Object, ident) && !topLevelIdentifiers.containsKey(ident)) {
-				s = context.ClassDeclaration_object;
-			}
-			
-			if (s == null) {
-				this.insearch = true;
-				s = ScopeDsymbol_search(loc, ident, flags, context);
-				this.insearch = false;
-			}
-
-			this.searchCacheIdent = ident;			
-			this.searchCacheSymbol = s;
-			this.searchCacheFlags = flags;
+		}
+		
+		// Optimization for the well know type Object:
+		// If we are a lazy module and we don't define Object and we are request to search for Object
+		// by this module (allowing search in other modules), then it's the well known Object.
+		// This optimization is here because if only Object needs to be searched and we don't
+		// do this, all private imports will be resolved, thus slowing everything unnecessarily
+		if (s == null && builder != null && (flags & 1) == 0 && CharOperation.equals(Id.Object, ident) && !topLevelIdentifiers.containsKey(ident)) {
+			s = context.ClassDeclaration_object;
+		}
+		
+		if (s == null) {
+			s = super.search(loc, ident, flags, context);
 		}
 		
 		return s;
@@ -235,21 +228,21 @@ public class LazyModule extends Module implements ILazy {
 				if (target instanceof IType) {
 					IType type = (IType) target;
 					if (!type.isTemplate() && !type.isForwardDeclaration()) {
-						if (type.isClass()) {
+						if (LAZY_CLASSES && type.isClass()) {
 							ClassDeclaration cd = new LazyClassDeclaration(builder.getLoc(this, type), ModuleBuilder.getIdent(type), builder.getBaseClasses(type), builder);
 							cd.setJavaElement(type);
 							cd.members = new Dsymbols();
 							s = builder.wrap(cd, type);
 							members.add(s);
 							done = true;
-						} else if (type.isInterface()) {
+						} else if (LAZY_INTERFACES && type.isInterface()) {
 							InterfaceDeclaration cd = new LazyInterfaceDeclaration(builder.getLoc(this, type), ModuleBuilder.getIdent(type), builder.getBaseClasses(type), builder);
 							cd.setJavaElement(type);
 							cd.members = new Dsymbols();
 							s = builder.wrap(cd, type);
 							members.add(s);
 							done = true;
-						} else if (type.isStruct()) {
+						} else if (LAZY_STRUCTS && type.isStruct()) {
 							StructDeclaration cd = new LazyStructDeclaration(builder.getLoc(this, type), ModuleBuilder.getIdent(type), builder);
 							cd.setJavaElement(type);
 							cd.members = new Dsymbols();
@@ -314,13 +307,13 @@ public class LazyModule extends Module implements ILazy {
 	public void runMissingSemantic(Dsymbol sym, SemanticContext context) {
 		context.muteProblems++;
 		if (semanticScope != null) {
-			sym.semantic(semanticScope, context);
+			sym.semantic(Scope.copy(semanticScope), context);
 		}
 		if (semantic2Scope != null) {
-			sym.semantic2(semantic2Scope, context);
+			sym.semantic2(Scope.copy(semantic2Scope), context);
 		}
 		if (semantic3Scope != null) {
-			sym.semantic3(semantic3Scope, context);
+			sym.semantic3(Scope.copy(semantic3Scope), context);
 		}
 		context.muteProblems--;
 	}

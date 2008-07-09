@@ -184,6 +184,12 @@ TypeOnlyAllowedIfAnonymousEnumAndNoEnumType
 IfTypeThereMustBeAnInitializer
 	formatString=If type, there must be an initializer
 	numArgs=0
+InvariantAsAttributeIsOnlySupportedInD2
+	formatString=invariant as attribute is only supported in D 2.x. Make sure you set the project's compiler version to 2.x.
+	numArgs=0
+ConstAsAttributeIsOnlySupportedInD2
+	formatString=const as attribute is only supported in D 2.x. Make sure you set the project's compiler version to 2.x.
+	numArgs=0
 SymbolConflictsWithSymbolAtLocation
 	formatString=%1$s conflicts with %2$s %3$s at %4$s
 	numArgs=4

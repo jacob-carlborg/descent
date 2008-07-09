@@ -31,6 +31,7 @@ import descent.core.Flags;
  *    <b>inout</b>
  *    <b>lazy</b>
  *    <b>ref</b>
+ *    <b>enum</b>
  * </pre>
  */
 public class Modifier extends ASTNode {
@@ -61,6 +62,7 @@ public class Modifier extends ASTNode {
 		INOUT_KEYWORD("inout", INOUT),
 		LAZY_KEYWORD("lazy", LAZY),
 		REF_KEYWORD("ref", REF),
+		ENUM_KEYWORD("enum", ENUM),
 		;
 		
 		private String keyword;
@@ -247,6 +249,11 @@ public class Modifier extends ASTNode {
 	 * "ref" modifier constant (bit mask).
 	 */
 	public static final int REF = Flags.AccRef;
+	
+	/**
+	 * "enum" modifier constant (bit mask).
+	 */
+	public static final int ENUM = Flags.AccEnum;
 	
 	/**
 	 * The "modifierKeyword" structural property of this node type.
@@ -693,6 +700,17 @@ public class Modifier extends ASTNode {
 	 */
 	public static boolean isScope(long flags) {
 		return (flags & SCOPE) != 0;
+	}
+	
+	/**
+	 * Returns whether the given flags includes the "enum" modifier.
+	 * 
+	 * @param flags the modifier flags
+	 * @return <code>true</code> if the <code>ENUM</code> bit is
+	 *   set, and <code>false</code> otherwise
+	 */
+	public static boolean isEnum(long flags) {
+		return (flags & ENUM) != 0;
 	}
 
 }

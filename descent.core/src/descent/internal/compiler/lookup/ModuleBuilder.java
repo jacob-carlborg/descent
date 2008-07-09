@@ -146,7 +146,7 @@ public class ModuleBuilder {
 		}
 		
 		String moduleName = unit.getFullyQualifiedName();
-		
+				
 		final Module module;
 		if (!LAZY || "object".equals(moduleName) || (info != null && info.hasTopLevelCompileTimeDifficulties())) {
 			module = new Module(unit.getElementName(), new IdentifierExp(unit.getModuleName().toCharArray()));
@@ -953,7 +953,7 @@ public class ModuleBuilder {
 				if (child instanceof ISourceReference) {
 					ISourceReference sr = (ISourceReference) child;
 					ISourceRange srg = sr.getSourceRange();
-					if (srg != null && srg.getOffset() + srg.getLength() > lastImportLocation) {
+					if (!(child instanceof IParent) && srg != null && srg.getOffset() + srg.getLength() > lastImportLocation) {
 						break;
 					}
 				}

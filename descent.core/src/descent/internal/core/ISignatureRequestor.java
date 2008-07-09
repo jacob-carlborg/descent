@@ -219,4 +219,14 @@ public interface ISignatureRequestor {
 	 */
 	void acceptSlice(char[] lwr, char[] upr, String signature);
 
+	/**
+	 * The processos has found a const type.
+	 */
+	void acceptConst(String signature);
+	
+	/**
+	 * The processos has found an invariant type.
+	 */
+	void acceptInvariant(String signature);
+
 }

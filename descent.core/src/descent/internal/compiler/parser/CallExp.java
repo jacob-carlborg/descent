@@ -210,7 +210,7 @@ public class CallExp extends UnaExp {
 	}
 
 	@Override
-	public Expression semantic(Scope sc, SemanticContext context) {
+	public Expression semantic(Scope sc, SemanticContext context) {		
 		TypeFunction tf;
 		FuncDeclaration f = null;
 		//int i;
@@ -365,7 +365,9 @@ public class CallExp extends UnaExp {
 					 */
 					Expression e = new StructLiteralExp(loc,
 							(StructDeclaration) ad, arguments);
+					e.copySourceRange(this);
 					e = e.semantic(sc, context);
+					e.copySourceRange(this);
 					e.type = e1.type; // in case e1.type was a typedef
 					return e;
 				} else if (t1.ty == Tclass) {

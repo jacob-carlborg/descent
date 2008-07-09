@@ -41,6 +41,7 @@ import java.util.List;
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.IJavaElement;
+import descent.core.Signature;
 import descent.core.compiler.IProblem;
 
 
@@ -492,7 +493,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	}
 
 	public TY ty;
-	public char mod; // modifiers (MODconst, MODinvariant)
+	public int mod; // modifiers (MODconst, MODinvariant)
 	public Type next, sourceNext;
 	public String deco;
 	public Type cto; // MODconst ? mutable version of this type : const version
@@ -1409,7 +1410,20 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 			sig = alias.getSignature();
 		}
 		if (sig == null) {
-			sig = getSignature0();
+			StringBuilder sb = new StringBuilder();
+			
+			if (modifications != null && !modifications.isEmpty()) {
+				for(Modification mod : modifications) {
+					if (mod.tok == TOK.TOKinvariant) {
+						sb.append(Signature.C_INVARIANT);
+					} else if (mod.tok == TOK.TOKconst) {
+						sb.append(Signature.C_CONST);
+					}
+				}
+			}
+			
+			sb.append(getSignature0());			
+			sig = sb.toString();
 		}
 		return sig;
 	}
@@ -1424,6 +1438,16 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	}
 	
 	protected final void appendSignature(StringBuilder sb) {
+		if (modifications != null && !modifications.isEmpty()) {
+			for(Modification mod : modifications) {
+				if (mod.tok == TOK.TOKinvariant) {
+					sb.append(Signature.C_INVARIANT);
+				} else if (mod.tok == TOK.TOKconst) {
+					sb.append(Signature.C_CONST);
+				}
+			}
+		}
+		
 		if (alias != null && !(alias instanceof AliasDeclaration && ((AliasDeclaration) alias).isTemplateParameter)) {
 			StringBuilder sb2 = new StringBuilder();
 			alias.appendSignature(sb2);

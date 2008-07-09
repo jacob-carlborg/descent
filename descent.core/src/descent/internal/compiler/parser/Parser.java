@@ -406,9 +406,13 @@ public class Parser extends Lexer {
 	    nextToken();
 	    return decldefs;
 	}
+	
+	public Dsymbols parseDeclDefs(boolean once) {
+		return parseDeclDefs(once, false);
+	}
 
 	@SuppressWarnings("unchecked")
-	public Dsymbols parseDeclDefs(boolean once) {
+	public Dsymbols parseDeclDefs(boolean once, boolean thinksItsD2) {
 		if (token.value == null) {
 			nextToken();
 		}
@@ -523,7 +527,7 @@ public class Parser extends Lexer {
 			case TOKtypeof:
 			case TOKdot:
 				// Ldeclaration:
-				a = parseDeclarations(lastComments);
+				a = parseDeclarations(lastComments, thinksItsD2);
 				decldefs.addAll(a);
 				continue;
 
@@ -926,6 +930,13 @@ public class Parser extends Lexer {
 		
 		List<Modifier> modifiers = new ArrayList<Modifier>();
 		modifiers.add(modifier);
+
+		// Descent: better error reporting 
+		boolean thinksItsD2 = apiLevel < D2 && token.value == TOKlparen && (prevToken.value == TOKinvariant || prevToken.value == TOKconst);
+		if (thinksItsD2) {
+			error(prevToken.value == TOKinvariant ? IProblem.InvariantAsAttributeIsOnlySupportedInD2 : IProblem.ConstAsAttributeIsOnlySupportedInD2, prevToken);
+			nextToken();
+		}
 		
 		Dsymbol s = null;
 		
@@ -1035,7 +1046,7 @@ public class Parser extends Lexer {
 		else
 		{  
 			boolean isColon = token.value == TOKcolon;
-			Dsymbols a = parseBlock(isSingle);
+			Dsymbols a = parseBlock(isSingle, true /* thinks it's D2 */);
 			
 			if (isSingle[0] && a.size() == 0) {
 				parsingErrorDeleteToken(firstToken);
@@ -1049,12 +1060,20 @@ public class Parser extends Lexer {
 		
 		return s;
 	}
-
+	
 	private Dsymbols parseBlock() {
-		return parseBlock(null);
+		return parseBlock(null, false);
+	}
+	
+	private Dsymbols parseBlock(boolean thinksItsD2) {
+		return parseBlock(null, thinksItsD2);
 	}
 	
 	private Dsymbols parseBlock(boolean[] isSingle) {
+		return parseBlock(isSingle, false);
+	}
+	
+	private Dsymbols parseBlock(boolean[] isSingle, boolean thinksItsD2) {
 		Dsymbols a = null;
 
 		switch (token.value) {
@@ -1084,7 +1103,7 @@ public class Parser extends Lexer {
 			break;
 
 		default:
-			a = parseDeclDefs(true);
+			a = parseDeclDefs(true, thinksItsD2);
 			if (isSingle != null) {
 				isSingle[0] = true;
 			}
@@ -3228,8 +3247,12 @@ public class Parser extends Lexer {
 		return ts;
 	}
 	
-	@SuppressWarnings("unchecked")
 	private Dsymbols parseDeclarations(List<Comment> lastComments) {
+		return parseDeclarations(lastComments, false);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private Dsymbols parseDeclarations(List<Comment> lastComments, boolean alreadyThinksItsD2) {
 		int storage_class;
 		int stc;
 		Type ts;
@@ -3260,6 +3283,7 @@ public class Parser extends Lexer {
 
 		expect(modifierExpectations);
 		storage_class = STCundefined;
+		
 		while (true) {
 			switch (token.value) {
 			case TOKconst:
@@ -3295,6 +3319,7 @@ public class Parser extends Lexer {
 					}
 				}
 				modifiers.add(currentModifier);
+				
 				nextToken();
 				continue;
 
@@ -3319,6 +3344,17 @@ public class Parser extends Lexer {
 				break;
 			}
 			break;
+		}
+		
+		// Descent: better error reporting if source level is D1 but
+		// we find "invariant(...)" or "const(...)"
+		boolean thinksItsD2 = alreadyThinksItsD2;
+		if (!thinksItsD2 && apiLevel < D2 && token.value == TOKlparen && (prevToken.value == TOKinvariant || prevToken.value == TOKconst)) {
+			thinksItsD2 = true;
+			error(prevToken.value == TOKinvariant ? 
+					IProblem.InvariantAsAttributeIsOnlySupportedInD2 :
+					IProblem.ConstAsAttributeIsOnlySupportedInD2, prevToken);
+			nextToken();
 		}
 
 		a = new Dsymbols();
@@ -3400,10 +3436,20 @@ public class Parser extends Lexer {
 		int nextTypdefOrAliasStart = start;
 
 		ts = parseBasicType();
+		
+		if (thinksItsD2 && token.value == TOKrparen) {
+			nextToken();
+		}
+		
 		if (ts == null) {
 			return a;
 		}
 		ts = parseBasicType2(ts);
+		
+		if (thinksItsD2 && token.value == TOKrparen) {
+			nextToken();
+		}
+		
 		tfirst = null;
 		
 		int[] identStart = new int[1];

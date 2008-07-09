@@ -1281,6 +1281,13 @@ public class CompletionEngine extends Engine
 		}
 		
 		if (node.e1 != null && node.e1.type != null) {
+			if (node.sourceE1 instanceof CompletionOnDotIdExp) {
+				this.wantArguments = false;
+				this.isBetweenMethodName = true;
+				completeNode(node.sourceE1);
+				return;
+			}
+			
 			currentName = CharOperation.NO_CHAR;
 			startPosition = actualCompletionPosition;
 			endPosition = actualCompletionPosition;
