@@ -918,6 +918,36 @@ public final class JavaCore extends AbstractUIPlugin {
 	 * @see #getDefaultOptions()
 	 * @since 3.2
 	 */
+	public static final String CODEASSIST_NON_IMPORTED_VARIABLES_CHECK = PLUGIN_ID + ".codeComplete.nonImportedVariablesCheck"; //$NON-NLS-1$
+	/**
+	 * Possible  configurable option ID.
+	 * @see #getDefaultOptions()
+	 * @since 3.2
+	 */
+	public static final String CODEASSIST_NON_IMPORTED_ALIASES_CHECK = PLUGIN_ID + ".codeComplete.nonImportedAliasesCheck"; //$NON-NLS-1$
+	/**
+	 * Possible  configurable option ID.
+	 * @see #getDefaultOptions()
+	 * @since 3.2
+	 */
+	public static final String CODEASSIST_NON_IMPORTED_TYPEDEFS_CHECK = PLUGIN_ID + ".codeComplete.nonImportedTypedefsCheck"; //$NON-NLS-1$
+	/**
+	 * Possible  configurable option ID.
+	 * @see #getDefaultOptions()
+	 * @since 3.2
+	 */
+	public static final String CODEASSIST_NON_IMPORTED_FUNCTIONS_CHECK = PLUGIN_ID + ".codeComplete.nonImportedFunctionsCheck"; //$NON-NLS-1$
+	/**
+	 * Possible  configurable option ID.
+	 * @see #getDefaultOptions()
+	 * @since 3.2
+	 */
+	public static final String CODEASSIST_NON_IMPORTED_MODULES_TO_IGNORE = PLUGIN_ID + ".codeComplete.nonImportedModulesToIgnore"; //$NON-NLS-1$
+	/**
+	 * Possible  configurable option ID.
+	 * @see #getDefaultOptions()
+	 * @since 3.2
+	 */
 	public static final String CODEASSIST_CAMEL_CASE_MATCH = PLUGIN_ID + ".codeComplete.camelCaseMatch"; //$NON-NLS-1$
 	/**
 	 * Possible  configurable option ID.

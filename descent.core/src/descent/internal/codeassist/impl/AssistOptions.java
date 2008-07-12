@@ -12,7 +12,9 @@ package descent.internal.codeassist.impl;
 
 import java.util.Map;
 
+import descent.core.JavaCore;
 import descent.core.compiler.CharOperation;
+import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
 
 public class AssistOptions {
 	/**
@@ -64,6 +66,11 @@ public class AssistOptions {
 	public char[][] staticFieldSuffixes = null;
 	public char[][] localSuffixes = null;
 	public char[][] argumentSuffixes = null;
+	public boolean wantNonImportedVariables = true;
+	public boolean wantNonImportedAliases = true;
+	public boolean wantNonImportedTypedefs = true;
+	public boolean wantNonImportedFunctions = true;
+	public HashtableOfCharArrayAndObject ignoredNonImportedModules = new HashtableOfCharArrayAndObject();
 
 	/** 
 	 * Initializing the assist options with default settings
@@ -204,6 +211,43 @@ public class AssistOptions {
 				this.checkDeprecation = true;
 			} else if (DISABLED.equals(optionValue)) {
 				this.checkDeprecation = false;
+			}
+		}
+		if ((optionValue = optionsMap.get(JavaCore.CODEASSIST_NON_IMPORTED_VARIABLES_CHECK)) != null) {
+			if (ENABLED.equals(optionValue)) {
+				this.wantNonImportedVariables = false;
+			} else if (DISABLED.equals(optionValue)) {
+				this.wantNonImportedVariables = true;
+			}
+		}
+		if ((optionValue = optionsMap.get(JavaCore.CODEASSIST_NON_IMPORTED_ALIASES_CHECK)) != null) {
+			if (ENABLED.equals(optionValue)) {
+				this.wantNonImportedAliases = false;
+			} else if (DISABLED.equals(optionValue)) {
+				this.wantNonImportedAliases = true;
+			}
+		}
+		if ((optionValue = optionsMap.get(JavaCore.CODEASSIST_NON_IMPORTED_TYPEDEFS_CHECK)) != null) {
+			if (ENABLED.equals(optionValue)) {
+				this.wantNonImportedTypedefs = false;
+			} else if (DISABLED.equals(optionValue)) {
+				this.wantNonImportedTypedefs = true;
+			}
+		}
+		if ((optionValue = optionsMap.get(JavaCore.CODEASSIST_NON_IMPORTED_FUNCTIONS_CHECK)) != null) {
+			if (ENABLED.equals(optionValue)) {
+				this.wantNonImportedFunctions = false;
+			} else if (DISABLED.equals(optionValue)) {
+				this.wantNonImportedFunctions = true;
+			}
+		}
+		if ((optionValue = optionsMap.get(JavaCore.CODEASSIST_NON_IMPORTED_MODULES_TO_IGNORE)) != null) {
+			if (optionValue instanceof String) {
+				String moduleNames = (String) optionValue;
+				String[] strings = moduleNames.split(",");
+				for(String string : strings) {
+					ignoredNonImportedModules.put(string.trim().toCharArray(), this);
+				}
 			}
 		}
 	}

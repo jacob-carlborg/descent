@@ -745,6 +745,11 @@ public final class PreferencesMessages extends NLS {
 	public static String ProblemSeveritiesConfigurationBlock_pb_null_reference;
 	public static String ProblemSeveritiesConfigurationBlock_pb_fall_through_case;
 	public static String CodeAssistConfigurationBlock_hideDeprecated_label;
+	public static String CodeAssistConfigurationBlock_hideNonImportedVariables_label;
+	public static String CodeAssistConfigurationBlock_hideNonImportedAliases_label;
+	public static String CodeAssistConfigurationBlock_hideNonImportedTypedefs_label;
+	public static String CodeAssistConfigurationBlock_hideNonImportedFunctions_label;
+	public static String CodeAssistConfigurationBlock_hideNonImportedModulesToIgnore_label;
 	public static String CleanUpPreferencePage_Description;
 	public static String CleanUpPreferencePage_Title;
 

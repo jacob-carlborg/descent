@@ -3097,7 +3097,7 @@ public class CompletionEngine extends Engine
 			return;
 		}
 		
-		if (isImported(packageName)) {
+		if (isImported(packageName) || isIgnored(packageName)) {
 			return;
 		}
 		
@@ -3167,11 +3167,21 @@ public class CompletionEngine extends Engine
 	}
 	
 	public void acceptField(char[] packageName, char[] name, char[] typeName, char[][] enclosingTypeNames, long modifiers, int declarationStart, AccessRestriction accessRestriction) {
+		if (!options.wantNonImportedVariables && (modifiers & Flags.AccAlias) == 0 && (modifiers & Flags.AccTypedef) == 0) {
+			return;
+		}
+		if (!options.wantNonImportedAliases && (modifiers & Flags.AccAlias) != 0) {
+			return;
+		}
+		if (!options.wantNonImportedTypedefs && (modifiers & Flags.AccTypedef) != 0) {
+			return;
+		}		
+		
 		if (packageName == null || packageName.length == 0) {
 			return;
 		}
 		
-		if (isImported(packageName)) {
+		if (isImported(packageName) || isIgnored(packageName)) {
 			return;
 		}
 		
@@ -3234,11 +3244,15 @@ public class CompletionEngine extends Engine
 	}
 	
 	public void acceptMethod(char[] packageName, char[] name, char[][] enclosingTypeNames, char[] signature, char[] templateParametersSignature, long modifiers, int declarationStart, AccessRestriction accessRestriction) {
+		if (!options.wantNonImportedFunctions) {
+			return;
+		}
+		
 		if (packageName == null || packageName.length == 0) {
 			return;
 		}
 		
-		if (isImported(packageName)) {
+		if (isImported(packageName) || isIgnored(packageName)) {
 			return;
 		}
 		
@@ -3453,6 +3467,21 @@ public class CompletionEngine extends Engine
 			}
 		}
 		
+		return false;
+	}
+	
+	private boolean isIgnored(char[] fullyQualifiedName) {
+		if (options.ignoredNonImportedModules.size() == 0) {
+			return false;
+		}
+		
+		for(char[] key : options.ignoredNonImportedModules.keys()) {
+			if (key != null) {
+				if (CharOperation.match(key, fullyQualifiedName, false)) {
+					return true;
+				}
+			}
+		}
 		return false;
 	}
 

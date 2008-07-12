@@ -59,6 +59,12 @@ class CodeAssistConfigurationBlock extends OptionsConfigurationBlock {
 	private static final Key PREF_CODEASSIST_FORBIDDEN_REFERENCE_CHECK= getJDTCoreKey(JavaCore.CODEASSIST_FORBIDDEN_REFERENCE_CHECK);
 	private static final Key PREF_CODEASSIST_DISCOURAGED_REFERENCE_CHECK= getJDTCoreKey(JavaCore.CODEASSIST_DISCOURAGED_REFERENCE_CHECK);
 	private static final Key PREF_CODEASSIST_DEPRECATION_CHECK= getJDTCoreKey(JavaCore.CODEASSIST_DEPRECATION_CHECK);
+	private static final Key PREF_CODEASSIST_NON_IMPORTED_VARIABLES_CHECK= getJDTCoreKey(JavaCore.CODEASSIST_NON_IMPORTED_VARIABLES_CHECK);
+	private static final Key PREF_CODEASSIST_NON_IMPORTED_ALIASES_CHECK= getJDTCoreKey(JavaCore.CODEASSIST_NON_IMPORTED_ALIASES_CHECK);
+	private static final Key PREF_CODEASSIST_NON_IMPORTED_TYPEDEFS_CHECK= getJDTCoreKey(JavaCore.CODEASSIST_NON_IMPORTED_TYPEDEFS_CHECK);
+	private static final Key PREF_CODEASSIST_NON_IMPORTED_FUNCTIONS_CHECK= getJDTCoreKey(JavaCore.CODEASSIST_NON_IMPORTED_FUNCTIONS_CHECK);
+	private static final Key PREF_CODEASSIST_NON_IMPORTED_MODULES_TO_IGNORE= getJDTCoreKey(JavaCore.CODEASSIST_NON_IMPORTED_MODULES_TO_IGNORE);
+	
 	private static final Key PREF_CODEASSIST_CAMEL_CASE_MATCH= getJDTCoreKey(JavaCore.CODEASSIST_CAMEL_CASE_MATCH);
 
 	private static Key[] getAllKeys() {
@@ -79,6 +85,11 @@ class CodeAssistConfigurationBlock extends OptionsConfigurationBlock {
 				PREF_CODEASSIST_FORBIDDEN_REFERENCE_CHECK,
 				PREF_CODEASSIST_DISCOURAGED_REFERENCE_CHECK,
 				PREF_CODEASSIST_DEPRECATION_CHECK,
+				PREF_CODEASSIST_NON_IMPORTED_VARIABLES_CHECK,
+				PREF_CODEASSIST_NON_IMPORTED_ALIASES_CHECK,
+				PREF_CODEASSIST_NON_IMPORTED_TYPEDEFS_CHECK,
+				PREF_CODEASSIST_NON_IMPORTED_FUNCTIONS_CHECK,
+				PREF_CODEASSIST_NON_IMPORTED_MODULES_TO_IGNORE,
 				PREF_CODEASSIST_CAMEL_CASE_MATCH,
 		};	
 	}
@@ -212,8 +223,23 @@ class CodeAssistConfigurationBlock extends OptionsConfigurationBlock {
 		label= PreferencesMessages.CodeAssistConfigurationBlock_hideDeprecated_label;
 		addCheckBox(composite, label, PREF_CODEASSIST_DEPRECATION_CHECK, enabledDisabled, 0);
 		
+		label= PreferencesMessages.CodeAssistConfigurationBlock_hideNonImportedVariables_label;
+		addCheckBox(composite, label, PREF_CODEASSIST_NON_IMPORTED_VARIABLES_CHECK, enabledDisabled, 0);
+		
+		label= PreferencesMessages.CodeAssistConfigurationBlock_hideNonImportedAliases_label;
+		addCheckBox(composite, label, PREF_CODEASSIST_NON_IMPORTED_ALIASES_CHECK, enabledDisabled, 0);
+		
+		label= PreferencesMessages.CodeAssistConfigurationBlock_hideNonImportedTypedefs_label;
+		addCheckBox(composite, label, PREF_CODEASSIST_NON_IMPORTED_TYPEDEFS_CHECK, enabledDisabled, 0);
+		
+		label= PreferencesMessages.CodeAssistConfigurationBlock_hideNonImportedFunctions_label;
+		addCheckBox(composite, label, PREF_CODEASSIST_NON_IMPORTED_FUNCTIONS_CHECK, enabledDisabled, 0);
+		
 		label= PreferencesMessages.CodeAssistConfigurationBlock_matchCamelCase_label;
 		addCheckBox(composite, label, PREF_CODEASSIST_CAMEL_CASE_MATCH, enabledDisabled, 0);
+		
+		label= PreferencesMessages.CodeAssistConfigurationBlock_hideNonImportedModulesToIgnore_label;
+		addLabelledTextField(composite, label, PREF_CODEASSIST_NON_IMPORTED_MODULES_TO_IGNORE, 0, 4, true);
 	}
 
 	private void createPreferencePageLink(Composite composite, String label, final Map targetInfo) {
@@ -237,7 +263,7 @@ class CodeAssistConfigurationBlock extends OptionsConfigurationBlock {
 		});		
 		
 		label= PreferencesMessages.JavaEditorPreferencePage_autoActivationDelay; 
-		addLabelledTextField(composite, label, PREF_CODEASSIST_AUTOACTIVATION_DELAY, 4, 0, true);
+		addLabelledTextField(composite, label, PREF_CODEASSIST_AUTOACTIVATION_DELAY, 4, 0, false);
 		
 		label= PreferencesMessages.JavaEditorPreferencePage_autoActivationTriggersForJava; 
 		addLabelledTextField(composite, label, PREF_CODEASSIST_AUTOACTIVATION_TRIGGERS_JAVA, 4, 0, false);
@@ -246,16 +272,25 @@ class CodeAssistConfigurationBlock extends OptionsConfigurationBlock {
 		addLabelledTextField(composite, label, PREF_CODEASSIST_AUTOACTIVATION_TRIGGERS_JAVADOC, 4, 0, false);
 	}
 	
-	protected Text addLabelledTextField(Composite parent, String label, Key key, int textlimit, int indent, boolean dummy) {	
+	protected Text addLabelledTextField(Composite parent, String label, Key key, int textlimit, int indent, boolean enter) {	
 		PixelConverter pixelConverter= new PixelConverter(parent);
+		
+		GridData data;
 		
 		Label labelControl= new Label(parent, SWT.WRAP);
 		labelControl.setText(label);
-		labelControl.setLayoutData(new GridData());
+		
+		data = new GridData();
+		if (enter) {
+			data.horizontalSpan = 3;
+		}
+		labelControl.setLayoutData(data);
 				
 		Text textBox= new Text(parent, SWT.BORDER | SWT.SINGLE);
 		textBox.setData(key);
-		textBox.setLayoutData(new GridData());
+		
+		data = new GridData();
+		textBox.setLayoutData(data);
 		
 		fLabels.put(textBox, labelControl);
 		
@@ -265,13 +300,17 @@ class CodeAssistConfigurationBlock extends OptionsConfigurationBlock {
 		}
 		textBox.addModifyListener(getTextModifyListener());
 
-		GridData data= new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+		data= new GridData(GridData.HORIZONTAL_ALIGN_FILL);
 		if (textlimit != 0) {
 			textBox.setTextLimit(textlimit);
 			data.widthHint= pixelConverter.convertWidthInCharsToPixels(textlimit + 1);
 		}
 		data.horizontalIndent= indent;
-		data.horizontalSpan= 2;
+		if (enter) {
+			data.horizontalSpan= 3;
+		} else {
+			data.horizontalSpan= 2;
+		}
 		textBox.setLayoutData(data);
 
 		fTextBoxes.add(textBox);
