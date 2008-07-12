@@ -231,7 +231,7 @@ public class TypeSArray extends TypeArray {
 			Dsymbol s = ps[0];
 			TupleDeclaration td = s.isTupleDeclaration();
 			if (null != td) {
-				ScopeDsymbol sym = new ArrayScopeSymbol(td);
+				ScopeDsymbol sym = new ArrayScopeSymbol(sc, td);
 				sym.parent = sc.scopesym;
 				sc = sc.push(sym);
 

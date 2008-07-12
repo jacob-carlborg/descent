@@ -501,7 +501,6 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	public Type pto; // merged pointer to this type
 	public Type rto; // reference to this type
 	public Type arrayof; // array of this type
-	public Object vtinfo;
 	
 	/*
 	 * Descent: when a TypeIdentifier referres to an alias, for example:
@@ -741,7 +740,6 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 			t.rto = null;
 			t.cto = null;
 			t.ito = null;
-			t.vtinfo = null;
 //			if (ty == Tsarray) {
 //				TypeSArray ta = (TypeSArray) t;
 //				//ta.next = ta.next.mutableOf();
@@ -1319,11 +1317,11 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		if (vtinfo == null) {
 			if (context.isD2()) {
 				if (t.isConst()) {
-				    t.vtinfo = new TypeInfoConstDeclaration(t, context);
+				    vtinfo = new TypeInfoConstDeclaration(t, context);
 				} else if (t.isInvariant()) {
-				    t.vtinfo = new TypeInfoInvariantDeclaration(t, context);
+				    vtinfo = new TypeInfoInvariantDeclaration(t, context);
 				} else {
-				    t.vtinfo = t.getTypeInfoDeclaration(context);
+				    vtinfo = t.getTypeInfoDeclaration(context);
 				}
 			} else {
 				vtinfo = t.getTypeInfoDeclaration(context);

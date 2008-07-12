@@ -60,7 +60,7 @@ public class TypeSlice extends Type {
 				/*
 				 * It's a slice of a TupleDeclaration
 				 */
-				ScopeDsymbol sym = new ArrayScopeSymbol(td);
+				ScopeDsymbol sym = new ArrayScopeSymbol(sc, td);
 				sym.parent = sc.scopesym;
 				sc = sc.push(sym);
 				

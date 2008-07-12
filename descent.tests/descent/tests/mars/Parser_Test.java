@@ -160,7 +160,7 @@ public abstract class Parser_Test extends TestCase {
 			}
 			
 		}, result.module, null, new DmdModuleFinder(global), global, new CompilerConfiguration(),
-		new ASTNodeEncoder());
+		new ASTNodeEncoder(apiLevel));
 		
 		if (!(result.module.problems != null && result.module.problems.size() > 0)) {
 			result.module.semantic(context);

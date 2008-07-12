@@ -14,9 +14,10 @@ public class ASTNodeEncoder {
 	private final static char[] nastyCharSoltuion = { '*', '!', '_', '!', '*' };
 	
 	private Parser parser;
+	private final int apiLevel;
 	private Parser initParser(char[] source) {
 		if (parser == null) {
-			parser = new Parser(source, 0, source.length, false, false, false, false, Parser.DEFAULT_LEVEL, null, null, false, null);
+			parser = new Parser(source, 0, source.length, false, false, false, false, apiLevel, null, null, false, null);
 		} else {
 			parser.reset(source, 0, source.length, false, false, false, false);
 		}
@@ -24,8 +25,8 @@ public class ASTNodeEncoder {
 		return parser;
 	}
 	
-	public ASTNodeEncoder() {
-		
+	public ASTNodeEncoder(int apiLevel) {
+		this.apiLevel = apiLevel;		
 	}
 	
 	// TODO horrible hack: the indexer may get consufed if the expression has

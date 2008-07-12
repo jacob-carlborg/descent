@@ -202,12 +202,12 @@ public class Parser extends Lexer {
 	
 	public Parser(int apiLevel, char[] source, int offset, 
 			int length, char[][] taskTags, char[][] taskPriorities, boolean isTaskCaseSensitive, char[] filename) {
-		this(apiLevel, source, offset, length, taskTags, taskPriorities, isTaskCaseSensitive, filename, new ASTNodeEncoder());
+		this(apiLevel, source, offset, length, taskTags, taskPriorities, isTaskCaseSensitive, filename, new ASTNodeEncoder(apiLevel));
 	}
 	
 	public Parser(int apiLevel, char[] source, int offset, 
 			int length, char[][] taskTags, char[][] taskPriorities, boolean recordLineSeparator, boolean isTaskCaseSensitive, char[] filename) {
-		this(apiLevel, source, offset, length, taskTags, taskPriorities, recordLineSeparator, isTaskCaseSensitive, filename, new ASTNodeEncoder());
+		this(apiLevel, source, offset, length, taskTags, taskPriorities, recordLineSeparator, isTaskCaseSensitive, filename, new ASTNodeEncoder(apiLevel));
 	}
 	
 	public Parser(int apiLevel, char[] source, int offset, 
@@ -235,7 +235,7 @@ public class Parser extends Lexer {
 			char[] filename) {
 		this(source, offset, length, tokenizeComments, tokenizePragmas,
 				tokenizeWhiteSpace, recordLineSeparator, apiLevel,
-				taskTags, taskPriorities, isTaskCaseSensitive, filename, new ASTNodeEncoder());
+				taskTags, taskPriorities, isTaskCaseSensitive, filename, new ASTNodeEncoder(apiLevel));
 	}
 	
 	public Parser(char[] source, int offset, int length,
@@ -2860,6 +2860,9 @@ public class Parser extends Lexer {
 		    check(TOKlparen);
 		    t = parseType();
 		    check(TOKrparen);
+		    if (t == null) {
+		    	System.out.println(123456);
+		    }
 		    t = t.makeInvariant(start, prevToken.ptr + prevToken.sourceLen - start);
 		    break;
 		}

@@ -1,6 +1,7 @@
 package descent.tests.mangling;
 
 import descent.core.Signature;
+import descent.core.dom.AST;
 import descent.internal.compiler.parser.ASTNodeEncoder;
 import descent.internal.compiler.parser.IntegerExp;
 import descent.internal.compiler.parser.Loc;
@@ -25,17 +26,17 @@ public class Signature_Test extends AbstractSignatureTest implements ISignatureT
 	}
 	
 	public void testStaticArray() {
-		assertEquals(new TypeSArray(TypeBasic.tint32, new IntegerExp(3), new ASTNodeEncoder()).getSignature(), 
+		assertEquals(new TypeSArray(TypeBasic.tint32, new IntegerExp(3), new ASTNodeEncoder(AST.D1)).getSignature(), 
 			Signature.createStaticArraySignature(Signature.SIG_INT, "3"));
 	}
 	
 	public void testStaticArray2() {
-		assertEquals(new TypeSArray(TypeBasic.tint32, new IntegerExp(3), new ASTNodeEncoder()).getSignature(), 
+		assertEquals(new TypeSArray(TypeBasic.tint32, new IntegerExp(3), new ASTNodeEncoder(AST.D1)).getSignature(), 
 			new String(Signature.createStaticArraySignature(Signature.SIG_INT.toCharArray(), "3".toCharArray())));
 	}
 	
 	public void testStaticArray3() {
-		assertEquals(new TypeSArray(TypeBasic.tint32, new IntegerExp(123), new ASTNodeEncoder()).getSignature(), 
+		assertEquals(new TypeSArray(TypeBasic.tint32, new IntegerExp(123), new ASTNodeEncoder(AST.D1)).getSignature(), 
 			new String(Signature.createStaticArraySignature(Signature.SIG_INT.toCharArray(), "123".toCharArray())));
 	}
 	
@@ -60,22 +61,22 @@ public class Signature_Test extends AbstractSignatureTest implements ISignatureT
 	}
 	
 	public void testTypeof() {
-		assertEquals(new TypeTypeof(Loc.ZERO, new IntegerExp(3), new ASTNodeEncoder()).getSignature(), 
+		assertEquals(new TypeTypeof(Loc.ZERO, new IntegerExp(3), new ASTNodeEncoder(AST.D1)).getSignature(), 
 			Signature.createTypeofSignature("3"));
 	}
 	
 	public void testTypeof2() {
-		assertEquals(new TypeTypeof(Loc.ZERO, new IntegerExp(3), new ASTNodeEncoder()).getSignature(), 
+		assertEquals(new TypeTypeof(Loc.ZERO, new IntegerExp(3), new ASTNodeEncoder(AST.D1)).getSignature(), 
 			new String(Signature.createTypeofSignature("3".toCharArray())));
 	}
 	
 	public void testSlice() {
-		assertEquals(new TypeSlice(TypeBasic.tint32, new IntegerExp(1), new IntegerExp(23), new ASTNodeEncoder()).getSignature(), 
+		assertEquals(new TypeSlice(TypeBasic.tint32, new IntegerExp(1), new IntegerExp(23), new ASTNodeEncoder(AST.D1)).getSignature(), 
 			Signature.createSliceSignature(Signature.SIG_INT, "1", "23"));
 	}
 	
 	public void testSlice2() {
-		assertEquals(new TypeSlice(TypeBasic.tint32, new IntegerExp(1), new IntegerExp(23), new ASTNodeEncoder()).getSignature(), 
+		assertEquals(new TypeSlice(TypeBasic.tint32, new IntegerExp(1), new IntegerExp(23), new ASTNodeEncoder(AST.D1)).getSignature(), 
 			new String(Signature.createSliceSignature(Signature.SIG_INT.toCharArray(), "1".toCharArray(), "23".toCharArray())));
 	}
 	

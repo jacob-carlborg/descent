@@ -1203,7 +1203,7 @@ public abstract class ASTDmdNode extends ASTNode {
 
 	public static void arrayExpressionScanForNestedRef(Scope sc, Expressions a,
 			SemanticContext context) {
-		if (null == a) {
+		if (null != a) {
 			for (int i = 0; i < a.size(); i++) {
 				Expression e = a.get(i);
 
@@ -1326,7 +1326,7 @@ public abstract class ASTDmdNode extends ASTNode {
 	public static Expression semanticLength(Scope sc, Type t, Expression exp,
 			SemanticContext context) {
 		if (t.ty == Ttuple) {
-			ScopeDsymbol sym = new ArrayScopeSymbol((TypeTuple) t);
+			ScopeDsymbol sym = new ArrayScopeSymbol(sc, (TypeTuple) t);
 			sym.parent = sc.scopesym;
 			sc = sc.push(sym);
 
@@ -1341,7 +1341,7 @@ public abstract class ASTDmdNode extends ASTNode {
 
 	public static Expression semanticLength(Scope sc, TupleDeclaration s,
 			Expression exp, SemanticContext context) {
-		ScopeDsymbol sym = new ArrayScopeSymbol(s);
+		ScopeDsymbol sym = new ArrayScopeSymbol(sc, s);
 		sym.parent = sc.scopesym;
 		sc = sc.push(sym);
 
@@ -1957,6 +1957,10 @@ public abstract class ASTDmdNode extends ASTNode {
 	
 	public static Expression eval_builtin(BUILTIN builtin,
 			Expressions arguments, SemanticContext context) {
+		if (size(arguments) == 0) {
+			return null;
+		}
+		
 		Expression arg0 = arguments.get(0);
 		Expression e = null;
 		switch (builtin) {

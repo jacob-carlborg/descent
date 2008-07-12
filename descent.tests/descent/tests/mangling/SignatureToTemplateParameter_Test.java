@@ -1,5 +1,6 @@
 package descent.tests.mangling;
 
+import descent.core.dom.AST;
 import descent.internal.compiler.parser.ASTNodeEncoder;
 import descent.internal.compiler.parser.IntegerExp;
 import descent.internal.compiler.parser.TemplateAliasParameter;
@@ -13,13 +14,13 @@ public class SignatureToTemplateParameter_Test extends AbstractSignatureTest imp
 	
 	public void testTuple() {
 		TemplateTupleParameter param = (TemplateTupleParameter) 
-			InternalSignature.toTemplateParameter("" + TEMPLATE_TUPLE_PARAMETER, null, new ASTNodeEncoder());
+			InternalSignature.toTemplateParameter("" + TEMPLATE_TUPLE_PARAMETER, null, new ASTNodeEncoder(AST.D1));
 		assertNull(param.ident);
 	}
 	
 	public void testAlias() {
 		TemplateAliasParameter param = (TemplateAliasParameter) 
-			InternalSignature.toTemplateParameter("" + TEMPLATE_ALIAS_PARAMETER, null, new ASTNodeEncoder());
+			InternalSignature.toTemplateParameter("" + TEMPLATE_ALIAS_PARAMETER, null, new ASTNodeEncoder(AST.D1));
 		assertNull(param.ident);
 		assertNull(param.specAliasT);
 		assertNull(param.defaultAlias);
@@ -27,7 +28,7 @@ public class SignatureToTemplateParameter_Test extends AbstractSignatureTest imp
 	
 	public void testAliasDefaultValue() {
 		TemplateAliasParameter param = (TemplateAliasParameter) 
-			InternalSignature.toTemplateParameter("" + TEMPLATE_ALIAS_PARAMETER, "i", new ASTNodeEncoder());
+			InternalSignature.toTemplateParameter("" + TEMPLATE_ALIAS_PARAMETER, "i", new ASTNodeEncoder(AST.D1));
 		assertNull(param.ident);
 		assertNull(param.specAliasT);
 		assertSame(Type.tint32, param.defaultAlias);
@@ -35,7 +36,7 @@ public class SignatureToTemplateParameter_Test extends AbstractSignatureTest imp
 	
 	public void testAliasSpecificType() {
 		TemplateAliasParameter param = (TemplateAliasParameter) 
-			InternalSignature.toTemplateParameter("" + TEMPLATE_ALIAS_PARAMETER + TEMPLATE_ALIAS_PARAMETER2 + i, null, new ASTNodeEncoder());
+			InternalSignature.toTemplateParameter("" + TEMPLATE_ALIAS_PARAMETER + TEMPLATE_ALIAS_PARAMETER2 + i, null, new ASTNodeEncoder(AST.D1));
 		assertNull(param.ident);
 		assertSame(Type.tint32, param.specAliasT);
 		assertNull(param.defaultAlias);
@@ -43,7 +44,7 @@ public class SignatureToTemplateParameter_Test extends AbstractSignatureTest imp
 	
 	public void testType() {
 		TemplateTypeParameter param = (TemplateTypeParameter) 
-			InternalSignature.toTemplateParameter("" + TEMPLATE_TYPE_PARAMETER, null, new ASTNodeEncoder());
+			InternalSignature.toTemplateParameter("" + TEMPLATE_TYPE_PARAMETER, null, new ASTNodeEncoder(AST.D1));
 		assertNull(param.ident);
 		assertNull(param.specType);
 		assertNull(param.defaultType);
@@ -51,7 +52,7 @@ public class SignatureToTemplateParameter_Test extends AbstractSignatureTest imp
 	
 	public void testTypeSpecificType() {
 		TemplateTypeParameter param = (TemplateTypeParameter) 
-			InternalSignature.toTemplateParameter("" + TEMPLATE_TYPE_PARAMETER + TEMPLATE_TYPE_PARAMETER2 + i, null, new ASTNodeEncoder());
+			InternalSignature.toTemplateParameter("" + TEMPLATE_TYPE_PARAMETER + TEMPLATE_TYPE_PARAMETER2 + i, null, new ASTNodeEncoder(AST.D1));
 		assertNull(param.ident);
 		assertSame(Type.tint32, param.specType);
 		assertNull(param.defaultType);
@@ -59,7 +60,7 @@ public class SignatureToTemplateParameter_Test extends AbstractSignatureTest imp
 	
 	public void testTypeDefaultValue() {
 		TemplateTypeParameter param = (TemplateTypeParameter) 
-			InternalSignature.toTemplateParameter("" + TEMPLATE_TYPE_PARAMETER, "i", new ASTNodeEncoder());
+			InternalSignature.toTemplateParameter("" + TEMPLATE_TYPE_PARAMETER, "i", new ASTNodeEncoder(AST.D1));
 		assertNull(param.ident);
 		assertNull(param.specType);
 		assertSame(Type.tint32, param.defaultType);
@@ -67,7 +68,7 @@ public class SignatureToTemplateParameter_Test extends AbstractSignatureTest imp
 	
 	public void testValue() {
 		TemplateValueParameter param = (TemplateValueParameter) 
-			InternalSignature.toTemplateParameter("" + TEMPLATE_VALUE_PARAMETER + i, null, new ASTNodeEncoder());
+			InternalSignature.toTemplateParameter("" + TEMPLATE_VALUE_PARAMETER + i, null, new ASTNodeEncoder(AST.D1));
 		assertNull(param.ident);
 		assertSame(Type.tint32, param.valType);
 		assertNull(param.specValue);
@@ -76,7 +77,7 @@ public class SignatureToTemplateParameter_Test extends AbstractSignatureTest imp
 	
 	public void testValueSpecific() {
 		TemplateValueParameter param = (TemplateValueParameter) 
-			InternalSignature.toTemplateParameter("" + TEMPLATE_VALUE_PARAMETER + i + TEMPLATE_VALUE_PARAMETER2 + "1" + TEMPLATE_VALUE_PARAMETER + "3", null, new ASTNodeEncoder());
+			InternalSignature.toTemplateParameter("" + TEMPLATE_VALUE_PARAMETER + i + TEMPLATE_VALUE_PARAMETER2 + "1" + TEMPLATE_VALUE_PARAMETER + "3", null, new ASTNodeEncoder(AST.D1));
 		assertNull(param.ident);
 		assertSame(Type.tint32, param.valType);
 		assertEquals(3, ((IntegerExp) param.specValue).value.intValue());
@@ -85,7 +86,7 @@ public class SignatureToTemplateParameter_Test extends AbstractSignatureTest imp
 	
 	public void testValueDefaultValue() {
 		TemplateValueParameter param = (TemplateValueParameter) 
-			InternalSignature.toTemplateParameter("" + TEMPLATE_VALUE_PARAMETER + i, "1", new ASTNodeEncoder());
+			InternalSignature.toTemplateParameter("" + TEMPLATE_VALUE_PARAMETER + i, "1", new ASTNodeEncoder(AST.D1));
 		assertNull(param.ident);
 		assertSame(Type.tint32, param.valType);
 		assertNull(param.specValue);

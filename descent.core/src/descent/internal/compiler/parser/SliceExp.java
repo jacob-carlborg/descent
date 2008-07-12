@@ -198,7 +198,7 @@ public class SliceExp extends UnaExp {
 		}
 
 		if (t.ty == TY.Tsarray || t.ty == TY.Tarray || t.ty == TY.Ttuple) {
-			sym = new ArrayScopeSymbol(this);
+			sym = new ArrayScopeSymbol(sc, this);
 			sym.loc = loc;
 			sym.parent = sc.scopesym;
 			sc = sc.push(sym);

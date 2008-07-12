@@ -68,7 +68,13 @@ public class JavaElementImageDescriptor extends CompositeImageDescriptor {
 	 * Flag to render the 'deprecated' adornment.
 	 * @since 3.0
 	 */
-	public final static int DEPRECATED= 	0x400;	
+	public final static int DEPRECATED= 	0x400;
+	
+	/** Flag to render the const adornment. */
+	public final static int CONST=			0x800;
+	
+	/** Flag to render the invariant adornment. */
+	public final static int INVARIANT=			0x1000;
 
 	private ImageDescriptor fBaseImage;
 	private int fFlags;
@@ -194,7 +200,7 @@ public class JavaElementImageDescriptor extends CompositeImageDescriptor {
 	
 	private void drawTopRight() {		
 		int x= getSize().x;
-		if ((fFlags & ABSTRACT) != 0) {
+		if ((fFlags & ABSTRACT) != 0 && (fFlags & FINAL) == 0) {
 			ImageData data= getImageData(JavaPluginImages.DESC_OVR_ABSTRACT);
 			x-= data.width;
 			drawImage(data, x, 0);
@@ -204,7 +210,7 @@ public class JavaElementImageDescriptor extends CompositeImageDescriptor {
 			x-= data.width;
 			drawImage(data, x, 0);
 		}
-		if ((fFlags & FINAL) != 0) {
+		if ((fFlags & FINAL) != 0 && (fFlags & ABSTRACT) == 0) {
 			ImageData data= getImageData(JavaPluginImages.DESC_OVR_FINAL);
 			x-= data.width;
 			drawImage(data, x, 0);
@@ -214,6 +220,15 @@ public class JavaElementImageDescriptor extends CompositeImageDescriptor {
 			x-= data.width;
 			drawImage(data, x, 0);
 		}
+		if ((fFlags & INVARIANT) != 0) {
+			ImageData data= getImageData(JavaPluginImages.DESC_OVR_INVARIANT);
+			x-= data.width;
+			drawImage(data, x, 0);
+		} else if ((fFlags & CONST) != 0) {
+			ImageData data= getImageData(JavaPluginImages.DESC_OVR_CONST);
+			x-= data.width;
+			drawImage(data, x, 0);
+		} 
 	}		
 	
 	private void drawBottomRight() {

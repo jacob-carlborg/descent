@@ -759,22 +759,10 @@ public class JavaElementLabels {
 						buf.append(DECL_STRING);
 					}
 					
-					if (Flags.isInvariant(field.getFlags())) {
-						buf.append("invariant ");
-					} else if (Flags.isConst(field.getFlags())) {
-						buf.append("const ");
-					}
-					
 					getTypeSignatureLabel(new BindingKey(field.getKey()).toSignature(), flags, buf);
 				} else {
 					if (!annonymous) {
 						buf.append(DECL_STRING);
-					}
-					
-					if (Flags.isInvariant(field.getFlags())) {
-						buf.append("invariant ");
-					} else if (Flags.isConst(field.getFlags())) {
-						buf.append("const ");
 					}
 					
 					getTypeSignatureLabel(field.getTypeSignature(), flags, buf);

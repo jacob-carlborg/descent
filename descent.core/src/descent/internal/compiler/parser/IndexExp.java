@@ -129,7 +129,7 @@ public class IndexExp extends BinExp {
 
 		if (t1.ty == TY.Tsarray || t1.ty == TY.Tarray || t1.ty == TY.Ttuple) {
 			// Create scope for 'length' variable
-			sym = new ArrayScopeSymbol(this);
+			sym = new ArrayScopeSymbol(sc, this);
 			sym.loc = loc;
 			sym.parent = sc.scopesym;
 			sc = sc.push(sym);

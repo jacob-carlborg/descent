@@ -1,22 +1,23 @@
 package descent.internal.compiler.parser;
 
-import melnorme.miscutil.tree.TreeVisitor;
-import descent.core.compiler.IProblem;
-import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Constfold.Cast;
 import static descent.internal.compiler.parser.TOK.TOKarrayliteral;
 import static descent.internal.compiler.parser.TOK.TOKcall;
+import static descent.internal.compiler.parser.TOK.TOKconst;
+import static descent.internal.compiler.parser.TOK.TOKinvariant;
 import static descent.internal.compiler.parser.TOK.TOKnull;
 import static descent.internal.compiler.parser.TOK.TOKstring;
 import static descent.internal.compiler.parser.TOK.TOKsymoff;
 import static descent.internal.compiler.parser.TOK.TOKvar;
-
 import static descent.internal.compiler.parser.TY.Tarray;
 import static descent.internal.compiler.parser.TY.Tclass;
 import static descent.internal.compiler.parser.TY.Tpointer;
 import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Tstruct;
 import static descent.internal.compiler.parser.TY.Tvoid;
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
 public class CastExp extends UnaExp {
@@ -183,7 +184,20 @@ public class CastExp extends UnaExp {
 		if (e1.type != null) // if not a tuple
 		{
 			e1 = resolveProperties(sc, e1, context);
-			to = to.semantic(loc, sc, context);
+			
+			/* Handle cast(const) and cast(invariant)
+			 */
+			if (null == to) {
+				if (tok == TOKconst) {
+					to = e1.type.constOf(context);
+				} else if (tok == TOKinvariant) {
+					to = e1.type.invariantOf(context);
+				} else {
+					throw new IllegalStateException("assert(0);");
+				}
+			} else {
+				to = to.semantic(loc, sc, context);
+			}
 
 			e = op_overload(sc, context);
 			if (e != null) {

@@ -273,7 +273,7 @@ public class Lexer implements IProblemRequestor {
 			boolean tokenizeWhiteSpace, boolean recordLineSeparator,
 			int apiLevel, char[] filename) {
 		this(source, offset, length, tokenizeComments, tokenizePragmas,
-				tokenizeWhiteSpace, recordLineSeparator, apiLevel, filename, new ASTNodeEncoder());
+				tokenizeWhiteSpace, recordLineSeparator, apiLevel, filename, new ASTNodeEncoder(apiLevel));
 	}
 
 	public Lexer(char[] source, int offset, int length,

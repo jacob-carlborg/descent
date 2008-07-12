@@ -820,17 +820,47 @@ public class CompletionProposalLabelProvider {
 		if (Flags.isDeprecated(flags))
 			adornments |= JavaElementImageDescriptor.DEPRECATED;
 
-		if (kind == CompletionProposal.FIELD_REF || kind == CompletionProposal.METHOD_DECLARATION || kind == CompletionProposal.METHOD_DECLARATION || kind == CompletionProposal.METHOD_NAME_REFERENCE || kind == CompletionProposal.METHOD_REF || kind == CompletionProposal.OP_CALL)
-			if (Flags.isStatic(flags))
+		if (kind == CompletionProposal.FIELD_REF || kind == CompletionProposal.METHOD_DECLARATION || kind == CompletionProposal.METHOD_DECLARATION || kind == CompletionProposal.METHOD_NAME_REFERENCE || kind == CompletionProposal.METHOD_REF || kind == CompletionProposal.OP_CALL) {
+			if (Flags.isStatic(flags)) {
 				adornments |= JavaElementImageDescriptor.STATIC;
+			}
+			if (Flags.isInvariant(flags)) {
+				adornments |= JavaElementImageDescriptor.INVARIANT;
+			} else if (Flags.isConst(flags)) {
+				adornments |= JavaElementImageDescriptor.CONST;
+			}
+		}
 
-		if (kind == CompletionProposal.METHOD_DECLARATION || kind == CompletionProposal.METHOD_DECLARATION || kind == CompletionProposal.METHOD_NAME_REFERENCE || kind == CompletionProposal.METHOD_REF)
-			if (Flags.isSynchronized(flags))
+		if (kind == CompletionProposal.METHOD_DECLARATION || kind == CompletionProposal.METHOD_DECLARATION || kind == CompletionProposal.METHOD_NAME_REFERENCE || kind == CompletionProposal.METHOD_REF) {
+			if (Flags.isSynchronized(flags)) {
 				adornments |= JavaElementImageDescriptor.SYNCHRONIZED;
+			}
+			if (Flags.isInvariant(flags)) {
+				adornments |= JavaElementImageDescriptor.INVARIANT;
+			} else if (Flags.isConst(flags)) {
+				adornments |= JavaElementImageDescriptor.CONST;
+			}
+		}
 
-		if (kind == CompletionProposal.TYPE_REF && Flags.isAbstract(flags) && !Flags.isInterface(flags))
-			adornments |= JavaElementImageDescriptor.ABSTRACT;
-
+		if (kind == CompletionProposal.TYPE_REF) {
+			if (Flags.isAbstract(flags) && !Flags.isInterface(flags)) {
+				adornments |= JavaElementImageDescriptor.ABSTRACT;
+			}
+			if (Flags.isInvariant(flags)) {
+				adornments |= JavaElementImageDescriptor.INVARIANT;
+			} else if (Flags.isConst(flags)) {
+				adornments |= JavaElementImageDescriptor.CONST;
+			}
+		}
+		
+		if (kind == CompletionProposal.LOCAL_VARIABLE_REF) {
+			if (Flags.isInvariant(flags)) {
+				adornments |= JavaElementImageDescriptor.INVARIANT;
+			} else if (Flags.isConst(flags)) {
+				adornments |= JavaElementImageDescriptor.CONST;
+			}
+		}
+		
 		return new JavaElementImageDescriptor(descriptor, adornments, JavaElementImageProvider.SMALL_SIZE);
 	}
 

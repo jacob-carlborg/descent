@@ -46,7 +46,8 @@ public class JavaBuilder extends IncrementalProjectBuilder {
 			}
 			fullBuild(project, monitor);
 		} else {
-			delta.accept(new JavaBuilderVisitor(isShowSemanticErrors()));
+			IJavaProject javaProject = JavaCore.create(project);
+			delta.accept(new JavaBuilderVisitor(javaProject.getApiLevel(), isShowSemanticErrors()));
 		}
 		return null;
 	}
@@ -54,7 +55,7 @@ public class JavaBuilder extends IncrementalProjectBuilder {
 	private void fullBuild(IProject project, IProgressMonitor monitor) throws CoreException {
 		IJavaProject javaProject = JavaCore.create(project);
 		IResource[] members = project.members();
-		build(javaProject, isShowSemanticErrors(), members, new ASTNodeEncoder(), monitor);
+		build(javaProject, isShowSemanticErrors(), members, new ASTNodeEncoder(javaProject.getApiLevel()), monitor);
 	}
 	
 	private boolean isShowSemanticErrors() {
@@ -71,11 +72,12 @@ public class JavaBuilder extends IncrementalProjectBuilder {
 	
 	private class JavaBuilderVisitor implements IResourceDeltaVisitor {
 		
-		ASTNodeEncoder encoder = new ASTNodeEncoder();
-		boolean showSemanticErrors;
+		private final boolean showSemanticErrors;
+		private final ASTNodeEncoder encoder;
 		
-		public JavaBuilderVisitor(boolean showSemanticErrors) {
+		public JavaBuilderVisitor(int apiLevel, boolean showSemanticErrors) {
 			this.showSemanticErrors = showSemanticErrors;
+			this.encoder = new ASTNodeEncoder(apiLevel);
 		}
 
 		public boolean visit(IResourceDelta delta) throws CoreException {

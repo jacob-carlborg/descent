@@ -23,19 +23,14 @@ public class ArrayScopeSymbol extends ScopeDsymbol {
 	public TypeTuple type; // for tuple[length]
 	public TupleDeclaration td; // for tuples of objects
 	public Scope sc;
-
-	public ArrayScopeSymbol(Expression e) {
-		this(null, e);
-	}
 	
 	public ArrayScopeSymbol(Scope sc, Expression e) {
 		Assert.isTrue(e.op == TOK.TOKindex || e.op == TOK.TOKslice);
 		this.exp = e;
 		this.sc = sc;
-	}
-
-	public ArrayScopeSymbol(TupleDeclaration s) {
-		this(null, s);
+		if (sc == null) {
+			System.out.println(123456);
+		}
 	}
 	
 	public ArrayScopeSymbol(Scope sc, TupleDeclaration s) {
@@ -43,10 +38,9 @@ public class ArrayScopeSymbol extends ScopeDsymbol {
 		this.type = null;
 		this.td = s;
 		this.sc = sc;
-	}
-
-	public ArrayScopeSymbol(TypeTuple t) {
-		this(null, t);
+		if (sc == null) {
+			System.out.println(123456);
+		}
 	}
 	
 	public ArrayScopeSymbol(Scope sc, TypeTuple t) {
@@ -203,15 +197,17 @@ public class ArrayScopeSymbol extends ScopeDsymbol {
 					}
 				}
 				
-				if (context.isD2()) {
-					pvar.semantic(sc, context);
-				}
-				
 				// TODO semantic I think this logic is ok
 				// return *pvar;
 				if (pvar instanceof IndexExp) {
+					if (context.isD2()) {
+						((IndexExp) pvar).lengthVar.semantic(sc, context);
+					}
 					return ((IndexExp) pvar).lengthVar;
 				} else {
+					if (context.isD2()) {
+						((SliceExp) pvar).lengthVar.semantic(sc, context);
+					}
 					return ((SliceExp) pvar).lengthVar;
 				}
 			}
