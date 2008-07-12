@@ -32,6 +32,7 @@ public abstract class TypeQualified extends Type {
 		pt[0] = null;
 		ps[0] = null;
 		if (s != null) {
+			s.checkDeprecated(sc, context, this); // TODO check "this" for reference
 			s = s.toAlias(context);
 
 			if (idents != null) {

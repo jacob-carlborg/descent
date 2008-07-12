@@ -95,7 +95,9 @@ public class ThisExp extends Expression {
 		Assert.isNotNull(var.parent);
 		type = var.type;
 		var.isVarDeclaration().checkNestedReference(sc, loc, context);
-		sc.callSuper |= Scope.CSXthis;
+		if (0 == sc.intypeof) {
+			sc.callSuper |= Scope.CSXthis;
+		}
 		return this;
 	}
 

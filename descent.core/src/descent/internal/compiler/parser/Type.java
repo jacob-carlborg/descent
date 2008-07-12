@@ -1162,21 +1162,39 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	}
 
 	public Type makeConst(int startPosition, int length) {
-		if (this.modifications == null) {
-			this.modifications = new ArrayList<Modification>();
+		Type t = copy();
+		t.mod = MODconst;
+//	    t.deco = null;
+//	    t.arrayof = null;
+//	    t.pto = null;
+//	    t.rto = null;
+//	    t.cto = null;
+//	    t.ito = null;
+//	    t.vtinfo = null;
+		if (t.modifications == null) {
+			t.modifications = new ArrayList<Modification>();
 		}
-		this.modifications.add(new Modification(TOK.TOKconst, startPosition,
+		t.modifications.add(new Modification(TOK.TOKconst, startPosition,
 				length));
-		return this;
+		return t;
 	}
 
 	public Type makeInvariant(int startPosition, int length) {
-		if (this.modifications == null) {
-			this.modifications = new ArrayList<Modification>();
+		Type t = copy();
+		t.mod = MODinvariant;
+//	    t.deco = null;
+//	    t.arrayof = null;
+//	    t.pto = null;
+//	    t.rto = null;
+//	    t.cto = null;
+//	    t.ito = null;
+//	    t.vtinfo = null;
+		if (t.modifications == null) {
+			t.modifications = new ArrayList<Modification>();
 		}
-		this.modifications.add(new Modification(TOK.TOKinvariant,
+		t.modifications.add(new Modification(TOK.TOKinvariant,
 				startPosition, length));
-		return this;
+		return t;
 	}
 
 	public MATCH deduceType(Scope sc, Type tparam,
@@ -1197,10 +1215,20 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 				if (sc == null) {
 					return MATCHnomatch;
 				}
+				
+				 /* Need a loc to go with the semantic routine.
+			     */
+			    Loc loc = Loc.ZERO;
+				if (parameters != null && parameters.size() != 0) {
+					TemplateParameter tp = (TemplateParameter) parameters
+							.get(0);
+					loc = tp.loc;
+				}
+				
 				/* BUG: what if tparam is a template instance, that
 				 * has as an argument another Tident?
 				 */
-				tparam = tparam.semantic(Loc.ZERO, sc, context);
+				tparam = tparam.semantic(loc, sc, context);
 				if (tparam.ty == Tident) {
 					throw new IllegalStateException(
 							"assert(tparam.ty != Tident);");
@@ -1258,7 +1286,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		}
 
 		if (ty != tparam.ty) {
-			return MATCHnomatch;
+			return implicitConvTo(tparam, context);
 		}
 
 		if (nextOf() != null) {
@@ -1412,14 +1440,10 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		if (sig == null) {
 			StringBuilder sb = new StringBuilder();
 			
-			if (modifications != null && !modifications.isEmpty()) {
-				for(Modification mod : modifications) {
-					if (mod.tok == TOK.TOKinvariant) {
-						sb.append(Signature.C_INVARIANT);
-					} else if (mod.tok == TOK.TOKconst) {
-						sb.append(Signature.C_CONST);
-					}
-				}
+			if ((mod & MODinvariant) != 0) {
+				sb.append(Signature.C_INVARIANT);
+			} else if ((mod & MODconst) != 0) {
+				sb.append(Signature.C_CONST);
 			}
 			
 			sb.append(getSignature0());			
@@ -1438,14 +1462,10 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	}
 	
 	protected final void appendSignature(StringBuilder sb) {
-		if (modifications != null && !modifications.isEmpty()) {
-			for(Modification mod : modifications) {
-				if (mod.tok == TOK.TOKinvariant) {
-					sb.append(Signature.C_INVARIANT);
-				} else if (mod.tok == TOK.TOKconst) {
-					sb.append(Signature.C_CONST);
-				}
-			}
+		if ((mod & MODinvariant) != 0) {
+			sb.append(Signature.C_INVARIANT);
+		} else if ((mod & MODconst) != 0) {
+			sb.append(Signature.C_CONST);
 		}
 		
 		if (alias != null && !(alias instanceof AliasDeclaration && ((AliasDeclaration) alias).isTemplateParameter)) {

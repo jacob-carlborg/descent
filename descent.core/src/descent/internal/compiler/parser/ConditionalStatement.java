@@ -80,13 +80,21 @@ public class ConditionalStatement extends Statement {
 			SemanticContext context) {
 		condition.toCBuffer(buf, hgs, context);
 		buf.writenl();
+		buf.writeByte('{');
+		buf.writenl();
 		if (ifbody != null) {
 			ifbody.toCBuffer(buf, hgs, context);
 		}
+		buf.writeByte('}');
+		buf.writenl();
 		if (elsebody != null) {
 			buf.writestring("else");
 			buf.writenl();
+			buf.writeByte('{');
+			buf.writenl();
 			elsebody.toCBuffer(buf, hgs, context);
+			buf.writeByte('}');
+			buf.writenl();
 		}
 		buf.writenl();
 	}

@@ -874,15 +874,17 @@ public class Constfold {
 				}
 			}
 
-			else if (e1.op == TOKarrayliteral
+			else if ((e1.op == TOKarrayliteral || e1.op == TOKnull)
 					&& e1.type.toBasetype(context).nextOf().equals(e2.type)) {
-				ArrayLiteralExp es1 = (ArrayLiteralExp) e1;
-
-				ArrayLiteralExp ale = new ArrayLiteralExp(es1.loc,
-						new Expressions(es1.elements.size() + 1));
-				ale.elements.addAll(es1.elements);
-				ale.elements.add(e2);
-				e = ale;
+				ArrayLiteralExp es1;
+				if (e1.op == TOKarrayliteral) {
+					es1 = (ArrayLiteralExp) e1;
+					es1 = new ArrayLiteralExp(es1.loc, es1.elements.copy());
+					es1.elements.add(e2);
+				} else {
+					 es1 = new ArrayLiteralExp(e1.loc, e2);
+				}
+				e = es1;
 
 				if (type.toBasetype(context).ty == Tsarray) {
 					e.type = new TypeSArray(e2.type, new IntegerExp(Loc.ZERO,

@@ -155,11 +155,7 @@ public class ScopeDsymbol extends Dsymbol {
 	
 	@Override
 	public Dsymbol search(Loc loc, char[] ident, int flags, SemanticContext context) {
-		return ScopeDsymbol_search(loc, ident, flags, context);
-	}
-
-	protected final Dsymbol ScopeDsymbol_search(Loc loc, char[] ident, int flags, SemanticContext context) {
-		// Look in symbols declared in this module
+//		 Look in symbols declared in this module
 		Dsymbol s = symtab != null ? symtab.lookup(ident) : null;
 		if (s != null) {
 		} else if (imports != null && !imports.isEmpty()) {

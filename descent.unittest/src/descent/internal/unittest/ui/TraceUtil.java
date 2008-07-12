@@ -1,6 +1,6 @@
 package descent.internal.unittest.ui;
 
-import descent.internal.compiler.parser.ISignatureConstants;
+import descent.core.Signature;
 import descent.internal.unittest.ui.FailureTableDisplay.LineType;
 import descent.unittest.IStackTraceElement;
 import descent.unittest.ITestResult;
@@ -10,7 +10,7 @@ public class TraceUtil
 	public static String getModuleSignature(String moduleName)
 	{
 		StringBuffer sig = new StringBuffer();
-		sig.append(ISignatureConstants.MODULE);
+		sig.append(Signature.C_MODULE);
 		
 		// Split takes a regex, so String.split(".") doesn't work
 		String[] fragments = moduleName.split("\\."); //$NON-NLS-1$

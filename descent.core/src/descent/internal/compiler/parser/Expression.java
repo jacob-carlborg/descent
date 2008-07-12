@@ -126,7 +126,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	}
 	
 	public boolean canThrow() {
-		return false;
+		return true;
 	}
 
 	public Expression castTo(Scope sc, Type t, SemanticContext context) {
@@ -252,7 +252,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 			} else {
 				e = new AddrExp(loc, this);
 			}
-			e.type = tb.next.pointerTo(context);
+			e.type = ts.next.pointerTo(context);
 		}
 		return e;
 	}
@@ -459,6 +459,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 						IProblem.ExpressionIsVoidAndHasNoValue, this,
 						new String[] { toChars(context) }));
 			}
+			type = Type.tint32;
 		}
 	}
 

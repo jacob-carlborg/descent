@@ -1073,6 +1073,12 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.WithoutThisCannotBeConstInvariant);
 		case CannotModifySymbol:
 			return String.format(ProblemMessages.CannotModifySymbol, arguments[0]);
+		case CannotCallPublicExportFunctionFromInvariant:
+			return String.format(ProblemMessages.CannotCallPublicExportFunctionFromInvariant, arguments[0]);
+		case TemplateMemberFunctionNotAllowedInInterface:
+			return String.format(ProblemMessages.TemplateMemberFunctionNotAllowedInInterface, arguments[0]);
+		case ArgumentToTypeofIsNotAnExpression:
+			return String.format(ProblemMessages.ArgumentToTypeofIsNotAnExpression, arguments[0]);
 		default:
 			return "";
 		}

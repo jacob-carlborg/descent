@@ -6,7 +6,7 @@ public class SignatureParameterCount_Test extends AbstractSignatureTest {
 	
 	public void testParameterCountNotFunction() {
 		try {
-			Signature.getReturnType(i);
+			Signature.getParameterTypes(i);
 		} catch (IllegalArgumentException e) {
 			
 		}

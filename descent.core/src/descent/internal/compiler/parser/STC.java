@@ -32,6 +32,7 @@ public class STC {
 	public final static int STCnothrow	    = 0x2000000;	// never throws exceptions
 	public final static int STCpure	    = 0x4000000;	// pure function
 	public final static int STCtls	    = 0x8000000;	// thread local
+	public final static int STCalias	    = 0x10000000;	// alias parameter
 	
 	public static int fromTOK(TOK tok) {
 		switch(tok) {

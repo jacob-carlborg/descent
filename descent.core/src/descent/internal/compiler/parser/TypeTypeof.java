@@ -43,6 +43,13 @@ public class TypeTypeof extends TypeQualified {
 			sc.intypeof++;
 			exp = exp.semantic(sc, context);
 			sc.intypeof--;
+			if (exp.op == TOK.TOKtype) {
+				if (context.acceptsErrors()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.ArgumentToTypeofIsNotAnExpression, this,
+							exp.toChars(context)));
+				}
+			}
 			t = exp.type;
 			if (null == t) {
 				if (context.acceptsErrors()) {
@@ -116,7 +123,7 @@ public class TypeTypeof extends TypeQualified {
 
 	@Override
 	public Dsymbol toDsymbol(Scope sc, SemanticContext context) {
-		Type t = semantic(Loc.ZERO, sc, context);
+		Type t = semantic(loc, sc, context);
 		if (same(t, this, context)) {
 			return null;
 		}

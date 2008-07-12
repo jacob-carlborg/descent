@@ -114,7 +114,9 @@ public class SuperExp extends ThisExp {
 		 * fd.vthis.nestedref = 1; fd.nestedFrameRef = 1; } #endif
 		 */
 
-		sc.callSuper |= Scope.CSXsuper;
+		if (0 == sc.intypeof) {
+			sc.callSuper |= Scope.CSXsuper;
+		}
 		return this;
 	}
 

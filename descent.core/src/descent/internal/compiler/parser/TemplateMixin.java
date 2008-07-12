@@ -190,10 +190,17 @@ public class TemplateMixin extends TemplateInstance {
 
 		/* Detect recursive mixin instantiations.
 		 */
-		Lcontinue: for (Dsymbol s = parent; s != null; s = s.parent) {
+	Lcontinue: 
+		for (Dsymbol s = parent; s != null; s = s.parent) {
 			TemplateMixin tm = s.isTemplateMixin();
 			if (null == tm || tempdecl != tm.tempdecl) {
 				continue;
+			}
+			
+			/* Different argument list lengths happen with variadic args
+			 */
+			if (size(tiargs) != size(tm.tiargs)) {
+			    continue;
 			}
 
 			for (int i = 0; i < tiargs.size(); i++) {
@@ -443,6 +450,10 @@ public class TemplateMixin extends TemplateInstance {
 			}
 		}
 		buf.writebyte(')');
+		if (ident != null) {
+			buf.writebyte(' ');
+			buf.writestring(ident.toChars());
+		}
 		buf.writebyte(';');
 		buf.writenl();
 	}

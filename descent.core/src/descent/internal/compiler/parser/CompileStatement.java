@@ -1,13 +1,11 @@
 package descent.internal.compiler.parser;
 
-import melnorme.miscutil.tree.TreeVisitor;
-import descent.core.compiler.IProblem;
-import descent.internal.compiler.parser.ast.ASTNode;
-import descent.internal.compiler.parser.ast.AstVisitorAdapter;
-import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Parser.PScurlyscope;
 import static descent.internal.compiler.parser.Parser.PSsemi;
 import static descent.internal.compiler.parser.TOK.TOKeof;
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
 public class CompileStatement extends Statement {
@@ -34,7 +32,7 @@ public class CompileStatement extends Statement {
 	}
 
 	@Override
-	public Statement semantic(Scope sc, SemanticContext context) {
+	public Statements flatten(Scope sc, SemanticContext context) {
 		exp = exp.semantic(sc, context);
 		exp = ASTDmdNode.resolveProperties(sc, exp, context);
 		exp = exp.optimize(ASTDmdNode.WANTvalue | ASTDmdNode.WANTinterpret,
@@ -43,14 +41,14 @@ public class CompileStatement extends Statement {
 			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArgumentToMixinMustBeString, this, exp.toChars(context)));
 			}
-			return this;
+			return null;
 		}
 		StringExp se = (StringExp) exp;
 		se = se.toUTF8(sc, context);
 		Parser p = new Parser(context.Module_rootModule.apiLevel, se.string);
 		p.loc = loc;
 
-		Statements statements = new Statements();
+		Statements a = new Statements();
 		while (p.token.value != TOKeof) {
 			Statement s = p.parseStatement(PSsemi | PScurlyscope);
 			
@@ -69,7 +67,7 @@ public class CompileStatement extends Statement {
 //				}
 //			});
 			
-			statements.add(s);
+			a.add(s);
 		}
 		
 		// TODO semantic do this better
@@ -82,8 +80,17 @@ public class CompileStatement extends Statement {
 			}
 		}
 
-		Statement s = new CompoundStatement(loc, statements);
-		return s.semantic(sc, context);
+		return a;
+	}
+	
+	@Override
+	public Statement semantic(Scope sc, SemanticContext context) {
+		Statements a = flatten(sc, context);
+	    if (null == a) {
+	    	return null;
+	    }
+	    Statement s = new CompoundStatement(loc, a);
+	    return s.semantic(sc, context);
 	}
 
 	@Override

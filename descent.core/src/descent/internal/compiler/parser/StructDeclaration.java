@@ -112,6 +112,9 @@ public class StructDeclaration extends AggregateDeclaration {
 		handle = type.pointerTo(context);
 		structalign = sc.structalign;
 		protection = sc.protection;
+		if ((sc.stc & STC.STCdeprecated) != 0) {
+			isdeprecated = true;
+		}
 		
 		if (context.isD2()) {
 			 storage_class |= sc.stc;

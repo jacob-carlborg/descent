@@ -1,5 +1,7 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.STC.STCdeprecated;
+
 import java.math.BigInteger;
 
 import melnorme.miscutil.tree.TreeVisitor;
@@ -8,7 +10,6 @@ import descent.core.IType;
 import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
 
 public class EnumDeclaration extends ScopeDsymbol {
 
@@ -26,6 +27,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 	public integer_t maxval;
 	public integer_t minval;
 	public integer_t defaultval; // default initializer
+	public boolean isdeprecated;
 	
 	private IType javaElement;
 	
@@ -61,6 +63,11 @@ public class EnumDeclaration extends ScopeDsymbol {
 	@Override
 	public Type getType(SemanticContext context) {
 		return type;
+	}
+	
+	@Override
+	public boolean isDeprecated() {
+		return isdeprecated;
 	}
 
 	@Override
@@ -98,6 +105,10 @@ public class EnumDeclaration extends ScopeDsymbol {
 
 		if (memtype == null) {
 			memtype = Type.tint32;
+		}
+		
+		if ((sc.stc & STCdeprecated) != 0) {
+			isdeprecated = true;
 		}
 
 		parent = sc.scopesym;

@@ -33,10 +33,11 @@ public class TemplateInstance extends ScopeDsymbol {
 	public Dsymbol isnested; // if referencing local symbols, this is the context
 	public boolean nest; // For recursion detection
 	public int errors; // 1 if compiled with errors
+	public boolean semantictiargsdone;
 	
 	// Descent: to improve performance, must be set by Parser or ModuleBuilder
-	public ASTNodeEncoder encoder; 
-
+	public ASTNodeEncoder encoder;
+	 
 	// to TemplateDeclaration.parameters
 	// [int, char, 100]
 
@@ -47,6 +48,7 @@ public class TemplateInstance extends ScopeDsymbol {
 		if (this.name != null) {
 			this.name.templateInstance = this;
 		}
+		this.semantictiargsdone = false;
 		this.encoder = encoder;
 	}
 
@@ -57,6 +59,7 @@ public class TemplateInstance extends ScopeDsymbol {
 		tiargs(tiargs);
 		this.tempdecl = td;
 		this.havetempdecl = 1;
+		this.semantictiargsdone = true;
 		this.encoder = encoder;
 	}
 
@@ -836,6 +839,10 @@ public class TemplateInstance extends ScopeDsymbol {
 	}
 
 	public void semanticTiargs(Scope sc, SemanticContext context) {
+		if (semantictiargsdone) {
+			return;
+		}
+		semantictiargsdone = true;
 		semanticTiargs(loc, sc, tiargs, context);
 	}
 

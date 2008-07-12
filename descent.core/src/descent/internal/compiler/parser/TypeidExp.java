@@ -32,6 +32,9 @@ public class TypeidExp extends Expression {
 		Expression e;
 		typeidType = typeidType.semantic(loc, sc, context);
 		e = typeidType.getTypeInfo(sc, context);
+		if (e.loc != null && e.loc.linnum == 0) {
+			e.loc = loc;		// so there's at least some line number info
+		}
 		return e;
 	}
 

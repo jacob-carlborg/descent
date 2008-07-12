@@ -483,6 +483,9 @@ final class ProblemMessages extends NLS {
 	public static String CannotHaveFieldWithSameStructType;
 	public static String WithoutThisCannotBeConstInvariant;
 	public static String CannotModifySymbol;
+	public static String CannotCallPublicExportFunctionFromInvariant;
+	public static String TemplateMemberFunctionNotAllowedInInterface;
+	public static String ArgumentToTypeofIsNotAnExpression;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

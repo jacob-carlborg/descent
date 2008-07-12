@@ -15,6 +15,7 @@ public class CompileDeclaration extends AttribDeclaration {
 
 	public Expression exp, sourceExp;
 	public ScopeDsymbol sd;
+	public boolean compiled;
 	
 	protected IInitializer javaElement;
 	
@@ -39,7 +40,68 @@ public class CompileDeclaration extends AttribDeclaration {
 	public int addMember(Scope sc, ScopeDsymbol sd, int memnum,
 			SemanticContext context) {
 		this.sd = sd;
+		if (memnum == 0) {
+			/*
+			 * No members yet, so parse the mixin now
+			 */
+			compileIt(sc, context);
+			memnum |= super.addMember(sc, sd, memnum, context);
+			compiled = true;
+		}
 		return memnum;
+	}
+	
+	public void compileIt(Scope sc, SemanticContext context) {
+		exp = exp.semantic(sc, context);
+		exp = resolveProperties(sc, exp, context);
+		exp = exp.optimize(WANTvalue | WANTinterpret, context);
+		if (exp.op != TOKstring) {
+			if (context.acceptsErrors()) {
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArgumentToMixinMustBeString, this, exp.toChars(context)));
+			}
+		}
+	    else
+	    {
+	    	StringExp se = (StringExp) exp;
+			se = se.toUTF8(sc, context);
+			Parser p = new Parser(context.Module_rootModule.apiLevel, se.string);
+			// p.nextToken();
+			p.loc = loc;
+			decl = p.parseModule();
+			for(Dsymbol s : decl) {
+				s.accept(new AstVisitorAdapter() {
+					@Override
+					public void preVisit(ASTNode node) {
+						if (node instanceof ASTDmdNode) {
+							ASTDmdNode s = (ASTDmdNode) node;
+							s.synthetic = true;
+							s.setStart(getStart() + 1);
+							s.setLength(getLength());
+							s.setLineNumber(getLineNumber());					
+							s.creator = CompileDeclaration.this;
+						}
+					}
+				});
+			}
+
+			// TODO semantic do this better
+			if (p.problems != null) {
+				for (int i = 0; i < p.problems.size(); i++) {
+					Problem problem = (Problem) p.problems.get(i);
+					problem.setSourceStart(start);
+					problem.setSourceEnd(start + length - 1);
+					context.acceptProblem(problem);
+				}
+			}
+
+			if (p.token.value != TOKeof) {
+				if (context.acceptsErrors()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.IncompleteMixinDeclaration, this,
+							new String[] { se.toChars(context) }));
+				}
+			}
+	    }
 	}
 
 	@Override
@@ -49,56 +111,11 @@ public class CompileDeclaration extends AttribDeclaration {
 
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-		exp = exp.semantic(sc, context);
-		exp = resolveProperties(sc, exp, context);
-		exp = exp.optimize(WANTvalue | WANTinterpret, context);
-		if (exp.op != TOKstring) {
-			if (context.acceptsErrors()) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArgumentToMixinMustBeString, this, exp.toChars(context)));
-			}
-			return;
+		if (!compiled) {
+			compileIt(sc, context);
+			super.addMember(sc, sd, 0, context);
+			compiled = true;
 		}
-		StringExp se = (StringExp) exp;
-		se = se.toUTF8(sc, context);
-		Parser p = new Parser(context.Module_rootModule.apiLevel, se.string);
-		// p.nextToken();
-		p.loc = loc;
-		decl = p.parseModule();
-		for(Dsymbol s : decl) {
-			s.accept(new AstVisitorAdapter() {
-				@Override
-				public void preVisit(ASTNode node) {
-					if (node instanceof ASTDmdNode) {
-						ASTDmdNode s = (ASTDmdNode) node;
-						s.synthetic = true;
-						s.setStart(getStart() + 1);
-						s.setLength(getLength());
-						s.setLineNumber(getLineNumber());					
-						s.creator = CompileDeclaration.this;
-					}
-				}
-			});
-		}
-
-		// TODO semantic do this better
-		if (p.problems != null) {
-			for (int i = 0; i < p.problems.size(); i++) {
-				Problem problem = (Problem) p.problems.get(i);
-				problem.setSourceStart(start);
-				problem.setSourceEnd(start + length - 1);
-				context.acceptProblem(problem);
-			}
-		}
-
-		if (p.token.value != TOKeof) {
-			if (context.acceptsErrors()) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.IncompleteMixinDeclaration, this,
-						new String[] { se.toChars(context) }));
-			}
-		}
-
-		super.addMember(sc, sd, 0, context);
 		super.semantic(sc, context);
 	}
 

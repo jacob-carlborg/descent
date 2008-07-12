@@ -1417,6 +1417,19 @@ WithoutThisCannotBeConstInvariant
 CannotModifySymbol
 	formatString=Cannot modify %1$s
 	numArgs=1
+CannotCallPublicExportFunctionFromInvariant
+	formatString=Cannot call public/export function %1$s from invariant
+	numArgs=1
+TemplateMemberFunctionNotAllowedInInterface
+	formatString=Template member function not allowed in interface %1$s
+	numArgs=1
+ArgumentToTypeofIsNotAnExpression
+	formatString=Argument %1$s to typeof is not an expression
+	numArgs=1
+
+
+
+
 
 
 

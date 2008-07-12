@@ -13,7 +13,6 @@ import descent.core.IJavaProject;
 import descent.core.IPackageFragment;
 import descent.core.IPackageFragmentRoot;
 import descent.core.JavaModelException;
-import descent.internal.compiler.parser.ISignatureConstants;
 
 public class OpenModuleAction extends OpenEditorAction
 {

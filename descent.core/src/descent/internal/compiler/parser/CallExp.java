@@ -1,15 +1,7 @@
 package descent.internal.compiler.parser;
 
-import melnorme.miscutil.tree.TreeVisitor;
-
-import org.eclipse.core.runtime.Assert;
-
-import descent.core.compiler.IProblem;
-import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.LINK.LINKd;
-
 import static descent.internal.compiler.parser.STC.STClazy;
-
 import static descent.internal.compiler.parser.Scope.CSXany_ctor;
 import static descent.internal.compiler.parser.Scope.CSXlabel;
 import static descent.internal.compiler.parser.Scope.CSXsuper_ctor;
@@ -24,8 +16,8 @@ import static descent.internal.compiler.parser.TOK.TOKimport;
 import static descent.internal.compiler.parser.TOK.TOKsuper;
 import static descent.internal.compiler.parser.TOK.TOKtemplate;
 import static descent.internal.compiler.parser.TOK.TOKthis;
-import static descent.internal.compiler.parser.TOK.*;
-
+import static descent.internal.compiler.parser.TOK.TOKtype;
+import static descent.internal.compiler.parser.TOK.TOKvar;
 import static descent.internal.compiler.parser.TY.Taarray;
 import static descent.internal.compiler.parser.TY.Tarray;
 import static descent.internal.compiler.parser.TY.Tclass;
@@ -35,6 +27,12 @@ import static descent.internal.compiler.parser.TY.Tpointer;
 import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Tstruct;
 import static descent.internal.compiler.parser.TY.Tvoid;
+import melnorme.miscutil.tree.TreeVisitor;
+
+import org.eclipse.core.runtime.Assert;
+
+import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
 public class CallExp extends UnaExp {
@@ -413,6 +411,18 @@ public class CallExp extends UnaExp {
 				if (f.needThis()) {
 				    ue.e1 = getRightThis(loc, sc, ad, ue.e1, f, context);
 				}
+				
+				/* Cannot call public functions from inside invariant
+				 * (because then the invariant would have infinite recursion)
+				 */
+				if (sc.func != null && sc.func.isInvariantDeclaration() != null &&
+				    ue.e1.op == TOKthis &&
+				    f.addPostInvariant(context)
+				   ) {
+					if (context.acceptsErrors()) {
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotCallPublicExportFunctionFromInvariant, this, f.toChars(context)));
+					}
+				}
 
 				checkDeprecated(sc, f, context);
 				accessCheck(sc, ue.e1, f, context);
@@ -462,17 +472,19 @@ public class CallExp extends UnaExp {
 						type = Type.terror;
 						return this;
 					} else {
-						if (sc.noctor != 0 || (sc.callSuper & CSXlabel) != 0) {
-							if (context.acceptsErrors()) {
-								context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.ConstructorCallsNotAllowedInLoopsOrAfterLabels, this));
+						if (0 == sc.intypeof) {
+							if (sc.noctor != 0 || (sc.callSuper & CSXlabel) != 0) {
+								if (context.acceptsErrors()) {
+									context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.ConstructorCallsNotAllowedInLoopsOrAfterLabels, this));
+								}
 							}
-						}
-						if ((sc.callSuper & (CSXsuper_ctor | CSXthis_ctor)) != 0) {
-							if (context.acceptsErrors()) {
-								context.acceptProblem(Problem.newSemanticTypeError(IProblem.MultipleConstructorCalls, this));
+							if ((sc.callSuper & (CSXsuper_ctor | CSXthis_ctor)) != 0) {
+								if (context.acceptsErrors()) {
+									context.acceptProblem(Problem.newSemanticTypeError(IProblem.MultipleConstructorCalls, this));
+								}
 							}
+							sc.callSuper |= CSXany_ctor | CSXsuper_ctor;
 						}
-						sc.callSuper |= CSXany_ctor | CSXsuper_ctor;
 
 						f = f.overloadResolve(loc, null, arguments, context, this);
 						checkDeprecated(sc, f, context);
@@ -495,17 +507,20 @@ public class CallExp extends UnaExp {
 					type = Type.terror;
 					return this;
 				} else {
-					if (sc.noctor != 0 || (sc.callSuper & CSXlabel) != 0) {
-						if (context.acceptsErrors()) {
-							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ConstructorCallsNotAllowedInLoopsOrAfterLabels, getLineNumber(), getErrorStart(), getErrorLength()));
+					if (0 == sc.intypeof)
+				    {
+						if (sc.noctor != 0 || (sc.callSuper & CSXlabel) != 0) {
+							if (context.acceptsErrors()) {
+								context.acceptProblem(Problem.newSemanticTypeError(IProblem.ConstructorCallsNotAllowedInLoopsOrAfterLabels, getLineNumber(), getErrorStart(), getErrorLength()));
+							}
 						}
-					}
-					if ((sc.callSuper & (CSXsuper_ctor | CSXthis_ctor)) != 0) {
-						if (context.acceptsErrors()) {
-							context.acceptProblem(Problem.newSemanticTypeError(IProblem.MultipleConstructorCalls, this));
+						if ((sc.callSuper & (CSXsuper_ctor | CSXthis_ctor)) != 0) {
+							if (context.acceptsErrors()) {
+								context.acceptProblem(Problem.newSemanticTypeError(IProblem.MultipleConstructorCalls, this));
+							}
 						}
-					}
-					sc.callSuper |= CSXany_ctor | CSXthis_ctor;
+						sc.callSuper |= CSXany_ctor | CSXthis_ctor;
+				    }
 
 					f = cd.ctor;
 					f = f.overloadResolve(loc, null, arguments, context, this);

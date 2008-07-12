@@ -32,6 +32,14 @@ public class SignatureReturnType_Test extends AbstractSignatureTest {
 		rt(H(i, a), F + Z + H(i, a));
 	}
 	
+	public void testConst() {
+		rt(Signature.C_CONST + i, F + Z + Signature.C_CONST +i);
+	}
+	
+	public void testInvariant() {
+		rt(Signature.C_INVARIANT + i, F + Z + Signature.C_INVARIANT +i);
+	}
+	
 	public void testTypeof() {
 		rt(typeof("foo"), F + Z + typeof("foo"));
 	}

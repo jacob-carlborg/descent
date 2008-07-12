@@ -56,8 +56,6 @@ import descent.core.JavaModelException;
 import descent.core.Signature;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
-import descent.internal.compiler.lookup.LazyClassDeclaration;
-import descent.internal.compiler.lookup.LazyInterfaceDeclaration;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import descent.internal.core.util.Util;
 
@@ -1001,6 +999,7 @@ public class FuncDeclaration extends Declaration {
 		StructDeclaration sd = null;
 		ClassDeclaration cd = null;
 		InterfaceDeclaration id = null;
+		Dsymbol pd;
 		int nparams = 0;
 
 		if (!context.isD2()) {
@@ -1166,6 +1165,18 @@ public class FuncDeclaration extends Declaration {
 							this, new String[] { id.toChars(context) }));
 				}
 			}
+		}
+		
+		/* Template member functions aren't virtual:
+	     *   interface TestInterface { void tpl(T)(); }
+	     * and so won't work in interfaces
+	     */
+	    if ((pd = toParent()) != null && pd.isTemplateInstance() != null
+				&& (pd = toParent2()) != null
+				&& (id = pd.isInterfaceDeclaration()) != null) {
+	    	if (context.acceptsErrors()) {
+	    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.TemplateMemberFunctionNotAllowedInInterface, this, id.toString()));
+	    	}
 		}
 
 		cd = parent.isClassDeclaration();
@@ -2071,7 +2082,7 @@ public class FuncDeclaration extends Declaration {
 				f = (TypeFunction) type;
 			}
 
-			boolean offend = fbody != null ? fbody.fallOffEnd(context) : true;
+			boolean offend = fbody != null ? (fbody.blockExit(context) & BEfallthru) != 0: true;
 
 			if (isStaticCtorDeclaration() != null) {
 				/*

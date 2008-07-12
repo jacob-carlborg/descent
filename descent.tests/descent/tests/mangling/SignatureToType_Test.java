@@ -13,6 +13,7 @@ import descent.internal.compiler.parser.TemplateInstance;
 import descent.internal.compiler.parser.TemplateInstanceWrapper;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeAArray;
+import descent.internal.compiler.parser.TypeBasic;
 import descent.internal.compiler.parser.TypeDArray;
 import descent.internal.compiler.parser.TypeDelegate;
 import descent.internal.compiler.parser.TypeFunction;
@@ -52,6 +53,18 @@ public class SignatureToType_Test extends AbstractSignatureTest implements ISign
 		TypeAArray actual = (TypeAArray) InternalSignature.toType(H(i, a), new ASTNodeEncoder());
 		assertSame(Type.tint32, actual.index);
 		assertSame(Type.tchar, actual.next);
+	}
+	
+	public void testConst() {
+		TypeBasic actual = (TypeBasic) InternalSignature.toType(Signature.C_CONST + i, new ASTNodeEncoder());
+		assertEquals(descent.internal.compiler.parser.TY.Tint32, actual.ty);
+		assertEquals(Type.MODconst, actual.mod);
+	}
+	
+	public void testInvariant() {
+		TypeBasic actual = (TypeBasic) InternalSignature.toType(Signature.C_INVARIANT + i, new ASTNodeEncoder());
+		assertEquals(descent.internal.compiler.parser.TY.Tint32, actual.ty);
+		assertEquals(Type.MODinvariant, actual.mod);
 	}
 	
 	public void testTypeof() {

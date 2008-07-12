@@ -1,12 +1,13 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.STC.STCdeprecated;
+
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.Flags;
 import descent.core.IJavaElement;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
 
 public class Dsymbol extends ASTDmdNode {
 
@@ -137,6 +138,11 @@ public class Dsymbol extends ASTDmdNode {
 				if (sc.scopesym != null && sc.scopesym.isDeprecated()) {
 					return;
 				}
+				
+				// If inside a StorageClassDeclaration that is deprecated
+			    if ((sc.stc & STCdeprecated) != 0) {
+			    	return;
+			    }
 			}
 
 			if (context.acceptsErrors()) {
@@ -475,11 +481,29 @@ public class Dsymbol extends ASTDmdNode {
 		return null;
 	}
 
+	/**
+	 * Search for ident as member of s.
+	 * Input:
+	 *	flags:	1	don't find private members
+	 *		2	don't give error messages
+	 *		4	return NULL if ambiguous
+	 * Returns:
+	 *	NULL if not found
+	 */
 	public final Dsymbol search(Loc loc, IdentifierExp ident, int flags,
 			SemanticContext context) {
 		return search(loc, ident.ident, flags, context);
 	}
 
+	/**
+	 * Search for ident as member of s.
+	 * Input:
+	 *	flags:	1	don't find private members
+	 *		2	don't give error messages
+	 *		4	return NULL if ambiguous
+	 * Returns:
+	 *	NULL if not found
+	 */
 	public Dsymbol searchX(Loc loc, Scope sc, IdentifierExp id,
 			SemanticContext context) {
 		Dsymbol s = this.toAlias(context);
@@ -564,6 +588,15 @@ public class Dsymbol extends ASTDmdNode {
 	@Override
 	public String toChars(SemanticContext context) {
 		return (this.ident != null && this.ident.ident != null) ? this.ident.toChars() : "__anonymous";
+	}
+	
+	public TemplateInstance inTemplateInstance() {
+		for (Dsymbol parent = this.parent; parent != null; parent = parent.parent) {
+			TemplateInstance ti = parent.isTemplateInstance();
+			if (ti != null)
+				return ti;
+		}
+		return null;
 	}
 
 	public Dsymbol toParent() {

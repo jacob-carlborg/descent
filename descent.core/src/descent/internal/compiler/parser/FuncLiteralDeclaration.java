@@ -66,6 +66,11 @@ public class FuncLiteralDeclaration extends FuncDeclaration {
 	public boolean isNested() {
 		return (tok == TOK.TOKdelegate);
 	}
+	
+	@Override
+	public boolean isVirtual(SemanticContext context) {
+		return false;
+	}
 
 	@Override
 	public String kind() {

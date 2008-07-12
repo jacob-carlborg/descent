@@ -88,6 +88,10 @@ public class CtorDeclaration extends FuncDeclaration {
 			tret = cd.type; // .referenceTo();
 		}
 		type = new TypeFunction(arguments, tret, varargs, LINK.LINKd);
+		
+		if (null == originalType) {
+			originalType = type;
+		}
 
 		sc.flags |= Scope.SCOPEctor;
 		type = type.semantic(loc, sc, context);

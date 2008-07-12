@@ -682,5 +682,8 @@ public interface IProblem {
 	int CannotHaveFieldWithSameStructType = 471;
 	int WithoutThisCannotBeConstInvariant = 472;
 	int CannotModifySymbol = 473;
+	int CannotCallPublicExportFunctionFromInvariant = 474;
+	int TemplateMemberFunctionNotAllowedInInterface = 475;
+	int ArgumentToTypeofIsNotAnExpression = 476;
 
 }

@@ -1,21 +1,20 @@
 package descent.internal.compiler.parser;
 
-import java.math.BigInteger;
-
-import descent.core.compiler.CharOperation;
-import descent.core.compiler.IProblem;
-import descent.internal.compiler.parser.ast.IASTVisitor;
-
 import static descent.internal.compiler.parser.MATCH.MATCHconst;
 import static descent.internal.compiler.parser.MATCH.MATCHconvert;
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
-
 import static descent.internal.compiler.parser.TY.Tenum;
 import static descent.internal.compiler.parser.TY.Tint32;
 import static descent.internal.compiler.parser.TY.Tpointer;
 import static descent.internal.compiler.parser.TY.Tuns32;
 import static descent.internal.compiler.parser.TY.Tuns64;
+
+import java.math.BigInteger;
+
+import descent.core.compiler.CharOperation;
+import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
 public class IntegerExp extends Expression {
@@ -430,7 +429,13 @@ public class IntegerExp extends Expression {
 					break;
 
 				default:
-					throw new IllegalStateException("assert(0);");
+					/* This can happen if errors, such as
+					 * the type is painted on like in fromConstInitializer().
+					 */
+					if (0 == context.global.errors) {
+						throw new IllegalStateException("assert(0);");
+					}
+					break;
 				}
 			}
 		} else if (v.and(N_0x8000000000000000).compareTo(BigInteger.ZERO) != 0) {
@@ -515,7 +520,12 @@ public class IntegerExp extends Expression {
 			}
 
 			default:
-				throw new IllegalStateException("assert(0);");
+				/* This can happen if errors, such as
+				 * the type is painted on like in fromConstInitializer().
+				 */
+				if (0 == context.global.errors) {
+					throw new IllegalStateException("assert(0);");
+				}
 			}
 			break;
 		}

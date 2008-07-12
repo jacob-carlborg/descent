@@ -247,7 +247,7 @@ public class CompoundStatement extends Statement {
 			}
 		}
 		if (statements != null && statements.size() == 1) {
-			return s;
+			return statements.get(0);
 		}
 		return this;
 	}

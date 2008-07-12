@@ -126,7 +126,19 @@ public class DotVarExp extends UnaExp {
 				AggregateDeclaration ad = var.toParent()
 						.isAggregateDeclaration();
 			    e1 = getRightThis(loc, sc, ad, e1, var, context);
-				accessCheck(sc, e1, var, context, ident);
+			    if (0 == sc.noaccesscheck) {
+			    	accessCheck(sc, e1, var, context, ident);
+			    }
+			    
+			    VarDeclaration v = var.isVarDeclaration();
+				if (v != null && v.isConst()) {
+					ExpInitializer ei = v.getExpInitializer(context);
+					if (ei != null) {
+						Expression e = ei.exp.copy();
+						e = e.semantic(sc, context);
+						return e;
+					}
+				}
 			}
 		}
 		return this;

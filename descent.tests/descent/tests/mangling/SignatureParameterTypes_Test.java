@@ -32,6 +32,14 @@ public class SignatureParameterTypes_Test extends AbstractSignatureTest {
 		pt(F + H(i, a) + a + Z + v, H(i, a), a);
 	}
 	
+	public void testConst() {
+		pt(F + Signature.C_CONST + i + Z + v, Signature.C_CONST + i);
+	}
+	
+	public void testInvariant() {
+		pt(F + Signature.C_INVARIANT + i + Z + v, Signature.C_INVARIANT + i);
+	}
+	
 	public void testTypeof() {
 		pt(F + typeof("foo") + a + Z + v, typeof("foo"), a);
 	}

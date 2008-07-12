@@ -56,7 +56,7 @@ public class GdbDebugger implements IDebugger {
 			
 			fProxy.write("break " +  //$NON-NLS-1$
 					ArgumentUtils.toStringArgument(
-					toGdbPath(filename) +
+					toLinuxPath(filename) +
 					":" + //$NON-NLS-1$
 					lineNumber
 					) + 
@@ -202,7 +202,7 @@ public class GdbDebugger implements IDebugger {
 			beforeWaitStateReturn();
 			
 			fProxy.write("clear " + ArgumentUtils.toStringArgument( //$NON-NLS-1$
-					toGdbPath(filename) +
+					toLinuxPath(filename) +
 					":" + //$NON-NLS-1$
 					lineNumber
 					) + 
@@ -366,7 +366,7 @@ public class GdbDebugger implements IDebugger {
 		}
 	}
 	
-	private String toGdbPath(String path) {
+	private String toLinuxPath(String path) {
 		return path.replace('\\', '/');
 	}
 	

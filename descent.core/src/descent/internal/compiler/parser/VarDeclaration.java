@@ -150,7 +150,7 @@ public class VarDeclaration extends Declaration {
 		if (this.init != null) {
 			ei = this.init().isExpInitializer();
 		} else {
-			Expression e = this.type.defaultInit(context);
+			Expression e = this.type.defaultInit(loc, context);
 			if (e != null) {
 				ei = new ExpInitializer(this.loc, e);
 			} else {

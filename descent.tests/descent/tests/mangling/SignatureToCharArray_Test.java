@@ -40,6 +40,14 @@ public class SignatureToCharArray_Test extends AbstractSignatureTest {
 		tca("int[1 .. 3]", slice(i, "1", "3"));
 	}
 	
+	public void testConst() {
+		tca("const(int)", Signature.C_CONST + i);
+	}
+	
+	public void testInvariant() {
+		tca("invariant(int)", Signature.C_INVARIANT + i);
+	}
+	
 	public void testClass() {
 		tca("Bar", MODULE + "3foo4test" + CLASS + "3Bar");
 	}

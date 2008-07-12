@@ -489,18 +489,65 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			/*
 			 * Check for match with function parameter T...
 			 */
-			Type t = fparam.type;
-			switch (t.ty) {
+			Type tb = fparam.type.toBasetype(context);
+			switch (tb.ty) {
 			// Perhaps we can do better with this, see
 			// TypeFunction.callMatch()
-			case Tsarray:
-			case Tarray:
+			case Tsarray: {
+				TypeSArray tsa = (TypeSArray) tb;
+				integer_t sz = tsa.dim.toInteger(context);
+				if (sz.intValue() != nfargs - i) {
+					return deduceFunctionTemplateMatch_Lnomatch(paramscope);
+				}
+				// goto Lmatch;
+				return deduceFunctionTemplateMatch_Lmatch(nargsi, dedargs, dedtypes, paramscope, match,
+						context);
+			}
+			case Tarray: {
+				TypeArray ta = (TypeArray) tb;
+				for (; i < nfargs; i++)
+				{
+				    Expression arg = (Expression) fargs.get(i);
+				    /* If lazy array of delegates,
+				     * convert arg(s) to delegate(s)
+				     */
+				    Type tret = fparam.isLazyArray(context);
+				    if (tret != null)
+				    {
+					if (ta.next.equals(arg.type))
+					{   m = MATCHexact;
+					}
+					else
+					{
+					    m = arg.implicitConvTo(tret, context);
+					    if (m == MATCHnomatch)
+					    {
+						if (tret.toBasetype(context).ty == Tvoid)
+						    m = MATCHconvert;
+					    }
+					}
+				    }
+				    else
+				    {
+					m = arg.type.deduceType(scope, ta.next, parameters, dedtypes, context);
+					//m = arg.implicitConvTo(ta.next);
+				    }
+				    if (m == MATCHnomatch) {
+				    	return deduceFunctionTemplateMatch_Lnomatch(paramscope);
+				    }
+				    if (m.ordinal() < match.ordinal()) {
+				    	match = m;
+				    }
+				}
+				// goto Lmatch;
+				return deduceFunctionTemplateMatch_Lmatch(nargsi, dedargs, dedtypes, paramscope, match,
+						context);
+			}
 			case Tclass:
 			case Tident:
+				// goto Lmatch;
 				return deduceFunctionTemplateMatch_Lmatch(nargsi, dedargs, dedtypes, paramscope, match,
-						context); // goto
-				// Lmatch;
-
+						context);
 			default:
 				return deduceFunctionTemplateMatch_Lnomatch(paramscope); // goto Lnomatch;
 			}

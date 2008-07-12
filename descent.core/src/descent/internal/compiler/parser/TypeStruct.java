@@ -130,13 +130,18 @@ public class TypeStruct extends Type {
 		if (equals(ident, Id.tupleof)) {
 			/* Create a TupleExp
 			 */
+			e = e.semantic(sc, context);	// do this before turning on noaccesscheck
+			
 			Expressions exps = new Expressions(sym.fields.size());
 			for (VarDeclaration v_ : sym.fields) {
 				Expression fe = new DotVarExp(e.loc, e, v_);
 				exps.add(fe);
 			}
 			e = new TupleExp(e.loc, exps);
+			sc = sc.push();
+			sc.noaccesscheck = 1;
 			e = e.semantic(sc, context);
+			sc.pop();
 			return e;
 		}
 
@@ -172,6 +177,9 @@ public class TypeStruct extends Type {
 				return super.dotExp(sc, e, ident, context);
 			}
 	
+			if (null == s.isFuncDeclaration()) {	// because of overloading
+				s.checkDeprecated(sc, context, this); // TODO check this for reference
+			}
 			s = s.toAlias(context);
 	
 			v = s.isVarDeclaration();

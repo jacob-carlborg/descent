@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.STC.STCdeprecated;
 import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
@@ -8,7 +9,6 @@ import descent.core.IField;
 import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
 
 public class TypedefDeclaration extends Declaration {
 
@@ -90,6 +90,7 @@ public class TypedefDeclaration extends Declaration {
 			if (sc.parent.isFuncDeclaration() != null && init != null) {
 				semantic2(sc, context);
 			}
+			storage_class |= sc.stc & STCdeprecated;
 		} else if (sem == 1) {
 			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(

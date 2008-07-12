@@ -814,7 +814,8 @@ public abstract class ASTDmdNode extends ASTNode {
 						break;
 					}
 					if (!gotoL2) {
-						arg = p.defaultArg.copy();
+						arg = p.defaultArg;
+						arg = arg.copy();
 						arguments.add(arg);
 						nargs++;
 					}
@@ -961,7 +962,7 @@ public abstract class ASTDmdNode extends ASTNode {
 				tb = arg.type.toBasetype(context);
 				if (tb.ty == Tsarray) {
 					TypeSArray ts = (TypeSArray) tb;
-					Type ta = tb.next.arrayOf(context);
+					Type ta = ts.next.arrayOf(context);
 					if (ts.size(arg.loc, context) == 0) {
 						arg = new NullExp(arg.loc);
 						arg.type = ta;
@@ -2015,7 +2016,7 @@ public abstract class ASTDmdNode extends ASTNode {
 			Type t = e1.type.toBasetype(context);
 	
 			if (ad != null
-					&& !(t.ty == Tpointer && t.next.ty == Tstruct && ((TypeStruct) t.next).sym == ad)
+					&& !(t.ty == Tpointer && t.nextOf().ty == Tstruct && ((TypeStruct) t.nextOf()).sym == ad)
 					&& !(t.ty == Tstruct && ((TypeStruct) t).sym == ad)) {
 				ClassDeclaration cd = ad.isClassDeclaration();
 				ClassDeclaration tcd = t.isClassHandle();
@@ -2025,22 +2026,29 @@ public abstract class ASTDmdNode extends ASTNode {
 					if (tcd != null && tcd.isNested()) { // Try again with outer scope
 	
 						e1 = new DotVarExp(loc, e1, tcd.vthis);
-						e1 = e1.semantic(sc, context);
+						e1.type = tcd.vthis.type;
+//						e1 = e1.semantic(sc, context);
 	
 						// Skip over nested functions, and get the enclosing
 						// class type.
-						Dsymbol s = tcd.toParent();
-						while (s != null && s.isFuncDeclaration() != null) {
+						int n = 0;
+						Dsymbol s;
+						for(s = tcd.toParent(); s != null && s.isFuncDeclaration() != null; s = s.toParent()) {
 							FuncDeclaration f = s.isFuncDeclaration();
 							if (f.vthis != null) {
+								n++;
 								e1 = new VarExp(loc, f.vthis);
 							}
 							s = s.toParent();
 						}
 						if (s != null && s.isClassDeclaration() != null) {
 							e1.type = s.isClassDeclaration().type;
+							if (n > 1) {
+								e1 = e1.semantic(sc, context);
+							}
+						} else {
+							e1 = e1.semantic(sc, context);
 						}
-						e1 = e1.semantic(sc, context);
 						// goto L1;
 						gotoL1 = true;
 						continue L1;

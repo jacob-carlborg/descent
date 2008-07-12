@@ -129,13 +129,18 @@ public class TypeClass extends Type {
 		if (equals(ident, Id.tupleof) && !gotoL1) {
 			/* Create a TupleExp
 			 */
+			e = e.semantic(sc, context);	// do this before turning on noaccesscheck
+			
 			Expressions exps = new Expressions(sym.fields.size());
 			for (VarDeclaration v_ : sym.fields) {
 				Expression fe = new DotVarExp(e.loc, e, v_);
 				exps.add(fe);
 			}
 			e = new TupleExp(e.loc, exps);
+			sc = sc.push();
+			sc.noaccesscheck = 1;
 			e = e.semantic(sc, context);
+			sc.pop();
 			return e;
 		}
 
@@ -204,8 +209,29 @@ public class TypeClass extends Type {
 					}
 					return e;
 				}
+				
+				if (equals(ident, Id.__vptr))
+				{   /* The pointer to the vtbl[]
+				     * *cast(void***)e
+				     */
+				    e = e.castTo(sc, context.Type_tvoidptr.pointerTo(context).pointerTo(context), context);
+				    e = new PtrExp(e.loc, e);
+				    e = e.semantic(sc, context);
+				    return e;
+				}
+
+				if (equals(ident, Id.__monitor))
+				{   /* The handle to the monitor (call it a void*)
+				     * *(cast(void**)e + 1)
+				     */
+				    e = e.castTo(sc, context.Type_tvoidptr.pointerTo(context), context);
+				    e = new AddExp(e.loc, e, new IntegerExp(1));
+				    e = new PtrExp(e.loc, e);
+				    e = e.semantic(sc, context);
+				    return e;
+				}
 	
-				else if (equals(ident, Id.typeinfo)) {
+				if (equals(ident, Id.typeinfo)) {
 					if (!context.global.params.useDeprecated) {
 						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
@@ -216,12 +242,10 @@ public class TypeClass extends Type {
 					return getTypeInfo(sc, context);
 				}
 	
-				else if (equals(ident, Id.outer)
+				if (equals(ident, Id.outer)
 						&& null != sym.vthis) {
 					s = sym.vthis;
-				}
-	
-				else {
+				} else {
 					//return getProperty(e.loc, ident);
 					return super.dotExp(sc, e, ident, context);
 				}
@@ -230,6 +254,10 @@ public class TypeClass extends Type {
 			// Descent: for binding resolution
 			ident.resolvedSymbol = s;
 	
+			if (null == s.isFuncDeclaration()) {	// because of overloading
+				s.checkDeprecated(sc, context, this); // TODO check this for reference
+			}
+			
 			s = s.toAlias(context);
 			v = s.isVarDeclaration();
 			if (null != v && v.isConst()) {

@@ -22,6 +22,13 @@ public class ArrayLiteralExp extends Expression {
 			this.sourceElements = new Expressions(elements);
 		}
 	}
+	
+	public ArrayLiteralExp(Loc loc, Expression e) {
+		super(loc, TOK.TOKarrayliteral);
+		this.elements = new Expressions();
+		this.elements.add(e);
+		this.sourceElements = new Expressions(elements);
+	}
 
 	@Override
 	public void accept0(IASTVisitor visitor) {
