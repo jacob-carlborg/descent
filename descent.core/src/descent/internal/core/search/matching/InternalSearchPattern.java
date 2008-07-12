@@ -59,8 +59,8 @@ public abstract class InternalSearchPattern {
 	}
 	String documentPath(String containerPath, String relativePath) {
 		
-		
-		String separator = new File(containerPath).isAbsolute() ? IJavaSearchScope.JAR_FILE_ENTRY_SEPARATOR : "/"; //$NON-NLS-1$
+		File file = new File(containerPath);
+		String separator = file.isAbsolute() && file.exists() ? IJavaSearchScope.JAR_FILE_ENTRY_SEPARATOR : "/"; //$NON-NLS-1$
 		StringBuffer buffer = new StringBuffer(containerPath.length() + separator.length() + relativePath.length());
 		buffer.append(containerPath);
 		buffer.append(separator);

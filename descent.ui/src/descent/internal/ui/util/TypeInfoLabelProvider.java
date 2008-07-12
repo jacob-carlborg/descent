@@ -24,10 +24,11 @@ public class TypeInfoLabelProvider extends LabelProvider {
 	public static final int SHOW_POST_QUALIFIED=		0x40;
 	
 	private static final Image CLASS_ICON= JavaPluginImages.get(JavaPluginImages.IMG_OBJS_CLASS);
-	private static final Image ANNOTATION_ICON= JavaPluginImages.get(JavaPluginImages.IMG_OBJS_ANNOTATION);
 	private static final Image INTERFACE_ICON= JavaPluginImages.get(JavaPluginImages.IMG_OBJS_INTERFACE);
+	private static final Image STRUCT_ICON= JavaPluginImages.get(JavaPluginImages.IMG_OBJS_STRUCT);
+	private static final Image UNION_ICON= JavaPluginImages.get(JavaPluginImages.IMG_OBJS_UNION);
 	private static final Image ENUM_ICON= JavaPluginImages.get(JavaPluginImages.IMG_OBJS_ENUM);
-	private static final Image PKG_ICON= JavaPluginImages.get(JavaPluginImages.IMG_OBJS_PACKAGE);
+	private static final Image PKG_ICON= JavaPluginImages.get(JavaPluginImages.IMG_OBJS_MODULE);
 	
 	private int fFlags;
 	
@@ -109,15 +110,14 @@ public class TypeInfoLabelProvider extends LabelProvider {
 			return PKG_ICON;
 		} else {
 			long modifiers= ((TypeInfo)element).getModifiers();
-			/*
-			if (Flags.isAnnotation(modifiers)) {
-				return ANNOTATION_ICON;
-			} else
-			*/ 
 			if (Flags.isEnum(modifiers)) {
 				return ENUM_ICON;
 			} else if (Flags.isInterface(modifiers)) {
 				return INTERFACE_ICON;
+			} else if (Flags.isStruct(modifiers)) {
+				return STRUCT_ICON;
+			} else if (Flags.isUnion(modifiers)) {
+				return UNION_ICON;
 			}
 			return CLASS_ICON;
 		}
