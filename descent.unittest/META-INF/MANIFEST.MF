@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Unittest Plug-in
 Bundle-SymbolicName: descent.unittest;singleton:=true
-Bundle-Version: 0.5.1.20080206
+Bundle-Version: 0.5.3.20080713
 Bundle-Activator: descent.internal.unittest.DescentUnittestPlugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,

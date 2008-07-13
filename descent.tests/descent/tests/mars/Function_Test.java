@@ -12,6 +12,7 @@ import descent.core.dom.FunctionDeclaration;
 import descent.core.dom.ModifiedType;
 import descent.core.dom.Modifier;
 import descent.core.dom.NumberLiteral;
+import descent.core.dom.PostblitDeclaration;
 import descent.core.dom.UnitTestDeclaration;
 
 public class Function_Test extends Parser_Test {
@@ -404,6 +405,12 @@ public class Function_Test extends Parser_Test {
 		Modifier modifier = f.postModifiers().get(0);
 		assertPosition(modifier, 13, 4);
 		assertEquals("pure", modifier.toString());
+	}
+	
+	public void testPostBlit() {
+		String s = " this(this) { }";
+		PostblitDeclaration f = (PostblitDeclaration) getSingleDeclarationNoProblems(s, AST.D2);
+		assertPosition(f, 1, s.length() - 1);
 	}
 
 }

@@ -120,5 +120,15 @@ public class ThisExp extends Expression {
 	public Expression toLvalue(Scope sc, Expression e, SemanticContext context) {
 		return this;
 	}
+	
+	@Override
+	public void setResolvedSymbol(Dsymbol symbol) {
+		this.resolvedSymbol = symbol;
+	}
+	
+	@Override
+	public Dsymbol getResolvedSymbol() {
+		return this.resolvedSymbol;
+	}
 
 }

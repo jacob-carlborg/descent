@@ -115,6 +115,7 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 		addProperty(TEMPLATE_PARAMETERS_PROPERTY, properyList);
 		addProperty(ARGUMENTS_PROPERTY, properyList);
 		addProperty(VARIADIC_PROPERTY, properyList);
+		addProperty(POST_MODIFIERS_PROPERTY, properyList);
 		addProperty(PRECONDITION_PROPERTY, properyList);
 		addProperty(POSTCONDITION_PROPERTY, properyList);
 		addProperty(POSTCONDITION_VARIABLE_NAME_PROPERTY, properyList);
@@ -274,6 +275,9 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 		if (property == MODIFIERS_PROPERTY) {
 			return modifiers();
 		}
+		if (property == POST_MODIFIERS_PROPERTY) {
+			return modifiers();
+		}
 		if (property == TEMPLATE_PARAMETERS_PROPERTY) {
 			return templateParameters();
 		}
@@ -284,50 +288,50 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 		return super.internalGetChildListProperty(property);
 	}
 
-		@Override
-		final ChildListPropertyDescriptor internalPreDDocsProperty() {
-			return PRE_D_DOCS_PROPERTY;
-		}
-		
-		@Override
-		final ChildListPropertyDescriptor internalModifiersProperty() {
-			return MODIFIERS_PROPERTY;
-		}
-		
-		@Override
-		final ChildListPropertyDescriptor internalArgumentsProperty() {
-			return ARGUMENTS_PROPERTY;
-		}
-		
-		@Override
-		final SimplePropertyDescriptor internalVariadicProperty() {
-			return VARIADIC_PROPERTY;
-		}
-		
-		@Override
-		final ChildPropertyDescriptor internalPreconditionProperty() {
-			return PRECONDITION_PROPERTY;
-		}
-		
-		@Override
-		final ChildPropertyDescriptor internalPostconditionProperty() {
-			return POSTCONDITION_PROPERTY;
-		}
-		
-		@Override
-		final ChildPropertyDescriptor internalPostconditionVariableNameProperty() {
-			return POSTCONDITION_VARIABLE_NAME_PROPERTY;
-		}
-		
-		@Override
-		final ChildPropertyDescriptor internalBodyProperty() {
-			return BODY_PROPERTY;
-		}
-		
-		@Override
-		final ChildPropertyDescriptor internalPostDDocProperty() {
-			return POST_D_DOC_PROPERTY;
-		}
+	@Override
+	final ChildListPropertyDescriptor internalPreDDocsProperty() {
+		return PRE_D_DOCS_PROPERTY;
+	}
+	
+	@Override
+	final ChildListPropertyDescriptor internalModifiersProperty() {
+		return MODIFIERS_PROPERTY;
+	}
+	
+	@Override
+	final ChildListPropertyDescriptor internalArgumentsProperty() {
+		return ARGUMENTS_PROPERTY;
+	}
+	
+	@Override
+	final SimplePropertyDescriptor internalVariadicProperty() {
+		return VARIADIC_PROPERTY;
+	}
+	
+	@Override
+	final ChildPropertyDescriptor internalPreconditionProperty() {
+		return PRECONDITION_PROPERTY;
+	}
+	
+	@Override
+	final ChildPropertyDescriptor internalPostconditionProperty() {
+		return POSTCONDITION_PROPERTY;
+	}
+	
+	@Override
+	final ChildPropertyDescriptor internalPostconditionVariableNameProperty() {
+		return POSTCONDITION_VARIABLE_NAME_PROPERTY;
+	}
+	
+	@Override
+	final ChildPropertyDescriptor internalBodyProperty() {
+		return BODY_PROPERTY;
+	}
+	
+	@Override
+	final ChildPropertyDescriptor internalPostDDocProperty() {
+		return POST_D_DOC_PROPERTY;
+	}
 		
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
@@ -344,16 +348,17 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.preDDocs.addAll(ASTNode.copySubtrees(target, preDDocs()));
 		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
+		result.postModifiers.addAll(ASTNode.copySubtrees(target, postModifiers()));
 		result.setReturnType((Type) getReturnType().clone(target));
 		result.setName((SimpleName) getName().clone(target));
 		result.templateParameters.addAll(ASTNode.copySubtrees(target, templateParameters()));
 		result.arguments.addAll(ASTNode.copySubtrees(target, arguments()));
 		result.setVariadic(isVariadic());
-	result.setPrecondition((Block) ASTNode.copySubtree(target, getPrecondition()));
-	result.setPostcondition((Block) ASTNode.copySubtree(target, getPostcondition()));
-	result.setPostconditionVariableName((SimpleName) ASTNode.copySubtree(target, getPostconditionVariableName()));
+		result.setPrecondition((Block) ASTNode.copySubtree(target, getPrecondition()));
+		result.setPostcondition((Block) ASTNode.copySubtree(target, getPostcondition()));
+		result.setPostconditionVariableName((SimpleName) ASTNode.copySubtree(target, getPostconditionVariableName()));
 		result.setBody((Block) getBody().clone(target));
-	result.setPostDDoc((DDocComment) ASTNode.copySubtree(target, getPostDDoc()));
+		result.setPostDDoc((DDocComment) ASTNode.copySubtree(target, getPostDDoc()));
 		return result;
 	}
 
@@ -378,6 +383,7 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 			acceptChild(visitor, getName());
 			acceptChildren(visitor, this.templateParameters);
 			acceptChildren(visitor, this.arguments);
+			acceptChildren(visitor, this.postModifiers);
 			acceptChild(visitor, getPrecondition());
 			acceptChild(visitor, getPostcondition());
 			acceptChild(visitor, getPostconditionVariableName());

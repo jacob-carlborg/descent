@@ -2425,5 +2425,25 @@ public final class AST {
 		ModifiedType node = new ModifiedType(this);
 		return node;
 	}
+	
+	/**
+	 * Creates an unparented postblit declaration node owned by this AST.
+	 * 
+	 * @return the new unparented postblit declaration node
+	 */
+	public PostblitDeclaration newPostblitDeclaration() {
+		PostblitDeclaration node = new PostblitDeclaration(this);
+		return node;
+	}
+	
+	/**
+	 * Creates an unparented this template parameter node owned by this AST.
+	 * 
+	 * @return the new unparented this template parameter node
+	 */
+	public ThisTemplateParameter newThisTemplateParameter() {
+		ThisTemplateParameter node = new ThisTemplateParameter(this);
+		return node;
+	}
 
 }

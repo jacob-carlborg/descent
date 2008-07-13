@@ -488,6 +488,10 @@ public class CallExp extends UnaExp {
 
 						f = f.overloadResolve(loc, null, arguments, context, this);
 						checkDeprecated(sc, f, context);
+						
+						// Descent: for binding resolution
+						this.sourceE1.setResolvedSymbol(f);
+						
 						e1 = new DotVarExp(e1.loc, e1, f);
 						e1 = e1.semantic(sc, context);
 						t1 = e1.type;
@@ -525,6 +529,10 @@ public class CallExp extends UnaExp {
 					f = cd.ctor;
 					f = f.overloadResolve(loc, null, arguments, context, this);
 					checkDeprecated(sc, f, context);
+					
+					// Descent: for binding resolution
+					this.sourceE1.setResolvedSymbol(f);
+					
 					e1 = new DotVarExp(e1.loc, e1, f);
 					e1 = e1.semantic(sc, context);
 					t1 = e1.type;

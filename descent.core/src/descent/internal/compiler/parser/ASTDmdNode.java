@@ -258,6 +258,8 @@ public abstract class ASTDmdNode extends ASTNode {
 	public final static int FILE_INIT_EXP = 198;
 	public final static int LINE_INIT_EXP = 199;
 	public final static int DEFAULT_INIT_EXP = 200;
+	public final static int POSTBLIT_DECLARATION = 201;
+	public final static int TEMPLATE_THIS_PARAMETER = 202;
 
 	// Defined here because MATCH and Match overlap on Windows
 	public static class Match {
@@ -772,7 +774,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		int done;
 		Type tb;
 
-		Assert.isNotNull(arguments);
+//		Assert.isNotNull(arguments);
 		int nargs = arguments != null ? arguments.size() : 0;
 		int nparams = Argument.dim(tf.parameters, context);
 

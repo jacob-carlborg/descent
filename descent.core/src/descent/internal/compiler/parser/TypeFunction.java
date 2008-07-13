@@ -53,6 +53,7 @@ public class TypeFunction extends Type implements Cloneable {
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, sourceNext);
 			TreeVisitor.acceptChildren(visitor, sourceParameters);
+			TreeVisitor.acceptChildren(visitor, postModifiers);
 		}
 		visitor.endVisit(this);
 	}

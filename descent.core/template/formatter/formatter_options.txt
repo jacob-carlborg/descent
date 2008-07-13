@@ -87,6 +87,12 @@ brace_position_for_function_declaration
 	csDefault=BracePosition.NEXT_LINE
 	tab=BracesTabPage
 	uiText=Function Declarations
+brace_position_for_postblit_declaration
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+	csDefault=BracePosition.NEXT_LINE
+	tab=BracesTabPage
+	uiText=Postblit Declarations
 brace_position_for_type_declaration
 	type=BracePosition
 	default=BracePosition.END_OF_LINE

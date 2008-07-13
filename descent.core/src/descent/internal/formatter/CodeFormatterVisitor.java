@@ -1090,6 +1090,33 @@ public class CodeFormatterVisitor extends ASTVisitor
 		return false;
 	}
 	
+	public boolean visit(PostblitDeclaration node)
+	{
+		formatModifiers(true, node.modifiers());
+		
+		if (isNextToken(TOK.TOKassign)) {
+			// =this()
+			scribe.printNextToken(TOK.TOKassign);
+			scribe.printNextToken(TOK.TOKthis);
+			scribe.printNextToken(TOK.TOKlparen);
+			scribe.printNextToken(TOK.TOKrparen);
+		} else {
+			// this(this)
+			scribe.printNextToken(TOK.TOKthis);
+			scribe.printNextToken(TOK.TOKlparen);
+			scribe.printNextToken(TOK.TOKthis);
+			scribe.printNextToken(TOK.TOKrparen);
+		}
+		
+		Block in   = (Block) node.getPrecondition();
+		Block out  = (Block) node.getPostcondition();
+		Block body = (Block) node.getBody();
+		SimpleName outName = node.getPostconditionVariableName();
+		
+		formatContracts(in, out, body, outName, prefs.brace_position_for_postblit_declaration);
+		return false;
+	}
+	
 	public boolean visit(FunctionLiteralDeclarationExpression node)
 	{
 		switch(node.getSyntax())
@@ -1114,7 +1141,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 		
 		formatFunction(node, prefs.brace_position_for_function_literal);
 		
-		scribe.printNextToken(TOK.TOKsemicolon, prefs.insert_space_before_semicolon);
+		if (isNextToken(TOK.TOKsemicolon)) {
+			scribe.printNextToken(TOK.TOKsemicolon, prefs.insert_space_before_semicolon);
+		}
 		return false;
 	}
 	
@@ -1753,8 +1782,10 @@ public class CodeFormatterVisitor extends ASTVisitor
 			scribe.space();
 			exp.accept(this);
 		}
-		scribe.printNextToken(TOK.TOKsemicolon,
-				prefs.insert_space_before_semicolon);
+		if (isNextToken(TOK.TOKsemicolon)) {
+			scribe.printNextToken(TOK.TOKsemicolon,
+					prefs.insert_space_before_semicolon);
+		}
 		scribe.printTrailingComment();
 		return false;
 	}
@@ -2258,6 +2289,15 @@ public class CodeFormatterVisitor extends ASTVisitor
 		return false;
 	}
 	
+	@Override
+	public boolean visit(TypeofReturn node) {
+		scribe.printNextToken(TOK.TOKtypeof);
+		scribe.printNextToken(TOK.TOKlparen);
+		scribe.printNextToken(TOK.TOKreturn);
+		scribe.printNextToken(TOK.TOKrparen);
+		return false;
+	}
+	
 	public boolean visit(TypeTemplateParameter node)
 	{
 		node.getName().accept(this);
@@ -2279,6 +2319,13 @@ public class CodeFormatterVisitor extends ASTVisitor
 			defaultType.accept(this);
 		}
 		return false;
+	}
+	
+	public boolean visit(ThisTemplateParameter node)
+	{
+		scribe.printNextToken(TOK.TOKthis);
+		scribe.space();
+		return visit((TypeTemplateParameter) node);
 	}
 	
 	public boolean visit(UnitTestDeclaration node)
@@ -2801,10 +2848,24 @@ public class CodeFormatterVisitor extends ASTVisitor
 			scribe.printNextToken(TOK.TOKrparen);
 		}
 		
+		// Next comes the post modifiers
+		if (node instanceof FunctionDeclaration) {
+			FunctionDeclaration func = (FunctionDeclaration) node;
+			if (!func.postModifiers().isEmpty()) {
+				scribe.space();
+				formatModifiers(true, func.postModifiers());
+			}
+		}
+		
 		Block in   = (Block) node.getPrecondition();
 		Block out  = (Block) node.getPostcondition();
 		Block body = (Block) node.getBody();
+		SimpleName outName = node.getPostconditionVariableName();
 		
+		formatContracts(in, out, body, outName, bracePosition);
+	}
+	
+	private void formatContracts(Block in, Block out, Block body, SimpleName outName, BracePosition bracePosition) {
 		boolean lastWasInOrOutOrBody = false;
 		if (null != in || null != out)
 		{
@@ -2832,8 +2893,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 						if(isNextToken(TOK.TOKlparen))
 						{
 							scribe.printNextToken(TOK.TOKlparen, prefs.insert_space_before_opening_paren_in_out_declaration);
-							SimpleName name = node.getPostconditionVariableName();
-							if(null != name)
+							if(null != outName)
 							{
 								if(prefs.insert_space_after_opening_paren_in_out_declaration)
 									scribe.space();
@@ -2947,6 +3007,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 				case TOKinout:
 				case TOKref:
 				case TOKlazy:
+				case TOKenum:
+				case TOKpure:
+				case TOKnothrow:
 					scribe.printNextToken(modifierTokenList(), printed);
 					printed = true;
 					break;
@@ -3464,7 +3527,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 	{
 		if(null == MODIFIERS)
 		{
-			MODIFIERS = new TOK[21];
+			MODIFIERS = new TOK[24];
 			
 			MODIFIERS[0] = TOK.TOKprivate;
 			MODIFIERS[1] = TOK.TOKprotected;
@@ -3487,6 +3550,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 			MODIFIERS[18] = TOK.TOKlazy;
 			MODIFIERS[19] = TOK.TOKinout;
 			MODIFIERS[20] = TOK.TOKref;
+			MODIFIERS[21] = TOK.TOKenum;
+			MODIFIERS[22] = TOK.TOKpure;
+			MODIFIERS[23] = TOK.TOKnothrow;
 			Arrays.sort(MODIFIERS);
 		}
 		return MODIFIERS;

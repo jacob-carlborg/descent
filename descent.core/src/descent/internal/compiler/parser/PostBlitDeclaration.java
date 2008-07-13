@@ -107,5 +107,10 @@ public class PostBlitDeclaration extends FuncDeclaration {
 		}
 		visitor.endVisit(this);
 	}
+	
+	@Override
+	public int getNodeType() {
+		return POSTBLIT_DECLARATION;
+	}
 
 }

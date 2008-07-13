@@ -9,7 +9,7 @@ import java.util.List;
  *
  * <pre>
  * EnumMember:
- *    SimpleName [ <b>=</b> Expression ]
+ *    [ Type ] SimpleName [ <b>=</b> Expression ]
  * </pre>
  */
 public class EnumMember extends ASTNode {
@@ -19,6 +19,12 @@ public class EnumMember extends ASTNode {
 	 */
 	public static final ChildListPropertyDescriptor PRE_D_DOCS_PROPERTY =
 		new ChildListPropertyDescriptor(EnumMember.class, "preDDocs", CodeComment.class, NO_CYCLE_RISK); //$NON-NLS-1$
+	
+	/**
+	 * The "type" structural property of this node type.
+	 */
+	public static final ChildPropertyDescriptor TYPE_PROPERTY =
+		new ChildPropertyDescriptor(EnumMember.class, "type", Type.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "name" structural property of this node type.
@@ -49,7 +55,8 @@ public class EnumMember extends ASTNode {
 		List properyList = new ArrayList(4);
 		createPropertyList(EnumMember.class, properyList);
 		addProperty(PRE_D_DOCS_PROPERTY, properyList);
-		addProperty(NAME_PROPERTY, properyList);
+		addProperty(TYPE_PROPERTY, properyList);
+		addProperty(NAME_PROPERTY, properyList);		
 		addProperty(VALUE_PROPERTY, properyList);
 		addProperty(POST_D_DOC_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
@@ -77,6 +84,12 @@ public class EnumMember extends ASTNode {
 	 */
 	private ASTNode.NodeList preDDocs =
 		new ASTNode.NodeList(PRE_D_DOCS_PROPERTY);
+	
+	/**
+	 * The type.
+	 */
+	private Type type;
+	
 	/**
 	 * The name.
 	 */
@@ -117,6 +130,14 @@ public class EnumMember extends ASTNode {
 	 * Method declared on ASTNode.
 	 */
 	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
+		if (property == TYPE_PROPERTY) {
+			if (get) {
+				return getType();
+			} else {
+				setType((Type) child);
+				return null;
+			}
+		}
 		if (property == NAME_PROPERTY) {
 			if (get) {
 				return getName();
@@ -170,9 +191,10 @@ public class EnumMember extends ASTNode {
 		EnumMember result = new EnumMember(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.preDDocs.addAll(ASTNode.copySubtrees(target, preDDocs()));
+		result.setType((Type) ASTNode.copySubtree(target, getType()));
 		result.setName((SimpleName) getName().clone(target));
-	result.setValue((Expression) ASTNode.copySubtree(target, getValue()));
-	result.setPostDDoc((CodeComment) ASTNode.copySubtree(target, getPostDDoc()));
+		result.setValue((Expression) ASTNode.copySubtree(target, getValue()));
+		result.setPostDDoc((CodeComment) ASTNode.copySubtree(target, getPostDDoc()));
 		return result;
 	}
 
@@ -192,6 +214,7 @@ public class EnumMember extends ASTNode {
 		if (visitChildren) {
 			// visit children in normal left to right reading order
 			acceptChildren(visitor, this.preDDocs);
+			acceptChild(visitor, getType());
 			acceptChild(visitor, getName());
 			acceptChild(visitor, getValue());
 			acceptChild(visitor, getPostDDoc());
@@ -208,6 +231,33 @@ public class EnumMember extends ASTNode {
 	 */ 
 	public List<CodeComment> preDDocs() {
 		return this.preDDocs;
+	}
+	
+	/**
+	 * Returns the type of this enum member.
+	 * 
+	 * @return the type
+	 */ 
+	public Type getType() {
+		return this.type;
+	}
+	
+	/**
+	 * Sets the type of this enum member.
+	 * 
+	 * @param type the type
+	 * @exception IllegalArgumentException if:
+	 * <ul>
+	 * <li>the node belongs to a different AST</li>
+	 * <li>the node already has a parent</li>
+	 * <li>a cycle in would be created</li>
+	 * </ul>
+	 */ 
+	public void setType(Type type) {
+		ASTNode oldChild = this.type;
+		preReplaceChild(oldChild, type, TYPE_PROPERTY);
+		this.type = type;
+		postReplaceChild(oldChild, type, TYPE_PROPERTY);
 	}
 
 	/**
@@ -308,7 +358,7 @@ public class EnumMember extends ASTNode {
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 4 * 4;
+		return BASE_NODE_SIZE + 5 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -318,6 +368,7 @@ public class EnumMember extends ASTNode {
 		return
 			memSize()
 			+ (this.preDDocs.listSize())
+			+ (this.type == null ? 0 : getType().treeSize())
 			+ (this.name == null ? 0 : getName().treeSize())
 			+ (this.value == null ? 0 : getValue().treeSize())
 			+ (this.postDDoc == null ? 0 : getPostDDoc().treeSize())

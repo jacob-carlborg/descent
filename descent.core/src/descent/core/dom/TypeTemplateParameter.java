@@ -134,7 +134,7 @@ public class TypeTemplateParameter extends TemplateParameter {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
-	final int getNodeType0() {
+	int getNodeType0() {
 		return TYPE_TEMPLATE_PARAMETER;
 	}
 
@@ -153,7 +153,7 @@ public class TypeTemplateParameter extends TemplateParameter {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
-	final boolean subtreeMatch0(ASTMatcher matcher, Object other) {
+	boolean subtreeMatch0(ASTMatcher matcher, Object other) {
 		// dispatch to correct overloaded match method
 		return matcher.match(this, other);
 	}

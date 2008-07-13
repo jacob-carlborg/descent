@@ -63,6 +63,7 @@ public class DefaultCodeFormatterConstants {
 	
 	// Formatter value names
 	public static final String FORMATTER_BRACE_POSITION_FOR_FUNCTION_DECLARATION = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_function_declaration";
+	public static final String FORMATTER_BRACE_POSITION_FOR_POSTBLIT_DECLARATION = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_postblit_declaration";
 	public static final String FORMATTER_BRACE_POSITION_FOR_TYPE_DECLARATION = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_type_declaration";
 	public static final String FORMATTER_BRACE_POSITION_FOR_ENUM_DECLARATION = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_enum_declaration";
 	public static final String FORMATTER_BRACE_POSITION_FOR_TEMPLATE_DECLARATION = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_template_declaration";

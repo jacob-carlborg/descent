@@ -709,6 +709,10 @@ class NaiveASTFlattener extends ASTVisitor {
 	@Override
 	public boolean visit(EnumMember node) {
 		printIndent();
+		if (node.getType() != null) {
+			node.getType().accept(this);
+			this.buffer.append(' ');
+		}
 		node.getName().accept(this);
 		if (node.getValue() != null) {
 			this.buffer.append(" = ");
@@ -829,6 +833,12 @@ class NaiveASTFlattener extends ASTVisitor {
 			this.buffer.append("...");
 		}
 		this.buffer.append(")");
+		
+		if (!node.postModifiers().isEmpty()) {
+			this.buffer.append(" ");
+			visitModifiers(node.postModifiers());
+		}
+		
 		if (node.getPrecondition() != null) {
 			this.buffer.append(LINE_END);
 			printIndent();
@@ -1659,6 +1669,12 @@ class NaiveASTFlattener extends ASTVisitor {
 	}
 	
 	@Override
+	public boolean visit(ThisTemplateParameter node) {
+		this.buffer.append("this ");
+		return visit((TypeTemplateParameter) node);
+	}
+	
+	@Override
 	public boolean visit(UnitTestDeclaration node) {
 		visitPreDDocss(node.preDDocs());
 		printIndent();
@@ -1806,6 +1822,44 @@ class NaiveASTFlattener extends ASTVisitor {
 		node.getExpression().accept(this);
 		this.buffer.append(") ");
 		node.getBody().accept(this);
+		return false;
+	}
+	
+	@Override
+	public boolean visit(PostblitDeclaration node) {
+		visitPreDDocss(node.preDDocs());
+		printIndent();
+		visitModifiers(node.modifiers());
+		this.buffer.append("this(this) ");
+		
+		if (node.getPrecondition() != null) {
+			this.buffer.append(LINE_END);
+			printIndent();
+			this.buffer.append("in ");
+			node.getPrecondition().accept(this);
+			this.buffer.append(LINE_END);
+			printIndent();
+		}
+		if (node.getPostcondition() != null) {
+			this.buffer.append(LINE_END);
+			printIndent();
+			this.buffer.append("out ");
+			node.getPostcondition().accept(this);
+			this.buffer.append(LINE_END);
+			printIndent();
+		}
+		if (node.getBody() != null) {
+			if (node.getPrecondition() != null || node.getPostcondition() != null) {
+				this.buffer.append("body");
+			}
+			this.buffer.append(" ");
+			node.getBody().accept(this);
+		}
+		
+		if (node.getPostDDoc() != null) {
+			this.buffer.append(" ");
+			node.getPostDDoc().accept(this);
+		}
 		return false;
 	}
 	

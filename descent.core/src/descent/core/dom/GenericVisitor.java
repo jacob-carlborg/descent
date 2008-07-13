@@ -1668,5 +1668,25 @@ public class GenericVisitor extends ASTVisitor {
 	public void endVisit(ModifiedType node) {
 		endVisitNode(node);
 	}
+	
+	@Override
+	public boolean visit(PostblitDeclaration node) {
+		return visitNode(node);
+	}
+	
+	@Override
+	public void endVisit(PostblitDeclaration node) {
+		endVisitNode(node);
+	}
+	
+	@Override
+	public boolean visit(ThisTemplateParameter node) {
+		return visitNode(node);
+	}
+	
+	@Override
+	public void endVisit(ThisTemplateParameter node) {
+		endVisitNode(node);
+	}
 
 }

@@ -40,7 +40,10 @@ import descent.internal.compiler.parser.ProtDeclaration;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.StorageClassDeclaration;
 import descent.internal.compiler.parser.StructDeclaration;
+import descent.internal.compiler.parser.SuperExp;
 import descent.internal.compiler.parser.TemplateDeclaration;
+import descent.internal.compiler.parser.TemplateInstance;
+import descent.internal.compiler.parser.ThisExp;
 import descent.internal.compiler.parser.Token;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeClass;
@@ -452,6 +455,44 @@ public class SelectionEngine extends AstVisitorAdapter {
 					addBinarySearch(((TypeClass) node.newtype).sym);
 				}
 			}
+			return false;
+		}
+		return true;
+	}
+	
+	@Override
+	public boolean visit(ThisExp node) {
+		if (isInRange(node)) {
+			doSemantic();
+			if (node.resolvedSymbol != null) {
+				if (node.resolvedSymbol.getJavaElement() != null) {
+					addJavaElement(node.resolvedSymbol.getJavaElement());
+				} else {
+					add(node.resolvedSymbol);
+				}
+			}
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean visit(SuperExp node) {
+		if (isInRange(node)) {
+			doSemantic();
+			if (node.resolvedSymbol != null) {
+				if (node.resolvedSymbol.getJavaElement() != null) {
+					addJavaElement(node.resolvedSymbol.getJavaElement());
+				} else {
+					add(node.resolvedSymbol);
+				}
+			}
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean visit(TemplateInstance node) {
+		if (selectedElements != null && !selectedElements.isEmpty()) {
 			return false;
 		}
 		return true;

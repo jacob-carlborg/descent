@@ -41,7 +41,12 @@ public class VariableBinding extends JavaElementBasedBinding implements IVariabl
 			TypedefDeclaration typedef = (TypedefDeclaration) node;
 			return bindingResolver.resolveType(typedef.basetype);
 		} else if (node instanceof EnumMember) {
-			return bindingResolver.resolveType(((EnumDeclaration) ((EnumMember) node).parent).type);
+			EnumMember em = (EnumMember) node;
+			if (em.sourceType != null) {
+				return bindingResolver.resolveType(em.type);
+			} else {
+				return bindingResolver.resolveType(((EnumDeclaration) ((EnumMember) node).parent).type);
+			}
 		}
 		
 		return null;

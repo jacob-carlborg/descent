@@ -58,6 +58,7 @@ public class DefaultCodeFormatterOptions
 		else if(name.equals(DefaultCodeFormatterConstants.PROFILE_C_SHARP_DEFAULTS))
 		{
 			options.brace_position_for_function_declaration = BracePosition.NEXT_LINE;
+			options.brace_position_for_postblit_declaration = BracePosition.NEXT_LINE;
 			options.brace_position_for_type_declaration = BracePosition.NEXT_LINE;
 			options.brace_position_for_enum_declaration = BracePosition.NEXT_LINE;
 			options.brace_position_for_template_declaration = BracePosition.NEXT_LINE;
@@ -83,6 +84,7 @@ public class DefaultCodeFormatterOptions
 	
 	// User formatting options
 	public BracePosition brace_position_for_function_declaration;
+	public BracePosition brace_position_for_postblit_declaration;
 	public BracePosition brace_position_for_type_declaration;
 	public BracePosition brace_position_for_enum_declaration;
 	public BracePosition brace_position_for_template_declaration;
@@ -419,6 +421,7 @@ public class DefaultCodeFormatterOptions
 		Map<String, String> options = new HashMap<String, String>();
 		
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_FUNCTION_DECLARATION, brace_position_for_function_declaration.toString());
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_POSTBLIT_DECLARATION, brace_position_for_postblit_declaration.toString());
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_TYPE_DECLARATION, brace_position_for_type_declaration.toString());
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_ENUM_DECLARATION, brace_position_for_enum_declaration.toString());
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_TEMPLATE_DECLARATION, brace_position_for_template_declaration.toString());
@@ -750,6 +753,15 @@ public class DefaultCodeFormatterOptions
 				brace_position_for_function_declaration = DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(current) ? BracePosition.NEXT_LINE_SHIFTED : DefaultCodeFormatterConstants.NEXT_LINE.equals(current) ? BracePosition.NEXT_LINE : BracePosition.END_OF_LINE;
 			} catch(Exception e) {
 				brace_position_for_function_declaration = BracePosition.END_OF_LINE;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_POSTBLIT_DECLARATION);
+		if(null != current) {
+			try {
+				brace_position_for_postblit_declaration = DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(current) ? BracePosition.NEXT_LINE_SHIFTED : DefaultCodeFormatterConstants.NEXT_LINE.equals(current) ? BracePosition.NEXT_LINE : BracePosition.END_OF_LINE;
+			} catch(Exception e) {
+				brace_position_for_postblit_declaration = BracePosition.END_OF_LINE;
 			}
 		}
 		
@@ -3600,6 +3612,7 @@ public class DefaultCodeFormatterOptions
 
 	public void setDefaultSettings() {
 		brace_position_for_function_declaration = BracePosition.END_OF_LINE;
+		brace_position_for_postblit_declaration = BracePosition.END_OF_LINE;
 		brace_position_for_type_declaration = BracePosition.END_OF_LINE;
 		brace_position_for_enum_declaration = BracePosition.END_OF_LINE;
 		brace_position_for_template_declaration = BracePosition.END_OF_LINE;

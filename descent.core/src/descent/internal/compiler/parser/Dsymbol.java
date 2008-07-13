@@ -707,6 +707,8 @@ public class Dsymbol extends ASTDmdNode {
 		if ((storage_class & STC.STCscope) != 0) flags |= Flags.AccScope;
 		if ((storage_class & STC.STCstatic) != 0) flags |= Flags.AccStatic;
 		if ((storage_class & STC.STCsynchronized) != 0) flags |= Flags.AccSynchronized;
+		if ((storage_class & STC.STCpure) != 0) flags |= Flags.AccPure;
+		if ((storage_class & STC.STCnothrow) != 0) flags |= Flags.AccNothrow;
 		
 		if (protection == null) {
 			flags |= Flags.AccPublic;
@@ -746,7 +748,7 @@ public class Dsymbol extends ASTDmdNode {
 	public Dsymbol effectiveParent() {
 		Dsymbol p = parent;
 		while(p instanceof FuncLiteralDeclaration) {
-			p = parent.parent;
+			p = p.parent;
 		}
 		return p;
 	}

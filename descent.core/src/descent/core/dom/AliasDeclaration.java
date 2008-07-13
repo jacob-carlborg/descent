@@ -150,20 +150,20 @@ public class AliasDeclaration extends Declaration {
 		return super.internalGetChildListProperty(property);
 	}
 
-		@Override
-		final ChildListPropertyDescriptor internalPreDDocsProperty() {
-			return PRE_D_DOCS_PROPERTY;
-		}
-		
-		@Override
-		final ChildListPropertyDescriptor internalModifiersProperty() {
-			return MODIFIERS_PROPERTY;
-		}
-		
-		@Override
-		final ChildPropertyDescriptor internalPostDDocProperty() {
-			return POST_D_DOC_PROPERTY;
-		}
+	@Override
+	final ChildListPropertyDescriptor internalPreDDocsProperty() {
+		return PRE_D_DOCS_PROPERTY;
+	}
+	
+	@Override
+	final ChildListPropertyDescriptor internalModifiersProperty() {
+		return MODIFIERS_PROPERTY;
+	}
+	
+	@Override
+	final ChildPropertyDescriptor internalPostDDocProperty() {
+		return POST_D_DOC_PROPERTY;
+	}
 		
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
@@ -182,7 +182,7 @@ public class AliasDeclaration extends Declaration {
 		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
 		result.setType((Type) getType().clone(target));
 		result.fragments.addAll(ASTNode.copySubtrees(target, fragments()));
-	result.setPostDDoc((DDocComment) ASTNode.copySubtree(target, getPostDDoc()));
+		result.setPostDDoc((DDocComment) ASTNode.copySubtree(target, getPostDDoc()));
 		return result;
 	}
 

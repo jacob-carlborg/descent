@@ -1658,6 +1658,9 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		case TOKinout: this.buffer.append("inout"); break;
 		case TOKlazy: this.buffer.append("lazy"); break;
 		case TOKref: this.buffer.append("ref"); break;
+		case TOKenum: this.buffer.append("enum"); break;
+		case TOKpure: this.buffer.append("pure"); break;
+		case TOKnothrow: this.buffer.append("nothrow"); break;
 		default:
 			throw new IllegalStateException("Invalid modifier: " + node.tok);
 		}
@@ -3193,16 +3196,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	@Override
 	public boolean visit(TemplateThisParameter node) {
 		this.buffer.append("this ");
-		node.ident.accept(this);
-		if (node.specType != null) {
-			this.buffer.append(" : ");
-			node.specType.accept(this);
-		}
-		if (node.defaultType != null) {
-			this.buffer.append(" = ");
-			node.defaultType.accept(this);
-		}
-		return false;
+		return visit((TemplateTypeParameter) node);
 	}
 
 	private void printFunctionBodies(FuncDeclaration node) {

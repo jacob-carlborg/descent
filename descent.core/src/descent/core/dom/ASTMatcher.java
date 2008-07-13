@@ -208,6 +208,36 @@ public class ASTMatcher {
 			&& safeSubtreeMatch(node.getBody(), o.getBody())
 			);
 	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(PostblitDeclaration node, Object other) {
+		if (!(other instanceof PostblitDeclaration)) {
+			return false;
+		}
+		PostblitDeclaration o = (PostblitDeclaration) other;
+		return (
+			safeSubtreeListMatch(node.preDDocs(), o.preDDocs())
+			&& safeSubtreeListMatch(node.modifiers(), o.modifiers())
+			&& safeSubtreeMatch(node.getPrecondition(), o.getPrecondition())
+			&& safeSubtreeMatch(node.getPostcondition(), o.getPostcondition())
+			&& safeSubtreeMatch(node.getPostconditionVariableName(), o.getPostconditionVariableName())
+			&& safeSubtreeMatch(node.getBody(), o.getBody())
+			&& safeSubtreeMatch(node.getPostDDoc(), o.getPostDDoc())
+			);
+	}
 
 	/**
 	 * Returns whether the given node and the other object match.
@@ -791,6 +821,7 @@ public class ASTMatcher {
 		EnumMember o = (EnumMember) other;
 		return (
 			safeSubtreeListMatch(node.preDDocs(), o.preDDocs())
+			&& safeSubtreeMatch(node.getType(), o.getType())
 			&& safeSubtreeMatch(node.getName(), o.getName())
 			&& safeSubtreeMatch(node.getValue(), o.getValue())
 			&& safeSubtreeMatch(node.getPostDDoc(), o.getPostDDoc())
@@ -1089,6 +1120,7 @@ public class ASTMatcher {
 			&& safeSubtreeListMatch(node.templateParameters(), o.templateParameters())
 			&& safeSubtreeListMatch(node.arguments(), o.arguments())
 			&& node.isVariadic() == o.isVariadic()
+			&& safeSubtreeListMatch(node.postModifiers(), o.postModifiers())
 			&& safeSubtreeMatch(node.getPrecondition(), o.getPrecondition())
 			&& safeSubtreeMatch(node.getPostcondition(), o.getPostcondition())
 			&& safeSubtreeMatch(node.getPostconditionVariableName(), o.getPostconditionVariableName())

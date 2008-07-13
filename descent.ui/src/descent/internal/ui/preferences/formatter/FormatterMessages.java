@@ -315,6 +315,7 @@ final class FormatterMessages extends NLS {
 	
 	// Messages for various options (automatically generated)
 	public static String BracesTabPage_brace_position_for_function_declaration;
+	public static String BracesTabPage_brace_position_for_postblit_declaration;
 	public static String BracesTabPage_brace_position_for_type_declaration;
 	public static String BracesTabPage_brace_position_for_enum_declaration;
 	public static String BracesTabPage_brace_position_for_template_declaration;

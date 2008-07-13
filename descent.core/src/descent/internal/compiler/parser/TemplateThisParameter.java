@@ -9,6 +9,11 @@ public class TemplateThisParameter extends TemplateTypeParameter {
 			Type defaultType) {
 		super(loc, ident, specType, defaultType);
 	}
+	
+	@Override
+	public int getNodeType() {
+		return TEMPLATE_THIS_PARAMETER;
+	}
 
 	@Override
 	public TemplateThisParameter isTemplateThisParameter() {

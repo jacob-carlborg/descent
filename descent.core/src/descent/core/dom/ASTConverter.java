@@ -352,6 +352,8 @@ public class ASTConverter {
 			return convert((BinExp) symbol, InfixExpression.Operator.OR);
 		case ASTDmdNode.OR_OR_EXP:
 			return convert((BinExp) symbol, InfixExpression.Operator.OR_OR);
+		case ASTDmdNode.POSTBLIT_DECLARATION:
+			return convert((PostBlitDeclaration) symbol);
 		case ASTDmdNode.POST_EXP:
 			return convert((PostExp) symbol);
 		case ASTDmdNode.PRAGMA_DECLARATION:
@@ -410,6 +412,8 @@ public class ASTConverter {
 			return convert((TemplateTupleParameter) symbol);
 		case ASTDmdNode.TEMPLATE_TYPE_PARAMETER:
 			return convert((TemplateTypeParameter) symbol);
+		case ASTDmdNode.TEMPLATE_THIS_PARAMETER:
+			return convert((TemplateThisParameter) symbol);
 		case ASTDmdNode.TEMPLATE_VALUE_PARAMETER:
 			return convert((TemplateValueParameter) symbol);
 		case ASTDmdNode.THIS_EXP:
@@ -1131,6 +1135,17 @@ public class ASTConverter {
 	
 	public descent.core.dom.TypeTemplateParameter convert(TemplateTypeParameter a) {
 		descent.core.dom.TypeTemplateParameter b = new descent.core.dom.TypeTemplateParameter(ast);
+		convertCommonTemplateTypeParameter(a, b);
+		return b;
+	}
+
+	public descent.core.dom.ThisTemplateParameter convert(TemplateThisParameter a) {
+		descent.core.dom.ThisTemplateParameter b = new descent.core.dom.ThisTemplateParameter(ast);
+		convertCommonTemplateTypeParameter(a, b);
+		return b;
+	}
+	
+	private void convertCommonTemplateTypeParameter(TemplateTypeParameter a, descent.core.dom.TypeTemplateParameter b) {
 		b.setName((SimpleName) convert(a.ident));
 		if (a.sourceDefaultType != null) {
 			b.setDefaultType(convert(a.sourceDefaultType));
@@ -1139,7 +1154,6 @@ public class ASTConverter {
 			b.setSpecificType(convert(a.sourceSpecType));
 		}
 		setSourceRange(b, a.start, a.length);
-		return b;
 	}
 	
 	public descent.core.dom.TupleTemplateParameter convert(TemplateTupleParameter a) {
@@ -1664,6 +1678,36 @@ public class ASTConverter {
 		return b;
 	}
 	
+	public descent.core.dom.PostblitDeclaration convert(PostBlitDeclaration a) {
+		descent.core.dom.PostblitDeclaration b = new descent.core.dom.PostblitDeclaration(ast);
+		
+		if (a.sourceFrequire != null) {
+			b.setPrecondition((Block) convert(a.sourceFrequire));
+		}
+		if (a.sourceFensure != null) {
+			b.setPostcondition((Block) convert(a.sourceFensure));
+		}
+		if (a.outId != null) {
+			b.setPostconditionVariableName((SimpleName) convert(a.outId));
+		}
+		if (a.sourceFbody != null) {
+			descent.core.dom.Block convertedBody = (Block) convert(a.sourceFbody);
+			if (convertedBody != null) {
+				b.setBody(convertedBody);
+			}
+		}
+		
+		fillDeclaration(b, a);
+		
+		setSourceRange(b, a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
+		return b;
+	}
+	
 	public descent.core.dom.ForeachStatement convert(ForeachStatement a) {
 		descent.core.dom.ForeachStatement b = new descent.core.dom.ForeachStatement(ast);
 		if (a.op == TOK.TOKforeach_reverse) {
@@ -1800,6 +1844,9 @@ public class ASTConverter {
 
 	public descent.core.dom.EnumMember convert(EnumMember a) {
 		descent.core.dom.EnumMember b = new descent.core.dom.EnumMember(ast);
+		if (a.sourceType != null) {
+			b.setType(convert(a.sourceType));
+		}
 		if (a.ident != null) {
 			SimpleName convertedIdent = (SimpleName) convert(a.ident);
 			if (convertedIdent != null) {
@@ -3124,6 +3171,11 @@ public class ASTConverter {
 	public descent.core.dom.Type convert(TypeReturn a) {
 		TypeofReturn b = new TypeofReturn(ast);
 		setSourceRange(b, a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
 		return b;
 	}
 	

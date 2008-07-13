@@ -66,7 +66,7 @@ public class BracesTabPage extends ModifyDialogTabPage {
 	
 	protected void doCreatePreferences(Composite composite, int numColumns) {
 		final Group group = createGroup(numColumns, composite, FormatterMessages.BracesTabPage_group_brace_positions_title); 
-		final ComboPreference[] prefs = new ComboPreference[17];
+		final ComboPreference[] prefs = new ComboPreference[18];
 		prefs[0] = createBracesCombo(group, numColumns, 
 				FormatterMessages.BracesTabPage_brace_position_for_function_declaration, 
 				DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_FUNCTION_DECLARATION);
@@ -118,6 +118,9 @@ public class BracesTabPage extends ModifyDialogTabPage {
 		prefs[16] = createBracesCombo(group, numColumns, 
 				FormatterMessages.BracesTabPage_brace_position_for_pragmas, 
 				DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_PRAGMAS);
+		prefs[17] = createBracesCombo(group, numColumns, 
+				FormatterMessages.BracesTabPage_brace_position_for_postblit_declaration, 
+				DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_POSTBLIT_DECLARATION);
 		
 		final SetAllGroup setAll = createSetAllGroup(numColumns, composite, FormatterMessages.BracesTabPage_group_set_all_to);
 		createSetAllOption(setAll, FormatterMessages.BracesTabPage_position_same_line, FormatterMessages.BracesTabPage_position_same_line);

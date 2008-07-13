@@ -1898,7 +1898,7 @@ public class Parser extends Lexer {
 					} else {
 						value = null;
 						if (type != null) {
-							error(IProblem.IfTypeThereMustBeAnInitializer, type.start, type.length, type.getLineNumber());
+							error(IProblem.IfTypeThereMustBeAnInitializer, type.getLineNumber(), type.start, type.length);
 						}
 					}
 					

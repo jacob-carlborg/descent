@@ -461,5 +461,15 @@ public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 				options
 				);
 	}
+	
+	public void testModifierAfterFunction() throws Exception {
+		Map options = new HashMap();
+		assertFormat(
+				"void bla() pure {\r\n" +
+				"}",
+				"void   bla  (  )   pure   {     }",
+				options
+				);
+	}
 
 }

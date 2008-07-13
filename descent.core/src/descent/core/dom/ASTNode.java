@@ -1121,6 +1121,20 @@ public abstract class ASTNode {
 	public static final int TYPEOF_RETURN = 138;
 	
 	/**
+	 * Node type constant indicating a node of type 
+	 * <code>PostblitDeclaration</code>.
+	 * @see PostblitDeclaration
+	 */
+	public static final int POSTBLIT_DECLARATION = 139;
+	
+	/**
+	 * Node type constant indicating a node of type 
+	 * <code>ThisTemplateParameter</code>.
+	 * @see ThisTemplateParameter
+	 */
+	public static final int THIS_TEMPLATE_PARAMETER = 140;
+	
+	/**
 	 * Returns the node class for the corresponding node type.
 	 * 
 	 * @param nodeType AST node type
@@ -1407,6 +1421,10 @@ public abstract class ASTNode {
 			return FileImportExpression.class;
 		case EMPTY_STATEMENT:
 			return EmptyStatement.class;
+		case POSTBLIT_DECLARATION:
+			return PostblitDeclaration.class;
+		case THIS_TEMPLATE_PARAMETER:
+			return ThisTemplateParameter.class;
 		}
 		return null;
 	}

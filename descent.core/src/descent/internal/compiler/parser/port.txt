@@ -15,7 +15,7 @@ func.c  --> missing StaticCtorDeclaration::StaticCtorDeclaration
 Remaining from DMD 2.013
 ------------------------------
 Make an option to ignore unrecongnized pragmas.
-Implement TypeReturn, PostBlitDeclaration, TemplateThisParameter, FileInitExp, LineInitExp, DefaultInitExp for Descent side.
+Implement FileInitExp, LineInitExp, DefaultInitExp for Descent side.
 
 cast.c --> StringExp::implicitConvTo
 constfold.c

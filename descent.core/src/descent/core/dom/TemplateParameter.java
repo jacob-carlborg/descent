@@ -17,6 +17,8 @@ package descent.core.dom;
  *    SimpleName <b>...</b>
  * TypeTemplateParameter:
  *    SimpleName [ <b>:</b> Type ] [ <b>=</b> Type ]
+ * ThisTemplateParameter:
+ *    <b>this</b> SimpleName [ <b>:</b> Type ] [ <b>=</b> Type ]
  * ValueTemplateParameter:
  *    Type SimpleName [ <b>:</b> Expression ] [ <b>=</b> Expression ]
  * </pre>

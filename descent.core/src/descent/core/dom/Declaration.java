@@ -20,6 +20,7 @@ import java.util.List;
  *    InvariantDeclaration
  *    MixinDeclaration
  *    ModifierDeclaration
+ *    PostblitDeclaration
  *    PragmaDeclaration
  *    StaticAssert
  *    TemplateDeclaration

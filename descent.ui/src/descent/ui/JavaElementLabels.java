@@ -543,6 +543,8 @@ public class JavaElementLabels {
 				buf.append(JavaUIMessages.JavaElementLabels_new);
 			} else if (method.isDelete()) {
 				buf.append(JavaUIMessages.JavaElementLabels_delete);
+			} else if (method.isPostBlit()) {
+				buf.append(JavaUIMessages.JavaElementLabels_postblit);
 			}
 			
 			// template parameters (moved after the method name, like in D)
@@ -572,69 +574,71 @@ public class JavaElementLabels {
 				}					
 			}
 			
-			// parameters
-			buf.append('(');
-			if (getFlag(flags, M_PARAMETER_TYPES | M_PARAMETER_NAMES)) {
-				String[] types= null;
-				int nParams= 0;
-				int varargs = method.exists() ? method.getVarargs() : 0;
-				if (getFlag(flags, M_PARAMETER_TYPES)) {
-					if (resolvedKey != null) {
-						types= Signature.getParameterTypes(resolvedKey.toSignature());
-					} else {
-						types= method.getParameterTypes();
+			if (!method.isPostBlit()) {
+				// parameters
+				buf.append('(');
+				if (getFlag(flags, M_PARAMETER_TYPES | M_PARAMETER_NAMES)) {
+					String[] types= null;
+					int nParams= 0;
+					int varargs = method.exists() ? method.getVarargs() : 0;
+					if (getFlag(flags, M_PARAMETER_TYPES)) {
+						if (resolvedKey != null) {
+							types= Signature.getParameterTypes(resolvedKey.toSignature());
+						} else {
+							types= method.getParameterTypes();
+						}
+						nParams= types.length;
 					}
-					nParams= types.length;
-				}
-				String[] names= null;
-				if (getFlag(flags, M_PARAMETER_NAMES) && method.exists()) {
-					names= method.getParameterNames();
-					if (types == null) {
-						nParams= names.length;
-					} else {
-						if (nParams != names.length) {
-							// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=99137 and
-							// https://bugs.eclipse.org/bugs/show_bug.cgi?id=101029
-							// JavaPlugin.logErrorMessage("JavaElementLabels: Number of param types(" + nParams + ") != number of names(" + names.length + "): " + method.getElementName());   //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
-							names= null; // no names rendered
+					String[] names= null;
+					if (getFlag(flags, M_PARAMETER_NAMES) && method.exists()) {
+						names= method.getParameterNames();
+						if (types == null) {
+							nParams= names.length;
+						} else {
+							if (nParams != names.length) {
+								// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=99137 and
+								// https://bugs.eclipse.org/bugs/show_bug.cgi?id=101029
+								// JavaPlugin.logErrorMessage("JavaElementLabels: Number of param types(" + nParams + ") != number of names(" + names.length + "): " + method.getElementName());   //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+								names= null; // no names rendered
+							}
 						}
 					}
-				}
-				
-				for (int i= 0; i < nParams; i++) {
-					if (i > 0) {
-						buf.append(COMMA_STRING);
+					
+					for (int i= 0; i < nParams; i++) {
+						if (i > 0) {
+							buf.append(COMMA_STRING);
+						}
+						if (types != null) {
+							String paramSig= types[i];						
+							getTypeSignatureLabel(paramSig, flags, buf);
+						}
+						if (names != null) {
+							if (types != null && names[i] != null && names[i].length() > 0) {
+								buf.append(' ');
+							}
+							buf.append(names[i]);
+						}
 					}
-					if (types != null) {
-						String paramSig= types[i];						
-						getTypeSignatureLabel(paramSig, flags, buf);
-					}
-					if (names != null) {
-						if (types != null && names[i] != null && names[i].length() > 0) {
+					
+					if (varargs != 0) {
+						if (varargs == IMethod.VARARGS_SAME_TYPES) {
 							buf.append(' ');
+							buf.append(ELLIPSIS_STRING);
+						} else {
+							if (nParams > 0 ) {
+								buf.append(',');
+								buf.append(' ');
+							}
+							buf.append(ELLIPSIS_STRING);
 						}
-						buf.append(names[i]);
 					}
-				}
-				
-				if (varargs != 0) {
-					if (varargs == IMethod.VARARGS_SAME_TYPES) {
-						buf.append(' ');
-						buf.append(ELLIPSIS_STRING);
-					} else {
-						if (nParams > 0 ) {
-							buf.append(',');
-							buf.append(' ');
-						}
+				} else {
+					if (method.getParameterTypes().length > 0) {
 						buf.append(ELLIPSIS_STRING);
 					}
 				}
-			} else {
-				if (method.getParameterTypes().length > 0) {
-					buf.append(ELLIPSIS_STRING);
-				}
+				buf.append(')');
 			}
-			buf.append(')');
 					
 			// TODO JDT signature
 //			if (getFlag(flags, M_EXCEPTIONS)) {

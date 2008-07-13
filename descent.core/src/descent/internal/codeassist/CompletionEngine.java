@@ -1430,7 +1430,7 @@ public class CompletionEngine extends Engine
 				}
 			} else {
 				includesFilter = INCLUDE_VARIABLES;
-				completeNode(node.baseclasses.get(baseClassIndex).type);
+				completeNode(node.sourceBaseclasses.get(baseClassIndex).sourceType);
 				includesFilter = 0;
 			}
 		}
@@ -3136,15 +3136,13 @@ public class CompletionEngine extends Engine
 		relevance += computeRelevanceForCaseMatching(currentName, typeName);
 		relevance += computeRelevanceForExpectedType(sigChar);
 		if (parser.inNewExp) {
-			if ((modifiers & (Flags.AccStruct | Flags.AccUnion | Flags.AccInterface | Flags.AccTemplate | Flags.AccEnum)) == 0) {
+			if ((modifiers & (Flags.AccClass)) != 0) {
 				// Don't suggest abstract classes
 				if ((modifiers & Flags.AccAbstract) != 0) {
 					return;
 				}
 				
 				relevance += R_NEW;
-			} else {
-				return;
 			}
 		}
 		relevance += R_CLASS;
