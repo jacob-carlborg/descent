@@ -32,6 +32,8 @@ import descent.core.Flags;
  *    <b>lazy</b>
  *    <b>ref</b>
  *    <b>enum</b>
+ *    <b>pure</b>
+ *    <b>nothrow</b>
  * </pre>
  */
 public class Modifier extends ASTNode {
@@ -63,6 +65,8 @@ public class Modifier extends ASTNode {
 		LAZY_KEYWORD("lazy", LAZY),
 		REF_KEYWORD("ref", REF),
 		ENUM_KEYWORD("enum", ENUM),
+		PURE_KEYWORD("pure", PURE),
+		NOTHROW_KEYWORD("nothrow", NOTHROW),
 		;
 		
 		private String keyword;
@@ -254,6 +258,16 @@ public class Modifier extends ASTNode {
 	 * "enum" modifier constant (bit mask).
 	 */
 	public static final int ENUM = Flags.AccEnum;
+	
+	/**
+	 * "pure" modifier constant (bit mask).
+	 */
+	public static final int PURE = Flags.AccPure;
+	
+	/**
+	 * "nothrow" modifier constant (bit mask).
+	 */
+	public static final int NOTHROW = Flags.AccNothrow;
 	
 	/**
 	 * The "modifierKeyword" structural property of this node type.

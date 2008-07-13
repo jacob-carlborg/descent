@@ -518,6 +518,11 @@ public class SourceElementParser extends AstVisitorAdapter {
 			}
 			info.returnType = getSignature(ty.next);
 			info.signature = getSignature(ty);
+			if (ty.postModifiers != null) {
+				for(Modifier modifier : ty.postModifiers) {
+					info.modifiers |= modifier.getFlags();
+				}
+			}
 		}
 		if (templateDeclaration != null) {
 			info.typeParameters = getTypeParameters(templateDeclaration.parameters);

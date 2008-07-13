@@ -1065,10 +1065,6 @@ public class Parser extends Lexer {
 		return parseBlock(null, false);
 	}
 	
-	private Dsymbols parseBlock(boolean thinksItsD2) {
-		return parseBlock(null, thinksItsD2);
-	}
-	
 	private Dsymbols parseBlock(boolean[] isSingle) {
 		return parseBlock(isSingle, false);
 	}
@@ -3215,15 +3211,27 @@ public class Parser extends Lexer {
 						    nextToken();
 						    continue;
 
-						case TOKnothrow:
-						    ((TypeFunction) ta).isnothrow = true;
+						case TOKnothrow: {
+							TypeFunction tf = (TypeFunction) ta;
+						    tf.isnothrow = true;
+						    if (tf.postModifiers == null) {
+						    	tf.postModifiers = new ArrayList<Modifier>();
+						    }
+						    tf.postModifiers.add(new Modifier(token, linnum));
 						    nextToken();
 						    continue;
+						}
 
-						case TOKpure:
-						    ((TypeFunction) ta).ispure = true;
+						case TOKpure: {
+							TypeFunction tf = (TypeFunction) ta;
+						    tf.ispure = true;
+						    if (tf.postModifiers == null) {
+						    	tf.postModifiers = new ArrayList<Modifier>();
+						    }
+						    tf.postModifiers.add(new Modifier(token, linnum));
 						    nextToken();
 						    continue;
+						}
 					    }
 					    break;
 					}

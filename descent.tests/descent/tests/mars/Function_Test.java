@@ -10,6 +10,7 @@ import descent.core.dom.ConstructorDeclaration;
 import descent.core.dom.DeclarationStatement;
 import descent.core.dom.FunctionDeclaration;
 import descent.core.dom.ModifiedType;
+import descent.core.dom.Modifier;
 import descent.core.dom.NumberLiteral;
 import descent.core.dom.UnitTestDeclaration;
 
@@ -331,6 +332,78 @@ public class Function_Test extends Parser_Test {
 		assertEquals(2, argument.modifiers().size());
 		assertEquals("final", argument.modifiers().get(0).toString());
 		assertEquals("scope", argument.modifiers().get(1).toString());
+	}
+	
+	public void testConstFunction() {
+		String s = " const void func() { }";
+		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s, AST.D2);
+		assertEquals(1, f.modifiers().size());
+		assertEquals("const", f.modifiers().get(0).toString());
+	}
+	
+	public void testInvariantFunction() {
+		String s = " invariant void func() { }";
+		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s, AST.D2);
+		assertEquals(1, f.modifiers().size());
+		assertEquals("invariant", f.modifiers().get(0).toString());
+	}
+	
+	public void testPureFunction() {
+		String s = " pure void func() { }";
+		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s, AST.D2);
+		assertEquals(1, f.modifiers().size());
+		assertEquals("pure", f.modifiers().get(0).toString());
+	}
+	
+	public void testNothrowFunction() {
+		String s = " nothrow void func() { }";
+		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s, AST.D2);
+		assertEquals(1, f.modifiers().size());
+		assertEquals("nothrow", f.modifiers().get(0).toString());
+	}
+	
+	public void testPostConstFunction() {
+		String s = " void func() const { }";
+		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s, AST.D2);
+		assertEquals(0, f.modifiers().size());
+		assertEquals(1, f.postModifiers().size());
+		
+		Modifier modifier = f.postModifiers().get(0);
+		assertPosition(modifier, 13, 5);
+		assertEquals("const", modifier.toString());
+	}
+	
+	public void testPostInvariantFunction() {
+		String s = " void func() invariant { }";
+		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s, AST.D2);
+		assertEquals(0, f.modifiers().size());
+		assertEquals(1, f.postModifiers().size());
+		
+		Modifier modifier = f.postModifiers().get(0);
+		assertPosition(modifier, 13, 9);
+		assertEquals("invariant", modifier.toString());
+	}
+	
+	public void testPostNothrowFunction() {
+		String s = " void func() nothrow { }";
+		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s, AST.D2);
+		assertEquals(0, f.modifiers().size());
+		assertEquals(1, f.postModifiers().size());
+		
+		Modifier modifier = f.postModifiers().get(0);
+		assertPosition(modifier, 13, 7);
+		assertEquals("nothrow", modifier.toString());
+	}
+	
+	public void testPostPureFunction() {
+		String s = " void func() pure { }";
+		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s, AST.D2);
+		assertEquals(0, f.modifiers().size());
+		assertEquals(1, f.postModifiers().size());
+		
+		Modifier modifier = f.postModifiers().get(0);
+		assertPosition(modifier, 13, 4);
+		assertEquals("pure", modifier.toString());
 	}
 
 }

@@ -379,6 +379,14 @@ public class JavaElementImageProvider {
 					flags |= JavaElementImageDescriptor.CONST;
 				}
 				
+				if (Flags.isNothrow(modifiers)) {
+					flags |= JavaElementImageDescriptor.NOTHROW;
+				}
+				
+				if (Flags.isPure(modifiers)) {
+					flags |= JavaElementImageDescriptor.PURE;
+				}
+				
 				if (Flags.isDeprecated(modifiers))
 					flags |= JavaElementImageDescriptor.DEPRECATED;
 				

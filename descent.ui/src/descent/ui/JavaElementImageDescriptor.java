@@ -75,6 +75,12 @@ public class JavaElementImageDescriptor extends CompositeImageDescriptor {
 	
 	/** Flag to render the invariant adornment. */
 	public final static int INVARIANT=			0x1000;
+	
+	/** Flag to render the nothrow adornment. */
+	public final static int NOTHROW=			0x2000;
+	
+	/** Flag to render the pure adornment. */
+	public final static int PURE=			0x4000;
 
 	private ImageDescriptor fBaseImage;
 	private int fFlags;
@@ -228,7 +234,17 @@ public class JavaElementImageDescriptor extends CompositeImageDescriptor {
 			ImageData data= getImageData(JavaPluginImages.DESC_OVR_CONST);
 			x-= data.width;
 			drawImage(data, x, 0);
-		} 
+		}
+		if ((fFlags & NOTHROW) != 0) {
+			ImageData data= getImageData(JavaPluginImages.DESC_OVR_NOTHROW);
+			x-= data.width;
+			drawImage(data, x, 0);
+		}
+		if ((fFlags & PURE) != 0) {
+			ImageData data= getImageData(JavaPluginImages.DESC_OVR_PURE);
+			x-= data.width;
+			drawImage(data, x, 0);
+		}
 	}		
 	
 	private void drawBottomRight() {

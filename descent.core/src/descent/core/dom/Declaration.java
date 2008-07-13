@@ -155,7 +155,7 @@ public abstract class Declaration extends ASTNode {
 	 * Returns the live ordered list of modifiers for this
 	 * declaration.
 	 * 
-	 * @return the live list of alias declaration
+	 * @return the live list of modifiers
 	 *    (element type: <code>Modifier</code>)
 	 */ 
 	public final List<Modifier> modifiers() {

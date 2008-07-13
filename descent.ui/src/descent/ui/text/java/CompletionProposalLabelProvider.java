@@ -840,6 +840,12 @@ public class CompletionProposalLabelProvider {
 			} else if (Flags.isConst(flags)) {
 				adornments |= JavaElementImageDescriptor.CONST;
 			}
+			if (Flags.isNothrow(flags)) {
+				adornments |= JavaElementImageDescriptor.NOTHROW;
+			}
+			if (Flags.isPure(flags)) {
+				adornments |= JavaElementImageDescriptor.PURE;
+			}
 		}
 
 		if (kind == CompletionProposal.TYPE_REF) {

@@ -448,6 +448,8 @@ public class JavaPluginImages {
 	public static final ImageDescriptor DESC_OVR_ABSTRACT= createUnManagedCached(T_OVR, "abstract_co.gif"); 					//$NON-NLS-1$
 	public static final ImageDescriptor DESC_OVR_CONST= createUnManagedCached(T_OVR, "const_co.gif"); 					//$NON-NLS-1$
 	public static final ImageDescriptor DESC_OVR_INVARIANT= createUnManagedCached(T_OVR, "invariant_co.gif"); 					//$NON-NLS-1$
+	public static final ImageDescriptor DESC_OVR_PURE= createUnManagedCached(T_OVR, "pure_co.gif"); 					//$NON-NLS-1$
+	public static final ImageDescriptor DESC_OVR_NOTHROW= createUnManagedCached(T_OVR, "nothrow_co.gif"); 					//$NON-NLS-1$
 	public static final ImageDescriptor DESC_OVR_SYNCH= createUnManagedCached(T_OVR, "synch_co.gif"); 						//$NON-NLS-1$
 	public static final ImageDescriptor DESC_OVR_RUN= createUnManagedCached(T_OVR, "run_co.gif"); 							//$NON-NLS-1$
 	public static final ImageDescriptor DESC_OVR_WARNING= createUnManagedCached(T_OVR, "warning_co.gif"); 					//$NON-NLS-1$

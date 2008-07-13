@@ -1,6 +1,7 @@
 package descent.core.dom;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -11,6 +12,7 @@ import java.util.List;
  * FunctionDeclaration:
  *    Type SimpleName [ <b>(</b> TemplateParameter { <b>,</b> TemplateParameter } <b>)</b> ]
  *       <b>(</b> [ Argument { <b>,</b> Argument } ] <b>)</b>
+ *       { Modifiers }
  *       [ <b>in</b> Block ]
  *       [ <b>out</b> [ <b>(</b> SimpleName <b>)</b> ] Block ]
  *       [ <b>body</b> ] Block
@@ -29,6 +31,12 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 	 */
 	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
 	internalModifiersPropertyFactory(FunctionDeclaration.class); //$NON-NLS-1$
+	
+	/**
+	 * The "postModifiers" structural property of this node type.
+	 */
+	public static final ChildListPropertyDescriptor POST_MODIFIERS_PROPERTY =
+		new ChildListPropertyDescriptor(FunctionDeclaration.class, "postModifiers", Modifier.class, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "returnType" structural property of this node type.
@@ -147,6 +155,14 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 	 */
 	private ASTNode.NodeList templateParameters =
 		new ASTNode.NodeList(TEMPLATE_PARAMETERS_PROPERTY);
+	
+	/**
+	 * The post modifiers
+	 * (element type: <code>Modifier</code>).
+	 * Defaults to an empty list.
+	 */
+	final ASTNode.NodeList postModifiers =
+		new ASTNode.NodeList(POST_MODIFIERS_PROPERTY);
 
 	/**
 	 * Creates a new unparented function declaration node owned by the given 
@@ -461,12 +477,41 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 	public List<TemplateParameter> templateParameters() {
 		return this.templateParameters;
 	}
+	
+	/**
+	 * Returns the live ordered list of post modifiers for this
+	 * declaration.
+	 * 
+	 * @return the live list of post modifiers
+	 *    (element type: <code>Modifier</code>)
+	 */ 
+	public final List<Modifier> postModifiers() {
+		return this.postModifiers;
+	}
+	
+	/**
+	 * Returns the modifiers explicitly specified on this declaration.
+	 * 
+	 * @return the bit-wise or of <code>Modifier</code> constants
+	 * @see Modifier
+	 */
+	@Override
+	public int getModifiers() {
+		int computedmodifierFlags = super.getModifiers();
+		for (Iterator it = postModifiers().iterator(); it.hasNext(); ) {
+			Object x = it.next();
+			if (x instanceof Modifier) {
+				computedmodifierFlags |= ((Modifier) x).getModifierKeyword().toFlagValue();
+			}
+		}
+		return computedmodifierFlags;
+	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 12 * 4;
+		return BASE_NODE_SIZE + 13 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -477,6 +522,7 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 			memSize()
 			+ (this.preDDocs.listSize())
 			+ (this.modifiers.listSize())
+			+ (this.postModifiers.listSize())
 			+ (this.returnType == null ? 0 : getReturnType().treeSize())
 			+ (this.name == null ? 0 : getName().treeSize())
 			+ (this.templateParameters.listSize())

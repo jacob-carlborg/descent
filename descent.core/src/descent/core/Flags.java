@@ -248,6 +248,18 @@ public final class Flags {
 	public static final int AccStaticDestructor = 0x00010000;
 	
 	/**
+	 * Nothrow property flag.
+	 * @since 2.0
+	 */
+	public static final int AccNothrow = 0x10000000;
+	
+	/**
+	 * Pure property flag.
+	 * @since 2.0
+	 */
+	public static final int AccPure = 0x20000000;
+	
+	/**
 	 * Invariant property flag.
 	 * @since 2.0
 	 */
@@ -657,6 +669,26 @@ public final class Flags {
 	 */
 	public static boolean isInvariant(long flags) {
 		return (flags & AccInvariant) != 0;
+	}
+	
+	/**
+	 * Returns whether the given integer includes the <code>nothrow</code> modifier.
+	 *
+	 * @param flags the flags
+	 * @return <code>true</code> if the <code>nothrow</code> modifier is included
+	 */
+	public static boolean isNothrow(long flags) {
+		return (flags & AccNothrow) != 0;
+	}
+	
+	/**
+	 * Returns whether the given integer includes the <code>pure</code> modifier.
+	 *
+	 * @param flags the flags
+	 * @return <code>true</code> if the <code>pure</code> modifier is included
+	 */
+	public static boolean isPure(long flags) {
+		return (flags & AccPure) != 0;
 	}
 	
 	/**

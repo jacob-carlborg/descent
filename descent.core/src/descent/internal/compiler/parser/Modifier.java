@@ -10,9 +10,13 @@ public class Modifier extends ASTDmdNode {
 	public TOK tok;
 
 	public Modifier(Token token, int lineNumber) {
-		this.tok = token.value;
-		this.start = token.ptr;
-		this.length = token.sourceLen;
+		this(token.value, token.ptr, token.sourceLen, lineNumber);
+	}
+	
+	public Modifier(TOK tok, int start, int length, int lineNumber) {
+		this.tok = tok;
+		this.start = start;
+		this.length = length;
 		this.lineNumber = lineNumber;
 	}
 	
@@ -64,6 +68,9 @@ public class Modifier extends ASTDmdNode {
 		case TOKconst: return Flags.AccConst;
 		case TOKscope: return Flags.AccScope;
 		case TOKinvariant: return  Flags.AccInvariant;
+		case TOKenum: return Flags.AccEnum;
+		case TOKnothrow: return Flags.AccNothrow;
+		case TOKpure: return Flags.AccPure;
 		case TOKin: return 0;
 		case TOKout: return 0;
 		case TOKinout: return 0;

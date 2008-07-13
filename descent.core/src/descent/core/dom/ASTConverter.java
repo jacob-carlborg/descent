@@ -1653,6 +1653,7 @@ public class ASTConverter {
 			}
 		}
 		convertArguments(b.arguments(), ty.sourceParameters);
+		convertModifiers(b.postModifiers(), ty.postModifiers);
 		fillFunction(b, a);
 		fillDeclaration(b, a);
 		
@@ -3293,6 +3294,8 @@ public class ASTConverter {
 		case TOKlazy: b.setModifierKeyword(descent.core.dom.Modifier.ModifierKeyword.LAZY_KEYWORD); break;
 		case TOKref: b.setModifierKeyword(descent.core.dom.Modifier.ModifierKeyword.REF_KEYWORD); break;
 		case TOKenum: b.setModifierKeyword(descent.core.dom.Modifier.ModifierKeyword.ENUM_KEYWORD); break;
+		case TOKpure: b.setModifierKeyword(descent.core.dom.Modifier.ModifierKeyword.PURE_KEYWORD); break;
+		case TOKnothrow: b.setModifierKeyword(descent.core.dom.Modifier.ModifierKeyword.NOTHROW_KEYWORD); break;
 		default:
 			throw new IllegalStateException("Invalid modifier: " + a.tok);
 		}

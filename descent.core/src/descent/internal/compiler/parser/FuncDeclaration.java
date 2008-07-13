@@ -51,6 +51,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.Flags;
 import descent.core.IMethod;
 import descent.core.JavaModelException;
 import descent.core.Signature;
@@ -2561,6 +2562,19 @@ public class FuncDeclaration extends Declaration {
 	@Override
 	public IMethod getJavaElement() {
 		return javaElement;
+	}
+	
+	@Override
+	public long getFlags() {
+		long flags = super.getFlags();
+		TypeFunction ty = (TypeFunction) type;
+		if (ty.isnothrow) {
+			flags |= Flags.AccNothrow;
+		}
+		if (ty.ispure) {
+			flags |= Flags.AccPure;
+		}
+		return flags;
 	}
 
 }

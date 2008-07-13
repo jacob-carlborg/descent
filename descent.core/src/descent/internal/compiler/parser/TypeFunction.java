@@ -1,5 +1,8 @@
 package descent.internal.compiler.parser;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import melnorme.miscutil.Assert;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
@@ -29,6 +32,8 @@ public class TypeFunction extends Type implements Cloneable {
 	public char linkageChar;
 	public boolean ispure;
 	public boolean isnothrow;
+	
+	public List<Modifier> postModifiers;
 
 	public TypeFunction(Arguments parameters, Type treturn, int varargs,
 			LINK linkage) {
@@ -651,6 +656,26 @@ public class TypeFunction extends Type implements Cloneable {
 		} catch (CloneNotSupportedException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	@Override
+	public Type makeConst(int startPosition, int length) {
+		TypeFunction tf = (TypeFunction) super.makeConst(startPosition, length);
+		if (tf.postModifiers == null) {
+			tf.postModifiers = new ArrayList<Modifier>();
+		}
+		tf.postModifiers.add(new Modifier(TOK.TOKconst, startPosition, length, 0));
+		return tf;
+	}
+	
+	@Override
+	public Type makeInvariant(int startPosition, int length) {
+		TypeFunction tf = (TypeFunction) super.makeInvariant(startPosition, length);
+		if (tf.postModifiers == null) {
+			tf.postModifiers = new ArrayList<Modifier>();
+		}
+		tf.postModifiers.add(new Modifier(TOK.TOKinvariant, startPosition, length, 0));
+		return tf;
 	}
 
 	@SuppressWarnings("serial")
