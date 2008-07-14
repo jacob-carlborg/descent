@@ -1,7 +1,7 @@
 package descent.building;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 
 /**
@@ -23,5 +23,6 @@ import org.eclipse.debug.core.ILaunchConfiguration;
  */
 public interface IDBuilder
 {
-    public String build(ILaunchConfiguration config, IProgressMonitor pm) throws CoreException;
+    public String build(ILaunchConfiguration config, ILaunch launch,
+            IProgressMonitor pm);
 }

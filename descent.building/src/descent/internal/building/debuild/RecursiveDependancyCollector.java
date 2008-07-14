@@ -25,40 +25,15 @@ import descent.core.JavaModelException;
 /**
  * Class that can recurse through dependencies to generate a list of all files
  * that need to be compiled in a module. This class mainly exists to abstract
- * the actual source analysis from the builder. The only method in this class
- * that should be called externally is 
- * {@link #getObjectFiles(IJavaProject, ICompilationUnit[], IProgressMonitor)},
- * which will get the actual object files necessary using an instance of this
- * class.
+ * the actual source analysis from the builder.
  * 
  * @author Robert Fraser
  */
 /* package */ class RecursiveDependancyCollector
-{	
-	/**
-	 * Gets new {@link IObjectFile}s for all the compilation units given and any
-	 * dependencies they may have.
-	 * 
-	 * @param modules  the initial compilation units to search from
-	 * @param toIgnore a list of modules to ignore (not build). Entire packages
-	 *                 can be ignored by ending the package name with a "."
-	 * @param pm       the progress monitor
-	 * @return         the object files (and dependancies) taht must be built
-	 *                 for this project
-	 */
-	public static IObjectFile[] getObjectFiles(
-	        BuildRequest req,
-			ObjectFileFactory factory,
-			String[] modules,
-			IProgressMonitor pm)
-	{
-		RecursiveDependancyCollector collector = new RecursiveDependancyCollector
-			(req, factory);
-		return collector.collect(modules, pm);
-	}
-	
+{		
 	private final BuildRequest req;
 	private final ObjectFileFactory factory;
+	private final ConditionalEvaluator eval;
 	
 	private final Map<String, IObjectFile> objectFiles = 
         new HashMap<String, IObjectFile>();
@@ -70,28 +45,34 @@ import descent.core.JavaModelException;
     // (since multiple dependancy collectors may exist at the same time)
     private final Set<IJavaProject> visitedProjectAccumulator = new HashSet<IJavaProject>();
 	
-	// Shouldn't be constructed directly, use the getObjectFiles method instead
-	private RecursiveDependancyCollector(BuildRequest req, ObjectFileFactory factory)
+    /**
+     * Creates a new dependancy collectr
+     */
+	public RecursiveDependancyCollector(BuildRequest req, ObjectFileFactory factory)
 	{
 		this.factory = factory;
 		this.req = req;
+		this.eval = new ConditionalEvaluator(req);
 	}
 	
-	private IObjectFile[] collect(String[] modules, IProgressMonitor pm)
+	/**
+     * Gets new {@link IObjectFile}s for all the compilation units given and any
+     * dependencies they may have.
+     */
+	public IObjectFile[] getModules(IProgressMonitor pm)
 	{
+	    ICompilationUnit[] modules = req.getModules();
 		try
 		{
 			pm.beginTask("Collecting dependencies", modules.length * 10);
 			
-			for(String moduleName : modules)
+			for(ICompilationUnit module : modules)
 			{
-				// Since this can take a long time, checking every so often for cancellation
-				// is good!
-				if(pm.isCanceled())
-					return null;
-				
-				collectRecursive(moduleName);
+				collectRecursive(module.getFullyQualifiedName(), pm);
 				pm.worked(10);
+				
+				if(pm.isCanceled())
+                    return null;
 			}
 			
 			IObjectFile[] arr = new IObjectFile[objectFiles.size()];
@@ -113,17 +94,21 @@ import descent.core.JavaModelException;
 		}
 	}
 	
-	private void collectRecursive(String moduleName)
+	private void collectRecursive(String moduleName, IProgressMonitor pm)
 		throws JavaModelException
-    {	
+    {
+	    // Check for user cancellation
+	    if(pm.isCanceled())
+	        return;
+	    
 		// Check if we've already traversed this module
 		if(objectFiles.containsKey(moduleName))
 			return;
 		
-		// Check if it's a nodule that should be ignored
-		/* TODO for(String ignore : req.getIgnoredModules())
+		// Check if it's a module that should be ignored
+		for(String ignore : req.getIgnoredModules())
 			if(moduleName.startsWith(ignore))
-				return; */
+				return;
 		
         // Find the module
         // Note: pass an array of one boolean to get pointer semantics
@@ -137,14 +122,13 @@ import descent.core.JavaModelException;
         
         // Recurse through imports
 		for(String importedModule : getImports(module))
-			collectRecursive(importedModule);
+			collectRecursive(importedModule, pm);
 	}
 	
 	private IObjectFile createObjectFile(ICompilationUnit cu, 
             boolean isLibraryFile)
 	{
-		// TODO
-		return null;
+		return factory.create(cu, isLibraryFile);
 	}
     
     private ICompilationUnit findModule(String moduleName, boolean[] isLibraryFile)
@@ -246,17 +230,10 @@ import descent.core.JavaModelException;
             if(element instanceof IConditional)
             {
                 IConditional cond = (IConditional) element;
-                findImportsInElements((isActive(cond) ? cond.getThenChildren() :
+                findImportsInElements((eval.isActive(cond) ? cond.getThenChildren() :
                 	cond.getElseChildren()), imports);
                 continue;
             }
         }
-    }
-    
-    private boolean isActive(IConditional cond)
-    {
-    	System.out.println("Conditional with displayString: " + cond.getElementName());
-    	// TODO check if it's active
-    	return true;
     }
 }

@@ -10,6 +10,8 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.debug.core.ILaunchConfiguration;
 
 import descent.building.CompilerInterfaceRegistry;
@@ -20,13 +22,17 @@ import descent.launching.IVMInstall;
 import descent.launching.JavaRuntime;
 
 /**
- * Static utility methods used throughout the builder
+ * Static utility methods used throughout the builder. THis class is not part of
+ * the debuild package, as it is designed to be used in the UI as well.
  * 
  * @author Robert Fraser
  */
 @SuppressWarnings("unchecked")
 public class BuilderUtil
 {
+    //--------------------------------------------------------------------------
+    // OS-Specific functionality
+    
     /**
      * True if the current OS is Windows-based, false otherwise
      */
@@ -40,6 +46,7 @@ public class BuilderUtil
     
     static
     {
+        // This needs to be initialized here to prevent constant folding
         IS_WINDOWS = System.getProperty("os.name").startsWith("Windows"); //$NON-NLS-1$ //$NON-NLS-2$
         
         if(IS_WINDOWS)
@@ -59,6 +66,9 @@ public class BuilderUtil
             EXTENSION_OBJECT_FILE = ".o"; //$NON-NLS-1$
         }
     }
+    
+    //--------------------------------------------------------------------------
+    // Version/debug identifier management
     
     /**
      * List of all predefined versions in sorted order (according to
@@ -99,21 +109,13 @@ public class BuilderUtil
     }
     
     /**
-     * Gets the absolute OS path for the given Eclipse path (with portable
-     * separarators, etc.).
+     * Checks whether the given string is a valid D identifier. Valid D
+     * identifiers are the same as valid Java identifiers with the exception
+     * that Java allows '$'.
      * 
-     * @param path
+     * @param id
      * @return
      */
-    public static String getAbsolutePath(IPath path)
-    {
-        IResource res = ResourcesPlugin.getWorkspace().getRoot().findMember(path);
-        if(null != res)
-            path = res.getLocation();
-        
-        return path.toString();
-    }
-
     public static boolean isValidIdentifier(String id)
     {
         int len = id.length();
@@ -128,11 +130,24 @@ public class BuilderUtil
         return true;
     }
     
+    private static boolean isValidIdStart(char c)
+    {
+        return Character.isJavaIdentifierStart(c) && !(c == '$');
+    }
+    
+    private static boolean isValidIdPart(char c)
+    {
+        return Character.isJavaIdentifierPart(c) && !(c == '$');
+    }
+    
+    //--------------------------------------------------------------------------
+    // Compiler management
+    
     private static final CompilerInterfaceRegistry registry = 
         CompilerInterfaceRegistry.getInstance();
     
     /**
-     * Gets the compielr interface for the given compiler.
+     * Gets the compiler interface for the given compiler.
      * 
      * @param compiler the compiler to get the interface for
      * @return         the interface to the compiler or null if not such compiler
@@ -157,28 +172,20 @@ public class BuilderUtil
         }
     }
     
-    private static boolean isValidIdStart(char c)
-    {
-        return Character.isJavaIdentifierStart(c) && !(c == '$');
-    }
-    
-    private static boolean isValidIdPart(char c)
-    {
-        return Character.isJavaIdentifierPart(c) && !(c == '$');
-    }
-    
     /**
-     * An empty list to use as a default for list-typed constants (there's no
-     * similar constant here for the empty string since the empty string is
-     * internalized by the JVM).
+     * Gets the VMInstall (compiler) associated with the given project
+     * 
+     * @param project the project to get the compiler for
+     * @return        the compiler associated with the project or null if either
+     *                poject was null or no compielr is associated with project
      */
-    public static final List EMPTY_LIST = new ArrayList(0);
-    
-    /**
-     * An empty array object to be used by content providers for elements
-     * that are barren and childless.
-     */
-    public static final Object[] EMPTY_ARRAY = new Object[] {};
+    public static IVMInstall getVMInstall(IJavaProject project)
+        throws CoreException
+    {
+        if(null == project)
+            return null;
+        return JavaRuntime.getVMInstall(project);
+    }
     
     //--------------------------------------------------------------------------
     // Wrappers for ILaunchConfiguration methods which hide the exceptions,
@@ -255,26 +262,44 @@ public class BuilderUtil
         catch(CoreException e) { }
         return value;
     }
-
-    public static IVMInstall getVMInstall(IJavaProject project)
-        throws CoreException
-    {
-        if(null == project)
-            return null;
-        return JavaRuntime.getVMInstall(project);
-    }
+    
+    //--------------------------------------------------------------------------
+    // Miscellaneous
     
     /**
-     * This method is needed since 
-     * {@link ILaunchConfiguration#contentsEqual(ILaunchConfiguration)} compares
-     * the paths of launch configurations as well, and the getInfo method is not
-     * publicly available.
+     * A monitor for tasks that do not require 
+     * 
+     * Don't use this as the main null progress monitor, since its 
+     * canceleld state is not garunteed.
      */
-    public static boolean launchConfigsEqual(ILaunchConfiguration config,
-            ILaunchConfiguration other) throws CoreException
+    public static final IProgressMonitor NO_MONITOR = new NullProgressMonitor();
+    
+    /**
+     * An empty list to use as a default for list-typed constants (there's no
+     * similar constant here for the empty string since the empty string is
+     * internalized by the JVM).
+     */
+    public static final List EMPTY_LIST = new ArrayList(0);
+    
+    /**
+     * An empty array object to be used by content providers for elements
+     * that are barren and childless.
+     */
+    public static final Object[] EMPTY_ARRAY = new Object[] {};
+    
+    /**
+     * Gets the absolute OS path for the given Eclipse path (with portable
+     * separarators, etc.).
+     * 
+     * @param path
+     * @return
+     */
+    public static String getAbsolutePath(IPath path)
     {
-        return config.getName().equals(other.getName()) &&
-                config.getType().equals(other.getType()) &&
-                config.getAttributes().equals(other.getAttributes());
+        IResource res = ResourcesPlugin.getWorkspace().getRoot().findMember(path);
+        if(null != res)
+            path = res.getLocation();
+        
+        return path.toString();
     }
 }

@@ -34,7 +34,7 @@ public final class BuilderLaunchDelegate implements
         if(null == builder)
             throw error(String.format(DebuildMessages.BuilderLaunchDelegate_error_could_not_instantiate_builder, builderType.getIdentifier()));
         
-        builder.build(config, pm);
+        builder.build(config, launch, pm);
     }
     
     private static CoreException error(String message)

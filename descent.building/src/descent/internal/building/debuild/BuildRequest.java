@@ -313,9 +313,16 @@ import static descent.building.IDescentBuilderConstants.*;
         "gcstats",
         "std.",
     };
+	
 	private static final String[] tangoIgnored = new String[]
     {
         "object",
         "gcc.",
     };
+	
+	public final String[] getIgnoredModules()
+	{
+	    // TODO
+	    return phobosIgnored;
+	}
 }
