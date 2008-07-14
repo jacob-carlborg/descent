@@ -19,6 +19,7 @@ import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.internal.building.BuilderUtil;
 import descent.launching.IVMInstall;
+import descent.building.compiler.BuildException;
 import descent.building.compiler.ICompilerInterface;
 
 import static descent.building.IDescentBuilderConstants.*;
@@ -58,7 +59,7 @@ import static descent.building.IDescentBuilderConstants.*;
 		}
 		catch(CoreException e)
 		{
-		    throw new DebuildException("Could not get compiler for project " +
+		    throw new BuildException("Could not get compiler for project " +
 		            project.getElementName());
 		}
 		compilerInterface = BuilderUtil.getCompilerInterface(compilerInstall);
@@ -108,7 +109,7 @@ import static descent.building.IDescentBuilderConstants.*;
                 BuilderUtil.EMPTY_LIST);
         
         if(handles.isEmpty())
-            throw new DebuildException("No target modules defined");
+            throw new BuildException("No target modules defined");
         
         List<ICompilationUnit> modules = 
             new ArrayList<ICompilationUnit>(handles.size());
@@ -145,7 +146,7 @@ import static descent.building.IDescentBuilderConstants.*;
         }
         
         if(modules.isEmpty())
-            throw new DebuildException("None of the modules to be built exist in the project.");
+            throw new BuildException("None of the modules to be built exist in the project.");
         
         return modules.toArray(new ICompilationUnit[modules.size()]);
     }
@@ -198,7 +199,7 @@ import static descent.building.IDescentBuilderConstants.*;
         }
         catch(JavaModelException e)
         {
-            throw new DebuildException(e);
+            throw new BuildException(e);
         }
     }
     
@@ -213,7 +214,7 @@ import static descent.building.IDescentBuilderConstants.*;
         }
         
         if(null == project)
-            throw new DebuildException(String.format("Cannot find project %1$s", projectName));
+            throw new BuildException(String.format("Cannot find project %1$s", projectName));
         
         return project;
     }

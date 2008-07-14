@@ -4,62 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import descent.building.compiler.IBuildManager;
+import descent.building.compiler.ICompileManager;
 import descent.building.compiler.IResponseInterpreter;
 import descent.building.compiler.ui.CompilerOption;
 
 import static descent.internal.building.compiler.ui.DmdUIOptions.*;
 
 public final class DmdCompilerInterface extends DmdfeCompilerInterface
-{
-	protected static final boolean DEBUG = true;
-	
-	//--------------------------------------------------------------------------
-	// Response interpreter
-	protected static class DmdResponseInterpreter implements IResponseInterpreter
-	{
-		private static final Pattern ERROR_WITH_FILENAME = Pattern.compile(
-				"([^\\(\\:]*)" +          // Filename
-				"(?:\\((\\d*)\\))?" +     // Line number
-				"\\:\\s(.*)$"             // Message
-			);
-		
-		/* (non-Javadoc)
-		 * @see descent.launching.compiler.IResponseInterpreter#interpret(java.lang.String)
-		 */
-		public void interpret(String line)
-		{
-			// TODO finish & test
-			
-			if(DEBUG)
-				System.out.println("OUT => " + line);
-			
-            /*
-			Matcher m = ERROR_WITH_FILENAME.matcher(line);
-			if(m.find())
-			{
-				String file = m.group(1);
-				String lineStr = m.group(2);
-				String message = m.group(3);
-				int lineNum = null != lineStr ? Integer.parseInt(lineStr) : -1;
-				resp.addError(new BuildError(message, file, lineNum));
-				return;
-			}
-            */
-		}
-		
-		/* (non-Javadoc)
-		 * @see descent.launching.compiler.IResponseInterpreter#interpretError(java.lang.String)
-		 */
-		public void interpretError(String line)
-		{
-            if(DEBUG)
-                System.out.println("ERR => " + line);
-            
-			// Keep all the interpretation in one method
-			// TODO interpret(line);
-		}
-	}
-	
+{	
 	//--------------------------------------------------------------------------
 	// UI Options
 	
@@ -94,4 +47,10 @@ public final class DmdCompilerInterface extends DmdfeCompilerInterface
 	    
 	    uiOptions = options.toArray(new CompilerOption[options.size()]);
 	}
+
+    @Override
+    public ICompileManager getCompileManager(IBuildManager buildManager)
+    {
+        return new DmdCompileManager();
+    }
 }

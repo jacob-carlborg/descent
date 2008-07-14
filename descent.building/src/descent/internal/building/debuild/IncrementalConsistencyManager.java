@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 
+import descent.building.compiler.BuildException;
 import descent.internal.building.BuilderUtil;
 
 /**
@@ -102,7 +103,7 @@ import descent.internal.building.BuilderUtil;
         }
         catch(CoreException e)
         {
-            throw new DebuildException(String.format(
+            throw new BuildException(String.format(
                     "Error preparing output folder: %1$s", e.getMessage()));
         }
         
@@ -144,7 +145,7 @@ import descent.internal.building.BuilderUtil;
             }
             catch(CoreException e)
             {
-                throw new DebuildException(String.format(
+                throw new BuildException(String.format(
                         "Error deleting resource %1$s: %2$s", 
                         file.getFullPath().toString(), e.getMessage()));
             }
