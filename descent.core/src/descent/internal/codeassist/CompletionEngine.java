@@ -721,7 +721,6 @@ public class CompletionEngine extends Engine
 //		node.semantic(Scope.createGlobal(node.mod, semanticContext), semanticContext);
 		
 		if (node.mod != null) {
-			node.mod = node.mod.unlazy(semanticContext);
 			if (node.selectiveName == null) {
 				this.startPosition = actualCompletionPosition;
 				this.endPosition = actualCompletionPosition;
@@ -729,6 +728,9 @@ public class CompletionEngine extends Engine
 			} else {
 				this.currentName = computePrefixAndSourceRange(node.selectiveName);
 			}
+			
+			node.mod = node.mod.unlazy(this.currentName, semanticContext);
+			
 			this.wantArguments = false;
 			suggestMembers(node.mod.members, false, new HashtableOfCharArrayAndObject(), INCLUDE_TYPES | INCLUDE_VARIABLES | INCLUDE_FUNCTIONS);
 		}
@@ -1095,7 +1097,7 @@ public class CompletionEngine extends Engine
 		boolean onlyStatics = resolvedExpression instanceof TypeExp;
 		
 		if (sym instanceof ClassDeclaration) {
-			ClassDeclaration cd = ((ClassDeclaration) sym).unlazy(semanticContext);
+			ClassDeclaration cd = ((ClassDeclaration) sym).unlazy(this.currentName, semanticContext);
 			
 			Declaration func = cd.ctor;
 			
@@ -1127,7 +1129,7 @@ public class CompletionEngine extends Engine
 				suggestMembers(cd.members, onlyStatics, 0, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
 			}
 		} else if (sym instanceof StructDeclaration) {
-			StructDeclaration struct = ((StructDeclaration) sym).unlazy(semanticContext);
+			StructDeclaration struct = ((StructDeclaration) sym).unlazy(CharOperation.NO_CHAR, semanticContext);
 			suggestMembers(struct.members, onlyStatics, 0, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
 		}
 	}
@@ -1885,7 +1887,7 @@ public class CompletionEngine extends Engine
 	}
 	
 	private void completeTypeClassRecursively(TypeClass type, boolean onlyStatics, HashtableOfCharArrayAndObject funcSignatures) {
-		ClassDeclaration decl = type.sym == null ? null : type.sym.unlazy(semanticContext);
+		ClassDeclaration decl = type.sym == null ? null : type.sym.unlazy(this.currentName, semanticContext);
 		if (decl == null) {
 			return;
 		}
@@ -1909,7 +1911,7 @@ public class CompletionEngine extends Engine
 	}
 	
 	private void completeTypeStruct(TypeStruct type, boolean onlyStatics) {
-		StructDeclaration decl = type.sym == null ? null : type.sym.unlazy(semanticContext);
+		StructDeclaration decl = type.sym == null ? null : type.sym.unlazy(this.currentName, semanticContext);
 		if (decl == null) {
 			return;
 		}
@@ -2048,9 +2050,7 @@ public class CompletionEngine extends Engine
 				char[] fqn = mod.getFullyQualifiedName().toCharArray();
 				if (!suggestedModules.containsKey(fqn)) {
 					suggestedModules.put(fqn, this);
-					
-					mod = mod.unlazy(semanticContext);
-					
+					mod = mod.unlazy(this.currentName, semanticContext);
 					suggestMembers(mod.members, false, funcSignatures, includes & (~INCLUDE_IMPORTS));
 				}
 			}
@@ -2240,7 +2240,7 @@ public class CompletionEngine extends Engine
 					
 					if (parser.inNewExp) {
 						if (type instanceof TypeClass) {
-							ClassDeclaration cd = ((TypeClass) type).sym.unlazy(semanticContext);
+							ClassDeclaration cd = ((TypeClass) type).sym.unlazy(this.currentName, semanticContext);
 							if (cd.isClassDeclaration() != null && cd.isInterfaceDeclaration() == null) {
 								// If it's abstract, skip
 								if ((cd.getFlags() & Flags.AccAbstract) != 0) {
@@ -2547,14 +2547,14 @@ public class CompletionEngine extends Engine
 			
 		// opCall
 		case ASTDmdNode.TYPE_STRUCT: {
-			StructDeclaration sym = (((TypeStruct) type).sym).unlazy(semanticContext);
 			currentName = ident;
+			StructDeclaration sym = (((TypeStruct) type).sym).unlazy(this.currentName, semanticContext);			
 			suggestMembers(sym.members, onlyStatics, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
 			break;
 		}
-		case ASTDmdNode.TYPE_CLASS: {			
-			ClassDeclaration sym = (((TypeClass) type).sym).unlazy(semanticContext);
+		case ASTDmdNode.TYPE_CLASS: {
 			currentName = ident;
+			ClassDeclaration sym = (((TypeClass) type).sym).unlazy(this.currentName, semanticContext);			
 			suggestMembers(sym.members, onlyStatics, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
 			
 			// Then try with superclass and superinterface members

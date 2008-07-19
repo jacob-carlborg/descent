@@ -36,12 +36,10 @@ public class TraitsExp extends Expression {
 	public Expression semantic(final Scope sc,
 			final SemanticContext context)
 	{
-		
-		/* TODO semantic
-		TemplateInstance.semanticTiargs(loc, sc, args);
-		*/
-		//int dim = null != args ? args.size() : 0;
-	    char[] ident = this.ident.ident;
+			
+		if (!equals(ident, Id.compiles) && !equals(ident, Id.isSame)) {
+//			TemplateInstance.semanticTiargs(loc, sc, args, 1, context);
+		}
 		
 	    if (equals(ident, Id.isArithmetic))
 	    {
@@ -239,18 +237,18 @@ public class TraitsExp extends Expression {
 				return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
-			char[] id = null; /* TODO semantic Lexer.idPool((char *)se.string); */
-			Type t = null; /* TODO semantic isType(o); */
-			e = null; /* TODO semantic isExpression(o); */
-			Dsymbol s = null; /* TODO semantic isDsymbol(o); */
+			IdentifierExp id = context.uniqueId(new String(se.string));
+			Type t = isType(o);
+			e = isExpression(o);
+			Dsymbol s = isDsymbol(o);
 			if(null != t)
-			    e = new TypeDotIdExp(loc, t, new IdentifierExp(Loc.ZERO, id));
+			    e = new TypeDotIdExp(loc, t, id);
 			else if(null != e)
-			    e = new DotIdExp(loc, e, new IdentifierExp(Loc.ZERO, id));
+			    e = new DotIdExp(loc, e, id);
 			else if (null != s)
 			{
 				e = new DsymbolExp(loc, s);
-			    e = new DotIdExp(loc, e, new IdentifierExp(Loc.ZERO, id));
+			    e = new DotIdExp(loc, e, id);
 			}
 			else
 			{
@@ -431,7 +429,7 @@ public class TraitsExp extends Expression {
 	    {
 	    	if (context.acceptsErrors()) {
 		    	context.acceptProblem(Problem.newSemanticTypeError(
-		    			IProblem.UnrecongnizedTrait, this.ident, new String[] { new String(ident) }));
+		    			IProblem.UnrecongnizedTrait, this.ident, ident.toString()));
 	    	}
 	    	return new IntegerExp(loc, 0, Type.tbool);
 	    }

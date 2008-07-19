@@ -1,6 +1,6 @@
 package descent.internal.compiler.lookup;
 
-import descent.core.JavaModelException;
+import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.DsymbolTable;
 import descent.internal.compiler.parser.Dsymbols;
@@ -10,7 +10,6 @@ import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.ScopeDsymbol;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.StructDeclaration;
-import descent.internal.core.util.Util;
 
 public class LazyStructDeclaration extends StructDeclaration implements ILazyAggregate {
 
@@ -28,21 +27,30 @@ public class LazyStructDeclaration extends StructDeclaration implements ILazyAgg
 		this.lazy = new LazyAggregateDeclaration(this);
 	}
 	
-	private StructDeclaration unlazyOne;
-	public StructDeclaration unlazy(SemanticContext context) {
-		if (unlazyOne == null) {
-			unlazyOne = new StructDeclaration(loc, ident);
-			unlazyOne.parent = this.parent;
-			unlazyOne.members = new Dsymbols();
-			try {
-				builder.fill(getModule(), unlazyOne.members, javaElement.getChildren(), null);
-			} catch (JavaModelException e) {
-				Util.log(e);
+	private boolean isUnlazy;
+	
+	public boolean isUnlazy() {
+		return isUnlazy;
+	}
+	
+	public StructDeclaration unlazy(char[] prefix, SemanticContext context) {
+		if (!isUnlazy) {
+			isUnlazy = true;
+			
+			if (lazy.javaElementMembersCache == null) {
+				lazy.fillJavaElementMemebrsCache(context);
 			}
-			unlazyOne.setJavaElement(this.javaElement);
-			runMissingSemantic(unlazyOne, context);
+			
+			if (!lazy.cancelLazyness) {
+				
+				for(char[] key : lazy.javaElementMembersCache.keys()) {
+					if (key != null && CharOperation.prefixEquals(prefix, key, false)) {
+						search(Loc.ZERO, key, 0, context);
+					}
+				}
+			}
 		}
-		return unlazyOne;
+		return this;
 	}
 	
 	@Override

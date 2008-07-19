@@ -3,6 +3,8 @@ package descent.internal.compiler.lookup;
 import java.util.ArrayList;
 import java.util.List;
 
+import descent.core.IConditional;
+import descent.core.IInitializer;
 import descent.core.IJavaElement;
 import descent.core.IType;
 import descent.core.JavaModelException;
@@ -83,13 +85,17 @@ public class LazyModule extends Module implements ILazy {
 		this.lastImportLocation = lastImportLocation;
 	}
 	
-	private Module unlazyOne;
-	public Module unlazy(SemanticContext context) {
-		if (unlazyOne == null) {
-			unlazyOne = builder.buildNonLazyModule(javaElement);
-			unlazyOne.semantic(context);
+	private boolean isUnlazy;
+	public Module unlazy(char[] prefix, SemanticContext context) {
+		if (!isUnlazy) {
+			isUnlazy = true;
+			for(char[] key : topLevelIdentifiers.keys()) {
+				if (key != null && CharOperation.prefixEquals(prefix, key, false)) {
+					search(Loc.ZERO, key, 0, context);
+				}
+			}
 		}
-		return unlazyOne;
+		return this;
 	}
 	
 	@Override
@@ -139,6 +145,8 @@ public class LazyModule extends Module implements ILazy {
 			boolean easy = true;
 			if (javaElementMembersCache == null) {
 				Object target = topLevelIdentifiers.get(ident);
+				
+				target = filter(target);
 				
 				if (target != null) {
 					if (target instanceof IJavaElement) {
@@ -211,8 +219,74 @@ public class LazyModule extends Module implements ILazy {
 		return s;
 	}
 
+	// Remove element that are under false conditionals
+	private Object filter(Object target) {
+		if (target == null) {
+			return null;
+		}
+		
+		if (target instanceof IJavaElement) {
+			IJavaElement element = (IJavaElement) target;
+			return isActive(element) ? element : null;
+		} else if (target instanceof List) {
+			List<IJavaElement> elements = (List<IJavaElement>) target;
+			List<IJavaElement> filteredElements = new ArrayList<IJavaElement>(elements.size());
+			for(IJavaElement element : elements) {
+				if (isActive(element)) {
+					filteredElements.add(element);
+				}
+			}
+			if (filteredElements.isEmpty()) {
+				return null;
+			} else if (filteredElements.size() == 1) {
+				return filteredElements.get(0);
+			} else {
+				return filteredElements;
+			}
+		}
+		
+		return target;
+	}
+
+	private boolean isActive(IJavaElement element) {
+		switch(element.getParent().getElementType()) {
+		case IJavaElement.COMPILATION_UNIT:
+			return true;
+		case IJavaElement.INITIALIZER:
+			IInitializer init = (IInitializer) element.getParent();
+			try {
+				if (init.isThen()) {
+					return builder.isThenActive((IConditional) init.getParent(), this);
+				} else if (init.isElse()) {
+					return !builder.isThenActive((IConditional) init.getParent(), this);
+				} else {
+					return true;
+				}
+			} catch (JavaModelException e) {
+				Util.log(e);
+				return true;
+			}
+		case IJavaElement.CONDITIONAL:
+			IConditional cond = (IConditional) element.getParent();
+			try {
+				return builder.isThenActive(cond, this);
+			} catch (JavaModelException e) {
+				Util.log(e);
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private boolean isEasy(IJavaElement element) {
-		return element.getParent().getElementType() == IJavaElement.COMPILATION_UNIT;
+		switch(element.getParent().getElementType()) {
+		case IJavaElement.COMPILATION_UNIT:
+			return true;
+		case IJavaElement.CONDITIONAL:
+			return isEasy(element.getParent());
+		default:
+			return false;
+		}
 	}
 
 	private Dsymbol processTarget(SemanticContext context, Object target) {
@@ -309,11 +383,13 @@ public class LazyModule extends Module implements ILazy {
 		if (semanticScope != null) {
 			sym.semantic(Scope.copy(semanticScope), context);
 		}
-		if (semantic2Scope != null) {
-			sym.semantic2(Scope.copy(semantic2Scope), context);
-		}
-		if (semantic3Scope != null) {
-			sym.semantic3(Scope.copy(semantic3Scope), context);
+		if (!isUnlazy) {
+			if (semantic2Scope != null) {
+				sym.semantic2(Scope.copy(semantic2Scope), context);
+			}
+			if (semantic3Scope != null) {
+				sym.semantic3(Scope.copy(semantic3Scope), context);
+			}
 		}
 		context.muteProblems--;
 	}

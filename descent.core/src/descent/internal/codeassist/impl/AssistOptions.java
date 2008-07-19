@@ -246,7 +246,10 @@ public class AssistOptions {
 				String moduleNames = (String) optionValue;
 				String[] strings = moduleNames.split(",");
 				for(String string : strings) {
-					ignoredNonImportedModules.put(string.trim().toCharArray(), this);
+					string = string.trim();
+					if (string.length() > 0) {
+						ignoredNonImportedModules.put(string.toCharArray(), this);
+					}
 				}
 			}
 		}

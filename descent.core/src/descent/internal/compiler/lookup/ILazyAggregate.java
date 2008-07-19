@@ -30,4 +30,6 @@ public interface ILazyAggregate extends ILazy {
 
 	void symtab(DsymbolTable table);
 
+	boolean isUnlazy();
+
 }

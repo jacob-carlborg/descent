@@ -1,6 +1,6 @@
 package descent.internal.compiler.lookup;
 
-import descent.core.JavaModelException;
+import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.BaseClasses;
 import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.Dsymbol;
@@ -11,7 +11,6 @@ import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.ScopeDsymbol;
 import descent.internal.compiler.parser.SemanticContext;
-import descent.internal.core.util.Util;
 
 public class LazyClassDeclaration extends ClassDeclaration implements ILazyAggregate {
 
@@ -29,29 +28,38 @@ public class LazyClassDeclaration extends ClassDeclaration implements ILazyAggre
 		this.lazy = new LazyAggregateDeclaration(this);
 	}
 	
-	private ClassDeclaration unlazyOne;
-	public ClassDeclaration unlazy(SemanticContext context) {
-		if (unlazyOne == null) {
+	private boolean isUnlazy;
+	
+	public boolean isUnlazy() {
+		return isUnlazy;
+	}
+	
+	public ClassDeclaration unlazy(char[] prefix, SemanticContext context) {
+		if (!isUnlazy) {
+			isUnlazy = true;
+			
 			if (baseClass != null) {
-				baseClass = baseClass.unlazy(context);
+				baseClass = baseClass.unlazy(prefix, context);
 			}
 			
 			for (int i = 0; i < size(baseclasses); i++) {
-				unlazy(baseclasses.get(i), context);
+				unlazy(baseclasses.get(i), prefix, context);
 			}
 			
-			unlazyOne = new ClassDeclaration(loc, ident, baseclasses);
-			unlazyOne.parent = this.parent;
-			unlazyOne.members = new Dsymbols();
-			try {
-				builder.fill(getModule(), unlazyOne.members, javaElement.getChildren(), null);
-			} catch (JavaModelException e) {
-				Util.log(e);
+			if (lazy.javaElementMembersCache == null) {
+				lazy.fillJavaElementMemebrsCache(context);
 			}
-			unlazyOne.setJavaElement(this.javaElement);
-			runMissingSemantic(unlazyOne, context);
+			
+			if (!lazy.cancelLazyness) {
+				
+				for(char[] key : lazy.javaElementMembersCache.keys()) {
+					if (key != null && CharOperation.prefixEquals(prefix, key, false)) {
+						search(Loc.ZERO, key, 0, context);
+					}
+				}
+			}
 		}
-		return unlazyOne;
+		return this;
 	}
 	
 	@Override

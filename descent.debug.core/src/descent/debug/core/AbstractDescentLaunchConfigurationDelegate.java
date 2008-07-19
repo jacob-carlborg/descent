@@ -573,6 +573,7 @@ public abstract class AbstractDescentLaunchConfigurationDelegate extends LaunchC
 				final Semaphore sem = new Semaphore(0);
 				
 				final IProcess iprocess = DebugPlugin.newProcess(launch, process, renderProcessLabel(commandArray[1]));
+				iprocess.setAttribute(IProcess.ATTR_PROCESS_TYPE, "descentDebugger");
 				iprocess.getStreamsProxy().getOutputStreamMonitor().addListener(new IStreamListener() {
 
 					public void streamAppended(String text, IStreamMonitor monitor) {

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -341,7 +342,11 @@ public class ScopeDsymbol extends Dsymbol {
 		return null;
 	}
 	
-	public ScopeDsymbol unlazy(SemanticContext context) {
+	public final ScopeDsymbol unlazy(SemanticContext context) {
+		return unlazy(CharOperation.NO_CHAR, context);
+	}
+	
+	public ScopeDsymbol unlazy(char[] prefix, SemanticContext context) {
 		return this;
 	}
 

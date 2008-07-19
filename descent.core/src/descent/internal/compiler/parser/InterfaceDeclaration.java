@@ -358,7 +358,7 @@ public class InterfaceDeclaration extends ClassDeclaration {
 	}
 	
 	@Override
-	public InterfaceDeclaration unlazy(SemanticContext context) {
+	public InterfaceDeclaration unlazy(char[] prefix, SemanticContext context) {
 		return this;
 	}
 

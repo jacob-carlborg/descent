@@ -19,11 +19,11 @@ import descent.internal.core.util.Util;
 
 public class LazyAggregateDeclaration {
 	
-	private HashtableOfCharArrayAndObject javaElementMembersCache;
-	private List<Dsymbol> pendingPublicImports;
-	private List<Dsymbol> pendingPrivateImports;
-	private boolean cancelLazyness;
-	private ILazyAggregate lazy;
+	HashtableOfCharArrayAndObject javaElementMembersCache;
+	List<Dsymbol> pendingPublicImports;
+	List<Dsymbol> pendingPrivateImports;
+	boolean cancelLazyness;
+	ILazyAggregate lazy;
 	
 	public LazyAggregateDeclaration(ILazyAggregate lazy) {
 		this.lazy = lazy;
@@ -38,41 +38,10 @@ public class LazyAggregateDeclaration {
 		
 		if (s == null) {
 			if (javaElementMembersCache == null) {
-				javaElementMembersCache = new HashtableOfCharArrayAndObject();
-				List<Dsymbol> privateImports = new ArrayList<Dsymbol>();
-				List<Dsymbol> publicImports = new ArrayList<Dsymbol>();
-				FillResult result = null ;
-				try {
-					result = lazy.builder().fillJavaElementMembersCache(lazy, lazy.getJavaElement().getChildren(), javaElementMembersCache, lazy.members(), privateImports, publicImports, context);
-				} catch (JavaModelException e) {
-					Util.log(e);
-				}
+				FillResult result = fillJavaElementMemebrsCache(context);
 				
 				if (result.hasMixinDeclaration || result.hasStaticIf || result.hasAnon) {
-					cancelLazyness = true;
-					lazy.members(new Dsymbols());
-					try {
-						lazy.builder().fill(lazy.getModule(), lazy.members(), lazy.getJavaElement().getChildren(), null);
-					} catch (JavaModelException e) {
-						Util.log(e);
-					}
-					
-					int size = lazy.members().size();
-					
-					for (int i = 0; i < size; i++) {
-						Dsymbol sym = lazy.members().get(i);
-						sym.addMember(lazy.semanticScope(), lazy.asScopeDsymbol(), 0, context);
-						lazy.runMissingSemantic(sym, context);
-					}
-					
 					return search(loc, ident, flags, context);
-				}
-				
-				if (!privateImports.isEmpty()) {
-					pendingPrivateImports = privateImports;	
-				}
-				if (!publicImports.isEmpty()) {
-					pendingPublicImports = publicImports;	
 				}
 				
 				// Anonymous enums are "hard" for me :-P
@@ -158,17 +127,58 @@ public class LazyAggregateDeclaration {
 		
 		return s;
 	}
+
+	FillResult fillJavaElementMemebrsCache(SemanticContext context) {
+		javaElementMembersCache = new HashtableOfCharArrayAndObject();
+		List<Dsymbol> privateImports = new ArrayList<Dsymbol>();
+		List<Dsymbol> publicImports = new ArrayList<Dsymbol>();
+		FillResult result = null ;
+		try {
+			result = lazy.builder().fillJavaElementMembersCache(lazy, lazy.getJavaElement().getChildren(), javaElementMembersCache, lazy.members(), privateImports, publicImports, context);
+		} catch (JavaModelException e) {
+			Util.log(e);
+		}
+		
+		if (!privateImports.isEmpty()) {
+			pendingPrivateImports = privateImports;	
+		}
+		if (!publicImports.isEmpty()) {
+			pendingPublicImports = publicImports;	
+		}
+		
+		if (result.hasMixinDeclaration || result.hasStaticIf || result.hasAnon) {
+			cancelLazyness = true;
+			lazy.members(new Dsymbols());
+			try {
+				lazy.builder().fill(lazy.getModule(), lazy.members(), lazy.getJavaElement().getChildren(), null);
+			} catch (JavaModelException e) {
+				Util.log(e);
+			}
+			
+			int size = lazy.members().size();
+			
+			for (int i = 0; i < size; i++) {
+				Dsymbol sym = lazy.members().get(i);
+				sym.addMember(lazy.semanticScope(), lazy.asScopeDsymbol(), 0, context);
+				lazy.runMissingSemantic(sym, context);
+			}
+		}
+		
+		return result;
+	}
 	
 	public void runMissingSemantic(Dsymbol sym, SemanticContext context) {
 		context.muteProblems++;
 		if (lazy.semanticScope() != null) {			
 			sym.semantic(Scope.copy(lazy.semanticScope()), context);
 		}
-		if (lazy.semantic2Scope() != null) {
-			sym.semantic2(Scope.copy(lazy.semantic2Scope()), context);
-		}
-		if (lazy.semantic3Scope() != null) {
-			sym.semantic3(Scope.copy(lazy.semantic3Scope()), context);
+		if (!lazy.isUnlazy()) {
+			if (lazy.semantic2Scope() != null) {
+				sym.semantic2(Scope.copy(lazy.semantic2Scope()), context);
+			}
+			if (lazy.semantic3Scope() != null) {
+				sym.semantic3(Scope.copy(lazy.semantic3Scope()), context);
+			}
 		}
 		context.muteProblems--;
 	}

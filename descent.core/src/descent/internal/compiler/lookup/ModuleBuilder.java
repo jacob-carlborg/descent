@@ -262,7 +262,7 @@ public class ModuleBuilder {
 				if ((state != null && state.versions.containsKey(nameC))) {
 					buildConditional(module, members, cond, state, nameC, value, false /* not debug */);
 				} else {
-					if (config.isVersionEnabled(value) || value >= module.versionlevel) {
+					if (config.isVersionEnabled(value) || module.versionlevel >= value) {
 						fill(module, members, cond.getThenChildren(), state);
 					} else {
 						fill(module, members, cond.getElseChildren(), state);
@@ -287,7 +287,7 @@ public class ModuleBuilder {
 				if (state != null && state.debugs.containsKey(nameC)) {
 					buildConditional(module, members, cond, state, nameC, value, true /* debug */);
 				} else {					
-					if (config.isDebugEnabled(value) || value >= module.debuglevel) {
+					if (config.isDebugEnabled(value) || module.debuglevel >= value) {
 						fill(module, members, cond.getThenChildren(), state);
 					} else {
 						fill(module, members, cond.getElseChildren(), state);
@@ -838,39 +838,11 @@ public class ModuleBuilder {
 					IConditional cond = (IConditional) child;
 					if (cond.isStaticIfDeclaration()) {
 						result.hasStaticIf = true;
-					} else if (cond.isVersionDeclaration()) {
-						String name = cond.getElementName();
-						char[] nameC = name.toCharArray();
-						try {
-							long value = Long.parseLong(name);
-							if (config.isVersionEnabled(value) || value >= lazy.getModule().versionlevel) {
-								internalFillJavaElementMembersCache(lazy, cond.getThenChildren(), javaElementMembersCache, symbols, privateImports, publicImports, context, result);
-							} else {
-								internalFillJavaElementMembersCache(lazy, cond.getElseChildren(), javaElementMembersCache, symbols, privateImports, publicImports, context, result);
-							}
-						} catch(NumberFormatException e) {
-							if (config.isVersionEnabled(nameC) || (lazy.getModule().versionids != null && lazy.getModule().versionids.containsKey(nameC))) {
-								internalFillJavaElementMembersCache(lazy, cond.getThenChildren(), javaElementMembersCache, symbols, privateImports, publicImports, context, result);
-							} else {
-								internalFillJavaElementMembersCache(lazy, cond.getElseChildren(), javaElementMembersCache, symbols, privateImports, publicImports, context, result);
-							}
-						}
-					} else if (cond.isDebugDeclaration()) {
-						String name = cond.getElementName();
-						char[] nameC = name.toCharArray();
-						try {
-							long value = Long.parseLong(name);
-							if (config.isDebugEnabled(value) || value >= lazy.getModule().debuglevel) {
-								internalFillJavaElementMembersCache(lazy, cond.getThenChildren(), javaElementMembersCache, symbols, privateImports, publicImports, context, result);
-							} else {
-								internalFillJavaElementMembersCache(lazy, cond.getElseChildren(), javaElementMembersCache, symbols, privateImports, publicImports, context, result);
-							}
-						} catch(NumberFormatException e) {
-							if (config.isDebugEnabled(nameC) || (lazy.getModule().debugids != null && lazy.getModule().debugids.containsKey(nameC))) {
-								internalFillJavaElementMembersCache(lazy, cond.getThenChildren(), javaElementMembersCache, symbols, privateImports, publicImports, context, result);
-							} else {
-								internalFillJavaElementMembersCache(lazy, cond.getElseChildren(), javaElementMembersCache, symbols, privateImports, publicImports, context, result);
-							}
+					} else if (cond.isVersionDeclaration() || cond.isDebugDeclaration()) {
+						if (isThenActive(cond, lazy)) {
+							internalFillJavaElementMembersCache(lazy, cond.getThenChildren(), javaElementMembersCache, symbols, privateImports, publicImports, context, result);
+						} else {
+							internalFillJavaElementMembersCache(lazy, cond.getElseChildren(), javaElementMembersCache, symbols, privateImports, publicImports, context, result);
 						}
 					}
 					break;
@@ -947,6 +919,30 @@ public class ModuleBuilder {
 		}
 	}
 	
+	public boolean isThenActive(IConditional cond, ILazy lazy) throws JavaModelException {
+		if (cond.isVersionDeclaration()) {
+			String name = cond.getElementName();
+			char[] nameC = name.toCharArray();
+			try {
+				long value = Long.parseLong(name);
+				return config.isVersionEnabled(value) || lazy.getModule().versionlevel >= value;
+			} catch(NumberFormatException e) {
+				return config.isVersionEnabled(nameC) || (lazy.getModule().versionids != null && lazy.getModule().versionids.containsKey(nameC));
+			}
+		} else if (cond.isDebugDeclaration()) {
+			String name = cond.getElementName();
+			char[] nameC = name.toCharArray();
+			try {
+				long value = Long.parseLong(name);
+				return config.isDebugEnabled(value) || lazy.getModule().debuglevel >= value;
+			} catch(NumberFormatException e) {
+				return config.isDebugEnabled(nameC) || (lazy.getModule().debugids != null && lazy.getModule().debugids.containsKey(nameC));
+			}
+		} else {
+			throw new IllegalStateException("Can't happen");
+		}
+	}
+	
 	public void fillImports(ILazy lazy, IJavaElement[] elements, List<Dsymbol> privateImports, List<Dsymbol> publicImports, SemanticContext context, int lastImportLocation) {
 		try {
 			for(IJavaElement child : elements) {
@@ -976,39 +972,11 @@ public class ModuleBuilder {
 					IConditional cond = (IConditional) child;
 					if (cond.isStaticIfDeclaration()) {
 						
-					} else if (cond.isVersionDeclaration()) {
-						String name = cond.getElementName();
-						char[] nameC = name.toCharArray();
-						try {
-							long value = Long.parseLong(name);
-							if (config.isVersionEnabled(value) || value >= lazy.getModule().versionlevel) {
-								fillImports(lazy, cond.getThenChildren(), privateImports, publicImports, context, lastImportLocation);
-							} else {
-								fillImports(lazy, cond.getElseChildren(), privateImports, publicImports, context, lastImportLocation);
-							}
-						} catch(NumberFormatException e) {
-							if (config.isVersionEnabled(nameC) || (lazy.getModule().versionids != null && lazy.getModule().versionids.containsKey(nameC))) {
-								fillImports(lazy, cond.getThenChildren(), privateImports, publicImports, context, lastImportLocation);
-							} else {
-								fillImports(lazy, cond.getElseChildren(), privateImports, publicImports, context, lastImportLocation);
-							}
-						}
-					} else if (cond.isDebugDeclaration()) {
-						String name = cond.getElementName();
-						char[] nameC = name.toCharArray();
-						try {
-							long value = Long.parseLong(name);
-							if (config.isDebugEnabled(value) || value >= lazy.getModule().debuglevel) {
-								fillImports(lazy, cond.getThenChildren(), privateImports, publicImports, context, lastImportLocation);
-							} else {
-								fillImports(lazy, cond.getElseChildren(), privateImports, publicImports, context, lastImportLocation);
-							}
-						} catch(NumberFormatException e) {
-							if (config.isDebugEnabled(nameC) || (lazy.getModule().debugids != null && lazy.getModule().debugids.containsKey(nameC))) {
-								fillImports(lazy, cond.getThenChildren(), privateImports, publicImports, context, lastImportLocation);
-							} else {
-								fillImports(lazy, cond.getElseChildren(), privateImports, publicImports, context, lastImportLocation);
-							}
+					} else if (cond.isVersionDeclaration() || cond.isDebugDeclaration()) {
+						if (isThenActive(cond, lazy)) {
+							fillImports(lazy, cond.getThenChildren(), privateImports, publicImports, context, lastImportLocation);
+						} else {
+							fillImports(lazy, cond.getElseChildren(), privateImports, publicImports, context, lastImportLocation);
 						}
 					}
 					break;

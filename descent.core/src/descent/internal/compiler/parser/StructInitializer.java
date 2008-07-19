@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.lookup.LazyStructDeclaration;
 import descent.internal.compiler.parser.ast.IASTVisitor;
@@ -69,12 +70,12 @@ public class StructInitializer extends Initializer {
 			ts = (TypeStruct) t;
 			
 			// Descent: remove lazy initalization
-			ts.sym = ts.sym.unlazy(context);
+			ts.sym = ts.sym.unlazy(CharOperation.NO_CHAR, context);
 			
 			ad = ts.sym;
 			
 			if (ad instanceof LazyStructDeclaration) {
-				ts.sym =  ((LazyStructDeclaration) ad).unlazy(context);
+				ts.sym =  ((LazyStructDeclaration) ad).unlazy(CharOperation.NO_CHAR, context);
 				ad = ts.sym;
 			}
 			

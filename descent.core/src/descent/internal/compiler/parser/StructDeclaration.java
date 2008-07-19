@@ -639,7 +639,7 @@ public class StructDeclaration extends AggregateDeclaration {
 	}
 	
 	@Override
-	public StructDeclaration unlazy(SemanticContext context) {
+	public StructDeclaration unlazy(char[] prefix, SemanticContext context) {
 		return this;
 	}
 

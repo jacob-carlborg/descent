@@ -23,7 +23,7 @@ public class Pvirtuals
 			    e = new DsymbolExp(Loc.ZERO, f);
 			p.exps.add(e);
 	    }
-	    
-	    return 0;
+
+		return 0;
 	}
 }

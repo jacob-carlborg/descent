@@ -456,7 +456,8 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 		return type;
 	}
 	
-	public AggregateDeclaration unlazy(SemanticContext context) {
+	@Override
+	public AggregateDeclaration unlazy(char[] prefix, SemanticContext context) {
 		return this;
 	}
 	

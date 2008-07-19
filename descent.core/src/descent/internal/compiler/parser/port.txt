@@ -30,8 +30,6 @@ idgen.c
 impcnvgen.c
 init.c
 inline.c
-mars.c
-module.c
 mtype.c
 mtype.h
 optimize.c --> CastExp::optimize

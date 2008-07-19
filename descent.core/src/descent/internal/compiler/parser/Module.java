@@ -399,7 +399,8 @@ public class Module extends Package {
 		return javaElement;
 	}
 	
-	public Module unlazy(SemanticContext context) {
+	@Override
+	public Module unlazy(char[] prefix, SemanticContext context) {
 		return this;
 	}
 

@@ -20,6 +20,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.Signature;
+import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.lookup.ModuleBuilder;
 import descent.internal.compiler.parser.ast.IASTVisitor;
@@ -844,19 +845,27 @@ public class ClassDeclaration extends AggregateDeclaration {
 	}
 	
 	protected void unlazy(BaseClass bc, SemanticContext context) {
+		unlazy(bc, CharOperation.NO_CHAR, context);
+	}
+	
+	protected void unlazy(BaseClass bc, char[] prefix, SemanticContext context) {
 		if (bc.type instanceof TypeClass) {
-			unlazy((TypeClass) bc.type, context);
+			unlazy((TypeClass) bc.type, prefix, context);
 		}
-		bc.base = bc.base == null ? null : bc.base.unlazy(context);
+		bc.base = bc.base == null ? null : bc.base.unlazy(prefix, context);
+	}
+	
+	protected void unlazy(TypeClass type, SemanticContext context) {
+		unlazy(type, CharOperation.NO_CHAR, context);
 	}
 
-	protected void unlazy(TypeClass type, SemanticContext context) {
-		type.sym = type.sym.unlazy(context);
-		type.sym.baseClass = type.sym.baseClass == null ? null : type.sym.baseClass.unlazy(context);
+	protected void unlazy(TypeClass type, char[] prefix, SemanticContext context) {
+		type.sym = type.sym.unlazy(prefix, context);
+		type.sym.baseClass = type.sym.baseClass == null ? null : type.sym.baseClass.unlazy(prefix, context);
 		
 		if (type.sym.baseclasses != null) {
 			for(BaseClass bc : type.sym.baseclasses) {
-				unlazy(bc, context);
+				unlazy(bc, prefix, context);
 			}
 		}
 	}
@@ -1017,7 +1026,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 	}
 	
 	@Override
-	public ClassDeclaration unlazy(SemanticContext context) {
+	public ClassDeclaration unlazy(char[] prefix, SemanticContext context) {
 		return this;
 	}
 
