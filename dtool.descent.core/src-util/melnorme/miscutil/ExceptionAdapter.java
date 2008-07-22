@@ -1,22 +1,24 @@
 package melnorme.miscutil;
 
+import static melnorme.miscutil.Assert.assertNotNull;
+
+import java.io.IOException;
+
 
 /**
- * Excepetion adapter to make checked exceptions less annoying. 
+ * Exception adapter to make checked exceptions less annoying. 
  * Based on Bruce Eckel's article:
  * http://www.mindview.net/Etc/Discussions/CheckedExceptions
  */
 @SuppressWarnings("serial")
 public class ExceptionAdapter extends RuntimeException {
 
-	// The original checked exception
-	private Exception originalException;
 	// Number of frames that originalException traveled while checked
-	private int checkedLength; 
+	protected int checkedLength; 
 
-	public ExceptionAdapter(Exception e) {
-		super(e.toString());
-		originalException = e;
+	protected ExceptionAdapter(Exception e) {
+		super(e);
+		assertNotNull(e);
 		
 		// Determine checkedLength based on the difference to this stack trace
 		StackTraceElement[] est = e.getStackTrace();
@@ -30,41 +32,47 @@ public class ExceptionAdapter extends RuntimeException {
 		
 	}
 
-/*	public ExceptionAdapter(String string) {
-		this(new Exception(string));
-	}
-*/
-	
-	protected void printStackTrace(melnorme.miscutil.log.IPrinter pr) {
-        synchronized (pr) {
-            pr.println(this);
-            StackTraceElement[] trace = originalException.getStackTrace();
-            for (int i=0; i < trace.length; i++) {
-                pr.print("\tat " + trace[i]);
-            	if(i == checkedLength)
-            		pr.print(" [UNCHECKED]");
-                pr.println();
-            }
+
+	protected void printStackTraceAppendable(Appendable pr) {
+        synchronized(pr) {
+            try {
+				pr.append(this.toString());
+	            StackTraceElement[] trace = getCause().getStackTrace();
+	            for (int i=0; i < trace.length; i++) {
+	                pr.append("\tat " + trace[i]);
+	            	if(i == checkedLength)
+	            		pr.append(" [UNCHECKED]");
+	                pr.append("\n");
+	            }
+			} catch (IOException e) {
+				melnorme.miscutil.Assert.assertFail();
+			}
         }
 	}
 	
-	public void printStackTrace(java.io.PrintStream ps) {
-		printStackTrace(new melnorme.miscutil.log.StreamPrinter(ps));
+	@Override
+	public void printStackTrace(java.io.PrintStream ps) {		
+		printStackTraceAppendable(ps);
 	}
 
+	@Override
 	public void printStackTrace(java.io.PrintWriter pw) {
-		printStackTrace(new melnorme.miscutil.log.WriterPrinter(pw));
+		printStackTraceAppendable(pw);
 	}
 
+	@Override
+	public Exception getCause() {
+		return (Exception) super.getCause();
+	}
 
 	public void rethrow() throws Exception {
-		throw originalException;
+		throw getCause();
 	}
 
+	@Override
 	public String toString() {
-        //String name = getClass().getName();
-        //return name + "\n>> " + getLocalizedMessage();
-        return "[UE] " + getLocalizedMessage();
+        String className = getClass().getSimpleName();
+        return "["+className+"] " + getLocalizedMessage() + "\n";
 	}
 	
 	/** Creates an unchecked Throwable, if not unchecked already. */
@@ -81,8 +89,10 @@ public class ExceptionAdapter extends RuntimeException {
 		}
 	}
 	
-	/** Same as unchecked() but stands for a TODO call. */
-	@Deprecated public static RuntimeException uncheckedTODO(Throwable e) {
+	/** Same as unchecked() but stands for TO DO code. 
+	 * Uses the Deprecated annotation solely to cause a warning. */
+	@Deprecated 
+	public static RuntimeException uncheckedTODO(Throwable e) {
 		return unchecked(e);
 	}
 }

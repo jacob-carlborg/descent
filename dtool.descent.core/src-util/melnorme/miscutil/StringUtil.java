@@ -81,7 +81,7 @@ public final class StringUtil {
 		if(coll == null) 
 			return new String[0];
 		String[] strs = new String[coll.size()];
-		Iterator iter = coll.iterator();
+		Iterator<?> iter = coll.iterator();
 		for (int i = 0; i < strs.length; i++) {
 			strs[i] = iter.next().toString();
 		}
@@ -94,6 +94,17 @@ public final class StringUtil {
 			String repStr) {
 		return str.substring(0, repOffset) + repStr
 				+ str.substring(repOffset + repLen, str.length());
+	}
+
+	/** Replace str with strRep in the given strb StringBuilder, if str occurs.
+	 * Return true if str occurs in strb. */
+	public static boolean replace(StringBuilder strb, String str, String repStr) {
+		int ix = strb.indexOf(str);
+		if(ix != -1) {
+			strb.replace(ix, ix + str.length(), repStr);
+			return true;
+		}
+		return false;
 	}
 
 

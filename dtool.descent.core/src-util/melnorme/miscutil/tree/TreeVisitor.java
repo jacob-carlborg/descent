@@ -38,7 +38,7 @@ public abstract class TreeVisitor {
 		}
 	}
 
-	/** Same as {@link #acceptChild(CommonASTVisitor, TreeNode) } */
+	/** Same as {@link #acceptChild(Object, IVisitable) } */
 	public static <T> void acceptChildren(T visitor, IVisitable<T> child) {
 		TreeVisitor.acceptChild(visitor, child);
 	}
