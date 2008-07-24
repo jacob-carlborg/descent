@@ -1426,8 +1426,9 @@ TemplateMemberFunctionNotAllowedInInterface
 ArgumentToTypeofIsNotAnExpression
 	formatString=Argument %1$s to typeof is not an expression
 	numArgs=1
-
-
+CannotInferTypeFromOverloadedFunctionSymbol
+	formatString=Cannot infer type from overloaded function symbol %1$s
+	numArgs=1
 
 
 

@@ -74,7 +74,7 @@ public class Bugs_Test extends Parser_Test {
 	
 	// Dont give error on UTF characters
 	public void testBugUTF() {
-		String s = " // ö";
+		String s = " // ï¿½";
 		CompilationUnit unit = getCompilationUnit(s);
 		assertEquals(0, unit.getProblems().length);
 	}
@@ -328,10 +328,10 @@ public class Bugs_Test extends Parser_Test {
 	public void testTicket25() {
 		String s;
 		
-		s = "char[] s = \"°a\";";
+		s = "char[] s = \"ï¿½a\";";
 		assertEquals(0, getCompilationUnit(s).problems.size());
 		
-		s = "char[] s = \"a°\";";
+		s = "char[] s = \"aï¿½\";";
 		assertEquals(0, getCompilationUnit(s).problems.size());
 	}
 	
@@ -389,6 +389,19 @@ public class Bugs_Test extends Parser_Test {
 		
 		ASTDmdNode node = (ASTDmdNode) m.members.get(1);
 		assertEquals(0, node.preComments.size());
+	}
+	
+	public void testTicket108() {
+		String s = 
+			"char[] c(int v) {\r\n" + 
+			"    switch (v) {\r\n" + 
+			"    default:\r\n" + 
+			"        return b( a(\"test\" );\r\n" + 
+			"    }\r\n" + 
+			"}";
+		
+		Module m = getParseResult(s, AST.D1).module;
+		assertNotNull(m);
 	}
 
 }

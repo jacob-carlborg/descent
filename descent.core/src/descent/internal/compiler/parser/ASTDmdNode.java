@@ -549,8 +549,15 @@ public abstract class ASTDmdNode extends ASTNode {
 			SemanticContext context) {
 		if (e.type != null) {
 			Type t = e.type.toBasetype(context);
+			
+			boolean condition;
+			if (context.isD2()) {
+				condition = t.ty == Tfunction || e.op == TOK.TOKoverloadset;
+			} else {
+				condition = t.ty == Tfunction;
+			}
 
-			if (t.ty == Tfunction) {
+			if (condition) {
 				e = new CallExp(e.loc, e);
 				e = e.semantic(sc, context);
 			}
@@ -576,6 +583,20 @@ public abstract class ASTDmdNode extends ASTNode {
 			}
 		}
 		return e;
+	}
+	
+	/******************************
+	 * Perform canThrow() on an array of Expressions.
+	 */
+	public static boolean arrayExpressionCanThrow(Expressions exps) {
+		if (exps != null) {
+			for (int i = 0; i < exps.size(); i++) {
+				Expression e = (Expression) exps.get(i);
+				if (e != null && e.canThrow())
+					return true;
+			}
+		}
+		return false;
 	}
 
 	public static Dsymbol search_function(ScopeDsymbol ad,
@@ -817,7 +838,17 @@ public abstract class ASTDmdNode extends ASTNode {
 					}
 					if (!gotoL2) {
 						arg = p.defaultArg;
-						arg = arg.copy();
+						if (context.isD2()) {
+							if (arg.op == TOKdefault) {
+								DefaultInitExp de = (DefaultInitExp) arg;
+								// XXX Semantic!!!!
+//								arg = de.resolve(loc, sc, context);
+							} else {
+								arg = arg.copy();
+							}
+						} else {
+							arg = arg.copy();
+						}
 						arguments.add(arg);
 						nargs++;
 					}
@@ -847,7 +878,7 @@ public abstract class ASTDmdNode extends ASTNode {
 							// Create a static array variable v of type
 							// arg.type
 	
-							char[] id = ("_arrayArg" + (++context.ASTDmdNode_idn)).toCharArray();
+							IdentifierExp id = context.uniqueId("__arrayArg");
 							Type t = new TypeSArray(tb.next, new IntegerExp(loc,
 									nargs - i), context.encoder);
 							t = t.semantic(loc, sc, context);
@@ -868,11 +899,14 @@ public abstract class ASTDmdNode extends ASTNode {
 								Expression e = new VarExp(loc, v);
 								e = new IndexExp(loc, e, new IntegerExp(loc, u + 1
 										- nparams));
-								e = new AssignExp(loc, e, a);
+								AssignExp ae = new AssignExp(loc, e, a);
+								if (context.isD2()) {
+									ae.op = TOK.TOKconstruct;
+								}
 								if (c != null) {
-									c = new CommaExp(loc, c, e);
+									c = new CommaExp(loc, c, ae);
 								} else {
-									c = e;
+									c = ae;
 								}
 							}
 							arg = new VarExp(loc, v);

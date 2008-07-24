@@ -123,7 +123,7 @@ public class ArrayInitializer extends Initializer {
 				System.out.println();
 			}
 			
-			val = val.semantic(sc, t.next, context);
+			val = val.semantic(sc, t.nextOf(), context);
 			value.set(i, val);
 			length++;
 			// This was length == 0 in DMD, with length
@@ -139,9 +139,9 @@ public class ArrayInitializer extends Initializer {
 			}
 		}
 		
-	    if (new integer_t(dim).multiply(t.next.size(context)).compareTo(amax) >= 0) {
+	    if (new integer_t(dim).multiply(t.nextOf().size(context)).compareTo(amax) >= 0) {
 	    	if (context.acceptsErrors()) {
-	    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArrayDimensionExceedsMax, this, String.valueOf(dim), amax.divide(t.next.size(context)).toString() ));
+	    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArrayDimensionExceedsMax, this, String.valueOf(dim), amax.divide(t.nextOf().size(context)).toString() ));
 	    	}
 	    }
 		return this;

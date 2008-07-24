@@ -15,6 +15,7 @@ public class SymOffExp extends Expression {
 
 	public Declaration var;
 	public integer_t offset;
+	public boolean hasOverloads;
 	
 	public SymOffExp(Loc loc, Declaration var, integer_t offset, SemanticContext context) {
 		super(loc, TOK.TOKsymoff);

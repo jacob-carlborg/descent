@@ -649,6 +649,7 @@
             id="descent.ui.preferences.ImportOrganizePreferencePage">
             <keywordReference id="descent.ui.organizeimports"/>
       </page>
+      -->
       <page
             name="%typeFilterPrefName"
             category="descent.ui.preferences.AppearancePreferencePage"
@@ -656,7 +657,6 @@
             id="descent.ui.preferences.TypeFilterPreferencePage">
             <keywordReference id="descent.ui.typefilter"/>
       </page>
-      -->
       <page
             name="%codeFormatterPrefName"
             category="descent.ui.preferences.CodeStylePreferencePage"

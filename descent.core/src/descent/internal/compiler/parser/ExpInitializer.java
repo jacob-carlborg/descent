@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
@@ -35,6 +36,24 @@ public class ExpInitializer extends Initializer {
 	public Type inferType(Scope sc, SemanticContext context) {
 		exp = exp.semantic(sc, context);
 		exp = ASTDmdNode.resolveProperties(sc, exp, context);
+		
+		if (context.isD2()) {
+			// Give error for overloaded function addresses
+		    if (exp.op == TOK.TOKsymoff) {
+				SymOffExp se = (SymOffExp) exp;
+				if (se.hasOverloads
+						&& null == se.var.isFuncDeclaration().isUnique(context)) {
+					if (context.acceptsErrors()) {
+						context
+								.acceptProblem(Problem
+										.newSemanticTypeError(
+												IProblem.CannotInferTypeFromOverloadedFunctionSymbol,
+												this, exp.toChars(context)));
+					}
+				}
+			}
+		}
+		
 		return exp.type;
 	}
 
@@ -46,6 +65,11 @@ public class ExpInitializer extends Initializer {
 	@Override
 	public Initializer semantic(Scope sc, Type t, SemanticContext context) {
 		exp = exp.semantic(sc, context);
+		
+		if (context.isD2()) {
+			exp = exp.optimize(WANTvalue | WANTinterpret, context);
+		}
+		
 		Type tb = t.toBasetype(context);
 
 		/*
@@ -72,9 +96,9 @@ public class ExpInitializer extends Initializer {
 		// Look for the case of statically initializing an array
 		// with a single member.
 		if (tb.ty == TY.Tsarray
-				&& !tb.next.equals(exp.type.toBasetype(context).next)
-				&& exp.implicitConvTo(tb.next, context) != MATCH.MATCHnomatch) {
-			t = tb.next;
+				&& !tb.nextOf().equals(exp.type.toBasetype(context).nextOf())
+				&& exp.implicitConvTo(tb.nextOf(), context) != MATCH.MATCHnomatch) {
+			t = tb.nextOf();
 		}
 
 		exp = exp.implicitCastTo(sc, t, context);

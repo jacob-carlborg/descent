@@ -4809,7 +4809,7 @@ public class Parser extends Lexer {
 
 			statements = new Statements();
 			while (token.value != TOKcase && token.value != TOKdefault
-					&& token.value != TOKrcurly) {
+					&& token.value != TOKrcurly && token.value != TOKeof) {
 				statements.add(parseStatement(PSsemi | PScurlyscope));
 			}
 			
@@ -7357,6 +7357,11 @@ public class Parser extends Lexer {
 						return arguments;
 					}
 					check(TOKcomma);
+					
+					// Descent: added for better error reporting 
+					if (token.value == TOK.TOKsemicolon) {
+						return arguments;
+					}
 				}
 			}
 			check(endtok);

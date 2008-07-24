@@ -237,6 +237,8 @@ public class BasicSearchEngine {
 						SearchDocument[] matches = MatchLocator.addWorkingCopies(pattern, indexMatches, getWorkingCopies(), participant);
 						participant.locateMatches(matches, pattern, scope, requestor, subMonitor);
 					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				} finally {		
 					requestor.exitParticipant(participant);
 					participant.doneSearching();

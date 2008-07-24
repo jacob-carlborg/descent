@@ -23,13 +23,10 @@ declaration.c --> VarDeclaration::semantic
 declaration.h
 enum.c
 enum.h
-expression.c
+expression.c --> Line 568
 expression.h
 func.c --> DtorDeclaration::semantic
 idgen.c
-impcnvgen.c
-init.c
-inline.c
 mtype.c
 mtype.h
 optimize.c --> CastExp::optimize

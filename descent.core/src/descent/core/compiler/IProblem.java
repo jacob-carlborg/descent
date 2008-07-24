@@ -685,5 +685,6 @@ public interface IProblem {
 	int CannotCallPublicExportFunctionFromInvariant = 474;
 	int TemplateMemberFunctionNotAllowedInInterface = 475;
 	int ArgumentToTypeofIsNotAnExpression = 476;
+	int CannotInferTypeFromOverloadedFunctionSymbol = 477;
 
 }

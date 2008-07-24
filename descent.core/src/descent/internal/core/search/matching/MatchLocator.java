@@ -104,8 +104,8 @@ public class MatchLocator {
 
 	public MatchLocator(SearchPattern pattern, SearchRequestor requestor, IJavaSearchScope scope, SubProgressMonitor progressMonitor) {
 		this.pattern = pattern;
-		//this.patternLocator = PatternLocator.patternLocator(this.pattern);
-		//this.matchContainer = this.patternLocator.matchContainer();
+		this.patternLocator = PatternLocator.patternLocator(this.pattern);
+		this.matchContainer = this.patternLocator.matchContainer();
 		this.requestor = requestor;
 		this.scope = scope;
 		this.progressMonitor = progressMonitor;
