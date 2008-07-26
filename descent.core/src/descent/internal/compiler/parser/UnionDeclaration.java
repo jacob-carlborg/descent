@@ -20,7 +20,7 @@ public class UnionDeclaration extends StructDeclaration {
 			TreeVisitor.acceptChildren(visitor, ident);
 			TreeVisitor.acceptChildren(visitor, members);
 			
-			acceptSynthetic(visitor);
+//			acceptSynthetic(visitor);
 		}
 		visitor.endVisit(this);
 	}

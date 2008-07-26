@@ -65,13 +65,19 @@ public class EnumMember extends Dsymbol {
 		if (value != null) {
 			e = value.syntaxCopy(context);
 		}
+		
+		Type t = null;
+	    if (type != null) {
+	    	t = type.syntaxCopy(context);
+	    }
 
 		EnumMember em;
 		if (s != null) {
 			em = (EnumMember) s;
 			em.value = e;
+			em.type = t;
 		} else {
-			em = new EnumMember(loc, ident, e);
+			em = new EnumMember(loc, ident, e, t);
 		}
 		
 		em.copySourceRange(this);
@@ -83,7 +89,11 @@ public class EnumMember extends Dsymbol {
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
-		buf.writestring(ident.toChars());
+		if (type != null) {
+			type.toCBuffer(buf, ident, hgs, context);
+		} else {
+			buf.writestring(ident.toChars());
+		}
 		if (value != null) {
 			buf.writestring(" = ");
 			value.toCBuffer(buf, hgs, context);

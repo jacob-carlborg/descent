@@ -57,7 +57,7 @@ public class TypeEnum extends Type {
 	public Expression defaultInit(Loc loc, SemanticContext context) {
 		// Initialize to first member of enum
 		Expression e;
-		e = new IntegerExp(loc, sym.defaultval, this);
+		e = new IntegerExp(loc, (integer_t) sym.defaultval, this);
 		return e;
 	}
 
@@ -105,13 +105,13 @@ public class TypeEnum extends Type {
 				// goto Lfwd;
 				return getProperty_Lfwd(ident, context);
 			}
-			e = new IntegerExp(Loc.ZERO, sym.maxval, this);
+			e = new IntegerExp(Loc.ZERO, (integer_t) sym.maxval, this);
 		} else if (equals(ident, Id.min)) {
 			if (null == sym.symtab) {
 				// goto Lfwd;
 				return getProperty_Lfwd(ident, context);
 			}
-			e = new IntegerExp(Loc.ZERO, sym.minval, this);
+			e = new IntegerExp(Loc.ZERO, (integer_t) sym.minval, this);
 		} else if (equals(ident, Id.init)) {
 			if (null == sym.symtab) {
 				// goto Lfwd;

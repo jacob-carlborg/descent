@@ -21,8 +21,6 @@ cast.c --> StringExp::implicitConvTo
 constfold.c
 declaration.c --> VarDeclaration::semantic
 declaration.h
-enum.c
-enum.h
 expression.c --> Line 568
 expression.h
 func.c --> DtorDeclaration::semantic

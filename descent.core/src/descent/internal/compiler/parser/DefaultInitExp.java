@@ -2,7 +2,7 @@ package descent.internal.compiler.parser;
 
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
-public class DefaultInitExp extends Expression {
+public abstract class DefaultInitExp extends Expression {
 
 	private final TOK subop;
 
@@ -21,6 +21,8 @@ public class DefaultInitExp extends Expression {
 		visitor.visit(this);
 		visitor.endVisit(this);
 	}
+	
+	public abstract Expression resolve(Loc loc, Scope sc, SemanticContext context);
 	
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {

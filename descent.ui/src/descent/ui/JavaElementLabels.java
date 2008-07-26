@@ -483,31 +483,31 @@ public class JavaElementLabels {
 			String resolvedSig= (resolvedKey != null) ? resolvedKey.toSignature() : null;
 			
 			// type parameters
-			if (getFlag(flags, M_PRE_TYPE_PARAMETERS)) {
-				if (resolvedKey != null) {
-					if (resolvedKey.isParameterizedMethod()) {
-						String[] typeArgRefs= resolvedKey.getTypeArguments();
-						if (typeArgRefs.length > 0) {
-							getTypeArgumentSignaturesLabel(typeArgRefs, flags, buf);
-							buf.append(' ');
-						}
-					} else {
-						// TODO JDT signature
-//						String[] typeParameterSigs= Signature.getTypeParameters(resolvedSig);
-//						if (typeParameterSigs.length > 0) {
-//							getTypeParameterSignaturesLabel(typeParameterSigs, flags, buf);
+//			if (getFlag(flags, M_PRE_TYPE_PARAMETERS)) {
+//				if (resolvedKey != null) {
+//					if (resolvedKey.isParameterizedMethod()) {
+//						String[] typeArgRefs= resolvedKey.getTypeArguments();
+//						if (typeArgRefs.length > 0) {
+//							getTypeArgumentSignaturesLabel(typeArgRefs, flags, buf);
 //							buf.append(' ');
 //						}
-					}
-				} else 
-				if (method.exists()) {
-					ITypeParameter[] typeParameters= method.getTypeParameters();
-					if (typeParameters.length > 0) {
-						getTypeParametersLabel(typeParameters, flags, buf);
-						buf.append(' ');
-					}
-				}
-			}
+//					} else {
+//						// TODO JDT signature
+////						String[] typeParameterSigs= Signature.getTypeParameters(resolvedSig);
+////						if (typeParameterSigs.length > 0) {
+////							getTypeParameterSignaturesLabel(typeParameterSigs, flags, buf);
+////							buf.append(' ');
+////						}
+//					}
+//				} else 
+//				if (method.exists()) {
+//					ITypeParameter[] typeParameters= method.getTypeParameters();
+//					if (typeParameters.length > 0) {
+//						getTypeParametersLabel(typeParameters, flags, buf);
+//						buf.append(' ');
+//					}
+//				}
+//			}
 			
 			// return type
 			if (getFlag(flags, M_PRE_RETURNTYPE) && method.exists() && method.isMethod()) {
@@ -548,7 +548,7 @@ public class JavaElementLabels {
 			}
 			
 			// template parameters (moved after the method name, like in D)
-			if (getFlag(flags, M_APP_TYPE_PARAMETERS)) {
+//			if (getFlag(flags, M_APP_TYPE_PARAMETERS)) {
 				if (resolvedKey != null) {
 					if (resolvedKey.isParameterizedMethod()) {
 						String[] typeArgRefs= resolvedKey.getTypeArguments();
@@ -568,11 +568,11 @@ public class JavaElementLabels {
 				if (method.exists()) {
 					ITypeParameter[] typeParameters= method.getTypeParameters();
 					if (typeParameters.length > 0) {
-						buf.append(' ');
+//						buf.append(' ');
 						getTypeParametersLabel(typeParameters, flags, buf);
 					}
 				}					
-			}
+//			}
 			
 			if (!method.isPostBlit()) {
 				// parameters

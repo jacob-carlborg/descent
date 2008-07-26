@@ -147,13 +147,13 @@ public final class Flags {
 	 * Varargs property flag.
 	 * @since 2.0
 	 */
-	public static final long AccVarargs1 = 0x40000000L;
+	public static final long AccVarargs1 = 0x02000000L;
 	
 	/**
 	 * Varargs property flag.
 	 * @since 2.0
 	 */
-	public static final long AccVarargs2 = 0x80000000L;
+	public static final long AccVarargs2 = 0x04000000L;
 	
 	// Extensions for types
 	

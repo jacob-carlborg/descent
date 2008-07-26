@@ -65,7 +65,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			TreeVisitor.acceptChildren(visitor, parameters);
 			TreeVisitor.acceptChildren(visitor, members);
 			
-			acceptSynthetic(visitor);
+//			acceptSynthetic(visitor);
 		}
 		visitor.endVisit(this);
 	}

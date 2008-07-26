@@ -31,7 +31,6 @@ public class CompileDeclaration extends AttribDeclaration {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, sourceExp);
-			TreeVisitor.acceptChildren(visitor, decl);
 		}
 		visitor.endVisit(this);
 	}

@@ -46,7 +46,7 @@ public class StructDeclaration extends AggregateDeclaration {
 			TreeVisitor.acceptChildren(visitor, ident);
 			TreeVisitor.acceptChildren(visitor, members);
 			
-			acceptSynthetic(visitor);
+//			acceptSynthetic(visitor);
 		}
 		visitor.endVisit(this);
 	}

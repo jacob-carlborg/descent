@@ -73,7 +73,7 @@ public class Module extends Package {
 			TreeVisitor.acceptChildren(visitor, md);
 			TreeVisitor.acceptChildren(visitor, members);
 			
-			acceptSynthetic(visitor);
+//			acceptSynthetic(visitor);
 		}
 		visitor.endVisit(this);
 	}

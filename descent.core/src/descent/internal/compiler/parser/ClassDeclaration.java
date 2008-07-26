@@ -97,7 +97,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 			TreeVisitor.acceptChildren(visitor, sourceBaseclasses);
 			TreeVisitor.acceptChildren(visitor, members);
 			
-			acceptSynthetic(visitor);
+//			acceptSynthetic(visitor);
 		}
 		visitor.endVisit(this);
 	}

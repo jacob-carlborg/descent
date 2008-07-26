@@ -841,8 +841,7 @@ public abstract class ASTDmdNode extends ASTNode {
 						if (context.isD2()) {
 							if (arg.op == TOKdefault) {
 								DefaultInitExp de = (DefaultInitExp) arg;
-								// XXX Semantic!!!!
-//								arg = de.resolve(loc, sc, context);
+								arg = de.resolve(loc, sc, context);
 							} else {
 								arg = arg.copy();
 							}
