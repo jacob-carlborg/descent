@@ -3731,7 +3731,7 @@ public class Parser extends Lexer {
 				 * But... the function's body might be needed later if we need to interpret it.
 				 * So... assign the "rest" of it by parsing the actual body when needed.
 				 */
-				final int startSkip = p;
+				final int startSkip = token.ptr;
 				
 				Statement body = dietParseStatement(f);
 				f.setFbody(body);

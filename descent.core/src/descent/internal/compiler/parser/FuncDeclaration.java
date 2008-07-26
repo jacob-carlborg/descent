@@ -399,7 +399,12 @@ public class FuncDeclaration extends Declaration {
 				sym.semantic3(scope.enclosing, context);
 				materialized = extractFunction(sym);
 			}
-			return materialized.interpret(istate, arguments, context);
+			if (materialized != null) {
+				this.fbody = materialized.fbody;
+				this.frequire = materialized.frequire;
+				this.fensure = materialized.fensure;
+				this.outId = materialized.outId;
+			}
 		}
 
 		if (equals(ident, Id.aaLen)) {
@@ -2454,6 +2459,9 @@ public class FuncDeclaration extends Declaration {
 		f.copySourceRange(this);
 		f.javaElement = javaElement;
 		f.templated = templated;
+		f.input = input;
+		f.startSkip = startSkip;
+		f.endSkip = endSkip;
 		return f;
 	}
 
