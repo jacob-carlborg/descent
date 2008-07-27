@@ -9,7 +9,8 @@ import java.util.List;
  *
  * <pre>
  * TemplateDeclaration:
- *    <b>template</b> SimpleName <b>( [ TemplateParameter { <b>,</b> TemplateParameter } ] 
+ *    <b>template</b> SimpleName <b>( [ TemplateParameter { <b>,</b> TemplateParameter } ]
+ *    ( <b>if</b> <b>(</b> Expression <b>)</b> )
  *    <b>{</b> 
  *       { Declaration } 
  *    <b>}</b>
@@ -40,6 +41,12 @@ public class TemplateDeclaration extends Declaration {
 	 */
 	public static final ChildListPropertyDescriptor TEMPLATE_PARAMETERS_PROPERTY =
 		new ChildListPropertyDescriptor(TemplateDeclaration.class, "templateParameters", TemplateParameter.class, NO_CYCLE_RISK); //$NON-NLS-1$
+	
+	/**
+	 * The "constraint" structural property of this node type.
+	 */
+	public static final ChildPropertyDescriptor CONSTRAINT_PROPERTY =
+		new ChildPropertyDescriptor(TemplateDeclaration.class, "constraint", Expression.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "declarations" structural property of this node type.
@@ -66,6 +73,7 @@ public class TemplateDeclaration extends Declaration {
 		addProperty(PRE_D_DOCS_PROPERTY, properyList);
 		addProperty(MODIFIERS_PROPERTY, properyList);
 		addProperty(NAME_PROPERTY, properyList);
+		addProperty(CONSTRAINT_PROPERTY, properyList);
 		addProperty(TEMPLATE_PARAMETERS_PROPERTY, properyList);
 		addProperty(DECLARATIONS_PROPERTY, properyList);
 		addProperty(POST_D_DOC_PROPERTY, properyList);
@@ -91,6 +99,11 @@ public class TemplateDeclaration extends Declaration {
 	 * The name.
 	 */
 	private SimpleName name;
+	
+	/**
+	 * The constraint.
+	 */
+	private Expression constraint;
 
 	/**
 	 * The templateParameters
@@ -136,6 +149,14 @@ public class TemplateDeclaration extends Declaration {
 				return getName();
 			} else {
 				setName((SimpleName) child);
+				return null;
+			}
+		}
+		if (property == CONSTRAINT_PROPERTY) {
+			if (get) {
+				return getConstraint();
+			} else {
+				setConstraint((Expression) child);
 				return null;
 			}
 		}
@@ -202,6 +223,7 @@ public class TemplateDeclaration extends Declaration {
 		result.preDDocs.addAll(ASTNode.copySubtrees(target, preDDocs()));
 		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
 		result.setName((SimpleName) getName().clone(target));
+		result.setConstraint((Expression) ASTNode.copySubtree(target, getConstraint()));
 		result.templateParameters.addAll(ASTNode.copySubtrees(target, templateParameters()));
 		result.declarations.addAll(ASTNode.copySubtrees(target, declarations()));
 	result.setPostDDoc((DDocComment) ASTNode.copySubtree(target, getPostDDoc()));
@@ -226,6 +248,7 @@ public class TemplateDeclaration extends Declaration {
 			acceptChildren(visitor, this.preDDocs);
 			acceptChildren(visitor, this.modifiers);
 			acceptChild(visitor, getName());
+			acceptChild(visitor, getConstraint());
 			acceptChildren(visitor, this.templateParameters);
 			acceptChildren(visitor, this.declarations);
 			acceptChild(visitor, getPostDDoc());
@@ -272,6 +295,33 @@ public class TemplateDeclaration extends Declaration {
 		this.name = name;
 		postReplaceChild(oldChild, name, NAME_PROPERTY);
 	}
+	
+	/**
+	 * Returns the constraint of this template declaration.
+	 * 
+	 * @return the constraint
+	 */ 
+	public Expression getConstraint() {
+		return this.constraint;
+	}
+
+	/**
+	 * Sets the constraint of this template declaration.
+	 * 
+	 * @param constraint the constraint
+	 * @exception IllegalArgumentException if:
+	 * <ul>
+	 * <li>the node belongs to a different AST</li>
+	 * <li>the node already has a parent</li>
+	 * <li>a cycle in would be created</li>
+	 * </ul>
+	 */ 
+	public void setConstraint(Expression constraint) {
+		ASTNode oldChild = this.constraint;
+		preReplaceChild(oldChild, constraint, CONSTRAINT_PROPERTY);
+		this.constraint = constraint;
+		postReplaceChild(oldChild, constraint, CONSTRAINT_PROPERTY);
+	}
 
 	/**
 	 * Returns the live ordered list of templateParameters for this
@@ -299,7 +349,7 @@ public class TemplateDeclaration extends Declaration {
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 6 * 4;
+		return BASE_NODE_SIZE + 7 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -311,6 +361,7 @@ public class TemplateDeclaration extends Declaration {
 			+ (this.preDDocs.listSize())
 			+ (this.modifiers.listSize())
 			+ (this.name == null ? 0 : getName().treeSize())
+			+ (this.constraint == null ? 0 : getConstraint().treeSize())
 			+ (this.templateParameters.listSize())
 			+ (this.declarations.listSize())
 			+ (this.postDDoc == null ? 0 : getPostDDoc().treeSize())

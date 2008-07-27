@@ -2081,9 +2081,34 @@ public class CodeFormatterVisitor extends ASTVisitor
 		else if(prefs.insert_space_between_empty_parens_in_template_declarations)
 			scribe.space();
 		scribe.printNextToken(TOK.TOKrparen);
+		
+		formatConstraint(node.getConstraint());
+		
 		formatDeclarationBlock(node.declarations(), prefs.brace_position_for_template_declaration, prefs.indent_body_declarations_compare_to_template_header);
 		scribe.printTrailingComment();
 		return false;
+	}
+
+	private void formatConstraint(Expression constraint) {
+		if (constraint != null) {
+			scribe.printNewLine();
+			scribe.indent();
+			scribe.printNextToken(TOK.TOKif);
+			if (prefs.insert_space_before_opening_paren_in_if_statements) {
+				scribe.space();
+			}
+			scribe.printNextToken(TOK.TOKlparen);
+			if (prefs.insert_space_after_opening_paren_in_if_statements) {
+				scribe.space();
+			}
+			constraint.accept(this);
+			if (prefs.insert_space_before_closing_paren_in_if_statements) {
+				scribe.space();
+			}
+			scribe.printNextToken(TOK.TOKrparen);
+			scribe.unIndent();
+			scribe.printNewLine();
+		}
 	}
 	
 	public boolean visit(TemplateMixinDeclaration node)
@@ -2848,13 +2873,15 @@ public class CodeFormatterVisitor extends ASTVisitor
 			scribe.printNextToken(TOK.TOKrparen);
 		}
 		
-		// Next comes the post modifiers
+		// Next comes the post modifiers and the constraint
 		if (node instanceof FunctionDeclaration) {
 			FunctionDeclaration func = (FunctionDeclaration) node;
 			if (!func.postModifiers().isEmpty()) {
 				scribe.space();
 				formatModifiers(true, func.postModifiers());
 			}
+			
+			formatConstraint(func.getConstraint());
 		}
 		
 		Block in   = (Block) node.getPrecondition();

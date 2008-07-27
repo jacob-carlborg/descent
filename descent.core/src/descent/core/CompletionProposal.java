@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 import descent.core.compiler.CharOperation;
 import descent.internal.codeassist.InternalCompletionProposal;
+import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.IdentifierExp;
@@ -1713,10 +1714,10 @@ public final class CompletionProposal extends InternalCompletionProposal {
 					return this.parameterNames;
 				}
 				
-				TypeFunction tf = (TypeFunction) func.type; 
-				
-				this.parameterNames = new char[tf.parameters.size()][];
-				for (int i = 0; i < tf.parameters.size(); i++) {
+				TypeFunction tf = (TypeFunction) func.type;
+				final int size = ASTDmdNode.size(tf.parameters);
+				this.parameterNames = new char[size][];
+				for (int i = 0; i < size; i++) {
 					IdentifierExp ident = tf.parameters.get(i).ident;
 					this.parameterNames[i] = ident == null || ident.ident == null ? ("arg" + (i + 1)).toCharArray() : ident.ident;
 				}

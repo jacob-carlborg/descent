@@ -41,16 +41,18 @@ public class TemplateDeclaration extends ScopeDsymbol {
 	public TemplateDeclaration overnext; // next overloaded
 	// TemplateDeclaration
 	public TemplateDeclaration overroot; // first in overnext list
+	public Expression constraint;
 
 	public List<TemplateInstance> instances = new ArrayList<TemplateInstance>();
 	
 	private IJavaElement javaElement;
 	
 	public TemplateDeclaration(Loc loc, IdentifierExp id,
-			TemplateParameters parameters, Dsymbols decldefs) {
+			TemplateParameters parameters, Expression constraint, Dsymbols decldefs) {
 		super(id);
 		this.loc = loc;
 		this.parameters = parameters;
+		this.constraint = constraint;
 		this.members = decldefs;
 		if (decldefs != null){
 			this.sourceMembers = new Dsymbols(decldefs);
@@ -922,6 +924,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		TemplateDeclaration td;
 		TemplateParameters p;
+		Expression c = null;
 		Dsymbols d;
 
 		p = null;
@@ -933,8 +936,13 @@ public class TemplateDeclaration extends ScopeDsymbol {
 				p.set(i, tp.syntaxCopy(context));
 			}
 		}
+		
+		if (constraint != null) {
+			c = constraint.syntaxCopy(context);
+		}
+		
 		d = Dsymbol.arraySyntaxCopy(members, context);
-		td = new TemplateDeclaration(loc, ident, p, d);
+		td = new TemplateDeclaration(loc, ident, p, c, d);
 		td.copySourceRange(this);
 		td.javaElement = javaElement;
 		td.wrapper = wrapper;

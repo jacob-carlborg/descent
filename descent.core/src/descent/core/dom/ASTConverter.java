@@ -1191,6 +1191,9 @@ public class ASTConverter {
 			Dsymbol wrappedSymbol = (Dsymbol) a.sourceMembers.get(0); // SEMANTIC
 			if (wrappedSymbol.getNodeType() == ASTDmdNode.FUNC_DECLARATION) {
 				FunctionDeclaration b = (FunctionDeclaration) convert(wrappedSymbol);
+				if (a.constraint != null) {
+					b.setConstraint(convert(a.constraint));
+				}
 				convertTemplateParameters(b.templateParameters(), a.parameters);
 				processDdocs(b, a);
 				return b;
@@ -1210,6 +1213,11 @@ public class ASTConverter {
 			}
 		}
 		convertTemplateParameters(b.templateParameters(), a.parameters);
+		
+		if (a.constraint != null) {
+			b.setConstraint(convert(a.constraint));
+		}
+		
 		convertDeclarations(b.declarations(), a.sourceMembers);
 		fillDeclaration(b, a);
 		

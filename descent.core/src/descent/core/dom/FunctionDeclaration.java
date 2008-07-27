@@ -12,6 +12,7 @@ import java.util.List;
  * FunctionDeclaration:
  *    Type SimpleName [ <b>(</b> TemplateParameter { <b>,</b> TemplateParameter } <b>)</b> ]
  *       <b>(</b> [ Argument { <b>,</b> Argument } ] <b>)</b>
+ *       ( <b>if</b> <b>(</b> Expression <b>)</b> )
  *       { Modifiers }
  *       [ <b>in</b> Block ]
  *       [ <b>out</b> [ <b>(</b> SimpleName <b>)</b> ] Block ]
@@ -67,6 +68,12 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 	 */
 	public static final SimplePropertyDescriptor VARIADIC_PROPERTY =
 	internalVariadicPropertyFactory(FunctionDeclaration.class); //$NON-NLS-1$
+	
+	/**
+	 * The "constraint" structural property of this node type.
+	 */
+	public static final ChildPropertyDescriptor CONSTRAINT_PROPERTY =
+		new ChildPropertyDescriptor(FunctionDeclaration.class, "constraint", Expression.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "precondition" structural property of this node type.
@@ -115,6 +122,7 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 		addProperty(TEMPLATE_PARAMETERS_PROPERTY, properyList);
 		addProperty(ARGUMENTS_PROPERTY, properyList);
 		addProperty(VARIADIC_PROPERTY, properyList);
+		addProperty(CONSTRAINT_PROPERTY, properyList);
 		addProperty(POST_MODIFIERS_PROPERTY, properyList);
 		addProperty(PRECONDITION_PROPERTY, properyList);
 		addProperty(POSTCONDITION_PROPERTY, properyList);
@@ -148,6 +156,11 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 	 * The name.
 	 */
 	private SimpleName name;
+	
+	/**
+	 * The constraint.
+	 */
+	private Expression constraint;
 
 	/**
 	 * The template parameters
@@ -218,6 +231,14 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 				return getName();
 			} else {
 				setName((SimpleName) child);
+				return null;
+			}
+		}
+		if (property == CONSTRAINT_PROPERTY) {
+			if (get) {
+				return getConstraint();
+			} else {
+				setConstraint((Expression) child);
 				return null;
 			}
 		}
@@ -353,6 +374,7 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 		result.setName((SimpleName) getName().clone(target));
 		result.templateParameters.addAll(ASTNode.copySubtrees(target, templateParameters()));
 		result.arguments.addAll(ASTNode.copySubtrees(target, arguments()));
+		result.setConstraint((Expression) ASTNode.copySubtree(target, getConstraint()));
 		result.setVariadic(isVariadic());
 		result.setPrecondition((Block) ASTNode.copySubtree(target, getPrecondition()));
 		result.setPostcondition((Block) ASTNode.copySubtree(target, getPostcondition()));
@@ -384,6 +406,7 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 			acceptChildren(visitor, this.templateParameters);
 			acceptChildren(visitor, this.arguments);
 			acceptChildren(visitor, this.postModifiers);
+			acceptChild(visitor, getConstraint());
 			acceptChild(visitor, getPrecondition());
 			acceptChild(visitor, getPostcondition());
 			acceptChild(visitor, getPostconditionVariableName());
@@ -472,6 +495,33 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 		this.name = name;
 		postReplaceChild(oldChild, name, NAME_PROPERTY);
 	}
+	
+	/**
+	 * Returns the constraint of this template declaration.
+	 * 
+	 * @return the constraint
+	 */ 
+	public Expression getConstraint() {
+		return this.constraint;
+	}
+
+	/**
+	 * Sets the constraint of this template declaration.
+	 * 
+	 * @param constraint the constraint
+	 * @exception IllegalArgumentException if:
+	 * <ul>
+	 * <li>the node belongs to a different AST</li>
+	 * <li>the node already has a parent</li>
+	 * <li>a cycle in would be created</li>
+	 * </ul>
+	 */ 
+	public void setConstraint(Expression constraint) {
+		ASTNode oldChild = this.constraint;
+		preReplaceChild(oldChild, constraint, CONSTRAINT_PROPERTY);
+		this.constraint = constraint;
+		postReplaceChild(oldChild, constraint, CONSTRAINT_PROPERTY);
+	}
 
 	/**
 	 * Returns the live ordered list of template parameters for this
@@ -517,7 +567,7 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 13 * 4;
+		return BASE_NODE_SIZE + 14 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -533,6 +583,7 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 			+ (this.name == null ? 0 : getName().treeSize())
 			+ (this.templateParameters.listSize())
 			+ (this.arguments.listSize())
+			+ (this.constraint == null ? 0 : getConstraint().treeSize())
 			+ (this.precondition == null ? 0 : getPrecondition().treeSize())
 			+ (this.postcondition == null ? 0 : getPostcondition().treeSize())
 			+ (this.postconditionVariableName == null ? 0 : getPostconditionVariableName().treeSize())

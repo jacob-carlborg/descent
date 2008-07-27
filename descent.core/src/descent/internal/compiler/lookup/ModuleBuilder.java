@@ -470,7 +470,12 @@ public class ModuleBuilder {
 			Dsymbols symbols = new Dsymbols();
 			fill(module, symbols, type.getChildren(), state);
 				
-			TemplateDeclaration member = new TemplateDeclaration(getLoc(module, type), getIdent(type), getTemplateParameters(type), symbols);
+			TemplateDeclaration member = new TemplateDeclaration(
+					getLoc(module, type), 
+					getIdent(type), 
+					getTemplateParameters(type),
+					null, // XXX Template Constraints
+					symbols);
 			member.setJavaElement(type);
 			members.add(wrap(member, type));
 		}
@@ -590,7 +595,13 @@ public class ModuleBuilder {
 
 	private Dsymbol wrapWithTemplate(Module module, Dsymbol symbol, final ITemplated templated) throws JavaModelException {
 		if (templated.isTemplate()) {
-			TemplateDeclaration temp = new TemplateDeclaration(getLoc(module, (ISourceReference) templated), getIdent((IJavaElement) templated), getTemplateParameters(templated), toDsymbols(symbol));
+			TemplateDeclaration temp = new TemplateDeclaration(
+					getLoc(module, 
+							(ISourceReference) templated), 
+							getIdent((IJavaElement) templated), 
+							getTemplateParameters(templated),
+							null, // XXX Template Constraint
+							toDsymbols(symbol));
 			temp.setJavaElement((IJavaElement) templated);
 			return wrap(temp, (IMember) templated);
 		} else {

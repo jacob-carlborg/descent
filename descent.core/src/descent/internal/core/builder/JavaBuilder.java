@@ -59,15 +59,16 @@ public class JavaBuilder extends IncrementalProjectBuilder {
 	}
 	
 	private boolean isShowSemanticErrors() {
-		IJavaProject activeProject = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot()).getActiveProject();
-		String showSemanticErrorsOpt = JavaCore.getOption(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS);
-		if (activeProject == null) {
-			showSemanticErrorsOpt = JavaCore.getOption(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS); 
-		} else {
-			showSemanticErrorsOpt = activeProject.getOption(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS, true);
-		}
-		
-		return !showSemanticErrorsOpt.equals("0");
+		return false;
+//		IJavaProject activeProject = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot()).getActiveProject();
+//		String showSemanticErrorsOpt = JavaCore.getOption(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS);
+//		if (activeProject == null) {
+//			showSemanticErrorsOpt = JavaCore.getOption(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS); 
+//		} else {
+//			showSemanticErrorsOpt = activeProject.getOption(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS, true);
+//		}
+//		
+//		return !showSemanticErrorsOpt.equals("0");
 	}
 	
 	private class JavaBuilderVisitor implements IResourceDeltaVisitor {

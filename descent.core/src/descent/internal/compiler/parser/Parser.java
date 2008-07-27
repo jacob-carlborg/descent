@@ -1967,6 +1967,7 @@ public class Parser extends Lexer {
 		AggregateDeclaration a = null;
 		IdentifierExp id;
 		TemplateParameters tpl = null;
+		Expression constraint = null;
 		BaseClasses baseClasses = null;
 		int anon = 0;
 		boolean[] malformed = { false };
@@ -1983,6 +1984,9 @@ public class Parser extends Lexer {
 			if (token.value == TOKlparen) {				
 				// Gather template parameter list
 				tpl = parseTemplateParameterList(malformed);
+				if (apiLevel >= D2) {
+					constraint = parseConstraint();
+				}
 			}
 		}
 
@@ -2097,7 +2101,7 @@ public class Parser extends Lexer {
 			// Wrap a template around the aggregate declaration
 			decldefs = new Dsymbols();
 			decldefs.add(a);
-			tempdecl = new TemplateDeclaration(loc(), id, tpl, decldefs);
+			tempdecl = new TemplateDeclaration(loc(), id, tpl, constraint, decldefs);
 			tempdecl.setSourceRange(a.start, a.length);
 			tempdecl.wrapper = true;
 			a.templated = true;
@@ -2147,10 +2151,23 @@ public class Parser extends Lexer {
 		return baseclasses;
 	}
 	
+	private Expression parseConstraint() {
+		Expression e = null;
+
+		if (token.value == TOKif) {
+			nextToken(); // skip over 'if'
+			check(TOKlparen);
+			e = parseExpression();
+			check(TOKrparen);
+		}
+		return e;
+	}
+	
 	private TemplateDeclaration parseTemplateDeclaration() {
 		IdentifierExp id;
 		TemplateParameters tpl;
 		Dsymbols decldefs;
+		Expression constraint = null;
 		boolean[] malformed = { false };
 
 		int start = token.ptr;
@@ -2166,6 +2183,10 @@ public class Parser extends Lexer {
 		if (tpl == null) {
 			// goto Lerr;
 			return null;
+		}
+		
+		if (apiLevel >= D2) {
+			constraint = parseConstraint();
 		}
 
 		if (token.value != TOKlcurly) {
@@ -2185,7 +2206,7 @@ public class Parser extends Lexer {
 			nextToken();
 		}
 
-		TemplateDeclaration tempdecl = new TemplateDeclaration(loc(), id, tpl, decldefs);
+		TemplateDeclaration tempdecl = new TemplateDeclaration(loc(), id, tpl, constraint,  decldefs);
 		tempdecl.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 		
 		if (malformed[0]) {
@@ -3586,8 +3607,16 @@ public class Parser extends Lexer {
 				Dsymbol s;
 				
 				TypeFunction typeFunction = (TypeFunction) t;
+				Expression constraint = null;
 				
 				FuncDeclaration f = new FuncDeclaration(loc(), ident, storage_class, typeFunction);
+				
+				if (apiLevel >= 2) {
+					if (tpl != null) {
+						constraint = parseConstraint();
+					}
+				}
+				
 				parseContracts(f);
 				f.setSourceRange(t.start, prevToken.ptr + prevToken.sourceLen - t.start);
 				
@@ -3611,7 +3640,7 @@ public class Parser extends Lexer {
 					// Wrap a template around the aggregate declaration
 					decldefs = new Dsymbols();
 					decldefs.add(s);
-					tempdecl = new TemplateDeclaration(loc(), s.ident, tpl, decldefs);
+					tempdecl = new TemplateDeclaration(loc(), s.ident, tpl, constraint, decldefs);
 					tempdecl.setSourceRange(s.start, s.length);
 					tempdecl.wrapper = true;
 					s = tempdecl;

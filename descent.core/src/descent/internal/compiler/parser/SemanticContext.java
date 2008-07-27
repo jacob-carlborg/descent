@@ -212,6 +212,15 @@ public class SemanticContext {
 	}
 
 	public void acceptProblem(Problem problem) {
+		// This one is important to see if the user configured Descent correctly
+		if (problem.getID() == IProblem.MissingOrCurruptObjectDotD) {
+			problemRequestor.acceptProblem(problem);
+			if (problem.isError()) {
+				global.errors++;
+			}
+			return;
+		}
+		
 		// Don't report more problems if fatal was signaled
 		if (fatalWasSignaled) {
 			return;

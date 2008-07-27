@@ -101,6 +101,8 @@ import descent.internal.compiler.parser.ScopeDsymbol;
 import descent.internal.compiler.parser.ScopeExp;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.Statement;
+import descent.internal.compiler.parser.StaticCtorDeclaration;
+import descent.internal.compiler.parser.StaticDtorDeclaration;
 import descent.internal.compiler.parser.StringExp;
 import descent.internal.compiler.parser.StructDeclaration;
 import descent.internal.compiler.parser.SuperExp;
@@ -409,17 +411,19 @@ public class CompletionEngine extends Engine
 					!requestor.isIgnored(CompletionProposal.KEYWORD)) {
 				
 				char[] prefix = findTextBeforeCursor();
-				this.startPosition = this.actualCompletionPosition - prefix.length;
-				this.endPosition = this.actualCompletionPosition;
-				
-				for(ICompletionOnKeyword node : parser.getKeywordCompletions()) {
-					findKeywords(prefix, node.getPossibleKeywords(), node.canCompleteEmptyToken());
-				}
-				
-				// Also suggest the special tokens, if at least
-				// one character was types (otherwise, it's annoying)
 				if (prefix.length > 0) {
-					findKeywords(prefix, specialTokens, true);
+					this.startPosition = this.actualCompletionPosition - prefix.length;
+					this.endPosition = this.actualCompletionPosition;
+					
+					for(ICompletionOnKeyword node : parser.getKeywordCompletions()) {
+						findKeywords(prefix, node.getPossibleKeywords(), node.canCompleteEmptyToken());
+					}
+					
+					// Also suggest the special tokens, if at least
+					// one character was types (otherwise, it's annoying)
+					if (prefix.length > 0) {
+						findKeywords(prefix, specialTokens, true);
+					}
 				}
 			}
 			
@@ -664,7 +668,11 @@ public class CompletionEngine extends Engine
 		if (parser.wantOnlyType()) {
 			completeScope(rootScope, INCLUDE_TYPES | INCLUDE_IMPORTS);
 		} else {
-			completeScope(rootScope, INCLUDE_ALL);	
+			if (currentName.length == 0) {
+				completeScope(rootScope, INCLUDE_ALL & ~INCLUDE_TYPES);
+			} else {
+				completeScope(rootScope, INCLUDE_ALL);
+			}
 		}
 	}
 
@@ -2043,6 +2051,11 @@ public class CompletionEngine extends Engine
 	private void suggestMember(Dsymbol member, char[] ident, boolean onlyStatics, long flags, HashtableOfCharArrayAndObject funcSignatures, int includes, boolean isAliased) {
 		if (includesFilter != 0) {
 			includes &= ~includesFilter;
+		}
+		
+		if (member instanceof StaticCtorDeclaration ||
+			member instanceof StaticDtorDeclaration) {
+			return;
 		}
 		
 		if (member instanceof Import /* && member.getModule() == module */) {

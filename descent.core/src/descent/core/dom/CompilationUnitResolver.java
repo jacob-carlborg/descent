@@ -197,6 +197,12 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		
 		IProblemRequestor problemRequestor = new IProblemRequestor() {
 			public void acceptProblem(IProblem problem) {
+				// This one is important to see if the user configured Descent correctly
+				if (problem.getID() == IProblem.MissingOrCurruptObjectDotD) {
+					module.problems.add(problem);
+					return;
+				}
+				
 				if (config.semanticAnalysisLevel == 2) {
 					module.problems.add(problem);
 				} else if (config.semanticAnalysisLevel == 1) {

@@ -27,7 +27,8 @@ public class CompilerConfiguration {
 	public CompilerConfiguration(IJavaProject javaProject) {
 		this.javaProject = javaProject;
 		
-		semanticAnalysisLevel = (int) getLevel(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS);
+//		semanticAnalysisLevel = (int) getLevel(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS);
+		semanticAnalysisLevel = 0;
 		
 		debugLevel = getLevel(JavaCore.COMPILER_DEBUG_LEVEL);
 		debugIdentifiers = getIdentifiers(JavaCore.COMPILER_DEBUG_IDENTIFIERS);

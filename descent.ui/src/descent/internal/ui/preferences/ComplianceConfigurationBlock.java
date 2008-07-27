@@ -180,15 +180,15 @@ public class ComplianceConfigurationBlock extends OptionsConfigurationBlock {
 		layout= new GridLayout();
 		layout.numColumns= nColumns;
 
-		group= new Group(fControlsComposite, SWT.NONE);
-		group.setFont(fControlsComposite.getFont());
-		group.setText("Semantic analysis"); 
-		group.setLayoutData(new GridData(GridData.BEGINNING, GridData.END, true, false));
-		group.setLayout(layout);
-		
-		addComboBox(group, "Show semantic errors", PREF_SHOW_SEMANTIC_ERRORS, new String[] { "0", "1", "2" }, new String[] { "No", "Some", "All" }, 0);
-		addCheckBox(group, "Enable warnings", PREF_ENABLE_WARNINGS, trueFalse, 0);
-		addCheckBox(group, "Allow deprecated features", PREF_ALLOW_DEPRECATED, trueFalse, 0);
+//		group= new Group(fControlsComposite, SWT.NONE);
+//		group.setFont(fControlsComposite.getFont());
+//		group.setText("Semantic analysis"); 
+//		group.setLayoutData(new GridData(GridData.BEGINNING, GridData.END, true, false));
+//		group.setLayout(layout);
+//		
+//		addComboBox(group, "Show semantic errors", PREF_SHOW_SEMANTIC_ERRORS, new String[] { "0", "1", "2" }, new String[] { "No", "Some", "All" }, 0);
+//		addCheckBox(group, "Enable warnings", PREF_ENABLE_WARNINGS, trueFalse, 0);
+//		addCheckBox(group, "Allow deprecated features", PREF_ALLOW_DEPRECATED, trueFalse, 0);
 		
 		//label= PreferencesMessages.ComplianceConfigurationBlock_default_settings_label; 
 		//addCheckBox(group, label, INTR_DEFAULT_COMPLIANCE, new String[] { DEFAULT_CONF, USER_CONF }, 0);	
