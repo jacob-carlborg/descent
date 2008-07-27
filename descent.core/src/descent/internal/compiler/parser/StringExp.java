@@ -166,6 +166,9 @@ public class StringExp extends Expression {
 				break;
 			}
 			type = type.semantic(loc, sc, context);
+			if (context.isD2()) {
+				type = type.invariantOf(context);
+			}
 		}
 		return this;
 	}
@@ -507,8 +510,7 @@ public class StringExp extends Expression {
 		return e;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(Object obj, SemanticContext context) {
 		if (!(obj instanceof ASTDmdNode)) {
 			return false;
 		}

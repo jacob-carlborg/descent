@@ -14,20 +14,15 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
-public class VarExp extends Expression {
-
-	public Declaration var;
-	public boolean hasOverloads;
+public class VarExp extends SymbolExp {
 	
 	public VarExp(Loc loc, Declaration var) {
 		this(loc, var, false);
 	}
 
 	public VarExp(Loc loc, Declaration var, boolean hasOverloads) {
-		super(loc, TOK.TOKvar);
-		this.var = var;
+		super(loc, TOK.TOKvar, var, hasOverloads);
 		this.type = var.type;
-		this.hasOverloads = hasOverloads;
 	}
 
 	@Override
@@ -59,7 +54,7 @@ public class VarExp extends Expression {
 	}
 
 	@Override
-	public boolean equals(Object o) {
+	public boolean equals(Object o, SemanticContext context) {
 		if (this == o) {
 			return true;
 		}
@@ -67,8 +62,12 @@ public class VarExp extends Expression {
 		if (o instanceof Expression) {
 			if (((Expression) o).op == TOKvar) {
 				VarExp ne = (VarExp) o;
-				// TODO semantic check if this is OK
-				return type.equals(ne.type) && var.equals(ne.var);
+				if (context.isD2()) {
+					return (type.toHeadMutable().equals(ne.type.toHeadMutable()))
+						&& var.equals(ne.var);
+				} else {
+					return type.equals(ne.type) && var.equals(ne.var);
+				}
 			}
 		}
 
@@ -89,10 +88,14 @@ public class VarExp extends Expression {
 	@Override
 	public Expression modifiableLvalue(Scope sc, Expression e,
 			SemanticContext context) {
-		if (sc.incontract != 0 && var.isParameter()) {
-			// TODO the start and length of the problem should be different (should be passed by parameter to this function)
-			if (context.acceptsErrors()) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotModifyParameterInContract, this, new String[] { var.toChars(context) }));
+		if (context.isD2()) {
+			
+		} else {
+			if (sc.incontract != 0 && var.isParameter()) {
+				// TODO the start and length of the problem should be different (should be passed by parameter to this function)
+				if (context.acceptsErrors()) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotModifyParameterInContract, this, new String[] { var.toChars(context) }));
+				}
 			}
 		}
 
@@ -103,44 +106,48 @@ public class VarExp extends Expression {
 			}
 		}
 
-		VarDeclaration v = var.isVarDeclaration();
-		if (v != null
-				&& v.canassign() == 0
-				&& (var.isConst() || (context.global.params.Dversion > 1 && var
-						.isFinal()))) {
-			if (context.acceptsErrors()) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.CannotModifyFinalVariable, this, new String[] { var.toChars(context) }));
+		if (context.isD2()) {
+			var.checkModify(loc, sc, type, context);
+		} else {
+			VarDeclaration v = var.isVarDeclaration();
+			if (v != null
+					&& v.canassign() == 0
+					&& (var.isConst() || (context.global.params.Dversion > 1 && var
+							.isFinal()))) {
+				if (context.acceptsErrors()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.CannotModifyFinalVariable, this, new String[] { var.toChars(context) }));
+				}
 			}
-		}
-
-		if (var.isCtorinit()) { // It's only modifiable if inside the right constructor
-			Dsymbol s = sc.func;
-			while (true) {
-				FuncDeclaration fd = null;
-				if (s != null) {
-					fd = s.isFuncDeclaration();
-				}
-				if (fd != null
-						&& ((fd.isCtorDeclaration() != null && (var.storage_class & STCfield) != 0) || (fd
-								.isStaticCtorDeclaration() != null && (var.storage_class & STCfield) == 0))
-						&& fd.toParent() == var.toParent()) {
-					VarDeclaration v2 = var.isVarDeclaration();
-					Assert.isNotNull(v2);
-					v2.ctorinit(true);
-				} else {
+	
+			if (var.isCtorinit()) { // It's only modifiable if inside the right constructor
+				Dsymbol s = sc.func;
+				while (true) {
+					FuncDeclaration fd = null;
 					if (s != null) {
-						s = s.toParent2();
-						continue;
-					} else {
-						/* TODO semantic
-						 const char *p = var.isStatic() ? "static " : "";
-						 error("can only initialize %sconst %s inside %sconstructor",
-						 p, var.toChars(), p);
-						 */
+						fd = s.isFuncDeclaration();
 					}
+					if (fd != null
+							&& ((fd.isCtorDeclaration() != null && (var.storage_class & STCfield) != 0) || (fd
+									.isStaticCtorDeclaration() != null && (var.storage_class & STCfield) == 0))
+							&& fd.toParent() == var.toParent()) {
+						VarDeclaration v2 = var.isVarDeclaration();
+						Assert.isNotNull(v2);
+						v2.ctorinit(true);
+					} else {
+						if (s != null) {
+							s = s.toParent2();
+							continue;
+						} else {
+							/* TODO semantic
+							 const char *p = var.isStatic() ? "static " : "";
+							 error("can only initialize %sconst %s inside %sconstructor",
+							 p, var.toChars(), p);
+							 */
+						}
+					}
+					break;
 				}
-				break;
 			}
 		}
 
@@ -179,11 +186,15 @@ public class VarExp extends Expression {
 
 		VarDeclaration v = var.isVarDeclaration();
 		if (v != null) {
-			if (v.isConst() && type.toBasetype(context).ty != TY.Tsarray
-					&& v.init() != null) {
-				ExpInitializer ei = v.init().isExpInitializer();
-				if (ei != null) {
-					return ei.exp.implicitCastTo(sc, type, context);
+			if (context.isD2()) {
+				
+			} else {
+				if (v.isConst() && type.toBasetype(context).ty != TY.Tsarray
+						&& v.init() != null) {
+					ExpInitializer ei = v.init().isExpInitializer();
+					if (ei != null) {
+						return ei.exp.implicitCastTo(sc, type, context);
+					}
 				}
 			}
 			v.checkNestedReference(sc, loc, context);

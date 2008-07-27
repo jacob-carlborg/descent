@@ -1429,6 +1429,10 @@ ArgumentToTypeofIsNotAnExpression
 CannotInferTypeFromOverloadedFunctionSymbol
 	formatString=Cannot infer type from overloaded function symbol %1$s
 	numArgs=1
+SymbolIsNotMutable
+	formatString=%1$s is not mutable
+	numArgs=1
+
 
 
 

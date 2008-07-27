@@ -1845,6 +1845,7 @@ public class CompletionEngine extends Engine
 	}
 	
 	public final static char[][] staticAndDynamicArrayProperties = { Id.dup, Id.sort, Id.length, Id.ptr, Id.reverse };
+	public final static char[][] staticAndDynamicArrayProperties2 = { Id.idup };
 
 	private void suggestTypeStaticArrayProperties(TypeSArray type) {
 		suggestAllTypesProperties(type);
@@ -1862,6 +1863,13 @@ public class CompletionEngine extends Engine
 				staticAndDynamicArrayProperties,
 				new Type[] { type, type, typeInt, typeInt, type },
 				R_INTERESTING_BUILTIN_PROPERTY);
+		if (semanticContext.isD2()) {
+			suggestProperties(
+					type.getSignature().toCharArray(),
+					staticAndDynamicArrayProperties2,
+					new Type[] { type.invariantOf(semanticContext) },
+					R_INTERESTING_BUILTIN_PROPERTY);
+		}
 	}
 	
 	public final static char[][] associativeArrayProperties = { Id.length, Id.keys, Id.values, Id.rehash };

@@ -53,8 +53,7 @@ public class RealExp extends Expression {
 		return e;
 	}
 
-	@Override
-	public boolean equals(Object o) {
+	public boolean equals(Object o, SemanticContext context) {
 		if (this == o) {
 			return true;
 		}
@@ -62,7 +61,16 @@ public class RealExp extends Expression {
 		if (o instanceof Expression) {
 			if (((Expression) o).op == TOK.TOKfloat64) {
 				RealExp ne = (RealExp) o;
-				return type.equals(ne.type) && value.equals(ne.value);
+				if (context.isD2()) {
+					if (context.isD2()) {
+						return (type.toHeadMutable().equals(ne.type.toHeadMutable()))
+						 	&& value.equals(ne.value);
+					} else {
+						return type.equals(ne.type) && value.equals(ne.value);
+					}	
+				} else {
+					return type.equals(ne.type) && value.equals(ne.value);
+				}
 			}
 		}
 

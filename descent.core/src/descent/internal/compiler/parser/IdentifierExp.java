@@ -73,8 +73,7 @@ public class IdentifierExp extends Expression {
 		return DYNCAST.DYNCAST_IDENTIFIER;
 	}
 
-	@Override
-	public boolean equals(Object o) {
+	public boolean equals(Object o, SemanticContext context) {
 		if (o instanceof char[]) {
 			char[] c = (char[]) o;
 			return CharOperation.equals(ident, c);
@@ -108,7 +107,8 @@ public class IdentifierExp extends Expression {
 			Expression e;
 			WithScopeSymbol withsym;
 
-			// See if it was a with class
+			/* See if the symbol was a member of an enclosing 'with'
+			 */
 			withsym = scopesym[0].isWithScopeSymbol();
 			if (withsym != null) {
 				s = s.toAlias(context);
@@ -120,20 +120,24 @@ public class IdentifierExp extends Expression {
 				} else {
 					Type t = withsym.withstate.wthis.type;
 					if (t.ty == TY.Tpointer) {
-						t = t.next;
+						t = ((TypePointer) t).next;
 					}
 					e = new TypeDotIdExp(loc, t, this);
 				}
 			} else {
-				if (s.parent == null
-						&& scopesym[0].isArrayScopeSymbol() != null) { // Kludge
-					// to
-					// run
-					// semantic()
-					// here
-					// because
-					// ArrayScopeSymbol::search() doesn't have access to sc.
-					s.semantic(sc, context);
+				if (context.isD2()) {
+					
+				} else {
+					if (s.parent == null
+							&& scopesym[0].isArrayScopeSymbol() != null) { // Kludge
+						// to
+						// run
+						// semantic()
+						// here
+						// because
+						// ArrayScopeSymbol::search() doesn't have access to sc.
+						s.semantic(sc, context);
+					}
 				}
 				// Look to see if f is really a function template
 				FuncDeclaration f = s.isFuncDeclaration();
@@ -158,7 +162,12 @@ public class IdentifierExp extends Expression {
 						return e;
 					}
 				}
-				e = new DsymbolExp(loc, s);
+				if (context.isD2()) {
+					// Haven't done overload resolution yet, so pass 1
+					e = new DsymbolExp(loc, s, true);
+				} else {
+					e = new DsymbolExp(loc, s);
+				}
 				e.copySourceRange(this);
 			}
 			

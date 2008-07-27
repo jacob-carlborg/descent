@@ -120,7 +120,7 @@ public class TypeSArray extends TypeArray {
 									return MATCHnomatch; // goto Lnomatch;
 
 								if (null != dedtypes.get(i)) {
-									if (!dim.equals(dedtypes.get(i)))
+									if (!dim.equals(dedtypes.get(i), context))
 										return MATCHnomatch; // goto Lnomatch;
 								} else {
 									dedtypes.set(i, dim);

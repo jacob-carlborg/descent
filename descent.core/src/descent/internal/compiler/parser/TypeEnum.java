@@ -184,7 +184,11 @@ public class TypeEnum extends Type {
 
 	@Override
 	public boolean isZeroInit(SemanticContext context) {
-		return (sym.defaultval.equals(0));
+		if (context.isD2()) {
+			return (((Expression)sym.defaultval)).equals(new IntegerExp(0), context);
+		} else {
+			return (sym.defaultval.equals(0));
+		}
 	}
 
 	@Override

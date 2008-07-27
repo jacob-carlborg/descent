@@ -1,26 +1,24 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import descent.core.compiler.IProblem;
-import descent.internal.compiler.parser.Constfold.BinExp_fp;
 import static descent.internal.compiler.parser.LINK.LINKd;
-
 import static descent.internal.compiler.parser.MATCH.MATCHconst;
 import static descent.internal.compiler.parser.MATCH.MATCHconvert;
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
-
 import static descent.internal.compiler.parser.TOK.TOKdelegate;
 import static descent.internal.compiler.parser.TOK.TOKint64;
-
 import static descent.internal.compiler.parser.TY.Tbit;
 import static descent.internal.compiler.parser.TY.Tbool;
 import static descent.internal.compiler.parser.TY.Tpointer;
 import static descent.internal.compiler.parser.TY.Treference;
 import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Tvoid;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.Constfold.BinExp_fp;
 
 
 public abstract class Expression extends ASTDmdNode implements Cloneable {
@@ -125,8 +123,12 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		return e;
 	}
 	
-	public boolean canThrow() {
-		return true;
+	public boolean canThrow(SemanticContext context) {
+		if (context.isD2()) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	public Expression castTo(Scope sc, Type t, SemanticContext context) {
@@ -437,6 +439,14 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	public Expression modifiableLvalue(Scope sc, Expression e,
 			SemanticContext context) {
 		// See if this expression is a modifiable lvalue (i.e. not const)
+		if (context.isD2()) {
+			if (type != null && (!type.isMutable() || !type.isAssignable())) {
+				if (context.acceptsErrors()) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolIsNotMutable, e, e.toChars(context)));
+				}
+			}
+		}
+		
 		return toLvalue(sc, e, context);
 	}
 
@@ -603,6 +613,15 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 
 	public void setLineNumber(int lineNumber) {
 		loc.linnum = lineNumber;
+	}
+	
+	@Override
+	public final boolean equals(Object arg0) {
+		return super.equals(arg0);
+	}
+	
+	public boolean equals(Object o, SemanticContext context) {
+		return super.equals(o);
 	}
 
 	public void setResolvedSymbol(Dsymbol symbol) {

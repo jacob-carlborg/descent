@@ -508,5 +508,24 @@ public class TraitsExp extends Expression {
 		
 		return new IntegerExp(loc, 1, Type.tbool);
 	}
+	
+	@Override
+	public Expression syntaxCopy(SemanticContext context) {
+		return new TraitsExp(loc, ident, TemplateInstance.arraySyntaxCopy(args, context));
+	}
+	
+	@Override
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+		buf.writestring("__traits(");
+		buf.writestring(ident.toChars());
+		if (args != null) {
+			for (int i = 0; i < args.size(); i++) {
+				buf.writeByte(',');
+				ASTDmdNode oarg = (ASTDmdNode) args.get(i);
+				ObjectToCBuffer(buf, hgs, oarg, context);
+			}
+		}
+		buf.writeByte(')');
+	}
 
 }

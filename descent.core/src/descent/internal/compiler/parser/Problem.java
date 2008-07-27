@@ -1081,6 +1081,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.ArgumentToTypeofIsNotAnExpression, arguments[0]);
 		case CannotInferTypeFromOverloadedFunctionSymbol:
 			return String.format(ProblemMessages.CannotInferTypeFromOverloadedFunctionSymbol, arguments[0]);
+		case SymbolIsNotMutable:
+			return String.format(ProblemMessages.SymbolIsNotMutable, arguments[0]);
 		default:
 			return "";
 		}

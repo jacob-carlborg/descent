@@ -120,7 +120,7 @@ public class CaseStatement extends Statement {
 			for (i = 0; i < sw.cases.size(); i++) {
 				CaseStatement cs = (CaseStatement) sw.cases.get(i);
 
-				if (cs.exp.equals(exp)) {
+				if (cs.exp.equals(exp, context)) {
 					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.DuplicateCaseInSwitchStatement, this, exp.toChars(context)));
 					}

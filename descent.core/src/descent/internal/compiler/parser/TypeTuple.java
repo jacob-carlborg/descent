@@ -57,7 +57,6 @@ public class TypeTuple extends Type {
 			return false;
 
 		Type t = (Type) o;
-		// printf("TypeTuple.equals(%s, %s)\n", toChars(), t.toChars());
 		if (t.ty == Ttuple) {
 			TypeTuple tt = (TypeTuple) t;
 

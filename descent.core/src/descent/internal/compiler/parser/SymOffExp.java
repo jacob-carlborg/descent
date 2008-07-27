@@ -11,16 +11,17 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
-public class SymOffExp extends Expression {
+public class SymOffExp extends SymbolExp {
 
-	public Declaration var;
 	public integer_t offset;
-	public boolean hasOverloads;
 	
 	public SymOffExp(Loc loc, Declaration var, integer_t offset, SemanticContext context) {
-		super(loc, TOK.TOKsymoff);
+		this(loc, var, offset, false, context);
+	}
+	
+	public SymOffExp(Loc loc, Declaration var, integer_t offset, boolean hasOverloads, SemanticContext context) {
+		super(loc, TOK.TOKsymoff, var, hasOverloads);
 		Assert.isNotNull(var);
-		this.var = var;
 		this.offset = offset;
 		VarDeclaration v = var.isVarDeclaration();
 		if (v != null && v.needThis()) {
@@ -31,12 +32,11 @@ public class SymOffExp extends Expression {
 	}
 
 	public SymOffExp(Loc loc, Declaration var, int offset, SemanticContext context) {
-		this(loc, var, new integer_t(offset), context);
+		this(loc, var, new integer_t(offset), false, context);
 	}
 	
 	public SymOffExp(Loc loc, Declaration var, int offset, boolean hasOverloads, SemanticContext context) {
-		// TODO SEMANTIC
-		this(loc, var, new integer_t(offset), context);
+		this(loc, var, new integer_t(offset), hasOverloads, context);
 	}
 
 	@Override

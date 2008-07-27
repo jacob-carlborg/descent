@@ -42,7 +42,7 @@ public class SwitchStatement extends Statement {
 	@Override
 	public int blockExit(SemanticContext context) {
 		int result = BEnone;
-		if (condition.canThrow()) {
+		if (condition.canThrow(context)) {
 			result |= BEthrow;
 		}
 
@@ -197,7 +197,7 @@ public class SwitchStatement extends Statement {
 					for (int j = 0; j < scx.sw.cases.size(); j++) {
 						CaseStatement cs = (CaseStatement) scx.sw.cases.get(j);
 	
-						if (cs.exp.equals(gcs.exp)) {
+						if (cs.exp.equals(gcs.exp, context)) {
 							gcs.cs = cs;
 							// goto Lfoundcase;
 							continue Lfoundcase;

@@ -44,7 +44,7 @@ public class DoStatement extends Statement {
 		} else {
 			result = BEfallthru;
 		}
-		if ((result & BEfallthru) != 0 && condition.canThrow()) {
+		if ((result & BEfallthru) != 0 && condition.canThrow(context)) {
 			result |= BEthrow;
 		}
 		return result;

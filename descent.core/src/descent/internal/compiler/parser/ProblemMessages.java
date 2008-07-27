@@ -487,6 +487,7 @@ final class ProblemMessages extends NLS {
 	public static String TemplateMemberFunctionNotAllowedInInterface;
 	public static String ArgumentToTypeofIsNotAnExpression;
 	public static String CannotInferTypeFromOverloadedFunctionSymbol;
+	public static String SymbolIsNotMutable;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

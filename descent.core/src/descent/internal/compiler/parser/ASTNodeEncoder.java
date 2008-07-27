@@ -93,10 +93,6 @@ public class ASTNodeEncoder {
 		}
 		
 		value = decodeForIndexer(value);
-		
-		if (new String(value).equals("Info[] lookup [in BomSniffer [in UnicodeBom.d [in tango.text.convert [in <project root> [in Tango]]]]]")) {
-			System.out.println();
-		}
 
 		return initParser(value).parseInitializer();
 	}

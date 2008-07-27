@@ -43,7 +43,7 @@ public class ForStatement extends Statement {
 			}
 		}
 		if (condition != null) {
-			if (condition.canThrow()) {
+			if (condition.canThrow(context)) {
 				result |= BEthrow;
 			}
 		} else
@@ -55,7 +55,7 @@ public class ForStatement extends Statement {
 			}
 			result |= r & ~(BEbreak | BEcontinue);
 		}
-		if (increment != null && increment.canThrow()) {
+		if (increment != null && increment.canThrow(context)) {
 			result |= BEthrow;
 		}
 		return result;

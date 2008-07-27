@@ -109,13 +109,12 @@ public class SuperExp extends ThisExp {
 		}
 
 		var.isVarDeclaration().checkNestedReference(sc, loc, context);
-		/*
-		 * #if 0 if (fd != fdthis) { fdthis.getLevel(loc, fd);
-		 * fd.vthis.nestedref = 1; fd.nestedFrameRef = 1; } #endif
-		 */
-
-		if (0 == sc.intypeof) {
+		if (context.isD2()) {
 			sc.callSuper |= Scope.CSXsuper;
+		} else {
+			if (0 == sc.intypeof) {
+				sc.callSuper |= Scope.CSXsuper;
+			}
 		}
 		return this;
 	}

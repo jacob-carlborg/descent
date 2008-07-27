@@ -403,5 +403,13 @@ public class Bugs_Test extends Parser_Test {
 		Module m = getParseResult(s, AST.D1).module;
 		assertNotNull(m);
 	}
+	
+	public void testWrongEnum() {
+		String s = 
+			"enum { int a = 1; int b = 2; }";
+		
+		Module m = getParseResult(s, AST.D2).module;
+		assertNotNull(m);
+	}
 
 }

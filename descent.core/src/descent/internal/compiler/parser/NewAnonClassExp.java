@@ -33,6 +33,15 @@ public class NewAnonClassExp extends Expression {
 	}
 	
 	@Override
+	public boolean canThrow(SemanticContext context) {
+		if (context.isD2()) {
+			return true;
+		} else {
+			return super.canThrow(context);
+		}
+	}
+	
+	@Override
 	public int checkSideEffect(int flag, SemanticContext context) {
 		return 1;
 	}

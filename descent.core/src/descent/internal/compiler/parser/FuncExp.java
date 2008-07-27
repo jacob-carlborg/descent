@@ -58,6 +58,9 @@ public class FuncExp extends Expression {
 			} else {
 				type = fd.type.pointerTo(context);
 			}
+			if (context.isD2()) {
+				fd.tookAddressOf++;
+			}
 		}
 		return this;
 	}

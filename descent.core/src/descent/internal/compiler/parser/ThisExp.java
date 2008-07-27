@@ -95,8 +95,12 @@ public class ThisExp extends Expression {
 		Assert.isNotNull(var.parent);
 		type = var.type;
 		var.isVarDeclaration().checkNestedReference(sc, loc, context);
-		if (0 == sc.intypeof) {
+		if (context.isD2()) {
 			sc.callSuper |= Scope.CSXthis;
+		} else {
+			if (0 == sc.intypeof) {
+				sc.callSuper |= Scope.CSXthis;
+			}
 		}
 		return this;
 	}
@@ -106,7 +110,11 @@ public class ThisExp extends Expression {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.ThisOnlyAllowedInNonStaticMemberFunctions, this));
 		}
-		type = Type.tint32;
+		if (context.isD2()) {
+			type = Type.terror;
+		} else {
+			type = Type.tint32;
+		}
 		return this;
 	}
 

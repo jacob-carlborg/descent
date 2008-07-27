@@ -49,6 +49,15 @@ public class TupleExp extends Expression {
 		visitor.visit(this);
 		visitor.endVisit(this);
 	}
+	
+	@Override
+	public boolean canThrow(SemanticContext context) {
+		if (context.isD2()) {
+			return arrayExpressionCanThrow(exps, context);
+		} else {
+			return super.canThrow(context);
+		}
+	}
 
 	@Override
 	public Expression castTo(Scope sc, Type t, SemanticContext context) {
@@ -85,8 +94,7 @@ public class TupleExp extends Expression {
 		return f;
 	}
 
-	@Override
-	public boolean equals(Object o) {
+	public boolean equals(Object o, SemanticContext context) {
 		if (this == o) {
 			return true;
 		}
@@ -101,7 +109,7 @@ public class TupleExp extends Expression {
 					Expression e1 = exps.get(i);
 					Expression e2 = te.exps.get(i);
 
-					if (!e1.equals(e2)) {
+					if (!e1.equals(e2, context)) {
 						return false;
 					}
 				}

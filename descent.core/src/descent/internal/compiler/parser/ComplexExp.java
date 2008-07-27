@@ -87,8 +87,7 @@ public class ComplexExp extends Expression {
 		}
 	}
 
-	@Override
-	public boolean equals(Object o) {
+	public boolean equals(Object o, SemanticContext context) {
 		if (this == o) {
 			return true;
 		}
@@ -96,7 +95,12 @@ public class ComplexExp extends Expression {
 		if (o instanceof Expression) {
 			if (((Expression) o).op == TOK.TOKcomplex80) {
 				ComplexExp ne = (ComplexExp) o;
-				return type.equals(ne.type) && value.equals(ne.value);
+				if (context.isD2()) {
+					return (type.toHeadMutable().equals(ne.type.toHeadMutable()))
+					 	&& value.equals(ne.value);
+				} else {
+					return type.equals(ne.type) && value.equals(ne.value);
+				}
 			}
 		}
 

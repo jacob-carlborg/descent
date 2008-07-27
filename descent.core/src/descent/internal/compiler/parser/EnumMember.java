@@ -22,8 +22,10 @@ public class EnumMember extends Dsymbol {
 		this.loc = loc;
 		this.value = this.sourceValue = value;
 		if (value == null) {
-			start = id.start;
-			length = id.length;
+			if (id != null) {
+				start = id.start;
+				length = id.length;
+			}
 		} else {
 			start = id.start;
 			length = value.start + value.length - id.start;

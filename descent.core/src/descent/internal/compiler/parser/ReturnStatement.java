@@ -55,7 +55,7 @@ public class ReturnStatement extends Statement {
 	public int blockExit(SemanticContext context) {
 		int result = BEreturn;
 
-	    if (exp != null && exp.canThrow()) {
+	    if (exp != null && exp.canThrow(context)) {
 	    	result |= BEthrow;
 	    }
 	    return result;

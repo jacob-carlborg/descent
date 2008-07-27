@@ -122,7 +122,7 @@ public class TypeInstance extends TypeQualified {
 						return MATCHnomatch;
 					}
 				} else if (e1 != null && e2 != null) {
-					if (!e1.equals(e2)) {
+					if (!e1.equals(e2, context)) {
 						if (e2.op == TOKvar) {
 							/*
 							 * (T:Number!(e2), int e2)
@@ -162,7 +162,7 @@ public class TypeInstance extends TypeQualified {
 		}
 		Expression e = (Expression) dedtypes.get(j);
 		if (e != null) {
-			if (!e1.equals(e)) {
+			if (!e1.equals(e, context)) {
 				return MATCHnomatch;
 			}
 		} else {

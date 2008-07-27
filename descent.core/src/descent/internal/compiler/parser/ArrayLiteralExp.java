@@ -38,6 +38,15 @@ public class ArrayLiteralExp extends Expression {
 		}
 		visitor.endVisit(this);
 	}
+	
+	@Override
+	public boolean canThrow(SemanticContext context) {
+		if (context.isD2()) {
+			return true;	// because it can fail allocating memory
+		} else {
+			return super.canThrow(context);	
+		}
+	}
 
 	@Override
 	public Expression castTo(Scope sc, Type t, SemanticContext context) {

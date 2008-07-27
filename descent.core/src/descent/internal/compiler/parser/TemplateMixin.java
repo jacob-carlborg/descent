@@ -221,7 +221,7 @@ public class TemplateMixin extends TemplateInstance {
 					}
 				} else if (ea != null) {
 					Expression tme = isExpression(tmo);
-					if (null == tme || !ea.equals(tme)) {
+					if (null == tme || !ea.equals(tme, context)) {
 						// goto Lcontinue;
 						continue Lcontinue;
 					}

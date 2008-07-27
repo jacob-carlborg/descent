@@ -19,6 +19,20 @@ public class DeclarationExp extends Expression {
 		visitor.visit(this);
 		visitor.endVisit(this);
 	}
+	
+	@Override
+	public boolean canThrow(SemanticContext context) {
+		if (context.isD2()) {
+			VarDeclaration v = declaration.isVarDeclaration();
+			if (v != null && v.init != null) {
+				ExpInitializer ie = v.init.isExpInitializer();
+				return ie != null && ie.exp.canThrow(context);
+			}
+			return false;
+		} else {
+			return super.canThrow(context);
+		}
+	}
 
 	@Override
 	public int checkSideEffect(int flag, SemanticContext context) {

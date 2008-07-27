@@ -29,6 +29,15 @@ public class StructLiteralExp extends Expression {
 	@Override
 	protected void accept0(IASTVisitor visitor) {
 	}
+	
+	@Override
+	public boolean canThrow(SemanticContext context) {
+		if (context.isD2()) {
+			return arrayExpressionCanThrow(elements, context);	
+		} else {
+			return super.canThrow(context);
+		}
+	}
 
 	@Override
 	public int checkSideEffect(int flag, SemanticContext context) {
@@ -194,6 +203,12 @@ public class StructLiteralExp extends Expression {
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		Expression e;
+		
+		if (context.isD2()) {
+			if (type != null) {
+				return this;
+			}
+		}
 
 		// Run semantic() on each element
 		for (int i = 0; i < elements.size(); i++) {

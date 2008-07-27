@@ -92,6 +92,7 @@ public interface Id {
 	static final char[] sort = { 's', 'o', 'r', 't' };
 	static final char[] reverse = { 'r', 'e', 'v', 'e', 'r', 's', 'e' };
 	static final char[] dup = { 'd', 'u', 'p' };
+	static final char[] idup = { 'i', 'd', 'u', 'p' };
 	static final char[] ___out = { 'o', 'u', 't' };
 	static final char[] ___in = { 'i', 'n' };
 	static final char[] __int = { 'i', 'n', 't' };

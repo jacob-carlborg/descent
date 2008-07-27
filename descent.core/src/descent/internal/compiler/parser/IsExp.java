@@ -110,6 +110,23 @@ public class IsExp extends Expression {
 					return new IntegerExp(Loc.ZERO, 0); // goto Lno;
 				tded = targ;
 				break;
+				
+			case TOKconst:
+				if (!context.isD2()) assert (false);
+				
+				if (!targ.isConst()) {
+					return new IntegerExp(Loc.ZERO, 0); // goto Lno;
+				}
+				tded = targ;
+				break;
+			case TOKinvariant:
+				if (!context.isD2()) assert (false);
+				
+				if (!targ.isInvariant()) {
+					return new IntegerExp(Loc.ZERO, 0); // goto Lno;
+				}
+				tded = targ;
+				break;
 
 			case TOKsuper:
 				// If class or interface, get the base class and interfaces
@@ -244,8 +261,24 @@ public class IsExp extends Expression {
 
 	@Override
 	public Expression syntaxCopy(SemanticContext context) {
+		TemplateParameters p = null;
+		
+		if (context.isD2()) {
+			// This section is identical to that in
+			// TemplateDeclaration::syntaxCopy()			
+			if (parameters != null) {
+				p = new TemplateParameters();
+				p.setDim(parameters.size());
+				for (int i = 0; i < size(p); i++) {
+					TemplateParameter tp = (TemplateParameter) parameters
+							.get(i);
+					p.set(i, tp.syntaxCopy(context));
+				}
+			}
+		}
+		
 		return new IsExp(loc, targ.syntaxCopy(context), id, tok,
-				null != tspec ? tspec.syntaxCopy(context) : null, tok2);
+				null != tspec ? tspec.syntaxCopy(context) : null, tok2, p);
 	}
 
 	@Override

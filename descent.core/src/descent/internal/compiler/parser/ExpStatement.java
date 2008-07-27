@@ -42,7 +42,7 @@ public class ExpStatement extends Statement {
 					return BEhalt;
 				}
 			}
-			if (exp.canThrow()) {
+			if (exp.canThrow(context)) {
 				result |= BEthrow;
 			}
 		}

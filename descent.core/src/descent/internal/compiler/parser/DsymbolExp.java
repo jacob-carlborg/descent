@@ -10,10 +10,16 @@ import static descent.internal.compiler.parser.TY.Tsarray;
 public class DsymbolExp extends Expression {
 
 	public Dsymbol s;
-
+	public boolean hasOverloads;
+	
 	public DsymbolExp(Loc loc, Dsymbol s) {
+		this(loc, s, false);
+	}
+
+	public DsymbolExp(Loc loc, Dsymbol s, boolean hasOverloads) {
 		super(loc, TOK.TOKdsymbol);
 		this.s = s;
+		this.hasOverloads = hasOverloads;
 	}
 
 	@Override
@@ -35,6 +41,7 @@ public class DsymbolExp extends Expression {
 		VarDeclaration v;
 		FuncDeclaration f;
 		FuncLiteralDeclaration fld;
+		OverloadSet o;
 		// Declaration d;
 		ClassDeclaration cd;
 		ClassDeclaration thiscd = null;
@@ -63,6 +70,12 @@ public class DsymbolExp extends Expression {
 
 			// BUG: This should happen after overload resolution for functions, not before
 			if (s.needThis()) {
+				boolean condition;
+				if (context.isD2()) {
+					condition = hasThis(sc) != null /*&& !s.isFuncDeclaration()*/;
+				} else {
+					condition = hasThis(sc) != null && null == s.isFuncDeclaration();
+				}	
 				if (hasThis(sc) != null /*&& !s.isFuncDeclaration()*/) {
 					// Supply an implicit 'this', as in
 					//	  this.ident
@@ -76,7 +89,11 @@ public class DsymbolExp extends Expression {
 
 			em = s.isEnumMember();
 			if (em != null) {
-				e = em.value().copy();
+				if (context.isD2()) {
+					e = em.value();
+				} else {
+					e = em.value().copy();
+				}
 				e = e.semantic(sc, context);
 				return e;
 			}
@@ -132,9 +149,20 @@ public class DsymbolExp extends Expression {
 			}
 			f = s.isFuncDeclaration();
 			if (f != null) {
-				VarExp ve = new VarExp(loc, f);
+				VarExp ve;
+				if (context.isD2()) {
+					ve = new VarExp(loc, f, hasOverloads);
+				} else {
+					ve = new VarExp(loc, f);
+				}
 				ve.copySourceRange(this);
 				return ve;
+			}
+			if (context.isD2()) {
+				o = s.isOverloadSet();
+				if (o != null) {
+					return new OverExp(o);
+				}
 			}
 			cd = s.isClassDeclaration();
 			if (cd != null && thiscd != null
@@ -179,13 +207,13 @@ public class DsymbolExp extends Expression {
 				Expressions exps = new Expressions(tup.objects
 						.size());
 				for (int i = 0; i < tup.objects.size(); i++) {
-					ASTDmdNode o = tup.objects.get(i);
-					if (o.dyncast() != DYNCAST.DYNCAST_EXPRESSION) {
+					ASTDmdNode o2 = tup.objects.get(i);
+					if (o2.dyncast() != DYNCAST.DYNCAST_EXPRESSION) {
 						if (context.acceptsWarnings()) {
-							context.acceptProblem(Problem.newSemanticTypeWarning(IProblem.SymbolNotAnExpression, 0, o.getStart(), o.getLength(), o.toChars(context)));
+							context.acceptProblem(Problem.newSemanticTypeWarning(IProblem.SymbolNotAnExpression, 0, o2.getStart(), o2.getLength(), o2.toChars(context)));
 						}
 					} else {
-						Expression e2 = (Expression) o;
+						Expression e2 = (Expression) o2;
 						e2 = e2.syntaxCopy(context);
 						exps.add(e2);
 					}

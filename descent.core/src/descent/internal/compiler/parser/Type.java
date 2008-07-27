@@ -847,6 +847,10 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		}
 	}
 	
+	public Type toHeadMutable() {
+		return this;
+	}
+	
 	public boolean isConst() {
 		return mod == MODconst;
 	}

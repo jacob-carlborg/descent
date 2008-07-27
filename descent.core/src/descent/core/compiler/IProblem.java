@@ -686,5 +686,6 @@ public interface IProblem {
 	int TemplateMemberFunctionNotAllowedInInterface = 475;
 	int ArgumentToTypeofIsNotAnExpression = 476;
 	int CannotInferTypeFromOverloadedFunctionSymbol = 477;
+	int SymbolIsNotMutable = 478;
 
 }

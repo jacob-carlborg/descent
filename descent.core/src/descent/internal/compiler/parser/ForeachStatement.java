@@ -91,7 +91,7 @@ public class ForeachStatement extends Statement {
 	public int blockExit(SemanticContext context) {
 		int result = BEfallthru;
 
-		if (aggr.canThrow()) {
+		if (aggr.canThrow(context)) {
 			result |= BEthrow;
 		}
 

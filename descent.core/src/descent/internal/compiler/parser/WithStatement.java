@@ -40,7 +40,7 @@ public class WithStatement extends Statement {
 	@Override
 	public int blockExit(SemanticContext context) {
 		int result = BEnone;
-		if (exp.canThrow()) {
+		if (exp.canThrow(context)) {
 			result = BEthrow;
 		}
 		if (body != null) {

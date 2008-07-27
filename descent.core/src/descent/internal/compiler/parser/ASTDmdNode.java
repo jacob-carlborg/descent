@@ -260,6 +260,7 @@ public abstract class ASTDmdNode extends ASTNode {
 	public final static int DEFAULT_INIT_EXP = 200;
 	public final static int POSTBLIT_DECLARATION = 201;
 	public final static int TEMPLATE_THIS_PARAMETER = 202;
+	public final static int OVER_EXP = 203;
 
 	// Defined here because MATCH and Match overlap on Windows
 	public static class Match {
@@ -587,12 +588,13 @@ public abstract class ASTDmdNode extends ASTNode {
 	
 	/******************************
 	 * Perform canThrow() on an array of Expressions.
+	 * @param context TODO
 	 */
-	public static boolean arrayExpressionCanThrow(Expressions exps) {
+	public static boolean arrayExpressionCanThrow(Expressions exps, SemanticContext context) {
 		if (exps != null) {
 			for (int i = 0; i < exps.size(); i++) {
 				Expression e = (Expression) exps.get(i);
-				if (e != null && e.canThrow())
+				if (e != null && e.canThrow(context))
 					return true;
 			}
 		}
@@ -942,33 +944,63 @@ public abstract class ASTDmdNode extends ASTNode {
 				}
 
 				// L1: 
-				if (!((p.storageClass & STClazy) != 0 && p.type.ty == Tvoid)) {
-					arg = arg.implicitCastTo(sc, p.type, context);
-				}
-				if ((p.storageClass & (STCout | STCref)) != 0) {
-					// BUG: should check that argument to inout is type
-					// 'invariant'
-					// BUG: assignments to inout should also be type 'invariant'
-					arg = arg.modifiableLvalue(sc, arg, context);
-
-					// if (arg.op == TOKslice)
-					// arg.error("cannot modify slice %s", arg.toChars());
-
-					// Don't have a way yet to do a pointer to a bit in array
-					if (arg.op == TOKarray && 
-							arg.type.toBasetype(context).ty == Tbit) {
-						if (context.acceptsErrors()) {
-							context.acceptProblem(Problem.newSemanticTypeError(
-									IProblem.CannotHaveOutOrInoutArgumentOfBitInArray, this));
+				if (context.isD2()) {
+					if (!((p.storageClass & STClazy) != 0 && p.type.ty == Tvoid)) {
+						if (p.type != arg.type) {
+							arg = arg.implicitCastTo(sc, p.type, context);
+							arg = arg.optimize(WANTvalue, context);
 						}
 					}
-				}
+					if ((p.storageClass & STCref) != 0) {
+						arg = arg.toLvalue(sc, arg, context);
+					} else if ((p.storageClass & STCout) != 0) {
+						arg = arg.modifiableLvalue(sc, arg, context);
+					}
 
-				// Convert static arrays to pointers
-				tb = arg.type.toBasetype(context);
-				if (tb.ty == Tsarray) {
-					arg = arg.checkToPointer(context);
-				}
+					// Convert static arrays to pointers
+					tb = arg.type.toBasetype(context);
+					if (tb.ty == Tsarray) {
+						arg = arg.checkToPointer(context);
+					}
+
+					if (tb.ty == Tstruct
+							&& 0 == (p.storageClass & (STCref | STCout))) {
+						arg = callCpCtor(loc, sc, arg, context);
+					}
+
+					// Convert lazy argument to a delegate
+					if ((p.storageClass & STClazy) != 0) {
+						arg = arg.toDelegate(sc, p.type, context);
+					}
+				} else {
+					if (!((p.storageClass & STClazy) != 0 && p.type.ty == Tvoid)) {
+						arg = arg.implicitCastTo(sc, p.type, context);
+					}
+					if ((p.storageClass & (STCout | STCref)) != 0) {
+						// BUG: should check that argument to inout is type
+						// 'invariant'
+						// BUG: assignments to inout should also be type 'invariant'
+						arg = arg.modifiableLvalue(sc, arg, context);
+	
+						// if (arg.op == TOKslice)
+						// arg.error("cannot modify slice %s", arg.toChars());
+	
+						// Don't have a way yet to do a pointer to a bit in array
+						if (arg.op == TOKarray && 
+								arg.type.toBasetype(context).ty == Tbit) {
+							if (context.acceptsErrors()) {
+								context.acceptProblem(Problem.newSemanticTypeError(
+										IProblem.CannotHaveOutOrInoutArgumentOfBitInArray, this));
+							}
+						}
+					}
+					
+					// Convert static arrays to pointers
+					tb = arg.type.toBasetype(context);
+					if (tb.ty == Tsarray) {
+						arg = arg.checkToPointer(context);
+					}
+				}				
 
 				// Convert lazy argument to a delegate
 				if ((p.storageClass & STClazy) != 0) {
@@ -1023,6 +1055,11 @@ public abstract class ASTDmdNode extends ASTNode {
 					arguments.size() - nparams);
 			arguments.add(0, e);
 		}
+	}
+
+	private Expression callCpCtor(Loc loc, Scope sc, Expression arg, SemanticContext context) {
+		// TODO Auto-generated method stub
+		return arg;
 	}
 
 	public abstract int getNodeType();
@@ -1777,7 +1814,7 @@ public abstract class ASTDmdNode extends ASTNode {
 				// goto Lnomatch;
 				return false;
 			}
-			if (!e1.equals(e2)) {
+			if (!e1.equals(e2, context)) {
 				// goto Lnomatch;
 				return false;
 			}

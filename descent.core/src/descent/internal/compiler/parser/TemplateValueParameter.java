@@ -166,7 +166,7 @@ public class TemplateValueParameter extends TemplateParameter {
 			ei = ei.syntaxCopy(context);
 			ei = ei.semantic(sc, context);
 			ei = ei.optimize(WANTvalue | WANTinterpret, context);
-			if (!ei.equals(e)) {
+			if (!ei.equals(e, context)) {
 				// goto Lnomatch;
 				psparam = null;
 				return MATCHnomatch;
@@ -174,7 +174,7 @@ public class TemplateValueParameter extends TemplateParameter {
 		} else if (dedtypes.get(i) != null) { // Must match already deduced value
 			Expression e = (Expression) dedtypes.get(i);
 
-			if (null == ei || !ei.equals(e)) {
+			if (null == ei || !ei.equals(e, context)) {
 				// goto Lnomatch;
 				psparam = null;
 				return MATCHnomatch;

@@ -55,6 +55,15 @@ public class NewExp extends Expression {
 		}
 		visitor.endVisit(this);
 	}
+	
+	@Override
+	public boolean canThrow(SemanticContext context) {
+		if (context.isD2()) {
+			return true;
+		} else {
+			return super.canThrow(context);
+		}
+	}
 
 	@Override
 	public int checkSideEffect(int flag, SemanticContext context) {
@@ -156,6 +165,7 @@ public class NewExp extends Expression {
 				 */
 					Dsymbol s = cd.toParent2();
 					ClassDeclaration cdn = s.isClassDeclaration();
+					FuncDeclaration fdn = s.isFuncDeclaration();
 
 					if (cdn != null) {
 						if (cdthis == null) {
@@ -196,10 +206,23 @@ public class NewExp extends Expression {
 								}
 							}
 						}
-					} else if (thisexp != null) {
-						if (context.acceptsErrors()) {
-							context.acceptProblem(Problem.newSemanticTypeError(
-									IProblem.ExpressionDotNewIsOnlyForAllocatingNestedClasses, this));
+					} else {
+						if (context.isD2()) {
+							if (fdn != null) {
+								if (thisexp != null) {
+									if (context.acceptsErrors()) {
+										context.acceptProblem(Problem.newSemanticTypeError(
+												IProblem.ExpressionDotNewIsOnlyForAllocatingNestedClasses, this));
+									}
+								}
+							}
+						} else {
+							if (thisexp != null) {
+								if (context.acceptsErrors()) {
+									context.acceptProblem(Problem.newSemanticTypeError(
+											IProblem.ExpressionDotNewIsOnlyForAllocatingNestedClasses, this));
+								}
+							}
 						}
 					}
 				} else if (thisexp != null) {
@@ -219,7 +242,11 @@ public class NewExp extends Expression {
 					cd.accessCheck(sc, member, context, this);
 
 					tf = (TypeFunction) f.type;
-					type = tf.next;
+					if (context.isD2()) {
+						
+					} else {
+						type = tf.next;
+					}
 
 					if (arguments == null) {
 						arguments = new Expressions();
@@ -314,6 +341,9 @@ public class NewExp extends Expression {
 					Expression arg = arguments.get(i);
 					arg = resolveProperties(sc, arg, context);
 					arg = arg.implicitCastTo(sc, Type.tsize_t, context);
+					if (context.isD2()) {
+						arg = arg.optimize(WANTvalue, context);
+					}
 					if (arg.op == TOKint64
 							&& arg.toInteger(context)
 									.compareTo(BigInteger.ZERO) < 0) {

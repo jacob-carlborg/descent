@@ -41,7 +41,7 @@ public class IfStatement extends Statement {
 	@Override
 	public int blockExit(SemanticContext context) {
 		int result = BEnone;
-	    if (condition.canThrow()) {
+	    if (condition.canThrow(context)) {
 	    	result |= BEthrow;
 	    }
 	    if (ifbody != null) {

@@ -1938,6 +1938,9 @@ public class Parser extends Lexer {
 						;
 					} else {
 						check(TOKcomma);
+						if (token.value == TOK.TOKsemicolon) {
+							nextToken();
+						}
 					}
 					
 					attachLeadingComments(em);

@@ -78,8 +78,7 @@ public class IntegerExp extends Expression {
 		return num;
 	}
 
-	@Override
-	public boolean equals(Object o) {
+	public boolean equals(Object o, SemanticContext context) {
 		if (this == o) {
 			return true;
 		}
@@ -87,7 +86,12 @@ public class IntegerExp extends Expression {
 		if (o instanceof Expression) {
 			if (((Expression) o).op == TOK.TOKint64) {
 				IntegerExp ne = (IntegerExp) o;
-				return type.equals(ne.type) && value.equals(ne.value);
+				if (context.isD2()) {
+					return (type.toHeadMutable().equals(ne.type.toHeadMutable()))
+					 	&& value.equals(ne.value);
+				} else {
+					return type.equals(ne.type) && value.equals(ne.value);
+				}
 			}
 		}
 
@@ -303,7 +307,13 @@ public class IntegerExp extends Expression {
 				type = Type.tint32;
 			}
 		} else {
-			type = type.semantic(loc, sc, context);
+			if (context.isD2()) {
+				if (null == type.deco) {
+					type = type.semantic(loc, sc, context);
+				}
+			} else {
+				type = type.semantic(loc, sc, context);
+			}
 		}
 		return this;
 	}
@@ -523,8 +533,12 @@ public class IntegerExp extends Expression {
 				/* This can happen if errors, such as
 				 * the type is painted on like in fromConstInitializer().
 				 */
-				if (0 == context.global.errors) {
+				if (context.isD2()) {
 					throw new IllegalStateException("assert(0);");
+				} else {
+					if (0 == context.global.errors) {
+						throw new IllegalStateException("assert(0);");
+					}
 				}
 			}
 			break;

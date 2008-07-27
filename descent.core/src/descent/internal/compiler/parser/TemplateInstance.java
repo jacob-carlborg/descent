@@ -73,7 +73,7 @@ public class TemplateInstance extends ScopeDsymbol {
 		visitor.endVisit(this);
 	}
 
-	public Objects arraySyntaxCopy(Objects objs, SemanticContext context) {
+	public static Objects arraySyntaxCopy(Objects objs, SemanticContext context) {
 		Objects a = null;
 		if (objs != null) {
 			a = new Objects();
