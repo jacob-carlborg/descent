@@ -136,4 +136,27 @@ public final class FileUtil {
 	public static String readStringFromStream(InputStream inputStream) throws IOException {
 		return readStringFromReader(new InputStreamReader(inputStream));
 	}
+	
+	
+	/** Performs an InputStream close, either ignoring IOExceptions, 
+	 * or rethrowing them unchecked. */
+	public static void uncheckedClose(InputStream inStream, boolean rethrowAsUnchecked) {
+		try {
+			inStream.close();
+		} catch (IOException e) {
+			if(rethrowAsUnchecked)
+				throw melnorme.miscutil.ExceptionAdapter.unchecked(e);
+		}
+	}
+
+	/** Performs an Reader close, either ignoring IOExceptions, 
+	 * or rethrowing them unchecked. */
+	public static void uncheckedClose(Reader reader, boolean rethrowAsUnchecked) {
+		try {
+			reader.close();
+		} catch (IOException e) {
+			if(rethrowAsUnchecked)
+				throw melnorme.miscutil.ExceptionAdapter.unchecked(e);
+		}
+	}
 }

@@ -134,6 +134,11 @@ public class ArrayUtil {
 		return (T[])Array.newInstance(cpType, list.size());
 	}
 
+    /** Copies src array range [0 .. src.length] to dest array starting at destIx. */
+	public static void copyToRange(byte[] src, byte[] dest, int destIx) {
+		assertTrue(src.length < dest.length - destIx);
+		System.arraycopy(src, 0, dest, destIx, src.length);
+	}
 	
 	/** Appends an element to array, creating a new array. */
 	public static <T> T[] append(T[] array, T element) {
