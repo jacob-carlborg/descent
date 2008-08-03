@@ -11,7 +11,7 @@ public class InvariantDeclaration extends FuncDeclaration {
 	public int invariantStart;
 
 	public InvariantDeclaration(Loc loc) {
-		super(loc, new IdentifierExp(Loc.ZERO, Id.classInvariant),
+		super(loc, new IdentifierExp(Id.classInvariant),
 				STC.STCundefined, null);
 	}
 

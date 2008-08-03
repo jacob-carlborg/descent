@@ -248,7 +248,7 @@ public class SemanticContext {
 	public IdentifierExp generateId(String prefix) {
 		String name = prefix + ++generatedIds;
 		char[] id = name.toCharArray();
-		return new IdentifierExp(Loc.ZERO, id);
+		return new IdentifierExp(id);
 	}
 
 	public FuncDeclaration genCfunc(Type treturn, char[] id) {

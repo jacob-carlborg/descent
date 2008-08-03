@@ -11,7 +11,7 @@ public class StaticDtorDeclaration extends FuncDeclaration {
 	public VarDeclaration vgate;
 
 	public StaticDtorDeclaration(Loc loc) {
-		super(loc, new IdentifierExp(Loc.ZERO, Id.staticDtor), STC.STCstatic,
+		super(loc, new IdentifierExp(Id.staticDtor), STC.STCstatic,
 				null);
 	}
 

@@ -775,8 +775,7 @@ public class ForeachStatement extends Statement {
 			/*
 			 * Call: aggr.apply(flde)
 			 */
-			ec = new DotIdExp(loc, aggr, new IdentifierExp(loc,
-					(op == TOKforeach_reverse) ? Id.applyReverse : Id.apply));
+			ec = new DotIdExp(loc, aggr, (op == TOKforeach_reverse) ? Id.applyReverse : Id.apply);
 			Expressions exps = new Expressions();
 			exps.add(flde);
 			

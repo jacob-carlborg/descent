@@ -260,7 +260,11 @@ public class CallExp extends UnaExp {
 						TypeAArray taa = (TypeAArray) dotid.e1.type
 								.toBasetype(context);
 						key = key.implicitCastTo(sc, taa.index, context);
-						key = key.implicitCastTo(sc, taa.key, context);
+						if (context.isD2()) {
+							
+						} else {
+							key = key.implicitCastTo(sc, taa.key, context);
+						}
 
 						return new RemoveExp(loc, dotid.e1, key);
 					}
@@ -270,6 +274,56 @@ public class CallExp extends UnaExp {
 					}
 					arguments.add(0, dotid.e1);
 					e1 = new IdentifierExp(dotid.loc, dotid.ident);
+				}
+			}
+		}
+		
+		if (context.isD2()) {
+			/*
+			 * This recognizes: foo!(tiargs)(funcargs)
+			 */
+			if (e1.op == TOKimport && null == e1.type) {
+				ScopeExp se = (ScopeExp) e1;
+				TemplateInstance ti = se.sds.isTemplateInstance();
+				if (ti != null && 0 == ti.semanticdone) {
+					/*
+					 * Attempt to instantiate ti. If that works, go with it. If
+					 * not, go with partial explicit specialization.
+					 */
+					int errors = context.global.errors;
+					context.global.gag++;
+					ti.semantic(sc, context);
+					context.global.gag--;
+					if (errors != context.global.errors) {
+						context.global.errors = errors;
+						targsi = ti.tiargs;
+						e1 = new IdentifierExp(loc, ti.name);
+					}
+				}
+			}
+
+			/*
+			 * This recognizes: expr.foo!(tiargs)(funcargs)
+			 */
+			if (e1.op == TOK.TOKdotti && null == e1.type) {
+				DotTemplateInstanceExp se = (DotTemplateInstanceExp) e1;
+				TemplateInstance ti = se.ti;
+				if (0 == ti.semanticdone) {
+					/*
+					 * Attempt to instantiate ti. If that works, go with it. If
+					 * not, go with partial explicit specialization.
+					 */
+					Expression etmp;
+					int errors = context.global.errors;
+					context.global.gag++;
+					etmp = e1.semantic(sc, context);
+					context.global.gag--;
+					if (errors != context.global.errors) {
+						context.global.errors = errors;
+						targsi = ti.tiargs;
+						e1 = new DotIdExp(loc, se.e1, ti.name);
+					} else
+						e1 = etmp;
 				}
 			}
 		}
@@ -408,19 +462,67 @@ public class CallExp extends UnaExp {
 					ad = td.toParent().isAggregateDeclaration();
 				}
 				
-				if (f.needThis()) {
-				    ue.e1 = getRightThis(loc, sc, ad, ue.e1, f, context);
-				}
-				
-				/* Cannot call public functions from inside invariant
-				 * (because then the invariant would have infinite recursion)
-				 */
-				if (sc.func != null && sc.func.isInvariantDeclaration() != null &&
-				    ue.e1.op == TOKthis &&
-				    f.addPostInvariant(context)
-				   ) {
-					if (context.acceptsErrors()) {
-						context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotCallPublicExportFunctionFromInvariant, this, f.toChars(context)));
+				if (context.isD2()) {
+					/* Now that we have the right function f, we need to get the
+					 * right 'this' pointer if f is in an outer class, but our
+					 * existing 'this' pointer is in an inner class.
+					 * This code is analogous to that used for variables
+					 * in DotVarExp::semantic().
+					 */
+				  // L10:
+					boolean repeat = true;
+					while(repeat) {
+						repeat = false;
+
+						Type t = ue.e1.type.toBasetype(context);
+						if (f.needThis()
+								&& ad != null
+								&& !(t.ty == Tpointer
+										&& ((TypePointer) t).next.ty == Tstruct && ((TypeStruct) ((TypePointer) t).next).sym == ad)
+								&& !(t.ty == Tstruct && ((TypeStruct) t).sym == ad)) {
+							ClassDeclaration cd = ad.isClassDeclaration();
+							ClassDeclaration tcd = t.isClassHandle();
+
+							if (null == cd
+									|| null == tcd
+									|| !(tcd == cd || cd.isBaseOf(tcd, null,
+											context))) {
+								if (tcd != null && tcd.isNested()) { 
+									// Try again with outer scope
+									ue.e1 = new DotVarExp(loc, ue.e1, tcd.vthis);
+									ue.e1 = ue.e1.semantic(sc, context);
+									// goto L10;
+									repeat = true;
+									continue;
+								}
+								if (context.acceptsErrors()) {
+									context
+											.acceptProblem(Problem
+													.newSemanticTypeError(
+															IProblem.ThisForSymbolNeedsToBeType,
+															this,
+															f.toChars(context),
+															ad.toChars(context),
+															t.toChars(context)));
+								}
+							}
+						}
+					}
+				} else {
+					if (f.needThis()) {
+					    ue.e1 = getRightThis(loc, sc, ad, ue.e1, f, context);
+					}
+					
+					/* Cannot call public functions from inside invariant
+					 * (because then the invariant would have infinite recursion)
+					 */
+					if (sc.func != null && sc.func.isInvariantDeclaration() != null &&
+					    ue.e1.op == TOKthis &&
+					    f.addPostInvariant(context)
+					   ) {
+						if (context.acceptsErrors()) {
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotCallPublicExportFunctionFromInvariant, this, f.toChars(context)));
+						}
 					}
 				}
 
@@ -437,6 +539,42 @@ public class CallExp extends UnaExp {
 						e1 = new DotVarExp(loc, dte.e1, f);
 					}
 					e1.type = f.type;
+					
+					if (context.isD2()) {
+						// Const member function can take
+						// const/invariant/mutable this
+						if (!(f.type.isConst())) {
+							// Check for const/invariant compatibility
+							Type tthis = ue.e1.type.toBasetype(context);
+							if (tthis.ty == Tpointer)
+								tthis = tthis.nextOf().toBasetype(context);
+							if (f.type.isInvariant()) {
+								if (tthis.mod != Type.MODinvariant) {
+									if (context.acceptsErrors()) {
+										context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolCanOnlyBeCalledOnAnInvariantObject, this, e1.toChars(context)));
+									}
+								}
+							} else {
+								if (tthis.mod != 0) {
+									if (context.acceptsErrors()) {
+										context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolCanOnlyBeCalledOnAMutableObject, this, e1.toChars(context), tthis.toChars(context)));
+									}
+								}
+							}
+
+							/*
+							 * Cannot call mutable method on a final struct
+							 */
+							if (tthis.ty == Tstruct && ue.e1.op == TOKvar) {
+								VarExp v = (VarExp) ue.e1;
+								if ((v.var.storage_class & STC.STCfinal) != 0) {
+									if (context.acceptsErrors()) {
+										context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotCallMutableMethodOnFinalStruct, this));
+									}
+								}
+							}
+						}
+					}
 
 					// See if we need to adjust the 'this' pointer
 					ad = f.isThis();
@@ -665,8 +803,7 @@ public class CallExp extends UnaExp {
 	private Expression semantic_L1(Scope sc, SemanticContext context) {
 		// overload of opCall, therefore it's a call
 		// Rewrite as e1.call(arguments)
-		Expression e = new DotIdExp(loc, e1, new IdentifierExp(
-				Id.call));
+		Expression e = new DotIdExp(loc, e1, Id.call);
 		e = new CallExp(loc, e, arguments);
 		e = e.semantic(sc, context);
 		return e;

@@ -14,7 +14,7 @@ public class DeleteDeclaration extends FuncDeclaration {
 	public int deleteStart; // where the "delete" keyword starts
 
 	public DeleteDeclaration(Loc loc, Arguments arguments) {
-		super(loc, new IdentifierExp(Loc.ZERO, Id.classDelete),
+		super(loc, new IdentifierExp(Id.classDelete),
 				STC.STCundefined, null);
 		this.arguments = arguments;
 	}

@@ -169,7 +169,7 @@ public class SliceExp extends UnaExp {
 
 			if (null != search_function(ad, Id.slice, context)) {
 				// Rewrite as e1.slice(lwr, upr)
-				e = new DotIdExp(loc, e1, new IdentifierExp(Loc.ZERO, Id.slice));
+				e = new DotIdExp(loc, e1, Id.slice);
 				if (null != lwr) {
 					assert (null != upr);
 					e = new CallExp(loc, e, lwr, upr);

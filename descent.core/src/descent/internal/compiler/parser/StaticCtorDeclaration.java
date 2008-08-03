@@ -10,7 +10,7 @@ public class StaticCtorDeclaration extends FuncDeclaration {
 	public int thisStart; // where the "this" keyword starts
 
 	public StaticCtorDeclaration(Loc loc) {
-		super(loc, new IdentifierExp(Loc.ZERO, Id.staticCtor), STC.STCstatic,
+		super(loc, new IdentifierExp(Id.staticCtor), STC.STCstatic,
 				null);
 	}
 

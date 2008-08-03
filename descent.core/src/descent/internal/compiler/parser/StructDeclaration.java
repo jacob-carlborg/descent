@@ -321,10 +321,10 @@ public class StructDeclaration extends AggregateDeclaration {
 
 					// this.v
 					ex = new ThisExp(Loc.ZERO);
-					ex = new DotVarExp(Loc.ZERO, ex, v, 0);
+					ex = new DotVarExp(Loc.ZERO, ex, v, false);
 
 					if (dim == 1) { // this.v.dtor()
-						ex = new DotVarExp(Loc.ZERO, ex, sd.postblit, 0);
+						ex = new DotVarExp(Loc.ZERO, ex, sd.postblit, false);
 						ex = new CallExp(Loc.ZERO, ex);
 					} else {
 						// Typeinfo.postblit(cast(void*)&this.v);
@@ -333,8 +333,7 @@ public class StructDeclaration extends AggregateDeclaration {
 								.pointerTo(context));
 
 						Expression et = v.type.getTypeInfo(sc, context);
-						et = new DotIdExp(Loc.ZERO, et, new IdentifierExp(
-								Id.postblit));
+						et = new DotIdExp(Loc.ZERO, et, Id.postblit);
 
 						ex = new CallExp(Loc.ZERO, et, ea);
 					}
@@ -373,7 +372,7 @@ public class StructDeclaration extends AggregateDeclaration {
 			for (int i = 0; i < size(postblits); i++) {
 				FuncDeclaration fd = (FuncDeclaration) postblits.get(i);
 				Expression ex = new ThisExp(Loc.ZERO);
-				ex = new DotVarExp(Loc.ZERO, ex, fd, 0);
+				ex = new DotVarExp(Loc.ZERO, ex, fd, false);
 				ex = new CallExp(Loc.ZERO, ex);
 				e = Expression.combine(e, ex);
 			}
@@ -471,7 +470,7 @@ public class StructDeclaration extends AggregateDeclaration {
 				e = Expression.combine(e, ec);
 			}
 			ec = new AssignExp(Loc.ZERO, new PtrExp(Loc.ZERO, new ThisExp(
-					Loc.ZERO)), new IdentifierExp(Loc.ZERO, Id.p));
+					Loc.ZERO)), new IdentifierExp(Id.p));
 			ec.op = TOKblit;
 			e = Expression.combine(e, ec);
 			if (dtor != null) {
@@ -480,7 +479,7 @@ public class StructDeclaration extends AggregateDeclaration {
 				 * avoids needing to copy tmp back in to s.
 				 */
 				Expression ec2 = new DotVarExp(Loc.ZERO, new VarExp(Loc.ZERO,
-						tmp), dtor, 0);
+						tmp), dtor, false);
 				ec2 = new CallExp(Loc.ZERO, ec2);
 				e = Expression.combine(e, ec2);
 			}
@@ -493,8 +492,8 @@ public class StructDeclaration extends AggregateDeclaration {
 				VarDeclaration v = s.isVarDeclaration();
 				// this.v = s.v;
 				AssignExp ec = new AssignExp(Loc.ZERO, new DotVarExp(Loc.ZERO,
-						new ThisExp(Loc.ZERO), v, 0), new DotVarExp(Loc.ZERO,
-						new IdentifierExp(Loc.ZERO, Id.p), v, 0));
+						new ThisExp(Loc.ZERO), v, false), new DotVarExp(Loc.ZERO,
+						new IdentifierExp(Id.p), v, false));
 				ec.op = TOKblit;
 				e = Expression.combine(e, ec);
 			}

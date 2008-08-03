@@ -12,7 +12,7 @@ public class CtorDeclaration extends FuncDeclaration {
 	public int thisStart; // where the "this" keyword starts
 
 	public CtorDeclaration(Loc loc, Arguments arguments, int varags) {
-		super(loc, new IdentifierExp(Loc.ZERO, Id.ctor), STC.STCundefined, null);
+		super(loc, new IdentifierExp(Id.ctor), STC.STCundefined, null);
 		this.arguments = arguments;
 		this.varargs = varags;
 	}

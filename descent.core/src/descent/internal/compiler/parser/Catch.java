@@ -57,8 +57,7 @@ public class Catch extends ASTDmdNode {
 		sc = sc.push(sym);
 
 		if (type == null) {
-			type = new TypeIdentifier(Loc.ZERO, new IdentifierExp(Loc.ZERO,
-					Id.Object));
+			type = new TypeIdentifier(Loc.ZERO, Id.Object);
 		}
 		type = type.semantic(loc, sc, context);
 		if (type.toBasetype(context).isClassHandle() == null) {

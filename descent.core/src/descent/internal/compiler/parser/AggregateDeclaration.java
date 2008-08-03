@@ -213,10 +213,10 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 
 					// this.v
 					ex = new ThisExp(Loc.ZERO);
-					ex = new DotVarExp(Loc.ZERO, ex, v, 0);
+					ex = new DotVarExp(Loc.ZERO, ex, v, false);
 
 					if (dim == 1) { // this.v.dtor()
-						ex = new DotVarExp(Loc.ZERO, ex, sd.dtor, 0);
+						ex = new DotVarExp(Loc.ZERO, ex, sd.dtor, false);
 						ex = new CallExp(Loc.ZERO, ex);
 					} else {
 						// Typeinfo.destroy(cast(void*)&this.v);
@@ -225,7 +225,7 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 								.pointerTo(context));
 
 						Expression et = v.type.getTypeInfo(sc, context);
-						et = new DotIdExp(Loc.ZERO, et, new IdentifierExp(Id.destroy));
+						et = new DotIdExp(Loc.ZERO, et, Id.destroy);
 
 						ex = new CallExp(Loc.ZERO, et, ea);
 					}
@@ -264,7 +264,7 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 			for (int i = 0; i < size(dtors); i++) {
 				FuncDeclaration fd = (FuncDeclaration) dtors.get(i);
 				Expression ex = new ThisExp(Loc.ZERO);
-				ex = new DotVarExp(Loc.ZERO, ex, fd, 0);
+				ex = new DotVarExp(Loc.ZERO, ex, fd, false);
 				ex = new CallExp(Loc.ZERO, ex);
 				e = Expression.combine(ex, e);
 			}

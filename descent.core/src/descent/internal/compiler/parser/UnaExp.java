@@ -16,6 +16,11 @@ public abstract class UnaExp extends Expression {
 		this.e1 = e1;
 		this.sourceE1 = e1;
 	}
+	
+	@Override
+	public boolean canThrow(SemanticContext context) {
+		return e1.canThrow(context);
+	}
 
 	public final Expression interpretCommon(InterState istate,
 			UnaExp_fp fp, SemanticContext context) {

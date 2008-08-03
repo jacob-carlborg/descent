@@ -42,6 +42,15 @@ public abstract class TemplateParameter extends ASTDmdNode {
 	public TemplateThisParameter isTemplateThisParameter() {
 		return null;
 	}
+	
+	/**
+	 * Match actual argument against parameter.
+	 */
+	public final MATCH matchArg(Scope sc, Objects tiargs, int i,
+			TemplateParameters parameters, Objects dedtypes,
+			Declaration[] psparam, SemanticContext context) {
+		return matchArg(sc, tiargs, i, parameters, dedtypes, psparam, 0, context);
+	}
 
 	/**
 	 * Match actual argument against parameter.

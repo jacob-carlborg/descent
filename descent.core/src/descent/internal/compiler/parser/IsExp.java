@@ -5,6 +5,7 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 import static descent.internal.compiler.parser.TOK.*;
+import static descent.internal.compiler.parser.MATCH.*;
 
 
 public class IsExp extends Expression {
@@ -70,44 +71,44 @@ public class IsExp extends Expression {
 
 		if (0 < gerrors) // if any errors happened
 		{ // then condition is false
-			return new IntegerExp(Loc.ZERO, 0);
+			return no(context);
 		} else if (tok2 != TOK.TOKreserved) {
 			switch (tok2) {
 			case TOKtypedef:
 				if (targ.ty != TY.Ttypedef)
-					return new IntegerExp(Loc.ZERO, 0); // goto Lno;
+					return no(context);
 				tded = ((TypeTypedef) targ).sym.basetype;
 				break;
 
 			case TOKstruct:
 				if (targ.ty != TY.Tstruct)
-					return new IntegerExp(Loc.ZERO, 0); // goto Lno;
+					return no(context);
 				if (null != ((TypeStruct) targ).sym.isUnionDeclaration())
-					return new IntegerExp(Loc.ZERO, 0); // goto Lno;
+					return no(context);
 				tded = targ;
 				break;
 
 			case TOKunion:
 				if (targ.ty != TY.Tstruct)
-					return new IntegerExp(Loc.ZERO, 0); // goto Lno;
+					return no(context);
 				if (null == ((TypeStruct) targ).sym.isUnionDeclaration())
-					return new IntegerExp(Loc.ZERO, 0); // goto Lno;
+					return no(context);
 				tded = targ;
 				break;
 
 			case TOKclass:
 				if (targ.ty != TY.Tclass)
-					return new IntegerExp(Loc.ZERO, 0); // goto Lno;
+					return no(context);
 				if (null != ((TypeClass) targ).sym.isInterfaceDeclaration())
-					return new IntegerExp(Loc.ZERO, 0); // goto Lno;
+					return no(context);
 				tded = targ;
 				break;
 
 			case TOKinterface:
 				if (targ.ty != TY.Tclass)
-					return new IntegerExp(Loc.ZERO, 0); // goto Lno;
+					return no(context);
 				if (null == ((TypeClass) targ).sym.isInterfaceDeclaration())
-					return new IntegerExp(Loc.ZERO, 0); // goto Lno;
+					return no(context);
 				tded = targ;
 				break;
 				
@@ -115,7 +116,7 @@ public class IsExp extends Expression {
 				if (!context.isD2()) assert (false);
 				
 				if (!targ.isConst()) {
-					return new IntegerExp(Loc.ZERO, 0); // goto Lno;
+					return no(context);
 				}
 				tded = targ;
 				break;
@@ -123,7 +124,7 @@ public class IsExp extends Expression {
 				if (!context.isD2()) assert (false);
 				
 				if (!targ.isInvariant()) {
-					return new IntegerExp(Loc.ZERO, 0); // goto Lno;
+					return no(context);
 				}
 				tded = targ;
 				break;
@@ -131,7 +132,7 @@ public class IsExp extends Expression {
 			case TOKsuper:
 				// If class or interface, get the base class and interfaces
 				if (targ.ty != TY.Tclass)
-					return new IntegerExp(Loc.ZERO, 0); // goto Lno;
+					return no(context);
 				else {
 					ClassDeclaration cd = ((TypeClass) targ).sym;
 					Arguments args = new Arguments(cd.baseclasses.size());
@@ -145,19 +146,19 @@ public class IsExp extends Expression {
 
 			case TOKenum:
 				if (targ.ty != TY.Tenum)
-					return new IntegerExp(Loc.ZERO, 0); // goto Lno;
+					return no(context);
 				tded = ((TypeEnum) targ).sym.memtype;
 				break;
 
 			case TOKdelegate:
 				if (targ.ty != TY.Tdelegate)
-					return new IntegerExp(Loc.ZERO, 0); // goto Lno;
+					return no(context);
 				tded = targ.next; // the underlying function type
 				break;
 
 			case TOKfunction: {
 				if (targ.ty != TY.Tfunction)
-					return new IntegerExp(Loc.ZERO, 0); // goto Lno;
+					return no(context);
 				tded = targ;
 
 				/* Generate tuple from function parameter types.
@@ -187,7 +188,7 @@ public class IsExp extends Expression {
 				else if (targ.ty == TY.Tpointer && targ.next.ty == TY.Tfunction)
 					tded = targ.next.next;
 				else
-					return new IntegerExp(Loc.ZERO, 0); // goto Lno;
+					return no(context);
 				break;
 
 			default:
@@ -195,29 +196,76 @@ public class IsExp extends Expression {
 			}
 
 			return yes(tded, sc, context); // goto Lyes;
-		} else if ((null != id) && (null != tspec)) {
+		} else if (null != id && null != tspec) {
 			/* Evaluate to TRUE if targ matches tspec.
 			 * If TRUE, declare id as an alias for the specialized type.
 			 */
-			MATCH m;
-			TemplateTypeParameter tp = new TemplateTypeParameter(loc, id, null,
-					null);
+			if (context.isD2()) {
+				MATCH m;
 
-			TemplateParameters parameters = new TemplateParameters(1);
-			parameters.add(tp);
+				Objects dedtypes = new Objects();
+				dedtypes.setDim(size(parameters));
+				dedtypes.zero();
 
-			Objects dedtypes = new Objects(1);
+				m = targ.deduceType(null, tspec, parameters, dedtypes, context);
+				if (m == MATCHnomatch || (m != MATCHexact && tok == TOKequal)) {
+					return no(context);
+				} else {
+					tded = (Type) dedtypes.get(0);
+					if (null == tded) {
+						tded = targ;
+					}
 
-			m = targ.deduceType(null, tspec, parameters, dedtypes, context);
-			if (m == MATCH.MATCHnomatch
-					|| (m != MATCH.MATCHexact && tok == TOK.TOKequal)) {
-				return new IntegerExp(Loc.ZERO, 0); // goto Lno;
+					Objects tiargs = new Objects();
+					tiargs.setDim(1);
+					tiargs.set(0, targ);
+
+					for (int i = 1; i < size(parameters); i++) {
+						TemplateParameter tp = (TemplateParameter) parameters
+								.get(i);
+						Declaration[] s = { null };
+
+						m = tp.matchArg(sc, tiargs, i, parameters, dedtypes, s,
+								context);
+						if (m == MATCHnomatch) {
+							return no(context);
+						}
+						s[0].semantic(sc, context);
+						if (null == sc.insert(s[0])) {
+							if (context.acceptsErrors()) {
+								context.acceptProblem(Problem.newSemanticTypeError(
+														IProblem.DeclarationIsAlreadyDefined,
+														s[0],
+														s[0].toChars(context)));
+							}
+						}
+						if (sc.sd != null)
+							s[0].addMember(sc, sc.sd, 1, context);
+					}
+
+					return yes(tded, sc, context);
+				}
 			} else {
-				assert (dedtypes.size() == 1);
-				tded = (Type) dedtypes.get(0);
-				if (null == tded)
-					tded = targ;
-				return yes(tded, sc, context); // goto Lyes;
+				MATCH m;
+				TemplateTypeParameter tp = new TemplateTypeParameter(loc, id, null,
+						null);
+	
+				TemplateParameters parameters = new TemplateParameters(1);
+				parameters.add(tp);
+	
+				Objects dedtypes = new Objects(1);
+	
+				m = targ.deduceType(null, tspec, parameters, dedtypes, context);
+				if (m == MATCH.MATCHnomatch
+						|| (m != MATCH.MATCHexact && tok == TOK.TOKequal)) {
+					return no(context);
+				} else {
+					assert (dedtypes.size() == 1);
+					tded = (Type) dedtypes.get(0);
+					if (null == tded)
+						tded = targ;
+					return yes(tded, sc, context); // goto Lyes;
+				}
 			}
 		} else if (null != id) {
 			/* Declare id as an alias for type targ. Evaluate to TRUE
@@ -228,23 +276,30 @@ public class IsExp extends Expression {
 			/* Evaluate to TRUE if targ matches tspec
 			 */
 			tspec = tspec.semantic(loc, sc, context);
-			//printf("targ  = %s\n", targ.toChars());
-			//printf("tspec = %s\n", tspec.toChars());
 			if (tok == TOK.TOKcolon) {
 				if (targ.implicitConvTo(tspec, context) != MATCH.MATCHnomatch)
 					return yes(tded, sc, context); // goto Lyes;
 				else
-					return new IntegerExp(Loc.ZERO, 0); // goto Lno;
+					return no(context);
 			} else /* == */
 			{
 				if (targ.equals(tspec))
 					return yes(tded, sc, context); // goto Lyes;
 				else
-					return new IntegerExp(Loc.ZERO, 0); // goto Lno;
+					return no(context);
 			}
 		}
 
 		return yes(tded, sc, context);
+	}
+
+	 // Lno;
+	private Expression no(SemanticContext context) {
+		if (context.isD2()) {
+			return new IntegerExp(Loc.ZERO, 0, Type.tbool);
+		} else {
+			return new IntegerExp(Loc.ZERO, 0);
+		}
 	}
 
 	// Lyes:
@@ -252,11 +307,25 @@ public class IsExp extends Expression {
 		if (null != id) {
 			Dsymbol s = new AliasDeclaration(loc, id, tded);
 			s.semantic(sc, context);
-			sc.insert(s);
+			if (context.isD2()) {
+				if (null == sc.insert(s)) {
+					if (context.acceptsErrors()) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+									IProblem.DeclarationIsAlreadyDefined,
+									s, s.toChars(context)));
+					}
+				}
+			} else {
+				sc.insert(s);
+			}
 			if (null != sc.sd)
 				s.addMember(sc, sc.sd, 1, context);
 		}
-		return new IntegerExp(Loc.ZERO, 1);
+		if (context.isD2()) {
+			return new IntegerExp(Loc.ZERO, 1, Type.tbool);
+		} else {
+			return new IntegerExp(Loc.ZERO, 1);
+		}
 	}
 
 	@Override

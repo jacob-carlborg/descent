@@ -12,7 +12,7 @@ public class NewDeclaration extends FuncDeclaration {
 	public int newStart;
 
 	public NewDeclaration(Loc loc, Arguments arguments, int varargs) {
-		super(loc, new IdentifierExp(Loc.ZERO, Id.classNew), STC.STCstatic,
+		super(loc, new IdentifierExp(Id.classNew), STC.STCstatic,
 				null);
 		this.arguments = arguments;
 		this.varargs = varargs;

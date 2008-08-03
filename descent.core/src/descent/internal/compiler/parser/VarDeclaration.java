@@ -58,7 +58,7 @@ public class VarDeclaration extends Declaration {
 	private IField javaElement;
 	
 	public VarDeclaration(Loc loc, Type type, char[] ident, Initializer init) {
-		this(loc, type, new IdentifierExp(Loc.ZERO, ident), init);
+		this(loc, type, new IdentifierExp(ident), init);
 	}
 
 	public VarDeclaration(Loc loc, Type type, IdentifierExp id, Initializer init) {

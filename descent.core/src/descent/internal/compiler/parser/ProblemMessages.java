@@ -488,6 +488,11 @@ final class ProblemMessages extends NLS {
 	public static String ArgumentToTypeofIsNotAnExpression;
 	public static String CannotInferTypeFromOverloadedFunctionSymbol;
 	public static String SymbolIsNotMutable;
+	public static String SymbolForSymbolNeedsToBeType;
+	public static String CannotModifyConstInvariant;
+	public static String SymbolCanOnlyBeCalledOnAnInvariantObject;
+	public static String SymbolCanOnlyBeCalledOnAMutableObject;
+	public static String CannotCallMutableMethodOnFinalStruct;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

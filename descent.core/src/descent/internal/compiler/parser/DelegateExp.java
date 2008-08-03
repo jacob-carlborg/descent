@@ -10,10 +10,16 @@ import static descent.internal.compiler.parser.TY.Tfunction;
 public class DelegateExp extends UnaExp {
 
 	public FuncDeclaration func;
+	public boolean hasOverloads;
 
 	public DelegateExp(Loc loc, Expression e, FuncDeclaration f) {
+		this(loc, e, f, false);
+	}
+	
+	public DelegateExp(Loc loc, Expression e, FuncDeclaration f, boolean hasOverloads) {
 		super(loc, TOK.TOKdelegate, e);
 		this.func = f;
+		this.hasOverloads = hasOverloads;
 	}
 
 	@Override
@@ -111,8 +117,50 @@ public class DelegateExp extends UnaExp {
 			type = new TypeDelegate(func.type);
 			type = type.semantic(loc, sc, context);
 			AggregateDeclaration ad = func.toParent().isAggregateDeclaration();
-			if (func.needThis()) {
-			    e1 = getRightThis(loc, sc, ad, e1, func, context);
+			if (context.isD2()) {
+				// L10:
+				boolean repeat = true;
+				while (repeat) {
+					repeat = false;
+
+					Type t = e1.type;
+					if (func.needThis()
+							&& ad != null
+							&& !(t.ty == TY.Tpointer
+									&& ((TypePointer) t).next.ty == TY.Tstruct && ((TypeStruct) ((TypePointer) t).next).sym == ad)
+							&& !(t.ty == TY.Tstruct && ((TypeStruct) t).sym == ad)) {
+						ClassDeclaration cd = ad.isClassDeclaration();
+						ClassDeclaration tcd = t.isClassHandle();
+
+						if (null == cd
+								|| null == tcd
+								|| !(tcd == cd || cd.isBaseOf(tcd, null,
+										context))) {
+							if (tcd != null && tcd.isNested()) { 
+								// Try again with outer scope
+								e1 = new DotVarExp(loc, e1, tcd.vthis);
+								e1 = e1.semantic(sc, context);
+								// goto L10;
+								repeat = true;
+								continue;
+							}
+							if (context.acceptsErrors()) {
+								context
+										.acceptProblem(Problem
+												.newSemanticTypeError(
+														IProblem.ThisForSymbolNeedsToBeType,
+														this,
+														func.toChars(context),
+														ad.toChars(context),
+														t.toChars(context)));
+							}
+						}
+					}
+				}
+			} else {
+				if (func.needThis()) {
+				    e1 = getRightThis(loc, sc, ad, e1, func, context);
+				}
 			}
 		}
 		return this;

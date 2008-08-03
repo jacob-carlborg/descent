@@ -15,6 +15,10 @@ import static descent.internal.compiler.parser.TY.Tpointer;
 public class DotIdExp extends UnaExp {
 
 	public IdentifierExp ident;
+	
+	public DotIdExp(Loc loc, Expression e, char[] id) {
+		this(loc, e, new IdentifierExp(id));
+	}
 
 	public DotIdExp(Loc loc, Expression e, IdentifierExp id) {
 		super(loc, TOK.TOKdot, e);
@@ -101,6 +105,24 @@ public class DotIdExp extends UnaExp {
 			eleft = null;
 			eright = e1;
 		}
+		
+		if (e1.op == TOKtuple && equals(ident, Id.offsetof)) {
+			/*
+			 * 'distribute' the .offsetof to each of the tuple elements.
+			 */
+			TupleExp te = (TupleExp) e1;
+			Expressions exps = new Expressions();
+			exps.setDim(size(te.exps));
+			for (int i = 0; i < size(exps); i++) {
+				Expression e2 = (Expression) te.exps.get(i);
+				e2 = e2.semantic(sc, context);
+				e2 = new DotIdExp(e2.loc, e2, Id.offsetof);
+				exps.set(i, e2);
+			}
+			e = new TupleExp(loc, exps);
+			e = e.semantic(sc, context);
+			return e;
+		}
 
 		if (e1.op == TOKtuple && !equals(ident, Id.length)) {
 			TupleExp te = (TupleExp) e1;
@@ -144,20 +166,25 @@ public class DotIdExp extends UnaExp {
 						return this;
 					}
 					type = v.type;
-					if (v.isConst()) {
-						if (v.init() != null) {
-							ExpInitializer ei = v.init().isExpInitializer();
-							if (ei != null) {
-								if (same(ei.exp.type, type, context)) {
-									e = ei.exp.copy(); // make copy so we can change loc
-									e.loc = loc;
-									return e;
+					
+					if (context.isD2()) {
+						
+					} else {
+						if (v.isConst()) {
+							if (v.init() != null) {
+								ExpInitializer ei = v.init().isExpInitializer();
+								if (ei != null) {
+									if (same(ei.exp.type, type, context)) {
+										e = ei.exp.copy(); // make copy so we can change loc
+										e.loc = loc;
+										return e;
+									}
 								}
+							} else if (type.isscalar(context)) {
+								e = type.defaultInit(context);
+								e.loc = loc;
+								return e;
 							}
-						} else if (type.isscalar(context)) {
-							e = type.defaultInit(context);
-							e.loc = loc;
-							return e;
 						}
 					}
 					if (v.needThis()) {
@@ -182,7 +209,11 @@ public class DotIdExp extends UnaExp {
 						if (eleft == null) {
 							eleft = new ThisExp(loc);
 						}
-						e = new DotVarExp(loc, eleft, f);
+						if (context.isD2()) {
+							e = new DotVarExp(loc, eleft, f, true);
+						} else {
+							e = new DotVarExp(loc, eleft, f);
+						}
 						e = e.semantic(sc, context);
 					} else {
 						e = new VarExp(loc, f);
@@ -199,18 +230,22 @@ public class DotIdExp extends UnaExp {
 					return new TypeExp(loc, t);
 				}
 				
-			    TupleDeclaration tup = s.isTupleDeclaration();
-			    if (tup != null)
-			    {
-				if (eleft != null) {
-					if (context.acceptsErrors()) {
-						context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotHaveEDotTuple, this));
+				if (context.isD2()) {
+					
+				} else {
+				    TupleDeclaration tup = s.isTupleDeclaration();
+					if (tup != null) {
+						if (eleft != null) {
+							if (context.acceptsErrors()) {
+								context.acceptProblem(Problem.newSemanticTypeError(
+										IProblem.CannotHaveEDotTuple, this));
+							}
+						}
+						e = new TupleExp(loc, tup, context);
+						e = e.semantic(sc, context);
+						return e;
 					}
 				}
-				e = new TupleExp(loc, tup, context);
-				e = e.semantic(sc, context);
-				return e;
-			    }
 
 				ScopeDsymbol sds = s.isScopeDsymbol();
 				if (sds != null) {

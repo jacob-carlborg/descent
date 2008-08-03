@@ -687,5 +687,10 @@ public interface IProblem {
 	int ArgumentToTypeofIsNotAnExpression = 476;
 	int CannotInferTypeFromOverloadedFunctionSymbol = 477;
 	int SymbolIsNotMutable = 478;
+	int SymbolForSymbolNeedsToBeType = 479;
+	int CannotModifyConstInvariant = 480;
+	int SymbolCanOnlyBeCalledOnAnInvariantObject = 481;
+	int SymbolCanOnlyBeCalledOnAMutableObject = 482;
+	int CannotCallMutableMethodOnFinalStruct = 483;
 
 }

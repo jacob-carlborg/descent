@@ -10,7 +10,7 @@ public class DtorDeclaration extends FuncDeclaration {
 	public int thisStart;
 
 	public DtorDeclaration(Loc loc) {
-		this(loc, new IdentifierExp(Loc.ZERO, Id.dtor));
+		this(loc, new IdentifierExp(Id.dtor));
 	}
 	
 	public DtorDeclaration(Loc loc, IdentifierExp id) {

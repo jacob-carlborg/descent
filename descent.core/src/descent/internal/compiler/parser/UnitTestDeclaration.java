@@ -14,7 +14,7 @@ public class UnitTestDeclaration extends FuncDeclaration {
 	}
 
 	public UnitTestDeclaration(Loc loc) {
-		super(loc, new IdentifierExp(Loc.ZERO, unitTestId()), STC.STCundefined,
+		super(loc, new IdentifierExp(unitTestId()), STC.STCundefined,
 				null);
 	}
 

@@ -188,8 +188,7 @@ public class NewExp extends Expression {
 									break;
 								}
 								// Add a '.outer' and try again
-								thisexp = new DotIdExp(loc, thisexp,
-										new IdentifierExp(loc, Id.outer));
+								thisexp = new DotIdExp(loc, thisexp, Id.outer);
 							}
 							if (context.global.errors == 0) {
 								// goto Lagain;

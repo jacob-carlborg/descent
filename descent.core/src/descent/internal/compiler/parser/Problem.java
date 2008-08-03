@@ -1083,6 +1083,16 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.CannotInferTypeFromOverloadedFunctionSymbol, arguments[0]);
 		case SymbolIsNotMutable:
 			return String.format(ProblemMessages.SymbolIsNotMutable, arguments[0]);
+		case SymbolForSymbolNeedsToBeType:
+			return String.format(ProblemMessages.SymbolForSymbolNeedsToBeType, arguments[0], arguments[1], arguments[2], arguments[3]);
+		case CannotModifyConstInvariant:
+			return String.format(ProblemMessages.CannotModifyConstInvariant, arguments[0]);
+		case SymbolCanOnlyBeCalledOnAnInvariantObject:
+			return String.format(ProblemMessages.SymbolCanOnlyBeCalledOnAnInvariantObject, arguments[0]);
+		case SymbolCanOnlyBeCalledOnAMutableObject:
+			return String.format(ProblemMessages.SymbolCanOnlyBeCalledOnAMutableObject, arguments[0], arguments[1]);
+		case CannotCallMutableMethodOnFinalStruct:
+			return String.format(ProblemMessages.CannotCallMutableMethodOnFinalStruct);
 		default:
 			return "";
 		}

@@ -2292,7 +2292,7 @@ public class FuncDeclaration extends Declaration {
 				 * _arguments = v_arguments.elements;
 				 */
 				Expression e = new VarExp(loc, v_arguments);
-				e = new DotIdExp(loc, e, new IdentifierExp(loc, Id.elements));
+				e = new DotIdExp(loc, e, Id.elements);
 				Expression e1 = new VarExp(loc, _arguments);
 				e = new AssignExp(loc, e1, e);
 				if (context.isD2()) {

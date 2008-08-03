@@ -14,14 +14,14 @@ import static descent.internal.compiler.parser.TOK.TOKthis;
 public class DotVarExp extends UnaExp {
 
 	public Declaration var;
-	public int hasOverloads;
+	public boolean hasOverloads;
 	public IdentifierExp ident; // Descent: for better error reporting
 	
 	public DotVarExp(Loc loc, Expression e, Declaration var) {
-		this(loc, e, var, 0);
+		this(loc, e, var, false);
 	}
 
-	public DotVarExp(Loc loc, Expression e, Declaration var, int hasOverloads) {
+	public DotVarExp(Loc loc, Expression e, Declaration var, boolean hasOverloads) {
 		super(loc, TOK.TOKdotvar, e);
 		this.var = var;
 		this.hasOverloads = hasOverloads;
@@ -68,6 +68,19 @@ public class DotVarExp extends UnaExp {
 					}
 				}
 				break;
+			}
+		} else if (context.isD2()) {
+			Type t1 = e1.type.toBasetype(context);
+
+			if (!t1.isMutable() ||
+			    (t1.ty == TY.Tpointer && !t1.nextOf().isMutable()) ||
+			    !var.type.isMutable() ||
+			    !var.type.isAssignable() ||
+			    (var.storage_class & STC.STCmanifest) != 0
+			   ) {
+				if (context.acceptsErrors()) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotModifyConstInvariant, this, this.toChars(context)));
+				}
 			}
 		}
 		return this;
@@ -123,22 +136,91 @@ public class DotVarExp extends UnaExp {
 
 			if (var.isFuncDeclaration() == null) // for functions, do checks after overload resolution
 			{
+				if (context.isD2()) {
+					Type t1 = e1.type;
+					if (t1.ty == TY.Tpointer) {
+						t1 = t1.nextOf();
+					}
+					if (t1.isConst()) {
+						type = type.constOf(context);
+					} else if (t1.isInvariant()) {
+						type = type.invariantOf(context);
+					}
+				}
+				
 				AggregateDeclaration ad = var.toParent()
 						.isAggregateDeclaration();
-			    e1 = getRightThis(loc, sc, ad, e1, var, context);
+				if (context.isD2()) {
+					boolean repeat = true;
+				// L1:
+					while(repeat) {
+						repeat = false;
+						Type t = e1.type.toBasetype(context);
+	
+						if (ad != null
+								&& !(t.ty == TY.Tpointer
+										&& ((TypePointer) t).next.ty == TY.Tstruct && ((TypeStruct) ((TypePointer) t).next).sym == ad)
+								&& !(t.ty == TY.Tstruct && ((TypeStruct) t).sym == ad)) {
+							ClassDeclaration cd = ad.isClassDeclaration();
+							ClassDeclaration tcd = t.isClassHandle();
+	
+							if (null == cd
+									|| null == tcd
+									|| !(tcd == cd || cd.isBaseOf(tcd, null,
+											context))) {
+								if (tcd != null && tcd.isNested()) {
+									// Try again with outer scope
+	
+									e1 = new DotVarExp(loc, e1, tcd.vthis);
+									e1 = e1.semantic(sc, context);
+	
+									// Skip over nested functions, and get the
+									// enclosing
+									// class type.
+									Dsymbol s = tcd.toParent();
+									while (s != null
+											&& s.isFuncDeclaration() != null) {
+										FuncDeclaration f = s.isFuncDeclaration();
+										if (f.vthis != null) {
+											e1 = new VarExp(loc, f.vthis);
+										}
+										s = s.toParent();
+									}
+									if (s != null && s.isClassDeclaration() != null)
+										e1.type = s.isClassDeclaration().type;
+	
+									e1 = e1.semantic(sc, context); // get corrected nested refs
+									// goto L1;
+									repeat = true;
+									continue;
+								}
+								if (context.acceptsErrors()) {
+									context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolForSymbolNeedsToBeType, this, e1.toChars(context), var.toChars(context),
+											ad.toChars(context), t.toChars(context)));
+								}
+							}
+						}
+					}
+				} else {
+					e1 = getRightThis(loc, sc, ad, e1, var, context);
+				}
 			    if (0 == sc.noaccesscheck) {
 			    	accessCheck(sc, e1, var, context, ident);
 			    }
 			    
-			    VarDeclaration v = var.isVarDeclaration();
-				if (v != null && v.isConst()) {
-					ExpInitializer ei = v.getExpInitializer(context);
-					if (ei != null) {
-						Expression e = ei.exp.copy();
-						e = e.semantic(sc, context);
-						return e;
+			    if (context.isD2()) {
+			    	
+			    } else {
+				    VarDeclaration v = var.isVarDeclaration();
+					if (v != null && v.isConst()) {
+						ExpInitializer ei = v.getExpInitializer(context);
+						if (ei != null) {
+							Expression e = ei.exp.copy();
+							e = e.semantic(sc, context);
+							return e;
+						}
 					}
-				}
+			    }
 			}
 		}
 		return this;

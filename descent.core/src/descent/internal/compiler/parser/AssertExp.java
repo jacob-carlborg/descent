@@ -27,6 +27,11 @@ public class AssertExp extends UnaExp {
 	}
 	
 	@Override
+	public boolean canThrow(SemanticContext context) {
+		return context.global.params.useAssert;
+	}
+	
+	@Override
 	public int checkSideEffect(int flag, SemanticContext context) {
 		return 1;
 	}
@@ -89,7 +94,11 @@ public class AssertExp extends UnaExp {
 		if (msg != null) {
 			msg = msg.semantic(sc, context);
 			msg = resolveProperties(sc, msg, context);
-			msg = msg.implicitCastTo(sc, Type.tchar.arrayOf(context), context);
+			if (context.isD2()) {
+				msg = msg.implicitCastTo(sc, Type.tchar.constOf(context).arrayOf(context), context);
+			} else {
+				msg = msg.implicitCastTo(sc, Type.tchar.arrayOf(context), context);
+			}
 			msg = msg.optimize(WANTvalue, context);
 		}
 		if (e1.isBool(false)) {

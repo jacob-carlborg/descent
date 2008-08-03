@@ -80,6 +80,11 @@ public abstract class BinExp extends Expression {
 			this.length = e2.start + e2.length - e1.start;
 		}
 	}
+	
+	@Override
+	public boolean canThrow(SemanticContext context) {
+		return e1.canThrow(context) || e2.canThrow(context);
+	}
 
 	public Expression BinExp_semantic(Scope sc, SemanticContext context) {
 		e1 = e1.semantic(sc, context);

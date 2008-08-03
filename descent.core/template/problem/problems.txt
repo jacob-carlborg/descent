@@ -1432,7 +1432,21 @@ CannotInferTypeFromOverloadedFunctionSymbol
 SymbolIsNotMutable
 	formatString=%1$s is not mutable
 	numArgs=1
-
+SymbolForSymbolNeedsToBeType
+	formatString=%1$s for %2$s needs to be type %3$s not type %4$s
+	numArgs=4
+CannotModifyConstInvariant
+	formatString=cannot modify const/invariant %1$s
+	numArgs=1
+SymbolCanOnlyBeCalledOnAnInvariantObject
+	formatString=%1$s can only be called on an invariant object
+	numArgs=1
+SymbolCanOnlyBeCalledOnAMutableObject
+	formatString=%1$s can only be called on a mutable object, not $2%s
+	numArgs=2
+CannotCallMutableMethodOnFinalStruct
+	formatString=Cannot call mutable method on final struct
+	numArgs=0
 
 
 

@@ -73,8 +73,7 @@ public class AssignExp extends BinExp {
 
 				// Rewrite (a[i] = value) to (a.opIndexAssign(value, i))
 				if (null != search_function(ad, Id.indexass, context)) {
-					Expression e = new DotIdExp(loc, ae.e1, new IdentifierExp(
-							Loc.ZERO, Id.indexass));
+					Expression e = new DotIdExp(loc, ae.e1, Id.indexass);
 					Expressions a = new Expressions(ae.arguments);
 
 					a.add(0, e2);
@@ -84,8 +83,7 @@ public class AssignExp extends BinExp {
 				} else {
 					// Rewrite (a[i] = value) to (a.opIndex(i, value))
 					if (null != search_function(ad, id, context)) {
-						Expression e = new DotIdExp(loc, ae.e1,
-								new IdentifierExp(Loc.ZERO, id));
+						Expression e = new DotIdExp(loc, ae.e1, id);
 
 						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
@@ -124,8 +122,7 @@ public class AssignExp extends BinExp {
 
 				// Rewrite (a[i..j] = value) to (a.opIndexAssign(value, i, j))
 				if (null != search_function(ad, Id.sliceass, context)) {
-					Expression e = new DotIdExp(loc, ae.e1, new IdentifierExp(
-							Loc.ZERO, Id.sliceass));
+					Expression e = new DotIdExp(loc, ae.e1, Id.sliceass);
 					Expressions a = new Expressions();
 
 					a.add(e2);

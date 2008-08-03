@@ -218,7 +218,7 @@ public class CastExp extends UnaExp {
 
 				// Rewrite as to.call(e1)
 				e = new TypeExp(loc, to);
-				e = new DotIdExp(loc, e, new IdentifierExp(loc, Id.call));
+				e = new DotIdExp(loc, e, Id.call);
 				e = new CallExp(loc, e, e1);
 				e = e.semantic(sc, context);
 				return e;
