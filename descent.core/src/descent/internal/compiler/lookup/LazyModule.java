@@ -89,6 +89,9 @@ public class LazyModule extends Module implements ILazy {
 	public Module unlazy(char[] prefix, SemanticContext context) {
 		if (!isUnlazy) {
 			isUnlazy = true;
+			
+			initializeImports(context);
+			
 			for(char[] key : topLevelIdentifiers.keys()) {
 				if (key != null && CharOperation.prefixEquals(prefix, key, false)) {
 					search(Loc.ZERO, key, 0, context);
@@ -121,26 +124,7 @@ public class LazyModule extends Module implements ILazy {
 		if (s == null) {
 			
 			// Only build my imports at first
-			if (!importsWereInitialized) {
-				importsWereInitialized = true;
-				List<Dsymbol> privateImports = new ArrayList<Dsymbol>();
-				List<Dsymbol> publicImports = new ArrayList<Dsymbol>();
-				try {
-					builder.fillImports(this, this.javaElement.getChildren(), privateImports, publicImports, context, lastImportLocation);
-				} catch (JavaModelException e) {
-					Util.log(e);
-				}
-				
-				for(Dsymbol imp : privateImports) {
-					imp.addMember(semanticScope, this, 0, context);
-					runMissingSemantic(imp, context);
-				}
-				
-				for(Dsymbol imp : publicImports) {
-					imp.addMember(semanticScope, this, 0, context);
-					runMissingSemantic(imp, context);
-				}
-			}
+			initializeImports(context);
 			
 			boolean easy = true;
 			if (javaElementMembersCache == null) {
@@ -217,6 +201,29 @@ public class LazyModule extends Module implements ILazy {
 		}
 		
 		return s;
+	}
+
+	private void initializeImports(SemanticContext context) {
+		if (!importsWereInitialized) {
+			importsWereInitialized = true;
+			List<Dsymbol> privateImports = new ArrayList<Dsymbol>();
+			List<Dsymbol> publicImports = new ArrayList<Dsymbol>();
+			try {
+				builder.fillImports(this, this.javaElement.getChildren(), privateImports, publicImports, context, lastImportLocation);
+			} catch (JavaModelException e) {
+				Util.log(e);
+			}
+			
+			for(Dsymbol imp : privateImports) {
+				imp.addMember(semanticScope, this, 0, context);
+				runMissingSemantic(imp, context);
+			}
+			
+			for(Dsymbol imp : publicImports) {
+				imp.addMember(semanticScope, this, 0, context);
+				runMissingSemantic(imp, context);
+			}
+		}
 	}
 
 	// Remove element that are under false conditionals

@@ -145,7 +145,11 @@ public class CompletionParser extends Parser {
 	}
 	
 	public boolean wantAssitNode() {
-		return wantAssitNode;
+		return wantAssitNode && assistNode != null;
+	}
+	
+	public ASTDmdNode getExpectedTypeNode() {
+		return expectedTypeNode;
 	}
 	
 	public List<ICompletionOnKeyword> getKeywordCompletions() {
@@ -379,7 +383,11 @@ public class CompletionParser extends Parser {
 				}
 			}
 			
-			keywordCompletions.add(new CompletionOnKeyword(tokValue, toks));
+			keywordCompletions.add(new CompletionOnKeyword(tokValue, toks,
+					toks == externArgsExpectations || 
+					toks == traitsArgsExpectations || 
+					toks == scopeArgsExpectations || 
+					toks == pragmaArgsExpectations));
 			
 			if (toks == contractsExpectations) {
 				acceptMoreKeywords = false;

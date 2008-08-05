@@ -7,10 +7,12 @@ public class CompletionOnKeyword extends ASTDmdNode implements ICompletionOnKeyw
 	
 	private final char[] token;
 	private final char[][] possibleKeywords;
+	private final boolean canCompleteEmptyToken;
 	
-	public CompletionOnKeyword(char[] token, char[][] toks) {
+	public CompletionOnKeyword(char[] token, char[][] toks, boolean canCompleteEmptyToken) {
 		this.token = token;
 		this.possibleKeywords = toks;
+		this.canCompleteEmptyToken = canCompleteEmptyToken;
 	}
 
 	@Override
@@ -24,7 +26,7 @@ public class CompletionOnKeyword extends ASTDmdNode implements ICompletionOnKeyw
 	}
 
 	public boolean canCompleteEmptyToken() {
-		return true;
+		return canCompleteEmptyToken;
 	}
 
 	public char[][] getPossibleKeywords() {

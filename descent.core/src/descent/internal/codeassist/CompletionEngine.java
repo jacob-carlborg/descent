@@ -101,7 +101,6 @@ import descent.internal.compiler.parser.ScopeDsymbol;
 import descent.internal.compiler.parser.ScopeExp;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.Statement;
-import descent.internal.compiler.parser.StaticCtorDeclaration;
 import descent.internal.compiler.parser.StaticDtorDeclaration;
 import descent.internal.compiler.parser.StringExp;
 import descent.internal.compiler.parser.StructDeclaration;
@@ -251,6 +250,7 @@ public class CompletionEngine extends Engine
 	char[] currentName;
 	char[] expectedTypeSignature;
 	Type expectedType;
+	IdentifierExp targetIdent;
 	
 	HashtableOfObject typeCache;
 	
@@ -376,6 +376,13 @@ public class CompletionEngine extends Engine
 			
 			ASTDmdNode assistNode = parser.getAssistNode();
 			
+			// Determine to which id we are assigning
+			if (parser.getExpectedTypeNode() instanceof VarDeclaration) {
+				targetIdent = ((VarDeclaration) parser.getExpectedTypeNode()).ident;
+			} else if (parser.getExpectedTypeNode() instanceof IdentifierExp) {
+				targetIdent = (IdentifierExp) parser.getExpectedTypeNode();
+			}
+			
 			if (parser.wantNames()) {
 				if (assistNode instanceof VarDeclaration) {
 					VarDeclaration var = (VarDeclaration) assistNode;
@@ -411,19 +418,17 @@ public class CompletionEngine extends Engine
 					!requestor.isIgnored(CompletionProposal.KEYWORD)) {
 				
 				char[] prefix = findTextBeforeCursor();
-				if (prefix.length > 0) {
-					this.startPosition = this.actualCompletionPosition - prefix.length;
-					this.endPosition = this.actualCompletionPosition;
-					
-					for(ICompletionOnKeyword node : parser.getKeywordCompletions()) {
-						findKeywords(prefix, node.getPossibleKeywords(), node.canCompleteEmptyToken());
-					}
-					
-					// Also suggest the special tokens, if at least
-					// one character was types (otherwise, it's annoying)
-					if (prefix.length > 0) {
-						findKeywords(prefix, specialTokens, true);
-					}
+				this.startPosition = this.actualCompletionPosition - prefix.length;
+				this.endPosition = this.actualCompletionPosition;
+				
+				for(ICompletionOnKeyword node : parser.getKeywordCompletions()) {
+					findKeywords(prefix, node.getPossibleKeywords(), node.canCompleteEmptyToken());
+				}
+				
+				// Also suggest the special tokens, if at least
+				// two characters were typed (otherwise, it's annoying)
+				if (prefix.length > 1) {
+					findKeywords(prefix, specialTokens, true);
 				}
 			}
 			
@@ -2053,12 +2058,12 @@ public class CompletionEngine extends Engine
 			includes &= ~includesFilter;
 		}
 		
-		if (member instanceof StaticCtorDeclaration ||
+		if (member.isStaticCtorDeclaration() != null ||
 			member instanceof StaticDtorDeclaration) {
 			return;
 		}
 		
-		if (member instanceof Import /* && member.getModule() == module */) {
+		if (member.isImport() != null) {
 			Import imp = ((Import) member);
 			
 			// Don't suggest imports from imported modules
@@ -2078,7 +2083,7 @@ public class CompletionEngine extends Engine
 			return;
 		}
 		
-		if (member instanceof TemplateMixin) {
+		if (member.isTemplateMixin() != null) {
 			TemplateMixin mixin = (TemplateMixin) member;
 			if (mixin.sourceIdent != null && mixin.sourceIdent.ident != null &&
 				match(this.currentName, ident)) {
@@ -2177,6 +2182,15 @@ public class CompletionEngine extends Engine
 					relevance += computeRelevanceForInterestingProposal();
 					relevance += computeRelevanceForCaseMatching(currentName, ident);
 					relevance += computeRelevanceForExpectedType(var.type());
+					
+					// If it's:
+					// type name = ...
+					// give "name" lower relevance
+					// Same for:
+					// name = ...
+					if (ASTDmdNode.equals(targetIdent, ident)) {
+						relevance -= RelevanceConstants.R_INTERESTING;
+					}
 					
 					boolean isLocal = var.parent instanceof FuncDeclaration;
 					
@@ -2368,7 +2382,7 @@ public class CompletionEngine extends Engine
 				}
 			}
 			
-			if (member instanceof TemplateDeclaration) {
+			if (member.isTemplateDeclaration() != null) {
 				if (currentName.length == 0 || match(currentName, ident)) {
 					int relevance = computeBaseRelevance();
 					relevance += computeRelevanceForInterestingProposal();
@@ -3000,6 +3014,7 @@ public class CompletionEngine extends Engine
 		
 		if (isExpectingBool) {
 			choices = new char[][] { TOK.TOKtrue.charArrayValue, TOK.TOKfalse.charArrayValue };
+			canCompleteEmptyToken = true;
 		}
 			
 		int length = keyword.length;

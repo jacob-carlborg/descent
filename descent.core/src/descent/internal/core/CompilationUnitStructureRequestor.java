@@ -128,8 +128,8 @@ protected CompilationUnitStructureRequestor(ICompilationUnit unit, CompilationUn
 } 
 
 public void acceptImport(int declarationStart, int declarationEnd, String name, String alias, String[] selectiveImportsNames,  String[] selectiveImportsAliases, long modifiers) {
-	if (declarationStart + declarationEnd > lastImportLocation) {
-		lastImportLocation = declarationStart + declarationEnd; 
+	if (declarationEnd + 1 > lastImportLocation) {
+		lastImportLocation = declarationEnd + 1; 
 	}
 	
 	JavaElement parentHandle= (JavaElement) this.handleStack.peek();
