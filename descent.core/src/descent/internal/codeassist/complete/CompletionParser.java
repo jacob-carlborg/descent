@@ -248,7 +248,9 @@ public class CompletionParser extends Parser {
 	
 	@Override
 	protected GotoStatement newGotoStatement(Loc loc, IdentifierExp ident) {
-		if (inCompletion()) {		
+		if (inCompletion() && (prevToken.value != TOK.TOKgoto || prevToken.ptr + prevToken.sourceLen < cursorLocation)) {
+			wantKeywords = false;
+			
 			assistNode = new CompletionOnGotoStatement(loc, ident);
 			return (GotoStatement) assistNode;
 		} else {			
@@ -258,7 +260,9 @@ public class CompletionParser extends Parser {
 	
 	@Override
 	protected BreakStatement newBreakStatement(Loc loc, IdentifierExp ident) {
-		if (inCompletion()) {
+		if (inCompletion() && (prevToken.value != TOK.TOKbreak || prevToken.ptr + prevToken.sourceLen < cursorLocation)) {
+			wantKeywords = false;
+			
 			assistNode = new CompletionOnBreakStatement(loc, ident);
 			return (BreakStatement) assistNode;
 		} else {			
@@ -268,7 +272,9 @@ public class CompletionParser extends Parser {
 	
 	@Override
 	protected ContinueStatement newContinueStatement(Loc loc, IdentifierExp ident) {
-		if (inCompletion()) {
+		if (inCompletion() && (prevToken.value != TOK.TOKcontinue || prevToken.ptr + prevToken.sourceLen < cursorLocation)) {
+			wantKeywords = false;
+			
 			assistNode = new CompletionOnContinueStatement(loc, ident);
 			return (ContinueStatement) assistNode;
 		} else {			
@@ -409,7 +415,7 @@ public class CompletionParser extends Parser {
 			versions.put(id, this);
 		}
 		
-		if (inCompletion() && isId) {
+		if (inCompletion() && prevToken.ptr + prevToken.sourceLen < cursorLocation && isId) {
 			assistNode = new CompletionOnVersionCondition(module, loc, level, id);
 			return (VersionCondition) assistNode;
 		} else {
@@ -438,7 +444,7 @@ public class CompletionParser extends Parser {
 			debugs.put(id, this);
 		}
 		
-		if (inCompletion() && isId) {
+		if (inCompletion() && prevToken.ptr + prevToken.sourceLen < cursorLocation && isId) {
 			assistNode = new CompletionOnDebugCondition(module, loc, level, id);
 			return (DebugCondition) assistNode;
 		} else {
@@ -460,7 +466,7 @@ public class CompletionParser extends Parser {
 	@Override
 	protected CaseStatement newCaseStatement(Loc loc, Expression exp, Statement statement, int caseEnd, int expStart, int expLength) {
 		// exp.start is -1 if it's an error expression
-		if (caseEnd <= cursorLocation && cursorLocation <= expStart + expLength && exp != null && (exp instanceof ErrorExp || 
+		if (caseEnd < cursorLocation && cursorLocation <= expStart + expLength && exp != null && (exp instanceof ErrorExp || 
 				(exp.getNodeType() == ASTDmdNode.IDENTIFIER_EXP))) {
 			wantKeywords = false;
 			
@@ -833,7 +839,7 @@ public class CompletionParser extends Parser {
 		Expression newExp = super.newNewExp(loc, thisexp, newargs, t, arguments, start);
 		
 		if ((t != null && isMatch(t)) || (thisexp != null && isMatch(thisexp))
-			|| (prevToken.ptr + prevToken.sourceLen <= cursorLocation && cursorLocation <= token.ptr)
+			|| (prevToken.ptr + prevToken.sourceLen < cursorLocation && cursorLocation <= token.ptr)
 			|| (start <= cursorLocation && t != null && cursorLocation <= t.start)) {
 			inNewExp = true;
 			targetNew = newExp;
@@ -898,10 +904,11 @@ public class CompletionParser extends Parser {
 			return (AggregateDeclaration) assistNode;
 		}
 		
-		// If it's class NOT_IDENTIFIER and the cursor is after class, we don't want assist
-		if (prevToken.value == TOK.TOKclass && token.value != TOK.TOKidentifier) {
+		// If it's class NOT_IDENTIFIER and the cursor is after class,
+		// NOT inside it, we don't want assist
+		if (prevToken.value == TOK.TOKclass && token.value != TOK.TOKidentifier
+				&& cursorLocation > prevToken.ptr + prevToken.sourceLen) {
 			this.wantAssist = false;
-			this.wantKeywords = false;
 			return super.newClassDeclaration(loc, id, baseClasses);
 		}
 		
@@ -949,10 +956,11 @@ public class CompletionParser extends Parser {
 			return (AggregateDeclaration) assistNode;
 		}
 		
-		// If it's interface NOT_IDENTIFIER and the cursor is after class, we don't want assist
-		if (prevToken.value == TOK.TOKinterface && token.value != TOK.TOKidentifier) {
+		// If it's interface NOT_IDENTIFIER and the cursor is after class, 
+		// NOT inside it, we don't want assist
+		if (prevToken.value == TOK.TOKinterface && token.value != TOK.TOKidentifier
+				&& cursorLocation > prevToken.ptr + prevToken.sourceLen) {
 			this.wantAssist = false;
-			this.wantKeywords = false;
 			return super.newClassDeclaration(loc, id, baseClasses);
 		}
 		
@@ -991,6 +999,121 @@ public class CompletionParser extends Parser {
 		}
 		
 		return super.newUnionDeclaration(loc, id);
+	}
+	
+	@Override
+	public TOK nextToken() {
+		// If the cursor is located inside the current token
+		if (token.ptr <= cursorLocation && cursorLocation <= token.ptr + token.sourceLen && !wantNames) {
+			// Anything that's a word (not a symbol) will aid the autocompletion
+			switch(token.value) {
+			case TOKabstract:
+			case TOKalias:
+			case TOKalign:
+			case TOKasm:
+			case TOKauto:
+			case TOKbit:
+			case TOKbody:
+			case TOKbool:
+			case TOKbreak:
+			case TOKcase:
+			case TOKcast:
+			case TOKcatch:
+			case TOKcent:
+			case TOKchar:
+			case TOKclass:
+			case TOKconst:
+			case TOKcontinue:
+			case TOKdchar:
+			case TOKdebug:
+			case TOKdefault:
+			case TOKdelegate:
+			case TOKdelete:
+			case TOKdeprecated:
+			case TOKdo:
+			case TOKelse:
+			case TOKenum:
+			case TOKexport:
+			case TOKextern:
+			case TOKfalse:
+			case TOKfinal:
+			case TOKfinally:
+			case TOKfloat32:
+			case TOKfloat64:
+			case TOKfloat80:
+			case TOKfor:
+			case TOKforeach:
+			case TOKforeach_reverse:
+			case TOKgoto:
+			case TOKidentifier:
+			case TOKif:
+			case TOKiftype:
+			case TOKimaginary32:
+			case TOKimaginary64:
+			case TOKimaginary80:
+			case TOKimport:
+			case TOKin:
+			case TOKint16:
+			case TOKint32:
+			case TOKint64:
+			case TOKint8:
+			case TOKinterface:
+			case TOKlazy:
+			case TOKmacro:
+			case TOKmixin:
+			case TOKmodule:
+			case TOKnew:
+			case TOKnothrow:
+			case TOKnull:
+			case TOKon_scope_exit:
+			case TOKon_scope_failure:
+			case TOKon_scope_success:
+			case TOKout:
+			case TOKoverride:
+			case TOKpackage:
+			case TOKpragma:
+			case TOKprivate:
+			case TOKprotected:
+			case TOKpublic:
+			case TOKpure:
+			case TOKref:
+			case TOKreturn:
+			case TOKscope:
+			case TOKstatic:
+			case TOKstruct:
+			case TOKsuper:
+			case TOKswitch:
+			case TOKsynchronized:
+			case TOKtemplate:
+			case TOKthis:
+			case TOKthrow:
+			case TOKtraits:
+			case TOKtrue:
+			case TOKtry:
+			case TOKtypedef:
+			case TOKtypeid:
+			case TOKtypeof:
+			case TOKucent:
+			case TOKunion:
+			case TOKuns16:
+			case TOKuns32:
+			case TOKuns64:
+			case TOKuns8:
+			case TOKversion:
+			case TOKvoid:
+			case TOKvolatile:
+			case TOKwchar:
+			case TOKwhile:
+			case TOKwith:
+				completionTokenStart = token.ptr;
+				completionTokenEnd = token.ptr + token.sourceLen;
+				completionToken = CharOperation.subarray(input, completionTokenStart, cursorLocation);
+				break;
+			default:
+				break;
+			}
+		}
+		return super.nextToken();
 	}
 	
 	private boolean analyzeBinExp(Expression e, Expression e2) {

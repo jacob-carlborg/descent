@@ -664,9 +664,15 @@ public class CompletionEngine extends Engine
 			rootScope = node.scope;
 		}
 		
-		currentName = CharOperation.NO_CHAR;
-		startPosition = actualCompletionPosition;
-		endPosition = actualCompletionPosition;
+		if (parser.completionToken != null) {
+			currentName = parser.completionToken;
+			startPosition = parser.completionTokenStart;
+			endPosition = parser.completionTokenEnd;
+		} else {
+			currentName = CharOperation.NO_CHAR;
+			startPosition = actualCompletionPosition;
+			endPosition = actualCompletionPosition;
+		}
 		
 		wantConstructorsAndOpCall = false;
 		
@@ -780,6 +786,12 @@ public class CompletionEngine extends Engine
 	}
 	
 	private void completeGotoBreakOrContinueStatement(IdentifierExp ident, final boolean inLoop) {
+		if (parser.completionToken != null) {
+			currentName = parser.completionToken;
+			startPosition = parser.completionTokenStart;
+			endPosition = parser.completionTokenEnd;
+		}
+		
 		final HashtableOfCharArrayAndObject labelsMap = new HashtableOfCharArrayAndObject();		
 		module.accept(new AstVisitorAdapter() {
 			
@@ -886,6 +898,7 @@ public class CompletionEngine extends Engine
 						int relevance = computeBaseRelevance();
 						relevance += computeRelevanceForInterestingProposal();
 						relevance += computeRelevanceForCaseMatching(prefix, label);
+						relevance += RelevanceConstants.R_LABEL;
 						
 						CompletionProposal proposal = this.createProposal(CompletionProposal.LABEL_REF, this.actualCompletionPosition, null);
 						proposal.setName(label);

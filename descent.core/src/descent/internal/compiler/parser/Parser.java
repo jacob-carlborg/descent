@@ -5154,7 +5154,7 @@ public class Parser extends Lexer {
 		}
 		
 		return s;
-	}	
+	}
 
 	private void parseStatement_Ldeclaration(Statement[] s, int flags) {
 		List a;
@@ -6616,6 +6616,16 @@ public class Parser extends Lexer {
 					continue;
 				} else if (token.value == TOKnew) {
 					e = parseNewExp(e);
+					
+					// Descent: If it was only foo.new and nothing else,
+					// treat this as a DotIdExp (for autocompletion)
+					if (prevToken.value == TOK.TOKnew) {
+						IdentifierExp fakeId = new IdentifierExp(prevToken.value.charArrayValue);
+						fakeId.start = prevToken.ptr;
+						fakeId.length = prevToken.sourceLen;
+						
+						e = newDotIdExp(loc, ((NewExp) e).sourceThisexp, fakeId);
+					}
 					continue;
 				} else {
 					// signal a new DotIdExp anyway with the token's string representation

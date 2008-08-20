@@ -17,7 +17,13 @@ public class CompletionOnCompoundStatement extends CompoundStatement {
 	
 	@Override
 	public Statement semantic(Scope sc, SemanticContext context) {
-		Statement statement = super.semantic(sc, context);
+		Statement statement = this;
+		
+		try {
+			super.semantic(sc, context);
+		} catch (Exception e) {
+			
+		}
 		
 		this.scope = ScopeCopy.copy(sc, context);
 		

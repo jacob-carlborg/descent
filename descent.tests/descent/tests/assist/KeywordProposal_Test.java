@@ -55,23 +55,51 @@ public class KeywordProposal_Test extends AbstractCompletionTest {
 				);
 	}
 	
-	public void testFunctionBodyInOut() throws Exception {
-		String s = "void foo()  { }";
+	public void testFunctionBody() throws Exception {
+		String s = "void foo() b { }";
 		
-		assertCompletions(null, "test.d", s, 11, CompletionProposal.KEYWORD,
-				"body", 11, 11,
-				"in", 11, 11,
-				"out", 11, 11
+		assertCompletions(null, "test.d", s, 12, CompletionProposal.KEYWORD,
+				"body", 11, 12
 				);
 	}
 	
-	public void testFunctionBodyInOut2() throws Exception {
-		String s = "void foo() ";
+	public void testFunctionIn() throws Exception {
+		String s = "void foo() i { }";
 		
-		assertCompletions(null, "test.d", s, 11, CompletionProposal.KEYWORD,
-				"body", 11, 11,
-				"in", 11, 11,
-				"out", 11, 11
+		assertCompletions(null, "test.d", s, 12, CompletionProposal.KEYWORD,
+				"in", 11, 12
+				);
+	}
+	
+	public void testFunctionOut() throws Exception {
+		String s = "void foo() o { }";
+		
+		assertCompletions(null, "test.d", s, 12, CompletionProposal.KEYWORD,
+				"out", 11, 12
+				);
+	}
+	
+	public void testFunctionBody2() throws Exception {
+		String s = "void foo() b";
+		
+		assertCompletions(null, "test.d", s, 12, CompletionProposal.KEYWORD,
+				"body", 11, 12
+				);
+	}
+	
+	public void testFunctionIn2() throws Exception {
+		String s = "void foo() i";
+		
+		assertCompletions(null, "test.d", s, 12, CompletionProposal.KEYWORD,
+				"in", 11, 12
+				);
+	}
+	
+	public void testFunctionOut2() throws Exception {
+		String s = "void foo() o";
+		
+		assertCompletions(null, "test.d", s, 12, CompletionProposal.KEYWORD,
+				"out", 11, 12
 				);
 	}
 
