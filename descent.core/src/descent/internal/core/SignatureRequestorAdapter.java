@@ -149,4 +149,8 @@ public class SignatureRequestorAdapter implements ISignatureRequestor {
 		
 	}
 
+	public void acceptAutomaticTypeInference() {
+		
+	}
+
 }

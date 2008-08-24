@@ -14,6 +14,16 @@ public class TemplateAliasParameter extends TemplateParameter {
 	public Type specAliasT, sourceSpecAliasT;
 	public Type defaultAlias, sourceDefaultAlias;
 	public Dsymbol specAlias;
+	
+	public TemplateAliasParameter(Loc loc, IdentifierExp ident,
+			Type specType, ASTDmdNode specAlias, ASTDmdNode defaultAlias) {
+		super(loc, ident);
+		// TODO Semantic D2
+		this.specAliasT = this.sourceSpecAliasT = specType;
+		if (defaultAlias instanceof Type) {
+			this.defaultAlias = this.sourceDefaultAlias = (Type) defaultAlias;
+		}
+	}
 
 	public TemplateAliasParameter(Loc loc, IdentifierExp ident,
 			Type specAliasT, Type defaultAlias) {

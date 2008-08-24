@@ -5,6 +5,7 @@ import java.util.List;
 
 import melnorme.miscutil.Assert;
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -694,7 +695,11 @@ public class TypeFunction extends Type implements Cloneable {
 			}
 		}
 		sb.append((char) ('Z' - varargs));
-		next.appendSignature(sb);
+		if (next == null) {
+			sb.append(Signature.C_AUTO);
+		} else {
+			next.appendSignature(sb);
+		}
 	}
 
 	// PERHAPS type *toCtype();

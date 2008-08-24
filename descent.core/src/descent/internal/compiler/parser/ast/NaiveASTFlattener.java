@@ -1292,8 +1292,10 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		visitModifiers(node.modifiers);
 		
 		TypeFunction ty = (TypeFunction) node.type;
-		if (ty != null) {
+		if (ty != null && ty.next != null) {
 			ty.next.accept(this); // return type
+		} else {
+			buffer.append("auto");
 		}
 		this.buffer.append(" ");
 		node.ident.accept(this);

@@ -229,4 +229,6 @@ public interface ISignatureRequestor {
 	 */
 	void acceptInvariant(String signature);
 
+	void acceptAutomaticTypeInference();
+
 }

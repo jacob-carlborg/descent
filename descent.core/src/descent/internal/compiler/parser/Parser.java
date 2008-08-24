@@ -926,7 +926,7 @@ public class Parser extends Lexer {
 	
 	private Dsymbol parseDeclDefs_Lstc2(boolean[] isSingle, Modifier modifier, int stc, Dsymbols decldefs) {
 		Token firstToken = new Token(prevToken);
-		int start = firstToken.ptr;
+		int start = prevToken.ptr;
 		
 		List<Modifier> modifiers = new ArrayList<Modifier>();
 		modifiers.add(modifier);
@@ -992,73 +992,160 @@ public class Parser extends Lexer {
 			}
 		}
 		
-		VarDeclaration previous = null;
+		if (apiLevel == D2) {
+			Dsymbols a;
+			
+			/* Look for auto initializers:
+			 *	storage_class identifier = initializer;
+			 */
+			if (token.value == TOKidentifier &&
+			    peek(token).value == TOKassign)
+			{
+			    a = parseAutoDeclarations(stc, firstToken, start, modifiers);
+			    decldefs.addAll(a);
+			    return null;
+			}
 
-		/* Look for auto initializers:
-		 *	storage_class identifier = initializer;
-		 */
-		if (token.value == TOKidentifier &&
-		    peek(token).value == TOKassign)
-		{
-			boolean first = true;
-			while(true) {
-			    IdentifierExp ident = newIdentifierExp();
-			    nextToken();
-			    nextToken();
-			    Initializer init = parseInitializer();
-			    VarDeclaration v = newVarDeclaration(loc(), null, ident, init);
-			    v.first = first;
-			    first = false;
-			    
-			    v.storage_class = stc;
-			    v.addModifiers(modifiers);
-			    
-			    attachLeadingComments(v);
-			    
-			    s = v;
-			    if (previous != null) {
-			    	previous.next = v;
-			    }
-			    previous = v;
-			    
-			    if (token.value == TOKsemicolon) {
-			    	v.setSourceRange(start, token.ptr + token.sourceLen - start);
-					nextToken();
-				} else if (token.value == TOKcomma) {
+			/* Look for return type inference for template functions.
+			 */
+			Token[] tk = { null };
+			if (token.value == TOKidentifier &&
+			    (tk[0] = peek(token)).value == TOKlparen &&
+			    skipParens(tk[0], tk) &&
+			    peek(tk[0]).value == TOKlparen)
+			{
+			    a = parseDeclarations(stc);
+			    decldefs.addAll(a);
+			    return null;
+			}
+			
+			boolean isColon = token.value == TOKcolon;
+			a = parseBlock(isSingle);
+			s = new StorageClassDeclaration(stc, a, modifier, isSingle[0], isColon);
+		} else {
+			VarDeclaration previous = null;
+	
+			/* Look for auto initializers:
+			 *	storage_class identifier = initializer;
+			 */
+			if (token.value == TOKidentifier &&
+			    peek(token).value == TOKassign)
+			{
+				boolean first = true;
+				while(true) {
+				    IdentifierExp ident = newIdentifierExp();
+				    nextToken();
+				    nextToken();
+				    Initializer init = parseInitializer();
+				    VarDeclaration v = newVarDeclaration(loc(), null, ident, init);
+				    v.first = first;
+				    first = false;
+				    
+				    v.storage_class = stc;
+				    v.addModifiers(modifiers);
+				    
+				    attachLeadingComments(v);
+				    
+				    s = v;
+				    if (previous != null) {
+				    	previous.next = v;
+				    }
+				    previous = v;
+				    
+				    if (token.value == TOKsemicolon) {
+				    	v.setSourceRange(start, token.ptr + token.sourceLen - start);
+						nextToken();
+					} else if (token.value == TOKcomma) {
+						v.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
+						nextToken();
+						start = token.ptr;
+						if (token.value == TOKidentifier
+								&& peek(token).value == TOKassign) {
+							decldefs.add(s);
+							continue;
+						} else {
+							parsingErrorInsertTokenAfter(prevToken, "identifier");
+						}
+					} else {
+						parsingErrorInsertTokenAfter(prevToken, TOKsemicolon
+								.toString());
+						v.setSourceRange(firstToken.ptr, prevToken.ptr + prevToken.sourceLen - firstToken.ptr);
+					}
+					break;
+				}
+			}
+			else
+			{  
+				boolean isColon = token.value == TOKcolon;
+				Dsymbols a = parseBlock(isSingle, true /* thinks it's D2 */);
+				
+				if (isSingle[0] && a.size() == 0) {
+					parsingErrorDeleteToken(firstToken);
+					return null;
+				}
+				
+				s = new StorageClassDeclaration(stc, a, modifier, isSingle[0], isColon);
+				modifiers.remove(modifier);
+				s.modifiers = modifiers;
+			}
+		}
+		
+		return s;
+	}
+	
+	private Dsymbols parseAutoDeclarations(int storageClass, Token firstToken, int start, List<Modifier> modifiers) {
+		Dsymbols a = new Dsymbols();
+		
+		VarDeclaration previous = null;
+		boolean first = true;
+		
+		while (true) {
+			IdentifierExp ident = newIdentifierExp();
+			nextToken(); // skip over ident
+			nextToken(); // skip over '='
+			Initializer init = parseInitializer();
+			VarDeclaration v = new VarDeclaration(loc, null, ident, init);
+			v.first = first;
+		    first = false;
+			v.storage_class = storageClass;
+			v.addModifiers(modifiers);
+			
+			attachLeadingComments(v);
+			
+			if (previous != null) {
+		    	previous.next = v;
+		    }
+		    previous = v;
+			
+			a.add(v);
+			
+			if (token.value == TOKsemicolon) {
+				v.setSourceRange(start, token.ptr + token.sourceLen - start);
+				nextToken();
+			} else if (token.value == TOKcomma) {
+				nextToken();
+				if (token.value == TOKidentifier
+						&& peek(token).value == TOKassign) {
 					v.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 					nextToken();
 					start = token.ptr;
 					if (token.value == TOKidentifier
 							&& peek(token).value == TOKassign) {
-						decldefs.add(s);
 						continue;
 					} else {
 						parsingErrorInsertTokenAfter(prevToken, "identifier");
 					}
 				} else {
-					parsingErrorInsertTokenAfter(prevToken, TOKsemicolon
-							.toString());
-					v.setSourceRange(firstToken.ptr, prevToken.ptr + prevToken.sourceLen - firstToken.ptr);
+					parsingErrorInsertTokenAfter(prevToken, "Identifier");
 				}
-				break;
+			} else {
+				parsingErrorInsertTokenAfter(prevToken, TOKsemicolon
+						.toString());
+				v.setSourceRange(firstToken.ptr, prevToken.ptr + prevToken.sourceLen - firstToken.ptr);
 			}
+			break;
 		}
-		else
-		{  
-			boolean isColon = token.value == TOKcolon;
-			Dsymbols a = parseBlock(isSingle, true /* thinks it's D2 */);
-			
-			if (isSingle[0] && a.size() == 0) {
-				parsingErrorDeleteToken(firstToken);
-				return null;
-			}
-			
-			s = new StorageClassDeclaration(stc, a, modifier, isSingle[0], isColon);
-			modifiers.remove(modifier);
-			s.modifiers = modifiers;
-		}
-		
-		return s;
+		return a;
 	}
 	
 	private Dsymbols parseBlock() {
@@ -2220,7 +2307,6 @@ public class Parser extends Lexer {
 	}
 	
 	private TemplateParameters parseTemplateParameterList(boolean[] malformed) {
-		// TODO
 		return parseTemplateParameterList(0, malformed);
 	}
 	
@@ -2263,19 +2349,43 @@ public class Parser extends Lexer {
 				// Get TemplateParameter
 
 				// First, look ahead to see if it is a TypeParameter or a
-				// ValueParameter�
+				// ValueParameter
 				
 				t = peek(token);
 				if (token.value == TOKalias) { // AliasParameter
 					nextToken();
-					if (token.value != TOKidentifier) {
-						parsingErrorInsertTokenAfter(prevToken, "Identifier");
-						// goto Lerr;
-						malformed[0] = true;
-						return tpl;
+					
+					Type spectype = null;
+					if (apiLevel == D2) {						
+						if (isDeclaration(token, 2, TOKreserved, null))
+						{
+							IdentifierExp[] p_tp_ident = { tp_ident };
+						    spectype = parseType(p_tp_ident);
+						    tp_ident = p_tp_ident[0];
+						}
+						else
+						{
+							if (token.value != TOKidentifier) {
+								parsingErrorInsertTokenAfter(prevToken, "Identifier");
+								// goto Lerr;
+								malformed[0] = true;
+								return tpl;
+							}
+							tp_ident = newIdentifierExp();
+							nextToken();
+						}
+					} else {
+						if (token.value != TOKidentifier) {
+							parsingErrorInsertTokenAfter(prevToken, "Identifier");
+							// goto Lerr;
+							malformed[0] = true;
+							return tpl;
+						}
+						tp_ident = newIdentifierExp();
+						nextToken();
 					}
-					tp_ident = newIdentifierExp();
-					nextToken();
+					
+					ASTDmdNode spec = null;
 					if (token.value == TOKcolon) // : Type
 					{
 						nextToken();
@@ -2283,9 +2393,15 @@ public class Parser extends Lexer {
 							tp_spectype = parseBasicType();
 							tp_spectype = parseDeclarator(tp_spectype, null);	
 						} else {
-							tp_spectype = parseType();
+							if (isDeclaration(token, 0, TOKreserved, null)) {
+								spec = parseType();
+							} else {
+								spec = parseCondExp();
+							}
 						}
 					}
+					
+					ASTDmdNode def = null;
 					if (token.value == TOKassign) // = Type
 					{
 						nextToken();
@@ -2293,11 +2409,19 @@ public class Parser extends Lexer {
 							tp_defaulttype = parseBasicType();
 							tp_defaulttype = parseDeclarator(tp_defaulttype, null);
 						} else {
-							tp_defaulttype = parseType();
+							if (isDeclaration(token, 0, TOKreserved, null)) {
+								def = parseType();
+							} else {
+								def = parseCondExp();
+							}
 						}
 					}
 					
-					tp = new TemplateAliasParameter(loc(), tp_ident, tp_spectype, tp_defaulttype);
+					if (apiLevel < D2) {
+						tp = new TemplateAliasParameter(loc(), tp_ident, tp_spectype, tp_defaulttype);
+					} else {
+						tp = new TemplateAliasParameter(loc(), tp_ident, spectype, spec, def);
+					}
 				} else if (t.value == TOKcolon || t.value == TOKassign
 						|| t.value == TOKcomma || t.value == TOKrparen) { // TypeParameter
 					if (token.value != TOKidentifier) {
@@ -3098,11 +3222,6 @@ public class Parser extends Lexer {
 
 	private Type parseDeclarator(Type t, IdentifierExp[] pident,
 			TemplateParameters[] tpl, int[] identStart) {
-		// This may happen if a basic type was not find
-		if (t == null) {
-			return null;
-		}
-
 		Type ts;
 		Type ta;
 
@@ -3192,6 +3311,8 @@ public class Parser extends Lexer {
 			case TOKlparen: {
 				Arguments arguments;
 				int varargs = 0;
+				
+				int funcIdentStart = prevToken.ptr;
 
 				if (tpl != null) {
 					/* Look ahead to see if this is (...)(...),
@@ -3261,7 +3382,11 @@ public class Parser extends Lexer {
 					}
 				}
 
-				ta.setSourceRange(t.start, t.length);
+				if (t == null) {
+					ta.setSourceRange(funcIdentStart, prevToken.ptr + prevToken.len);
+				} else {
+					ta.setSourceRange(t.start, t.length);
+				}
 
 				if (ts != t) {
 					Type pt = ts;
@@ -3283,13 +3408,24 @@ public class Parser extends Lexer {
 	}
 	
 	private Dsymbols parseDeclarations(List<Comment> lastComments) {
-		return parseDeclarations(lastComments, false);
+		return parseDeclarations(0, lastComments);
+	}
+	
+	private Dsymbols parseDeclarations(int stc) {
+		return parseDeclarations(stc, new ArrayList<Comment>());
+	}
+	
+	private Dsymbols parseDeclarations(int stc, List<Comment> lastComments) {
+		return parseDeclarations(stc, lastComments, false);
+	}
+	
+	private Dsymbols parseDeclarations(List<Comment> lastComments, boolean alreadyThinksItsD2) {
+		return parseDeclarations(0, lastComments, alreadyThinksItsD2);
 	}
 	
 	@SuppressWarnings("unchecked")
-	private Dsymbols parseDeclarations(List<Comment> lastComments, boolean alreadyThinksItsD2) {
+	private Dsymbols parseDeclarations(int stc, List<Comment> lastComments, boolean alreadyThinksItsD2) {
 		int storage_class;
-		int stc;
 		Type ts;
 		Type t;
 		Type tfirst;
@@ -3317,7 +3453,7 @@ public class Parser extends Lexer {
 		}
 
 		expect(modifierExpectations);
-		storage_class = STCundefined;
+		storage_class = stc;
 		
 		while (true) {
 			switch (token.value) {
@@ -3400,59 +3536,67 @@ public class Parser extends Lexer {
 		/*
 		 * Look for auto initializers: storage_class identifier = initializer;
 		 */
-		while (storage_class != 0 && token.value == TOKidentifier
-				&& peek(token).value == TOKassign) {
-			ident = newIdentifierExp();
-			lineNumber = token.lineNumber;
-			
-			nextToken();
-			nextToken();
-			Initializer init = parseInitializer();
-
-			VarDeclaration v = newVarDeclaration(loc(), null, ident, init);
-			v.first = first;
-			first = false;
-			
-			v.storage_class = storage_class;
-			v.addModifiers(modifiers);
-			a.add(v);
-			
-			if (previousVar != null) {
-				previousVar.next = v;
+		
+		if (apiLevel == D2) {
+			if (storage_class != 0 && token.value == TOKidentifier
+					&& peek(token).value == TOKassign) {
+				return parseAutoDeclarations(stc, new Token(token), start, modifiers);
 			}
-			previousVar = v;
-			
-			if (token.value == TOKsemicolon) {
-				v.setSourceRange(start, token.ptr + token.sourceLen - start);
-				
-				// Discard any previous comments
-				if (comments != null) {
-					lastCommentRead = comments.size();
-				}
+		} else {
+			while (storage_class != 0 && token.value == TOKidentifier
+					&& peek(token).value == TOKassign) {
+				ident = newIdentifierExp();
+				lineNumber = token.lineNumber;
 				
 				nextToken();
-				v.preComments = lastComments;
-				attachLeadingComments(v);
-			} else if (token.value == TOKcomma) {
-				v.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
-				
-				// Discard any previous comments
-				if (comments != null) {
-					lastCommentRead = comments.size();
-				}
-				
 				nextToken();
-				if (!(token.value == TOKidentifier && peek(token).value == TOKassign)) {
-					parsingErrorInsertTokenAfter(prevToken, "identifier");
+				Initializer init = parseInitializer();
+	
+				VarDeclaration v = newVarDeclaration(loc(), null, ident, init);
+				v.first = first;
+				first = false;
+				
+				v.storage_class = storage_class;
+				v.addModifiers(modifiers);
+				a.add(v);
+				
+				if (previousVar != null) {
+					previousVar.next = v;
+				}
+				previousVar = v;
+				
+				if (token.value == TOKsemicolon) {
+					v.setSourceRange(start, token.ptr + token.sourceLen - start);
+					
+					// Discard any previous comments
+					if (comments != null) {
+						lastCommentRead = comments.size();
+					}
+					
+					nextToken();
+					v.preComments = lastComments;
+					attachLeadingComments(v);
+				} else if (token.value == TOKcomma) {
+					v.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
+					
+					// Discard any previous comments
+					if (comments != null) {
+						lastCommentRead = comments.size();
+					}
+					
+					nextToken();
+					if (!(token.value == TOKidentifier && peek(token).value == TOKassign)) {
+						parsingErrorInsertTokenAfter(prevToken, "identifier");
+					} else {
+						start = token.ptr;
+						continue;
+					}
 				} else {
-					start = token.ptr;
-					continue;
+					parsingErrorInsertTokenAfter(prevToken, ";");
 				}
-			} else {
-				parsingErrorInsertTokenAfter(prevToken, ";");
+				
+				return a;
 			}
-			
-			return a;
 		}
 
 		expect(classExpectations);
@@ -3469,21 +3613,37 @@ public class Parser extends Lexer {
 		
 		int nextVarStart = token.ptr;
 		int nextTypdefOrAliasStart = start;
-
-		ts = parseBasicType();
 		
-		if (thinksItsD2 && token.value == TOKrparen) {
-			nextToken();
+		if (apiLevel == D2) {
+			/*
+			 * Look for return type inference for template functions.
+			 */
+			{
+				Token[] tk = { null };
+				if (storage_class != 0 && token.value == TOKidentifier
+						&& (tk[0] = peek(token)).value == TOKlparen
+						&& skipParens(tk[0], tk)
+						&& peek(tk[0]).value == TOKlparen) {
+					ts = null;
+				} else {
+					ts = parseBasicType();
+					ts = parseBasicType2(ts);
+				}
+			}
+		} else {
+			ts = parseBasicType();
+			
+			if (thinksItsD2 && token.value == TOKrparen) {
+				nextToken();
+			}
+			
+			if (ts == null) {
+				return a;
+			}
+			ts = parseBasicType2(ts);
 		}
 		
-		if (ts == null) {
-			return a;
-		}
-		ts = parseBasicType2(ts);
 		
-		if (thinksItsD2 && token.value == TOKrparen) {
-			nextToken();
-		}
 		
 		tfirst = null;
 		

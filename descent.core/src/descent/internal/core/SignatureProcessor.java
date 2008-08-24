@@ -403,6 +403,9 @@ public class SignatureProcessor {
 				i = process0(signature, i + 1, wantSignature, requestor);
 				requestor.acceptInvariant(substring(signature, start, i, wantSignature));
 				return i;
+			case Signature.C_AUTO:
+				requestor.acceptAutomaticTypeInference();
+				return i + 1;
 			default:
 				// Try with type basic
 				TypeBasic type = TypeBasic.fromSignature(first);

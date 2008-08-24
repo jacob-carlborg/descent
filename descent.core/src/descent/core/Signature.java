@@ -360,6 +360,13 @@ public final class Signature {
 	public static final char C_DCHAR 									= 'w';
 	
 	/**
+	 * Character constant indicating a templated function automatic return
+	 * type inference.
+	 * Value is <code>'z'</code>.
+	 */
+	public static final char C_AUTO 									= 'z';
+	
+	/**
 	 * Character constant indicating a pointer type in a signature.
 	 * Value is <code>'P'</code>.
 	 */
@@ -1500,6 +1507,10 @@ public static String getReturnType(String methodSignature) throws IllegalArgumen
 			@Override
 			public void acceptPrimitive(TypeBasic type) {
 				copy(type.deco);
+			}
+			@Override
+			public void acceptAutomaticTypeInference() {
+				copy(String.valueOf(Signature.C_AUTO));
 			}
 			@Override
 			public void acceptAssociativeArray(String signature) {

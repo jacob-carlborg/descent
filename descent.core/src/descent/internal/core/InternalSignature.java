@@ -66,6 +66,11 @@ public class InternalSignature {
 					sub.push(type);
 				}
 				@Override
+				public void acceptAutomaticTypeInference() {
+					Stack<Type> sub = stack.peek();
+					sub.push(null);
+				}
+				@Override
 				public void acceptPointer(String signature) {
 					Stack<Type> sub = stack.peek();
 					sub.push(new TypePointer(sub.pop()));
@@ -275,6 +280,11 @@ public class InternalSignature {
 				public void acceptPrimitive(TypeBasic type) {
 					Stack<Type> sub = stack.peek();
 					sub.push(type);
+				}
+				@Override
+				public void acceptAutomaticTypeInference() {
+					Stack<Type> sub = stack.peek();
+					sub.push(null);
 				}
 				@Override
 				public void acceptPointer(String signature) {
