@@ -39,6 +39,7 @@ public final class CorrectionMessages extends NLS {
 	public static String CorrectPackageDeclarationProposal_add_description;
 	public static String CorrectPackageDeclarationProposal_change_description;
 	public static String JavaCorrectionProcessor_addquote_description;
+	public static String JavaCorrectionProcessor_addcast_description;
 	public static String ChangeCorrectionProposal_error_title;
 	public static String ChangeCorrectionProposal_error_message;
 	public static String ChangeCorrectionProposal_name_with_shortcut;

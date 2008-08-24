@@ -23,6 +23,7 @@ public class QuickFixProcessor implements IQuickFixProcessor {
 	public boolean hasCorrections(ICompilationUnit cu, int problemId) {
 		switch (problemId) {
 			case IProblem.UnterminatedStringConstant:
+			case IProblem.CStyleCastIllegal:
 				return true;
 			default:
 				return false;
@@ -74,6 +75,11 @@ public class QuickFixProcessor implements IQuickFixProcessor {
 				String quoteLabel= CorrectionMessages.JavaCorrectionProcessor_addquote_description;
 				int pos= moveBack(problem.getOffset() + problem.getLength(), problem.getOffset(), "\n\r", context.getCompilationUnit()); //$NON-NLS-1$
 				proposals.add(new ReplaceCorrectionProposal(quoteLabel, context.getCompilationUnit(), pos, 0, "\"", 0)); //$NON-NLS-1$
+				break;
+			case IProblem.CStyleCastIllegal:
+				String castLabel= CorrectionMessages.JavaCorrectionProcessor_addcast_description;
+				pos= problem.getOffset();
+				proposals.add(new ReplaceCorrectionProposal(castLabel, context.getCompilationUnit(), pos, 0, "cast", 0)); //$NON-NLS-1$
 				break;
 			default:
 		}
