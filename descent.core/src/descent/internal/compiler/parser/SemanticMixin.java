@@ -59,7 +59,6 @@ public class SemanticMixin {
 		return buffer.toString();
 	}
 	
-	static long total = 0;
 	public static String getSignature(Dsymbol aThis) {
 		if (aThis.effectiveParent() == null) {
 			return null;

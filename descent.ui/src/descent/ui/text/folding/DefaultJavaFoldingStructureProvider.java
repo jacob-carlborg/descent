@@ -939,7 +939,7 @@ public class DefaultJavaFoldingStructureProvider implements IJavaFoldingStructur
 				break;
 			case IJavaElement.TYPE:
 				// Changed to not only collapse inner types
-				collapseCode= !isAnonymousEnum((IType) element);
+				collapseCode= true; // !isAnonymousEnum((IType) element);
 				collapse= ctx.collapseTypes() && collapseCode;
 				break;
 			case IJavaElement.METHOD:

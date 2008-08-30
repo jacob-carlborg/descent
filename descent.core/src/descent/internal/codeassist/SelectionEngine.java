@@ -347,6 +347,13 @@ public class SelectionEngine extends AstVisitorAdapter {
 				}
 			}
 			
+			// Only allow selecting a reference to an import if it's an alias to it,
+			// not the first component
+			if (sym instanceof Import && ((Import) sym).aliasId == null
+					&& (sym.getJavaElement() == null || sym.getJavaElement().getElementType() != IJavaElement.COMPILATION_UNIT)) {
+				return false;
+			}
+			
 			if (sym.getJavaElement() != null) {
 				addJavaElement(sym.getJavaElement());
 			} else {

@@ -53,6 +53,15 @@ public class LazyStructDeclaration extends StructDeclaration implements ILazyAgg
 		return this;
 	}
 	
+	/**
+	 * For sizeof, we need the members, so unlazy.
+	 */
+	@Override
+	public int size(SemanticContext context) {
+		unlazy(CharOperation.NO_CHAR, context);
+		return super.size(context);
+	}
+	
 	@Override
 	protected void semanticScope(Scope sc) {
 		this.semanticScope = sc;

@@ -172,7 +172,7 @@ public class JavaTextTools {
 		fStringScanner= new SingleTokenJavaScanner(fColorManager, store, IJavaColorConstants.JAVA_STRING);
 		fPragmaScanner= new SingleTokenJavaScanner(fColorManager, store, IJavaColorConstants.JAVA_PRAGMA);
 		fJavaDocScanner= new JavaDocScanner(fColorManager, store, coreStore);
-		fPartitionScanner= JavaPartitionScannerFactory.newJavaPartitionScanner();
+		fPartitionScanner= JavaPartitionScannerFactory.newJavaPartitionScanner(store);
 	}
 
 	/**

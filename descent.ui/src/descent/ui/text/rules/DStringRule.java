@@ -2,6 +2,7 @@ package descent.ui.text.rules;
 
 import org.eclipse.jface.text.rules.ICharacterScanner;
 import org.eclipse.jface.text.rules.IToken;
+import org.eclipse.jface.text.rules.MultiLineRule;
 import org.eclipse.jface.text.rules.SingleLineRule;
 
 /**
@@ -12,7 +13,7 @@ import org.eclipse.jface.text.rules.SingleLineRule;
  * "hello"w
  * "hello"d
  */
-public class DStringRule extends SingleLineRule {
+public class DStringRule extends MultiLineRule {
 
 	public DStringRule(String startSequence, String endSequence, IToken token, char escapeCharacter) {
 		super(startSequence, endSequence, token, escapeCharacter, true);

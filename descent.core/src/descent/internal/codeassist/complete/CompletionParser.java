@@ -885,11 +885,13 @@ public class CompletionParser extends Parser {
 	
 	@Override
 	protected Statement newReturnStatement(Loc loc, Expression exp) {
-		Statement ret = super.newReturnStatement(loc, exp);
 		if (isMatch(exp) || 0 <= cursorLocation - prevToken.ptr && cursorLocation - prevToken.ptr <= 3) {
+			CompletionOnReturnStatement ret = new CompletionOnReturnStatement(loc, exp);
 			expectedTypeNode = ret;
+			return ret;
+		} else {
+			return super.newReturnStatement(loc, exp);
 		}
-		return ret;
 	}
 	
 	@Override

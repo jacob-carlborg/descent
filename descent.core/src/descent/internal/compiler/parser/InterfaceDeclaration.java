@@ -258,6 +258,10 @@ public class InterfaceDeclaration extends ClassDeclaration {
 
 			// Copy vtbl[] from base class
 			if (b.base.vtblOffset() != 0) {
+				
+				// Descent: to get "override" errors ok
+				b.base = (ClassDeclaration) b.base.unlazy(context);
+				
 				int d = b.base.vtbl.size();
 				if (d > 1) {
 					for (int j = 1; j < d; j++) {

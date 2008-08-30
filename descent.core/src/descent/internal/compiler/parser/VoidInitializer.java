@@ -53,4 +53,9 @@ public class VoidInitializer extends Initializer {
 		return new IntegerExp(loc, 0, Type.tint32);
 	}
 
+//	@Override
+//	public void toDt(SemanticContext context) {
+//		// Nothing
+//	}
+
 }

@@ -259,6 +259,12 @@ public void enterConstructor(MethodInfo methodInfo) {
  * @see ISourceElementRequestor
  */
 public void enterField(FieldInfo fieldInfo) {
+	if (topLevelNesting == 0 && (
+			(fieldInfo.modifiers & Flags.AccTemplateMixin) != 0
+			)) {
+		hasTopLevelCompileTimeDifficulties = true;
+	}
+	
 	JavaElementInfo parentInfo = (JavaElementInfo) this.infoStack.peek();
 	JavaElement parentHandle= (JavaElement) this.handleStack.peek();
 	SourceField handle = null;

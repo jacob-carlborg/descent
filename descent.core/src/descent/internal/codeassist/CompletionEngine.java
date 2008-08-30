@@ -37,6 +37,7 @@ import descent.internal.codeassist.complete.CompletionOnInterfaceDeclaration;
 import descent.internal.codeassist.complete.CompletionOnJavadocImpl;
 import descent.internal.codeassist.complete.CompletionOnModuleDeclaration;
 import descent.internal.codeassist.complete.CompletionOnNewExp;
+import descent.internal.codeassist.complete.CompletionOnReturnStatement;
 import descent.internal.codeassist.complete.CompletionOnSuperDotExp;
 import descent.internal.codeassist.complete.CompletionOnTemplateMixin;
 import descent.internal.codeassist.complete.CompletionOnThisDotExp;
@@ -95,7 +96,6 @@ import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.NewExp;
 import descent.internal.compiler.parser.Package;
 import descent.internal.compiler.parser.PtrExp;
-import descent.internal.compiler.parser.ReturnStatement;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.ScopeDsymbol;
 import descent.internal.compiler.parser.ScopeExp;
@@ -624,10 +624,11 @@ public class CompletionEngine extends Engine
 			return;
 		}
 		
-		if (parser.expectedTypeNode instanceof ReturnStatement) {
-			ReturnStatement stm = (ReturnStatement) parser.expectedTypeNode;
-			if (stm.exp != null && stm.exp.type != null) {
-				expectedType = stm.exp.type;
+		if (parser.expectedTypeNode instanceof CompletionOnReturnStatement) {
+			CompletionOnReturnStatement stm = (CompletionOnReturnStatement) parser.expectedTypeNode;
+			Scope scope = stm.scope;
+			if (scope != null && scope.func != null && scope.func.type != null && scope.func.type.next != null) {
+				expectedType = scope.func.type.next;
 				expectedTypeSignature = expectedType.getSignature().toCharArray();
 			}
 		}
@@ -1841,6 +1842,10 @@ public class CompletionEngine extends Engine
 		if (type.isfloating()) {
 			suggestFloatingProperties(type);
 		}
+		
+		if (type.iscomplex()) {
+			suggestComplextProperties(type);
+		}
 	}
 	
 	public final static char[][] allTypesProperties = { Id.init, Id.__sizeof, Id.alignof, Id.mangleof, Id.stringof };
@@ -1849,7 +1854,7 @@ public class CompletionEngine extends Engine
 				type.getSignature().toCharArray(),
 				allTypesProperties, 
 				new Type[] { type, typeInt, typeInt, typeCharArray, typeCharArray }, 
-				R_INTERESTING_BUILTIN_PROPERTY);
+				R_BUILTIN_PROPERTY);
 	}
 	
 	public final static char[][] integralTypesProperties = { Id.max, Id.min };
@@ -1868,6 +1873,23 @@ public class CompletionEngine extends Engine
 				floatingPointTypesProperties, 
 				new Type[] { type, type, typeInt, type, typeInt, typeInt, typeInt, typeInt, typeInt, type, type },
 				R_INTERESTING_BUILTIN_PROPERTY);
+	}
+	
+	public final static char[][] complextTypesProperties = { Id.re, Id.im };
+	private void suggestComplextProperties(Type type) {
+		Type component;
+		switch(type.ty) {
+		case Tcomplex32: component = Type.tfloat32; break;
+		case Tcomplex64: component = Type.tfloat64; break;
+		case Tcomplex80: component = Type.tfloat80; break;
+		default: throw new IllegalStateException("Should not happen");
+		}
+		
+		suggestProperties(
+				type.getSignature().toCharArray(),
+				complextTypesProperties, 
+				new Type[] { component, component },
+				R_VERY_INTERESTING_BUILTIN_PROPERTY);
 	}
 	
 	public final static char[][] staticAndDynamicArrayProperties = { Id.dup, Id.sort, Id.length, Id.ptr, Id.reverse };

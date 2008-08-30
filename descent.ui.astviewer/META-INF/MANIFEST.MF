@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: descent.astview;singleton:=true
-Bundle-Version: 0.5.3.20080723
+Bundle-Version: 0.5.3.20080823
 Bundle-Activator: descent.astview.ASTViewPlugin
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin

@@ -134,7 +134,10 @@ public class LazyAggregateDeclaration {
 		List<Dsymbol> publicImports = new ArrayList<Dsymbol>();
 		FillResult result = null ;
 		try {
-			result = lazy.builder().fillJavaElementMembersCache(lazy, lazy.getJavaElement().getChildren(), javaElementMembersCache, lazy.members(), privateImports, publicImports, context);
+			result = lazy.builder().fillJavaElementMembersCache(lazy, lazy.getJavaElement().getChildren(), lazy.members(), context);
+			javaElementMembersCache = result.javaElementMembersCache;
+			privateImports = result.privateImports;
+			publicImports = result.publicImports;
 		} catch (JavaModelException e) {
 			Util.log(e);
 		}

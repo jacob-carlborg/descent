@@ -698,16 +698,14 @@ public class JavaElementLabels {
 	
 	private static void getTypeParametersLabel(ITypeParameter[] typeParameters, long flags, StringBuffer buf) {
 		// Changed for Descent
-		if (typeParameters.length > 0) {
-			buf.append('(');
-			for (int i = 0; i < typeParameters.length; i++) {
-				if (i > 0) {
-					buf.append(COMMA_STRING);
-				}
-				buf.append(typeParameters[i].getElementName());
+		buf.append('(');
+		for (int i = 0; i < typeParameters.length; i++) {
+			if (i > 0) {
+				buf.append(COMMA_STRING);
 			}
-			buf.append(')');
+			buf.append(typeParameters[i].getElementName());
 		}
+		buf.append(')');
 	}
 	
 	/**
@@ -743,8 +741,8 @@ public class JavaElementLabels {
 			}
 			
 			// qualification
-			if (getFlag(flags, F_FULLY_QUALIFIED) && field.getDeclaringType() != null) {
-				getTypeLabel(field.getDeclaringType(), T_FULLY_QUALIFIED | (flags & QUALIFIER_FLAGS), buf);
+			if (getFlag(flags, F_FULLY_QUALIFIED) && field.getParent() != null) {
+				getElementLabel(field.getParent(), T_CONTAINER_QUALIFIED | CU_QUALIFIED | (flags & QUALIFIER_FLAGS), buf);
 				buf.append('.');
 			}
 			
@@ -1011,7 +1009,7 @@ public class JavaElementLabels {
 		if (getFlag(flags, T_FULLY_QUALIFIED)) {
 			ICompilationUnit unit = type.getCompilationUnit();
 			//getCompilationUnitLabel(unit, flags & QUALIFIER_FLAGS, buf);
-			getCompilationUnitLabel(unit, flags | CU_QUALIFIED, buf);
+			getCompilationUnitLabel(unit, (flags | CU_QUALIFIED) & ~F_KIND, buf);
 			buf.append('.');
 //			IPackageFragment pack= type.getPackageFragment();
 //			if (!pack.isDefaultPackage()) {
@@ -1091,7 +1089,9 @@ public class JavaElementLabels {
 				*/
 			} else if (type.exists()) {
 				try {
-					getTypeParametersLabel(type.getTypeParameters(), flags, buf);
+					if (type.isTemplate()) {
+						getTypeParametersLabel(type.getTypeParameters(), flags, buf);
+					}
 				} catch (JavaModelException e) {
 					// ignore
 				}
@@ -1189,6 +1189,10 @@ public class JavaElementLabels {
 //				buf.append('.');
 //			}
 //		}
+		if (getFlag(flags, F_KIND)) {
+			buf.append("module ");
+		}
+		
 //		buf.append(cu.getElementName());
 		if (getFlag(flags, CU_QUALIFIED)) {
 			buf.append(cu.getFullyQualifiedName());

@@ -608,8 +608,12 @@ public class ClassDeclaration extends AggregateDeclaration {
 
 			// Copy vtbl[] from base class
 			if (baseClass.vtbl != null) {
+				
+				// Descent: to get "override" errors ok
+				baseClass = (ClassDeclaration) baseClass.unlazy(context);
+				
 				vtbl = new ArrayList(baseClass.vtbl.size());
-				vtbl.addAll(baseClass.vtbl);
+ 				vtbl.addAll(baseClass.vtbl);
 			}
 
 			// Inherit properties from base class

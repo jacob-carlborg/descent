@@ -566,5 +566,37 @@ public class Lookup_Test extends AbstractLookupTest {
 			"}");
 		assertNoErrors();
 	}
+	
+	public void testStructInitializer() throws Exception {
+		one("struct Time { long ticks; }");
+		two("void foo() { auto x = Time(1); }");
+		assertNoErrors();
+	}
+	
+	public void testOverrideInterface() throws Exception {
+		one("interface One {" +
+			"  void method();" +
+			"}" +
+			"" +
+			"interface Two : One {" +
+			"}");
+		two("class Three : Two {" +
+			"  override void method() { }" +
+			"}");
+		assertNoErrors();
+	}
+	
+	public void testOverrideClass() throws Exception {
+		one("class One {" +
+			"  void method();" +
+			"}" +
+			"" +
+			"class Two : One {" +
+			"}");
+		two("class Three : Two {" +
+			"  override void method() { }" +
+			"}");
+		assertNoErrors();
+	}
 
 }

@@ -32,7 +32,6 @@ import org.eclipse.ui.texteditor.ITextEditorExtension3;
 
 import descent.core.IJavaProject;
 import descent.core.ToolFactory;
-import descent.core.compiler.IProblem;
 import descent.core.compiler.IScanner;
 import descent.core.compiler.ITerminalSymbols;
 import descent.core.compiler.InvalidInputException;
@@ -598,7 +597,7 @@ public class JavaAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 									  IJavaPartitions.JAVA_CHARACTER,
 									  IDocument.DEFAULT_CONTENT_TYPE
 		};
-		FastPartitioner partitioner= new FastPartitioner(JavaPartitionScannerFactory.newJavaPartitionScanner(), types);
+		FastPartitioner partitioner= new FastPartitioner(JavaPartitionScannerFactory.newJavaPartitionScanner(getPreferenceStore()), types);
 		partitioner.connect(document);
 		document.setDocumentPartitioner(IJavaPartitions.JAVA_PARTITIONING, partitioner);
 	}

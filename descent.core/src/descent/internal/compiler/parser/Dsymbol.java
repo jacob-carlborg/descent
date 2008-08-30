@@ -64,7 +64,7 @@ public class Dsymbol extends ASTDmdNode {
 	public IdentifierExp c_ident;
 	public Dsymbol parent;
 	public Loc loc;
-	public Dsymbol overprevious; // previous in overload list
+	public Dsymbol overprevious; // previous in overload list 
 
 	public Dsymbol() {
 	}
@@ -662,8 +662,12 @@ public class Dsymbol extends ASTDmdNode {
 		return null;
 	}
 	
+	private String signature;
 	public String getSignature() {
-		return SemanticMixin.getSignature(this);
+		if (signature == null) {
+			signature = SemanticMixin.getSignature(this);
+		}
+		return signature;
 	}
 	
 	public void appendSignature(StringBuilder sb) {

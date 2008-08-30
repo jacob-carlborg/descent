@@ -2,6 +2,7 @@ package descent.internal.compiler.lookup;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import descent.core.IConditional;
 import descent.core.IInitializer;
@@ -10,6 +11,7 @@ import descent.core.IType;
 import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.lookup.ModuleBuilder.FillResult;
+import descent.internal.compiler.parser.AlignDeclaration;
 import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.DsymbolTable;
@@ -77,6 +79,7 @@ public class LazyModule extends Module implements ILazy {
 	private Scope semantic2Scope;
 	private Scope semantic3Scope;
 	
+	private Map<IJavaElement, AlignDeclaration> aligns;
 
 	public LazyModule(String filename, IdentifierExp ident, ModuleBuilder builder, HashtableOfCharArrayAndObject topLevelIdentifiers, int lastImportLocation) {
 		super(filename, ident);
@@ -164,11 +167,11 @@ public class LazyModule extends Module implements ILazy {
 				if (topLevelIdentifiers.containsKey(ident)) {
 					if (javaElementMembersCache == null) {
 						javaElementMembersCache = new HashtableOfCharArrayAndObject();
-						List<Dsymbol> privateImports = new ArrayList<Dsymbol>();
-						List<Dsymbol> publicImports = new ArrayList<Dsymbol>();
 						FillResult result = null;
 						try {
-							result = builder.fillJavaElementMembersCache(this, this.javaElement.getChildren(), javaElementMembersCache, members, privateImports, publicImports, context);
+							result = builder.fillJavaElementMembersCache(this, this.javaElement.getChildren(), members, context);
+							javaElementMembersCache = result.javaElementMembersCache;
+							aligns = result.aligns;
 						} catch (JavaModelException e) {
 							Util.log(e);
 						}
@@ -346,8 +349,23 @@ public class LazyModule extends Module implements ILazy {
 			}
 			
 			s = members.get(members.size() - 1);
+			
+			// See if s is wrapped in an AlignDeclaration
+			AlignDeclaration ad = aligns == null ? null : aligns.get(target);
+			AlignDeclaration ad2 = null;
+			if (ad != null) {
+				Dsymbols syms = new Dsymbols();
+				syms.add(s);
+				ad2 = new AlignDeclaration(ad.salign, syms);
+				s = ad2;
+			}
+			
 			s.addMember(this.semanticScope, this, 0, context);
 			runMissingSemantic(s, context);
+			
+			if (ad != null) {
+				s = ad2.decl.get(0);
+			}
 		} else {
 			Dsymbols symbols = new Dsymbols();
 			

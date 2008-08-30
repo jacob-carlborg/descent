@@ -76,6 +76,8 @@ public abstract class Initializer extends ASTDmdNode {
 
 	public abstract Expression toExpression(SemanticContext context);
 	
+//	public abstract void toDt(SemanticContext context);
+	
 	public Loc loc() {
 		return loc;
 	}

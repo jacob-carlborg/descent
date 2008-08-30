@@ -255,7 +255,7 @@ public class TypeClass extends Type {
 			ident.resolvedSymbol = s;
 	
 			if (null == s.isFuncDeclaration()) {	// because of overloading
-				s.checkDeprecated(sc, context, this); // TODO check this for reference
+				s.checkDeprecated(sc, context, ident);
 			}
 			
 			s = s.toAlias(context);

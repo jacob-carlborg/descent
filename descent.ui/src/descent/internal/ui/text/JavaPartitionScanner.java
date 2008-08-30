@@ -14,6 +14,7 @@ package descent.internal.ui.text;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.rules.EndOfLineRule;
 import org.eclipse.jface.text.rules.ICharacterScanner;
 import org.eclipse.jface.text.rules.IPredicateRule;
@@ -25,6 +26,7 @@ import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.rules.WordRule;
 
+import descent.core.JavaCore;
 import descent.ui.text.IJavaPartitions;
 import descent.ui.text.rules.DEscapeRule;
 import descent.ui.text.rules.DStringRule;
@@ -35,6 +37,8 @@ import descent.ui.text.rules.NestedCommentRule;
  * This scanner recognizes the JavaDoc comments and Java multi line comments.
  */
 public class JavaPartitionScanner extends RuleBasedPartitionScanner implements IJavaPartitions {
+	
+	private static final String SOURCE_VERSION= JavaCore.COMPILER_SOURCE;
 
 	/**
 	 * Detector for empty comments.
@@ -104,8 +108,11 @@ public class JavaPartitionScanner extends RuleBasedPartitionScanner implements I
 	/**
 	 * Creates the partitioner and sets up the appropriate rules.
 	 */
-	public JavaPartitionScanner() {
+	public JavaPartitionScanner(IPreferenceStore store) {
 		super();
+		
+//		String version= store.getString(SOURCE_VERSION);
+//		boolean isD2 = JavaCore.VERSION_2_x.equals(version);
 
 		// TODO JDT UI update according to D partitions
 		IToken pragma= new Token(JAVA_PRAGMA);
@@ -134,11 +141,10 @@ public class JavaPartitionScanner extends RuleBasedPartitionScanner implements I
 		rules.add(new EndOfLineRule("//", singleLineComment)); //$NON-NLS-1$
 		
 		rules.add(new DStringRule("x\"", "\"", string, (char) 0)); //$NON-NLS-1$ //$NON-NLS-2$
-		rules.add(new DStringRule("q\"", "\"", string, (char) 0)); //$NON-NLS-1$ //$NON-NLS-2$
 		rules.add(new DStringRule("r\"", "\"", string, (char) 0)); //$NON-NLS-1$ //$NON-NLS-2$
 		rules.add(new DStringRule("`", "`", string, (char) 0)); //$NON-NLS-1$ //$NON-NLS-2$
-		
 		rules.add(new DStringRule("\"", "\"", string, '\\')); //$NON-NLS-1$ //$NON-NLS-2$
+		rules.add(new DStringRule("q\"", "\"", string, (char) 0)); //$NON-NLS-1$ //$NON-NLS-2$
 		
 		rules.add(new DEscapeRule(string));
 		

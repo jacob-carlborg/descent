@@ -3,7 +3,9 @@ package descent.internal.codeassist;
 public interface RelevanceConstants {
 	
 	int R_DEFAULT = 0;
-	int R_INTERESTING_BUILTIN_PROPERTY = 2;
+	int R_BUILTIN_PROPERTY = 1;
+	int R_INTERESTING_BUILTIN_PROPERTY = 3;
+	int R_VERY_INTERESTING_BUILTIN_PROPERTY = 4;
 	int R_INTERESTING = 5;
 	int R_CASE = 10;
 	int R_CAMEL_CASE = 5;

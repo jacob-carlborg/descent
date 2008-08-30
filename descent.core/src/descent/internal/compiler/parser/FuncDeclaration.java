@@ -404,6 +404,8 @@ public class FuncDeclaration extends Declaration {
 				this.frequire = materialized.frequire;
 				this.fensure = materialized.fensure;
 				this.outId = materialized.outId;
+				
+				return materialized.interpret(istate, arguments, context);
 			}
 		}
 
@@ -1214,6 +1216,9 @@ public class FuncDeclaration extends Declaration {
 
 			// Find index of existing function in vtbl[] to override
 			if (cd.baseClass != null) {
+				
+				cd.baseClass = (ClassDeclaration) cd.baseClass.unlazy(context);
+				
 				for (vi = 0; vi < cd.baseClass.vtbl.size() && !gotoL1; vi++) {
 					// Descent workarround
 					// XXX fix this

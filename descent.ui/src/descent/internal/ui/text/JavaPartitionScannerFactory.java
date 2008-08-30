@@ -1,5 +1,6 @@
 package descent.internal.ui.text;
 
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.rules.IPartitionTokenScanner;
 
 /**
@@ -10,8 +11,8 @@ import org.eclipse.jface.text.rules.IPartitionTokenScanner;
  */
 public class JavaPartitionScannerFactory {
 	
-	public final static IPartitionTokenScanner newJavaPartitionScanner() {
-		return new JavaPartitionScanner();
+	public final static IPartitionTokenScanner newJavaPartitionScanner(IPreferenceStore store) {
+		return new JavaPartitionScanner(store);
 	}
 
 }

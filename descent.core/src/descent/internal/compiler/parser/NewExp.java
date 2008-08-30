@@ -141,6 +141,9 @@ public class NewExp extends Expression {
 				TypeClass tc = (TypeClass) (tb);
 				ClassDeclaration cd = tc.sym.isClassDeclaration();
 				
+				// Descent: to get "foo is abtract class" errors ok
+				cd = (ClassDeclaration) cd.unlazy(context);
+				
 				if (cd.isInterfaceDeclaration() != null) {
 					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotCreateInstanceOfInterface, sourceNewtype, new String[] { cd.toChars(context) }));

@@ -1,7 +1,9 @@
 package descent.internal.compiler.lookup;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import descent.core.Flags;
 import descent.core.ICompilationUnit;
@@ -22,6 +24,7 @@ import descent.core.IType;
 import descent.core.ITypeParameter;
 import descent.core.JavaModelException;
 import descent.internal.compiler.parser.ASTNodeEncoder;
+import descent.internal.compiler.parser.AggregateDeclaration;
 import descent.internal.compiler.parser.AliasDeclaration;
 import descent.internal.compiler.parser.AlignDeclaration;
 import descent.internal.compiler.parser.AnonDeclaration;
@@ -603,6 +606,14 @@ public class ModuleBuilder {
 							null, // XXX Template Constraint
 							toDsymbols(symbol));
 			temp.setJavaElement((IJavaElement) templated);
+			
+			if (symbol instanceof AggregateDeclaration) {
+				((AggregateDeclaration) symbol).templated = true;
+			} else if (symbol instanceof FuncDeclaration) {
+				((FuncDeclaration) symbol).templated = true;
+			}
+			temp.wrapper = true;
+			
 			return wrap(temp, (IMember) templated);
 		} else {
 			return wrap(symbol, (IMember) templated);
@@ -817,32 +828,37 @@ public class ModuleBuilder {
 		public boolean hasStaticIf;
 		public boolean hasMixinDeclaration;
 		public boolean hasAnon;
+		public HashtableOfCharArrayAndObject javaElementMembersCache = new HashtableOfCharArrayAndObject();
+		public List<Dsymbol> privateImports = new ArrayList<Dsymbol>();
+		public List<Dsymbol> publicImports = new ArrayList<Dsymbol>();
+		public Map<IJavaElement, AlignDeclaration> aligns = new HashMap<IJavaElement, AlignDeclaration>();
+		private AlignDeclaration align;
 	}
 	
-	public FillResult fillJavaElementMembersCache(ILazy lazy, IJavaElement[] elements, HashtableOfCharArrayAndObject javaElementMembersCache, Dsymbols symbols, List<Dsymbol> privateImports, List<Dsymbol> publicImports, SemanticContext context) {
+	public FillResult fillJavaElementMembersCache(ILazy lazy, IJavaElement[] elements, Dsymbols symbols, SemanticContext context) {
 		FillResult result = new FillResult();
 		
-		internalFillJavaElementMembersCache(lazy, elements, javaElementMembersCache, symbols, privateImports, publicImports, context, result);
+		internalFillJavaElementMembersCache(lazy, elements, symbols, context, result);
 		
 		return result;
 	}
 	
 	// true if we encountered an anonymous enum
-	public void internalFillJavaElementMembersCache(ILazy lazy, IJavaElement[] elements, HashtableOfCharArrayAndObject javaElementMembersCache, Dsymbols symbols, List<Dsymbol> privateImports, List<Dsymbol> publicImports, SemanticContext context, FillResult result) {
+	public void internalFillJavaElementMembersCache(ILazy lazy, IJavaElement[] elements, Dsymbols symbols, SemanticContext context, FillResult result) {
 		try {
 			for(IJavaElement child : elements) {
 				switch(child.getElementType()) {
 				case IJavaElement.IMPORT_CONTAINER:
-					internalFillJavaElementMembersCache(lazy, ((IParent) child).getChildren(), javaElementMembersCache, symbols, privateImports, publicImports, context, result);
+					internalFillJavaElementMembersCache(lazy, ((IParent) child).getChildren(), symbols, context, result);
 					break;
 				case IJavaElement.IMPORT_DECLARATION:
 					IImportDeclaration imp = (IImportDeclaration) child;
 					Dsymbol s = fillImportDeclaration(lazy.getModule(), symbols, imp);
 					symbols.add(s);
 					if (Flags.isPublic(imp.getFlags())) {
-						publicImports.add(s);
+						result.publicImports.add(s);
 					} else {
-						privateImports.add(s);
+						result.privateImports.add(s);
 					}
 					break;
 				case IJavaElement.CONDITIONAL:
@@ -851,9 +867,9 @@ public class ModuleBuilder {
 						result.hasStaticIf = true;
 					} else if (cond.isVersionDeclaration() || cond.isDebugDeclaration()) {
 						if (isThenActive(cond, lazy)) {
-							internalFillJavaElementMembersCache(lazy, cond.getThenChildren(), javaElementMembersCache, symbols, privateImports, publicImports, context, result);
+							internalFillJavaElementMembersCache(lazy, cond.getThenChildren(), symbols, context, result);
 						} else {
-							internalFillJavaElementMembersCache(lazy, cond.getElseChildren(), javaElementMembersCache, symbols, privateImports, publicImports, context, result);
+							internalFillJavaElementMembersCache(lazy, cond.getElseChildren(), symbols, context, result);
 						}
 					}
 					break;
@@ -861,9 +877,13 @@ public class ModuleBuilder {
 					IInitializer init = (IInitializer) child;
 					if (init.isAlign()) {
 						Dsymbols sub = new Dsymbols();
-						internalFillJavaElementMembersCache(lazy, init.getChildren(), javaElementMembersCache, sub, privateImports, publicImports, context, result);
 						
 						AlignDeclaration member = new AlignDeclaration(Integer.parseInt(init.getElementName()), sub);
+						
+						result.align = member;
+						internalFillJavaElementMembersCache(lazy, init.getChildren(), sub, context, result);
+						result.align = null;
+						
 						symbols.add(member);
 					} else if (init.isDebugAssignment()) {
 						DebugSymbol symbol = fillDebugAssignment(lazy.getModule(), symbols, init, new ModuleBuilder.State());
@@ -875,7 +895,7 @@ public class ModuleBuilder {
 						result.hasMixinDeclaration = true;
 					} else if (init.isExtern()) {
 						Dsymbols sub = new Dsymbols();
-						internalFillJavaElementMembersCache(lazy, init.getChildren(), javaElementMembersCache, sub, privateImports, publicImports, context, result);
+						internalFillJavaElementMembersCache(lazy, init.getChildren(), sub, context, result);
 						
 						LinkDeclaration member = new LinkDeclaration(ModuleBuilder.getLink(init), sub);
 						symbols.add(wrap(member, init));
@@ -902,20 +922,23 @@ public class ModuleBuilder {
 							result.hasAnon = true;
 						}
 					} else {
-						if (javaElementMembersCache.containsKey(ident)) {
-							Object object = javaElementMembersCache.get(ident);
+						if (result.javaElementMembersCache.containsKey(ident)) {
+							Object object = result.javaElementMembersCache.get(ident);
 							
 							if (object instanceof IJavaElement) {
 								List<IJavaElement> elemsList = new ArrayList<IJavaElement>();
 								elemsList.add((IJavaElement) object);
 								elemsList.add(child);
-								javaElementMembersCache.put(ident, elemsList);
+								result.javaElementMembersCache.put(ident, elemsList);
 							} else {
 								List<IJavaElement> elemsList = (List<IJavaElement>) object;
 								elemsList.add(child);
 							}
 						} else {
-							javaElementMembersCache.put(ident, child);
+							result.javaElementMembersCache.put(ident, child);
+							if (result.align != null) {
+								result.aligns.put(child, result.align);
+							}
 						}
 					}
 					break;

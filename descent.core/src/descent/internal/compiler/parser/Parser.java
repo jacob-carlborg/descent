@@ -18,7 +18,6 @@ import static descent.internal.compiler.parser.STC.STCout;
 import static descent.internal.compiler.parser.STC.STCref;
 import static descent.internal.compiler.parser.STC.STCscope;
 import static descent.internal.compiler.parser.STC.STCstatic;
-import static descent.internal.compiler.parser.STC.STCundefined;
 import static descent.internal.compiler.parser.TOK.*;
 import static descent.internal.compiler.parser.TY.Taarray;
 import static descent.internal.compiler.parser.TY.Tfunction;
@@ -5019,6 +5018,9 @@ public class Parser extends Lexer {
 
 			nextToken();
 			if (token.value == TOKsemicolon) {
+				exp = null;
+			// Descent: added to improve autocompletion
+			} else if (token.value == TOKrcurly) {
 				exp = null;
 			} else {
 				exp = parseExpression();

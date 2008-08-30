@@ -220,6 +220,10 @@ public class StructLiteralExp extends Expression {
 			elements.set(i, e);
 		}
 		expandTuples(elements, context);
+		
+		// Need to know the real fields, so unlazy here
+		sd = (StructDeclaration) sd.unlazy(context);
+		
 		int offset = 0;
 		for (int i = 0; i < elements.size(); i++) {
 			e = elements.get(i);

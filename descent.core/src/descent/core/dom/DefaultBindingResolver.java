@@ -506,6 +506,20 @@ class DefaultBindingResolver extends BindingResolver {
 							.equals(prop, Id.min_exp))) {
 				binding = new BuiltinPropertyBinding(this, type, Type.tint32,
 						identifier, signature);
+			} else if (type instanceof TypeBasic
+					&& type.iscomplex()
+					&& (CharOperation.equals(prop, Id.re)
+							|| CharOperation.equals(prop, Id.im))) {
+				Type component;
+				switch(type.ty) {
+				case Tcomplex32: component = Type.tfloat32; break;
+				case Tcomplex64: component = Type.tfloat64; break;
+				case Tcomplex80: component = Type.tfloat80; break;
+				default: throw new IllegalStateException("Should not happen");
+				}
+				
+				binding = new BuiltinPropertyBinding(this, type, component,
+						identifier, signature);
 			} else if (type instanceof TypeSArray || type instanceof TypeDArray) {
 				if (CharOperation.equals(prop, Id.dup)
 						|| CharOperation.equals(prop, Id.sort)
@@ -540,13 +554,13 @@ class DefaultBindingResolver extends BindingResolver {
 				} else if (CharOperation.equals(prop, Id.keys)) {
 					String otherSignature = "A"
 							+ ((TypeAArray) type).index.toString();
-					binding = new TypeDArrayBinding(this, new TypeDArray(
-							((TypeAArray) type).index), otherSignature);
+					binding = new BuiltinPropertyBinding(this, new TypeDArray(
+							((TypeAArray) type).index), type, identifier, otherSignature);
 				} else if (CharOperation.equals(prop, Id.values)) {
 					String otherSignature = "A"
 							+ ((TypeAArray) type).next.toString();
-					binding = new TypeDArrayBinding(this, new TypeDArray(
-							((TypeAArray) type).next), otherSignature);
+					binding = new BuiltinPropertyBinding(this, new TypeDArray(
+							((TypeAArray) type).next), type, identifier, otherSignature);
 				}
 			}
 		}

@@ -165,10 +165,6 @@ public class TypedefDeclaration extends Declaration {
 		buf.writeByte(';');
 		buf.writenl();
 	}
-
-	public String getSignature() {
-		return SemanticMixin.getSignature(this);
-	}
 	
 	public char getSignaturePrefix() {
 		return Signature.C_TYPEDEF;

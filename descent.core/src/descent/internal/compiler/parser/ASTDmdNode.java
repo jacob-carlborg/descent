@@ -559,7 +559,10 @@ public abstract class ASTDmdNode extends ASTNode {
 			}
 
 			if (condition) {
+				Expression e2 = e;
+				
 				e = new CallExp(e.loc, e);
+				e.copySourceRange(e2);
 				e = e.semantic(sc, context);
 			}
 
