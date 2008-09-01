@@ -301,6 +301,9 @@ import descent.internal.ui.util.PixelConverter;
     {
         Composite comp = new Composite(parent, SWT.NONE);
         setControl(comp);
+        String helpId = getHelpContextId();
+        if(null != helpId)
+            PlatformUI.getWorkbench().getHelpSystem().setHelp(getControl(), helpId);        
 
         Layout topLayout = getTopLayout();
         comp.setLayout(topLayout);
@@ -368,6 +371,7 @@ import descent.internal.ui.util.PixelConverter;
     
     //--------------------------------------------------------------------------
     // Abstract methods
+    
     /**
      * Gets the path to the icon for the tab. This is called during construction
      * so should not rely on any instance variables.
@@ -384,6 +388,17 @@ import descent.internal.ui.util.PixelConverter;
      * Gets the top layout to be used in the control
      */
     protected abstract Layout getTopLayout();
+    
+    //--------------------------------------------------------------------------
+    // Overridable methods
+    
+    /**
+     * Gets the context ID of the help that should be used for this tab
+     */
+    protected String getHelpContextId()
+    {
+        return null;        
+    }
     
     //--------------------------------------------------------------------------
     // Icon management
@@ -422,7 +437,7 @@ import descent.internal.ui.util.PixelConverter;
      * @param gridFill    the value to pass to the GridData constructor
      * @return            the new group
      */
-    protected Group createGroup(Composite comp, String text, int columnsUsed, 
+    protected static Group createGroup(Composite comp, String text, int columnsUsed, 
             int columns, int gridFill)
     {
         Group group = new Group(comp, SWT.NONE);
@@ -533,7 +548,7 @@ import descent.internal.ui.util.PixelConverter;
         return spacer;
     }
     
-    protected Button createRadioButton(Composite parent, int numColumns, 
+    protected final Button createRadioButton(Composite parent, int numColumns, 
             String label, int indent, SelectionListener listener)
     {
         final Button button = new Button(parent, SWT.RADIO);

@@ -35,16 +35,12 @@ public interface ICompileManager
     /**
      * Compiles the given object files. If multiple files are passed, they may
      * be built together. If 
-     * {@link ICompilerInterface#supportsInternalDependancyAnalysis()} returns
-     * <code>true</code> for this compiler type, this class should return a 
-     * non-null array of the names of all modules imported by the given object
-     * files (whether or not these files need to be built should be decided by
-     * the builder). If supportsInternalDependancyAnalysis() is
-     * <code>false</code>, the return of this method will be ignored.
      * 
      * @param objectFiles the object files to be built
      * @param pm          a monitor to rack the progress of the operation
-     * @return            a list of files imported by the given targets
+     * @return            true if and only if the operation was successful and 
+     *                    future operations (additional compile requests or
+     *                    requests for linker) should be processed
      */
-    public String[] compile(IObjectFile[] objectFiles, IProgressMonitor pm);
+    public boolean compile(IObjectFile[] objectFiles, IProgressMonitor pm);
 }

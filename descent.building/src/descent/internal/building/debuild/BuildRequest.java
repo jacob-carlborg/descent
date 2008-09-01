@@ -33,13 +33,14 @@ import static descent.building.IDescentBuilderConstants.*;
  * @author Robert Fraser
  */
 @SuppressWarnings("unchecked")
-/* package */ class BuildRequest
+/* package */ final class BuildRequest
 {
 	private final ILaunchConfiguration config;
     private final IJavaProject project;
     private final IVMInstall compilerInstall;
     private final ICompilerInterface compilerInterface;
     private final IFolder outputResource;
+    private final String projectBaseLoc;
     
     // For version/debug settings
     private final IJavaProject sourceProject;
@@ -64,14 +65,24 @@ import static descent.building.IDescentBuilderConstants.*;
 		}
 		compilerInterface = BuilderUtil.getCompilerInterface(compilerInstall);
 		outputResource = setOutputResource();
+		projectBaseLoc = BuilderUtil.getAbsolutePath(project.getPath());
 		
 		// Set debug/version settings
 		sourceProject = getSourceProject();
 		debugLevel = getLevel(ATTR_DEBUG_LEVEL, JavaCore.COMPILER_DEBUG_LEVEL);
 		versionLevel = getLevel(ATTR_VERSION_LEVEL, JavaCore.COMPILER_VERSION_LEVEL);
 		debugIdents = getIdents(ATTR_DEBUG_IDENTS, JavaCore.COMPILER_DEBUG_IDENTIFIERS, false);
-		versionIdents = getIdents(ATTR_VERSION_IDENTS, JavaCore.COMPILER_VERSION_IDENTIFIERS, true);
+		// TODO should predefined versions be removed?
+		versionIdents = getIdents(ATTR_VERSION_IDENTS, JavaCore.COMPILER_VERSION_IDENTIFIERS, false);
 		debugMode = BuilderUtil.getAttribute(config, ATTR_DEBUG_MODE, true);
+	}
+	
+	/**
+	 * Gets the name of the underlying launch configuration
+	 */
+	public String getName()
+	{
+	    return config.getName();
 	}
 	
 	/**
@@ -129,9 +140,9 @@ import static descent.building.IDescentBuilderConstants.*;
                     IPackageFragment pkg = (IPackageFragment) element;
                     try
                     {
-                    for(IJavaElement child : pkg.getChildren())
-                        if(child instanceof ICompilationUnit && child.exists())
-                            modules.add((ICompilationUnit) child);
+                        for(IJavaElement child : pkg.getChildren())
+                            if(child instanceof ICompilationUnit && child.exists())
+                                modules.add((ICompilationUnit) child);
                     }
                     catch(JavaModelException e)
                     {
@@ -151,7 +162,8 @@ import static descent.building.IDescentBuilderConstants.*;
         return modules.toArray(new ICompilationUnit[modules.size()]);
     }
 	
-	public final List<String> getVersionIdents() {
+	public final List<String> getVersionIdents()
+	{
         return versionIdents;
     }
 
@@ -185,6 +197,21 @@ import static descent.building.IDescentBuilderConstants.*;
         return new File(BuilderUtil.getAbsolutePath(outputResource.getFullPath()));
     }
     
+    public IPath getProjectBasePath()
+    {
+        return project.getResource().getLocation();
+    }
+    
+    public String getProjectBaseLocation()
+    {
+        return projectBaseLoc;
+    }
+    
+    public String getTargetFile()
+    {
+        return BuilderUtil.getAttribute(config, ATTR_OUTPUT_FILE, "");
+    }
+    
     //--------------------------------------------------------------------------
     // Private methods
     
@@ -193,7 +220,7 @@ import static descent.building.IDescentBuilderConstants.*;
         try
         {
             IPath outputLoc = project.getOutputLocation().addTrailingSeparator()
-                    .append(config.getName());
+                    .append(getName());
             return project.getCorrespondingResource().getWorkspace().getRoot().
                 getFolder(outputLoc);
         }
@@ -308,22 +335,23 @@ import static descent.building.IDescentBuilderConstants.*;
     // Ignored modules
 	private static final String[] phobosIgnored = new String[]
     {
+	    "std.",
         "object",
         "crc32",
         "gcc.",
         "gcstats",
-        "std.",
     };
 	
 	private static final String[] tangoIgnored = new String[]
     {
         "object",
         "gcc.",
+        "tango.", // TODO remove
     };
 	
 	public final String[] getIgnoredModules()
 	{
 	    // TODO
-	    return phobosIgnored;
+	    return tangoIgnored;
 	}
 }

@@ -7,6 +7,7 @@ package descent.building.compiler;
  * should instead be reported by throwing a {@link BuildException}.
  * 
  * <b>This class is not intended to be implemented by clients.</b>
+ * <b>This class is thread-safe.</b>
  * 
  * @author Robert Fraser
  */

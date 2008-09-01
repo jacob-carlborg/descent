@@ -55,51 +55,11 @@ import descent.internal.building.BuilderUtil;
     {
         try
         {
-            // TODO
-            if(true)
-            {
-                IFolder folder = req.getOutputResource();
-                if(!folder.exists())
-                    folder.create(true, true, BuilderUtil.NO_MONITOR);
-                clearOutputFolder();
-            }
-            else
-            {
-                // TODO this doesn't work
-                
-                // Check if the folder exists
-                IFolder folder = req.getOutputResource();
-                if(!folder.exists())
-                {
-                    folder.create(true, true, BuilderUtil.NO_MONITOR);
-                    createConfigFile();
-                    return;
-                }
-    
-                folder.refreshLocal(IResource.DEPTH_INFINITE, BuilderUtil.NO_MONITOR);
-                IResource launchConfigFile = folder.findMember(getLaunchConfigFilename());
-                if(null == launchConfigFile || !(launchConfigFile instanceof IFile))
-                {
-                    System.out.println("File doesn't exist!");
-                    clearOutputFolder();
-                    createConfigFile();
-                    return;
-                }
-                
-                ILaunchConfiguration launchConfig = DebugPlugin.getDefault().
-                        getLaunchManager().getLaunchConfiguration((IFile) launchConfigFile);
-                if(!launchConfigsEqual(launchConfig, req.getLaunchConfig()))
-                {
-                    System.out.println("Not equal!");
-                    clearOutputFolder();
-                    createConfigFile();
-                    return;
-                }
-                
-                // If we get here, we can safely use any object files already
-                // generated for incremental compilation.
-                System.out.println("Contents saved!!!");
-            }
+            // TODO this always does a clean build -- make it save old object files
+            IFolder folder = req.getOutputResource();
+            if(!folder.exists())
+                folder.create(true, true, BuilderUtil.NO_MONITOR);
+            clearOutputFolder();
         }
         catch(CoreException e)
         {
@@ -110,31 +70,10 @@ import descent.internal.building.BuilderUtil;
     }
     
     /**
-     * Gets the file name of the target launch configuration.
-     */
-    private String getLaunchConfigFilename()
-    {
-        return req.getLaunchConfig().getName().concat(".").
-                concat(ILaunchConfiguration.LAUNCH_CONFIGURATION_FILE_EXTENSION);
-    }
-
-    /**
-     * Copes the original launch configuration to the target location
-     */
-    private void createConfigFile() throws CoreException
-    {
-        IFile src = req.getLaunchConfig().getFile();
-        IFile dst = req.getOutputResource().getFile(getLaunchConfigFilename());
-        src.copy(dst.getFullPath(), true, BuilderUtil.NO_MONITOR);
-    }
-    
-    /**
      * Clears the output folder of all resources.
      */
     private void clearOutputFolder() throws CoreException
-    {
-        System.out.println("Folder cleared!!!");
-        
+    {   
         IFolder outputFolder = req.getOutputResource();
         IResource[] members = outputFolder.members();
         for(IResource file : members)
@@ -152,12 +91,74 @@ import descent.internal.building.BuilderUtil;
         }
     }
     
+    //--------------------------------------------------------------------------
+    // OLD VERSION -- Doesn't work since there's no way to serialize a launch
+    // config without also saving it in the launch config registry. Best
+    // resolution I can see is to develop my own serialization (maybe just
+    // copy the existing serialization method and remove the save part).
+    
+    /*
+    public void checkConsistentState()
+    {
+     // Check if the folder exists
+        IFolder folder = req.getOutputResource();
+        if(!folder.exists())
+        {
+            folder.create(true, true, BuilderUtil.NO_MONITOR);
+            createConfigFile();
+            return;
+        }
+
+        folder.refreshLocal(IResource.DEPTH_INFINITE, BuilderUtil.NO_MONITOR);
+        IResource launchConfigFile = folder.findMember(getLaunchConfigFilename());
+        if(null == launchConfigFile || !(launchConfigFile instanceof IFile))
+        {
+            System.out.println("File doesn't exist!");
+            clearOutputFolder();
+            createConfigFile();
+            return;
+        }
+        
+        ILaunchConfiguration launchConfig = DebugPlugin.getDefault().
+                getLaunchManager().getLaunchConfiguration((IFile) launchConfigFile);
+        if(!launchConfigsEqual(launchConfig, req.getLaunchConfig()))
+        {
+            System.out.println("Not equal!");
+            clearOutputFolder();
+            createConfigFile();
+            return;
+        }
+        
+        // If we get here, we can safely use any object files already
+        // generated for incremental compilation.
+        System.out.println("Contents saved!!!");
+    }
+    
+    /**
+     * Gets the file name of the target launch configuration.
+     * /
+    private String getLaunchConfigFilename()
+    {
+        return req.getLaunchConfig().getName().concat(".").
+                concat(ILaunchConfiguration.LAUNCH_CONFIGURATION_FILE_EXTENSION);
+    }
+
+    /**
+     * Copes the original launch configuration to the target location
+     * /
+    private void createConfigFile() throws CoreException
+    {
+        IFile src = req.getLaunchConfig().getFile();
+        IFile dst = req.getOutputResource().getFile(getLaunchConfigFilename());
+        src.copy(dst.getFullPath(), true, BuilderUtil.NO_MONITOR);
+    }
+    
     /**
      * This method is needed since 
      * {@link ILaunchConfiguration#contentsEqual(ILaunchConfiguration)} compares
      * the paths of launch configurations as well, and the getInfo method is not
      * publicly available.
-     */
+     * /
     private static boolean launchConfigsEqual(ILaunchConfiguration config,
             ILaunchConfiguration other) throws CoreException
     {
@@ -165,6 +166,5 @@ import descent.internal.building.BuilderUtil;
                 config.getType().equals(other.getType()) &&
                 config.getAttributes().equals(other.getAttributes());
     }
-    
-    // NEXTVERSION make this smarter
+    */
 }

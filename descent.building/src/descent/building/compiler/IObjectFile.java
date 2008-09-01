@@ -12,6 +12,7 @@ import java.io.File;
  * two object file if they refer to the same module.
  * 
  * <b>This class is not intended to be implemented by clients.</b>
+ * <b>This class is thread-safe.</b>
  * 
  * @author Robert Fraser
  */

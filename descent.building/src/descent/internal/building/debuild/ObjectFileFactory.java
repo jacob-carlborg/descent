@@ -6,6 +6,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IPath;
+
 import descent.building.compiler.BuildException;
 import descent.building.compiler.IObjectFile;
 import descent.core.ICompilationUnit;
@@ -76,7 +79,7 @@ import descent.internal.building.BuilderUtil;
             
             str.append(getName());
             if(isLibraryFile())
-                str.append(" (ExTERNAL)");
+                str.append(" (EXTERNAL)");
             
             str.append("\n    ");
             str.append("Input file: ");
@@ -92,137 +95,31 @@ import descent.internal.building.BuilderUtil;
 	
 	private static final int MAX_FILENAME_LENGTH = 240;
 	
-	private final BuildRequest req;
-	private Map<String, IObjectFile> cached = 
-	    new HashMap<String, IObjectFile>();
-	
-	// Since findModule() is called quite a bit, creating
-    // a new hash set every time sounds like a horrible thrashing of the GC.
-    // Instead, we'll just keep clearing out these set. They can't be static
-    // to maintain the threadsafe nature of the builder as a whole, however
-    private final Set<IJavaProject> visitedProjectAccumulator = 
-        new HashSet<IJavaProject>();
+	private final String outputPrefix;
 	
 	public ObjectFileFactory(BuildRequest req)
 	{
-	    this.req = req;
+	    outputPrefix = req.getOutputLocation().getAbsolutePath();
 	}
 	
-	public IObjectFile create(String moduleName)
+	public IObjectFile create(String moduleName, ICompilationUnit cu, boolean isLibraryFile)
 	{
-	    // If there's a cached version, return that one
-	    if(cached.containsKey(moduleName))
-	        return cached.get(moduleName);
-	    
-	    // If we shouldn't be building it, return null
-        for(String ignored : req.getIgnoredModules())
-            if(moduleName.startsWith(ignored))
-                return null;
-	    
-	    try
-	    {
-    	    // Use a one-element array to get pointer semantics
-    	    boolean[] _isLibraryFile = new boolean[1];
-    	    ICompilationUnit cu = findModule(moduleName, _isLibraryFile);
-    	    if(null == cu)
-    	        return null;
-    	    boolean isLibraryFile = _isLibraryFile[0];
-    	    IObjectFile obj = getInstance(moduleName, cu, isLibraryFile);
-    	    cached.put(moduleName, obj);
-    	    return obj;
-	    }
-	    catch(JavaModelException e)
-	    {
-	        throw new BuildException(e);
-	    }
+	    //File inputFile = new File(BuilderUtil.getAbsolutePath(cu.getResource().getLocation()));
+	    IResource res = cu.getResource();
+	    IPath path = res.getLocation();
+	    String absPath = BuilderUtil.getAbsolutePath(path);
+	    File inputFile = new File(absPath);
+        File outputFile = new File(outputPrefix + File.separator + getOutputFilename(moduleName));
+        return new ObjectFile(moduleName, inputFile, outputFile, isLibraryFile);
 	}
 	
-	private IObjectFile getInstance(String moduleName,
-	        ICompilationUnit cu, boolean isLibraryFile)
+	private static String getOutputFilename(String moduleName)
 	{
-	    File inputFile = new File(BuilderUtil.getAbsolutePath(cu.getResource().
-	            getLocation()));
-	    File outputFile = new File(req.getOutputLocation().getAbsolutePath() +
-	            File.separator + getOutputFilename(cu));
-	    return new ObjectFile(moduleName, inputFile, outputFile, isLibraryFile);
-	}
-	
-	private ICompilationUnit findModule(String moduleName, boolean[] isLibraryFile)
-        throws JavaModelException
-    {
-        visitedProjectAccumulator.clear();
-        return findModuleInProject(req.getProject(), moduleName, isLibraryFile);
-    }
-    
-    private ICompilationUnit findModuleInProject(
-            IJavaProject project,
-            String moduleName,
-            boolean[] isLibraryFile)
-        throws JavaModelException
-    {
-        if (visitedProjectAccumulator.contains(project))
-            return null;
-        
-        int index = moduleName.lastIndexOf('.');
-        String packagePart = index > 0 ? moduleName.substring(0, index) : "";
-        String modulePart = (index > 0 ? moduleName.substring(index + 1) : 
-            moduleName) + ".d";
-        
-        ICompilationUnit module = null;
-        boolean libraryFile = false;
-        for(IPackageFragmentRoot root : project.getPackageFragmentRoots())
-        {
-            IPackageFragment pkg = root.getPackageFragment(packagePart);
-            if (pkg.exists())
-            {
-                // Check if it's in the package...
-                module = pkg.getCompilationUnit(modulePart);
-                
-                // If not, check if it's a class file
-                if (!module.exists())
-                {
-                    module = pkg.getClassFile(modulePart);
-                    libraryFile = true;
-                }
-                
-                if(module.exists())
-                {
-                    break;
-                }
-            }
-        }
-        
-        if(null != module && module.exists())
-        {
-            // Note: existance must be tested since an ICompilationUnit may
-            // be returned for non-existant modules
-            isLibraryFile[0] = libraryFile;
-            return module;
-        }
-        
-        visitedProjectAccumulator.add(project);
-        IJavaModel javaModel= project.getJavaModel();
-        String[] requiredProjectNames= project.getRequiredProjectNames();
-        for (int i= 0; i < requiredProjectNames.length; i++)
-        {
-            IJavaProject requiredProject= javaModel.getJavaProject(requiredProjectNames[i]);
-            if (requiredProject.exists())
-            {
-                module = findModuleInProject(requiredProject, moduleName, isLibraryFile);
-                if (module != null)
-                    return module;
-            }
-        }
-        return null;
-    }
-	
-	private static String getOutputFilename(ICompilationUnit cu)
-	{
-	    String name = cu.getFullyQualifiedName().replace('.', '-') + 
-	        BuilderUtil.EXTENSION_OBJECT_FILE;
+	    String name = moduleName.replace('.', '-') + BuilderUtil.EXTENSION_OBJECT_FILE;
 	    int len = name.length();
 	    if(len > MAX_FILENAME_LENGTH)
 	        name = name.substring(len - MAX_FILENAME_LENGTH);
+	    name = "__" + name;
 	    return name;
 	}
 }

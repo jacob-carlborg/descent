@@ -1,13 +1,66 @@
 package descent.internal.building.compiler;
 
+import java.io.File;
+import java.util.Collection;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import descent.building.compiler.IBuildManager;
 import descent.building.compiler.ICompileManager;
 import descent.building.compiler.IObjectFile;
 
 public class DmdCompileManager implements ICompileManager
 {
-    protected static final boolean DEBUG = true;
+    private IBuildManager buildMgr;
+    
+    public DmdCompileManager(IBuildManager buildMgr)
+    {
+        this.buildMgr = buildMgr;
+    }
+
+    /* (non-Javadoc)
+     * @see descent.building.compiler.ICompileManager#compile(descent.building.compiler.IObjectFile[], org.eclipse.core.runtime.IProgressMonitor)
+     */
+    public boolean compile(IObjectFile[] objectFiles, IProgressMonitor pm)
+    {
+        // TODO
+        try
+        {
+            pm.beginTask("Compiling object files", 100);
+            
+            System.out.println("----- DmdCompileManager#compile ---");
+            for(IObjectFile obj : objectFiles)
+            {
+                System.out.println(obj);
+                buildMgr.exec(getCommand(obj), null);
+            }
+            buildMgr.waitExecutionQueue();
+            return false;
+        }
+        finally
+        {
+            pm.done();
+        }
+    }
+    
+    private String getCommand(IObjectFile obj)
+    {
+        // TODO this is for testing purposes only
+        StringBuilder cmd = new StringBuilder();
+        cmd.append("dmd ");
+        cmd.append(obj.getInputFile());
+        cmd.append(" -c");
+        cmd.append(" -of" + obj.getOutputFile().getAbsolutePath());
+        for(File importPath : buildMgr.getImportPaths())
+        {
+            cmd.append(" -I");
+            cmd.append(importPath.toString());
+        }
+        return cmd.toString();
+    }
+    
+    //--------------------------------------------------------------------------
+    // OLD
     
     /* protected static class DmdResponseInterpreter implements IResponseInterpreter
     {
@@ -53,26 +106,4 @@ public class DmdCompileManager implements ICompileManager
             // TODO interpret(line);
         }
     } */
-    
-    public String[] compile(IObjectFile[] objectFiles, IProgressMonitor pm)
-    {
-        // TODO
-        
-        try
-        {
-            pm.beginTask("Compiling object files", 100);
-            
-            if(DEBUG)
-            {
-                System.out.println("----- DmdCompileManager#compile ---");
-                for(IObjectFile obj : objectFiles)
-                    System.out.println(obj);
-            }
-            return new String[] { };
-        }
-        finally
-        {
-            pm.done();
-        }
-    }
 }

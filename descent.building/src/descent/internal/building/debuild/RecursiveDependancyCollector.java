@@ -118,17 +118,17 @@ import descent.core.JavaModelException;
 			throw new RuntimeException("Could not find module " + moduleName);
 		
         // Add the new object file to the set
-		objectFiles.put(moduleName, createObjectFile(module, isLibraryFile[0]));
+		objectFiles.put(moduleName, createObjectFile(moduleName, module, isLibraryFile[0]));
         
         // Recurse through imports
 		for(String importedModule : getImports(module))
 			collectRecursive(importedModule, pm);
 	}
 	
-	private IObjectFile createObjectFile(ICompilationUnit cu, 
+	private IObjectFile createObjectFile(String moduleName, ICompilationUnit cu, 
             boolean isLibraryFile)
 	{
-		return factory.create(cu, isLibraryFile);
+		return factory.create(moduleName, cu, isLibraryFile);
 	}
     
     private ICompilationUnit findModule(String moduleName, boolean[] isLibraryFile)

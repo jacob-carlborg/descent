@@ -3,9 +3,11 @@ package descent.internal.building.debuild;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 
+import descent.building.compiler.IErrorReporter;
 import descent.core.IJavaProject;
 
-/* package */ class ErrorReporter
+// TODO ensure it's thread safe
+/* package */ class ErrorReporter implements IErrorReporter
 {
 	private final IJavaProject project;
 	

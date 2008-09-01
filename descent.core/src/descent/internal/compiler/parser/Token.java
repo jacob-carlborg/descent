@@ -153,9 +153,9 @@ public class Token {
 		case TOKdocpluscomment:
 		case TOKwhitespace:
 		case TOKPRAGMA:
-			return new String(sourceString);
+			return null != sourceString ? new String(sourceString) : "";
 		case TOKidentifier:
-			return new String(sourceString);
+			return null != sourceString ? new String(sourceString) : "";
 		default:
 			return value.value;
 	}	

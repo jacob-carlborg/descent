@@ -925,6 +925,12 @@ import descent.launching.JavaRuntime;
         layout.numColumns = 2;
         return layout;
     }
+    
+    @Override
+    protected String getHelpContextId()
+    {
+        return IDescentBuildingHelpContextIds.LAUNCH_CONFIGURATION_DIALOG_COMPILER_TAB;
+    }
 
     public String getName()
     {

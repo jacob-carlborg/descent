@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<contexts>
+   <context id="descent.building.compiler_tab" title="About Compiler Tab">
+      <description>Use the compiler tab to configure the compiler to use and the options passed to the compiler and linker.</description>
+   </context>
+</contexts>

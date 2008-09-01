@@ -2,11 +2,9 @@ package descent.internal.building.compiler;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import descent.building.compiler.IBuildManager;
 import descent.building.compiler.ICompileManager;
-import descent.building.compiler.IResponseInterpreter;
 import descent.building.compiler.ui.CompilerOption;
 
 import static descent.internal.building.compiler.ui.DmdUIOptions.*;
@@ -49,8 +47,8 @@ public final class DmdCompilerInterface extends DmdfeCompilerInterface
 	}
 
     @Override
-    public ICompileManager getCompileManager(IBuildManager buildManager)
+    public ICompileManager getCompileManager(IBuildManager buildMgr)
     {
-        return new DmdCompileManager();
+        return new DmdCompileManager(buildMgr);
     }
 }

@@ -126,5 +126,12 @@
             vmInstallType="descent.internal.debug.ui.launcher.GdcCompilerType">
       </compilerInterface>
    </extension>
+   <extension
+         point="org.eclipse.help.contexts">
+      <contexts
+            file="doc/contexts_building.xml"
+            plugin="descent.building">
+      </contexts>
+   </extension>
 
 </plugin>
