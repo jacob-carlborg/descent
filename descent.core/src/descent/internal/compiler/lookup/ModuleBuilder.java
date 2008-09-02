@@ -517,7 +517,7 @@ public class ModuleBuilder {
 	}
 
 	public void fillField(Module module, Dsymbols members, final IField field) throws JavaModelException {
-		if (field.isVariable()) {
+		if (field.isVariable() || field.isEnumConstant()) { // enum constant for D2, like "enum int foo = 2;"
 			VarDeclaration member = new VarDeclaration(getLoc(module, field), getType(field.getTypeSignature()), getIdent(field), getInitializer(field));
 			member.setJavaElement(field);
 			members.add(wrap(member, field));

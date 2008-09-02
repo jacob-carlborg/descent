@@ -155,6 +155,7 @@ public final class JavaCodeScanner extends AbstractJavaScanner {
 	static String[] fgKeywords2= {
 		"__traits", //$NON-NLS-1$,
 		"__overloadset", //$NON-NLS-1$
+		"__thread", //$NON-NLS-1$
 		"nothrow", //$NON-NLS-1$
 		"pure", //$NON-NLS-1$
 	};

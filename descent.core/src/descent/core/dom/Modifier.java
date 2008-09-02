@@ -67,6 +67,7 @@ public class Modifier extends ASTNode {
 		ENUM_KEYWORD("enum", ENUM),
 		PURE_KEYWORD("pure", PURE),
 		NOTHROW_KEYWORD("nothrow", NOTHROW),
+		THREAD_KEYWORD("__thread", THREAD),
 		;
 		
 		private String keyword;
@@ -268,6 +269,11 @@ public class Modifier extends ASTNode {
 	 * "nothrow" modifier constant (bit mask).
 	 */
 	public static final int NOTHROW = Flags.AccNothrow;
+	
+	/**
+	 * "__thread" modifier constant (bit mask).
+	 */
+	public static final int THREAD = Flags.AccThread;
 	
 	/**
 	 * The "modifierKeyword" structural property of this node type.

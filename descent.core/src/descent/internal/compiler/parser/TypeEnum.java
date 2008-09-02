@@ -57,7 +57,11 @@ public class TypeEnum extends Type {
 	public Expression defaultInit(Loc loc, SemanticContext context) {
 		// Initialize to first member of enum
 		Expression e;
-		e = new IntegerExp(loc, (integer_t) sym.defaultval, this);
+		if (context.isD2()) {
+			e = (Expression) sym.defaultval;
+		} else {
+			e = new IntegerExp(loc, (integer_t) sym.defaultval, this);
+		}
 		return e;
 	}
 

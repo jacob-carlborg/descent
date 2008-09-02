@@ -248,6 +248,12 @@ public final class Flags {
 	public static final int AccStaticDestructor = 0x00010000;
 	
 	/**
+	 * Thread property flag.
+	 * @since 2.0
+	 */
+	public static final int AccThread = 0x8000000;
+	
+	/**
 	 * Nothrow property flag.
 	 * @since 2.0
 	 */
@@ -489,6 +495,16 @@ public final class Flags {
 	 */
 	public static boolean isConst(long flags) {
 		return (flags & AccConst) != 0;
+	}
+	
+	/**
+	 * Returns whether the given integer includes the <code>__thread</code> modifier.
+	 *
+	 * @param flags the flags
+	 * @return <code>true</code> if the <code>__thread</code> modifier is included
+	 */
+	public static boolean isThread(long flags) {
+		return (flags & AccThread) != 0;
 	}
 	
 	/**

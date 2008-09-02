@@ -155,14 +155,16 @@ public IJavaElement getPrimaryElement(boolean checkOwner) {
  * @see IField
  */
 public String getTypeSignature() throws JavaModelException {
-	// Descent: if I'm an enum constant, my type is my parent's type
-	if (this.isEnumConstant()) {
-		return getParent().getElementSignature();
-	}
-	
 	// Else, return my signature
 	SourceFieldElementInfo info = (SourceFieldElementInfo) getElementInfo();
-	return info.getTypeSignature();
+	String signature = info.getTypeSignature();
+	
+	// If I'm an enum constant, my type is my parent's type
+	if (signature == null && this.isEnumConstant()) {
+		signature = getParent().getElementSignature();
+	}
+	
+	return signature;
 }
 /**
  * @see IField

@@ -482,11 +482,9 @@ public class EditorUtility {
 					jProject= null;
 			}
 		}
-		/* TODO JDT UI binary
 		else if (input instanceof IClassFileEditorInput) {
 			jProject= ((IClassFileEditorInput)input).getClassFile().getJavaProject();
 		}
-		*/
 		return jProject;
 	}
 	
