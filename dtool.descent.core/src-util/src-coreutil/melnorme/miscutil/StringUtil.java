@@ -107,5 +107,12 @@ public final class StringUtil {
 		return false;
 	}
 
+	/** Return "" if string is null, or the unmodified string otherwise. */
+	public static String nullAsEmpty(String string) {
+		if(string == null)
+			return "";
+		return string;
+	}
+
 
 }

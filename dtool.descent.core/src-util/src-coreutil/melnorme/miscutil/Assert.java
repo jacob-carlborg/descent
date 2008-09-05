@@ -42,8 +42,14 @@ public abstract class Assert {
         public AssertionFailedException() { 
         }
 
-        public AssertionFailedException(String detail) {
-            super(detail);
+        public AssertionFailedException(String message) {
+            super(message);
+        }
+        
+        @Override
+        public String toString() {
+            String message = getLocalizedMessage();
+            return "AssertionFailedException" + ((message != null) ? (": " + message) : "");
         }
         
     }
@@ -58,7 +64,7 @@ public abstract class Assert {
 	public static boolean isTrue(boolean expression, String message) {
 		if (!expression) {
 			expression = false;  // dummy statement to allow breakpoint placement
-			throw new AssertionFailedException("Assertion failed: " + message); //$NON-NLS-1$
+			throw new AssertionFailedException(message); //$NON-NLS-1$
 		}
 		return expression;
 	}
@@ -77,11 +83,11 @@ public abstract class Assert {
 	/** Like {@link #isTrue(boolean, String)} with empty message
 	 */
 	public static boolean isTrue(boolean expression) {
-		return Assert.isTrue(expression, ""); //$NON-NLS-1$
+		return Assert.isTrue(expression, null); //$NON-NLS-1$
 	}
 	/** Like {@link #isTrue(boolean, String)} with empty message */
 	public static boolean assertTrue(boolean expression) {
-		return Assert.isTrue(expression, ""); //$NON-NLS-1$
+		return Assert.isTrue(expression, null); //$NON-NLS-1$
 	}
 	
 	
@@ -102,11 +108,11 @@ public abstract class Assert {
 	
 	/** Like {@link #isNotNull(Object, String)} with empty message.	 */
 	public static void isNotNull(Object object) {
-		Assert.isTrue(!(object == null), "");
+		Assert.isTrue(!(object == null), null);
 	}
 	/** Like {@link #isNotNull(Object, String)} with empty message.	 */
 	public static void assertNotNull(Object object) {
-		Assert.isTrue(!(object == null), "");
+		Assert.isTrue(!(object == null), null);
 	}
 	
 	
@@ -124,7 +130,7 @@ public abstract class Assert {
 	 * Never returns.
 	 */
 	public static AssertionFailedException fail(String msg) {
-		throw new AssertionFailedException("Assert fail: " + msg);
+		throw new AssertionFailedException(msg);
 	}
 	/** Causes an inconditional assertion failure, with message msg. 
 	 * Never returns.
@@ -136,7 +142,7 @@ public abstract class Assert {
 	
 	/** Like {@link #fail(String)} with empty message. */
 	public static AssertionFailedException fail() {
-		throw new AssertionFailedException("Assert fail.");
+		throw new AssertionFailedException("fail.");
 	}
 	/** Like {@link #fail(String)} with empty message. */
 	public static AssertionFailedException assertFail() {
