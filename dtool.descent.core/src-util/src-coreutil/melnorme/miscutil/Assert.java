@@ -1,22 +1,19 @@
+/*******************************************************************************
+ * Copyright (c) 2007 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ * 	   IBM Corporation - initial API and implementation
+ *     Bruno Medeiros - next implementation
+ *******************************************************************************/
 package melnorme.miscutil;
 
 
 /**
- * <p>
- * (Somewhat based on org.eclipse.core.runtime.Assert)
- * </p>
- * 
- * <code>Assert</code> is useful for for embedding runtime sanity checks in
- * code. The static predicate methods all test a condition and throw some type
- * of unchecked exception if the condition does not hold.
- * <p>
- * Assertion failure exceptions, like most runtime exceptions, are thrown when
- * something is misbehaving. Assertion failures are invariably unspecified
- * behavior; consequently, clients should never rely on these being thrown (or
- * not thrown). <b>If you find yourself in the position where you need to catch
- * an assertion failure, you have most certainly written your program
- * incorrectly.</b>
- * </p>
+ * <code>Assert</code> is util code for contract checking (assertions)
  * <p>
  * For each method in this class, such as 'isTrue', there is an identical method
  * with the 'assert' prefix, (ie, assertTrue). This is a convenience for the use of
