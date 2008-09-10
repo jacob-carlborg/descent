@@ -1,22 +1,12 @@
 package descent.internal.building.debuild;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 
-import descent.building.compiler.BuildException;
 import descent.building.compiler.IObjectFile;
 import descent.core.ICompilationUnit;
-import descent.core.IJavaModel;
-import descent.core.IJavaProject;
-import descent.core.IPackageFragment;
-import descent.core.IPackageFragmentRoot;
-import descent.core.JavaModelException;
 import descent.internal.building.BuilderUtil;
 
 /* package */ final class ObjectFileFactory
@@ -119,7 +109,6 @@ import descent.internal.building.BuilderUtil;
 	    int len = name.length();
 	    if(len > MAX_FILENAME_LENGTH)
 	        name = name.substring(len - MAX_FILENAME_LENGTH);
-	    name = "__" + name;
 	    return name;
 	}
 }

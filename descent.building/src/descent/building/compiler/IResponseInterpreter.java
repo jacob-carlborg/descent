@@ -6,8 +6,8 @@ package descent.building.compiler;
  * to make appropriate callbacks to the {@link IBuildManager} to, for example,
  * report errors or other output.
  * 
- * <b>Implementations of this class must be thread-safe.</b>
- * <b>This class is intended to be implemented by clients.</b>
+ * <b>This class should be implemented by clients providing a compiler interface.</b>
+ * <b>Implementations of this class MUST be thread-safe.</b>
  * 
  * @author Robert Fraser
  */

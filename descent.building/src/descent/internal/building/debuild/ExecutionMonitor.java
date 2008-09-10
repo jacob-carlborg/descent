@@ -1,22 +1,27 @@
 package descent.internal.building.debuild;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Deque;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
+import org.eclipse.debug.core.IStreamListener;
+import org.eclipse.debug.core.model.IProcess;
+import org.eclipse.debug.core.model.IStreamMonitor;
+import org.eclipse.debug.core.model.IStreamsProxy;
+
+import com.sun.corba.se.impl.orbutil.threadpool.TimeoutException;
 
 import descent.internal.building.BuildingPlugin;
+import descent.building.compiler.IExecutionCallback;
+import descent.building.compiler.IExecutionMonitor;
 import descent.building.compiler.IResponseInterpreter;
 
 /**
@@ -25,8 +30,18 @@ import descent.building.compiler.IResponseInterpreter;
  *
  * @author Robert Fraser
  */
-/* package */ class ExecutionMonitor
+/* package */ class ExecutionMonitor implements IExecutionMonitor
 {
+    private static final IResponseInterpreter NULL_RESPONSE_INTERPRETER =
+        new IResponseInterpreter() {
+            public void interpret(String line) { }
+            public void interpretError(String line) { }
+        };
+    private static final IExecutionCallback NULL_CALLBACK = 
+        new IExecutionCallback() { public void taskCompleted(int result) { } };
+    private static final Callable<Boolean> NULL_CALLABLE =
+        new Callable<Boolean>() { public Boolean call() { return true; } };
+    
     /**
      * Response interpreter that simply wraps the streams logging info to Eclipse stdout.
      * This is useful for debugging purposes (obviously).
@@ -55,135 +70,70 @@ import descent.building.compiler.IResponseInterpreter;
         }
     }
     
-    /**
-     * Response interpreter that doesn't do anything.
-     * 
-     * @author Robert Fraser
-     */
-    private static class NullResponseInterpreter implements IResponseInterpreter
-    {
-        public void interpret(String line) {  }
-        public void interpretError(String line) {  }
-    }
-    
 	private final class ExecutionTask implements Callable<Integer>
 	{
 	    /**
-	     * Non-blocking mechanism for reading stream input line-by-line
-	     * and forwarding calls to the interpret() method
+	     * Listens to stream events and passes them on to the appropriate interpreter
 	     * 
 	     * @author Robert Fraser
 	     */
-	    private class LineByLineReader
-	    {
-	        private Thread thread;
-	        private BufferedReader reader;
-	        private long lastSleep;
-	        private final boolean isError;
-
-	        LineByLineReader(InputStream stream, boolean isError)
-	        {
-	            reader = new BufferedReader(new InputStreamReader(stream));
-	            this.isError = isError;
-	        }
-
-	        void start()
-	        {
-	            if (null == thread)
-	            {
-	                thread = new Thread(new Runnable()
-	                {
-	                    public void run()
-	                    {
-	                        read();
-	                    }
-	                });
-
-	                thread.setDaemon(true);
-	                thread.setPriority(Thread.MIN_PRIORITY);
-	                thread.start();
-	            }
-	        }
-
-	        void read()
-	        {
-	            lastSleep = System.currentTimeMillis();
-	            long currentTime = lastSleep;
-	            while (true)
-	            {
-	                try
-	                {
-	                    String text = reader.readLine();
-	                    if (null == text)
-	                        break;
-	                    else
-	                    {
-	                        if(isError)
-	                            interpreter.interpretError(text);
-	                        else
-	                            interpreter.interpret(text);
-	                    }
-	                }
-	                catch (IOException e)
-	                {
-	                    // This generally just means the end of the stream, so break
-	                    break;
-	                }
-
-	                // Give up some CPU time to maintain UI responsiveness
-	                currentTime = System.currentTimeMillis();
-	                if (currentTime - lastSleep > 1000)
-	                {
-	                    lastSleep = currentTime;
-	                    try
-	                    {
-	                        Thread.sleep(1);
-	                    }
-	                    catch (InterruptedException e)
-	                    {
-	                        // Do nothing
-	                    }
-	                }
-	            }
-
-	            try
-	            {
-	                reader.close();
-	            }
-	            catch (IOException e)
-	            {
-	                BuildingPlugin.log(e);
-	            }
-	        }
-	    }
+	    private final class StreamListner implements IStreamListener
+        {
+            private final boolean isError;
+            
+            public StreamListner(boolean isError)
+            {
+                this.isError = isError;
+            }
+            
+            public void streamAppended(String text, IStreamMonitor monitor)
+            {
+                int start = 0;
+                int len = text.length();
+                for(int i = 0; i < len; i++)
+                {
+                    char c = text.charAt(i);
+                    if (c == '\n')
+                    {
+                        int end = i;
+                        if(end > 0 && (text.charAt(end - 1) == '\r'))
+                            --end;
+                        String line = text.substring(start, end);
+                        if(isError)
+                            interpreter.interpretError(line);
+                        else
+                            interpreter.interpret(line);
+                        start = i + 1;
+                    }
+                }
+            }
+        }
 	    
 	    private final String command;
 	    private final IResponseInterpreter interpreter;
 	    private final String[] environment;
 	    private final String workingDir;
-	    
-	    private boolean finished = false;
+	    private final IExecutionCallback onComplete;
 	    
 	    public ExecutionTask(String command,
 	            IResponseInterpreter interpreter,
 	            String[] environment,
-	            String workingDir)
+	            String workingDir,
+	            IExecutionCallback onComplete)
 	    {   
 	        this.command = command;
 	        this.environment = environment;
-	        this.workingDir = workingDir;
+	        this.workingDir = null ==  workingDir ?  defaultWorkingDir : workingDir;
+	        this.onComplete = null == onComplete ? NULL_CALLBACK : onComplete;
 	        
-	        if(null == interpreter)
-	            interpreter = new NullResponseInterpreter();
-	        this.interpreter = DebuildBuilder.DEBUG ? new DebugResponseInterpreter(interpreter) : interpreter;
+	        interpreter = null == interpreter ? NULL_RESPONSE_INTERPRETER :  interpreter;
+	        interpreter = DebuildBuilder.DEBUG ? new DebugResponseInterpreter(interpreter) : interpreter;
+	        this.interpreter = interpreter;
 	    }
 	    
 	    public Integer call()
 	    {
-	        if(finished)
-	            throw new IllegalStateException();
 	        Process proc = null;
-	        
 	        try
 	        {
 	            if(DebuildBuilder.DEBUG)
@@ -191,71 +141,114 @@ import descent.building.compiler.IResponseInterpreter;
 	            
 	            proc = Runtime.getRuntime().exec(command,
 	                    environment, new File(workingDir));
-	            // TODO add the process to the launch
-	            LineByLineReader stdoutReader = 
-	                new LineByLineReader(proc.getInputStream(), false);
-	            LineByLineReader stderrReader = 
-	                new LineByLineReader(proc.getErrorStream(), true);
-	            stdoutReader.start();
-	            stderrReader.start();
+	            IProcess eclipseProc = DebugPlugin.newProcess(launch, proc, command);
+	            IStreamsProxy streamsProxy = eclipseProc.getStreamsProxy();
+	            streamsProxy.getOutputStreamMonitor().addListener(new StreamListner(false));
+	            streamsProxy.getErrorStreamMonitor().addListener(new StreamListner(true));
 	            
-	            int result = proc.waitFor();  // PERHAPS timeout in case of hangs?
-	            finished = true;
+	            int result;
+	            try
+	            {
+	                result = proc.waitFor();
+	            }
+                catch(InterruptedException e)
+                {
+                    proc.destroy();
+                    return null;
+                }
+	            
+	            if(DebuildBuilder.DEBUG)
+	                System.out.println("TRM => " + result);
+	            onComplete.taskCompleted(result);
 	            return result;
 	        }
 	        catch(Exception e)
 	        {
 	            // Kill the process if need be
 	            if(null != proc)
-	            {
-	                try
-	                {
-	                    proc.destroy();
-	                }
-	                catch(Exception ex)
-	                {
-	                    // Do nothing
-	                }
-	            }
-	            
+	                proc.destroy();
 	            BuildingPlugin.log(e);
 	            return null;
 	        }
-	    }
-	    
-	    public boolean finished()
-	    {
-	        return finished;
 	    }
 	}
 	
 	private final ExecutorService threadPool;
 	private final ILaunch launch;
+	private final String defaultWorkingDir;
 	
-	public ExecutionMonitor(ILaunch launch)
+	public ExecutionMonitor(ILaunch launch, String defaultWorkingDir, boolean useThreadPooling)
 	{
-	    int numThreads = DebuildBuilder.DEBUG ? 1 : Runtime.getRuntime().availableProcessors();
+	    int numThreads = (DebuildBuilder.DEBUG || !useThreadPooling) ? 1 :
+	        Runtime.getRuntime().availableProcessors();
 	    this.threadPool = Executors.newFixedThreadPool(numThreads);
 	    this.launch = launch;
+	    this.defaultWorkingDir = defaultWorkingDir;
 	}
 	
-	public Future<Integer> addTask(String command,
-            IResponseInterpreter interpreter,
-            String[] environment,
-            String workingDir)
+	/* (non-Javadoc)
+	 * @see descent.building.compiler.IExecutionMonitor#exec(java.lang.String, descent.building.compiler.IResponseInterpreter, descent.building.compiler.IExecutionCallback)
+	 */
+	public Future<Integer> exec(String cmd, IResponseInterpreter interpreter,
+            IExecutionCallback onComplete)
     {
-	    return threadPool.submit(new ExecutionTask(command, interpreter, environment, workingDir));
+        return exec(cmd, interpreter, onComplete, defaultWorkingDir, null);
     }
 	
-	public void waitFor()
+    /* (non-Javadoc)
+	 * @see descent.building.compiler.IExecutionMonitor#exec(java.lang.String, descent.building.compiler.IResponseInterpreter, descent.building.compiler.IExecutionCallback, java.lang.String, java.lang.String[])
+	 */
+	public Future<Integer> exec(String command,
+            IResponseInterpreter interpreter,
+            IExecutionCallback onComplete,
+            String workingDir,
+            String[] environment)
+    {
+	    return threadPool.submit(new ExecutionTask(command, interpreter, environment, workingDir, onComplete));
+    }
+	
+	/* (non-Javadoc)
+	 * @see descent.building.compiler.IExecutionMonitor#syncPreviousTasks(org.eclipse.core.runtime.IProgressMonitor)
+	 */
+	public boolean syncPreviousTasks(IProgressMonitor terminator)
 	{
-	    try
+	    // Come with me... if you want to live.
+	    if(null == terminator)
+	        terminator = new NullProgressMonitor();
+	    Future<Boolean> task = threadPool.submit(NULL_CALLABLE);
+	    while(true)
 	    {
-	        threadPool.awaitTermination(1, TimeUnit.DAYS);
+	        if(terminator.isCanceled())
+	        {
+	            shutdownNow();
+	            
+	            // Wait one second in case some processes aren't killed properly
+	            try
+	            {
+	                threadPool.awaitTermination(1, TimeUnit.SECONDS);
+	            }
+	            catch(Exception e) { }
+	            return false;
+	        }
+	        
+	        try
+	        {
+	            task.get(500, TimeUnit.MILLISECONDS);
+	            return true;
+	        }
+	        catch(Exception e)
+	        {
+	            // A timeout exception indicating that the request timed out... go through
+	            // the loop again
+	        }
 	    }
-	    catch(Exception e)
-	    {
-	        throw e instanceof RuntimeException ? ((RuntimeException) e) : new RuntimeException(e);
-	    }
+	}
+	
+	/* (non-Javadoc)
+	 * @see descent.building.compiler.IExecutionMonitor#shutdownNow()
+	 */
+	public void shutdownNow()
+	{
+	    threadPool.shutdownNow();
 	}
 }

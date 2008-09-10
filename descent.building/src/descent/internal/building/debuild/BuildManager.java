@@ -9,6 +9,8 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 
 import descent.building.compiler.IBuildManager;
 import descent.building.compiler.IErrorReporter;
+import descent.building.compiler.IExecutionCallback;
+import descent.building.compiler.IExecutionMonitor;
 import descent.building.compiler.IResponseInterpreter;
 
 /* package */ final class BuildManager implements IBuildManager
@@ -16,46 +18,27 @@ import descent.building.compiler.IResponseInterpreter;
     private final BuildRequest req;
     private final ErrorReporter err;
     private final Collection<File> importPath;
-    private final ExecutionMonitor executor;
+    private final ExecutionMonitor executionMonitor;
     
-    private final String defaultWorkingDir;
-    
-    public BuildManager(BuildRequest req, ErrorReporter err, Collection<File> importPath,
-            ILaunch launch)
+    public BuildManager(BuildRequest req, ErrorReporter err, Collection<File> importPath, ILaunch launch)
     {
         this.req = req;
         this.err = err;
         this.importPath = importPath;
-        this.executor = new ExecutionMonitor(launch);
         
-        defaultWorkingDir = req.getOutputLocation().toString();
+        this.executionMonitor = new ExecutionMonitor(launch, req.getOutputLocation().toString(), true); // TODO this isn't always true
     }
     
     /* (non-Javadoc)
-     * @see descent.building.compiler.IBuildManager#exec(java.lang.String, descent.building.compiler.IResponseInterpreter)
+     * @see descent.building.compiler.IBuildManager#getExecutionMonitor()
      */
-    public Future<Integer> exec(String cmd, IResponseInterpreter interpreter)
+    public IExecutionMonitor getExecutionMonitor()
     {
-        return exec(cmd, interpreter, defaultWorkingDir, null);
+        return executionMonitor;
     }
-    
-    /* (non-Javadoc)
-     * @see descent.building.compiler.IBuildManager#exec(java.lang.String, descent.building.compiler.IResponseInterpreter, java.lang.String, java.lang.String[])
-     */
-    public Future<Integer> exec(String cmd, IResponseInterpreter interpreter,
-            String workingDir, String[] env)
-    {
-        return executor.addTask(cmd, interpreter, env, workingDir);
-    }
-    
-    /* (non-Javadoc)
-     * @see descent.building.compiler.IBuildManager#waitExecutionQueue()
-     */
-    public void waitExecutionQueue()
-    {
-        executor.waitFor();
-    }
-    
+
+
+
     /* (non-Javadoc)
      * @see descent.building.compiler.IBuildManager#getErrorReporter()
      */

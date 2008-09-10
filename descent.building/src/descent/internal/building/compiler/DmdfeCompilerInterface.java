@@ -11,9 +11,4 @@ public abstract class DmdfeCompilerInterface implements ICompilerInterface
         // TODO Auto-generated method stub
         return null;
     }
-
-    public boolean supportsInternalDependancyAnalysis()
-    {
-        return true;
-    }
 }

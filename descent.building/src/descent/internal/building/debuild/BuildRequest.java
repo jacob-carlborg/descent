@@ -219,10 +219,8 @@ import static descent.building.IDescentBuilderConstants.*;
     {
         try
         {
-            IPath outputLoc = project.getOutputLocation().addTrailingSeparator()
-                    .append(getName());
-            return project.getCorrespondingResource().getWorkspace().getRoot().
-                getFolder(outputLoc);
+            IPath outputLoc = project.getOutputLocation().addTrailingSeparator().append("__" + getName());
+            return project.getCorrespondingResource().getWorkspace().getRoot().getFolder(outputLoc);
         }
         catch(JavaModelException e)
         {

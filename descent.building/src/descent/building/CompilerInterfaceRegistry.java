@@ -16,6 +16,8 @@ import descent.launching.IVMInstallType;
  * Class to get information about what compilers are configured for use with the
  * default D builder.
  * 
+ * TODO add compilerInterfaceType to compilerInterface
+ * 
  * @author Robert Fraser
  */
 public final class CompilerInterfaceRegistry
@@ -26,6 +28,7 @@ public final class CompilerInterfaceRegistry
         private static final String ATTR_ID = "id"; //$NON-NLS-1$
         private static final String ATTR_CLASS = "class"; //$NON-NLS-1$
         private static final String ATTR_VM_INSTALL_TYPE = "vmInstallType"; //$NON-NLS-1$
+        private static final String ATTR_USE_THREAD_POOLING = "useThreadPooling";
         
         private final IConfigurationElement info;
         private ICompilerInterface compilerInterfaceInstance;
@@ -45,6 +48,11 @@ public final class CompilerInterfaceRegistry
             return info.getAttribute(ATTR_VM_INSTALL_TYPE);
         }
         
+        public boolean getUseThreadPooling()
+        {
+            return Boolean.valueOf(info.getAttribute(ATTR_USE_THREAD_POOLING));
+        }
+
         public synchronized ICompilerInterface getCompilerInterface() throws CoreException
         {
             if(compilerInterfaceInstance == null)

@@ -11,8 +11,8 @@ import org.eclipse.debug.core.ILaunchConfiguration;
  * {@link ICompileManager} should use to gain information on the state of the
  * build and to perform various tasks.
  * 
- * <b>This class is thread-safe.</b>
  * <b>This class is NOT intended to be implemented by clients.</b>
+ * <b>This class is thread-safe.</b>
  * 
  * @see ICompileManager
  * @author Robert Fraser
@@ -20,27 +20,11 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 public interface IBuildManager
 {
     /**
-     * Adds the given command to the execution queue
+     * Gets the execution monitor used to managed running processes for this build
      * 
-     * @param cmd         the system command to execute. Must not be null
-     * @param interpreter the response interpreter. If null, responses will be ignored.
-     * @param workingDir  the working directory to execute the command. If null, the output directory of the project (where
-     *                    object files go).
-     * @param env         extensions/replacements for environment variables. If null, no extensions will be used.
-     * @return            a future for the response code of the program.
+     * @return the execution monitor that can be used to manage running processes for this build
      */
-    public Future<Integer> exec(String cmd, IResponseInterpreter interpreter, String workingDir, String[] env);
-    
-    /**
-     * Same as {@link #execSync(String, IResponseInterpreter, String, String[])} called as
-     * <code>execSync(cmd, interpreter, null, null);
-     */
-    public Future<Integer> exec(String cmd, IResponseInterpreter interpreter);
-    
-    /**
-     * Waits until the execution queue is finished
-     */
-    public void waitExecutionQueue();
+    public IExecutionMonitor getExecutionMonitor();
     
     /**
      * Gets a new error reporter that can attach errors to projects, files, etc.

@@ -65,12 +65,8 @@ public class DebuildBuilder implements IDBuilder
 	        ICompileManager compileMgr = req.getCompilerInterface().getCompileManager(buildMgr);
 	        pm.worked(5); // 50
 	        
-	        // Step 6: Invoke the compiler on the object files
-	        // TODO support compiling multiple objects at once
-	        compileMgr.compile(objects, new SubProgressMonitor(pm, 30)); // 80
-	        
-	        // Step 7: Link them into an executable file!
-	        // TODO compileMgr.link(objects, new SubProgressMonitor(pm, 20));
+	        // Step 6: Invoke the compiler on the object files -- it's all up to it now
+	        compileMgr.compile(objects, new SubProgressMonitor(pm, 50)); // 100
 	        
 	        return null;
 		}

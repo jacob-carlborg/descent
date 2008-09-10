@@ -1,11 +1,8 @@
 package descent.internal.building.debuild;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.debug.core.DebugPlugin;
-import org.eclipse.debug.core.ILaunchConfiguration;
 
 import descent.building.compiler.BuildException;
 import descent.internal.building.BuilderUtil;

@@ -16,31 +16,33 @@ import org.eclipse.core.runtime.IProgressMonitor;
  *     <li>For each build, this class will be constructed via the 
  *         {@link ICompilerInterface#getCompileManager(IBuildManager)} class.</li>
  *         
- *     <li>When an object file needs to be compiled, the 
- *         {@link #compile(IObjectFile)} method will be called.</li>
+ *     <li>After all compiler-ambivalent preparation has been completed, the
+ *         {@link #compile(IObjectFile[], IProgressMonitor)} method will be
+ *         called on this object. After this call, this object takes over the
+ *         thread with the goal of producing a compiled resource.</li>
  *         
  *     <li>During the course of building, methods on the {@link IBuildManager}
  *         should be called to handle things like executing specific commands,
  *         reporting errors, or getting build information.</li>
- *         
- *     <li>TODO linking</li>
  * </ol>
  * 
  * <b>This class should be implemented by clients providing a compiler interface.</b>
+ * <b>Objects of this class do not need to be thread-safe, however multiple
+ *    instances may exist at once (for example, if multiple builds are running
+ *    concurrently), so all access to static data should be locked.</b>
  * 
  * @author Robert Fraser
  */
 public interface ICompileManager
 {
     /**
-     * Compiles the given object files. If multiple files are passed, they may
-     * be built together. If 
+     * Compiles the given object files to form an executable.
+     * DOCS moar
      * 
      * @param objectFiles the object files to be built
      * @param pm          a monitor to rack the progress of the operation
-     * @return            true if and only if the operation was successful and 
-     *                    future operations (additional compile requests or
-     *                    requests for linker) should be processed
+     * @return            the full path of the output file if and only if the
+     *                    compilation was successful, null otherwise
      */
     public boolean compile(IObjectFile[] objectFiles, IProgressMonitor pm);
 }

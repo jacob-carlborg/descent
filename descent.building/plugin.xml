@@ -118,11 +118,13 @@
       <compilerInterface
             class="descent.internal.building.compiler.DmdCompilerInterface"
             id="descent.building.compiler.DmdCompilerInterface"
+            useThreadPooling="true"
             vmInstallType="descent.internal.debug.ui.launcher.DmdCompilerType">
       </compilerInterface>
       <compilerInterface
             class="descent.internal.building.compiler.GdcCompilerInterface"
             id="descent.building.compiler.GdcCompilerInterface"
+            useThreadPooling="true"
             vmInstallType="descent.internal.debug.ui.launcher.GdcCompilerType">
       </compilerInterface>
    </extension>

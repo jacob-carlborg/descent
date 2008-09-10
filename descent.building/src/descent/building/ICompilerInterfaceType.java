@@ -31,4 +31,10 @@ public interface ICompilerInterfaceType
      * instance.
      */
     public ICompilerInterface getCompilerInterface() throws CoreException;
+    
+    /**
+     * Gets whether this compiler type reports that multiple instances of it may
+     * be launched concurrently to speed up compilation.
+     */
+    public boolean getUseThreadPooling();
 }
