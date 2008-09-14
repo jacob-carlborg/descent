@@ -39,7 +39,7 @@ public class DeeProjectOptions {
 	protected DeeProjectOptions(IScriptProject dltkProj) {
 		this.dltkProj = dltkProj;
 		this.compilerOptions = new DeeBuildOptions(dltkProj.getElementName());
-		this.compilerOptions.buildToolCmdLine = "build -rf"+getBuildFile();
+		this.compilerOptions.buildToolCmdLine = "rebuild -rf"+getBuildFile();
 	}
 	
 	public IProject getProject() {
@@ -184,8 +184,8 @@ public class DeeProjectOptions {
 		while (i < buildToolCmd.length()) {
 			char ch = buildToolCmd.charAt(i);
 			if(ch == ' ') {
-				String str = buildToolCmd.substring(lastpos, i);
-				cmdLine.add(str);
+				String cmdstr = buildToolCmd.substring(lastpos, i);
+				cmdLine.add(cmdstr);
 				while(ch == ' ' && i < buildToolCmd.length()) 
 					ch = buildToolCmd.charAt(++i);
 				lastpos = i;

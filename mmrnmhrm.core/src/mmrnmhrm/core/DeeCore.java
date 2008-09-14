@@ -28,9 +28,9 @@ public class DeeCore extends LangCore {
 		return pluginInstance;
 	}
 	
-	protected static final boolean DEBUG_MODE = true ||
-	"true".equalsIgnoreCase(Platform.getDebugOption(
-			PLUGIN_ID+"/debug/ResultCollector"));
+	// XXX: restore debug mode defaults
+	public static final boolean DEBUG_MODE = true || "true"
+			.equalsIgnoreCase(Platform.getDebugOption(PLUGIN_ID + "/debug/ResultCollector"));
 
 
 	/** {@inheritDoc} */

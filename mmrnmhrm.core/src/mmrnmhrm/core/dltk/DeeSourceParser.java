@@ -6,7 +6,6 @@ import mmrnmhrm.core.DeeCorePreferences;
 import mmrnmhrm.core.LangCore;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.dltk.ast.declarations.ModuleDeclaration;
@@ -35,13 +34,7 @@ public class DeeSourceParser extends AbstractSourceParser {
 
 		//@Override
 		public void reportProblem(IProblem problem) {
-			try {
-				reporter.reportProblem(new DLTKDescentProblemWrapper(problem));
-				return;
-			} catch (CoreException e) {
-				LangCore.log(e);
-				return;
-			}
+			reporter.reportProblem(new DLTKDescentProblemWrapper(problem));
 		}
 
 		public static descent.internal.compiler.parser.ast.IProblemReporter create(

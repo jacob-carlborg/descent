@@ -17,7 +17,7 @@ import dtool.ast.definitions.DefinitionFunction;
 import dtool.ast.definitions.DefinitionVariable;
 import dtool.ast.references.NamedReference;
 
-public class DeeNeoPatternMatcher extends PatternLocator {
+public class DeeNeoPatternLocator extends PatternLocator {
 												
 	public char[] simpleName;
 	public char[] pkg;
@@ -33,7 +33,7 @@ public class DeeNeoPatternMatcher extends PatternLocator {
 	public boolean matchReferences;
 	public boolean matchDefinitions;
 	
-	public DeeNeoPatternMatcher(TypeDeclarationPattern pattern) {
+	public DeeNeoPatternLocator(TypeDeclarationPattern pattern) {
 		super(pattern);
 		this.typeDecPattern = pattern;
 		this.simpleName = pattern.simpleName;
@@ -41,7 +41,7 @@ public class DeeNeoPatternMatcher extends PatternLocator {
 		matchDefinitions = true;
 	}
 
-	public DeeNeoPatternMatcher(TypeReferencePattern pattern) {
+	public DeeNeoPatternLocator(TypeReferencePattern pattern) {
 		super(pattern);
 		this.typeRefPattern = pattern;
 		this.simpleName = pattern.getIndexKey();
@@ -49,7 +49,7 @@ public class DeeNeoPatternMatcher extends PatternLocator {
 		matchReferences = true;
 	}
 	
-	public DeeNeoPatternMatcher(FieldPattern pattern) {
+	public DeeNeoPatternLocator(FieldPattern pattern) {
 		super(pattern);
 		this.simpleName = pattern.getIndexKey();
 		matchVars = true;
@@ -57,7 +57,7 @@ public class DeeNeoPatternMatcher extends PatternLocator {
 		matchReferences = true;
 	}
 
-	public DeeNeoPatternMatcher(MethodPattern pattern) {
+	public DeeNeoPatternLocator(MethodPattern pattern) {
 		super(pattern);
 		this.simpleName = pattern.declaringSimpleName;
 		matchFunctions = true;
@@ -67,7 +67,6 @@ public class DeeNeoPatternMatcher extends PatternLocator {
 
 
 	@Override
-	@SuppressWarnings("restriction")
 	public int match(ASTNode node, MatchingNodeSet nodeSet) {
 		if(matchDefinitions && node instanceof DefinitionAlias)
 			return match((Definition) node, nodeSet);
@@ -88,7 +87,6 @@ public class DeeNeoPatternMatcher extends PatternLocator {
 	}
 	
 	
-	//@SuppressWarnings("restriction")
 	public int matchSimple(Definition node, MatchingNodeSet nodeSet) {
 		if(simpleName == null 
 				|| matchesName(simpleName, node.getName().toCharArray())) {
@@ -107,8 +105,7 @@ public class DeeNeoPatternMatcher extends PatternLocator {
 		return IMPOSSIBLE_MATCH;
 	}
 	
-	
-	@SuppressWarnings("restriction")
+	// XXX: DLTK copied code
 	public int match(Definition node, MatchingNodeSet nodeSet) {
 		if(simpleName == null 
 				|| matchesName(simpleName, node.getName().toCharArray())) {
@@ -132,6 +129,7 @@ public class DeeNeoPatternMatcher extends PatternLocator {
 		}
 		return IMPOSSIBLE_MATCH;
 	}
+	
 
 	@Override
 	public String toString() {

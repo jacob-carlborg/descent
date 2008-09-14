@@ -22,8 +22,9 @@ public class DeeLanguageToolkit extends AbstractLanguageToolkit  {
 		return instance ;
 	}
 	
+	@Override
 	public boolean languageSupportZIPBuildpath() {
-		return true;
+		return false;
 	}
 
 	//@Override

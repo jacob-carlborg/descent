@@ -1,9 +1,6 @@
 package mmrnmhrm.core.launch;
 
-import static melnorme.miscutil.Assert.assertFail;
-
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +23,8 @@ import org.eclipse.dltk.launching.IInterpreterInstall;
 import org.eclipse.dltk.launching.LibraryLocation;
 
 public class DeeDmdInstallType extends AbstractInterpreterInstallType {
+	
+	public static final String INSTALLTYPE_ID = "mmrnmhrm.core.launching.deeDmdInstallType";
 
 	private static final Path DMD_INSTALL_LIBRARY_PATH = new Path("src/phobos");
 
@@ -76,39 +75,14 @@ public class DeeDmdInstallType extends AbstractInterpreterInstallType {
 	public synchronized LibraryLocation[] getDefaultLibraryLocations(IFileHandle installLocation,
 			EnvironmentVariable[] variables, IProgressMonitor monitor) {
 		//return super.getDefaultLibraryLocations(installLocation, variables, monitor);
-		List<LibraryLocation> locations = new ArrayList<LibraryLocation>();
-		addDefaultLibraryLocations(installLocation, locations);
-		return locations.toArray(new LibraryLocation[0]);
-	}
-	
-	/** Unlike the parent class, this InstallType does not find library paths by
-	 * running some kind of external executable, like Ruby or Python.
-	 * It just adds some predefined path. */
-	@Override
-	@Deprecated
-	protected ILookupRunnable createLookupRunnable(
-			final IFileHandle installLocation, final List locations,
-			final EnvironmentVariable[] variables) {
-		assertFail();
-	
-		//return super.createLookupRunnable(installLocation, locations);
-		@SuppressWarnings("unchecked")
-		final List<LibraryLocation> locs = locations;
+		/** Unlike the parent class, this InstallType does not find library paths by
+		 * running some kind of external executable, like Ruby or Python.
+		 * It just adds some predefined path. */
+
 		
-
-		return new ILookupRunnable() {
-			public void run(IProgressMonitor monitor)
-					throws InvocationTargetException, InterruptedException {
-				//String[] env = extractEnvironment();
-				
-//				try {
-					addDefaultLibraryLocations(installLocation, locs);
-//				} catch (IOException e) {
-//					getLog().log(createStatus(IStatus.ERROR, "Unable to lookup library paths", e));
-//				}
-			}
-
-		};
+		List<LibraryLocation> locations = new ArrayList<LibraryLocation>();
+		addDefaultLibraryLocations(installLocation, locations); 
+		return locations.toArray(new LibraryLocation[0]);
 	}
 	
 	private void addDefaultLibraryLocations(IFileHandle installLocation, List<LibraryLocation> locs) {
@@ -120,9 +94,10 @@ public class DeeDmdInstallType extends AbstractInterpreterInstallType {
 		locs.add(loc);
 	}
 
+	
 	@Override
 	protected IPath createPathFile(IDeployment deployment) throws IOException {
-		Assert.fail("Not Used"); return null;
+		Assert.fail("Does not run lookup executable"); return null;
 	}
 
 	// Generating the InstallName not supported yet

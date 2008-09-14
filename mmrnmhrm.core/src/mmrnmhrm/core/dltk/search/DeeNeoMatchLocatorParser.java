@@ -26,6 +26,7 @@ public class DeeNeoMatchLocatorParser extends MatchLocatorParser {
 		super(locator);
 	}
 
+	@Override
 	public ModuleDeclaration parse(PossibleMatch possibleMatch) {
 		ISourceModule sourceModule = (ISourceModule) possibleMatch.getModelElement();
 		ModuleDeclaration module = SourceParserUtil.getModuleDeclaration(
@@ -43,19 +44,17 @@ public class DeeNeoMatchLocatorParser extends MatchLocatorParser {
 		public boolean visitGeneral(ASTNode node) throws Exception {
 			processNode(node);
 			return true;
-			// return super.visitGeneral(node);
 		}
 
 		@Override
 		public boolean visit(ASTNode node) throws Exception {
 			processNode(node);
 			return true;
-			// return super.visitGeneral(node);
 		}
 	};
 	
 	
-	//@Override
+	@Override
 	public void parseBodies(ModuleDeclaration unit) {
 		try {
 			unit.traverse(visitor);
@@ -66,6 +65,8 @@ public class DeeNeoMatchLocatorParser extends MatchLocatorParser {
 	}
 
 	private void processNode(ASTNode node) {
+		//TODO: optimize casts, since getPatternLocator() is a DeePatternLocator
+		
 		if(node instanceof DefUnit || node instanceof NamedReference) {
 			getPatternLocator().match(node, getNodeSet());
 			return;

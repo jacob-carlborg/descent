@@ -86,7 +86,6 @@ public class DeeBuilder {
 
 	public void collectBuildUnits(IScriptProject deeProj, IProgressMonitor monitor) throws CoreException  {
 		
-	
 		IBuildpathEntry[] buildpathEntries = deeProj.getResolvedBuildpath(true);
 
 		for (int i = 0; i < buildpathEntries.length; i++) {
@@ -100,6 +99,9 @@ public class DeeBuilder {
 				processLibraryEntry(entry);
 			}
 		}
+		
+		if(compilerPath == null)
+			throw DeeCore.createCoreException("Could not find a D Compiler in the project path", null);
 	}
 
 	private void processLibraryEntry(IBuildpathEntry entry) throws CoreException {
@@ -258,23 +260,17 @@ public class DeeBuilder {
 		//String[] cmdLine = { buildToolExePath, options.getBuilderCommandLine() };
 		
 		String[] cmdLine = options.getBuilderFullCommandLine();
-
+		
+		// Substitute vars in cmdLine
+		for (int i = 0; i < cmdLine.length; i++) {
+			cmdLine[i] = cmdLine[i].replace("$DEEBUILDER.COMPILERPATH", compilerPath.toOSString());
+			//cmdLine[i] = cmdLine[i].replace("$DEEBUILDER.COMPILEREXEPATH", compilerPath.toOSString()); // TODO
+		}
 		
 		final ProcessBuilder builder = new ProcessBuilder(cmdLine);
 
-		Map<String, String> env = builder.environment();
-		String pathName = "PATH";
-		String pathStr = env.get(pathName);
-		if(pathStr == null) {
-			pathName = "Path";
-			pathStr = env.get(pathName);
-		}
-		if(pathStr == null) {
-			pathName = "path";
-			pathStr = env.get(pathName);
-		}
-		pathStr = compilerPath.toOSString() + File.pathSeparator + pathStr;
-		env.put(pathName, pathStr);
+		// XXX: Note: Apperently this has no effect, the intended path is not used
+		addCompilerPathToBuilder(builder); 
 
 		if(cmdLine.toString().length() > 30000)
 			throw DeeCore.createCoreException(
@@ -292,6 +288,24 @@ public class DeeBuilder {
 		} catch (InterruptedException e) {
 			throw DeeCore.createCoreException("D Build: Interrupted.", e);
 		}
+	}
+
+	private void addCompilerPathToBuilder(final ProcessBuilder builder) {
+		if(compilerPath == null)
+			return;
+		Map<String, String> env = builder.environment();
+		String pathName = "PATH";
+		String pathStr = env.get(pathName);
+		if(pathStr == null) {
+			pathName = "Path";
+			pathStr = env.get(pathName);
+		}
+		if(pathStr == null) {
+			pathName = "path";
+			pathStr = env.get(pathName);
+		}
+		pathStr = compilerPath.toOSString() + File.pathSeparator + pathStr;
+		env.put(pathName, pathStr);
 	}
 	
 }

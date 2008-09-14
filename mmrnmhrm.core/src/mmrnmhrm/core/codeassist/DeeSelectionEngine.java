@@ -12,6 +12,7 @@ import org.eclipse.dltk.core.ModelException;
 // TODO: understand, implement and use this?
 public class DeeSelectionEngine extends ScriptSelectionEngine {
 
+	@Override
 	@Deprecated
 	public IAssistParser getParser() {
 		assertFail();

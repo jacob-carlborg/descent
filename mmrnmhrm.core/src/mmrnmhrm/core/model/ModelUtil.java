@@ -39,13 +39,6 @@ public class ModelUtil {
 		return fragment;
 	}
 
-	public static void createDeeProject(IProject project) throws CoreException {
-		ModelUtil.addNature(project, DeeNature.NATURE_ID);
-	
-		IScriptProject dltkProj = DLTKCore.create(project);
-		dltkProj.setRawBuildpath(new IBuildpathEntry[0], null);
-	}
-
 	/** Adds a nature to the given project if it doesn't exist already.*/
 	public static void addNature(IProject project, String natureID) throws CoreException {
 		IProjectDescription description = project.getDescription();
@@ -58,7 +51,6 @@ public class ModelUtil {
 		project.setDescription(description, null); 
 	}
 
-	@SuppressWarnings("restriction")
 	public static org.eclipse.dltk.internal.core.Model getModel() {
 		return org.eclipse.dltk.internal.core.ModelManager.
 		getModelManager().getModel();

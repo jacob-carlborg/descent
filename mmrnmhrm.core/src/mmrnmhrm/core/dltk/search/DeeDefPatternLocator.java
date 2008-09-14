@@ -12,21 +12,20 @@ import dtool.ast.definitions.DefUnit;
 import dtool.ast.references.CommonRefQualified;
 import dtool.ast.references.Reference;
 
-public class DeeDefMatcher extends PatternLocator {
+public class DeeDefPatternLocator extends PatternLocator {
 	
 	/** XXX: DLTK limitation: A global needed to pass parameters for 
 	 * the search.*/
-	public static DefUnit param_defunit;
+	public static DefUnit GLOBAL_param_defunit;
 	
 	public DefUnit defunit;
 
-	public DeeDefMatcher(DefUnit defunit, SearchPattern pattern) {
+	public DeeDefPatternLocator(DefUnit defunit, SearchPattern pattern) {
 		super(pattern);
 		this.defunit = defunit;
 	}
 	
 	@Override
-	@SuppressWarnings("restriction")
 	public int match(ASTNode node, MatchingNodeSet nodeSet) {
 		if(node instanceof Reference) {
 			// don't match qualifieds, the match will be made in its children

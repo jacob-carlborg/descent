@@ -10,6 +10,7 @@ public class DeeInterpreterRunner extends AbstractInterpreterRunner {
 		super(install);
 	}
 
+	@Override
 	protected String getProcessType() {
 		return DeeLaunchConfigurationConstants.ID_DEE_PROCESS_TYPE;
 	}
