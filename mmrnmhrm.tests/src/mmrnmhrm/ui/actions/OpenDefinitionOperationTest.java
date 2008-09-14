@@ -1,7 +1,7 @@
 package mmrnmhrm.ui.actions;
 
 import junit.framework.Assert;
-import melnorme.lang.ui.EditorUtil;
+import mmrnmhrm.lang.ui.EditorUtil;
 import mmrnmhrm.tests.BaseUITest;
 import mmrnmhrm.tests.SampleMainProject;
 import mmrnmhrm.tests.SampleNonDeeProject;

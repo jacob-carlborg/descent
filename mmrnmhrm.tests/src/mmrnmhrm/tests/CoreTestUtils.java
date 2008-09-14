@@ -10,6 +10,8 @@ import java.net.URL;
 
 import mmrnmhrm.core.CoreUtils;
 import mmrnmhrm.core.DeeCore;
+import mmrnmhrm.core.launch.DeeDmdInstallType;
+import mmrnmhrm.core.model.DeeNature;
 import mmrnmhrm.core.model.ModelUtil;
 
 import org.eclipse.core.resources.IContainer;
@@ -24,6 +26,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.dltk.core.DLTKCore;
+import org.eclipse.dltk.core.IBuildpathEntry;
 import org.eclipse.dltk.core.IScriptProject;
 import org.osgi.framework.Bundle;
 
@@ -69,8 +72,20 @@ public class CoreTestUtils {
 			project.delete(true, null);
 		project.create(null);
 		project.open(null);
-		ModelUtil.createDeeProject(project);
+		createDeeProject(project);
 		return DLTKCore.create(project);
+	}
+	
+	public static void createDeeProject(IProject project) throws CoreException {
+		ModelUtil.addNature(project, DeeNature.NATURE_ID);
+	
+		IBuildpathEntry entry = DLTKCore.newContainerEntry(new Path(
+				"org.eclipse.dltk.launching.INTERPRETER_CONTAINER/" +
+				DeeDmdInstallType.INSTALLTYPE_ID + "/" + BasePluginTest.DEFAULT_DMD2_INSTALL)
+		);
+		
+		IScriptProject dltkProj = DLTKCore.create(project);
+		dltkProj.setRawBuildpath(new IBuildpathEntry[] {entry}, null);
 	}
 
 

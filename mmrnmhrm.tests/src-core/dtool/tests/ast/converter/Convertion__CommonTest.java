@@ -1,5 +1,7 @@
 package dtool.tests.ast.converter;
 
+import static melnorme.miscutil.Assert.assertTrue;
+
 import java.io.IOException;
 
 import mmrnmhrm.tests.BasePluginTest;
@@ -9,15 +11,13 @@ import org.eclipse.core.runtime.CoreException;
 import org.junit.After;
 import org.junit.BeforeClass;
 
-import static melnorme.miscutil.Assert.assertTrue;
-
-import dtool.descentadapter.DescentASTConverter;
 import dtool.ast.ASTChecker;
 import dtool.ast.ASTNeoNode;
 import dtool.ast.definitions.Module;
+import dtool.descentadapter.DescentASTConverter;
 import dtool.refmodel.ParserAdapter;
 
-public abstract class ConvertionCommonTest extends BasePluginTest {
+public abstract class Convertion__CommonTest extends BasePluginTest {
 
 	protected static final String TESTFILESDIR = "astparser/";
 
@@ -31,8 +31,8 @@ public abstract class ConvertionCommonTest extends BasePluginTest {
 		return neoModule;
 	}
 	
-	public static void testConversionFromFile(String filename) throws CoreException, IOException {
-		testDtoolASTConvertion(TestUtils.readTestDataFile(TESTFILESDIR+filename));
+	public static ASTNeoNode testConversionFromFile(String filename) throws CoreException, IOException {
+		return testDtoolASTConvertion(TestUtils.readTestDataFile(TESTFILESDIR+filename));
 	}
 	
 	@BeforeClass
@@ -43,7 +43,6 @@ public abstract class ConvertionCommonTest extends BasePluginTest {
 	@After
 	public void tearDown() throws Exception {
 	}
-
 
 
 }

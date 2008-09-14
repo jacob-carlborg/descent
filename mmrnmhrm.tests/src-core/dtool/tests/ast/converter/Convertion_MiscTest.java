@@ -13,7 +13,7 @@ public class Convertion_MiscTest {
 	
 	@Test
 	public void testFoo() throws CoreException {
-		ConvertionCommonTest.testDtoolASTConvertion(
+		Convertion__CommonTest.testDtoolASTConvertion(
 				"module foo;" +
 				"import pack.bar;" +
 				"public import std.stdio;");
@@ -22,11 +22,11 @@ public class Convertion_MiscTest {
 	@Test
 	public void testRenamed() throws CoreException {
 		// RENAMED IMPORT, static import
-		ConvertionCommonTest.testDtoolASTConvertion(
+		Convertion__CommonTest.testDtoolASTConvertion(
 				"module pack.modul;" +
 				"import dee = std.stdio, lang = lang.string;"
 				);
-		ConvertionCommonTest.testDtoolASTConvertion(
+		Convertion__CommonTest.testDtoolASTConvertion(
 				"module pack.modul;" +
 				"private static import dee_io = std.stdio;"
 				);
@@ -35,46 +35,51 @@ public class Convertion_MiscTest {
 	@Test
 	public void testSelective() throws CoreException {
 		// SELECTIVE IMPORT, static import
-		ConvertionCommonTest.testDtoolASTConvertion(
+		Convertion__CommonTest.testDtoolASTConvertion(
 				"module pack.modul;" +
 				"import std.stdio : writefln, foo = writef;"
 				);
-		ConvertionCommonTest.testDtoolASTConvertion(	"module pack.modul;" +
+		Convertion__CommonTest.testDtoolASTConvertion(	"module pack.modul;" +
 				"import langio = std.stdio : writefln, foo = writef; "
 				);
-		ConvertionCommonTest.testDtoolASTConvertion(	"module pack.modul;" +
+		Convertion__CommonTest.testDtoolASTConvertion(	"module pack.modul;" +
 				"private static import langio = std.stdio : writefln, foo = writef; "
 				);
 	}
 	
 	@Test
 	public void testAll() throws IOException, CoreException {
-		ConvertionCommonTest.testConversionFromFile("testNodes.d");
+		Convertion__CommonTest.testConversionFromFile("testNodes.d");
 	}
 	
 	@Test
 	public void testAll2() throws IOException, CoreException {
-		ConvertionCommonTest.testConversionFromFile("conditionals.d");
+		Convertion__CommonTest.testConversionFromFile("conditionals.d");
 	}
 	
 	@Test
 	public void testAllMixinContainer() throws IOException, CoreException {
-		ConvertionCommonTest.testConversionFromFile("mixincontainer.d");
+		Convertion__CommonTest.testConversionFromFile("mixincontainer.d");
 	}
 	
 	@Test
 	public void testRefNodes() throws IOException, CoreException {
-		ConvertionCommonTest.testConversionFromFile("refs.d");
+		Convertion__CommonTest.testConversionFromFile("refs.d");
 	}
 
 	@Test
 	public void testDeclAttrib() throws IOException, CoreException {
-		ConvertionCommonTest.testConversionFromFile("declAttrib.d");
+		Convertion__CommonTest.testConversionFromFile("declAttrib.d");
 	}
 	
 	@Test
 	public void testForeach() throws IOException, CoreException {
-		ConvertionCommonTest.testConversionFromFile("for_each.d");
+		Convertion__CommonTest.testConversionFromFile("for_each.d");
+	}
+	
+	@Test
+	public void testNewExp() throws IOException, CoreException {
+		Convertion__CommonTest.testConversionFromFile("newExp.d");
 	}
 
 }

@@ -32,7 +32,7 @@ public abstract class SampleNonDeeProject {
 	public static IFile sampleOutOfModelFile;
 	public static IFile sampleNonExistantFile;
 
-	public static void createAndSetupProject() {
+	public static void createAndSetupNonDeeProject() {
 		try {
 			createAndFillSampleProj();
 		} catch (Exception e) {

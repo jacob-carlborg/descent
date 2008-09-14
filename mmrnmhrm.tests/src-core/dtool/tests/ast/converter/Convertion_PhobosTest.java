@@ -14,7 +14,7 @@ import org.junit.Test;
 /**
  * Test conversion of Phobos srcs
  */
-public class Convertion_PhobosTest extends ConvertionCommonTest {
+public class Convertion_PhobosTest extends Convertion__CommonTest {
 
 	
 	@Test

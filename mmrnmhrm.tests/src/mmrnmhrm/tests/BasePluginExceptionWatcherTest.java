@@ -1,5 +1,6 @@
 package mmrnmhrm.tests;
 
+import static melnorme.miscutil.Assert.assertTrue;
 import mmrnmhrm.ui.DeePlugin;
 
 import org.eclipse.core.runtime.ILogListener;
@@ -8,8 +9,9 @@ import org.eclipse.core.runtime.Platform;
 import org.junit.After;
 import org.junit.Before;
 
-import static melnorme.miscutil.Assert.assertTrue;
-
+/** Base Test class that adds an exception listener to the platform log. 
+  * FIXME: this was the only way I found to detected UI exceptions in 
+  * SafeRunnable's when running as plugin test. */
 public abstract class BasePluginExceptionWatcherTest extends BasePluginTest {
 
 	protected boolean exceptionThrown;
@@ -17,9 +19,7 @@ public abstract class BasePluginExceptionWatcherTest extends BasePluginTest {
 	protected ILogListener loglistener;
 
 	
-	/** Adds an exception listener to the platform log. 
-	 * FIXME: this was the only way I found to detected UI exceptions in 
-	 * SafeRunnable's when running as plugin test. */
+
 	@Before
 	public void setUpExceptionListener() throws Exception {
 		exceptionThrown = false;

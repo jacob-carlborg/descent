@@ -3,6 +3,7 @@ package mmrnmhrm.tests;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 
 import melnorme.miscutil.FileUtil;
 import mmrnmhrm.ui.DeePlugin;
@@ -27,6 +28,22 @@ public class TestUtils {
 		InputStreamReader isr = new InputStreamReader(is);
 		String src = FileUtil.readStringFromReader(isr);
 		return src;
+	}
+
+	public static Field getFieldAcessibly(Object obj, String fieldName) {
+		Field field = null;
+		Class<?> klass = obj.getClass();
+		while(klass != null) {
+			try {
+				field = klass.getDeclaredField(fieldName);
+			} catch (NoSuchFieldException e) {
+				klass = klass.getSuperclass();
+				continue;
+			}
+			field.setAccessible(true);
+			return field;
+		}
+		return null;
 	}
 
 }
