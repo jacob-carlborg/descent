@@ -121,6 +121,15 @@ public abstract class Assert {
 	public static void assertIsNull(Object object) {
 		Assert.isTrue(object == null);
 	}
+	
+    /** Asserts that given object1 equals object2. */
+	public static void equals(Object object1, Object object2) {
+		Assert.isTrue(object1.equals(object2));
+	}
+    /** Asserts that given object1 equals object2. */
+	public static void assertEquals(Object object1, Object object2) {
+		Assert.isTrue(object1.equals(object2));
+	}
 
 	
 	/** Causes an inconditional assertion failure, with message msg. 

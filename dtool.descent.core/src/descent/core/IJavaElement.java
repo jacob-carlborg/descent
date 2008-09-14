@@ -10,7 +10,6 @@
  *******************************************************************************/
 package descent.core;
 
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
@@ -188,25 +187,7 @@ public interface IJavaElement extends IAdaptable {
 	String getAttachedJavadoc(IProgressMonitor monitor) throws JavaModelException;
 	*/
 
-	/**
-	 * Returns the resource that corresponds directly to this element,
-	 * or <code>null</code> if there is no resource that corresponds to
-	 * this element.
-	 * <p>
-	 * For example, the corresponding resource for an <code>ICompilationUnit</code>
-	 * is its underlying <code>IFile</code>. The corresponding resource for
-	 * an <code>IPackageFragment</code> that is not contained in an archive 
-	 * is its underlying <code>IFolder</code>. An <code>IPackageFragment</code>
-	 * contained in an archive has no corresponding resource. Similarly, there
-	 * are no corresponding resources for <code>IMethods</code>,
-	 * <code>IFields</code>, etc.
-	 * <p>
-	 *
-	 * @return the corresponding resource, or <code>null</code> if none
-	 * @exception JavaModelException if this element does not exist or if an
-	 *		exception occurs while accessing its corresponding resource
-	 */
-	IResource getCorrespondingResource() throws JavaModelException;
+
 
 	/**
 	 * Returns the name of this element. This is a handle-only method.
@@ -236,37 +217,7 @@ public interface IJavaElement extends IAdaptable {
 	 */
 	String getHandleIdentifier();
 
-	/**
-	 * Returns the Java model.
-	 * This is a handle-only method.
-	 *
-	 * @return the Java model
-	 */
-	IJavaModel getJavaModel();
 
-	/**
-	 * Returns the Java project this element is contained in,
-	 * or <code>null</code> if this element is not contained in any Java project
-	 * (for instance, the <code>IJavaModel</code> is not contained in any Java 
-	 * project).
-	 * This is a handle-only method.
-	 *
-	 * @return the containing Java project, or <code>null</code> if this element is
-	 *   not contained in a Java project
-	 */
-	IJavaProject getJavaProject();
-
-	/**
-	 * Returns the first openable parent. If this element is openable, the element
-	 * itself is returned. Returns <code>null</code> if this element doesn't have
-	 * an openable parent.
-	 * This is a handle-only method.
-	 * 
-	 * @return the first openable parent or <code>null</code> if this element doesn't have
-	 * an openable parent.
-	 * @since 2.0
-	 */
-	IOpenable getOpenable();
 
 	/**
 	 * Returns the element directly containing this element,
@@ -304,19 +255,7 @@ public interface IJavaElement extends IAdaptable {
 	 */
 	IJavaElement getPrimaryElement();
 
-	/**
-	 * Returns the innermost resource enclosing this element. 
-	 * If this element is included in an archive and this archive is not external, 
-	 * this is the underlying resource corresponding to the archive. 
-	 * If this element is included in an external archive, <code>null</code>
-	 * is returned.
-	 * This is a handle-only method.
-	 * 
-	 * @return the innermost resource enclosing this element, <code>null</code> if this 
-	 * element is included in an external archive
-	 * @since 2.0
-	 */
-	IResource getResource();
+
 	
 	/**
 	 * Returns the scheduling rule associated with this Java element.
@@ -327,16 +266,7 @@ public interface IJavaElement extends IAdaptable {
 	 */
 	ISchedulingRule getSchedulingRule();
 
-	/**
-	 * Returns the smallest underlying resource that contains
-	 * this element, or <code>null</code> if this element is not contained
-	 * in a resource.
-	 *
-	 * @return the underlying resource, or <code>null</code> if none
-	 * @exception JavaModelException if this element does not exist or if an
-	 *		exception occurs while accessing its underlying resource
-	 */
-	IResource getUnderlyingResource() throws JavaModelException;
+
 
 	/**
 	 * Returns whether this Java element is read-only. An element is read-only
@@ -352,19 +282,5 @@ public interface IJavaElement extends IAdaptable {
 	 */
 	boolean isReadOnly();
 
-	/**
-	 * Returns whether the structure of this element is known. For example, for a
-	 * compilation unit that could not be parsed, <code>false</code> is returned.
-	 * If the structure of an element is unknown, navigations will return reasonable
-	 * defaults. For example, <code>getChildren</code> will return an empty collection.
-	 * <p>
-	 * Note: This does not imply anything about consistency with the
-	 * underlying resource/buffer contents.
-	 * </p>
-	 *
-	 * @return <code>true</code> if the structure of this element is known
-	 * @exception JavaModelException if this element does not exist or if an
-	 *		exception occurs while accessing its corresponding resource
-	 */// TODO JDT (philippe) predicate shouldn't throw an exception
-	boolean isStructureKnown() throws JavaModelException;
+
 }

@@ -16,6 +16,7 @@ import java.util.Map;
 import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.TextEdit;
 
+import descent.core.DMDCore;
 import descent.core.JavaCore;
 import descent.core.dom.AST;
 import descent.core.dom.ASTParser;
@@ -76,7 +77,7 @@ public class DefaultCodeFormatter extends CodeFormatter {
 			this.options = options;
 			this.preferences = new DefaultCodeFormatterOptions(options);
 		} else {
-			this.options = JavaCore.getOptions();
+			this.options = DMDCore.getOptions();
 			this.preferences = new DefaultCodeFormatterOptions(DefaultCodeFormatterConstants.getDefaultSettings());
 		}
 		this.defaultCompilerOptions = getDefaultCompilerOptions();

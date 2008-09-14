@@ -15,17 +15,10 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
-import descent.core.IClassFile;
-import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
-import descent.core.IJavaProject;
-import descent.core.JavaCore;
-import descent.core.JavaModelException;
-import descent.core.WorkingCopyOwner;
 import descent.core.compiler.CharOperation;
 import descent.core.dom.CompilationUnitResolver.ParseResult;
-import descent.internal.core.BasicCompilationUnit;
-import descent.internal.core.DefaultWorkingCopyOwner;
+import descent.internal.compiler.env.ICompilationUnit;
 
 /**
  * A D language parser for creating abstract syntax trees (ASTs).
@@ -162,7 +155,7 @@ public class ASTParser {
     /**
      * Java mode compilation unit supplying the source.
      */
-    private ICompilationUnit compilationUnitSource = null;
+    private descent.core.ICompilationUnit compilationUnitSource = null;
     
     /**
      * Java model class file supplying the source.
@@ -186,13 +179,13 @@ public class ASTParser {
     /**
      * Working copy owner. Defaults to primary owner.
      */
-	private WorkingCopyOwner workingCopyOwner = DefaultWorkingCopyOwner.PRIMARY;
+	//private WorkingCopyOwner workingCopyOwner = DefaultWorkingCopyOwner.PRIMARY;
 	
     /**
 	 * Java project used to resolve names, or <code>null</code> if none.
      * Defaults to none.
      */
-	private IJavaProject project = null;
+	private IJavaElement project = null;
 	
     /**
 	 * Name of the compilation unit for resolving bindings, or 
@@ -233,14 +226,14 @@ public class ASTParser {
 		this.resolveBindings = false;
 		this.sourceLength = -1;
 		this.sourceOffset = 0;
-		this.workingCopyOwner = DefaultWorkingCopyOwner.PRIMARY;
+		//this.workingCopyOwner = DefaultWorkingCopyOwner.PRIMARY;
 		this.unitName = null;
-		this.project = null;
+		//this.project = null;
 		//this.partial = false;
-		Map options = JavaCore.getOptions();
+		//Map options = JavaCore.getOptions();
 		// TODO check this
 		//options.remove(JavaCore.COMPILER_TASK_TAGS); // no need to parse task tags
-		this.compilerOptions = options;
+		//this.compilerOptions = options;
 	}
 	   
 	/**
@@ -270,7 +263,7 @@ public class ASTParser {
 	 */
 	public void setCompilerOptions(Map options) {
 		if (options == null) {
-			options = JavaCore.getOptions();
+			//options = JavaCore.getOptions();
 		} else {
 			// copy client's options so as to not do any side effect on them
 			options = new HashMap(options);
@@ -487,7 +480,7 @@ public class ASTParser {
 	 * @param source the Java model compilation unit whose source code
      * is to be parsed, or <code>null</code> if none
       */
-	public void setSource(ICompilationUnit source) {
+	public void setSource(descent.core.ICompilationUnit source) {
 		this.compilationUnitSource = source;
 		// clear the others
 		this.rawSource = null;
@@ -495,11 +488,11 @@ public class ASTParser {
 		this.classFileSource = null;
 		*/
 		if (source != null) {
-			this.project = source.getJavaProject();
-			Map options = this.project.getOptions(true);
+			//this.project = source.getJavaProject();
+			//Map options = this.project.getOptions(true);
 			// TODO check this
 			//options.remove(JavaCore.COMPILER_TASK_TAGS); // no need to parse task tags
-			this.compilerOptions = options;
+			//this.compilerOptions = options;
 		}
 	}
 	
@@ -570,13 +563,13 @@ public class ASTParser {
 	 * @param owner the owner of working copies that take precedence over underlying 
 	 *   compilation units, or <code>null</code> if the primary owner should be used
      */
-	public void setWorkingCopyOwner(WorkingCopyOwner owner) {
+	/*public void setWorkingCopyOwner(WorkingCopyOwner owner) {
 	    if (owner == null) {
 			this.workingCopyOwner = DefaultWorkingCopyOwner.PRIMARY;
 		} else {
 			this.workingCopyOwner = owner;
 	 	}
-	}
+	}*/
 
 	/**
      * Sets the name of the compilation unit that would hypothetically contains
@@ -620,7 +613,7 @@ public class ASTParser {
 	 * @param project the Java project used to resolve names, or 
 	 *    <code>null</code> if none
 	 */
-	public void setProject(IJavaProject project) {
+	/*public void setProject(IJavaProject project) {
 		this.project = project;
 		if (project != null) {
 			Map options = project.getOptions(true);
@@ -628,7 +621,7 @@ public class ASTParser {
 			//options.remove(JavaCore.COMPILER_TASK_TAGS); // no need to parse task tags
 			this.compilerOptions = options;
 		}
-	}
+	}*/
 	
 	public void setSurfaceDeclarations(boolean surfaceDeclarations) {
 		this.surfaceDeclarations = surfaceDeclarations;
@@ -788,19 +781,19 @@ public class ASTParser {
 	 * are insufficient, contradictory, or otherwise unsupported
 	 * @since 3.1
      */
-	public IBinding[] createBindings(IJavaElement[] elements, IProgressMonitor monitor) {
+	/*public IBinding[] createBindings(IJavaElement[] elements, IProgressMonitor monitor) {
 		try {
 			if (this.project == null)
 				throw new IllegalStateException("project not specified"); //$NON-NLS-1$
 			/* TODO JDT binding
 			return CompilationUnitResolver.resolve(elements, this.apiLevel, this.compilerOptions, this.project, this.workingCopyOwner, this.statementsRecovery, monitor);
-			*/
+			*//*
 			return null;
 		} finally {
 	   	   // re-init defaults to allow reuse (and avoid leaking)
 	   	   initializeDefaults();
 		}
-	}
+	}*/
 
 	private ASTNode internalCreateAST(IProgressMonitor monitor) {
 		boolean needToResolveBindings = this.resolveBindings;		
@@ -819,13 +812,13 @@ public class ASTParser {
 		case K_COMPILATION_UNIT :
 			ParseResult result = null;
 			descent.internal.compiler.env.ICompilationUnit sourceUnit = null;
-			IJavaElement element = null;
+			descent.core.IJavaElement element = null;
 			if (this.compilationUnitSource != null) {
 				sourceUnit = (descent.internal.compiler.env.ICompilationUnit) this.compilationUnitSource;
 				// use a BasicCompilation that caches the source instead of using the compilationUnitSource directly 
 				// (if it is a working copy, the source can change between the parse and the AST convertion)
 				// (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=75632)
-				sourceUnit = new BasicCompilationUnit(sourceUnit.getContents(), sourceUnit.getPackageName(), new String(sourceUnit.getFileName()), this.project);
+				//sourceUnit = new BasicCompilationUnit(sourceUnit.getContents(), sourceUnit.getPackageName(), new String(sourceUnit.getFileName()), this.project);
 				element = this.compilationUnitSource;
 			/* TODO JDT binary
 			} else if (this.classFileSource != null) {
@@ -857,13 +850,13 @@ public class ASTParser {
 			*/
 			} else if (this.rawSource != null) {
 				needToResolveBindings = this.resolveBindings && this.unitName != null && this.project != null && this.compilerOptions != null;
-				sourceUnit = new BasicCompilationUnit(this.rawSource, null, this.unitName == null ? "" : this.unitName, this.project); //$NON-NLS-1$
+				//sourceUnit = new BasicCompilationUnit(this.rawSource, null, this.unitName == null ? "" : this.unitName, this.project); //$NON-NLS-1$
 			} else {
 				throw new IllegalStateException();
 			}
 			
 			if (needToResolveBindings) {
-				try {
+				/*try {
 					// parse and resolve
 					result = 
 						CompilationUnitResolver.resolve(
@@ -881,7 +874,7 @@ public class ASTParser {
 							this.compilerOptions,
 							this.statementsRecovery);
 					needToResolveBindings = false;
-				}
+				}*/
 			} else {
 				try {
 					result = CompilationUnitResolver.parse(

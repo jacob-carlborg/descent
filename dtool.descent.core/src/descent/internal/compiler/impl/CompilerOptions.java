@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import descent.core.Flags;
-import descent.core.JavaCore;
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.ast.ASTNodeFromJdt;
 

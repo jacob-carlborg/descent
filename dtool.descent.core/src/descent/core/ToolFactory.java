@@ -105,7 +105,7 @@ public class ToolFactory {
 	 * @since 3.0
 	 */
 	public static CodeFormatter createCodeFormatter(Map options){
-		if (options == null) options = JavaCore.getOptions();
+		if (options == null) options = DMDCore.getOptions();
 		return new DefaultCodeFormatter(options);
 	}
 	

@@ -12,7 +12,6 @@ package descent.internal.codeassist;
 
 import descent.core.IAccessRule;
 import descent.core.compiler.CharOperation;
-import descent.internal.core.NameLookup;
 
 /**
  * Internal completion proposal
@@ -32,7 +31,7 @@ public class InternalCompletionProposal {
 	static final char[][] ARGS4 = new char[][]{ARG0, ARG1, ARG2, ARG3};
 	
 	//protected CompletionEngine completionEngine;
-	protected NameLookup nameLookup;
+	//protected NameLookup nameLookup;
 	
 	protected char[] declarationPackageName;
 	protected char[] declarationTypeName;

@@ -10,11 +10,14 @@
  *******************************************************************************/
 package melnorme.miscutil;
 
+import static melnorme.miscutil.Assert.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 
 public class MiscUtil {
 
@@ -61,6 +64,12 @@ public class MiscUtil {
 				count++;
 		}
 		return count;
+	}
+
+	/** Convenience method for extracting the element of a single element collection . */
+	public static <T> T getSingleElement(Collection<T> singletonDefunits) {
+		assertTrue(singletonDefunits.size() == 1);
+		return singletonDefunits.iterator().next();
 	}
 
 }

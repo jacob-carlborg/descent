@@ -30,9 +30,8 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.text.edits.TextEdit;
 
-import descent.core.JavaCore;
 import descent.core.ToolFactory;
-import descent.internal.core.util.Util;
+import descent.internal.core.util.Util2;
 
 /**
  * Implements an Eclipse Application for descent.core.JavaCodeFormatter.
@@ -194,7 +193,7 @@ public class CodeFormatterApplication implements IApplication {
 			File file = files[i];
 			if (file.isDirectory()) {
 				formatDirTree(file, codeFormatter);
-			} else if (Util.isJavaLikeFileName(file.getPath())) {
+			} else if (Util2.isJavaLikeFileName(file.getPath())) {
 				formatFile(file, codeFormatter);
 			}
 		}
@@ -235,11 +234,11 @@ public class CodeFormatterApplication implements IApplication {
 			}
 		} catch (IOException e) {
 			String errorMessage = Messages.bind(Messages.CaughtException, "IOException", e.getLocalizedMessage()); //$NON-NLS-1$
-			Util.log(e, errorMessage);
+			Util2.log(e, errorMessage);
 			System.err.println(Messages.bind(Messages.ExceptionSkip ,errorMessage));
 		} catch (BadLocationException e) {
 			String errorMessage = Messages.bind(Messages.CaughtException, "BadLocationException", e.getLocalizedMessage()); //$NON-NLS-1$
-			Util.log(e, errorMessage);
+			Util2.log(e, errorMessage);
 			System.err.println(Messages.bind(Messages.ExceptionSkip ,errorMessage));
 		}
 	}
@@ -344,7 +343,7 @@ public class CodeFormatterApplication implements IApplication {
 			formatterOptions.load(stream);
 			return formatterOptions;
 		} catch (IOException e) {
-			Util.log(e, Messages.bind(Messages.ConfigFileReadingError));
+			Util2.log(e, Messages.bind(Messages.ConfigFileReadingError));
 		} finally {
 			if (stream != null) {
 				try {
@@ -377,7 +376,7 @@ public class CodeFormatterApplication implements IApplication {
 		// preserve existing default behavior
 		// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=20793
 		if (this.options == null) {
-			this.options = JavaCore.getOptions();
+			//this.options = JavaCore.getOptions();
 			this.options.put(
 				DefaultCodeFormatterConstants.FORMATTER_NEVER_INDENT_BLOCK_COMMENTS_ON_FIRST_COLUMN,
 				DefaultCodeFormatterConstants.FALSE);
@@ -404,7 +403,7 @@ public class CodeFormatterApplication implements IApplication {
 			final File file = filesToFormat[i];
 			if (file.isDirectory()) {
 				formatDirTree(file, codeFormatter);
-			} else if (Util.isJavaLikeFileName(file.getPath())) {
+			} else if (Util2.isJavaLikeFileName(file.getPath())) {
 				formatFile(file, codeFormatter);
 			}			
 		}

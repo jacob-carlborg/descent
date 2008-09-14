@@ -786,8 +786,8 @@ public abstract class ASTUpTreeVisitor extends TreeVisitor implements IASTVisito
 		return visit((ASTDmdNode) node);
 	}
 	public boolean visit(TypeAArray node) {
-		Assert.isTrue(TypeAArray.class.getSuperclass().equals(Type.class));
-		return visit((Type) node);
+		Assert.isTrue(TypeAArray.class.getSuperclass().equals(TypeArray.class));
+		return visit((TypeArray) node);
 	}
 	public boolean visit(TypeBasic node) {
 		Assert.isTrue(TypeBasic.class.getSuperclass().equals(Type.class));
@@ -894,8 +894,8 @@ public abstract class ASTUpTreeVisitor extends TreeVisitor implements IASTVisito
 		return visit((Type) node);
 	}
 	public boolean visit(TypeSArray node) {
-		Assert.isTrue(TypeSArray.class.getSuperclass().equals(Type.class));
-		return visit((Type) node);
+		Assert.isTrue(TypeSArray.class.getSuperclass().equals(TypeArray.class));
+		return visit((TypeArray) node);
 	}
 	public boolean visit(TypeSlice node) {
 		Assert.isTrue(TypeSlice.class.getSuperclass().equals(Type.class));
@@ -1736,8 +1736,8 @@ public abstract class ASTUpTreeVisitor extends TreeVisitor implements IASTVisito
 		endVisit((ASTDmdNode) node);
 	}
 	public void endVisit(TypeAArray node) {
-		Assert.isTrue(TypeAArray.class.getSuperclass().equals(Type.class));
-		endVisit((Type) node);
+		Assert.isTrue(TypeAArray.class.getSuperclass().equals(TypeArray.class));
+		endVisit((TypeArray) node);
 	}
 	public void endVisit(TypeBasic node) {
 		Assert.isTrue(TypeBasic.class.getSuperclass().equals(Type.class));
@@ -1844,8 +1844,8 @@ public abstract class ASTUpTreeVisitor extends TreeVisitor implements IASTVisito
 		endVisit((Type) node);
 	}
 	public void endVisit(TypeSArray node) {
-		Assert.isTrue(TypeSArray.class.getSuperclass().equals(Type.class));
-		endVisit((Type) node);
+		Assert.isTrue(TypeSArray.class.getSuperclass().equals(TypeArray.class));
+		endVisit((TypeArray) node);
 	}
 	public void endVisit(TypeSlice node) {
 		Assert.isTrue(TypeSlice.class.getSuperclass().equals(Type.class));

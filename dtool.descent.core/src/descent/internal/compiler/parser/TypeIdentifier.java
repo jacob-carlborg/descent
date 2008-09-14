@@ -18,6 +18,7 @@ public class TypeIdentifier extends TypeQualified {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, ident);
+			TreeVisitor.acceptChildren(visitor, idents);
 		}
 		visitor.endVisit(this);
 	}

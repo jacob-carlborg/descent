@@ -14,11 +14,8 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
-import descent.core.IJavaProject;
 import descent.core.IProblemRequestor;
 import descent.core.JavaCore;
-import descent.core.JavaModelException;
-import descent.core.WorkingCopyOwner;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.ICompilerRequestor;
 import descent.internal.compiler.IErrorHandlingPolicy;
@@ -28,7 +25,7 @@ import descent.internal.compiler.impl.CompilerOptions;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.SemanticContext;
-import descent.internal.core.util.Util;
+import descent.internal.core.util.Util2;
 
 public class CompilationUnitResolver extends descent.internal.compiler.Compiler {
 	
@@ -113,8 +110,8 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			String taskTags = (String) options.get(JavaCore.COMPILER_TASK_TAGS);
 			if (taskTags != null) {
 				parser = new Parser(apiLevel, source, 0, source.length, 
-						Util.toCharArrays(taskTags.split(",")),
-						Util.toCharArrays(((String) options.get(JavaCore.COMPILER_TASK_PRIORITIES)).split(",")),
+						Util2.toCharArrays(taskTags.split(",")),
+						Util2.toCharArrays(((String) options.get(JavaCore.COMPILER_TASK_PRIORITIES)).split(",")),
 						JavaCore.ENABLED.equals(options.get(JavaCore.COMPILER_TASK_CASE_SENSITIVE))
 						);
 			} else {
@@ -133,7 +130,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		return new ParseResult(module, scanner);
 	}
 	
-	public static ParseResult resolve(int apiLevel,
+	/*public static ParseResult resolve(int apiLevel,
 			descent.internal.compiler.env.ICompilationUnit sourceUnit,
 			IJavaProject javaProject,
 			Map options,
@@ -144,7 +141,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		ParseResult result = parse(apiLevel, sourceUnit, options, statementsRecovery);
 		resolve(result.module);
 		return result;
-	}
+	}*/
 	
 	public static void resolve(final Module module) {
 		if (!RESOLVE) return;

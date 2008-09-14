@@ -162,7 +162,7 @@ public final class AST {
 	/**
 	 * Internal ast rewriter used to record ast modification when record mode is enabled.
 	 */
-	InternalASTRewrite rewriter;
+	InternalASTRewrite_Proxy rewriter;
 	
 	/**
 	 * Default value of <code>flag<code> when a new node is created.
@@ -745,7 +745,7 @@ public final class AST {
 			throw new IllegalArgumentException("Root node is not owned by this ast"); //$NON-NLS-1$
 		}
 		
-		this.rewriter = new InternalASTRewrite(root);
+		this.rewriter = InternalASTRewrite_Proxy.new_InternalASTRewrite(root);
 		this.setEventHandler(this.rewriter);
 	}
 	
