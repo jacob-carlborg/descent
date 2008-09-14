@@ -173,8 +173,8 @@ public class ReferenceResolver {
 						isStatementScope, importsOnly, thisModule);
 				if(search.isFinished() && search.findOnlyOne)
 					return; // Return if we only want one match in the scope
-			} 
-						
+			}
+			
 			// Check if the reference is before the point of definition
 			if(isStatementScope && refOffset < elem.getEndPos()) {
 				/* XXX: Technically we could return right away, since

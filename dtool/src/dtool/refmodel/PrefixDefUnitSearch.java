@@ -144,7 +144,7 @@ public class PrefixDefUnitSearch extends CommonDefUnitSearch {
 			if(node instanceof RefIdentifier) {
 				RefIdentifier refIdent = (RefIdentifier) node;
 				if(!parserAdapter.isQualifiedDotFixSearch) {
-					setupPrefixedSearch(searchOptions, offset, 
+					setupPrefixedSearchOptions(searchOptions, offset, 
 							refIdent.getOffset(), refIdent.name);
 				}
 			} else if(node instanceof CommonRefQualified) {
@@ -157,18 +157,18 @@ public class PrefixDefUnitSearch extends CommonDefUnitSearch {
 				int idEndPos = refTpl.getStartPos() + refTpl.name.length();
 				
 				if(offset <= idEndPos) {
-					setupPrefixedSearch(searchOptions, offset, 
+					setupPrefixedSearchOptions(searchOptions, offset, 
 							refTpl.getOffset(), refTpl.name);
 				} else if(lastToken.value == TOK.TOKnot) {
 					return "Invalid Context:" + lastToken;
 				}
 			} else if(node instanceof RefModule) {
 				RefModule refMod = (RefModule) node;
-				setupPrefixedSearch(searchOptions, offset, 
+				setupPrefixedSearchOptions(searchOptions, offset, 
 						refMod.getOffset(), refMod.toStringAsElement());
 			} else if (node instanceof RefImportSelection) {
 				RefImportSelection refImpSel = (RefImportSelection) node;
-				setupPrefixedSearch(searchOptions, offset, 
+				setupPrefixedSearchOptions(searchOptions, offset, 
 						refImpSel.getOffset(), refImpSel.name);
 			} else {
 				assertFail();
@@ -199,7 +199,7 @@ public class PrefixDefUnitSearch extends CommonDefUnitSearch {
 		return null;
 	}
 
-	private static void setupPrefixedSearch(PrefixSearchOptions searchOptions, 
+	private static void setupPrefixedSearchOptions(PrefixSearchOptions searchOptions, 
 			final int offset, int nameOffset, String name) {
 		int prefixLen = offset - nameOffset; 
 		searchOptions.prefixLen = prefixLen;

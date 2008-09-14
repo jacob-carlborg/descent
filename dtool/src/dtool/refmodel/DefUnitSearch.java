@@ -23,11 +23,7 @@ public class DefUnitSearch extends CommonDefUnitSearch {
 		this(searchName, searchref, -1, false);
 	}
 	
-	@Deprecated
-	public DefUnitSearch(String searchName, Reference searchref, int refOffset) {
-		this(searchName, searchref, refOffset, false);
-	}
-	
+
 	@Deprecated
 	public DefUnitSearch(String searchName, Reference searchref,
 			 boolean findOneOnly) {
@@ -42,9 +38,17 @@ public class DefUnitSearch extends CommonDefUnitSearch {
 		//defunits = new ArrayDeque<DefUnit>(4);
 	}
 	
+	// maybe not deprecate
+	@Deprecated
+	public DefUnitSearch(IScopeNode searchScope, String searchName,
+			int refOffset, boolean findOneOnly) {
+		super(searchScope, refOffset, findOneOnly);
+		this.searchName = searchName;
+		//defunits = new ArrayDeque<DefUnit>(4);
+	}
 
 	
-	public Collection<DefUnit> getDefUnits() {
+	public Collection<DefUnit> getMatchDefUnits() {
 		return defunits;
 	}
 

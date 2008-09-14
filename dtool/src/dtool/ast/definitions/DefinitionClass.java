@@ -16,7 +16,6 @@ public class DefinitionClass extends DefinitionAggregate {
 
 	public List<BaseClass> baseClasses;
 	
-	@SuppressWarnings("unchecked")
 	public DefinitionClass(ClassDeclaration elem) {
 		super(elem);
 		if(elem.members != null)

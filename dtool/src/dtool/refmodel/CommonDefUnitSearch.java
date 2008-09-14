@@ -1,5 +1,6 @@
 package dtool.refmodel;
 
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -17,14 +18,6 @@ public abstract class CommonDefUnitSearch {
 		return Collections.singletonList(defunit);
 	}
 	
-	/** Convenience method for extracting a single search result. */
-	public static DefUnit getResultDefUnit(Collection<DefUnit> singletonDefunits) {
-		return singletonDefunits.iterator().next();
-	}
-
-/* ------------------------------ */	
-	
-
 	/** Flag for stop searching when suitable matches are found. */
 	protected final boolean findOnlyOne;
 	/** The scope where the reference is located. 

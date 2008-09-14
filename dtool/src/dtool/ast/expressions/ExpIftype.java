@@ -1,6 +1,5 @@
 package dtool.ast.expressions;
 
-import melnorme.miscutil.Assert;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.IftypeExp;
 import descent.internal.compiler.parser.TOK;
@@ -16,7 +15,7 @@ public class ExpIftype extends Expression {
 	
 	public ExpIftype(IftypeExp node) {
 		convertNode(node);
-		Assert.isNull(node.id);
+		//Assert.isNull(node.id); //Can occur in error in illegal D code
 		this.tok = node.tok;
 		this.arg = ReferenceConverter.convertType(node.targ);
 		this.specType = ReferenceConverter.convertType(node.tspec);

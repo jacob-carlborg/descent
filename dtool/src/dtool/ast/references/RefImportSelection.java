@@ -46,7 +46,7 @@ public class RefImportSelection extends NamedReference
 		DefUnitSearch search = new DefUnitSearch(name, this, findOneOnly);
 		RefModule refMod = impSel.moduleRef;
 		CommonRefQualified.findDefUnitInMultipleDefUnitScopes(refMod.findTargetDefUnits(findOneOnly), search);
-		return search.getDefUnits();
+		return search.getMatchDefUnits();
 	}
 	
 	@Override

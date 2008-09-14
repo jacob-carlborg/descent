@@ -41,7 +41,7 @@ public abstract class CommonRefQualified extends NamedReference
 	public Collection<DefUnit> findTargetDefUnits(boolean findOneOnly) {
 		DefUnitSearch search = new DefUnitSearch(subref.name, this);
 		doQualifiedSearch(search, this);
-		return search.getDefUnits();
+		return search.getMatchDefUnits();
 	}
 	
 	@Override

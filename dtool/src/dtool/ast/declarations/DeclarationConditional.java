@@ -1,7 +1,5 @@
 package dtool.ast.declarations;
 
-import static melnorme.miscutil.Assert.assertTrue;
-
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -26,7 +24,7 @@ public abstract class DeclarationConditional extends ASTNeoNode implements IStat
 		NodeList thendecls = NodeList.createNodeList(elem.decl); 
 		NodeList elsedecls = NodeList.createNodeList(elem.elsedecl);
 
-		assertTrue(!(thendecls == null && elsedecls == null));
+		//assertTrue(!(thendecls == null && elsedecls == null));
 		Condition condition = elem.condition;
 		return createConditional(elem, thendecls, elsedecls, condition);		
 	}
@@ -35,6 +33,7 @@ public abstract class DeclarationConditional extends ASTNeoNode implements IStat
 		NodeList thendecls = NodeList.createNodeList(elem.ifbody); 
 		NodeList elsedecls = NodeList.createNodeList(elem.elsebody);
 
+		//assertTrue(!(thendecls == null && elsedecls == null));
 		Condition condition = elem.condition;
 		return createConditional(elem, thendecls, elsedecls, condition);	
 	}
@@ -55,6 +54,8 @@ public abstract class DeclarationConditional extends ASTNeoNode implements IStat
 
 
 	protected ASTNeoNode[] getMembers() {
+		if(thendecls == null && elsedecls == null)
+			return ASTNeoNode.NO_ELEMENTS;
 		if(thendecls == null)
 			return elsedecls.nodes;
 		if(elsedecls == null)
