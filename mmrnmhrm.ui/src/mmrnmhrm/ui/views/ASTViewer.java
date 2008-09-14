@@ -1,8 +1,8 @@
 package mmrnmhrm.ui.views;
 
-import melnorme.lang.ui.EditorUtil;
 import mmrnmhrm.core.dltk.DeeModuleDeclaration;
 import mmrnmhrm.core.model.CompilationUnit;
+import mmrnmhrm.lang.ui.EditorUtil;
 import mmrnmhrm.ui.DeePluginImages;
 import mmrnmhrm.ui.actions.GoToDefinitionHandler;
 

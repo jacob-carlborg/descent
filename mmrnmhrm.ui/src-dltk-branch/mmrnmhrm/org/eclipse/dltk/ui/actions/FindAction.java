@@ -2,8 +2,8 @@ package mmrnmhrm.org.eclipse.dltk.ui.actions;
 
 
 import static melnorme.miscutil.Assert.assertNotNull;
-import melnorme.lang.ui.EditorUtil;
-import mmrnmhrm.core.dltk.search.DeeDefMatcher;
+import mmrnmhrm.core.dltk.search.DeeDefPatternLocator;
+import mmrnmhrm.lang.ui.EditorUtil;
 import mmrnmhrm.ui.actions.OperationsManager;
 
 import org.eclipse.core.resources.IWorkspaceRunnable;
@@ -126,7 +126,7 @@ public abstract class FindAction extends SelectionDispatchAction {
 		IDLTKSearchScope scope= factory.createWorkspaceScope(true, getLanguageToolkit());
 		String description= factory.getWorkspaceScopeDescription(true);
 		
-		DeeDefMatcher.param_defunit = defunit;
+		DeeDefPatternLocator.GLOBAL_param_defunit = defunit;
 		return new PatternQuerySpecification(
 				defunit.getName(), 0, true, getLimitTo(), scope, description);
 		//return new ElementQuerySpecification(element, getLimitTo(), scope, description);

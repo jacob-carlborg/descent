@@ -2,8 +2,9 @@ package mmrnmhrm.ui.actions;
 
 import java.util.Collection;
 
-import melnorme.lang.ui.EditorUtil;
+import melnorme.miscutil.MiscUtil;
 import mmrnmhrm.core.DeeCore;
+import mmrnmhrm.lang.ui.EditorUtil;
 import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.editor.DeeEditor;
 
@@ -35,7 +36,6 @@ import dtool.ast.definitions.DefUnit;
 import dtool.ast.definitions.Module;
 import dtool.ast.definitions.Symbol;
 import dtool.ast.references.Reference;
-import dtool.refmodel.DefUnitSearch;
 import dtool.refmodel.INativeDefUnit;
 import dtool.refmodel.NodeUtil;
 
@@ -131,7 +131,7 @@ public class GoToDefinitionHandler extends AbstractHandler  {
 					+ "\nGoing to the first one.");
 		}
 
-		DefUnit defunit = DefUnitSearch.getResultDefUnit(defunits);
+		DefUnit defunit = MiscUtil.getSingleElement(defunits);
 		
 		if(defunit.hasNoSourceRangeInfo()) {
 			dialogError(window.getShell(), "DefUnit " 

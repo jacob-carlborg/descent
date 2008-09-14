@@ -9,7 +9,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Layout;
 
-public class JFaceUtil {
+public class MetricsUtil {
 
 	/** Gets FontMetrics for the given control */
 	protected static FontMetrics getFontMetrics(Control testControl) {

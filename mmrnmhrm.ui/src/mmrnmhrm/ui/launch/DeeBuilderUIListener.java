@@ -5,7 +5,7 @@ import static melnorme.miscutil.Assert.assertFail;
 import java.io.IOException;
 
 import melnorme.miscutil.ExceptionAdapter;
-import melnorme.util.ui.swt.SWTUtilExt;
+import melnorme.swtutil.SWTUtilExt;
 import mmrnmhrm.core.build.IDeeBuilderListener;
 import mmrnmhrm.ui.DeePlugin;
 

@@ -1,7 +1,7 @@
 package mmrnmhrm.ui.navigator;
 
 import melnorme.miscutil.tree.IElement;
-import melnorme.util.ui.swt.SWTUtilExt;
+import melnorme.swtutil.SWTUtilExt;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;

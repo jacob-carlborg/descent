@@ -1,8 +1,7 @@
 package mmrnmhrm.ui.preferences.pages;
 
 import melnorme.miscutil.ArrayUtil;
-import melnorme.util.ui.swt.ColumnComposite;
-import melnorme.util.ui.swt.RowComposite;
+import melnorme.swtutil.GridComposite;
 import mmrnmhrm.core.DeeCorePreferences;
 import mmrnmhrm.ui.ActualPlugin;
 
@@ -39,7 +38,7 @@ public class DeeRootPreferencePage extends PreferencePage implements IWorkbenchP
 	
 	@Override
 	protected Control createContents(Composite parent) {
-		RowComposite content = new RowComposite(parent);
+		GridComposite content = new GridComposite(parent);
 		
 		fAdaptedMalformedAST = new Button(content, SWT.CHECK);
 		fAdaptedMalformedAST.setText("Adapt source AST when there are syntax errors.");
@@ -54,7 +53,7 @@ public class DeeRootPreferencePage extends PreferencePage implements IWorkbenchP
 		fStrikethroughCheckBox.setLayoutData(gd);
 		*/
 
-		ColumnComposite holder = new ColumnComposite(content, 2);
+		GridComposite holder = new GridComposite(content, 2);
 		
 		fLangVersion = new ComboDialogField(SWT.READ_ONLY);
 		fLangVersion.setLabelText("Default Parser Language Version:");

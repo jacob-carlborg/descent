@@ -6,5 +6,6 @@
 	<classpathentry kind="src" path="src-jdt-adapters"/>
 	<classpathentry kind="src" path="src-jdt-original"/>
 	<classpathentry kind="src" path="src-dltk-branch"/>
+	<classpathentry kind="src" path="src-ui-util"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

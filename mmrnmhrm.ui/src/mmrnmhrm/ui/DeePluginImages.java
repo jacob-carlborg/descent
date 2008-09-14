@@ -2,7 +2,7 @@ package mmrnmhrm.ui;
 
 import java.io.FileNotFoundException;
 
-import melnorme.lang.ui.LangPluginImages;
+import mmrnmhrm.lang.ui.LangPluginImages;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;

@@ -1,9 +1,9 @@
 package mmrnmhrm.ui;
 
-import melnorme.lang.ui.InitializeAfterLoadJob;
-import melnorme.lang.ui.LangPlugin;
-import melnorme.util.ui.swt.SWTUtilExt;
+import melnorme.swtutil.SWTUtilExt;
 import mmrnmhrm.core.build.DeeProjectBuilder;
+import mmrnmhrm.lang.ui.InitializeAfterLoadJob;
+import mmrnmhrm.lang.ui.LangPlugin;
 import mmrnmhrm.ui.launch.DeeBuilderUIListener;
 import mmrnmhrm.ui.text.DeeTextTools;
 
@@ -60,7 +60,7 @@ public class DeePlugin extends LangPlugin {
 		Logg.main.println("Location: " + Platform.getLocation());
 		Logg.main.println("Instance Location: " + Platform.getInstanceLocation().getURL());
 		
-		SWTUtilExt.enableColorHelpers = Platform.inDebugMode();
+		SWTUtilExt.enableDebugColorHelpers = Platform.inDebugMode();
 
 		//defaultDeeCodeScanner = new DeeCodeScanner();
 	}

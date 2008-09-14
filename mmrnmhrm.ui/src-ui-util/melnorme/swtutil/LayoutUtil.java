@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2007 DSource.org and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     IBM Corporation - initial API and implementation
+ *     Bruno Medeiros - initial implementation
  *******************************************************************************/
 package melnorme.swtutil;
 
@@ -15,13 +15,35 @@ import static melnorme.miscutil.Assert.assertTrue;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Control;
 
 
 /**
  * SWT Layout Utils v2.
  */
-public class LayoutDataUtil {
+public class LayoutUtil {
+	
+	public static GridLayout createGridLayout() {
+		return createGridLayout(1);
+	}
+	
+	public static GridLayout createGridLayout(int numColumns) {
+		return createGridLayout(numColumns, true);
+	}
+
+	/** Creates a default GridLayout with given numColumns , margins, baseControl*/
+	public static GridLayout createGridLayout(int numColumns, boolean margins) {
+		GridLayout gd = new GridLayout(numColumns, false);
+		if(!margins) {
+			gd.marginWidth = 0;
+			gd.marginHeight = 0;
+		}
+		return gd;
+	}
+	
+	/* ================ Layout Data Utils ================ */
+	
 	
 	protected static GridData getControlGridData(Control control) {
 		Object ld = control.getLayoutData();
@@ -78,7 +100,7 @@ public class LayoutDataUtil {
 	}
 	
 	public static GridData newGridData(boolean grabHorizontal) {
-		return newHGridData(1, grabHorizontal, false);
+		return newHGridData(1, grabHorizontal);
 	}
 	
 	public static GridData newGridData(boolean grabHorizontal, boolean grabVertical) {
@@ -119,6 +141,5 @@ public class LayoutDataUtil {
 		gd.heightHint = heightHint;
 		return gd;
 	}
-
 
 }

@@ -1,6 +1,6 @@
 package mmrnmhrm.ui.editor.text;
 
-import melnorme.lang.ui.EditorUtil;
+import mmrnmhrm.lang.ui.EditorUtil;
 import mmrnmhrm.ui.editor.DeeEditor;
 
 import org.eclipse.jface.text.IRegion;

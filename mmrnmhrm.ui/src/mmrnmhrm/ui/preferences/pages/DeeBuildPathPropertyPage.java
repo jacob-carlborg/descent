@@ -10,7 +10,7 @@ import org.eclipse.ui.preferences.IWorkbenchPreferenceContainer;
 
 public class DeeBuildPathPropertyPage extends BuildPathsPropertyPage implements IWorkbenchPropertyPage {
 
-	public static final String PAGEID = "mmrnmhrm.ui.properties.DeeBuildPathProperties";  
+	public static final String PAGE_ID = "mmrnmhrm.ui.properties.DeeBuildPathProperties";  
 
 	@Override
 	protected BuildpathsBlock createBuildPathBlock(IWorkbenchPreferenceContainer pageContainer) {

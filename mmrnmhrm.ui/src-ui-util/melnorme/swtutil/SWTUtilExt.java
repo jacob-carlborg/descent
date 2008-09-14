@@ -18,7 +18,6 @@ import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -28,7 +27,6 @@ import org.eclipse.swt.widgets.Shell;
 
 /**
  * Miscelleanous class with some SWT utils.
- * @see SWTUtil 
  */
 public class SWTUtilExt {
 		
@@ -58,11 +56,9 @@ public class SWTUtilExt {
 		if(enableDebugColorHelpers) {
 			Color color = new Color(Display.getDefault(), 
 					rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
-//			Color color = Graphics.getColor(rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
 			control.setBackground(color);
 		}
 	}
-
 
 	/** Sets the enable state of the composite's children, recursively. */
 	public static void recursiveSetEnabled(Composite composite, boolean enabled) {
@@ -72,26 +68,6 @@ public class SWTUtilExt {
 			}
 			control.setEnabled(enabled);
 		}
-	}
-	
-
-	
-	public static GridLayout createGridLayout() {
-		return createGridLayout(1);
-	}
-	
-	public static GridLayout createGridLayout(int numColumns) {
-		return createGridLayout(numColumns, true);
-	}
-
-	/** Creates a default GridLayout with given numColumns , margins, baseControl*/
-	public static GridLayout createGridLayout(int numColumns, boolean margins) {
-		GridLayout gd = new GridLayout(numColumns, false);
-		if(!margins) {
-			gd.marginWidth = 0;
-			gd.marginHeight = 0;
-		}
-		return gd;
 	}
 
 
@@ -122,6 +98,7 @@ public class SWTUtilExt {
 			sc.setExpandHorizontal(true);
 			sc.setExpandVertical(true);
 			sc.addControlListener(new ControlAdapter() {
+				@Override
 				public void controlResized(ControlEvent e) {
 					reflowScrollContentWidth(sc, scrollContent);
 				}
@@ -146,8 +123,5 @@ public class SWTUtilExt {
 		messageBox.setMessage(message);
 		return messageBox.open(); 
 	}
-
-
-	
 
 }

@@ -3,7 +3,7 @@ package mmrnmhrm.ui.editor.text;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import melnorme.lang.ui.EditorUtil;
+import mmrnmhrm.lang.ui.EditorUtil;
 import mmrnmhrm.ui.views.DeeElementImageProvider;
 
 import org.eclipse.dltk.core.ISourceModule;

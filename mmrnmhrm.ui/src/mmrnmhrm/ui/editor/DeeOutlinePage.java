@@ -2,7 +2,7 @@ package mmrnmhrm.ui.editor;
 
 import melnorme.miscutil.Assert;
 import melnorme.miscutil.tree.IElement;
-import melnorme.util.ui.swt.SWTUtilExt;
+import melnorme.swtutil.SWTUtilExt;
 import mmrnmhrm.core.dltk.DeeModuleDeclaration;
 import mmrnmhrm.core.dltk.DeeParserUtil;
 

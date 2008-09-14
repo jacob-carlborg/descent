@@ -2,11 +2,11 @@ package mmrnmhrm.ui.preferences;
 
 import static melnorme.miscutil.Assert.assertNotNull;
 import static melnorme.miscutil.Assert.assertTrue;
+import melnorme.swtutil.GridComposite;
 import melnorme.util.ui.fields.FieldUtil;
 import melnorme.util.ui.fields.ProjectContainerSelectionDialog;
 import melnorme.util.ui.fields.SelectionComboDialogField;
 import melnorme.util.ui.fields.StringDialogField;
-import melnorme.util.ui.swt.RowComposite;
 import melnorme.util.ui.swt.SWTLayoutUtil;
 import mmrnmhrm.core.build.DeeBuildOptions;
 import mmrnmhrm.core.build.DeeBuilder;
@@ -105,18 +105,18 @@ public class DeeProjectOptionsBlock implements IDialogFieldListener  {
 				}
 			}
 		});
-		fCompilerTool.setLabelText("Build Tool:");
+		fCompilerTool.setLabelText("Build Command:");
 		fCompilerTool.setButtonLabel("Browse");
 		fCompilerTool.setDialogFieldListener(this);
 		
 		fExtraOptions = new StringDialogField(SWT.BORDER | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL
 				);
-		fExtraOptions.setLabelText("Build Commands (newline separated):");
+		fExtraOptions.setLabelText("Managed response file:");
 		fExtraOptions.setDialogFieldListener(this);
 
 		fOptionsPreview = new StringDialogField(SWT.BORDER | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL 
 				| SWT.READ_ONLY);
-		fOptionsPreview.setLabelText("Compiler Options Preview:");
+		fOptionsPreview.setLabelText("Generated 'build.rf' response file preview:");
 		
 	}
 	
@@ -136,9 +136,9 @@ public class DeeProjectOptionsBlock implements IDialogFieldListener  {
 	public Composite createControl(Composite parent) {
 		Composite content = parent;
 		shell = parent.getShell();
-		content = new RowComposite(parent);
+		content = new GridComposite(parent);
 		
-		RowComposite rowComposite = new RowComposite(content);
+		GridComposite rowComposite = new GridComposite(content);
 		SWTLayoutUtil.setWidthHint(rowComposite, 200);
 		SWTLayoutUtil.enableDiagonalExpand(rowComposite);
 

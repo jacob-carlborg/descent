@@ -1,7 +1,7 @@
 package mmrnmhrm.org.eclipse.dltk.ui.actions;
 
 
-import mmrnmhrm.core.dltk.search.DeeDefMatcher;
+import mmrnmhrm.core.dltk.search.DeeDefPatternLocator;
 
 import org.eclipse.dltk.core.DLTKCore;
 import org.eclipse.dltk.core.ISourceModule;
@@ -51,7 +51,7 @@ public final class FindReferencesInProjectAction extends FindAction {
 			description=  factory.getProjectScopeDescription(element.getScriptProject(), isInsideInterpreterEnvironment);
 		}
 		
-		DeeDefMatcher.param_defunit = defunit;
+		DeeDefPatternLocator.GLOBAL_param_defunit = defunit;
 		return new PatternQuerySpecification(
 				defunit.getName(), 0, true, getLimitTo(), scope, description);
 	}

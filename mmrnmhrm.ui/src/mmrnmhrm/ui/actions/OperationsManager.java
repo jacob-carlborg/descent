@@ -1,7 +1,7 @@
 package mmrnmhrm.ui.actions;
 
-import melnorme.lang.ui.ExceptionHandler;
 import mmrnmhrm.core.DeeCore;
+import mmrnmhrm.lang.ui.ExceptionHandler;
 
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;

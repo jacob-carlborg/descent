@@ -2,8 +2,8 @@ package mmrnmhrm.ui.text;
 
 import melnorme.miscutil.Assert;
 
-import org.eclipse.dltk.internal.ui.editor.semantic.highlighting.PositionUpdater;
-import org.eclipse.dltk.internal.ui.editor.semantic.highlighting.SemanticHighlighting;
+import org.eclipse.dltk.ui.editor.highlighting.ISemanticHighlighter;
+import org.eclipse.dltk.ui.editor.highlighting.SemanticHighlighting;
 import org.eclipse.dltk.ui.text.ScriptSourceViewerConfiguration;
 import org.eclipse.dltk.ui.text.ScriptTextTools;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -40,7 +40,7 @@ public class DeeTextTools extends ScriptTextTools {
 	}
 
 	@Override
-	public PositionUpdater getSemanticPositionUpdater() {
+	public ISemanticHighlighter getSemanticPositionUpdater() {
 		return null;
 	}
 

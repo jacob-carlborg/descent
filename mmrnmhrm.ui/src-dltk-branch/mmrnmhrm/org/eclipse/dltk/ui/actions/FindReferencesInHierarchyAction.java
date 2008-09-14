@@ -1,7 +1,7 @@
 package mmrnmhrm.org.eclipse.dltk.ui.actions;
 
 
-import mmrnmhrm.core.dltk.search.DeeDefMatcher;
+import mmrnmhrm.core.dltk.search.DeeDefPatternLocator;
 import mmrnmhrm.core.model.SourceModelUtil;
 import mmrnmhrm.ui.actions.OperationsManager;
 
@@ -57,7 +57,7 @@ public final class FindReferencesInHierarchyAction extends FindAction {
 		IDLTKSearchScope scope = SearchEngine.createHierarchyScope(type);
 		String description = factory.getHierarchyScopeDescription(type);
 		
-		DeeDefMatcher.param_defunit = defunit;
+		DeeDefPatternLocator.GLOBAL_param_defunit = defunit;
 		return new PatternQuerySpecification(
 				defunit.getName(), 0, true, getLimitTo(), scope, description);
 		//return new ElementQuerySpecification(element, getLimitTo(), scope, description);

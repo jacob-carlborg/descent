@@ -68,7 +68,7 @@
       <page
             class="mmrnmhrm.ui.preferences.pages.DeeProjectOptionsPropertyPage"
             id="mmrnmhrm.ui.properties.DeeCompileOptionsProperties"
-            name="D Compile Options">
+            name="D Compile Options (Mmrnmhrm)">
          <enabledWhen>
             <reference
                   definitionId="mmrnmhrm.core.expressions.isDeeNature">

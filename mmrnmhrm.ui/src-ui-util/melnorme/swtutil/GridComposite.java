@@ -36,7 +36,7 @@ public class GridComposite extends BaseComposite {
 	/** Creates a composite with given numCol columns and optional margins */
 	public GridComposite(Composite parent, int numColumns, boolean margins) {
 		super(parent);
-		setLayout(SWTUtilExt.createGridLayout(numColumns, margins));
+		setLayout(LayoutUtil.createGridLayout(numColumns, margins));
 	}
 
  }
