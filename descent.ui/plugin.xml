@@ -2877,7 +2877,22 @@
 		        class="descent.internal.ui.filters.JavaFileFilter"
 		        name="%HideJavaFiles.label"
 		        description="%HideJavaFiles.description"
-		        id="descent.java.ui.filters.HideJavaFiles"/> 		 
+		        id="descent.java.ui.filters.HideJavaFiles"/>
+		<commonFilter 
+		        class="descent.internal.ui.filters.ObjFileFilter"
+		        name="%HideObjFiles.label"
+		        description="%HideObjFiles.description"
+		        id="descent.java.ui.filters.HideObjFiles"/>
+		<commonFilter 
+		        class="descent.internal.ui.filters.DllFileFilter"
+		        name="%HideDllFiles.label"
+		        description="%HideDllFiles.description"
+		        id="descent.java.ui.filters.HideDllFiles"/>
+		<commonFilter 
+		        class="descent.internal.ui.filters.MapFileFilter"
+		        name="%HideMapFiles.label"
+		        description="%HideMapFiles.description"
+		        id="descent.java.ui.filters.HideMapFiles"/>
 		<!--
   		<commonFilter 
 		        class="descent.internal.ui.filters.LocalTypesFilter"
