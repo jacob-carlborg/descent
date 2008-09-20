@@ -408,6 +408,22 @@ public class CompletionEngine extends Engine
 				
 				// For new |, don't suggest keywords or ddoc
 				if (parser.inNewExp) {
+					// In:
+					// Foo f = new |
+					// suggest Foo constructors
+					if (currentName != null && currentName.length == 0) {
+						if (expectedType != null && expectedType.ty == TY.Tclass) {
+							TypeClass tc = (TypeClass) expectedType;
+							ClassDeclaration cd = tc.sym;
+							
+							if (!(cd instanceof InterfaceDeclaration) && cd.ident != null && cd.ident.ident != null) {
+								wantConstructorsAndOpCall = true;
+								currentName = cd.ident.ident;
+								
+								suggestConstructors(cd);
+							}
+						}
+					}
 					return;
 				}
 			}
@@ -1124,40 +1140,44 @@ public class CompletionEngine extends Engine
 		boolean onlyStatics = resolvedExpression instanceof TypeExp;
 		
 		if (sym instanceof ClassDeclaration) {
-			ClassDeclaration cd = ((ClassDeclaration) sym).unlazy(this.currentName, semanticContext);
-			
-			Declaration func = cd.ctor;
-			
 			// First constructors, only if in new
 			if (parser.inNewExp) {
-				HashtableOfCharArrayAndObject hash = new HashtableOfCharArrayAndObject();
-				
-				if (func == null && !((ClassDeclaration) sym).isAbstract()) {
-					// Suggest default constructor
-					cd.ctor = new CtorDeclaration(Loc.ZERO, new Arguments(), 0);
-					cd.ctor.type = new TypeFunction(new Arguments(), cd.type, 0, LINK.LINKd);
-					cd.ctor.parent = cd;
-					
-					suggestMember(cd.ctor, false, 0, hash, INCLUDE_CONSTRUCTORS);
-				} else {
-					while(func != null) {
-						suggestMember(func, false, 0, hash, INCLUDE_CONSTRUCTORS);
-						
-						if (func instanceof FuncDeclaration) {
-							func = ((FuncDeclaration) func).overnext;
-						} else {
-							break;
-						}
-					}
-				}
-			
+				suggestConstructors((ClassDeclaration) sym);
 			// Then opCalls, only if not in new
 			} else {
+				ClassDeclaration cd = ((ClassDeclaration) sym).unlazy(this.currentName, semanticContext);
 				suggestMembers(cd.members, onlyStatics, 0, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
 			}
 		} else if (sym instanceof StructDeclaration) {
 			StructDeclaration struct = ((StructDeclaration) sym).unlazy(CharOperation.NO_CHAR, semanticContext);
 			suggestMembers(struct.members, onlyStatics, 0, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
+		}
+	}
+	
+	private void suggestConstructors(ClassDeclaration sym) {
+		ClassDeclaration cd = sym.unlazy(this.currentName, semanticContext);
+		
+		Declaration func = cd.ctor;
+		
+		HashtableOfCharArrayAndObject hash = new HashtableOfCharArrayAndObject();
+		
+		if (func == null && !((ClassDeclaration) sym).isAbstract()) {
+			// Suggest default constructor
+			cd.ctor = new CtorDeclaration(Loc.ZERO, new Arguments(), 0);
+			cd.ctor.type = new TypeFunction(new Arguments(), cd.type, 0, LINK.LINKd);
+			cd.ctor.parent = cd;
+			
+			suggestMember(cd.ctor, false, 0, hash, INCLUDE_CONSTRUCTORS);
+		} else {
+			while(func != null) {
+				suggestMember(func, false, 0, hash, INCLUDE_CONSTRUCTORS);
+				
+				if (func instanceof FuncDeclaration) {
+					func = ((FuncDeclaration) func).overnext;
+				} else {
+					break;
+				}
+			}
 		}
 	}
 
