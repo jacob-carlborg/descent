@@ -84,8 +84,10 @@ public class CompletionParser extends Parser {
 	private ASTDmdNode targetNew;
 	
 	public boolean inNewExp;
+	public boolean inCatExp;
 	public boolean isInExp;
 	public boolean isInAddrExp;
+	public boolean isCallFollowing;
 	
 	public char[] completionToken;
 	public int completionTokenStart;
@@ -289,6 +291,8 @@ public class CompletionParser extends Parser {
 			completionTokenEnd = token.ptr + token.sourceLen;
 			completionToken = CharOperation.subarray(input, completionTokenStart, cursorLocation);
 			
+			isCallFollowing = peek(token).value == TOK.TOKlparen;
+			
 			assistNode = new CompletionOnIdentifierExp(loc, token);
 			return (IdentifierExp) assistNode;
 		} else {
@@ -298,6 +302,9 @@ public class CompletionParser extends Parser {
 			Token next = peek(token);
 			if (next != null && next.value == TOK.TOKdot && next.ptr + next.sourceLen == cursorLocation) {
 				assistNode = new CompletionOnIdentifierExp(loc, token, next.ptr + next.sourceLen);
+				
+				isCallFollowing = next.value == TOK.TOKlparen;
+				
 				return (IdentifierExp) assistNode;
 			} else {
 				return super.newIdentifierExp();	
@@ -574,7 +581,11 @@ public class CompletionParser extends Parser {
 	
 	@Override
 	protected Expression newCatAssignExp(Loc loc, Expression e, Expression e2) {
-		analyzeBinExp(e, e2);
+		boolean result = analyzeBinExp(e, e2);
+		if (result) {
+			inCatExp = true;
+		}
+		
 		return super.newCatAssignExp(loc, e, e2);
 	}
 	
@@ -652,7 +663,11 @@ public class CompletionParser extends Parser {
 	
 	@Override
 	protected Expression newCatExp(Loc loc, Expression e, Expression e2) {
-		analyzeBinExp(e, e2);
+		boolean result = analyzeBinExp(e, e2);
+		if (result) {
+			inCatExp = true;
+		}
+		
 		return super.newCatExp(loc, e, e2);
 	}
 	

@@ -368,12 +368,13 @@ protected void toStringInfo(int tab, StringBuffer buffer, Object info, boolean s
 		if (Flags.isStatic(flags)) {
 			buffer.append("static "); //$NON-NLS-1$
 		}
-		/*
-		if (!methodInfo.isConstructor()) {
-			buffer.append(methodInfo.getReturnTypeName());
-			buffer.append(' ');
+		if (!Flags.isConstructor(flags) && !Flags.isDestructor(flags)) {
+			char[] retType = methodInfo.getReturnTypeName();
+			if (retType != null && retType.length > 0) {
+				buffer.append(Signature.toCharArray(retType, false /* don't fully qualify names */));
+				buffer.append(' ');
+			}
 		}
-		*/
 		toStringName(buffer, flags);
 	}
 }
@@ -381,22 +382,32 @@ protected void toStringName(StringBuffer buffer) {
 	toStringName(buffer, 0);
 }
 protected void toStringName(StringBuffer buffer, long flags) {
-	buffer.append(getElementName());
+	if (Flags.isConstructor(flags)) {
+		buffer.append("this");
+	} else if (Flags.isDestructor(flags)) {
+		buffer.append("~this");
+	} else if (Flags.isNew(flags)) {
+		buffer.append("new");
+	} else if (Flags.isDelete(flags)) {
+		buffer.append("delete");
+	} else if (Flags.isPostBlit(flags)) {
+		buffer.append("=this");
+	} else {
+		buffer.append(getElementName());
+	}
 	buffer.append('(');
 	String[] parameters = getParameterTypes();
 	int length;
 	if (parameters != null && (length = parameters.length) > 0) {
 		//boolean isVarargs = Flags.isVarargs(flags);
 		for (int i = 0; i < length; i++) {
+			if (i != 0) {
+				buffer.append(", "); //$NON-NLS-1$
+			}
+			
 			try {
-				if (i < length - 1) {
-					buffer.append(Signature.toString(parameters[i],
-							false /* don't fully qualify names */));
-					buffer.append(", "); //$NON-NLS-1$
-				} else {
-					buffer.append(Signature.toString(parameters[i],
-							false /* don't fully qualify names */));
-				}
+				buffer.append(Signature.toString(parameters[i],
+						false /* don't fully qualify names */));
 			} catch (IllegalArgumentException e) {
 				// parameter signature is malformed
 				buffer.append("*** invalid signature: "); //$NON-NLS-1$

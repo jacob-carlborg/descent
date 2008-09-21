@@ -63,6 +63,7 @@ import descent.internal.compiler.parser.CaseStatement;
 import descent.internal.compiler.parser.CastExp;
 import descent.internal.compiler.parser.Chars;
 import descent.internal.compiler.parser.ClassDeclaration;
+import descent.internal.compiler.parser.CommaExp;
 import descent.internal.compiler.parser.CompoundStatement;
 import descent.internal.compiler.parser.ConditionalDeclaration;
 import descent.internal.compiler.parser.CtorDeclaration;
@@ -86,6 +87,7 @@ import descent.internal.compiler.parser.Id;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.IndexExp;
+import descent.internal.compiler.parser.IntegerExp;
 import descent.internal.compiler.parser.InterfaceDeclaration;
 import descent.internal.compiler.parser.InvariantDeclaration;
 import descent.internal.compiler.parser.LINK;
@@ -116,6 +118,7 @@ import descent.internal.compiler.parser.TemplateMixin;
 import descent.internal.compiler.parser.ThisExp;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeAArray;
+import descent.internal.compiler.parser.TypeArray;
 import descent.internal.compiler.parser.TypeBasic;
 import descent.internal.compiler.parser.TypeClass;
 import descent.internal.compiler.parser.TypeDArray;
@@ -157,6 +160,7 @@ public class CompletionEngine extends Engine
 	public static boolean PERF = false;
 	private static final char[][] ddocSections = { "Authors".toCharArray(), "Bugs".toCharArray(), "Date".toCharArray(), "Deprecated".toCharArray(), "Examples".toCharArray(), "History".toCharArray(), "License".toCharArray(), "Returns".toCharArray(), "See_Also".toCharArray(), "Standards".toCharArray(), "Throws".toCharArray(), "Version".toCharArray(), "Copyright".toCharArray(), "Params".toCharArray(), "Macros".toCharArray() };
 	private static final char[][] specialTokens = { Id.FILE, Id.LINE, Id.DATE, Id.TIME, Id.TIMESTAMP, Id.VERSION, Id.VENDOR };
+	private final static char[] parenthesis = { '(', ')' };
 	
 	private static final HashtableOfCharArrayAndObject specialFunctions = new HashtableOfCharArrayAndObject();
 	{
@@ -226,8 +230,6 @@ public class CompletionEngine extends Engine
 		ops.put(Id.apply, dummy);
 		ops.put(Id.applyReverse, dummy);
 	}
-	
-	char[] parenthesis = { '(', ')' };
 	
 	IJavaProject javaProject;
 	CompletionParser parser;
@@ -412,15 +414,17 @@ public class CompletionEngine extends Engine
 					// Foo f = new |
 					// suggest Foo constructors
 					if (currentName != null && currentName.length == 0) {
-						if (expectedType != null && expectedType.ty == TY.Tclass) {
-							TypeClass tc = (TypeClass) expectedType;
-							ClassDeclaration cd = tc.sym;
-							
-							if (!(cd instanceof InterfaceDeclaration) && cd.ident != null && cd.ident.ident != null) {
-								wantConstructorsAndOpCall = true;
-								currentName = cd.ident.ident;
+						if (expectedType != null) {
+							if (expectedType.ty == TY.Tclass) {
+								TypeClass tc = (TypeClass) expectedType;
+								ClassDeclaration cd = tc.sym;
 								
-								suggestConstructors(cd);
+								if (!(cd instanceof InterfaceDeclaration) && cd.ident != null && cd.ident.ident != null) {
+									wantConstructorsAndOpCall = true;
+									currentName = cd.ident.ident;
+									
+									suggestConstructors(cd);
+								}
 							}
 						}
 					}
@@ -542,6 +546,17 @@ public class CompletionEngine extends Engine
 	}
 	
 	private void computeExpectedType() {
+		computeExpectedTypeBasic();
+		
+		// If it's ~ or ~= on a dynamic array, the expectedType is the next
+		if (expectedType != null && parser.inCatExp && expectedType.ty == TY.Tarray) {
+			TypeArray ta = (TypeArray) expectedType;
+			expectedType = ta.next;
+			expectedTypeSignature = expectedType.getSignature().toCharArray();
+		}
+	}
+	
+	private void computeExpectedTypeBasic() {
 		if (parser.expectedTypeNode instanceof CallExp) {
 			CallExp callExp = (CallExp) parser.expectedTypeNode;
 			if (callExp.e1 == null) {
@@ -1081,6 +1096,24 @@ public class CompletionEngine extends Engine
 		
 		doSemantic();
 		
+		// Case where there is:
+		//
+		// this.|
+		// this.foo.bar = 2;
+		//
+		// or:
+		//
+		// this.something.|
+		// this.foo.bar = 2;
+		// 
+		// that is, "this" is next
+		
+		
+		if (node.e1 instanceof IntegerExp && node.sourceE1 instanceof CompletionOnDotIdExp) {
+			CompletionOnDotIdExp cip = (CompletionOnDotIdExp) node.sourceE1;
+			completeExpression(cip.e1, node.ident);
+		}
+		
 		completeExpression(node.e1, node.ident);
 	}
 	
@@ -1354,8 +1387,14 @@ public class CompletionEngine extends Engine
 			} else if (node.e1.type instanceof TypeFunction && node.e1.type.next != null) {
 				trySuggestCall(node.e1.type.next, currentName, CharOperation.NO_CHAR, false /* dosen't matter here */);
 			} else {
-				wantMethodContextInfo = true;
-				trySuggestCall(node.e1.type, currentName, CharOperation.NO_CHAR, false /* dosen't matter here */);
+				// This means that the call is not resolved
+				if (node.e1.type instanceof TypeBasic) {
+					wantArguments = false;
+					completeNode(node.sourceE1);
+				} else {
+					wantMethodContextInfo = true;
+					trySuggestCall(node.e1.type, currentName, CharOperation.NO_CHAR, false /* dosen't matter here */);
+				}
 			}
 		} else if (node.e1 instanceof CallExp && node.e1 != node) {
 			completeCallExp((CallExp) node.e1);
@@ -1620,6 +1659,10 @@ public class CompletionEngine extends Engine
 	}
 	private void completeExpression(Expression e1, IdentifierExp ident) throws JavaModelException {
 		isBetweenMethodName = ident != null && ident.resolvedSymbol != null;
+		
+		while(e1 instanceof CommaExp) {
+			e1 = ((CommaExp) e1).e2;
+		}
 		
 		if (e1 instanceof VarExp) {
 			VarExp var = (VarExp) e1;
@@ -3170,6 +3213,9 @@ public class CompletionEngine extends Engine
 		
 		int relevance = computeBaseRelevance();
 		relevance += computeRelevanceForInterestingProposal();
+		if (currentName != null) {
+			relevance += computeRelevanceForCaseMatching(currentName, fullyQualifiedName);
+		}
 		relevance += R_QUALIFIED + R_COMPILATION_UNIT;
 		
 		CompletionProposal proposal = createProposal(CompletionProposal.COMPILATION_UNIT_REF, this.actualCompletionPosition, null);
@@ -3390,7 +3436,7 @@ public class CompletionEngine extends Engine
 		
 		CompletionProposal proposal = this.createProposal(CompletionProposal.METHOD_REF, this.actualCompletionPosition, null);
 		
-		if (parser.isInAddrExp) {
+		if (parser.isInAddrExp || parser.isCallFollowing) {
 			proposal.wantArguments = false;
 		}
 		

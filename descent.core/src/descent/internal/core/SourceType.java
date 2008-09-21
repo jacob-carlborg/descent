@@ -943,12 +943,14 @@ protected void toStringInfo(int tab, StringBuffer buffer, Object info, boolean s
 		try {
 			if (this.isEnum()) {
 				buffer.append("enum "); //$NON-NLS-1$
-			} else if (this.isAnnotation()) {
-				buffer.append("@interface "); //$NON-NLS-1$
+			} else if (this.isClass()) {
+				buffer.append("class "); //$NON-NLS-1$
 			} else if (this.isInterface()) {
 				buffer.append("interface "); //$NON-NLS-1$
-			} else {
-				buffer.append("class "); //$NON-NLS-1$
+			} else if (this.isStruct()) {
+				buffer.append("struct "); //$NON-NLS-1$
+			} else if (this.isUnion()) {
+				buffer.append("union "); //$NON-NLS-1$
 			}
 			String elementName = getElementName();
 			if (elementName.length() == 0) {

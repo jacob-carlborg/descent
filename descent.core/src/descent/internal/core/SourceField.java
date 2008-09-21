@@ -236,10 +236,13 @@ protected void toStringInfo(int tab, StringBuffer buffer, Object info, boolean s
 		toStringName(buffer);
 	} else {
 		try {
-			buffer.append(Signature.toString(this.getTypeSignature(),
-					false /* don't fully qualify names */));
-			//buffer.append(this.getTypeSignature());
-			buffer.append(" "); //$NON-NLS-1$
+			String ts = this.getTypeSignature();
+			if (ts != null && ts.length() > 0) {
+				buffer.append(Signature.toString(ts, false /* don't fully qualify names */));
+			} else {
+				buffer.append("auto"); //$NON-NLS-1$
+			}
+			buffer.append(' ');
 			toStringName(buffer);
 		} catch (JavaModelException e) {
 			buffer.append("<JavaModelException in toString of " + getElementName()); //$NON-NLS-1$
