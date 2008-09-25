@@ -1437,6 +1437,8 @@ public class CompletionEngine extends Engine
 			endPosition = actualCompletionPosition;
 			
 			suggestContextInfo((FuncDeclaration) node.member);
+		} else if (node.sourceNewtype != null) {
+			completeNode(node.sourceNewtype);
 		}
 	}
 	

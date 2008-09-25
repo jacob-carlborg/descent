@@ -40,16 +40,17 @@ public class FuncExp extends Expression {
 		if (type == null) {
 			fd.semantic(sc, context);
 			fd.parent = sc.parent;
-			if (context.global.errors > 0) {
+			// Removed all this conditions to get better selection/bindings
+//			if (context.global.errors > 0) {
 				if (fd.type.next == null) {
 					fd.type.next = Type.terror;
 				}
-			} else {
+//			} else {
 				fd.semantic2(sc, context);
-				if (context.global.errors == 0) {
+//				if (context.global.errors == 0) {
 					fd.semantic3(sc, context);
-				}
-			}
+//				}
+//			}
 
 			// Type is a "delegate to" or "pointer to" the function literal
 			if (fd.isNested()) {
