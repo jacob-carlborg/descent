@@ -18,7 +18,7 @@ import descent.internal.ui.text.spelling.engine.AbstractSpellDictionary;
 import descent.internal.ui.text.javadoc.IJavaDocTagConstants;
 
 /**
- * Dictionary for Javadoc tags.
+ * Dictionary for ddoc tags.
  *
  * @since 3.0
  */

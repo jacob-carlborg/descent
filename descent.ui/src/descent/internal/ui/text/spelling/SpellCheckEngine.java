@@ -170,7 +170,6 @@ public class SpellCheckEngine implements ISpellCheckEngine, IPropertyChangeListe
 				locale= (Locale)iterator.next();
 				fLocaleDictionaries.put(locale, new SpellReconcileDictionary(locale, location));
 			}
-
 		} catch (MalformedURLException exception) {
 			// Do nothing
 		}
@@ -179,13 +178,19 @@ public class SpellCheckEngine implements ISpellCheckEngine, IPropertyChangeListe
 	/*
 	 * @see descent.ui.text.spelling.engine.ISpellCheckEngine#createSpellChecker(java.util.Locale,org.eclipse.jface.preference.IPreferenceStore)
 	 */
-	public final synchronized ISpellChecker createSpellChecker(final Locale locale, final IPreferenceStore store) {
+	public final synchronized ISpellChecker createSpellChecker(Locale locale, final IPreferenceStore store) {
+		
+		// If we don't have a dictionary for the current language,
+		// default to United States English: seems a reasonable default
+		// since most written documentation in software uses this language
+		if (fLocaleDictionaries.get(locale) == null) {
+			locale = new Locale("en", "US");  //$NON-NLS-1$//$NON-NLS-2$
+		}
 
 		if (fLocale != null && fLocale.equals(locale))
 			return fChecker;
 
 		if (fChecker == null) {
-
 			fChecker= new DefaultSpellChecker(store);
 			store.addPropertyChangeListener(this);
 
@@ -222,7 +227,6 @@ public class SpellCheckEngine implements ISpellCheckEngine, IPropertyChangeListe
 				fChecker= null;
 				fLocale= null;
 			}
-
 		} else
 			fChecker.addDictionary(dictionary);
 
