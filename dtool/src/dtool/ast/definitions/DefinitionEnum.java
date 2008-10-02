@@ -71,7 +71,6 @@ public class DefinitionEnum extends Definition implements IScopeNode, IStatement
 		return true;
 	}
 
-	@SuppressWarnings("unchecked")
 	public Iterator<EnumMember> getMembersIterator() {
 		return members.iterator();
 	}

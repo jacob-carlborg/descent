@@ -41,8 +41,8 @@ public abstract class Declaration {
 		int i = 0;
 		if(modifiers == null)
 			return -1;
-		for (Iterator iter = modifiers.iterator(); iter.hasNext(); i++) {
-			Modifier modifier = (Modifier) iter.next();
+		for (Iterator<Modifier> iter = modifiers.iterator(); iter.hasNext(); i++) {
+			Modifier modifier = iter.next();
 			if(modifier.tok == tok)
 				return i;
 		}

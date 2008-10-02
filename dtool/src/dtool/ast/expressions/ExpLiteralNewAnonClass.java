@@ -16,7 +16,6 @@ public class ExpLiteralNewAnonClass extends Expression {
 	public ASTNeoNode[] members; 
 
 
-	@SuppressWarnings("unchecked")
 	public ExpLiteralNewAnonClass(NewAnonClassExp elem) {
 		convertNode(elem);
 		this.allocargs = Expression.convertMany(elem.newargs); 

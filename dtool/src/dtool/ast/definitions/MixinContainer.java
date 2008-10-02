@@ -32,7 +32,6 @@ public class MixinContainer extends ASTNeoNode implements IStatement, INonScoped
 	}
 	
 
-	@SuppressWarnings("unchecked")
 	public Iterator<ASTNode> getMembersIterator() {
 		return IteratorUtil.getEMPTY_ITERATOR();
 		// TODO: mixin container

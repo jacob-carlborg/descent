@@ -9,7 +9,6 @@ import dtool.ast.IASTNeoVisitor;
 public class DefinitionInterface extends DefinitionClass {
 
 	
-	@SuppressWarnings("unchecked")
 	public DefinitionInterface(InterfaceDeclaration elem) {
 		super(elem);
 	}

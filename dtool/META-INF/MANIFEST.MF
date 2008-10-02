@@ -3,7 +3,8 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: dtool;singleton:=true
 Bundle-Version: 0.3.0.qualifier
-Bundle-ClassPath: DTool.jar
+Bundle-ClassPath: DTool.jar,
+ libs/ini4j-0.3.2/ini4j-0.3.2.jar
 Export-Package: dtool,
  dtool.ast,
  dtool.ast.declarations,

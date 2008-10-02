@@ -15,7 +15,6 @@ public class DefinitionStruct extends DefinitionAggregate {
 	public TemplateParameter[] templateParams; 
 	
 	
-	@SuppressWarnings("unchecked")
 	public DefinitionStruct(StructDeclaration elem) {
 		super(elem);
 		if(elem.members != null)

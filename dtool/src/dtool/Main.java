@@ -1,8 +1,6 @@
 package dtool;
 
 
-
-
 public class Main {
 	
 	private Main() { }
@@ -22,6 +20,5 @@ public class Main {
 		}
 		System.out.println("= THE END =");
 	}
-
 
 }

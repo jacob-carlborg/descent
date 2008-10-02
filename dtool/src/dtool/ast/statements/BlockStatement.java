@@ -19,7 +19,6 @@ public class BlockStatement extends Statement implements IScopeNode {
 	public List<IStatement> statements;
 	public boolean hasCurlyBraces; // syntax-structural?
 
-	@SuppressWarnings("unchecked")
 	public BlockStatement(descent.internal.compiler.parser.CompoundStatement elem) {
 		convertNode(elem);
 		this.statements = DescentASTConverter.convertManyL(elem.statements, statements);

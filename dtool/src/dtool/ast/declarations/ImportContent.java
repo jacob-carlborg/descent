@@ -3,7 +3,6 @@ package dtool.ast.declarations;
 import descent.internal.compiler.parser.Import;
 import dtool.refmodel.CommonDefUnitSearch;
 import dtool.refmodel.ReferenceResolver;
-import dtool.refmodel.DefUnitSearch;
 
 public class ImportContent extends ImportStatic {
 

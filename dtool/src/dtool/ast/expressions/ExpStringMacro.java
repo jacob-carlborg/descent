@@ -1,7 +1,6 @@
 package dtool.ast.expressions;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.compiler.parser.CompileDeclaration;
 import descent.internal.compiler.parser.CompileExp;
 import dtool.ast.IASTNeoVisitor;
 
