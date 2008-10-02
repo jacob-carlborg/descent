@@ -7,6 +7,8 @@ import static melnorme.miscutil.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import melnorme.miscutil.StringUtil;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -23,41 +25,34 @@ import dtool.refmodel.PrefixSearchOptions;
 import dtool.refmodel.PrefixDefUnitSearch.CompletionSession;
 import dtool.refmodel.PrefixDefUnitSearch.IDefUnitMatchAccepter;
 
-public class CodeCompletion__Common {
+public class CodeCompletion__Common implements ICodeCompletionTester {
 
 	protected static IFile file;
 	protected static ISourceModule srcModule;
-	protected static CodeCompletionTester ccTester;
+	protected static ICodeCompletionTester ccTester;
 	
 	protected static void setupWithFile(IScriptProject deeProject, String path) throws PartInitException, CoreException {
 		IProject project = deeProject.getProject();
 		file = project.getFile(path);
 		srcModule = DLTKCore.createSourceModuleFrom(file);
-		ccTester = new CodeCompletionTester();
-	}
-
-	public static class CodeCompletionTester {
-		protected void testComputeProposals(int repOffset,
-				int prefixLen, String... expectedProposals) throws ModelException {
-			CodeCompletion__Common.testComputeProposals(
-					repOffset, prefixLen, expectedProposals);
-		}
-		
-		protected void testComputeProposalsWithRepLen(int repOffset, int prefixLen, 
-				int repLen, String... expectedProposals) throws ModelException {
-			CodeCompletion__Common.testComputeProposalsWithRepLen(
-					repOffset, prefixLen, repLen, expectedProposals);
-		}
-
-	}
-
-	private static void testComputeProposals(int repOffset,
-			int prefixLen, String... expectedProposals) throws ModelException {
-		testComputeProposalsWithRepLen(repOffset, prefixLen, 0, expectedProposals);
+		ccTester = new CodeCompletion__Common();
 	}
 	
-	private static void testComputeProposalsWithRepLen(int repOffset, int prefixLen, 
+	public void testComputeProposals(int repOffset,
+			int prefixLen, String... expectedProposals) throws ModelException {
+		CodeCompletion__Common.testComputeProposalsWithRepLen(repOffset,
+				prefixLen, expectedProposals);
+	}
+	
+	public void testComputeProposalsWithRepLen(int repOffset, int prefixLen, 
 			int repLen, String... expectedProposals) throws ModelException {
+		CodeCompletion__Common.testComputeProposalsWithRepLen(
+				repOffset, prefixLen, expectedProposals);
+	}
+
+	
+	private static void testComputeProposalsWithRepLen(int repOffset, int prefixLen, 
+			String... expectedProposals) throws ModelException {
 		
 		final ArrayList<DefUnit> results;
 		results = new ArrayList<DefUnit>();
@@ -78,19 +73,22 @@ public class CodeCompletion__Common {
 				srcModule, srcModule.getSource(), new CompletionSession(), defUnitAccepter);
 		
 		assertNotNull(results, "Code Completion Unavailable");
-		checkProposals(repOffset, repLen, prefixLen, results, expectedProposals);
+		checkProposals(prefixLen, results, expectedProposals);
 	}
 
 	
-	@SuppressWarnings("unused")
-	protected static void checkProposals(int repOffset, int repLen, int prefixLen,
+	protected static void checkProposals(int prefixLen,
 			ArrayList<DefUnit> results, String... expectedProposals) {
 		int expectedLength = expectedProposals.length;
 		boolean[] proposalsMatched = new boolean[expectedLength];
 
 		assertTrue(results.size() == expectedLength, 
 				"Size mismatch, expected: " + expectedLength
-				+" got: "+ results.size());
+				+" got: "+ results.size() + "{ \n" +
+				StringUtil.collToString(expectedProposals, "\n") +
+				"\n----- Results: ----\n" +
+				StringUtil.collToString(results, "\n") +
+				" }");
 		
 		for (int i = 0; i < results.size(); i++) {
 			String defName = results.get(i).toStringAsElement();
@@ -101,6 +99,9 @@ public class CodeCompletion__Common {
 			for (; true; j++) {
 
 				repStr = expectedProposals[j];
+				// small repStr fix. Best solution is TODO: refactor testProposals
+//				if(repStr.indexOf('(') != -1)
+//					repStr = repStr.substring(0, repStr.indexOf('('));
 				if(defName.substring(prefixLen).equals(repStr))
 					break;
 

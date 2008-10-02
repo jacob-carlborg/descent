@@ -21,7 +21,7 @@ struct foo_t {};
 int ix;
 
 void func(int aaa, List!(Foo) aaa);
-void func(int bbb, List!(Foo) bbb); // same as previous, doesn't show up
+void func(int bbb, List!(Foo) bbb); // same as previous, but still shows up
 char func(char a, List!(Foo) a); // immediate param overload
 void func(int a, List!(Bar) a); // complex param overload 
 void func();

@@ -26,7 +26,7 @@ public class DeeNavigatorLabelProvider extends ModelElementLabelProvider {
 		if(element instanceof IElement) 
 			return DeeElementImageProvider.getElementImage((IElement) element);
 
-		if(element instanceof IModelElement) 
+		if(element instanceof IModelElement || true) 
 			return super.getImage(element);
 
 		if(element instanceof IFolder) {
@@ -52,15 +52,10 @@ public class DeeNavigatorLabelProvider extends ModelElementLabelProvider {
 
 	@Override
 	public String getText(Object element) {
-		/*if(element instanceof IDeeElement) {
-			return ((IDeeElement) element).getElementName();
-		} else*/ 
 		if(element instanceof IASTNode) {
 			return ((IElement) element).toString();
 		} 
-		if(element instanceof IModelElement) 
-			return super.getText(element);
-		return "<UNKNOWN>";
+		return super.getText(element);
 	}
 	
 	@Override

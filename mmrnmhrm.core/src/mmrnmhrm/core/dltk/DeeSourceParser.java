@@ -5,16 +5,11 @@ import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.DeeCorePreferences;
 import mmrnmhrm.core.LangCore;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.dltk.ast.declarations.ModuleDeclaration;
 import org.eclipse.dltk.ast.parser.AbstractSourceParser;
 import org.eclipse.dltk.ast.parser.ISourceParser;
 import org.eclipse.dltk.compiler.problem.IProblemReporter;
-import org.eclipse.dltk.core.DLTKCore;
-import org.eclipse.dltk.core.ISourceModule;
-import org.eclipse.dltk.core.environment.EnvironmentPathUtils;
 
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.Module;
@@ -34,7 +29,13 @@ public class DeeSourceParser extends AbstractSourceParser {
 
 		//@Override
 		public void reportProblem(IProblem problem) {
-			reporter.reportProblem(new DLTKDescentProblemWrapper(problem));
+			try {
+				reporter.reportProblem(new DLTKDescentProblemWrapper(problem));
+				if(false) throw new CoreException(null);
+			} catch (CoreException e) {
+				DeeCore.log(e);
+				// TODO: throw e ?
+			}
 		}
 
 		public static descent.internal.compiler.parser.ast.IProblemReporter create(
@@ -55,7 +56,6 @@ public class DeeSourceParser extends AbstractSourceParser {
 	public ModuleDeclaration parse(char[] fileName, char[] source, IProblemReporter reporter) {
 		int langVersion = DeeCorePreferences.getInt(DeeCorePreferences.LANG_VERSION);
 		return parseModule(source, langVersion, reporter, fileName);
-		
 		
 	}
 
@@ -83,7 +83,7 @@ public class DeeSourceParser extends AbstractSourceParser {
 		return deeModuleDecl;
 	}
 	
-	
+	/*
 	private static void setModuleDeclModuleUnit(char[] filename, DeeModuleDeclaration deeModuleDecl) {
 		if(filename == null)
 			return;
@@ -108,7 +108,7 @@ public class DeeSourceParser extends AbstractSourceParser {
 		} else {
 			module.exists();
 		}
-
 	}
+	*/
 
 }

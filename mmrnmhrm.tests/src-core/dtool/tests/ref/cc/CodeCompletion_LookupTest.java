@@ -66,9 +66,9 @@ public class CodeCompletion_LookupTest extends CodeCompletion__Common {
 	
 	@Test
 	public void test4() throws Exception {
-		ccTester.testComputeProposals(getMarkerEndOffset("/+CC4@+/")+2, 3, 
-				"barvar",
-				"var", "x", "_t", "alias", "OfModule"
+		ccTester.testComputeProposals(getMarkerEndOffset("/+CC4@+/")+2, 2, 
+				"obarvar",
+				"ovar", "ox", "o_t", "oalias", "oOfModule"
 				);
 	}
 	

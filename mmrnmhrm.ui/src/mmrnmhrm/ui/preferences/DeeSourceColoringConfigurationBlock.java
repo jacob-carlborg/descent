@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 public class DeeSourceColoringConfigurationBlock extends
-		AbstractScriptEditorColoringConfigurationBlock implements
+		org.eclipse.dltk.ui.preferences.AbstractScriptEditorColoringConfigurationBlock implements
 		IPreferenceConfigurationBlock {
 	
 	private static final String PREVIEW_FILE_NAME = "coloringpreview.txt";

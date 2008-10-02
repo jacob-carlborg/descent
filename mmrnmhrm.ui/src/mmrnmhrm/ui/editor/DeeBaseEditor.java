@@ -59,7 +59,7 @@ public abstract class DeeBaseEditor extends ScriptEditor {
 		// XXX: DLTK copy 0.9
 		ISourceReference reference = null;
 		ISelection selection = event.getSelection();
-		Iterator iter = ((IStructuredSelection) selection).iterator();
+		Iterator<?> iter = ((IStructuredSelection) selection).iterator();
 		while (iter.hasNext()) {
 			Object obj = iter.next();
 			if (obj instanceof ASTNeoNode) {

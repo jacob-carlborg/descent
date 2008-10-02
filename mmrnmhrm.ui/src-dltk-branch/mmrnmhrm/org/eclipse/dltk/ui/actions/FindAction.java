@@ -24,6 +24,8 @@ import org.eclipse.dltk.ui.search.PatternQuerySpecification;
 import org.eclipse.dltk.ui.search.QuerySpecification;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.text.TextSelection;
+import org.eclipse.search.ui.ISearchQuery;
+import org.eclipse.search.ui.NewSearchUI;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchSite;
 import org.eclipse.ui.PlatformUI;
@@ -114,7 +116,7 @@ public abstract class FindAction extends SelectionDispatchAction {
 			 * types used in the method signature, eventually triggering the loading of
 			 * a plug-in (in this case it would be ISearchQuery).
 			 */
-			IStatus status= SearchUtil.runQueryInForeground(progressService, query);
+			IStatus status= NewSearchUI.runQueryInForeground(progressService, (ISearchQuery)query);
 			if (status.matches(IStatus.ERROR | IStatus.INFO | IStatus.WARNING)) {
 				ErrorDialog.openError(getShell(), SearchMessages.Search_Error_search_title, SearchMessages.Search_Error_search_message, status); 
 			}

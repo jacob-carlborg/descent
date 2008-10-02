@@ -19,42 +19,25 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.ui.PartInitException;
 
 import dtool.refmodel.PrefixDefUnitSearch.CompletionSession;
-import dtool.tests.ref.cc.CodeCompletion__Common.CodeCompletionTester;
+import dtool.tests.ref.cc.ICodeCompletionTester;
 
-public class CodeCompletion__UICommon extends UITestWithEditor {
+public class CodeCompletion__UICommon extends UITestWithEditor implements ICodeCompletionTester {
 	
-	protected static CodeCompletionTester ccTester;
+	protected static ICodeCompletionTester ccTester;
 
 	protected static void setupWithFile(IScriptProject deeProject, String path) throws PartInitException, CoreException {
 		UITestWithEditor.setupWithFile(deeProject, path);
 		Assert.isTrue(editor.getScriptSourceViewer() != null);
-		ccTester = new CodeCompletionUITester();
-	}
-
-	public static class CodeCompletionUITester extends CodeCompletionTester {
-		@Override
-		protected void testComputeProposals(int repOffset,
-				int prefixLen, String... expectedProposals) throws ModelException {
-			CodeCompletion__UICommon.testComputeProposals(
-					repOffset, prefixLen, expectedProposals);
-		}
-		
-		@Override
-		protected void testComputeProposalsWithRepLen(int repOffset, int prefixLen, 
-				int repLen, String... expectedProposals) throws ModelException {
-			CodeCompletion__UICommon.testComputeProposalsWithRepLen(
-					repOffset, prefixLen, repLen, expectedProposals);
-		}
-
+		ccTester = new CodeCompletion__UICommon();
 	}
 
 
-	protected static void testComputeProposals(int repOffset,
+	public  void testComputeProposals(int repOffset,
 			int prefixLen, String... expectedProposals) throws ModelException {
 		testComputeProposalsWithRepLen(repOffset, prefixLen, 0, expectedProposals);
 	}
 	
-	protected static void testComputeProposalsWithRepLen(int repOffset, int prefixLen, 
+	public  void testComputeProposalsWithRepLen(int repOffset, int prefixLen, 
 			int repLen, String... expectedProposals) throws ModelException {
 		ICompletionProposal[] proposals = DeeCodeContentAssistProcessor
 				.computeProposals(repOffset, srcModule, srcModule.getSource(), new CompletionSession());
@@ -115,12 +98,16 @@ public class CodeCompletion__UICommon extends UITestWithEditor {
 			for (; true; j++) {
 
 				repStr = expectedProposals[j];
-				if(defName.substring(prefixLen).equals(repStr))
+				if(defName.substring(prefixLen).equals(repStr)) {
+					// small repStr fix. Best solution is TODO: refactor testProposals
+					if(repStr.indexOf('(') != -1)
+						repStr = repStr.substring(0, repStr.indexOf('('));
 					break;
+				}
 
 				// if end of cicle
 				if(j == expectedLength-1)
-					assertFail("Got Unmatched proposal:"+defName);
+					assertFail("Got unmatched proposal:"+defName);
 				
 			}
 			

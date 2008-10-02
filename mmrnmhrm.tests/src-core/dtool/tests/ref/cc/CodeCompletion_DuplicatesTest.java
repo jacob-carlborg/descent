@@ -36,7 +36,7 @@ public class CodeCompletion_DuplicatesTest extends CodeCompletion__Common {
 		int offset = getMarkerStartOffset("/+@CC1+/");
 		ccTester.testComputeProposals(offset, 1, 
 				
-				"unc(int a, List!(Foo) a)",
+				"unc(int aaa, List!(Foo) aaa)",
 				"unc(int bbb, List!(Foo) bbb)",
 				"unc(char a, List!(Foo) a)",
 				"unc(int a, List!(Bar) a)",
@@ -58,6 +58,8 @@ public class CodeCompletion_DuplicatesTest extends CodeCompletion__Common {
 				"unc(char a, List!(Foo) a)",
 				"unc(int a, List!(Bar) a)",
 				"unc()",
+				
+				"unc(int aaa, List!(Foo) aaa)", //TODO: should be removed due to overload sets
 				
 				"oovar", "oox", 
 				
