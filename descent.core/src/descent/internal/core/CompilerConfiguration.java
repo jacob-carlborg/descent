@@ -24,6 +24,13 @@ public class CompilerConfiguration {
 		this(JavaCore.create(ResourcesPlugin.getWorkspace().getRoot()).getActiveProject());
 	}
 	
+	public CompilerConfiguration(int semanticAnalysisLevel, long versionLevel, HashtableOfCharArrayAndObject versionIdentifiers, long debugLevel, HashtableOfCharArrayAndObject debugIdentifiers) {
+		this.semanticAnalysisLevel = semanticAnalysisLevel;
+		this.versionLevel = versionLevel;
+		this.versionIdentifiers = versionIdentifiers;
+		this.debugIdentifiers = debugIdentifiers;
+	}
+	
 	public CompilerConfiguration(IJavaProject javaProject) {
 		this.javaProject = javaProject;
 		

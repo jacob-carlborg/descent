@@ -485,6 +485,22 @@ public final class JavaModelUtil {
 	}
 	
 	/**
+	 * Checks whether the given type has a valid main method or not.
+	 */
+	public static boolean hasMainMethod(ICompilationUnit unit) throws JavaModelException {
+		IJavaElement[] children= unit.getChildren();
+		for (int i= 0; i < children.length; i++) {
+			if (children[i] instanceof IMethod) {
+				IMethod method = (IMethod) children[i];
+				if (method.isMainMethod()) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	/**
 	 * Checks if the field is boolean.
 	 */
 	public static boolean isBoolean(IField field) throws JavaModelException{

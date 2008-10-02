@@ -76,7 +76,9 @@ public class DstressTestGenerator extends DstressTestGeneratorBase {
 				"				return false;\r\n" + 
 				"			}\r\n" + 
 				"			\r\n" + 
-				"		}, module, null, new DmdModuleFinder(global), global);\r\n" + 
+				"		}, module, null, new DmdModuleFinder(global), global,\r\n" + 
+				"			new CompilerConfiguration(AST.D1, 0, new HashtableOfCharArrayAndObject(), 0, new HashtableOfCharArrayAndObject()),\r\n" + 
+				"			new ASTNodeEncoder(AST.D1));\r\n" + 
 				"		\r\n" + 
 				"		if (!(module.problems != null && module.problems.size() > 0)) {\r\n" + 
 				"			module.semantic(context);\r\n" + 
@@ -189,7 +191,9 @@ public class DstressTestGenerator extends DstressTestGeneratorBase {
 				"				return false;\r\n" + 
 				"			}\r\n" + 
 				"			\r\n" + 
-				"		}, module, null, new DmdModuleFinder(global), global);\r\n" + 
+				"		}, module, null, new DmdModuleFinder(global), global,\r\n" + 
+				"			new CompilerConfiguration(AST.D1, 0, new HashtableOfCharArrayAndObject(), 0, new HashtableOfCharArrayAndObject()),\r\n" + 
+				"			new ASTNodeEncoder(AST.D1));\r\n" + 
 				"		\r\n" + 
 				"		if (!(module.problems != null && module.problems.size() > 0)) {\r\n" + 
 				"			module.semantic(context);\r\n" + 

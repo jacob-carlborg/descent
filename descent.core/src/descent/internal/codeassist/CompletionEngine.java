@@ -430,6 +430,18 @@ public class CompletionEngine extends Engine
 					}
 					return;
 				}
+				
+				// If it's expecting a struct type, and it has an opCall,
+				// and there's no identifier typed, suggest opCalls
+				if (currentName != null && currentName.length == 0 && expectedType != null
+						&& expectedType.ty == TY.Tstruct) {
+					TypeStruct typeStruct = (TypeStruct) expectedType;
+					if (typeStruct.sym != null && typeStruct.sym.members != null) {
+						currentName = typeStruct.sym.ident.ident;
+						wantConstructorsAndOpCall = true;
+						suggestMembers(typeStruct.sym.members, true, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
+					}
+				}
 			}
 			
 			// Then the keywords

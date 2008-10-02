@@ -24,6 +24,7 @@ import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.model.IWorkbenchAdapter;
 
 import descent.core.Flags;
+import descent.core.ICompilationUnit;
 import descent.core.IConditional;
 import descent.core.IField;
 import descent.core.IInitializer;
@@ -356,7 +357,8 @@ public class JavaElementImageProvider {
 	
 	private int computeJavaAdornmentFlags(IJavaElement element, int renderFlags) {
 		int flags= 0;
-		if (showOverlayIcons(renderFlags) && element instanceof IMember) {
+		boolean show = showOverlayIcons(renderFlags); 
+		if (show && element instanceof IMember) {
 			try {
 				IMember member= (IMember) element;
 				
@@ -389,11 +391,13 @@ public class JavaElementImageProvider {
 				
 				if (Flags.isDeprecated(modifiers))
 					flags |= JavaElementImageDescriptor.DEPRECATED;
-				
-				if (member.getElementType() == IJavaElement.TYPE) {
-					if (JavaModelUtil.hasMainMethod((IType) member)) {
-						flags |= JavaElementImageDescriptor.RUNNABLE;
-					}
+			} catch (JavaModelException e) {
+				// do nothing. Can't compute runnable adornment or get flags
+			}
+		} else if (show && element instanceof ICompilationUnit) {
+			try {
+				if (JavaModelUtil.hasMainMethod((ICompilationUnit) element)) {
+					flags |= JavaElementImageDescriptor.RUNNABLE;
 				}
 			} catch (JavaModelException e) {
 				// do nothing. Can't compute runnable adornment or get flags

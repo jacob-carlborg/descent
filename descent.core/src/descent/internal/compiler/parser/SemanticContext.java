@@ -12,6 +12,7 @@ import descent.core.IJavaProject;
 import descent.core.IProblemRequestor;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
+import descent.core.dom.AST;
 import descent.internal.compiler.env.IModuleFinder;
 import descent.internal.core.CompilerConfiguration;
 import descent.internal.core.util.Util;
@@ -116,7 +117,11 @@ public class SemanticContext {
 		this.Type_tvoidptr = Type.tvoid.pointerTo(this);
 		this.encoder = encoder;
 		this.templateEvaluationStack = new LinkedList<ASTDmdNode>();
-		this.apiLevel = Util.getApiLevel(project);
+		if (project == null) {
+			this.apiLevel = AST.D1;
+		} else {
+			this.apiLevel = Util.getApiLevel(project);
+		}
 		
 		if (config.semanticAnalysisLevel == 0) {
 			muteProblems++;
