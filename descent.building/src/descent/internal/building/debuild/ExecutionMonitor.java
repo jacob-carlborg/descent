@@ -2,7 +2,6 @@ package descent.internal.building.debuild;
 
 import java.io.File;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -16,8 +15,6 @@ import org.eclipse.debug.core.IStreamListener;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.debug.core.model.IStreamsProxy;
-
-import com.sun.corba.se.impl.orbutil.threadpool.TimeoutException;
 
 import descent.internal.building.BuildingPlugin;
 import descent.building.compiler.IExecutionCallback;
@@ -133,6 +130,9 @@ import descent.building.compiler.IResponseInterpreter;
 	    
 	    public Integer call()
 	    {
+	        if(Thread.interrupted())
+	            return null;
+	        
 	        Process proc = null;
 	        try
 	        {

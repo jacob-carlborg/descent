@@ -212,6 +212,16 @@ import static descent.building.IDescentBuilderConstants.*;
         return BuilderUtil.getAttribute(config, ATTR_OUTPUT_FILE, "");
     }
     
+    public String getAdditionalCompilerArgs()
+    {
+        return BuilderUtil.getAttribute(config, ATTR_ADDITIONAL_COMPILER_ARGS, "");
+    }
+    
+    public String getAdditionalLinkerArgs()
+    {
+        return BuilderUtil.getAttribute(config, ATTR_ADDITIONAL_LINKER_ARGS, "");
+    }
+    
     //--------------------------------------------------------------------------
     // Private methods
     
@@ -325,31 +335,4 @@ import static descent.building.IDescentBuilderConstants.*;
                 idents.add(val);
         }
     }
-    
-    //--------------------------------------------------------------------------
-    // Private constants
-    // PERHAPS these shouldn't be hardcoded
-    
-    // Ignored modules
-	private static final String[] phobosIgnored = new String[]
-    {
-	    "std.",
-        "object",
-        "crc32",
-        "gcc.",
-        "gcstats",
-    };
-	
-	private static final String[] tangoIgnored = new String[]
-    {
-        "object",
-        "gcc.",
-        "tango.", // TODO remove
-    };
-	
-	public final String[] getIgnoredModules()
-	{
-	    // TODO
-	    return tangoIgnored;
-	}
 }
