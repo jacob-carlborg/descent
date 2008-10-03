@@ -42,6 +42,7 @@ import descent.core.Flags;
 import descent.core.IClassFile;
 import descent.core.IClasspathContainer;
 import descent.core.IClasspathEntry;
+import descent.core.ICodeAssist;
 import descent.core.ICompilationUnit;
 import descent.core.IField;
 import descent.core.IJavaElement;

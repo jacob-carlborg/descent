@@ -12,20 +12,17 @@ package descent.internal.ui.viewsupport;
 
 import java.util.ArrayList;
 
+import org.eclipse.core.resources.IStorage;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.SafeRunner;
-
-import org.eclipse.core.resources.IStorage;
-
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Image;
-
 import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.jface.viewers.IColorProvider;
 import org.eclipse.jface.viewers.ILabelDecorator;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.LabelProviderChangedEvent;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
 
 import descent.ui.JavaElementLabels;
 

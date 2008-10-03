@@ -7,6 +7,8 @@ import descent.core.dom.AliasDeclaration;
 import descent.core.dom.CompilationUnit;
 import descent.core.dom.DDocComment;
 import descent.core.dom.Declaration;
+import descent.core.dom.EnumDeclaration;
+import descent.core.dom.EnumMember;
 import descent.core.dom.ModuleDeclaration;
 import descent.core.dom.TypedefDeclaration;
 import descent.core.dom.VariableDeclaration;
@@ -298,6 +300,60 @@ public class Comment_Test extends Parser_Test {
 		Declaration y = decls.get(1);
 		assertEquals("/// top comment\r\n", y.preDDocs().get(0).getText());
 		assertPosition(y, 39, 24);
+	}
+	
+	public void testTicket121() {
+		String s = 
+			"enum {\r\n" + 
+			"	/// no ddoc in case1\r\n" + 
+			"	case1,\r\n" + 
+			"	\r\n" + 
+			"	/**\r\n" + 
+			"	 * no ddoc in case2\r\n" + 
+			"	 */ \r\n" + 
+			"	case2,\r\n" + 
+			"\r\n" + 
+			"	case3, /// ok in case3\r\n" + 
+			"	\r\n" + 
+			"	/// shows both\r\n" + 
+			"	case4, /// sections in case 4\r\n" + 
+			"}\r\n" + 
+			"";
+		
+		List<EnumMember> decls = ((EnumDeclaration) getSingleDeclarationNoProblems(s)).enumMembers();
+		
+		EnumMember x = decls.get(0);
+		assertEquals(1, x.preDDocs().size());
+		assertEquals("/// no ddoc in case1\r\n", x.preDDocs().get(0).getText());
+		
+		EnumMember y = decls.get(1);
+		assertEquals(1, y.preDDocs().size());
+		assertEquals("/**\r\n" + 
+			"	 * no ddoc in case2\r\n" + 
+			"	 */", y.preDDocs().get(0).getText());
+		
+		EnumMember z = decls.get(2);
+		assertEquals("/// ok in case3\r\n", z.getPostDDoc().getText());
+		
+		EnumMember a = decls.get(3);
+		assertEquals(1, a.preDDocs().size());
+		assertEquals("/// shows both\r\n", a.preDDocs().get(0).getText());
+		assertEquals("/// sections in case 4\r\n", a.getPostDDoc().getText());
+	}
+	
+	public void testTicket121_a() {
+		String s = 
+			"enum {\r\n" + 
+			"	/// no ddoc in case1\r\n" + 
+			"	case1\r\n" + 
+			"}\r\n" + 
+			"";
+		
+		List<EnumMember> decls = ((EnumDeclaration) getSingleDeclarationNoProblems(s)).enumMembers();
+		
+		EnumMember x = decls.get(0);
+		assertEquals(1, x.preDDocs().size());
+		assertEquals("/// no ddoc in case1\r\n", x.preDDocs().get(0).getText());
 	}
 
 }

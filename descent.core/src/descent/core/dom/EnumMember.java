@@ -18,7 +18,7 @@ public class EnumMember extends ASTNode {
 	 * The "preDDocs" structural property of this node type.
 	 */
 	public static final ChildListPropertyDescriptor PRE_D_DOCS_PROPERTY =
-		new ChildListPropertyDescriptor(EnumMember.class, "preDDocs", CodeComment.class, NO_CYCLE_RISK); //$NON-NLS-1$
+		new ChildListPropertyDescriptor(EnumMember.class, "preDDocs", DDocComment.class, NO_CYCLE_RISK); //$NON-NLS-1$
 	
 	/**
 	 * The "type" structural property of this node type.
@@ -42,7 +42,7 @@ public class EnumMember extends ASTNode {
 	 * The "postDDoc" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor POST_D_DOC_PROPERTY =
-		new ChildPropertyDescriptor(EnumMember.class, "postDDoc", CodeComment.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(EnumMember.class, "postDDoc", DDocComment.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -88,22 +88,22 @@ public class EnumMember extends ASTNode {
 	/**
 	 * The type.
 	 */
-	private Type type;
+	Type type;
 	
 	/**
 	 * The name.
 	 */
-	private SimpleName name;
+	SimpleName name;
 
 	/**
 	 * The value.
 	 */
-	private Expression value;
+	Expression value;
 
 	/**
 	 * The postDDoc.
 	 */
-	private CodeComment postDDoc;
+	DDocComment postDDoc;
 
 
 	/**
@@ -158,7 +158,7 @@ public class EnumMember extends ASTNode {
 			if (get) {
 				return getPostDDoc();
 			} else {
-				setPostDDoc((CodeComment) child);
+				setPostDDoc((DDocComment) child);
 				return null;
 			}
 		}
@@ -194,7 +194,7 @@ public class EnumMember extends ASTNode {
 		result.setType((Type) ASTNode.copySubtree(target, getType()));
 		result.setName((SimpleName) getName().clone(target));
 		result.setValue((Expression) ASTNode.copySubtree(target, getValue()));
-		result.setPostDDoc((CodeComment) ASTNode.copySubtree(target, getPostDDoc()));
+		result.setPostDDoc((DDocComment) ASTNode.copySubtree(target, getPostDDoc()));
 		return result;
 	}
 
@@ -229,7 +229,7 @@ public class EnumMember extends ASTNode {
 	 * @return the live list of enum member
 	 *    (element type: <code>Comment</code>)
 	 */ 
-	public List<CodeComment> preDDocs() {
+	public List<DDocComment> preDDocs() {
 		return this.preDDocs;
 	}
 	
@@ -332,7 +332,7 @@ public class EnumMember extends ASTNode {
 	 * 
 	 * @return the post d doc
 	 */ 
-	public CodeComment getPostDDoc() {
+	public DDocComment getPostDDoc() {
 		return this.postDDoc;
 	}
 
@@ -347,7 +347,7 @@ public class EnumMember extends ASTNode {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setPostDDoc(CodeComment postDDoc) {
+	public void setPostDDoc(DDocComment postDDoc) {
 		ASTNode oldChild = this.postDDoc;
 		preReplaceChild(oldChild, postDDoc, POST_D_DOC_PROPERTY);
 		this.postDDoc = postDDoc;

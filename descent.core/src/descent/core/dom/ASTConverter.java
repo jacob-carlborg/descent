@@ -1864,6 +1864,7 @@ public class ASTConverter {
 		if (a.sourceValue != null) {
 			b.setValue(convert(a.sourceValue));
 		}
+		processDdocs(b, a);
 		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
@@ -3815,6 +3816,17 @@ public class ASTConverter {
 	}
 
 	private void processDdocs(Declaration b, ASTDmdNode a) {
+		DDocComment first = null;
+		if (a.preComments != null) {
+			 first = convertDdoc(b.preDDocs(), a.preComments);
+		}
+		if (a.postComment != null) {
+			b.postDDoc = convertDdoc(a.postComment);
+		}		
+		setSourceRange(b, a, first);
+	}
+	
+	private void processDdocs(descent.core.dom.EnumMember b, ASTDmdNode a) {
 		DDocComment first = null;
 		if (a.preComments != null) {
 			 first = convertDdoc(b.preDDocs(), a.preComments);

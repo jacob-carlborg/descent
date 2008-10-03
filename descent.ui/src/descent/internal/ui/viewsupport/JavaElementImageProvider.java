@@ -357,8 +357,7 @@ public class JavaElementImageProvider {
 	
 	private int computeJavaAdornmentFlags(IJavaElement element, int renderFlags) {
 		int flags= 0;
-		boolean show = showOverlayIcons(renderFlags); 
-		if (show && element instanceof IMember) {
+		if (showOverlayIcons(renderFlags) && element instanceof IMember) {
 			try {
 				IMember member= (IMember) element;
 				
@@ -394,7 +393,7 @@ public class JavaElementImageProvider {
 			} catch (JavaModelException e) {
 				// do nothing. Can't compute runnable adornment or get flags
 			}
-		} else if (show && element instanceof ICompilationUnit) {
+		} else if (renderFlags == 3 && element instanceof ICompilationUnit) {
 			try {
 				if (JavaModelUtil.hasMainMethod((ICompilationUnit) element)) {
 					flags |= JavaElementImageDescriptor.RUNNABLE;

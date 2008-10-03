@@ -2002,11 +2002,11 @@ public class Parser extends Lexer {
 							value = parseAssignExp();
 						}
 						
-						if (token.value != TOK.TOKrcurly) {
+//						if (token.value != TOK.TOKrcurly) {
 							lastComments = getLastComments();
-						} else {
-							lastComments = null;
-						}
+//						} else {
+//							lastComments = null;
+//						}
 						
 						em = new EnumMember(loc(), ident, value);
 					} else {
