@@ -4371,11 +4371,11 @@ public class Parser extends Lexer {
 		case TOKunion:
 		case TOKclass:
 		case TOKinterface: {
-			Dsymbol d;
-
-			d = parseAggregate();
+			List<Comment> lastComments = getLastComments();
+			Dsymbol d = parseAggregate();
 			if (d != null) {
 				d.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
+				d.preComments = lastComments;
 				s = new DeclarationStatement(loc(), d);
 			}
 			break;
@@ -4409,9 +4409,11 @@ public class Parser extends Lexer {
 					}
 				}
 			} else {
+				List<Comment> lastComments = getLastComments();
 				d = parseEnum();
 				if (d != null) {
 					d.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
+					d.preComments = lastComments;
 					s = new DeclarationStatement(loc(), d);
 				}
 			}
@@ -5319,13 +5321,14 @@ public class Parser extends Lexer {
 	}
 
 	private void parseStatement_Ldeclaration(Statement[] s, int flags) {
-		List a;
-
-		a = parseDeclarations(new ArrayList<Comment>());
+		List<Comment> lastComments = getLastComments();
+		
+		List a = parseDeclarations(new ArrayList<Comment>());
 		if (a.size() > 1) {
 			Statements as = new Statements(a.size());
 			for (int i = 0; i < a.size(); i++) {
 				Dsymbol d = (Dsymbol) a.get(i);
+				d.preComments = lastComments;
 				s[0] = new DeclarationStatement(loc(), d);
 				as.add(s[0]);
 			}
@@ -5333,6 +5336,7 @@ public class Parser extends Lexer {
 			s[0] = newManyVarsBlock(as);
 		} else if (a.size() == 1) {
 			Dsymbol d = (Dsymbol) a.get(0);
+			d.preComments = lastComments;
 			s[0] = new DeclarationStatement(loc(), d);
 		} else {
 			parsingErrorDeleteToken(token);

@@ -19,8 +19,6 @@ import descent.core.IPackageFragment;
 import descent.core.IType;
 import descent.core.ITypeParameter;
 import descent.core.JavaModelException;
-import descent.core.Signature;
-import descent.core.compiler.CharOperation;
 
 public abstract class NamedMember extends Member {
 

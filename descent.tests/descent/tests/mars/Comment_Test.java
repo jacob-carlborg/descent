@@ -4,11 +4,14 @@ import java.util.List;
 
 import descent.core.dom.AggregateDeclaration;
 import descent.core.dom.AliasDeclaration;
+import descent.core.dom.Block;
 import descent.core.dom.CompilationUnit;
 import descent.core.dom.DDocComment;
 import descent.core.dom.Declaration;
+import descent.core.dom.DeclarationStatement;
 import descent.core.dom.EnumDeclaration;
 import descent.core.dom.EnumMember;
+import descent.core.dom.FunctionDeclaration;
 import descent.core.dom.ModuleDeclaration;
 import descent.core.dom.TypedefDeclaration;
 import descent.core.dom.VariableDeclaration;
@@ -354,6 +357,139 @@ public class Comment_Test extends Parser_Test {
 		EnumMember x = decls.get(0);
 		assertEquals(1, x.preDDocs().size());
 		assertEquals("/// no ddoc in case1\r\n", x.preDDocs().get(0).getText());
+	}
+	
+	public void testTicket121_b() {
+		String s = 
+			"/// if ddoc declared here, sometimes everything inside method shows that ddoc\r\n" + 
+			"void test() {\r\n" + 
+			"	/**\r\n" + 
+			"	 * testing enum: no ddoc\r\n" + 
+			"	 */\r\n" + 
+			"	enum TYPE {\r\n" + 
+			"		/// sometimes it shows \'testing enum\', sometimes nothing\r\n" + 
+			"		case1,\r\n" + 
+			"\r\n" + 
+			"		/**\r\n" + 
+			"		 * sometimes it works ok\r\n" + 
+			"		 */ \r\n" + 
+			"		case2,\r\n" + 
+			"\r\n" + 
+			"		case3, /// the same in case3\r\n" + 
+			"\r\n" + 
+			"		/// and here\r\n" + 
+			"		case4, /// as well\r\n" + 
+			"	}\r\n" + 
+			"	\r\n" + 
+			"	auto a = TYPE.case1;\r\n" + 
+			"}";
+		
+		FunctionDeclaration func = (FunctionDeclaration) getSingleDeclarationNoProblems(s);
+		
+		assertEquals(1, func.preDDocs().size());
+		assertEquals("/// if ddoc declared here, sometimes everything inside method shows that ddoc\r\n", func.preDDocs().get(0).getText());
+		Block body = func.getBody();
+		DeclarationStatement enumDeclStm = (DeclarationStatement) body.statements().get(0);
+		EnumDeclaration enumDecl = (EnumDeclaration) enumDeclStm.getDeclaration();
+		
+		assertEquals(1, enumDecl.preDDocs().size());
+		assertEquals("/**\r\n" + 
+			"	 * testing enum: no ddoc\r\n" + 
+			"	 */", enumDecl.preDDocs().get(0).getText());
+		assertNull(enumDecl.getPostDDoc());
+		
+		assertEquals(4, enumDecl.enumMembers().size());
+		
+		EnumMember member;
+		
+		member = enumDecl.enumMembers().get(0);
+		assertEquals(1, member.preDDocs().size());
+		assertNull(member.getPostDDoc());
+		assertEquals("/// sometimes it shows \'testing enum\', sometimes nothing\r\n", member.preDDocs().get(0).getText());
+		
+		member = enumDecl.enumMembers().get(1);
+		assertEquals(1, member.preDDocs().size());
+		assertNull(member.getPostDDoc());
+		assertEquals("/**\r\n" + 
+			"		 * sometimes it works ok\r\n" + 
+			"		 */", member.preDDocs().get(0).getText());
+		
+		member = enumDecl.enumMembers().get(2);
+		assertEquals(0, member.preDDocs().size());
+		assertEquals("/// the same in case3\r\n", member.getPostDDoc().getText());
+		
+		member = enumDecl.enumMembers().get(3);
+		assertEquals(1, member.preDDocs().size());
+		assertEquals("/// and here\r\n", member.preDDocs().get(0).getText());
+		assertEquals("/// as well\r\n", member.getPostDDoc().getText());
+	}
+	
+	public void testTicket121_c_class() {
+		testTicket121_c("class");
+	}
+	
+	public void testTicket121_c_struct() {
+		testTicket121_c("struct");
+	}
+	
+	public void testTicket121_c_union() {
+		testTicket121_c("union");
+	}
+	
+	public void testTicket121_c_interface() {
+		testTicket121_c("interface");
+	}
+	
+	private void testTicket121_c(String name) {
+		String s = 
+			"/// if ddoc declared here, sometimes everything inside method shows that ddoc\r\n" + 
+			"void test() {\r\n" + 
+			"	/**\r\n" + 
+			"	 * testing enum: no ddoc\r\n" + 
+			"	 */\r\n" + 
+			"	" + name + " TYPE {" +
+			"	}\r\n" + 
+			"}";
+		
+		FunctionDeclaration func = (FunctionDeclaration) getSingleDeclarationNoProblems(s);
+		
+		assertEquals(1, func.preDDocs().size());
+		assertEquals("/// if ddoc declared here, sometimes everything inside method shows that ddoc\r\n", func.preDDocs().get(0).getText());
+		Block body = func.getBody();
+		DeclarationStatement enumDeclStm = (DeclarationStatement) body.statements().get(0);
+		Declaration decl = enumDeclStm.getDeclaration();
+		
+		assertEquals(1, decl.preDDocs().size());
+		assertEquals("/**\r\n" + 
+			"	 * testing enum: no ddoc\r\n" + 
+			"	 */", decl.preDDocs().get(0).getText());
+		assertNull(decl.getPostDDoc());
+	}
+	
+	public void testTicket121_d() {
+		String s = 
+			"/// if ddoc declared here, sometimes everything inside method shows that ddoc\r\n" + 
+			"void test() {\r\n" + 
+			"	/**\r\n" + 
+			"	 * testing enum: no ddoc\r\n" + 
+			"	 */\r\n" + 
+			"	void TYPE() {" +
+			"	}\r\n" + 
+			"}";
+		
+		FunctionDeclaration func = (FunctionDeclaration) getSingleDeclarationNoProblems(s);
+		
+		assertEquals(1, func.preDDocs().size());
+		assertEquals("/// if ddoc declared here, sometimes everything inside method shows that ddoc\r\n", func.preDDocs().get(0).getText());
+		Block body = func.getBody();
+		DeclarationStatement enumDeclStm = (DeclarationStatement) body.statements().get(0);
+		Declaration decl = enumDeclStm.getDeclaration();
+		
+		assertEquals(1, decl.preDDocs().size());
+		assertEquals("/**\r\n" + 
+			"	 * testing enum: no ddoc\r\n" + 
+			"	 */", decl.preDDocs().get(0).getText());
+		assertNull(decl.getPostDDoc());
 	}
 
 }
