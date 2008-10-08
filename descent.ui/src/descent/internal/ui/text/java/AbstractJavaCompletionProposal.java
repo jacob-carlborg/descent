@@ -83,7 +83,10 @@ public abstract class AbstractJavaCompletionProposal implements IJavaCompletionP
 	/**
 	 * A class to simplify tracking a reference position in a document.
 	 */
-	static final class ReferenceTracker {
+	protected static final class ReferenceTracker {
+		
+		public ReferenceTracker() {
+		}
 	
 		/** The reference position category name. */
 		private static final String CATEGORY= "reference_position"; //$NON-NLS-1$
@@ -314,12 +317,12 @@ public abstract class AbstractJavaCompletionProposal implements IJavaCompletionP
 		}
 	}
 
-	private boolean isSmartTrigger(char trigger) {
+	protected boolean isSmartTrigger(char trigger) {
 		return trigger == ';' && JavaPlugin.getDefault().getCombinedPreferenceStore().getBoolean(PreferenceConstants.EDITOR_SMART_SEMICOLON)
 				|| trigger == '{' && JavaPlugin.getDefault().getCombinedPreferenceStore().getBoolean(PreferenceConstants.EDITOR_SMART_OPENING_BRACE);
 	}
 
-	private void handleSmartTrigger(IDocument document, char trigger, int referenceOffset) throws BadLocationException {
+	protected void handleSmartTrigger(IDocument document, char trigger, int referenceOffset) throws BadLocationException {
 		DocumentCommand cmd= new DocumentCommand() {
 		};
 		

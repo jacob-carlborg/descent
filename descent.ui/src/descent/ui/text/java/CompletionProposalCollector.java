@@ -95,6 +95,8 @@ public class CompletionProposalCollector extends CompletionRequestor {
 	protected final static char[] TYPE_TRIGGERS= new char[] { '.', '\t', '[', '(', ' ' };
 	/** Triggers for variables. Do not modify. */
 	protected final static char[] VAR_TRIGGER= new char[] { '\t', ' ', '=', ';', '.' };
+	/** Triggers for packages. Do not modify. */
+	protected final static char[] PACKAGE_TRIGGER= new char[] { '.' };
 
 	private final CompletionProposalLabelProvider fLabelProvider= new CompletionProposalLabelProvider();
 	private final ImageDescriptorRegistry fRegistry= JavaPlugin.getImageDescriptorRegistry();
@@ -814,7 +816,8 @@ public class CompletionProposalCollector extends CompletionRequestor {
 		Image image= getImage(fLabelProvider.createPackageImageDescriptor(proposal));
 		int relevance= computeRelevance(proposal);
 		
-		JavaCompletionProposal completionProposal = new JavaCompletionProposal(completion, start, length, image, label, relevance);
+		JavaCompletionProposal completionProposal = new PackageCompletionProposal(completion, start, length, image, label, relevance);
+		completionProposal.setTriggerCharacters(PACKAGE_TRIGGER);
 		return completionProposal;
 	}
 	
