@@ -1469,7 +1469,9 @@ class NaiveASTFlattener extends ASTVisitor {
 
 	@Override
 	public boolean visit(StringLiteral node) {
+		this.buffer.append('"');
 		this.buffer.append(node.getEscapedValue());
+		this.buffer.append('"');
 		return false;
 	}
 	

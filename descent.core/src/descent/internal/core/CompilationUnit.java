@@ -60,6 +60,8 @@ import descent.core.compiler.IProblem;
 import descent.core.dom.AST;
 import descent.core.dom.ASTConverter;
 import descent.core.dom.CompilationUnitResolver;
+import descent.core.dom.CompileTimeASTConverter;
+import descent.core.dom.CompilationUnitResolver.ParseResult;
 import descent.internal.compiler.SourceElementParser;
 import descent.internal.compiler.impl.CompilerOptions;
 import descent.internal.compiler.parser.Module;
@@ -1209,6 +1211,15 @@ public String getFullyQualifiedName() {
 	
 	return sb.toString();
 }
+
+public descent.core.dom.CompilationUnit getResolvedAtCompileTime(int astLevel) throws JavaModelException {
+	ParseResult result = CompilationUnitResolver.resolve(astLevel, this, getJavaProject(), null, owner, false, true, null);
+	CompileTimeASTConverter converter = new CompileTimeASTConverter(false, null);
+	converter.setAST(AST.newAST(astLevel));
+	converter.init(getJavaProject(), result.context, null);
+	return (descent.core.dom.CompilationUnit) converter.convert(result.module, this);
+}
+
 /**
  * Debugging purposes
  */

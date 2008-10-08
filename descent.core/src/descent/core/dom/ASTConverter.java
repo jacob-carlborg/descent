@@ -850,8 +850,8 @@ public class ASTConverter {
 			setSourceRange(b, a.start, a.length);
 		}
 		if (b != null) {
-			if (a.sourceFinalBody != null) {
-				b.setFinally(convert(a.sourceFinalBody));
+			if (a.sourceFinalbody != null) {
+				b.setFinally(convert(a.sourceFinalbody));
 			}
 		}
 		return b;

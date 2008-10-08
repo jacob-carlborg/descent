@@ -14,16 +14,12 @@ import descent.core.dom.BreakStatement;
 import descent.core.dom.CompilationUnit;
 import descent.core.dom.ConstructorDeclaration;
 import descent.core.dom.ContinueStatement;
-import descent.core.dom.DebugDeclaration;
-import descent.core.dom.DebugStatement;
 import descent.core.dom.FunctionDeclaration;
 import descent.core.dom.GotoStatement;
 import descent.core.dom.IBinding;
 import descent.core.dom.LabeledStatement;
 import descent.core.dom.SimpleName;
 import descent.core.dom.Version;
-import descent.core.dom.VersionDeclaration;
-import descent.core.dom.VersionStatement;
 import descent.internal.corext.dom.ASTNodes;
 import descent.internal.corext.dom.NodeFinder;
 
@@ -130,8 +126,14 @@ public class NaiveOccurrencesFinder extends ASTVisitor implements IOccurrencesFi
 	
 	@Override
 	public boolean visit(SimpleName node) {
-		if (kind == KIND_BINDING && fBinding != null && fBinding == node.resolveBinding()) {
-			fResult.add(node);
+		if (kind == KIND_BINDING) {
+			if (fBinding == null && fSelectedNode.getNodeType() == ASTNode.SIMPLE_NAME) {
+				if (((SimpleName) fSelectedNode).getIdentifier().equals(node.getIdentifier())) {
+					fResult.add(node);
+				}
+			} else if (fBinding == node.resolveBinding()) {
+				fResult.add(node);
+			}
 		} else if (kind == KIND_LABEL && isLabel(node)) {
 			fResult.add(node);
 		}

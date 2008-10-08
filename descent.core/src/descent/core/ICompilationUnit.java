@@ -641,4 +641,7 @@ CompilationUnit reconcile(int astLevel, boolean forceProblemDetection, boolean e
  * @since 3.0
  */
 void restore() throws JavaModelException;
+
+CompilationUnit getResolvedAtCompileTime(int astLevel) throws JavaModelException;
+
 }

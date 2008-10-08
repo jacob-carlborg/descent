@@ -11,6 +11,7 @@ import descent.internal.ui.JavaPlugin;
  * @since 2.0
  */
 public interface IJavaDebugUIConstants {
+	
 	/**
 	 * Plug-in identifier for the Java Debug UI
 	 */

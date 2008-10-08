@@ -1020,6 +1020,17 @@ public class CompletionParser extends Parser {
 	
 	@Override
 	public TOK nextToken() {
+		// If we have 
+		// .. |
+		// or
+		// ... |
+		// (where | is the cursor)
+		// we don't want autocomplete
+		if ((prevToken.value == TOK.TOKdotdotdot || prevToken.value == TOK.TOKslice) &&
+				prevToken.ptr + prevToken.sourceLen == cursorLocation) {
+			wantAssist = false;
+		}
+		
 		// If the cursor is located inside the current token
 		if (token.ptr <= cursorLocation && cursorLocation <= token.ptr + token.sourceLen && !wantNames) {
 			// Anything that's a word (not a symbol) will aid the autocompletion

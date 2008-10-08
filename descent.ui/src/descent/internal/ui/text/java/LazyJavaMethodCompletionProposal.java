@@ -618,11 +618,7 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 			return false;
 		}
 		
-		char[] retType = Signature.getReturnType(fProposal.getTypeSignature());
-		if (retType.length == 1 && retType[0] == 'v') {
-			return Signature.getParameterCount(fProposal.getTypeSignature()) == 1;
-		}
-		return false;
+		return Signature.getParameterCount(fProposal.getTypeSignature()) == 1;
 	}
 	
 	private boolean computeIsGetter() throws IllegalArgumentException {
