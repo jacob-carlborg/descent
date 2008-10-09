@@ -1,5 +1,7 @@
 package dtool.ast.references;
 
+import static melnorme.miscutil.Assert.assertTrue;
+
 import java.util.List;
 
 import melnorme.miscutil.Assert;
@@ -24,8 +26,13 @@ public class RefTemplateInstance extends CommonRefSingle {
 
 	public RefTemplateInstance(TemplateInstance elem, IdentifierExp tplIdent,
 			List<ASTDmdNode> tiargs) {
-		setSourceRange(elem);
-		Assert.isTrue(elem.getStartPos() == tplIdent.getStartPos());
+		if(elem.hasNoSourceRangeInfo()) {
+			setSourceRange(tplIdent);
+			assertTrue(!tplIdent.hasNoSourceRangeInfo());
+		} else {
+			setSourceRange(elem);
+			Assert.isTrue(elem.getStartPos() == tplIdent.getStartPos());
+		}
 		Assert.isTrue(tplIdent.ident != null);
 		this.name = new String(tplIdent.ident);
 		if (tiargs == null)

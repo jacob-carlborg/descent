@@ -27,6 +27,7 @@ import dtool.refmodel.pluginadapters.IModuleResolver;
  */
 public class ReferenceResolver {
 	
+	private static final String[] EMPTY_PACKAGE = new String[0];
 	protected static IModuleResolver modResolver;
 
 	/** Initializes the EntityResolver with a ModuleResolver. */
@@ -72,7 +73,9 @@ public class ReferenceResolver {
 
 			IScopeNode outerscope = NodeUtil.getOuterScope(scope);
 			if(outerscope == null) {
-				findDefUnitInModuleDec(scope, search);
+				Module module = (Module) scope;
+				findDefUnitInModuleDec(module, search);
+				findDefUnitInObjectIntrinsic(module, search);
 				return;
 			}
 
@@ -82,9 +85,14 @@ public class ReferenceResolver {
 		
 	}
 
-	private static void findDefUnitInModuleDec(IScopeNode scope,
+	private static void findDefUnitInObjectIntrinsic(Module originModule, CommonDefUnitSearch search) {
+		Module targetModule = findModule(originModule, EMPTY_PACKAGE, "object");
+		if (targetModule != null)
+			findDefUnitInScope(targetModule, search);
+	}
+
+	private static void findDefUnitInModuleDec(Module module,
 			CommonDefUnitSearch search) {
-		Module module = (Module) scope; 
 		DeclarationModule decMod = module.md;
 		if(decMod != null) {
 			DefUnit defUnit;

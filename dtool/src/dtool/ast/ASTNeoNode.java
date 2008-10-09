@@ -137,6 +137,7 @@ public abstract class ASTNeoNode extends ASTNode
 		neovisitor.postVisit(this);
 	}
 
+	
 	public final void accept0(@SuppressWarnings("unused") IASTVisitor visitor) {
 		Assert.fail("NEO AST elements should not use IASTVisitor");
 	}

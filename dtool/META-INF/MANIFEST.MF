@@ -3,7 +3,14 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: dtool;singleton:=true
 Bundle-Version: 0.3.0.qualifier
-Bundle-ClassPath: DTool.jar,
+Bundle-Vendor: %pluginProvider
+Bundle-Localization: plugin
+Require-Bundle: dtool.descent.core;visibility:=reexport,
+ org.eclipse.dltk.core,
+ org.eclipse.core.runtime
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .,
  libs/ini4j-0.3.2/ini4j-0.3.2.jar
 Export-Package: dtool,
  dtool.ast,
@@ -17,8 +24,3 @@ Export-Package: dtool,
  dtool.refmodel.pluginadapters,
  org.ini4j,
  org.ini4j.addon
-Bundle-Vendor: %pluginProvider
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Require-Bundle: dtool.descent.core;visibility:=reexport,
- org.eclipse.dltk.core,
- org.eclipse.core.runtime
