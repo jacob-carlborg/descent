@@ -3,6 +3,8 @@ package mmrnmhrm.ui.text;
 import java.util.ArrayList;
 import java.util.List;
 
+import mmrnmhrm.ui.internal.text.JavaWordDetector;
+import mmrnmhrm.ui.internal.text.LangWhitespaceDetector;
 import mmrnmhrm.ui.text.color.IDeeColorConstants;
 
 import org.eclipse.dltk.ui.text.AbstractScriptScanner;
@@ -44,7 +46,7 @@ public class DeeCodeScanner extends AbstractScriptScanner {
 	}
 
 	@Override
-	protected List createRules() {
+	protected List<IRule> createRules() {
 		List<IRule> rules = new ArrayList<IRule>();
 		
 		IToken tkKeyword = getToken(IDeeColorConstants.DEE_KEYWORD);

@@ -1,11 +1,9 @@
 package mmrnmhrm.ui.launch;
 
-import mmrnmhrm.core.dltk.DeeLanguageToolkit;
 import mmrnmhrm.core.model.DeeNature;
 import mmrnmhrm.ui.DeePlugin;
 
 import org.eclipse.debug.core.ILaunchConfiguration;
-import org.eclipse.dltk.core.IDLTKLanguageToolkit;
 import org.eclipse.dltk.core.PreferencesLookupDelegate;
 import org.eclipse.dltk.debug.core.DLTKDebugPreferenceConstants;
 import org.eclipse.dltk.debug.ui.launchConfigurations.MainLaunchConfigurationTab;
@@ -35,10 +33,6 @@ public class DeeMainLaunchConfigurationTab extends MainLaunchConfigurationTab {
 				DLTKDebugPreferenceConstants.PREF_DBGP_ENABLE_LOGGING);
 	}
 
-	@Override
-	protected boolean isValidToolkit(IDLTKLanguageToolkit toolkit) {
-		return (toolkit instanceof DeeLanguageToolkit) ? true : false;
-	}
 	
 	@Override
 	protected void createMainModuleEditor(Composite parent, String text) {

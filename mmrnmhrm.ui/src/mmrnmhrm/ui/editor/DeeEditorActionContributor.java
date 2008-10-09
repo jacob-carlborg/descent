@@ -10,6 +10,7 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.menus.CommandContributionItem;
+import org.eclipse.ui.menus.CommandContributionItemParameter;
 
 public class DeeEditorActionContributor extends	SourceModuleEditorActionContributor {
 
@@ -20,18 +21,22 @@ public class DeeEditorActionContributor extends	SourceModuleEditorActionContribu
 	
 	public static CommandContributionItem getCommand_FindDefinition() {
 		ImageDescriptor imgDesc = DeePluginImages.createActionImageDescriptor("gotodef.gif", true);
-		return new CommandContributionItem(DeePlugin.getActiveWorkbenchWindow(), null, 
+		return new CommandContributionItem(new CommandContributionItemParameter(
+				DeePlugin.getActiveWorkbenchWindow(), null,
 				GoToDefinitionHandler.COMMAND_ID, null,
 				imgDesc, null, null, null, null, null,
-				CommandContributionItem.STYLE_PUSH);
+				CommandContributionItem.STYLE_PUSH, null, true));
 	}
 	
+	/*
 	public static CommandContributionItem getCommand_SearchReferences() {
-		return new CommandContributionItem(DeePlugin.getActiveWorkbenchWindow(), null, 
+		return new CommandContributionItem(new CommandContributionItemParameter(
+				DeePlugin.getActiveWorkbenchWindow(), null, 
 				"GoToDefinitionHandler.COMMAND_ID", null,
 				null, null, null, null, null, null,
-				CommandContributionItem.STYLE_PUSH);
+				CommandContributionItem.STYLE_PUSH, null, true));
 	}
+	*/
 
 	
 	@Override

@@ -26,7 +26,7 @@ Require-Bundle: mmrnmhrm.core,
  org.eclipse.ui.console,
  org.eclipse.search,
  org.eclipse.debug.ui
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
 Bundle-Vendor: %pluginProvider
 Export-Package: mmrnmhrm.org.eclipse.dltk.ui.wizards,
  mmrnmhrm.ui.editor,

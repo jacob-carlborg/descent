@@ -64,7 +64,7 @@ public class OperationsManager {
 			ExceptionHandler.handle(ce, opName, "Execution Error");
 			opResult = IStatus.ERROR; 
 			return false;
-		} catch(RuntimeException re) {
+		} catch (RuntimeException re) {
 			opResult = IStatus.ERROR;
 			if(handleRuntimeExceptions) {
 				ExceptionHandler.handle(re, opName, 

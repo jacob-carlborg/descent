@@ -13,8 +13,8 @@ public class ProjectFolderSelectionDialog extends ProjectContainerSelectionDialo
 	public ProjectFolderSelectionDialog(Shell shell, IProject project) {
 		super(shell, project);
 
-		Class[] visibleClasses= new Class[] { IProject.class, IFolder.class };
-		Class[] acceptedClasses= new Class[] { IFolder.class };
+		Class<?>[] visibleClasses= new Class<?>[] { IProject.class, IFolder.class };
+		Class<?>[] acceptedClasses= new Class<?>[] { IFolder.class };
 
 		ViewerFilter filter = new TypedViewerFilter(visibleClasses, null);
 		ISelectionStatusValidator validator= new TypedElementSelectionValidator(acceptedClasses, false);

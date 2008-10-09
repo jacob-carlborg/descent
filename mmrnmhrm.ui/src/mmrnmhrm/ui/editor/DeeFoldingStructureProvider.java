@@ -7,6 +7,7 @@ import mmrnmhrm.ui.text.DeePartitions;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.dltk.ast.ASTNode;
 import org.eclipse.dltk.ui.text.folding.AbstractASTFoldingStructureProvider;
+import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.rules.IPartitionTokenScanner;
 
 import dtool.ast.definitions.DefinitionAggregate;
@@ -54,7 +55,8 @@ public class DeeFoldingStructureProvider extends AbstractASTFoldingStructureProv
 	}
 
 	@Override
-	protected boolean initiallyCollapseComments(FoldingStructureComputationContext ctx) {
+	protected boolean initiallyCollapseComments(IRegion commentRegion,
+			FoldingStructureComputationContext ctx) {
 		return false;
 	}
 	

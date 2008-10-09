@@ -13,6 +13,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.TextAttribute;
+import org.eclipse.jface.text.rules.IRule;
 import org.eclipse.jface.text.rules.IToken;
 
 import descent.core.dom.AST;
@@ -64,7 +65,7 @@ public class DeeCodeScannerWithLexer extends AbstractScriptScanner {
 	}
 
 	@Override
-	protected List createRules() {
+	protected List<IRule> createRules() {
 		return null;
 	}
 	

@@ -186,8 +186,8 @@
           name="%LangTemplateContext.name">
     </contextType>
     <include
-          file="default-templates.xml"
-          translations="default-templates.properties">
+          file="templates/default-templates.xml"
+          translations="templates/default-templates.properties">
     </include>
     <!--<include
           file="templates/templates.xml"
@@ -219,7 +219,7 @@
          </action>
  
            <action
-               definitionId="mmrnmhrm.ui.commands.deeOpenTypeInHierarchy"
+               definitionId="mmrnmhrm.ui.commands.openDeeTypeInHierarchy"
                label="%OpenTypeInHierarchyAction.label"
                tooltip="%OpenTypeInHierarchyAction.tooltip"
                class="mmrnmhrm.ui.actions.DeeOpenTypeInHierarchyAction"
@@ -228,8 +228,8 @@
          </action>
             
          <action
-            class="mmrnmhrm.ui.actions.DeeOpenTypeAction"
             definitionId="mmrnmhrm.ui.commands.openDeeType"
+            class="mmrnmhrm.ui.actions.DeeOpenTypeAction"
             icon="icons/action16e/opentype.gif"
             id="openType"
             label="%OpenTypeAction.label"
@@ -287,6 +287,13 @@
        id="mmrnmhrm.ui.commands.openDeeType"
        name="%OpenTypeAction.label">
  </command>
+ 
+ <command
+       categoryId="mmrnmhrm.ui.commands.category1"
+       id="mmrnmhrm.ui.commands.openDeeTypeInHierarchy"
+       name="%OpenTypeInHierarchyAction.label">
+ </command>
+
  <command
        categoryId="mmrnmhrm.ui.commands.category1"
        defaultHandler="mmrnmhrm.ui.actions.DeeOpenSearchPageHandler"
@@ -702,14 +709,14 @@
 			</action>
 			<!-- icon="$nl$/icons/etool16/insp_sbook.gif" -->
 			<action label="%ScriptInspect.label"
-				definitionId="org.eclipse.dlkt.debug.ui.commands.ScriptInspect"
+				definitionId="org.eclipse.dltk.debug.ui.commands.ScriptInspect"
 				class="org.eclipse.dltk.internal.debug.ui.actions.PopupScriptInspectAction"
 				menubarPath="additions"
 				id="mmrnmhrm.debug.ui.ScriptInspect">
 			</action>
 			<!-- icon="$nl$/icons/etool16/disp_sbook.gif" -->
 			<action label="%ScriptDisplay.label"
-				definitionId="org.eclipse.dlkt.debug.ui.commands.ScriptDisplay"
+				definitionId="org.eclipse.dltk.debug.ui.commands.ScriptDisplay"
 				class="org.eclipse.dltk.internal.debug.ui.actions.PopupScriptDisplayAction"
 				menubarPath="additions"
 				id="mmrnmhrm.debug.ui.ScriptDisplay">

@@ -10,7 +10,6 @@ import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.ITextHoverExtension;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 @SuppressWarnings("restriction")
@@ -50,19 +49,18 @@ implements ITextHoverExtension {
 	
 	
 	@Override
-	@SuppressWarnings("restriction")
 	public IInformationControlCreator getHoverControlCreator() {
 		if(true)
 		return super.getHoverControlCreator();
 		
+		// TODO: remove this?
 		if(false)
 		return new IInformationControlCreator() {
-			@SuppressWarnings("restriction")
 			public IInformationControl createInformationControl(Shell parent) {
-				return new DefaultInformationControl(parent, SWT.NONE, 
+				return new DefaultInformationControl(parent, "TODO",  
 						//new	org.eclipse.jface.internal.text.html.HTMLTextPresenter(true),
-						new org.eclipse.dltk.internal.ui.text.HTMLTextPresenter(true),
-						EditorsUI.getTooltipAffordanceString());
+						new org.eclipse.dltk.internal.ui.text.HTMLTextPresenter(true)
+						);
 			}
 		};
 		
@@ -73,7 +71,6 @@ implements ITextHoverExtension {
 			return null;
 		
 		return new AbstractReusableInformationControlCreator() {
-			@SuppressWarnings("restriction")
 			@Override
 			public IInformationControl doCreateInformationControl(Shell parent) {
 				return new org.eclipse.dltk.internal.ui.BrowserInformationControl(

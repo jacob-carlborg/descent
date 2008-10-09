@@ -3,6 +3,7 @@ package mmrnmhrm.ui;
 import mmrnmhrm.ui.text.color.DeeColorPreferenceInitializer;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
+import org.eclipse.dltk.ui.CodeFormatterConstants;
 import org.eclipse.dltk.ui.PreferenceConstants;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
@@ -36,7 +37,7 @@ public class DeeUIPreferenceInitializer extends AbstractPreferenceInitializer {
 		store.setDefault(PreferenceConstants.CODEASSIST_PREFIX_COMPLETION, true);
 		
 		store.setDefault(PreferenceConstants.EDITOR_SMART_INDENT, true);
-		//store.setDefault( PreferenceConstants.EDITOR_TAB_ALWAYS_INDENT, false);
+		store.setDefault(PreferenceConstants.EDITOR_TAB_ALWAYS_INDENT, true);
 		store.setDefault(PreferenceConstants.EDITOR_CLOSE_STRINGS, true);
 		store.setDefault(PreferenceConstants.EDITOR_CLOSE_BRACKETS, true);
 		store.setDefault(PreferenceConstants.EDITOR_CLOSE_BRACES, true);
@@ -51,7 +52,21 @@ public class DeeUIPreferenceInitializer extends AbstractPreferenceInitializer {
 		store.setDefault(PreferenceConstants.EDITOR_FOLDING_ENABLED, true);
 		store.setDefault(PreferenceConstants.EDITOR_COMMENTS_FOLDING_ENABLED, true);		
 		store.setDefault(PreferenceConstants.SEARCH_USE_REDUCED_MENU, true);
+
 		
+		store.setDefault(CodeFormatterConstants.FORMATTER_INDENTATION_SIZE, 4);
+		store.setDefault(CodeFormatterConstants.FORMATTER_TAB_SIZE, 4);
+
+		/*
+		store.setDefault(APPEARANCE_COMPRESS_PACKAGE_NAMES, false);
+		store.setDefault(APPEARANCE_METHOD_RETURNTYPE, false);
+		store.setDefault(APPEARANCE_METHOD_TYPEPARAMETERS, true);
+		store.setDefault(APPEARANCE_PKG_NAME_PATTERN_FOR_PKG_VIEW, ""); //$NON-NLS-1$
+
+		store.setDefault(SHOW_SOURCE_MODULE_CHILDREN, true);
+
+		store.setDefault(CODEASSIST_AUTOACTIVATION_TRIGGERS, ".:$@"); //$NON-NLS-1$
+		 */
 
 		// WIZARDS
 		store.setDefault(PreferenceConstants.SRCBIN_FOLDERS_IN_NEWPROJ, true);

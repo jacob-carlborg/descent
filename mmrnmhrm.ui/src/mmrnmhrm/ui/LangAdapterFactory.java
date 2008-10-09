@@ -9,11 +9,12 @@ import org.eclipse.ui.IContributorResourceAdapter;
 public class LangAdapterFactory implements IAdapterFactory, IContributorResourceAdapter {
 
 	
-	private static final Class[] ADAPTER_LIST= new Class[] {
+	private static final Class<?>[] ADAPTER_LIST= new Class[] {
 		IResource.class,
 		IContributorResourceAdapter.class,
 	};
 	
+	@SuppressWarnings("unchecked")
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
 		/*if (IResource.class.equals(adapterType)) {
 			return getResource((ILangElement) adaptableObject);
@@ -25,7 +26,7 @@ public class LangAdapterFactory implements IAdapterFactory, IContributorResource
 		return null;
 	}
 
-	public Class[] getAdapterList() {
+	public Class<?>[] getAdapterList() {
 		return ADAPTER_LIST;
 	}
 	

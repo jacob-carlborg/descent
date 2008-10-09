@@ -1,7 +1,5 @@
 package mmrnmhrm.ui.editor.doc;
 
-import static melnorme.miscutil.Assert.assertFailTODO;
-
 import java.io.Reader;
 
 import org.eclipse.dltk.core.IMember;
@@ -15,7 +13,6 @@ public class DeeDocumentationProvider implements IScriptDocumentationProvider {
 	}
 
 	public Reader getInfo(IMember element, boolean lookIntoParents, boolean lookIntoExternal) {
-		assertFailTODO();
 		return null;
 	}
 

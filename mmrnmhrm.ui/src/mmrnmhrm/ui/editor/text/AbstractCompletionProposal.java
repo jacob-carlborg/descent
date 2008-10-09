@@ -3,7 +3,6 @@ package mmrnmhrm.ui.editor.text;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.dltk.internal.ui.BrowserInformationControl;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jface.text.AbstractReusableInformationControlCreator;
 import org.eclipse.jface.text.BadLocationException;
@@ -252,8 +251,8 @@ public abstract class AbstractCompletionProposal implements
 
 				@Override
 				public IInformationControl doCreateInformationControl(Shell parent) {
-					return new BrowserInformationControl(parent, SWT.NO_TRIM | SWT.TOOL, SWT.NONE,
-							null);
+					return new org.eclipse.dltk.internal.ui.BrowserInformationControl(
+							parent, SWT.NO_TRIM | SWT.TOOL, SWT.NONE, null);
 				}
 			};
 		}

@@ -1,4 +1,4 @@
-package mmrnmhrm.ui.text;
+package mmrnmhrm.ui.internal.text;
 
 import org.eclipse.jface.text.rules.IWordDetector;
 

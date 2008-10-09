@@ -25,6 +25,7 @@ public abstract class LangPlugin extends AbstractUIPlugin {
 	
 	/** Logs the given Throwable, wrapping it in a Status. */
 	public static void log(Throwable e) {
+		e.printStackTrace();
 		log(new Status(IStatus.ERROR, getPluginId(),
 				ILangStatusConstants.INTERNAL_ERROR,
 				LangUIMessages.LangPlugin_internal_error, e)); 

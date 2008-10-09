@@ -6,6 +6,7 @@ import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.editor.text.DeeCodeContentAssistProcessor;
 import mmrnmhrm.ui.editor.text.DeeDocTextHover;
 import mmrnmhrm.ui.editor.text.DeeHyperlinkDetector;
+import mmrnmhrm.ui.internal.text.RubyAutoEditStrategy;
 import mmrnmhrm.ui.text.color.IDeeColorConstants;
 
 import org.eclipse.dltk.internal.ui.editor.EditorUtility;
@@ -177,8 +178,10 @@ public class DeeSourceViewerConfiguration extends ScriptSourceViewerConfiguratio
 	@Override
 	public IAutoEditStrategy[] getAutoEditStrategies(ISourceViewer sourceViewer, String contentType) {
 		// TODO improve auto edit strategy
-		return super.getAutoEditStrategies(sourceViewer, contentType);
+		String partitioning = getConfiguredDocumentPartitioning(sourceViewer);
+		return new IAutoEditStrategy[] { new RubyAutoEditStrategy(partitioning ) };
 	}
+
 	
 	@Override
 	public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType, int stateMask) {
@@ -230,7 +233,6 @@ public class DeeSourceViewerConfiguration extends ScriptSourceViewerConfiguratio
 			}
 		};
 	}
-	
 
 	
 	@Override
@@ -255,7 +257,7 @@ public class DeeSourceViewerConfiguration extends ScriptSourceViewerConfiguratio
 		return presenter;
 	}
 
-	
+
 	// XXX: use DTLK default method?
 	@Override
 	public IInformationControlCreator getInformationControlCreator(ISourceViewer sourceViewer) {

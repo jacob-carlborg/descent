@@ -10,6 +10,6 @@ public class DeeCompilerContainerWizardPage extends AbstractInterpreterContainer
 
 	@Override
 	protected AbstractInterpreterComboBlock getInterpreterBlock() {
-		return new DeeCompilersComboBlock();
+		return new DeeCompilersComboBlock(null);
 	}
 }

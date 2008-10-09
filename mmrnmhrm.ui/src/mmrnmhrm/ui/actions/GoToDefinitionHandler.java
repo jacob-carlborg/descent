@@ -2,7 +2,6 @@ package mmrnmhrm.ui.actions;
 
 import java.util.Collection;
 
-import melnorme.miscutil.MiscUtil;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.lang.ui.EditorUtil;
 import mmrnmhrm.ui.DeePlugin;
@@ -124,14 +123,15 @@ public class GoToDefinitionHandler extends AbstractHandler  {
 		Logg.main.println(" Find Definition, found: " 
 				+ ASTPrinter.toStringAsElements(defunits, " ") );
 		
+		
 		if(defunits.size() > 1) {
 			dialogInfo(window.getShell(), 
 					"Multiple definitions found: \n" 
 					+ ASTPrinter.toStringAsElements(defunits, "\n")
 					+ "\nGoing to the first one.");
-		}
+		} 
 
-		DefUnit defunit = MiscUtil.getSingleElement(defunits);
+		DefUnit defunit = defunits.iterator().next();
 		
 		if(defunit.hasNoSourceRangeInfo()) {
 			dialogError(window.getShell(), "DefUnit " 

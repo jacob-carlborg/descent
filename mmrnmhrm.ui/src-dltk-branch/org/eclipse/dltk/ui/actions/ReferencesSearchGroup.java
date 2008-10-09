@@ -1,4 +1,13 @@
-package mmrnmhrm.org.eclipse.dltk.ui.actions;
+/*******************************************************************************
+ * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ 
+ *******************************************************************************/
+package org.eclipse.dltk.ui.actions;
 
 import java.util.Iterator;
 
@@ -8,9 +17,6 @@ import org.eclipse.dltk.internal.ui.callhierarchy.SearchUtil;
 import org.eclipse.dltk.internal.ui.editor.ScriptEditor;
 import org.eclipse.dltk.internal.ui.search.SearchMessages;
 import org.eclipse.dltk.ui.IContextMenuConstants;
-import org.eclipse.dltk.ui.actions.DLTKActionConstants;
-import org.eclipse.dltk.ui.actions.IScriptEditorActionDefinitionIds;
-import org.eclipse.dltk.ui.actions.SelectionDispatchAction;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -48,8 +54,11 @@ public class ReferencesSearchGroup extends ActionGroup {
 	private String fGroupId;
 
 	private FindReferencesAction fFindReferencesAction;
+
 	private FindReferencesInProjectAction fFindReferencesInProjectAction;
+
 	private FindReferencesInHierarchyAction fFindReferencesInHierarchyAction;
+
 	private FindReferencesInWorkingSetAction fFindReferencesInWorkingSetAction;
 
 	private final IDLTKLanguageToolkit toolkit;
@@ -63,12 +72,16 @@ public class ReferencesSearchGroup extends ActionGroup {
 	 * @param site
 	 *            the view part that owns this action group
 	 */
-	/*public ReferencesSearchGroup(IWorkbenchSite site, IDLTKLanguageToolkit tk) {
+	public ReferencesSearchGroup(IWorkbenchSite site, IDLTKLanguageToolkit tk) {
 		fSite = site;
 		fGroupId = IContextMenuConstants.GROUP_SEARCH;
 		this.toolkit = tk;
 
-		fFindReferencesAction = new mmrnmhrm.ui.editor.FindReferencesAction(site);
+		fFindReferencesAction = new FindReferencesAction(site) {
+			protected IDLTKLanguageToolkit getLanguageToolkit() {
+				return toolkit;
+			}
+		};
 		fFindReferencesAction.setActionDefinitionId(IScriptEditorActionDefinitionIds.SEARCH_REFERENCES_IN_WORKSPACE);
 
 		fFindReferencesInProjectAction = new FindReferencesInProjectAction(site) {
@@ -99,7 +112,7 @@ public class ReferencesSearchGroup extends ActionGroup {
 		registerAction(fFindReferencesInProjectAction, provider, selection);
 		registerAction(fFindReferencesInHierarchyAction, provider, selection);
 		registerAction(fFindReferencesInWorkingSetAction, provider, selection);
-	}*/
+	}
 
 	/**
 	 * Note: This constructor is for internal use only. Clients should not call
@@ -115,19 +128,35 @@ public class ReferencesSearchGroup extends ActionGroup {
 		fSite = fEditor.getSite();
 		fGroupId = ITextEditorActionConstants.GROUP_FIND;
 
-		fFindReferencesAction = new mmrnmhrm.org.eclipse.dltk.ui.actions.FindReferencesAction(editor);
+		fFindReferencesAction = new FindReferencesAction(editor) {
+			protected IDLTKLanguageToolkit getLanguageToolkit() {
+				return toolkit;
+			}
+		};
 		fFindReferencesAction.setActionDefinitionId(IScriptEditorActionDefinitionIds.SEARCH_REFERENCES_IN_WORKSPACE);
 		fEditor.setAction("SearchReferencesInWorkspace", fFindReferencesAction); //$NON-NLS-1$
 
-		fFindReferencesInProjectAction = new FindReferencesInProjectAction(fEditor);
+		fFindReferencesInProjectAction = new FindReferencesInProjectAction(fEditor) {
+			protected IDLTKLanguageToolkit getLanguageToolkit() {
+				return toolkit;
+			}
+		};
 		fFindReferencesInProjectAction.setActionDefinitionId(IScriptEditorActionDefinitionIds.SEARCH_REFERENCES_IN_PROJECT);
 		fEditor.setAction("SearchReferencesInProject", fFindReferencesInProjectAction); //$NON-NLS-1$
 
-		fFindReferencesInHierarchyAction = new FindReferencesInHierarchyAction(fEditor);
+		fFindReferencesInHierarchyAction = new FindReferencesInHierarchyAction(fEditor) {
+			protected IDLTKLanguageToolkit getLanguageToolkit() {
+				return toolkit;
+			}
+		};
 		fFindReferencesInHierarchyAction.setActionDefinitionId(IScriptEditorActionDefinitionIds.SEARCH_REFERENCES_IN_HIERARCHY);
 		fEditor.setAction("SearchReferencesInHierarchy", fFindReferencesInHierarchyAction); //$NON-NLS-1$
 
-		fFindReferencesInWorkingSetAction = new FindReferencesInWorkingSetAction(fEditor);
+		fFindReferencesInWorkingSetAction = new FindReferencesInWorkingSetAction(fEditor) {
+			protected IDLTKLanguageToolkit getLanguageToolkit() {
+				return toolkit;
+			}
+		};
 		fFindReferencesInWorkingSetAction.setActionDefinitionId(IScriptEditorActionDefinitionIds.SEARCH_REFERENCES_IN_WORKING_SET);
 		fEditor.setAction("SearchReferencesInWorkingSet", fFindReferencesInWorkingSetAction); //$NON-NLS-1$
 	}
@@ -150,7 +179,6 @@ public class ReferencesSearchGroup extends ActionGroup {
 	/*
 	 * (non-Javadoc) Method declared in ActionGroup
 	 */
-	@Override
 	public void fillActionBars(IActionBars actionBars) {
 		Assert.isNotNull(actionBars);
 		super.fillActionBars(actionBars);
@@ -166,14 +194,18 @@ public class ReferencesSearchGroup extends ActionGroup {
 
 	private void addWorkingSetAction(IWorkingSet[] workingSets, IMenuManager manager) {
 		FindAction action;
-		//if (fEditor != null)
-			action = new WorkingSetFindAction(fEditor, 
-					new FindReferencesInWorkingSetAction(fEditor, workingSets),
-					SearchUtil.toString(workingSets));
-		/*else
-			action = new WorkingSetFindAction(fSite, 
-					new FindReferencesInWorkingSetAction(fSite, workingSets),
-					SearchUtil.toString(workingSets));*/
+		if (fEditor != null)
+			action = new WorkingSetFindAction(fEditor, new FindReferencesInWorkingSetAction(fEditor, workingSets) {
+				protected IDLTKLanguageToolkit getLanguageToolkit() {
+					return toolkit;
+				}
+			}, SearchUtil.toString(workingSets));
+		else
+			action = new WorkingSetFindAction(fSite, new FindReferencesInWorkingSetAction(fSite, workingSets) {
+				protected IDLTKLanguageToolkit getLanguageToolkit() {
+					return toolkit;
+				}
+			}, SearchUtil.toString(workingSets));
 		action.update(getContext().getSelection());
 		addAction(action, manager);
 	}
@@ -181,7 +213,6 @@ public class ReferencesSearchGroup extends ActionGroup {
 	/*
 	 * (non-Javadoc) Method declared on ActionGroup.
 	 */
-	@Override
 	public void fillContextMenu(IMenuManager manager) {
 		MenuManager javaSearchMM = new MenuManager(getName(), IContextMenuConstants.GROUP_SEARCH);
 		addAction(fFindReferencesAction, javaSearchMM);
@@ -190,9 +221,9 @@ public class ReferencesSearchGroup extends ActionGroup {
 
 		javaSearchMM.add(new Separator());
 
-		Iterator<IWorkingSet[]> iter = SearchUtil.getLRUWorkingSets().sortedIterator();
+		Iterator iter = SearchUtil.getLRUWorkingSets().sortedIterator();
 		while (iter.hasNext()) {
-			addWorkingSetAction(iter.next(), javaSearchMM);
+			addWorkingSetAction((IWorkingSet[]) iter.next(), javaSearchMM);
 		}
 		addAction(fFindReferencesInWorkingSetAction, javaSearchMM);
 
@@ -203,7 +234,6 @@ public class ReferencesSearchGroup extends ActionGroup {
 	/*
 	 * Overrides method declared in ActionGroup
 	 */
-	@Override
 	public void dispose() {
 		ISelectionProvider provider = fSite.getSelectionProvider();
 		if (provider != null) {

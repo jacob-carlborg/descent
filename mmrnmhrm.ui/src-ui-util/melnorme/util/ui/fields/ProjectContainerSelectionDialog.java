@@ -23,7 +23,7 @@ public class ProjectContainerSelectionDialog {
 	public ProjectContainerSelectionDialog(Shell shell, IProject project) {
 		this.shell = shell;
 		this.project = project;
-		Class[] acceptedClasses= new Class[] { IProject.class, IFolder.class };
+		Class<?>[] acceptedClasses= new Class<?>[] { IProject.class, IFolder.class };
 
 		ViewerFilter filter = new TypedViewerFilter(acceptedClasses, null);
 		ISelectionStatusValidator validator= new TypedElementSelectionValidator(acceptedClasses, false);
