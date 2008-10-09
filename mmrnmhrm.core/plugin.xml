@@ -137,5 +137,13 @@
             name="%localDeeApplication">
       </launchConfigurationType>
    </extension>
+   <extension
+         point="org.eclipse.dltk.core.fileHierarchyResolvers">
+      <fileHierarchyResolver
+            class="mmrnmhrm.core.dltk.search.DeeFileHierarchyResolver"
+            nature="mmrnmhrm.core.fileHierarchyResolver"
+            priority="0">
+      </fileHierarchyResolver>
+   </extension>
 
 </plugin>

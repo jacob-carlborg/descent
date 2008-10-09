@@ -3,8 +3,8 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: mmrnmhrm.core;singleton:=true
 Bundle-Version: 0.3.0.qualifier
-Bundle-Activator: mmrnmhrm.core.DeeCore
 Bundle-Vendor: %pluginProvider
+Bundle-Activator: mmrnmhrm.core.DeeCore
 Bundle-Localization: plugin
 Export-Package: mmrnmhrm.core,
  mmrnmhrm.core.build,

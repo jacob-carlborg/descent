@@ -37,7 +37,7 @@ public class DLTKModuleResolver implements IModuleResolver {
 
 		IScriptProject deeproj = sourceModule.getScriptProject();
 		
-		if(deeproj == null)
+		if(deeproj == null || deeproj.exists() == false)
 			return null;
 		
 		String fullPackageName = StringUtil.collToString(packages, "/");  
@@ -54,7 +54,6 @@ public class DLTKModuleResolver implements IModuleResolver {
 					 	return DeeParserUtil.getNeoASTModule(modDecl);
 				 	}
 				}
-			
 			}	
 		}
 		return null;

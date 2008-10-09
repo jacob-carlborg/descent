@@ -20,9 +20,9 @@ import dtool.ast.definitions.DefinitionClass;
 import dtool.ast.definitions.Module;
 import dtool.ast.references.NamedReference;
 
-public class DeeNeoMatchLocatorParser extends MatchLocatorParser {
+public class DeeMatchLocatorParser extends MatchLocatorParser {
 
-	public DeeNeoMatchLocatorParser(MatchLocator locator) {
+	public DeeMatchLocatorParser(MatchLocator locator) {
 		super(locator);
 	}
 
@@ -72,17 +72,6 @@ public class DeeNeoMatchLocatorParser extends MatchLocatorParser {
 			return;
 		}
 
-		if(node instanceof Module) {
-			getPatternLocator().match(node, getNodeSet());
-		} else
-		if(node instanceof DefinitionClass) {
-			DefinitionClass defClass = (DefinitionClass) node;
-			getPatternLocator().match(defClass, getNodeSet());
-		} else
-		if(node instanceof DefinitionAggregate) {
-			DefinitionAggregate defAggr = (DefinitionAggregate) node;
-			getPatternLocator().match(defAggr, getNodeSet());
-		}
 	}
 	
 }

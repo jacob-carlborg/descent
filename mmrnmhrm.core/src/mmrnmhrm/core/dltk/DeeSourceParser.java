@@ -55,12 +55,6 @@ public class DeeSourceParser extends AbstractSourceParser {
 	//@Override
 	public ModuleDeclaration parse(char[] fileName, char[] source, IProblemReporter reporter) {
 		int langVersion = DeeCorePreferences.getInt(DeeCorePreferences.LANG_VERSION);
-		return parseModule(source, langVersion, reporter, fileName);
-		
-	}
-
-	protected static DeeModuleDeclaration parseModule(char[] source, int langVersion,
-			IProblemReporter reporter, char[] fileName) {
 		Parser parser = new Parser(langVersion, source);
 		parser.setProblemReporter(DescentProblemAdapter.create(reporter));
 		Module dmdModule = null;
@@ -81,8 +75,9 @@ public class DeeSourceParser extends AbstractSourceParser {
 		deeModuleDecl.setNeoModule(neoModule);
 		//setModuleDeclModuleUnit(fileName, deeModuleDecl);
 		return deeModuleDecl;
+		
 	}
-	
+
 	/*
 	private static void setModuleDeclModuleUnit(char[] filename, DeeModuleDeclaration deeModuleDecl) {
 		if(filename == null)

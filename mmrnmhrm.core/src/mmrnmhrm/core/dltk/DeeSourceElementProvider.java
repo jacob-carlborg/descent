@@ -248,14 +248,13 @@ public final class DeeSourceElementProvider extends ASTNeoUpTreeVisitor {
 
 		List<BaseClass> coll = defClass.baseClasses;
 		if(coll == null || coll.isEmpty()) {
-			if(defClass instanceof DefinitionInterface)
+			if(defClass instanceof DefinitionInterface && false)
 				return DeeSourceElementProvider.EMPTY_STRING;
 			else {
 				return DeeSourceElementProvider.OBJECT_SUPER_CLASS_LIST;
 			}
 		}
 		String[] strs = new String[coll.size()];
-		//Collections.reverse(coll); // XXX: DLTK: try reversing to see if it works better
 		Iterator<BaseClass> iter = coll.iterator();
 		for (int i = 0; i < strs.length; i++) {
 			strs[i] = iter.next().type.toStringAsElement();

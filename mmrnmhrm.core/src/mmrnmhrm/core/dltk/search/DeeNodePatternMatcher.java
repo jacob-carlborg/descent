@@ -1,5 +1,8 @@
 package mmrnmhrm.core.dltk.search;
 
+import static melnorme.miscutil.Assert.assertFail;
+
+import org.eclipse.core.resources.IResource;
 import org.eclipse.dltk.ast.ASTNode;
 import org.eclipse.dltk.compiler.CharOperation;
 import org.eclipse.dltk.core.search.matching.PatternLocator;
@@ -17,7 +20,7 @@ import dtool.ast.definitions.DefinitionFunction;
 import dtool.ast.definitions.DefinitionVariable;
 import dtool.ast.references.NamedReference;
 
-public class DeeNeoPatternLocator extends PatternLocator {
+public class DeeNodePatternMatcher extends PatternLocator {
 												
 	public char[] simpleName;
 	public char[] pkg;
@@ -33,7 +36,7 @@ public class DeeNeoPatternLocator extends PatternLocator {
 	public boolean matchReferences;
 	public boolean matchDefinitions;
 	
-	public DeeNeoPatternLocator(TypeDeclarationPattern pattern) {
+	public DeeNodePatternMatcher(TypeDeclarationPattern pattern) {
 		super(pattern);
 		this.typeDecPattern = pattern;
 		this.simpleName = pattern.simpleName;
@@ -41,7 +44,7 @@ public class DeeNeoPatternLocator extends PatternLocator {
 		matchDefinitions = true;
 	}
 
-	public DeeNeoPatternLocator(TypeReferencePattern pattern) {
+	public DeeNodePatternMatcher(TypeReferencePattern pattern) {
 		super(pattern);
 		this.typeRefPattern = pattern;
 		this.simpleName = pattern.getIndexKey();
@@ -49,7 +52,7 @@ public class DeeNeoPatternLocator extends PatternLocator {
 		matchReferences = true;
 	}
 	
-	public DeeNeoPatternLocator(FieldPattern pattern) {
+	public DeeNodePatternMatcher(FieldPattern pattern) {
 		super(pattern);
 		this.simpleName = pattern.getIndexKey();
 		matchVars = true;
@@ -57,9 +60,9 @@ public class DeeNeoPatternLocator extends PatternLocator {
 		matchReferences = true;
 	}
 
-	public DeeNeoPatternLocator(MethodPattern pattern) {
+	public DeeNodePatternMatcher(MethodPattern pattern) {
 		super(pattern);
-		this.simpleName = pattern.declaringSimpleName;
+		this.simpleName = pattern.selector;
 		matchFunctions = true;
 		matchDefinitions = true;
 		matchReferences = true;
@@ -68,19 +71,16 @@ public class DeeNeoPatternLocator extends PatternLocator {
 
 	@Override
 	public int match(ASTNode node, MatchingNodeSet nodeSet) {
-		if(matchDefinitions && node instanceof DefinitionAlias)
-			return match((Definition) node, nodeSet);
+//		if(matchDefinitions && node instanceof DefinitionAlias)
+//			return match((Definition) node, nodeSet);
 		if(matchDefinitions && matchTypes && node instanceof DefinitionAggregate)
 			return match((Definition) node, nodeSet);
+		
 		if(matchDefinitions && matchFunctions && node instanceof DefinitionFunction)
 			return matchSimple((Definition) node, nodeSet);
 		if(matchDefinitions && matchVars && node instanceof DefinitionVariable)
 			return matchSimple((Definition) node, nodeSet);
 		
-		if(matchReferences && node instanceof NamedReference)
-			return matchSimple((NamedReference) node, nodeSet);
-		if(matchReferences && node instanceof NamedReference)
-			return matchSimple((NamedReference) node, nodeSet);
 		if(matchReferences && node instanceof NamedReference)
 			return matchSimple((NamedReference) node, nodeSet);
 		return IMPOSSIBLE_MATCH;
@@ -124,6 +124,10 @@ public class DeeNeoPatternLocator extends PatternLocator {
 				if(!matchesName(enclosingTypeName, enclosingNodeTypeName)) {
 					return IMPOSSIBLE_MATCH;
 				}
+			}
+			if(node.sourceStart() == -1 || node.sourceEnd() == -1) {
+				//assertFail("No source range");
+				return IMPOSSIBLE_MATCH;
 			}
 			return nodeSet.addMatch(node, ACCURATE_MATCH);
 		}

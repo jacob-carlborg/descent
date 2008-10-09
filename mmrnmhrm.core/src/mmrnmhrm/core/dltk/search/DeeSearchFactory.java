@@ -14,17 +14,16 @@ public class DeeSearchFactory extends AbstractSearchFactory {
 	@Override
 	public MatchLocator createMatchLocator(SearchPattern pattern, SearchRequestor requestor,
 			IDLTKSearchScope scope, SubProgressMonitor monitor) {
-		return new DeeNeoMatchLocator(pattern, requestor, scope, monitor);
+		return new DeeMatchLocator(pattern, requestor, scope, monitor);
 	}
 
 	public IMatchLocatorParser createMatchParser(MatchLocator locator) {
-		return new DeeNeoMatchLocatorParser(locator);
+		return new DeeMatchLocatorParser(locator);
 	}
 
 	@Override
 	public ISearchPatternProcessor createSearchPatternProcessor() {
-		// XXX: DLTK: this does what?
-		return super.createSearchPatternProcessor();
+		return DeeSearchPatterProcessor.instance;
 	}
 
 }

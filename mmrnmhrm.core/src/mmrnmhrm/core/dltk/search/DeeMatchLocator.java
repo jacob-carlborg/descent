@@ -26,16 +26,10 @@ import org.eclipse.dltk.internal.core.search.matching.TypeReferencePattern;
 
 import dtool.ast.ASTNeoNode;
 
-public class DeeNeoMatchLocator extends MatchLocator {
+public class DeeMatchLocator extends MatchLocator {
 
-	/*
-	public RubyMatchLocator(SearchPattern pattern, SearchRequestor requestor,
-			IDLTKSearchScope scope, IProgressMonitor progressMonitor) {
-		super(pattern, requestor, scope, progressMonitor);
-	}
-	*/
 	
-	public DeeNeoMatchLocator(SearchPattern pattern, SearchRequestor requestor,
+	public DeeMatchLocator(SearchPattern pattern, SearchRequestor requestor,
 			IDLTKSearchScope scope, IProgressMonitor progressMonitor) {
 		super(pattern, requestor, scope, progressMonitor);
 		this.patternLocator = neoCreatePatternLocator(this.pattern);
@@ -54,18 +48,16 @@ public class DeeNeoMatchLocator extends MatchLocator {
 		
 		switch (((InternalSearchPattern) pattern).kind) {
 			case IIndexConstants.TYPE_REF_PATTERN:
-				return new DeeNeoPatternLocator((TypeReferencePattern) pattern);
+				return new DeeNodePatternMatcher((TypeReferencePattern) pattern);
 			case IIndexConstants.TYPE_DECL_PATTERN:
-				return new DeeNeoPatternLocator((TypeDeclarationPattern) pattern);
+				return new DeeNodePatternMatcher((TypeDeclarationPattern) pattern);
 			case IIndexConstants.FIELD_PATTERN:
-				 return new DeeNeoPatternLocator((FieldPattern) pattern);
+				 return new DeeNodePatternMatcher((FieldPattern) pattern);
 			case IIndexConstants.METHOD_PATTERN:
-				return new DeeNeoPatternLocator((MethodPattern) pattern);
+				return new DeeNodePatternMatcher((MethodPattern) pattern);
 			case IIndexConstants.OR_PATTERN:
 				return new OrLocator((OrPattern) pattern);
-			
 		}
-
 		return null;
 	}
 	
