@@ -3,6 +3,10 @@ package mmrnmhrm.tests.ui.ref;
 import static melnorme.miscutil.Assert.assertFail;
 import static melnorme.miscutil.Assert.assertNotNull;
 import static melnorme.miscutil.Assert.assertTrue;
+
+import java.util.ArrayList;
+
+import melnorme.miscutil.ArrayUtil;
 import melnorme.miscutil.Assert;
 import mmrnmhrm.tests.UITestWithEditor;
 import mmrnmhrm.tests.adapters.Mock_Document;
@@ -19,6 +23,7 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.ui.PartInitException;
 
 import dtool.refmodel.PrefixDefUnitSearch.CompletionSession;
+import dtool.tests.ref.cc.CodeCompletion__Common;
 import dtool.tests.ref.cc.ICodeCompletionTester;
 
 public class CodeCompletion__UICommon extends UITestWithEditor implements ICodeCompletionTester {
@@ -32,19 +37,41 @@ public class CodeCompletion__UICommon extends UITestWithEditor implements ICodeC
 	}
 
 
-	public  void testComputeProposals(int repOffset,
-			int prefixLen, String... expectedProposals) throws ModelException {
-		testComputeProposalsWithRepLen(repOffset, prefixLen, 0, expectedProposals);
+	public void testComputeProposals(int repOffset,
+			int prefixLen, boolean removeObjectIntrinsics, String... expectedProposals) throws ModelException {
+		testComputeProposalsWithRepLen(repOffset, prefixLen, 0, removeObjectIntrinsics, expectedProposals);
 	}
 	
-	public  void testComputeProposalsWithRepLen(int repOffset, int prefixLen, 
-			int repLen, String... expectedProposals) throws ModelException {
+	public void testComputeProposalsWithRepLen(int repOffset, int prefixLen, 
+			int repLen, boolean removeObjectIntrinsics, String... expectedProposals) throws ModelException {
 		ICompletionProposal[] proposals = DeeCodeContentAssistProcessor
 				.computeProposals(repOffset, srcModule, srcModule.getSource(), new CompletionSession());
 		assertNotNull(proposals, "Code Completion Unavailable");
-		checkProposals(repOffset, repLen, prefixLen, proposals, expectedProposals);
+		
+		
+		ICompletionProposal[] newProposals = proposals;
+		if(removeObjectIntrinsics) {
+			newProposals = removeObjectIntrinsics(proposals, expectedProposals); 
+		}
+		checkProposals(repOffset, repLen, prefixLen, newProposals, expectedProposals);
 		invokeContentAssist();
 	}
+
+	private ICompletionProposal[] removeObjectIntrinsics(ICompletionProposal[] proposals, String[] expectedProposals) {
+		ArrayList<ICompletionProposal> newProposals = new ArrayList<ICompletionProposal>();
+		
+		for (int i = 0; i < proposals.length; i++) {
+			DeeCompletionProposal proposal = (DeeCompletionProposal) proposals[i];
+			String defName = proposal.defUnit.toStringAsElement();
+			
+			if(ArrayUtil.contains(expectedProposals, defName) ||
+					!ArrayUtil.contains(CodeCompletion__Common.OBJECT_INTRINSIC_DEFUNITS, defName)) {
+				newProposals.add(proposals[i]);
+			}
+		}
+		return newProposals.toArray(new ICompletionProposal[0]);
+	}
+
 
 	private static void invokeContentAssist() {
 		ITextOperationTarget target= 

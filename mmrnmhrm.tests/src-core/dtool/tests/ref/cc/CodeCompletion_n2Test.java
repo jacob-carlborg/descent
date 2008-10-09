@@ -22,7 +22,7 @@ public class CodeCompletion_n2Test extends CodeCompletion__Common {
 	
 	@Test
 	public void test1() throws Exception {
-		ccTester.testComputeProposals(getMarkerStartOffset("/+@CC1+/"), 1, 
+		ccTester.testComputeProposals(getMarkerStartOffset("/+@CC1+/"), 1, false,
 				"unc()", "oobarvar",
 				"oovar", "oox",  "oo_t", "ooOfModule"
 				);
@@ -31,11 +31,11 @@ public class CodeCompletion_n2Test extends CodeCompletion__Common {
 	@Test
 	public void test2() throws Exception {
 		int offset = getMarkerStartOffset("/+@CC2+/");
-		ccTester.testComputeProposals(offset, 1, 
+		ccTester.testComputeProposals(offset, 1, false,
 				"oovar", "oox" 
 				);
 		
-		ccTester.testComputeProposalsWithRepLen(offset-1, 0, 1, 
+		ccTester.testComputeProposalsWithRepLen(offset-1, 0, 1, false,
 				"foovar", "foox", "baz" 
 		);
 	}
@@ -43,11 +43,11 @@ public class CodeCompletion_n2Test extends CodeCompletion__Common {
 	@Test
 	public void test3() throws Exception {
 		int offset = getMarkerStartOffset("/+@CC3+/");
-		ccTester.testComputeProposals(offset, 1, 
+		ccTester.testComputeProposals(offset, 1, false,
 				"ooOfModule", "oo_t"
 				);
 		
-		ccTester.testComputeProposalsWithRepLen(offset-1, 0, 1, 
+		ccTester.testComputeProposalsWithRepLen(offset-1, 0, 1, false,
 				"Foo", "fooOfModule", "foo_t", "ix", "FooBar",
 				"pack", "nonexistantmodule"
 				,"othervar", "Other" 
@@ -56,7 +56,7 @@ public class CodeCompletion_n2Test extends CodeCompletion__Common {
 	
 	@Test
 	public void test4() throws Exception {
-		ccTester.testComputeProposals(getMarkerStartOffset("/+@CC4+/"), 0, 
+		ccTester.testComputeProposals(getMarkerStartOffset("/+@CC4+/"), 0, false,
 				"foovar", "foox", "baz" 
 				);
 	}

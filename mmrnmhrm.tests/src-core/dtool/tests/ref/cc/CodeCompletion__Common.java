@@ -7,6 +7,7 @@ import static melnorme.miscutil.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import melnorme.miscutil.ArrayUtil;
 import melnorme.miscutil.StringUtil;
 
 import org.eclipse.core.resources.IFile;
@@ -39,19 +40,19 @@ public class CodeCompletion__Common implements ICodeCompletionTester {
 	}
 	
 	public void testComputeProposals(int repOffset,
-			int prefixLen, String... expectedProposals) throws ModelException {
+			int prefixLen, boolean removeObjectIntrinsics, String... expectedProposals) throws ModelException {
 		CodeCompletion__Common.testComputeProposalsWithRepLen(repOffset,
-				prefixLen, expectedProposals);
+				prefixLen, removeObjectIntrinsics, expectedProposals);
 	}
 	
 	public void testComputeProposalsWithRepLen(int repOffset, int prefixLen, 
-			int repLen, String... expectedProposals) throws ModelException {
+			int repLen, boolean removeObjectIntrinsics, String... expectedProposals) throws ModelException {
 		CodeCompletion__Common.testComputeProposalsWithRepLen(
-				repOffset, prefixLen, expectedProposals);
+				repOffset, prefixLen, removeObjectIntrinsics, expectedProposals);
 	}
 
 	
-	private static void testComputeProposalsWithRepLen(int repOffset, int prefixLen, 
+	private static void testComputeProposalsWithRepLen(int repOffset, int prefixLen, boolean removeObjectIntrinsics, 
 			String... expectedProposals) throws ModelException {
 		
 		final ArrayList<DefUnit> results;
@@ -71,12 +72,43 @@ public class CodeCompletion__Common implements ICodeCompletionTester {
 		
 		PrefixDefUnitSearch.doCompletionSearch(repOffset, 
 				srcModule, srcModule.getSource(), new CompletionSession(), defUnitAccepter);
-		
+
 		assertNotNull(results, "Code Completion Unavailable");
-		checkProposals(prefixLen, results, expectedProposals);
+
+		// TODO can be improved for better accuracy
+		ArrayList<DefUnit> newResults = results;
+		if(removeObjectIntrinsics) {
+			newResults = removeObjectIntrinsics(results, expectedProposals); 
+		}
+		checkProposals(prefixLen, newResults, expectedProposals);
 	}
 
 	
+	public static String[] OBJECT_INTRINSIC_DEFUNITS = new String[] {
+		"bit", "size_t", "ptrdiff_t", "hash_t", "string", "wstring", "dstring",
+		"printf(char*, ...)", "trace_term()", "Object", "Interface", "ClassInfo",
+		"OffsetTypeInfo", "TypeInfo",
+		"TypeInfo_Typedef",	"TypeInfo_Enum", "TypeInfo_Pointer", "TypeInfo_Array",
+		"TypeInfo_StaticArray","TypeInfo_AssociativeArray", "TypeInfo_Function", "TypeInfo_Delegate", 
+		"TypeInfo_Class", "TypeInfo_Interface", "TypeInfo_Struct", "TypeInfo_Tuple", "TypeInfo_Const",
+		"TypeInfo_Invariant",
+		"MemberInfo", "MemberInfo_field", "MemberInfo_function", "Exception", "Error" 
+	};
+	
+	public static ArrayList<DefUnit> removeObjectIntrinsics(ArrayList<DefUnit> results, String[] expectedProposals) {
+		ArrayList<DefUnit> newResults = new ArrayList<DefUnit>();
+		
+		for (int i = 0; i < results.size(); i++) {
+			String defName = results.get(i).toStringAsElement();
+			
+			if(ArrayUtil.contains(expectedProposals, defName) ||
+					!ArrayUtil.contains(CodeCompletion__Common.OBJECT_INTRINSIC_DEFUNITS, defName)) {
+				newResults.add(results.get(i));
+			}
+		}
+		return newResults;
+	}
+
 	protected static void checkProposals(int prefixLen,
 			ArrayList<DefUnit> results, String... expectedProposals) {
 		int expectedLength = expectedProposals.length;

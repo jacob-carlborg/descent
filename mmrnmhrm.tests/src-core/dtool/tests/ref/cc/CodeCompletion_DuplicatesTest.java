@@ -34,7 +34,7 @@ public class CodeCompletion_DuplicatesTest extends CodeCompletion__Common {
 	@Test
 	public void test1() throws Exception {
 		int offset = getMarkerStartOffset("/+@CC1+/");
-		ccTester.testComputeProposals(offset, 1, 
+		ccTester.testComputeProposals(offset, 1, false,
 				
 				"unc(int aaa, List!(Foo) aaa)",
 				"unc(int bbb, List!(Foo) bbb)",
@@ -50,7 +50,7 @@ public class CodeCompletion_DuplicatesTest extends CodeCompletion__Common {
 	@Test
 	public void test2() throws Exception {
 		int offset = getMarkerStartOffset("/+@CC2+/");
-		ccTester.testComputeProposals(offset, 1, 
+		ccTester.testComputeProposals(offset, 1, false,
 				"oolocalinner", "oolocal1", "Param", "oobarvar",
 				
 				"unc(int a, List!(Foo) a)",

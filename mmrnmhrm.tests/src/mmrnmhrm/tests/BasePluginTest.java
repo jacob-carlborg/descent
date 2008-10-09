@@ -58,7 +58,8 @@ public class BasePluginTest {
 		install.setName(DEFAULT_DMD2_INSTALL);
 		//TODO: configure path properly
 		install.setInstallLocation(new LazyFileHandle(LocalEnvironment.ENVIRONMENT_ID,
-				new Path("D:/devel/D.tools/dmd2.0/dmd/bin/dmd.exe")));
+				new Path("D:/devel/D.tools/dmd-archive/dmd-2.019/dmd/bin/dmd.exe")));
+		
 		
 		install.setInterpreterArgs(null);
 		install.setLibraryLocations(null);
