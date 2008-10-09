@@ -27,6 +27,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.dltk.core.IBuildpathEntry;
 import org.eclipse.dltk.core.IScriptProject;
+import org.eclipse.dltk.core.environment.EnvironmentPathUtils;
 
 import dtool.Logg;
 
@@ -263,7 +264,8 @@ public class DeeBuilder {
 		
 		// Substitute vars in cmdLine
 		for (int i = 0; i < cmdLine.length; i++) {
-			cmdLine[i] = cmdLine[i].replace("$DEEBUILDER.COMPILERPATH", compilerPath.toOSString());
+			String localCompilerPath = EnvironmentPathUtils.getLocalPath(compilerPath).toOSString();
+			cmdLine[i] = cmdLine[i].replace("$DEEBUILDER.COMPILERPATH", localCompilerPath);
 			//cmdLine[i] = cmdLine[i].replace("$DEEBUILDER.COMPILEREXEPATH", compilerPath.toOSString()); // TODO
 		}
 		
