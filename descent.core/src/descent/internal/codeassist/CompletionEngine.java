@@ -98,6 +98,7 @@ import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.NewExp;
 import descent.internal.compiler.parser.Package;
 import descent.internal.compiler.parser.PtrExp;
+import descent.internal.compiler.parser.STC;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.ScopeDsymbol;
 import descent.internal.compiler.parser.ScopeExp;
@@ -1611,7 +1612,17 @@ public class CompletionEngine extends Engine
 			if (sym instanceof ScopeDsymbol) {
 				ScopeDsymbol scopeDsymbol = ((ScopeDsymbol) sym).unlazy(semanticContext);
 				if (scopeDsymbol.members != null) {
-					completeScopeDsymbol(scopeDsymbol, false /* not only statics */, includes);
+					boolean onlyStatics = false;
+					
+					// If the completion is inside a method, and this is the time
+					// to suggest class members, if the class is the one defining the method,
+					// and the method is static, then only suggest static stuff
+					if (rootScope.func != null && rootScope.func.storage_class == STC.STCstatic
+							&& rootScope.func.parent == scopeDsymbol) {
+						onlyStatics = true;
+					}
+					
+					completeScopeDsymbol(scopeDsymbol, onlyStatics, includes);
 				}
 				if (scopeDsymbol.imports != null) {
 					// TODO optimize this

@@ -550,15 +550,15 @@ public class TemplateInstance extends ScopeDsymbol {
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
 		// Comment in Descent, we want template instances resolved when possible
-//		if (context.global.errors > 0) {
-//			if (0 == context.global.gag) {
-//				/* Trying to soldier on rarely generates useful messages
-//				 * at this point.
-//				 */
-//				fatal(context);
-//			}
-//			return;
-//		}
+		if (context.global.errors > 0) {
+			if (0 == context.global.gag) {
+				/* Trying to soldier on rarely generates useful messages
+				 * at this point.
+				 */
+				fatal(context);
+			}
+			return;
+		}
 
 		if (null != inst) // if semantic() was already run
 		{
