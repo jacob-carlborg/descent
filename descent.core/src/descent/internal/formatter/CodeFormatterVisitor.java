@@ -1541,7 +1541,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 		}
 		formatDeclarationBlock(node.declarations(), prefs.brace_position_for_anonymous_type, true);
 		
-		scribe.printNextToken(TOK.TOKsemicolon, prefs.insert_space_before_semicolon);
+		if (nextNonCommentToken() == TOK.TOKsemicolon) {
+			scribe.printNextToken(TOK.TOKsemicolon, prefs.insert_space_before_semicolon);
+		}
 		return false;
 	}
 	

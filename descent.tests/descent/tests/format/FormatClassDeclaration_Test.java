@@ -70,6 +70,18 @@ public class FormatClassDeclaration_Test extends AbstractFormatBrace_Test {
 				options
 				);
 	}
+	
+	public void testFormatNewInnerClassInsideMethod() throws Exception {
+		assertFormat(
+				"void foo() {\r\n" +
+					"\tbla.ble(new class() {\r\n" +
+						"\t\tint x;\r\n" +
+						"\t});\r\n" +
+				"}",
+				
+				"void foo() { bla.ble(new class() { int x; }); }"
+				);
+	}
 
 
 }
