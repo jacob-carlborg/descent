@@ -73,16 +73,16 @@ public class LibrariesWorkbookPage extends BuildPathBasePage {
 	private Control fSWTControl;
 	private final IWorkbenchPreferenceContainer fPageContainer;
 
-	private final int IDX_ADDJAR= 0;
-	private final int IDX_ADDEXT= 1;
-	private final int IDX_ADDVAR= 2;
-	private final int IDX_ADDLIB= 3;
-	private final int IDX_ADDFOL= 4;
+//	private final int IDX_ADDJAR= 0;
+	private final int IDX_ADDEXT= 0;
+//	private final int IDX_ADDVAR= 2;
+//	private final int IDX_ADDLIB= 3;
+//	private final int IDX_ADDFOL= 4;
 	
-	private final int IDX_EDIT= 6;
-	private final int IDX_REMOVE= 7;
+	private final int IDX_EDIT= 2;
+	private final int IDX_REMOVE= 3;
 
-	private final int IDX_REPLACE= 9;
+//	private final int IDX_REPLACE= 9;
 		
 	public LibrariesWorkbookPage(CheckedListDialogField classPathList, IWorkbenchPreferenceContainer pageContainer) {
 		fClassPathList= classPathList;
@@ -90,16 +90,16 @@ public class LibrariesWorkbookPage extends BuildPathBasePage {
 		fSWTControl= null;
 		
 		String[] buttonLabels= new String[] { 
-			NewWizardMessages.LibrariesWorkbookPage_libraries_addjar_button,	
+//			NewWizardMessages.LibrariesWorkbookPage_libraries_addjar_button,	
 			NewWizardMessages.LibrariesWorkbookPage_libraries_addextjar_button, 
-			NewWizardMessages.LibrariesWorkbookPage_libraries_addvariable_button, 
-			NewWizardMessages.LibrariesWorkbookPage_libraries_addlibrary_button, 
-			NewWizardMessages.LibrariesWorkbookPage_libraries_addclassfolder_button, 
+//			NewWizardMessages.LibrariesWorkbookPage_libraries_addvariable_button, 
+//			NewWizardMessages.LibrariesWorkbookPage_libraries_addlibrary_button, 
+//			NewWizardMessages.LibrariesWorkbookPage_libraries_addclassfolder_button, 
 			/* */ null,  
 			NewWizardMessages.LibrariesWorkbookPage_libraries_edit_button, 
 			NewWizardMessages.LibrariesWorkbookPage_libraries_remove_button,
 			/* */ null,  
-			NewWizardMessages.LibrariesWorkbookPage_libraries_replace_button
+//			NewWizardMessages.LibrariesWorkbookPage_libraries_replace_button
 		};		
 				
 		LibrariesAdapter adapter= new LibrariesAdapter();
@@ -110,7 +110,7 @@ public class LibrariesWorkbookPage extends BuildPathBasePage {
 
 		fLibrariesList.enableButton(IDX_REMOVE, false);
 		fLibrariesList.enableButton(IDX_EDIT, false);
-		fLibrariesList.enableButton(IDX_REPLACE, false);
+//		fLibrariesList.enableButton(IDX_REPLACE, false);
 
 		fLibrariesList.setViewerSorter(new CPListElementSorter());
 
@@ -218,30 +218,30 @@ public class LibrariesWorkbookPage extends BuildPathBasePage {
 	private void libaryPageCustomButtonPressed(DialogField field, int index) {
 		CPListElement[] libentries= null;
 		switch (index) {
-		case IDX_ADDJAR: /* add jar */
-			libentries= openJarFileDialog(null);
-			break;
+//		case IDX_ADDJAR: /* add jar */
+//			libentries= openJarFileDialog(null);
+//			break;
 		case IDX_ADDEXT: /* add external jar */
 			libentries= openExtJarFileDialog(null);
 			break;
-		case IDX_ADDVAR: /* add variable */
-			libentries= openVariableSelectionDialog(null);
-			break;
-		case IDX_ADDLIB: /* add library */
-			libentries= openContainerSelectionDialog(null);
-			break;
-		case IDX_ADDFOL: /* add folder */
-			libentries= openClassFolderDialog(null);
-			break;			
+//		case IDX_ADDVAR: /* add variable */
+//			libentries= openVariableSelectionDialog(null);
+//			break;
+//		case IDX_ADDLIB: /* add library */
+//			libentries= openContainerSelectionDialog(null);
+//			break;
+//		case IDX_ADDFOL: /* add folder */
+//			libentries= openClassFolderDialog(null);
+//			break;			
 		case IDX_EDIT: /* edit */
 			editEntry();
 			return;
 		case IDX_REMOVE: /* remove */
 			removeEntry();
 			return;
-		case IDX_REPLACE: /* replace */
-			replaceJarFile();
-			return;
+//		case IDX_REPLACE: /* replace */
+//			replaceJarFile();
+//			return;
 		}
 		if (libentries != null) {
 			int nElementsChosen= libentries.length;					
@@ -257,14 +257,14 @@ public class LibrariesWorkbookPage extends BuildPathBasePage {
 					curr.setAttribute(CPListElement.JAVADOC, BuildPathSupport.guessJavadocLocation(curr));
 				}
 			}
-			if (!elementsToAdd.isEmpty() && (index == IDX_ADDFOL)) {
-				askForAddingExclusionPatternsDialog(elementsToAdd);
-			}
+//			if (!elementsToAdd.isEmpty() && (index == IDX_ADDFOL)) {
+//				askForAddingExclusionPatternsDialog(elementsToAdd);
+//			}
 			
 			fLibrariesList.addElements(elementsToAdd);
-			if (index == IDX_ADDLIB || index == IDX_ADDVAR) {
-				fLibrariesList.refresh();
-			}
+//			if (index == IDX_ADDLIB || index == IDX_ADDVAR) {
+//				fLibrariesList.refresh();
+//			}
 			fLibrariesList.postSetSelection(new StructuredSelection(libentries));
 		}
 	}
@@ -573,14 +573,14 @@ public class LibrariesWorkbookPage extends BuildPathBasePage {
 		List selElements= fLibrariesList.getSelectedElements();
 		fLibrariesList.enableButton(IDX_EDIT, canEdit(selElements));
 		fLibrariesList.enableButton(IDX_REMOVE, canRemove(selElements));
-		fLibrariesList.enableButton(IDX_REPLACE, getSelectedPackageFragmentRoot() != null);
+//		fLibrariesList.enableButton(IDX_REPLACE, getSelectedPackageFragmentRoot() != null);
 		
 		boolean noAttributes= containsOnlyTopLevelEntries(selElements);
 		fLibrariesList.enableButton(IDX_ADDEXT, noAttributes);
-		fLibrariesList.enableButton(IDX_ADDFOL, noAttributes);
-		fLibrariesList.enableButton(IDX_ADDJAR, noAttributes);
-		fLibrariesList.enableButton(IDX_ADDLIB, noAttributes);
-		fLibrariesList.enableButton(IDX_ADDVAR, noAttributes);
+//		fLibrariesList.enableButton(IDX_ADDFOL, noAttributes);
+//		fLibrariesList.enableButton(IDX_ADDJAR, noAttributes);
+//		fLibrariesList.enableButton(IDX_ADDLIB, noAttributes);
+//		fLibrariesList.enableButton(IDX_ADDVAR, noAttributes);
 	}
 	
 	private boolean canEdit(List selElements) {

@@ -650,6 +650,7 @@
             <keywordReference id="descent.ui.organizeimports"/>
       </page>
       -->
+      <!--
       <page
             name="%typeFilterPrefName"
             category="descent.ui.preferences.AppearancePreferencePage"
@@ -657,6 +658,7 @@
             id="descent.ui.preferences.TypeFilterPreferencePage">
             <keywordReference id="descent.ui.typefilter"/>
       </page>
+      -->
       <page
             name="%codeFormatterPrefName"
             category="descent.ui.preferences.CodeStylePreferencePage"
@@ -664,6 +666,7 @@
             id="descent.ui.preferences.CodeFormatterPreferencePage">
             <keywordReference id="descent.ui.formatter"/>
       </page>
+      <!--
       <page
             name="%buildPathPrefName"
             category="descent.ui.preferences.JavaBasePreferencePage"
@@ -671,6 +674,7 @@
             id="descent.ui.preferences.BuildPathPreferencePage">
             <keywordReference id="descent.ui.buildpathoptions"/>
       </page>
+      -->
       <!--
       <page
             name="%classPathVarPrefName"
@@ -828,6 +832,7 @@
          <keywordReference id="descent.ui.sortorder"/>
       </page>
       -->
+      <!--
       <page
             name="%installJREPageName"
             category="descent.ui.preferences.JavaBasePreferencePage"
@@ -835,6 +840,7 @@
             id="descent.debug.ui.preferences.VMPreferencePage">
          <keywordReference id="descent.debug.ui.jres"/>
       </page>
+      -->
       <!--
       <page
             category="descent.ui.preferences.CompliancePreferencePage"

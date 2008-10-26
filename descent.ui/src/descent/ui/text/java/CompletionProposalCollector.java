@@ -96,7 +96,7 @@ public class CompletionProposalCollector extends CompletionRequestor {
 	/** Triggers for variables. Do not modify. */
 	protected final static char[] VAR_TRIGGER= new char[] { '\t', ' ', '=', ';', '.' };
 	/** Triggers for packages. Do not modify. */
-	protected final static char[] PACKAGE_TRIGGER= new char[] { '.' };
+	protected final static char[] PACKAGE_TRIGGER= new char[] { '.', ';' };
 
 	private final CompletionProposalLabelProvider fLabelProvider= new CompletionProposalLabelProvider();
 	private final ImageDescriptorRegistry fRegistry= JavaPlugin.getImageDescriptorRegistry();

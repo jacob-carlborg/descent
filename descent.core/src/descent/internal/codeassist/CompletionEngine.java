@@ -1121,16 +1121,21 @@ public class CompletionEngine extends Engine
 		// 
 		// that is, "this" is next
 		
-		
 		if (node.e1 instanceof IntegerExp && node.sourceE1 instanceof CompletionOnDotIdExp) {
 			CompletionOnDotIdExp cip = (CompletionOnDotIdExp) node.sourceE1;
 			completeExpression(cip.e1, node.ident);
+			return;
 		}
 		
 		completeExpression(node.e1, node.ident);
 	}
 	
 	private void completeTypeIdentifier(CompletionOnTypeIdentifier node) throws JavaModelException {
+		if ((node.idents == null || node.idents.isEmpty()) && 
+			(node.ident == null || node.ident.ident == null || node.ident.ident.length == 0)) {
+			return;
+		}
+		
 		isCompletingTypeIdentifier = true;
 		
 		doSemantic();

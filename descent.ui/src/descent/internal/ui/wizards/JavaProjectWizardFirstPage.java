@@ -315,7 +315,7 @@ public class JavaProjectWizardFirstPage extends WizardPage {
 			String id= NewJavaProjectPreferencePage.ID;
 			PreferencesUtil.createPreferenceDialogOn(getShell(), id, new String[] { id }, null).open();
 			fDetectGroup.handlePossibleJVMChange();
-			fJREGroup.handlePossibleJVMChange();
+//			fJREGroup.handlePossibleJVMChange();
 		}
 	}
 	
@@ -522,14 +522,14 @@ public class JavaProjectWizardFirstPage extends WizardPage {
 		}
 		
 		public void handlePossibleJVMChange() {
-			String selectedCompliance= fJREGroup.getSelectedCompilerCompliance();
-			if (selectedCompliance == null) {
-				selectedCompliance= JavaCore.getOption(JavaCore.COMPILER_COMPLIANCE);
-			}
-			IVMInstall selectedJVM= fJREGroup.getSelectedJVM();
-			if (selectedJVM == null) {
-				selectedJVM= JavaRuntime.getDefaultVMInstall();
-			}
+//			String selectedCompliance= fJREGroup.getSelectedCompilerCompliance();
+//			if (selectedCompliance == null) {
+//				selectedCompliance= JavaCore.getOption(JavaCore.COMPILER_COMPLIANCE);
+//			}
+//			IVMInstall selectedJVM= fJREGroup.getSelectedJVM();
+//			if (selectedJVM == null) {
+//				selectedJVM= JavaRuntime.getDefaultVMInstall();
+//			}
 			/*
 			String jvmCompliance= JavaModelUtil.getCompilerCompliance(selectedJVM, JavaCore.VERSION_1_x);
 			if (!selectedCompliance.equals(jvmCompliance) && (JavaModelUtil.is50OrHigher(selectedCompliance) || JavaModelUtil.is50OrHigher(jvmCompliance))) {
@@ -597,7 +597,7 @@ public class JavaProjectWizardFirstPage extends WizardPage {
 			data.put(PropertyAndPreferencePage.DATA_NO_LINK, Boolean.TRUE);
 			PreferencesUtil.createPreferenceDialogOn(getShell(), complianceId, new String[] { jreID, complianceId  }, data).open();
 			
-			fJREGroup.handlePossibleJVMChange();
+//			fJREGroup.handlePossibleJVMChange();
 			handlePossibleJVMChange();
 		}
 	}
@@ -683,8 +683,8 @@ public class JavaProjectWizardFirstPage extends WizardPage {
 
 	private NameGroup fNameGroup;
 	private LocationGroup fLocationGroup;
-	private LayoutGroup fLayoutGroup;
-	private JREGroup fJREGroup;
+//	private LayoutGroup fLayoutGroup;
+//	private JREGroup fJREGroup;
 	private DetectGroup fDetectGroup;
 	private Validator fValidator;
 
@@ -728,14 +728,14 @@ public class JavaProjectWizardFirstPage extends WizardPage {
 		// create UI elements
 		fNameGroup= new NameGroup(composite, fInitialName);
 		fLocationGroup= new LocationGroup(composite);
-		fJREGroup= new JREGroup(composite);
-		fLayoutGroup= new LayoutGroup(composite);
+//		fJREGroup= new JREGroup(composite);
+//		fLayoutGroup= new LayoutGroup(composite);
 		fDetectGroup= new DetectGroup(composite);
 		
 		// establish connections
 		fNameGroup.addObserver(fLocationGroup);
-		fDetectGroup.addObserver(fLayoutGroup);
-		fDetectGroup.addObserver(fJREGroup);
+//		fDetectGroup.addObserver(fLayoutGroup);
+//		fDetectGroup.addObserver(fJREGroup);
 		fLocationGroup.addObserver(fDetectGroup);
 
 		// initialize all elements
@@ -797,21 +797,24 @@ public class JavaProjectWizardFirstPage extends WizardPage {
 	}
 	
 	public boolean isSrcBin() {
-		return fLayoutGroup.isSrcBin();
+//		return fLayoutGroup.isSrcBin();
+		return false;
 	}
 	
 	/**
 	 * @return the selected JVM, or <code>null</code> iff the default JVM should be used
 	 */
 	public IVMInstall getJVM() {
-		return fJREGroup.getSelectedJVM();
+//		return fJREGroup.getSelectedJVM();
+		return null;
 	}
 	
 	/**
 	 * @return the selected Compiler Compliance, or <code>null</code> iff the default Compiler Compliance should be used
 	 */
 	public String getCompilerCompliance() {
-		return fJREGroup.getSelectedCompilerCompliance();
+//		return fJREGroup.getSelectedCompilerCompliance();
+		return null;
 	}
 	
 	/*

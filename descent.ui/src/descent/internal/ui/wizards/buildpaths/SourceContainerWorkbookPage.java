@@ -128,7 +128,7 @@ public class SourceContainerWorkbookPage extends BuildPathBasePage {
 	
 	private StringDialogField fOutputLocationField;
 	
-	private SelectionButtonDialogField fUseFolderOutputs;
+//	private SelectionButtonDialogField fUseFolderOutputs;
 	
 	private final int IDX_ADD= 0;
 	private final int IDX_ADD_LINK= 1;
@@ -161,10 +161,10 @@ public class SourceContainerWorkbookPage extends BuildPathBasePage {
 		fFoldersList.setViewerSorter(new CPListElementSorter());
 		fFoldersList.enableButton(IDX_EDIT, false);
 		
-		fUseFolderOutputs= new SelectionButtonDialogField(SWT.CHECK);
-		fUseFolderOutputs.setSelection(false);
-		fUseFolderOutputs.setLabelText(NewWizardMessages.SourceContainerWorkbookPage_folders_check); 
-		fUseFolderOutputs.setDialogFieldListener(adapter);
+//		fUseFolderOutputs= new SelectionButtonDialogField(SWT.CHECK);
+//		fUseFolderOutputs.setSelection(false);
+//		fUseFolderOutputs.setLabelText(NewWizardMessages.SourceContainerWorkbookPage_folders_check); 
+//		fUseFolderOutputs.setDialogFieldListener(adapter);
 	}
 	
 	public void init(IJavaProject jproject) {
@@ -189,7 +189,7 @@ public class SourceContainerWorkbookPage extends BuildPathBasePage {
 			}
 		}
 		fFoldersList.setElements(folders);
-		fUseFolderOutputs.setSelection(useFolderOutputs);
+//		fUseFolderOutputs.setSelection(useFolderOutputs);
 		
 		for (int i= 0; i < folders.size(); i++) {
 			CPListElement cpe= (CPListElement) folders.get(i);
@@ -206,7 +206,7 @@ public class SourceContainerWorkbookPage extends BuildPathBasePage {
 		PixelConverter converter= new PixelConverter(parent);
 		Composite composite= new Composite(parent, SWT.NONE);
 		
-		LayoutUtil.doDefaultLayout(composite, new DialogField[] { fFoldersList, fUseFolderOutputs , fOutputLocationField}, true, SWT.DEFAULT, SWT.DEFAULT);
+		LayoutUtil.doDefaultLayout(composite, new DialogField[] { fFoldersList, /* fUseFolderOutputs , */ fOutputLocationField}, true, SWT.DEFAULT, SWT.DEFAULT);
 		LayoutUtil.setHorizontalGrabbing(fFoldersList.getTreeControl(null));
 		
 		int buttonBarWidth= converter.convertWidthInCharsToPixels(24);
@@ -259,7 +259,7 @@ public class SourceContainerWorkbookPage extends BuildPathBasePage {
 
 		public Object[] getChildren(TreeListDialogField field, Object element) {
 			if (element instanceof CPListElement) {
-				return ((CPListElement) element).getChildren(!fUseFolderOutputs.isSelected());
+//				return ((CPListElement) element).getChildren(!fUseFolderOutputs.isSelected());
 			}
 			return EMPTY_ARR;
 		}
@@ -507,16 +507,17 @@ public class SourceContainerWorkbookPage extends BuildPathBasePage {
 			return;
 		}
 		
-		if (field == fUseFolderOutputs) {
-			if (!fUseFolderOutputs.isSelected()) {
-				int nFolders= fFoldersList.getSize();
-				for (int i= 0; i < nFolders; i++) {
-					CPListElement cpe= (CPListElement) fFoldersList.getElement(i);
-					cpe.setAttribute(CPListElement.OUTPUT, null);
-				}
-			}
-			fFoldersList.refresh();
-		} else if (field == fFoldersList) {
+//		if (field == fUseFolderOutputs) {
+//			if (!fUseFolderOutputs.isSelected()) {
+//				int nFolders= fFoldersList.getSize();
+//				for (int i= 0; i < nFolders; i++) {
+//					CPListElement cpe= (CPListElement) fFoldersList.getElement(i);
+//					cpe.setAttribute(CPListElement.OUTPUT, null);
+//				}
+//			}
+//			fFoldersList.refresh();
+//		} else 
+		if (field == fFoldersList) {
 			updateClasspathList();
 		}
 	}	

@@ -104,7 +104,7 @@ public class BuildPathsPropertyPage extends PropertyPage implements IStatusChang
 		IDialogSettings pageSettings= javaSettings.getSection(PAGE_SETTINGS);
 		if (pageSettings == null) {
 			pageSettings= javaSettings.addNewSection(PAGE_SETTINGS);
-			pageSettings.put(INDEX, 3);
+			pageSettings.put(INDEX, 2);
 		}
 		return pageSettings;
 	}

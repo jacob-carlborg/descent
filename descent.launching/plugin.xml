@@ -67,5 +67,4 @@
             class="descent.internal.launching.VariableClasspathEntry">
       </runtimeClasspathEntry>
    </extension>
-
 </plugin>

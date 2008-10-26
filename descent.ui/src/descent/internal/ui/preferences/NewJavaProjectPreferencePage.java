@@ -85,24 +85,26 @@ public class NewJavaProjectPreferencePage extends PreferencePage implements IWor
 	private static String fgDefaultEncoding= System.getProperty("file.encoding"); //$NON-NLS-1$
 
 	public static IClasspathEntry[] getDefaultJRELibrary() {
-		IPreferenceStore store= JavaPlugin.getDefault().getPreferenceStore();
-		
-		String str= store.getString(CLASSPATH_JRELIBRARY_LIST);
-		int index= store.getInt(CLASSPATH_JRELIBRARY_INDEX);
-		
-		StringTokenizer tok= new StringTokenizer(str, ";"); //$NON-NLS-1$
-		while (tok.hasMoreTokens() && index > 0) {
-			tok.nextToken();
-			index--;
-		}
-		
-		if (tok.hasMoreTokens()) {
-			IClasspathEntry[] res= decodeJRELibraryClasspathEntries(tok.nextToken());
-			if (res.length > 0) {
-				return res;
-			}
-		}
-		return new IClasspathEntry[] { getJREContainerEntry() };	
+		// Descent: we don't want a Standard Library entry
+		return new IClasspathEntry[0];
+//		IPreferenceStore store= JavaPlugin.getDefault().getPreferenceStore();
+//		
+//		String str= store.getString(CLASSPATH_JRELIBRARY_LIST);
+//		int index= store.getInt(CLASSPATH_JRELIBRARY_INDEX);
+//		
+//		StringTokenizer tok= new StringTokenizer(str, ";"); //$NON-NLS-1$
+//		while (tok.hasMoreTokens() && index > 0) {
+//			tok.nextToken();
+//			index--;
+//		}
+//		
+//		if (tok.hasMoreTokens()) {
+//			IClasspathEntry[] res= decodeJRELibraryClasspathEntries(tok.nextToken());
+//			if (res.length > 0) {
+//				return res;
+//			}
+//		}
+//		return new IClasspathEntry[] { getJREContainerEntry() };	
 	}			
 	
 	// JRE Entry
@@ -271,12 +273,13 @@ public class NewJavaProjectPreferencePage extends PreferencePage implements IWor
 	
 	private static String getDefaultJRELibraries() {
 		StringBuffer buf= new StringBuffer();
-		IClasspathEntry cntentry= getJREContainerEntry();
-		buf.append(encodeJRELibrary(PreferencesMessages.NewJavaProjectPreferencePage_jre_container_description, new IClasspathEntry[] { cntentry} )); 
-		buf.append(';');
-		IClasspathEntry varentry= getJREVariableEntry();
-		buf.append(encodeJRELibrary(PreferencesMessages.NewJavaProjectPreferencePage_jre_variable_description, new IClasspathEntry[] { varentry })); 
-		buf.append(';');
+		// Descent: we don't want a Standard Library entry
+//		IClasspathEntry cntentry= getJREContainerEntry();
+//		buf.append(encodeJRELibrary(PreferencesMessages.NewJavaProjectPreferencePage_jre_container_description, new IClasspathEntry[] { cntentry} )); 
+//		buf.append(';');
+//		IClasspathEntry varentry= getJREVariableEntry();
+//		buf.append(encodeJRELibrary(PreferencesMessages.NewJavaProjectPreferencePage_jre_variable_description, new IClasspathEntry[] { varentry })); 
+//		buf.append(';');
 		return buf.toString();
 	}
 	

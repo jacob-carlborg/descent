@@ -240,12 +240,13 @@ public class BuildPathsBlock {
 		Image cpoImage= JavaPluginImages.DESC_TOOL_CLASSPATH_ORDER.createImage();
 		composite.addDisposeListener(new ImageDisposer(cpoImage));	
 		
-		ClasspathOrderingWorkbookPage ordpage= new ClasspathOrderingWorkbookPage(fClassPathList);		
-		item= new TabItem(folder, SWT.NONE);
-		item.setText(NewWizardMessages.BuildPathsBlock_tab_order); 
-		item.setImage(cpoImage);
-		item.setData(ordpage);
-		item.setControl(ordpage.getControl(folder));
+		// Descent: we don't want the Order & Export settings
+//		ClasspathOrderingWorkbookPage ordpage= new ClasspathOrderingWorkbookPage(fClassPathList);		
+//		item= new TabItem(folder, SWT.NONE);
+//		item.setText(NewWizardMessages.BuildPathsBlock_tab_order); 
+//		item.setImage(cpoImage);
+//		item.setData(ordpage);
+//		item.setControl(ordpage.getControl(folder));
 				
 		if (fCurrJProject != null) {
 			fSourceContainerPage.init(fCurrJProject);
