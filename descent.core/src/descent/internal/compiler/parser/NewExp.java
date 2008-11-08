@@ -234,7 +234,7 @@ public class NewExp extends Expression {
 					}
 				}
 
-				FuncDeclaration f = cd.ctor;
+				FuncDeclaration f = cd.ctor(context);
 				if (f != null) {
 					f = f.overloadResolve(loc, null, arguments, context, this);
 					checkDeprecated(sc, f, context);
@@ -263,10 +263,10 @@ public class NewExp extends Expression {
 					}
 				}
 
-				if (cd.aggNew != null) {
+				if (cd.aggNew(context) != null) {
 					Expression e;
 
-					f = cd.aggNew;
+					f = cd.aggNew(context);
 
 					// Prepend the uint size argument to newargs[]
 					e = new IntegerExp(loc, cd.size(context), Type.tuns32);
@@ -293,7 +293,7 @@ public class NewExp extends Expression {
 			} else if (tb.ty == Tstruct) {
 				TypeStruct ts = (TypeStruct) tb;
 				StructDeclaration sd = ts.sym;
-				FuncDeclaration f = sd.aggNew;
+				FuncDeclaration f = sd.aggNew(context);
 				TypeFunction tf;
 
 				if (arguments != null && arguments.size() > 0) {

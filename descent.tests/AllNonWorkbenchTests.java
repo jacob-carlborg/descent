@@ -129,7 +129,7 @@ public class AllNonWorkbenchTests {
 					| FORMATTER 
 					| LEXER_PARSER 
 					| SIGNATURE 
-//					| REWRITE 
+//					| REWRITE
 					| TRACE
 					;
 	

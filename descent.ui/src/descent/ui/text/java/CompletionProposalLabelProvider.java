@@ -76,7 +76,9 @@ public class CompletionProposalLabelProvider {
 		
 		StringBuffer sb1 = new StringBuffer();
 		
-		appendTemplateParameterList(sb1, methodProposal);
+		if (methodProposal.getKind() != CompletionProposal.OP_CALL) {
+			appendTemplateParameterList(sb1, methodProposal);
+		}
 		
 		StringBuffer sb2 = new StringBuffer();
 		if (methodProposal.getKind() == CompletionProposal.METHOD_REF ||

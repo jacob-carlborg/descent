@@ -34,7 +34,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 	public BaseClasses baseclasses;
 	
 	public ClassDeclaration baseClass; // null only if this is Object
-	public CtorDeclaration ctor;
+	private CtorDeclaration ctor;
 	public CtorDeclaration defaultCtor; // default constructor
 	public FuncDeclarations dtors; // Array of destructors
 	public FuncDeclaration staticCtor;
@@ -56,6 +56,9 @@ public class ClassDeclaration extends AggregateDeclaration {
 	public boolean cpp;				// !=0 if this is a C++ interface
 	
 	public ModuleBuilder builder;
+	
+	// Scope used in the initializeSpecial method
+	private Scope specialInitializeScope;
 
 	public ClassDeclaration(Loc loc, char[] id) { 
 		this(loc, id, null);
@@ -707,6 +710,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		}
 
 		sc = sc.push(this);
+		specialInitializeScope = sc;
 		
 		if (context.isD2()) {
 		    sc.stc &= ~(STCfinal | STCauto | STCscope | STCstatic |
@@ -769,75 +773,10 @@ public class ClassDeclaration extends AggregateDeclaration {
 
 		structsize = sc.offset;
 		// members.print();
-
-		/*
-		 * Look for special member functions. They must be in this class, not in
-		 * a base class.
-		 */
-		ctor = (CtorDeclaration) search(loc, Id.ctor, 0, context);
-		if (ctor != null && ctor.toParent() != this) {
-			ctor = null;
-		}
-
-		// dtor = (DtorDeclaration *)search(Id::dtor, 0);
-		// if (dtor && dtor.toParent() != this)
-		// dtor = NULL;
-
-		// inv = (InvariantDeclaration *)search(Id::classInvariant, 0);
-		// if (inv && inv.toParent() != this)
-		// inv = NULL;
-
-		// Can be in base class
-		aggNew = (NewDeclaration) search(loc, Id.classNew, 0, context);
-		aggDelete = (DeleteDeclaration) search(loc, Id.classDelete, 0, context);
-
-		// If this class has no constructor, but base class does, create
-		// a constructor:
-		// this() { }
-		if (ctor == null && baseClass != null && baseClass.ctor != null) {
-			// toChars());
-			CtorDeclaration ctor = new CtorDeclaration(loc, null, 0);
-			ctor.synthetic = true;
-			ctor.fbody = new CompoundStatement(loc, new Statements());
-			this.ctor = ctor;
-			
-			members.add(ctor);
-			ctor.addMember(sc, this, 1, context);
-			sc = scsave; // why? What about sc.nofree?
-			sc.offset = structsize;
-			ctor.semantic(sc, context);
-			defaultCtor = ctor;
-		}
-
-		 // Allocate instance of each new interface
-        for (i = 0; i < vtblInterfaces.size(); i++)
-        {
-            BaseClass b = vtblInterfaces.get(i);
-            int thissize = Type.PTRSIZE;
-            
-            int[] p_sc_offset = new int[]
-            { sc.offset };
-            alignmember(structalign, thissize, p_sc_offset);
-            sc.offset = p_sc_offset[0];
-            // SEMANTIC
-            if (b.offset != 0) {
-            	continue;
-            }
-            Assert.isTrue(b.offset == 0);
-            b.offset = sc.offset; // Take care of single inheritance offsets
-            while (b.baseInterfaces.size() > 0)
-            {
-                b = b.baseInterfaces.get(0);
-                b.offset = sc.offset;
-            }
-            
-            sc.offset += thissize;
-            if (alignsize < thissize) {
-				alignsize = thissize;
-			}
-        }
-
-		structsize = sc.offset;
+		
+		// Descent: changed to defer this part of the semantic analysis
+		// see intiializeSpecial()
+		
 		sizeok = 1;
 
 		context.Module_dprogress++;
@@ -1032,6 +971,92 @@ public class ClassDeclaration extends AggregateDeclaration {
 	@Override
 	public ClassDeclaration unlazy(char[] prefix, SemanticContext context) {
 		return this;
+	}
+	
+	@Override
+	protected void initializeSpecial(SemanticContext context) {
+		Scope sc = specialInitializeScope;
+		
+		/*
+		 * Look for special member functions. They must be in this class, not in
+		 * a base class.
+		 */
+		ctor = (CtorDeclaration) search(loc, Id.ctor, 0, context);
+		if (ctor != null && ctor.toParent() != this) {
+			ctor = null;
+		}
+
+		// dtor = (DtorDeclaration *)search(Id::dtor, 0);
+		// if (dtor && dtor.toParent() != this)
+		// dtor = NULL;
+
+		// inv = (InvariantDeclaration *)search(Id::classInvariant, 0);
+		// if (inv && inv.toParent() != this)
+		// inv = NULL;
+
+		// Can be in base class
+		aggNew((NewDeclaration) search(loc, Id.classNew, 0, context));
+		aggDelete((DeleteDeclaration) search(loc, Id.classDelete, 0, context));
+
+		// If this class has no constructor, but base class does, create
+		// a constructor:
+		// this() { }
+		if (ctor == null && baseClass != null && baseClass.ctor != null) {
+			// toChars());
+			CtorDeclaration ctor = new CtorDeclaration(loc, null, 0);
+			ctor.synthetic = true;
+			ctor.fbody = new CompoundStatement(loc, new Statements());
+			this.ctor = ctor;
+			
+			members.add(ctor);
+			ctor.addMember(sc, this, 1, context);
+			sc = scope; // why? What about sc.nofree?
+			sc.offset = structsize;
+			ctor.semantic(sc, context);
+			defaultCtor = ctor;
+		}
+
+		 // Allocate instance of each new interface
+        for (int i = 0; i < vtblInterfaces.size(); i++)
+        {
+            BaseClass b = vtblInterfaces.get(i);
+            int thissize = Type.PTRSIZE;
+            
+            int[] p_sc_offset = new int[]
+            { sc.offset };
+            alignmember(structalign, thissize, p_sc_offset);
+            sc.offset = p_sc_offset[0];
+            // SEMANTIC
+            if (b.offset != 0) {
+            	continue;
+            }
+            Assert.isTrue(b.offset == 0);
+            b.offset = sc.offset; // Take care of single inheritance offsets
+            while (b.baseInterfaces.size() > 0)
+            {
+                b = b.baseInterfaces.get(0);
+                b.offset = sc.offset;
+            }
+            
+            sc.offset += thissize;
+            if (alignsize < thissize) {
+				alignsize = thissize;
+			}
+        }
+
+		structsize = sc.offset;
+	}
+	
+	public CtorDeclaration ctor(SemanticContext context) {
+		if (!specialInitialized) {
+			specialInitialized = true;
+			initializeSpecial(context);
+		}
+		return ctor;
+	}
+	
+	public void ctor(CtorDeclaration ctor) {
+		this.ctor = ctor;
 	}
 
 }

@@ -136,7 +136,10 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 				return replacement + "()"; //$NON-NLS-1$
 			}
 			
-			int count= templateParameterNames.length + parameterNames.length;
+			// If it's a template opCall, don't suggest template parameters
+			int templateParameterCount = isOpCall() ? 0 : templateParameterNames.length;
+			
+			int count= templateParameterCount + parameterNames.length;
 			fArgumentOffsets= new int[count];
 			fArgumentLengths= new int[count];
 			
@@ -144,13 +147,13 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 			
 			FormatterPrefs prefs= getFormatterPrefs();
 			
-			if (templateParameterNames.length > 0) {
+			if (templateParameterCount > 0) {
 				buffer.append(EXCL);
 				buffer.append(LPAREN);
 				
 				setCursorPosition(buffer.length());
 				
-				for (int i= 0; i != templateParameterNames.length; i++) {
+				for (int i= 0; i < templateParameterCount; i++) {
 					if (i != 0) {
 						if (prefs.beforeTypeArgumentComma)
 							buffer.append(SPACE);
@@ -174,7 +177,7 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 				if (prefs.afterAssignmentOperator)
 					buffer.append(SPACE);
 				
-				if (templateParameterNames.length == 0) {
+				if (templateParameterCount == 0) {
 					setCursorPosition(buffer.length());
 				}
 				
@@ -184,7 +187,7 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 					fArgumentLengths[0]= parameterNames[0].length;
 				}
 			} else if (isGetter()) {
-				if (templateParameterNames.length == 0) {
+				if (templateParameterCount == 0) {
 					setCursorPosition(buffer.length());
 				}
 			} else {
@@ -193,7 +196,7 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 					buffer.append(SPACE);
 				buffer.append(LPAREN);
 				
-				if (templateParameterNames.length == 0) {
+				if (templateParameterCount == 0) {
 					setCursorPosition(buffer.length());
 				}			
 				
@@ -209,9 +212,9 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 							buffer.append(SPACE);
 					}
 					
-					fArgumentOffsets[i + templateParameterNames.length]= buffer.length();
+					fArgumentOffsets[i + templateParameterCount]= buffer.length();
 					buffer.append(parameterNames[i]);
-					fArgumentLengths[i + templateParameterNames.length]= parameterNames[i].length;
+					fArgumentLengths[i + templateParameterCount]= parameterNames[i].length;
 				}
 				
 				if (prefs.beforeFunctionClosingParen)
@@ -229,6 +232,10 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 		}
 	}
 	
+	private boolean isOpCall() {
+		return fProposal.getKind() == CompletionProposal.OP_CALL;
+	}
+
 	protected String computeReplacementString0() {
 		String replacement= super.computeReplacementString();
 

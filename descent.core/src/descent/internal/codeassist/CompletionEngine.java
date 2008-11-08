@@ -1208,17 +1208,17 @@ public class CompletionEngine extends Engine
 	private void suggestConstructors(ClassDeclaration sym) {
 		ClassDeclaration cd = sym.unlazy(this.currentName, semanticContext);
 		
-		Declaration func = cd.ctor;
+		Declaration func = cd.ctor(semanticContext);
 		
 		HashtableOfCharArrayAndObject hash = new HashtableOfCharArrayAndObject();
 		
 		if (func == null && !((ClassDeclaration) sym).isAbstract()) {
 			// Suggest default constructor
-			cd.ctor = new CtorDeclaration(Loc.ZERO, new Arguments(), 0);
-			cd.ctor.type = new TypeFunction(new Arguments(), cd.type, 0, LINK.LINKd);
-			cd.ctor.parent = cd;
+			cd.ctor(new CtorDeclaration(Loc.ZERO, new Arguments(), 0));
+			cd.ctor(semanticContext).type = new TypeFunction(new Arguments(), cd.type, 0, LINK.LINKd);
+			cd.ctor(semanticContext).parent = cd;
 			
-			suggestMember(cd.ctor, false, 0, hash, INCLUDE_CONSTRUCTORS);
+			suggestMember(cd.ctor(semanticContext), false, 0, hash, INCLUDE_CONSTRUCTORS);
 		} else {
 			while(func != null) {
 				suggestMember(func, false, 0, hash, INCLUDE_CONSTRUCTORS);
@@ -2508,18 +2508,34 @@ public class CompletionEngine extends Engine
 						completeEnumMembers((EnumDeclaration) member, null, true);
 					}
 				}
-			}
-			
-			if (member.isTemplateDeclaration() != null) {
-				if (currentName.length == 0 || match(currentName, ident)) {
-					int relevance = computeBaseRelevance();
-					relevance += computeRelevanceForInterestingProposal();
+			}			
+		}
+		
+		boolean constructor = (includes & INCLUDE_CONSTRUCTORS) != 0;
+		boolean opCall = (includes & INCLUDE_OPCALL) != 0;
+		boolean funcNameIsOpCall = CharOperation.equals(Id.call, ident);
+		
+		if (member.isTemplateDeclaration() != null) {
+			if (currentName.length == 0 || match(currentName, ident)
+					|| (opCall && funcNameIsOpCall)) {
+				int relevance = computeBaseRelevance();
+				relevance += computeRelevanceForInterestingProposal();
+				
+				if (constructor || opCall) {
+					relevance += R_CAMEL_CASE;
+					relevance += R_CONSTRUCTOR;
+					relevance += R_NEW;
+				} else {
 					relevance += computeRelevanceForCaseMatching(currentName, ident);
 					relevance += R_TEMPLATE;
-					
-					int kind = CompletionProposal.TEMPLATE_REF;
-					TemplateDeclaration temp = (TemplateDeclaration) member;
-					if (temp.wrapper) {
+				}
+				
+				int kind = CompletionProposal.TEMPLATE_REF;
+				TemplateDeclaration temp = (TemplateDeclaration) member;
+				if (temp.wrapper) {
+					if (funcNameIsOpCall) {
+						kind = CompletionProposal.OP_CALL;
+					} else {
 						Dsymbol first = temp.members.get(0);
 						if (first instanceof FuncDeclaration) {
 							kind = CompletionProposal.TEMPLATED_FUNCTION_REF;
@@ -2527,22 +2543,28 @@ public class CompletionEngine extends Engine
 							kind = CompletionProposal.TEMPLATED_AGGREGATE_REF;
 						}
 					}
-					
-					CompletionProposal proposal = this.createProposal(kind, this.actualCompletionPosition, member);
+				}
+				
+				CompletionProposal proposal = this.createProposal(
+						kind, this.actualCompletionPosition, member);
+				if (opCall && funcNameIsOpCall) {
+					proposal.setName(currentName);
+					proposal.setCompletion(currentName);
+				} else {
 					proposal.setName(ident);
 					proposal.setCompletion(ident);
-					
-					char[] sig = member.getSignature().toCharArray();
-					proposal.setSignature(sig);
-					proposal.setTypeSignature(sig);
-					proposal.setDeclarationSignature(temp.parent.getSignature().toCharArray());
-					
-					proposal.setFlags(flags | member.getFlags());
-					proposal.setRelevance(relevance);
-					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
-					proposal.isAlias = isAliased;
-					CompletionEngine.this.requestor.accept(proposal);
 				}
+				
+				char[] sig = member.getSignature().toCharArray();
+				proposal.setSignature(sig);
+				proposal.setTypeSignature(sig);
+				proposal.setDeclarationSignature(temp.parent.getSignature().toCharArray());
+				
+				proposal.setFlags(flags | member.getFlags());
+				proposal.setRelevance(relevance);
+				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+				proposal.isAlias = isAliased;
+				CompletionEngine.this.requestor.accept(proposal);
 			}
 		}
 		
@@ -2574,9 +2596,6 @@ public class CompletionEngine extends Engine
 					return;
 				}
 				
-				boolean constructor = (includes & INCLUDE_CONSTRUCTORS) != 0;
-				boolean opCall = (includes & INCLUDE_OPCALL) != 0;
-				boolean funcNameIsOpCall = CharOperation.equals(funcName, Id.call);
 				if ((!constructor && !opCall && (currentName.length == 0 || match(currentName, ident)))
 						|| (constructor && CharOperation.equals(funcName, Id.ctor)) 
 						|| (opCall && funcNameIsOpCall)) {
@@ -2711,7 +2730,7 @@ public class CompletionEngine extends Engine
 		// opCall
 		case ASTDmdNode.TYPE_STRUCT: {
 			currentName = ident;
-			StructDeclaration sym = (((TypeStruct) type).sym).unlazy(this.currentName, semanticContext);			
+			StructDeclaration sym = (((TypeStruct) type).sym).unlazy(Id.call, semanticContext);			
 			suggestMembers(sym.members, onlyStatics, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
 			break;
 		}

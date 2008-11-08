@@ -602,7 +602,7 @@ public class CallExp extends UnaExp {
 					type = Type.terror;
 					return this;
 				} else {
-					f = cd.baseClass.ctor;
+					f = cd.baseClass.ctor(context);
 					if (f == null) {
 						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.NoSuperClassConstructor, this, cd.baseClass.toChars(context)));
@@ -664,7 +664,7 @@ public class CallExp extends UnaExp {
 						sc.callSuper |= CSXany_ctor | CSXthis_ctor;
 				    }
 
-					f = cd.ctor;
+					f = cd.ctor(context);
 					f = f.overloadResolve(loc, null, arguments, context, this);
 					checkDeprecated(sc, f, context);
 					

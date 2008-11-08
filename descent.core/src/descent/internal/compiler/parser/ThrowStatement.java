@@ -46,6 +46,12 @@ public class ThrowStatement extends Statement {
 		}
 		exp = exp.semantic(sc, context);
 		exp = resolveProperties(sc, exp, context);
+		
+		// Descent: might happen if there are syntatic errors
+		if (exp.type == null) {
+			return this;
+		}
+		
 		if (null == exp.type.toBasetype(context).isClassHandle()) {
 			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(

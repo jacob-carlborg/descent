@@ -74,7 +74,7 @@ public class DeleteExp extends UnaExp {
 			if (tb.ty == Tstruct) {
 				TypeStruct ts = (TypeStruct) tb;
 				StructDeclaration sd = ts.sym;
-				FuncDeclaration f = sd.aggDelete;
+				FuncDeclaration f = sd.aggDelete(context);
 
 				if (f != null) {
 					Type tpv = Type.tvoid.pointerTo(context);

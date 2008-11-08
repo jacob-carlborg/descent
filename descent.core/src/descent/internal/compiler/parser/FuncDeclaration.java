@@ -276,6 +276,8 @@ public class FuncDeclaration extends Declaration {
 
 	public void bodyToCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
+		resolveDiet(context);
+		
 		if (fbody != null && (!hgs.hdrgen || hgs.tpltMember /* || canInline(true, true,
 		 context) */)) {
 			buf.writenl();
@@ -1946,6 +1948,8 @@ public class FuncDeclaration extends Declaration {
 		}
 
 		sc2.incontract++;
+		
+		resolveDiet(context);
 
 		if (frequire != null) {
 			// BUG: need to error if accessing out parameters
@@ -2144,7 +2148,7 @@ public class FuncDeclaration extends Declaration {
 				}
 
 				if ((sc2.callSuper & Scope.CSXany_ctor) == 0
-						&& cd.baseClass != null && cd.baseClass.ctor != null) {
+						&& cd.baseClass != null && cd.baseClass.ctor(context) != null) {
 					sc2.callSuper = 0;
 
 					// Insert implicit super() at start of fbody

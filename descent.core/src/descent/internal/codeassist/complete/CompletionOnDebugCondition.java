@@ -3,7 +3,6 @@ package descent.internal.codeassist.complete;
 import descent.internal.compiler.parser.DebugCondition;
 import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Module;
-import descent.internal.compiler.parser.VersionCondition;
 
 public class CompletionOnDebugCondition extends DebugCondition {
 

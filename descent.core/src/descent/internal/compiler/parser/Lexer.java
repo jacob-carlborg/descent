@@ -5987,5 +5987,16 @@ public class Lexer implements IProblemRequestor {
 	private final char input(int position) {
 		return position >= input.length ? 0 : input[position];
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(input, base, token.ptr - base);
+		sb.append("\n--------------->");
+		sb.append(input, token.ptr, token.sourceLen);
+		sb.append("<---------------\n");
+		sb.append(input, token.ptr + token.sourceLen, end - (token.ptr + token.sourceLen));
+		return sb.toString();
+	}
 
 }

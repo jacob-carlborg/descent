@@ -35,8 +35,8 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 
 	// Special member functions
 	public InvariantDeclaration inv; // invariant
-	public NewDeclaration aggNew; // allocator
-	public DeleteDeclaration aggDelete; // deallocator
+	private NewDeclaration aggNew; // allocator
+	private DeleteDeclaration aggDelete; // deallocator
 
 	public List<VarDeclaration> fields;
 	
@@ -48,11 +48,18 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 	public boolean templated;
 	
 	protected IType javaElement;
+	
+	// Descent: whether special members (aggNew, aggDelete, ctor, etc.) were initialized
+	protected boolean specialInitialized;
 
 	public AggregateDeclaration(Loc loc, IdentifierExp id) {
 		super(id);
 		this.loc = loc;
 		fields = new ArrayList<VarDeclaration>(0);
+	}
+	
+	protected void initializeSpecial(SemanticContext context) {
+		
 	}
 
 	// The "reference" is not in DMD. It holds the source range of the node
@@ -459,6 +466,30 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 	@Override
 	public AggregateDeclaration unlazy(char[] prefix, SemanticContext context) {
 		return this;
+	}
+	
+	public NewDeclaration aggNew(SemanticContext context) {
+		if (!specialInitialized) {
+			specialInitialized = true;
+			initializeSpecial(context);
+		}
+		return aggNew;
+	}
+	
+	public void aggNew(NewDeclaration aggNew) {
+		this.aggNew = aggNew;
+	}
+	
+	public DeleteDeclaration aggDelete(SemanticContext context) {
+		if (!specialInitialized) {
+			specialInitialized = true;
+			initializeSpecial(context);
+		}
+		return aggDelete;
+	}
+	
+	public void aggDelete(DeleteDeclaration aggDelete) {
+		this.aggDelete = aggDelete;
 	}
 	
 }

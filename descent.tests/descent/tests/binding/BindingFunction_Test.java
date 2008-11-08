@@ -30,7 +30,7 @@ public class BindingFunction_Test extends AbstractBinding_Test {
 	}
 	
 	public void testCtorBinding() throws Exception {
-		CompilationUnit unit = createCU("test.d", "class Foo { this(int x) { } } void foo() { new Foo(); }");
+		CompilationUnit unit = createCU("test.d", "class Foo { this(int x) { } } void foo() { new Foo(1); }");
 		FunctionDeclaration func = (FunctionDeclaration) unit.declarations().get(1);
 		ExpressionStatement stm = (ExpressionStatement) func.getBody().statements().get(0);
 		NewExpression exp = (NewExpression) stm.getExpression();

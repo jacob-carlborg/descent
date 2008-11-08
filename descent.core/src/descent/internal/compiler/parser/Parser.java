@@ -1021,6 +1021,8 @@ public class Parser extends Lexer {
 			boolean isColon = token.value == TOKcolon;
 			a = parseBlock(isSingle);
 			s = new StorageClassDeclaration(stc, a, modifier, isSingle[0], isColon);
+			modifiers.remove(modifier);
+			s.modifiers = modifiers;
 		} else {
 			VarDeclaration previous = null;
 	
@@ -3225,6 +3227,9 @@ public class Parser extends Lexer {
 		Type ta;
 
 		t = parseBasicType2(t);
+		if (t == null) {
+			return null;
+		}
 
 		switch (token.value) {
 

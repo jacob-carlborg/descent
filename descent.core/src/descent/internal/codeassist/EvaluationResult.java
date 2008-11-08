@@ -39,6 +39,9 @@ public class EvaluationResult implements IEvaluationResult {
 			sb.append("]");
 			return sb.toString();
 		}
+		if (kind == CHAR_ARRAY || kind == DCHAR_ARRAY || kind == WCHAR_ARRAY) {
+			return "\"" + value.toString() + "\"";
+		}
 		return value.toString();
 	}
 
