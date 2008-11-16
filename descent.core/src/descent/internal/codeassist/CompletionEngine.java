@@ -1732,6 +1732,16 @@ public class CompletionEngine extends Engine
 				suggestMembers((((Module) se.sds)).unlazy(semanticContext).members, 
 						false /* not only statics */, 
 						new HashtableOfCharArrayAndObject(), INCLUDE_ALL);
+			} else if (se.sds instanceof ClassDeclaration) {
+				currentName = computePrefixAndSourceRange(ident);
+				suggestMembers((((ClassDeclaration) se.sds)).unlazy(semanticContext).members, 
+						false /* not only statics */, 
+						new HashtableOfCharArrayAndObject(), INCLUDE_ALL);
+			} else if (se.sds instanceof StructDeclaration) {
+				currentName = computePrefixAndSourceRange(ident);
+				suggestMembers((((StructDeclaration) se.sds)).unlazy(semanticContext).members, 
+						false /* not only statics */, 
+						new HashtableOfCharArrayAndObject(), INCLUDE_ALL);
 			} else if (se.sds instanceof Package) {
 				char[] name = ident.ident;
 				this.startPosition = se.start;

@@ -133,5 +133,38 @@ public class LazyStructDeclaration extends StructDeclaration implements ILazyAgg
 	public void symtab(DsymbolTable table) {
 		this.symtab = table;
 	}
+	
+	private int isRunningSemantic;
+	
+	@Override
+	public void semantic(Scope sc, SemanticContext context) {
+		isRunningSemantic++;
+		
+		super.semantic(sc, context);
+		
+		isRunningSemantic--;
+	}
+	
+	@Override
+	public void semantic2(Scope sc, SemanticContext context) {
+		isRunningSemantic++;
+		
+		super.semantic2(sc, context);
+		
+		isRunningSemantic--;
+	}
+	
+	@Override
+	public void semantic3(Scope sc, SemanticContext context) {
+		isRunningSemantic++;
+		
+		super.semantic3(sc, context);
+		
+		isRunningSemantic--;
+	}
+	
+	public boolean isRunningSemantic() {
+		return isRunningSemantic != 0;
+	}
 
 }

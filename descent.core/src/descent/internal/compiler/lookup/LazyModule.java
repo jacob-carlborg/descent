@@ -360,8 +360,10 @@ public class LazyModule extends Module implements ILazy {
 				s = ad2;
 			}
 			
-			s.addMember(this.semanticScope, this, 0, context);
-			runMissingSemantic(s, context);
+			if (!isRunningSemantic()) {
+				s.addMember(this.semanticScope, this, 0, context);
+				runMissingSemantic(s, context);
+			}
 			
 			if (ad != null) {
 				s = ad2.decl.get(0);
@@ -429,6 +431,39 @@ public class LazyModule extends Module implements ILazy {
 	
 	public IdentifierExp getIdent() {
 		return ident;
+	}
+	
+	private int isRunningSemantic;
+	
+	@Override
+	public void semantic(Scope sc, SemanticContext context) {
+		isRunningSemantic++;
+		
+		super.semantic(sc, context);
+		
+		isRunningSemantic--;
+	}
+	
+	@Override
+	public void semantic2(Scope sc, SemanticContext context) {
+		isRunningSemantic++;
+		
+		super.semantic2(sc, context);
+		
+		isRunningSemantic--;
+	}
+	
+	@Override
+	public void semantic3(Scope sc, SemanticContext context) {
+		isRunningSemantic++;
+		
+		super.semantic3(sc, context);
+		
+		isRunningSemantic--;
+	}
+	
+	public boolean isRunningSemantic() {
+		return isRunningSemantic != 0;
 	}
 
 }

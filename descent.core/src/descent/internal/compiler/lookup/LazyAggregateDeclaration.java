@@ -64,8 +64,11 @@ public class LazyAggregateDeclaration {
 					}
 					
 					s = lazy.members().get(lazy.members().size() - 1);
-					s.addMember(lazy.semanticScope(), lazy.asScopeDsymbol(), 0, context);
-					lazy.runMissingSemantic(s, context);
+					
+					if (!lazy.isRunningSemantic()) {
+						s.addMember(lazy.semanticScope(), lazy.asScopeDsymbol(), 0, context);
+						lazy.runMissingSemantic(s, context);
+					}
 				} else {
 					Dsymbols symbols = new Dsymbols();
 					
@@ -79,14 +82,18 @@ public class LazyAggregateDeclaration {
 						
 						s = lazy.members().get(lazy.members().size() - 1);
 						if (lazy.semanticScope() != null) {
-							s.addMember(lazy.semanticScope(), lazy.asScopeDsymbol(), 0, context);
+							if (!lazy.isRunningSemantic()) {
+								s.addMember(lazy.semanticScope(), lazy.asScopeDsymbol(), 0, context);
+							}
 						}
 						
 						symbols.add(s);
 					}
 					
-					for(Dsymbol sym : symbols) {
-						lazy.runMissingSemantic(sym, context);
+					if (!lazy.isRunningSemantic()) {
+						for(Dsymbol sym : symbols) {
+							lazy.runMissingSemantic(sym, context);
+						}
 					}
 					
 					s = symbols.get(0);
@@ -160,10 +167,13 @@ public class LazyAggregateDeclaration {
 			
 			int size = lazy.members().size();
 			
-			for (int i = 0; i < size; i++) {
-				Dsymbol sym = lazy.members().get(i);
-				sym.addMember(lazy.semanticScope(), lazy.asScopeDsymbol(), 0, context);
-				lazy.runMissingSemantic(sym, context);
+			if (!lazy.isRunningSemantic()) {
+				for (int i = 0; i < size; i++) {
+					Dsymbol sym = lazy.members().get(i);
+
+					sym.addMember(lazy.semanticScope(), lazy.asScopeDsymbol(), 0, context);
+					lazy.runMissingSemantic(sym, context);
+				}
 			}
 		}
 		

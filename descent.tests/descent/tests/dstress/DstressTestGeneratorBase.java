@@ -1300,6 +1300,9 @@ public class DstressTestGeneratorBase implements IDstressConfiguration {
 		failures.add("template_60_A.d");
 		failures.add("template_61_C.d");
 		failures.add("template_63_C.d");
+		failures.add("template_66_C.d");
+		failures.add("template_66_D.d");
+		failures.add("template_66_E.d");
 		failures.add("template_class_04.d");
 		failures.add("template_class_05.d");
 		failures.add("template_class_09.d");
@@ -1343,6 +1346,7 @@ public class DstressTestGeneratorBase implements IDstressConfiguration {
 		failures.add("this_14_I.d");
 		failures.add("this_14_J.d");
 		failures.add("this_15_A.d");
+		failures.add("this_16_B.d");
 		failures.add("throw_07_A.d");
 		failures.add("throw_07_B.d");
 		failures.add("tupelof_01_A.d");
@@ -1359,7 +1363,12 @@ public class DstressTestGeneratorBase implements IDstressConfiguration {
 		failures.add("tuple_06_D.d");
 		failures.add("tuple_06_E.d");
 		failures.add("tuple_06_F.d");
+		failures.add("tuple_09_A.d");
+		failures.add("tuple_09_B.d");
 		failures.add("tuple_09_C.d");
+		failures.add("tuple_09_D.d");
+		failures.add("tuple_09_E.d");
+		failures.add("tuple_09_F.d");
 		failures.add("tuple_09_G.d");
 		failures.add("tuple_09_H.d");
 		failures.add("tuple_09_I.d");

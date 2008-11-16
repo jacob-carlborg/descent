@@ -14,6 +14,7 @@ import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.core.dom.AST;
 import descent.internal.compiler.env.IModuleFinder;
+import descent.internal.compiler.lookup.DmdModuleFinder;
 import descent.internal.core.CompilerConfiguration;
 import descent.internal.core.util.Util;
 
@@ -128,7 +129,6 @@ public class SemanticContext {
 		}
 		
 		// for debugging purposes
-//		global.path.add("c:\\ary\\programacion\\d\\1.020\\dmd\\src\\phobos");
 //		this.moduleFinder = new DmdModuleFinder(global);
 
 		Module_init();

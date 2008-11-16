@@ -43,13 +43,6 @@ public class TypeTypeof extends TypeQualified {
 			sc.intypeof++;
 			exp = exp.semantic(sc, context);
 			sc.intypeof--;
-			if (exp.op == TOK.TOKtype) {
-				if (context.acceptsErrors()) {
-					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.ArgumentToTypeofIsNotAnExpression, this,
-							exp.toChars(context)));
-				}
-			}
 			t = exp.type;
 			if (null == t) {
 				if (context.acceptsErrors()) {

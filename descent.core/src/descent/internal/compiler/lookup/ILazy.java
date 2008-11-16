@@ -18,5 +18,7 @@ public interface ILazy {
 	ScopeDsymbol asScopeDsymbol();
 	
 	IdentifierExp getIdent();
+	
+	boolean isRunningSemantic();
 
 }
