@@ -1968,7 +1968,9 @@ public class CompletionEngine extends Engine
 		if (tf.parameters != null && tf.parameters.size() > 0 &&
 				((!isTemplate && tf.parameters.get(0).type != null &&
 				array.deco.equals(tf.parameters.get(0).type.deco)) ||
-				(isTemplate && tf.parameters.get(0).type instanceof TypeIdentifier))) {
+				(isTemplate && 
+						(tf.parameters.get(0).type instanceof TypeIdentifier ||
+						tf.parameters.get(0).type instanceof TypeArray)))) {
 			int relevance = computeBaseRelevance();
 			relevance += computeRelevanceForInterestingProposal();
 			relevance += computeRelevanceForCaseMatching(currentName, ident);
