@@ -126,7 +126,7 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 			}
 			
 			
-			char[][] templateParameterNames = fProposal.findTemplateParameterNames(null);
+			char[][] templateParameterNames = fProposal.getKind() == CompletionProposal.EXTENSION_METHOD ? new char[0][] : fProposal.findTemplateParameterNames(null);
 			if (templateParameterNames == null) {
 				templateParameterNames = CharOperation.NO_CHAR_CHAR;
 			}
@@ -134,6 +134,12 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 			char[][] parameterNames= fProposal.findParameterNames(null);
 			if (parameterNames == null) {
 				return replacement + "()"; //$NON-NLS-1$
+			}
+			
+			if (fProposal.getKind() == CompletionProposal.EXTENSION_METHOD) {
+				char[][] newParameterNames = new char[parameterNames.length - 1][];
+				System.arraycopy(parameterNames, 1, newParameterNames, 0, newParameterNames.length);
+				parameterNames = newParameterNames;
 			}
 			
 			// If it's a template opCall, don't suggest template parameters
@@ -361,7 +367,7 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 				setCursorPosition(getCursorPosition());
 			}
 			
-			if (fProposal.wantArguments() && fArgumentOffsets != null && getTextViewer() != null && !isGetter()) {
+			if (fProposal.wantArguments() && fArgumentOffsets != null && fArgumentOffsets.length > 0 && getTextViewer() != null && !isGetter()) {
 				try {
 					LinkedModeModel model= new LinkedModeModel();
 					for (int i= 0; i != fArgumentOffsets.length; i++) {
@@ -613,7 +619,12 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 	}
 	
 	private boolean computeHasParameters() throws IllegalArgumentException {
-		return Signature.getParameterCount(fProposal.getTypeSignature()) > 0;
+		int count = Signature.getParameterCount(fProposal.getTypeSignature());
+		if (fProposal.getKind() == CompletionProposal.EXTENSION_METHOD) {
+			return count > 1;
+		} else {
+			return count > 0;
+		}
 	}
 	
 	private int computeGetVariadic() throws IllegalArgumentException {
@@ -687,7 +698,7 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 	protected IContextInformation computeContextInformation() {
 		// no context information for METHOD_NAME_REF proposals (e.g. for static imports)
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=94654
-		if ((fProposal.getKind() == CompletionProposal.METHOD_REF || fProposal.getKind() == CompletionProposal.OP_CALL) &&  hasParameters() && 
+		if ((fProposal.getKind() == CompletionProposal.METHOD_REF || fProposal.getKind() == CompletionProposal.OP_CALL || fProposal.getKind() == CompletionProposal.EXTENSION_METHOD) &&  hasParameters() && 
 				(getReplacementString().endsWith(RPAREN) || getReplacementString().length() == 0
 						|| isSetter())) {
 			ProposalContextInformation contextInformation= new ProposalContextInformation(fProposal);

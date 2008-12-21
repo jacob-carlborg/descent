@@ -193,7 +193,7 @@ public class ReturnStatement extends Statement {
 					}
 				} else {
 					fd.type.next = exp.type;
-					fd.type = fd.type.semantic(loc, sc, context);
+					fd.type = fd.type.semantic(new LocWithNode(loc, this), sc, context);
 					if (fd.tintro == null) {
 						tret = fd.type.nextOf();
 						tbret = tret.toBasetype(context);

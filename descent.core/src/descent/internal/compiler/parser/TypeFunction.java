@@ -228,8 +228,13 @@ public class TypeFunction extends Type implements Cloneable {
 		tf.next = tf.next.semantic(loc, sc, context);
 		if (tf.next.toBasetype(context).ty == Tsarray) {
 			if (context.acceptsErrors()) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.FunctionsCannotReturnStaticArrays, this));
+				if (loc instanceof LocWithNode) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.FunctionsCannotReturnStaticArrays, ((LocWithNode)loc).node));
+				} else {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.FunctionsCannotReturnStaticArrays, this));
+				}
 			}
 			tf.next = Type.terror;
 		}

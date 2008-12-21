@@ -127,6 +127,7 @@ import descent.internal.compiler.parser.TypeDelegate;
 import descent.internal.compiler.parser.TypeEnum;
 import descent.internal.compiler.parser.TypeExp;
 import descent.internal.compiler.parser.TypeFunction;
+import descent.internal.compiler.parser.TypeIdentifier;
 import descent.internal.compiler.parser.TypePointer;
 import descent.internal.compiler.parser.TypeSArray;
 import descent.internal.compiler.parser.TypeStruct;
@@ -1853,12 +1854,15 @@ public class CompletionEngine extends Engine
 			break;
 		case ASTDmdNode.TYPE_S_ARRAY:
 			suggestTypeStaticArrayProperties((TypeSArray) type);
+			suggestExtensionMethods((TypeArray) type);
 			break;
 		case ASTDmdNode.TYPE_D_ARRAY:
 			suggestTypeDynamicArrayProperties((TypeDArray) type);
+			suggestExtensionMethods((TypeArray) type);
 			break;
 		case ASTDmdNode.TYPE_A_ARRAY:
 			suggestTypeAssociativeArrayProperties((TypeAArray) type);
+			suggestExtensionMethods((TypeArray) type);
 			break;
 		case ASTDmdNode.TYPE_POINTER:
 			// Allow completion for:
@@ -1872,6 +1876,123 @@ public class CompletionEngine extends Engine
 		}
 	}
 	
+	private void suggestExtensionMethods(TypeArray array) {
+		suggestExtensionMethods(array, module, true);
+	}
+	
+	private void suggestExtensionMethods(TypeArray array, Module module, boolean original) {
+		module.unlazy(semanticContext);
+		
+		suggestExtensionMethods(array, module.members);
+		
+		if (CharOperation.equals(Id.object, module.ident.ident)) {
+			return;
+		}
+		
+		for(Object o : module.members) {
+			if (o instanceof Import) {
+				Import imp = (Import) o;
+				if (original || imp.ispublic) {
+					suggestExtensionMethods(array, imp.mod, false);
+				}
+			}
+		}
+	}
+	
+	private void suggestExtensionMethods(TypeArray array, Dsymbols dsymbols) {
+		for(Dsymbol s : dsymbols) {
+			suggestExtensionMethod(array, s);
+		}
+	}
+
+	private void suggestExtensionMethod(TypeArray array, Dsymbol s) {
+		if (s instanceof AttribDeclaration) {
+			AttribDeclaration attrib = (AttribDeclaration) s;
+			switch(attrib.getNodeType()) {
+			case ASTDmdNode.ALIGN_DECLARATION:
+			case ASTDmdNode.ANON_DECLARATION:
+			case ASTDmdNode.COMPILE_DECLARATION:
+			case ASTDmdNode.LINK_DECLARATION:
+			case ASTDmdNode.PRAGMA_DECLARATION:
+			case ASTDmdNode.PROT_DECLARATION:
+			case ASTDmdNode.STORAGE_CLASS_DECLARATION:
+				suggestExtensionMethods(array, attrib.decl);
+				break;
+			case ASTDmdNode.CONDITIONAL_DECLARATION:
+				ConditionalDeclaration conditional = (ConditionalDeclaration) attrib;
+				if (conditional.condition.inc == 1) {
+					suggestExtensionMethods(array, conditional.decl);
+				} else if (conditional.condition.inc == 2) {
+					suggestExtensionMethods(array, conditional.elsedecl);
+				}
+				break;
+			}
+			return;
+		}
+		
+		if (!isVisible(s)) {
+			return;
+		}
+		
+		if (s instanceof FuncDeclaration) {
+			FuncDeclaration f = (FuncDeclaration) s;
+			suggestExtensionMethod(array, f, false /* is not template */);
+		} else if (s instanceof TemplateDeclaration) {
+			TemplateDeclaration t = (TemplateDeclaration) s;
+			if (t.parameters != null && t.parameters.size() == 1) {
+				for(Dsymbol s2 : t.members) {
+					if (s2 instanceof FuncDeclaration) {
+						FuncDeclaration f = (FuncDeclaration) s2;
+						suggestExtensionMethod(array, f, true /* is template */);
+					}
+				}
+			}
+		}
+	}
+
+	private void suggestExtensionMethod(TypeArray array, FuncDeclaration f, boolean isTemplate) {
+		if (f.ident == null || f.ident.ident == null) {
+			return;
+		}
+		
+		char[] ident = f.ident.ident;
+		if (!match(this.currentName, ident)) {
+			return;
+		}
+		
+		if (!(f.type instanceof TypeFunction)) {
+			return;
+		}
+		
+		TypeFunction tf = (TypeFunction) f.type;
+		if (tf.parameters != null && tf.parameters.size() > 0 &&
+				((!isTemplate && tf.parameters.get(0).type != null &&
+				array.deco.equals(tf.parameters.get(0).type.deco)) ||
+				(isTemplate && tf.parameters.get(0).type instanceof TypeIdentifier))) {
+			int relevance = computeBaseRelevance();
+			relevance += computeRelevanceForInterestingProposal();
+			relevance += computeRelevanceForCaseMatching(currentName, ident);
+			relevance += R_METHOD;
+			
+			CompletionProposal proposal = this.createProposal(CompletionProposal.EXTENSION_METHOD, this.actualCompletionPosition, f);
+			proposal.setName(ident);
+			
+			if (wantMethodContextInfo) {
+				handleContextInfo(f, false /* func name is not opCall */, proposal);
+			} else {
+				handleMethodCompletion(proposal, ident);
+			}
+			
+			proposal.setTypeSignature(f.type.getSignature().toCharArray());
+			proposal.setSignature(f.getSignature().toCharArray());
+			proposal.setDeclarationSignature(f.parent.getSignature().toCharArray());
+			proposal.setFlags(f.getFlags());
+			proposal.setRelevance(relevance);
+			proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+			CompletionEngine.this.requestor.accept(proposal);
+		}
+	}
+
 	private void suggestTypeDelegate(TypeDelegate type, char[] name, char[] signature) {
 		Type next = type.next;
 		if (next instanceof TypeFunction) {

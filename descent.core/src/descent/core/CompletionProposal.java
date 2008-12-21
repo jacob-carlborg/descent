@@ -710,6 +710,8 @@ public final class CompletionProposal extends InternalCompletionProposal {
 	 * @since 3.2
 	 */
 	public static final int ENUM_MEMBER = 29;
+	
+	public static final int EXTENSION_METHOD = 30;
 
 	/**
 	 * First valid completion kind.
@@ -723,7 +725,7 @@ public final class CompletionProposal extends InternalCompletionProposal {
 	 * 
 	 * @since 3.1
 	 */
-	protected static final int LAST_KIND = ENUM_MEMBER;
+	protected static final int LAST_KIND = EXTENSION_METHOD;
 	
 	/**
 	 * Kind of completion request.

@@ -68,6 +68,7 @@ public class CompletionProposalLabelProvider {
 	 */
 	public String createParameterList(CompletionProposal methodProposal) {
 		Assert.isTrue(methodProposal.getKind() == CompletionProposal.METHOD_REF ||
+				methodProposal.getKind() == CompletionProposal.EXTENSION_METHOD ||
 				methodProposal.getKind() == CompletionProposal.OP_CALL ||
 				methodProposal.getKind() == CompletionProposal.FUNCTION_CALL ||
 				methodProposal.getKind() == CompletionProposal.TEMPLATE_REF ||
@@ -76,12 +77,14 @@ public class CompletionProposalLabelProvider {
 		
 		StringBuffer sb1 = new StringBuffer();
 		
-		if (methodProposal.getKind() != CompletionProposal.OP_CALL) {
+		if (methodProposal.getKind() != CompletionProposal.OP_CALL &&
+				methodProposal.getKind() != CompletionProposal.EXTENSION_METHOD) {
 			appendTemplateParameterList(sb1, methodProposal);
 		}
 		
 		StringBuffer sb2 = new StringBuffer();
 		if (methodProposal.getKind() == CompletionProposal.METHOD_REF ||
+				methodProposal.getKind() == CompletionProposal.EXTENSION_METHOD ||
 				methodProposal.getKind() == CompletionProposal.OP_CALL ||
 				methodProposal.getKind() == CompletionProposal.FUNCTION_CALL ||
 				methodProposal.getKind() == CompletionProposal.TEMPLATED_FUNCTION_REF) {
@@ -121,7 +124,7 @@ public class CompletionProposalLabelProvider {
 		for (int i= 0; i < parameterTypes.length; i++) {
 			parameterTypes[i]= createTypeDisplayName(parameterTypes[i]);
 		}
-		return appendParameterSignature(buffer, parameterTypes, parameterNames, parameterDefaultValues);
+		return appendParameterSignature(buffer, parameterTypes, parameterNames, parameterDefaultValues, methodProposal.getKind());
 	}
 	
 	private StringBuffer appendVarargs(StringBuffer buffer, CompletionProposal methodProposal) {
@@ -220,10 +223,12 @@ public class CompletionProposalLabelProvider {
 	 * @return the display string of the parameter list defined by the passed
 	 *         arguments
 	 */
-	private final StringBuffer appendParameterSignature(StringBuffer buffer, char[][] parameterTypes, char[][] parameterNames, char[][] parameterDefaultValues) {
+	private final StringBuffer appendParameterSignature(StringBuffer buffer, char[][] parameterTypes, char[][] parameterNames, char[][] parameterDefaultValues, int completionKind) {
 		if (parameterTypes != null) {
-			for (int i = 0; i < parameterTypes.length; i++) {
-				if (i > 0) {
+			int start = completionKind == CompletionProposal.EXTENSION_METHOD ? 1 : 0;
+			
+			for (int i = start; i < parameterTypes.length; i++) {
+				if (i > start) {
 					buffer.append(',');
 					buffer.append(' ');
 				}
@@ -271,7 +276,8 @@ public class CompletionProposalLabelProvider {
 		StringBuffer nameBuffer= new StringBuffer();
 		nameBuffer.append(methodProposal.getName());
 		
-		if (Signature.getTypeSignatureKind(methodProposal.getSignature()) == Signature.TEMPLATED_FUNCTION_SIGNATURE) {
+		if (Signature.getTypeSignatureKind(methodProposal.getSignature()) == Signature.TEMPLATED_FUNCTION_SIGNATURE
+				&& methodProposal.getKind() != CompletionProposal.EXTENSION_METHOD) {
 			nameBuffer.append('!');
 			nameBuffer.append('(');
 			appendTemplateParameterList(nameBuffer, methodProposal);
@@ -609,6 +615,7 @@ public class CompletionProposalLabelProvider {
 			case CompletionProposal.OP_CALL:
 			case CompletionProposal.FUNCTION_CALL:
 			case CompletionProposal.POTENTIAL_METHOD_DECLARATION:
+			case CompletionProposal.EXTENSION_METHOD:
 				if (fContext != null && fContext.isInJavadoc())
 					return createJavadocMethodProposalLabel(proposal);
 				return createMethodProposalLabel(proposal);
@@ -670,6 +677,7 @@ public class CompletionProposalLabelProvider {
 			case CompletionProposal.TEMPLATED_FUNCTION_REF:
 			case CompletionProposal.ANNOTATION_ATTRIBUTE_REF:
 			case CompletionProposal.POTENTIAL_METHOD_DECLARATION:
+			case CompletionProposal.EXTENSION_METHOD:
 				descriptor= JavaElementImageProvider.getMethodImageDescriptor(false, flags);
 				break;
 			case CompletionProposal.FUNCTION_CALL:

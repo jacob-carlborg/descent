@@ -33,6 +33,7 @@ public final class ExperimentalResultCollector extends CompletionProposalCollect
 		switch (proposal.getKind()) {
 			case CompletionProposal.METHOD_REF:
 			case CompletionProposal.OP_CALL:
+			case CompletionProposal.EXTENSION_METHOD:
 				return createMethodReferenceProposal(proposal);
 			case CompletionProposal.FUNCTION_CALL:
 				return createFunctionCallProposal(proposal);

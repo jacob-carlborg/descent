@@ -410,6 +410,7 @@ public class CompletionProposalCollector extends CompletionRequestor {
 			case CompletionProposal.OP_CALL:
 			case CompletionProposal.METHOD_NAME_REFERENCE:
 			case CompletionProposal.JAVADOC_METHOD_REF:
+			case CompletionProposal.EXTENSION_METHOD:
 				return createMethodReferenceProposal(proposal);
 			case CompletionProposal.FUNCTION_CALL:
 				return createFunctionCallProposal(proposal);
