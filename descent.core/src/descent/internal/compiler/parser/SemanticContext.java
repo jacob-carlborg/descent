@@ -90,6 +90,7 @@ public class SemanticContext {
 	 * If true, errors no longer are reported.
 	 */
 	public boolean fatalWasSignaled;
+	public boolean countErrors = true;
 	
 	public final ASTNodeEncoder encoder;
 	public boolean alwaysResolveFunctionSemanticRest;
@@ -199,7 +200,9 @@ public class SemanticContext {
 			// Each acceptProblem is preceded by acceptsProblems, and originaly
 			// global.errors is incremented, so...
 			
-			global.errors++;
+			if (countErrors) {
+				global.errors++;
+			}
 			return false;
 		}
 	}
@@ -221,7 +224,9 @@ public class SemanticContext {
 		if (problem.getID() == IProblem.MissingOrCurruptObjectDotD) {
 			problemRequestor.acceptProblem(problem);
 			if (problem.isError()) {
-				global.errors++;
+				if (countErrors) {
+					global.errors++;
+				}
 			}
 			return;
 		}
@@ -244,7 +249,9 @@ public class SemanticContext {
 		}
 		
 		if (problem.isError()) {
-			global.errors++;
+			if (countErrors) {
+				global.errors++;
+			}
 		}
 	}
 

@@ -105,7 +105,10 @@ public class Module extends Package {
 		}
 
 		semantic3(null, context);
-	}
+	
+		// Added for Descent
+		templateSemantic(context);
+	}	
 
 	@Override
 	public void semantic(Scope scope, SemanticContext context) {
@@ -248,6 +251,91 @@ public class Module extends Package {
 		sc = sc.pop();
 		sc.pop();
 		semanticdone = semanticstarted;
+	}
+	
+	// This is so that autocompletion, semantic highlighting and go to
+	// definition work inside templates. We just make a fake semantic
+	// pass over those symbols that are templates
+	private void templateSemantic(SemanticContext context) {
+		if (members == null) return;
+		
+//		context.countErrors = false;
+		context.muteProblems++;
+		
+		Scope sc = Scope.createGlobal(this, context); // create root scope
+		for (int semanticPass = 1; semanticPass <= 3; semanticPass++) {
+			templateSemantic(sc, context, members, semanticPass);
+		}
+		
+		context.muteProblems--;
+	}
+	
+	private void templateSemantic(Scope sc, SemanticContext context, Dsymbols members, int semanticPass) {
+		if (members == null) return;
+		
+		int count = members.size();
+		
+		for(int i = 0; i < count; i++) {
+			Dsymbol s = members.get(i);
+			if (s instanceof AttribDeclaration) {
+				AttribDeclaration attrib = (AttribDeclaration) s;
+				switch(attrib.getNodeType()) {
+				case ASTDmdNode.ALIGN_DECLARATION:
+				case ASTDmdNode.ANON_DECLARATION:
+				case ASTDmdNode.COMPILE_DECLARATION:
+				case ASTDmdNode.LINK_DECLARATION:
+				case ASTDmdNode.PRAGMA_DECLARATION:
+				case ASTDmdNode.PROT_DECLARATION:
+				case ASTDmdNode.STORAGE_CLASS_DECLARATION:
+					templateSemantic(sc, context, attrib.decl, semanticPass);
+					break;
+				case ASTDmdNode.CONDITIONAL_DECLARATION:
+					ConditionalDeclaration conditional = (ConditionalDeclaration) attrib;
+					if (conditional.condition.inc == 1) {
+						templateSemantic(sc, context, conditional.decl, semanticPass);
+					} else if (conditional.condition.inc == 2) {
+						templateSemantic(sc, context, conditional.elsedecl, semanticPass);
+					}
+					break;
+				}
+				continue;
+			}
+			
+			if (s instanceof TemplateDeclaration) {
+				TemplateDeclaration td = (TemplateDeclaration) s;
+				if (semanticPass == 1) {
+					td.symtab = new DsymbolTable();
+				}
+				sc = sc.push(td);
+				
+				if (td.members != null) {
+					int count2 = td.members.size();
+					
+					if (semanticPass == 1) {
+						for(int j = 0; j < count2; j++) {
+							Dsymbol s2 = td.members.get(j);
+							s2.addMember(sc, td, 1, context);
+						}
+					}
+					
+					for(int j = 0; j < count2; j++) {
+						Dsymbol s2 = td.members.get(j);
+						switch(semanticPass) {
+						case 1:
+							s2.semantic(sc, context);
+							break;
+						case 2:
+							s2.semantic2(sc, context);
+							break;
+						case 3:
+							s2.semantic3(sc, context);
+							break;
+						}
+					}
+				}
+				sc = sc.pop();
+			}
+		}
 	}
 	
 	protected void semanticScope(Scope sc) {

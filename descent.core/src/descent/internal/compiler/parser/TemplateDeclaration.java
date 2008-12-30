@@ -917,7 +917,39 @@ public class TemplateDeclaration extends ScopeDsymbol {
 					s[0].parent = this;
 				}
 			}
+			
+//			
 		}
+	}
+	
+	@Override
+	public void semantic2(Scope sc, SemanticContext context) {
+//		if (members != null) {
+//			context.muteProblems++;
+//			sc = sc.push(this);
+//			int members_dim = members.size();
+//			for (int i = 0; i < members_dim; i++) {
+//				Dsymbol sym = members.get(i);
+//				sym.semantic2(sc, context);
+//			}
+//			sc = sc.pop();
+//			context.muteProblems--;
+//		}
+	}
+	
+	@Override
+	public void semantic3(Scope sc, SemanticContext context) {
+//		if (members != null) {
+//			context.muteProblems++;
+//			sc = sc.push(this);
+//			int members_dim = members.size();
+//			for (int i = 0; i < members_dim; i++) {
+//				Dsymbol sym = members.get(i);
+//				sym.semantic3(sc, context);
+//			}
+//			sc = sc.pop();
+//			context.muteProblems--;
+//		}
 	}
 
 	@Override

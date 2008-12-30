@@ -1900,6 +1900,8 @@ public class CompletionEngine extends Engine
 	}
 	
 	private void suggestExtensionMethods(TypeArray array, Dsymbols dsymbols) {
+		if (dsymbols == null) return;
+		
 		for(Dsymbol s : dsymbols) {
 			suggestExtensionMethod(array, s);
 		}

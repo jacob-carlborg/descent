@@ -3890,6 +3890,8 @@ public class ASTConverter {
 	}
 	
 	public descent.core.dom.DDocComment convertDdoc(descent.internal.compiler.parser.Comment a) {
+		if (moduleComments == null) return null;
+		
 		Comment comment = moduleComments[a.index];
 		if (comment.isDDocComment()) {
 			return (DDocComment) comment;
