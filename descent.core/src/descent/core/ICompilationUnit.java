@@ -644,4 +644,6 @@ void restore() throws JavaModelException;
 
 CompilationUnit getResolvedAtCompileTime(int astLevel) throws JavaModelException;
 
+boolean hasMainMethod() throws JavaModelException;
+
 }

@@ -120,6 +120,7 @@ import descent.internal.core.JavaModelManager;
 import descent.internal.core.JavaProject;
 import descent.internal.core.Region;
 import descent.internal.core.SetClasspathOperation;
+import descent.internal.core.UserLibraryManager;
 import descent.internal.core.builder.OriginalJavaBuilder;
 import descent.internal.core.builder.State;
 import descent.internal.core.util.MementoTokenizer;
@@ -2876,11 +2877,9 @@ public final class JavaCore extends AbstractUIPlugin {
 	 * @return Return an array containing the names of all known user defined.
 	 * @since 3.0
 	 */
-	/* TODO JDT user library
 	public static String[] getUserLibraryNames() {
 		 return UserLibraryManager.getUserLibraryNames();
 	}
-	*/
 
 	/**
 	 * Returns the working copies that have the given owner. 
@@ -4231,35 +4230,35 @@ public final class JavaCore extends AbstractUIPlugin {
 			}
 			IClasspathContainer oldContainer = manager.containerGet(affectedProject, containerPath);
 			if (oldContainer == JavaModelManager.CONTAINER_INITIALIZATION_IN_PROGRESS) {
-//				Map previousContainerValues = (Map)JavaModelManager.getJavaModelManager().previousSessionContainers.get(affectedProject);
-//				if (previousContainerValues != null){
-//					IClasspathContainer previousContainer = (IClasspathContainer)previousContainerValues.get(containerPath);
-//					if (previousContainer != null) {
-//						if (JavaModelManager.CP_RESOLVE_VERBOSE){
-//							StringBuffer buffer = new StringBuffer();
-//							buffer.append("CPContainer INIT - reentering access to project container during its initialization, will see previous value\n"); 
-//							buffer.append("	project: " + affectedProject.getElementName() + '\n');
-//							buffer.append("	container path: " + containerPath + '\n');
-//							buffer.append("	previous value: ");
-//							buffer.append(previousContainer.getDescription());
-//							buffer.append(" {\n");
-//							IClasspathEntry[] entries = previousContainer.getClasspathEntries();
-//							if (entries != null){
-//								for (int j = 0; j < entries.length; j++){
-//									buffer.append(" 		");
-//									buffer.append(entries[j]); 
-//									buffer.append('\n'); 
-//								}
-//							}
-//							buffer.append(" 	}");
-//							Util.verbose(buffer.toString());
-//						}
-//						JavaModelManager.getJavaModelManager().containerPut(affectedProject, containerPath, previousContainer); 
-//					}
-//					oldContainer = null; //33695 - cannot filter out restored container, must update affected project to reset cached CP
-//				} else {
+				Map previousContainerValues = (Map)JavaModelManager.getJavaModelManager().previousSessionContainers.get(affectedProject);
+				if (previousContainerValues != null){
+					IClasspathContainer previousContainer = (IClasspathContainer)previousContainerValues.get(containerPath);
+					if (previousContainer != null) {
+						if (JavaModelManager.CP_RESOLVE_VERBOSE){
+							StringBuffer buffer = new StringBuffer();
+							buffer.append("CPContainer INIT - reentering access to project container during its initialization, will see previous value\n"); 
+							buffer.append("	project: " + affectedProject.getElementName() + '\n');
+							buffer.append("	container path: " + containerPath + '\n');
+							buffer.append("	previous value: ");
+							buffer.append(previousContainer.getDescription());
+							buffer.append(" {\n");
+							IClasspathEntry[] entries = previousContainer.getClasspathEntries();
+							if (entries != null){
+								for (int j = 0; j < entries.length; j++){
+									buffer.append(" 		");
+									buffer.append(entries[j]); 
+									buffer.append('\n'); 
+								}
+							}
+							buffer.append(" 	}");
+							Util.verbose(buffer.toString());
+						}
+						JavaModelManager.getJavaModelManager().containerPut(affectedProject, containerPath, previousContainer); 
+					}
+					oldContainer = null; //33695 - cannot filter out restored container, must update affected project to reset cached CP
+				} else {
 					oldContainer = null;
-//				}
+				}
 			}
 			if (oldContainer != null && oldContainer.equals(respectiveContainers[i])){
 				modifiedProjects[i] = null; // filter out this project - container did not change

@@ -98,10 +98,10 @@ public class CPListElement {
 				break;
 			case IClasspathEntry.CPE_LIBRARY:
 			case IClasspathEntry.CPE_VARIABLE:
-				createAttributeElement(SOURCEATTACHMENT, null, true);
-				createAttributeElement(JAVADOC, null, false);
-				createAttributeElement(NATIVE_LIB_PATH, null, false);
-				createAttributeElement(ACCESSRULES, new IAccessRule[0], true);
+//				createAttributeElement(SOURCEATTACHMENT, null, true);
+//				createAttributeElement(JAVADOC, null, false);
+//				createAttributeElement(NATIVE_LIB_PATH, null, false);
+//				createAttributeElement(ACCESSRULES, new IAccessRule[0], true);
 				break;
 			case IClasspathEntry.CPE_PROJECT:
 				createAttributeElement(ACCESSRULES, new IAccessRule[0], true);
@@ -109,7 +109,7 @@ public class CPListElement {
 				createAttributeElement(NATIVE_LIB_PATH, null, false);
 				break;
 			case IClasspathEntry.CPE_CONTAINER:
-				createAttributeElement(ACCESSRULES, new IAccessRule[0], true);
+//				createAttributeElement(ACCESSRULES, new IAccessRule[0], true);
 				try {
 					IClasspathContainer container= JavaCore.getClasspathContainer(fPath, fProject);
 					if (container != null) {
@@ -126,7 +126,7 @@ public class CPListElement {
 					}
 				} catch (JavaModelException e) {
 				}			
-				createAttributeElement(NATIVE_LIB_PATH, null, false);
+//				createAttributeElement(NATIVE_LIB_PATH, null, false);
 				break;
 			default:
 		}

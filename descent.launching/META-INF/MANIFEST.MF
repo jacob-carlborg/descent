@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Descent Launching Plug-in
 Bundle-SymbolicName: descent.launching;singleton:=true
-Bundle-Version: 0.5.3.20081220
+Bundle-Version: 0.5.3.20081230
 Bundle-Activator: descent.internal.launching.LaunchingPlugin
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,

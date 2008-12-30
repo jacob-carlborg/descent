@@ -76,11 +76,11 @@ public class LibrariesWorkbookPage extends BuildPathBasePage {
 //	private final int IDX_ADDJAR= 0;
 	private final int IDX_ADDEXT= 0;
 //	private final int IDX_ADDVAR= 2;
-//	private final int IDX_ADDLIB= 3;
+	private final int IDX_ADDLIB= 1;
 //	private final int IDX_ADDFOL= 4;
 	
-	private final int IDX_EDIT= 2;
-	private final int IDX_REMOVE= 3;
+	private final int IDX_EDIT= 3;
+	private final int IDX_REMOVE= 4;
 
 //	private final int IDX_REPLACE= 9;
 		
@@ -93,7 +93,7 @@ public class LibrariesWorkbookPage extends BuildPathBasePage {
 //			NewWizardMessages.LibrariesWorkbookPage_libraries_addjar_button,	
 			NewWizardMessages.LibrariesWorkbookPage_libraries_addextjar_button, 
 //			NewWizardMessages.LibrariesWorkbookPage_libraries_addvariable_button, 
-//			NewWizardMessages.LibrariesWorkbookPage_libraries_addlibrary_button, 
+			NewWizardMessages.LibrariesWorkbookPage_libraries_addlibrary_button, 
 //			NewWizardMessages.LibrariesWorkbookPage_libraries_addclassfolder_button, 
 			/* */ null,  
 			NewWizardMessages.LibrariesWorkbookPage_libraries_edit_button, 
@@ -227,9 +227,9 @@ public class LibrariesWorkbookPage extends BuildPathBasePage {
 //		case IDX_ADDVAR: /* add variable */
 //			libentries= openVariableSelectionDialog(null);
 //			break;
-//		case IDX_ADDLIB: /* add library */
-//			libentries= openContainerSelectionDialog(null);
-//			break;
+		case IDX_ADDLIB: /* add library */
+			libentries= openContainerSelectionDialog(null);
+			break;
 //		case IDX_ADDFOL: /* add folder */
 //			libentries= openClassFolderDialog(null);
 //			break;			
@@ -262,9 +262,9 @@ public class LibrariesWorkbookPage extends BuildPathBasePage {
 //			}
 			
 			fLibrariesList.addElements(elementsToAdd);
-//			if (index == IDX_ADDLIB || index == IDX_ADDVAR) {
-//				fLibrariesList.refresh();
-//			}
+			if (index == IDX_ADDLIB /*|| index == IDX_ADDVAR */) {
+				fLibrariesList.refresh();
+			}
 			fLibrariesList.postSetSelection(new StructuredSelection(libentries));
 		}
 	}
@@ -579,7 +579,7 @@ public class LibrariesWorkbookPage extends BuildPathBasePage {
 		fLibrariesList.enableButton(IDX_ADDEXT, noAttributes);
 //		fLibrariesList.enableButton(IDX_ADDFOL, noAttributes);
 //		fLibrariesList.enableButton(IDX_ADDJAR, noAttributes);
-//		fLibrariesList.enableButton(IDX_ADDLIB, noAttributes);
+		fLibrariesList.enableButton(IDX_ADDLIB, noAttributes);
 //		fLibrariesList.enableButton(IDX_ADDVAR, noAttributes);
 	}
 	

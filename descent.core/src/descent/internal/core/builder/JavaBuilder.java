@@ -35,7 +35,7 @@ import descent.internal.core.util.Util;
  * task resource markers with them.
  */
 public class JavaBuilder extends IncrementalProjectBuilder {
-	
+
 	@Override
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
 		IProject project = getProject();
@@ -49,9 +49,10 @@ public class JavaBuilder extends IncrementalProjectBuilder {
 			IJavaProject javaProject = JavaCore.create(project);
 			delta.accept(new JavaBuilderVisitor(javaProject.getApiLevel(), isShowSemanticErrors()));
 		}
+
 		return null;
 	}
-
+	
 	private void fullBuild(IProject project, IProgressMonitor monitor) throws CoreException {
 		IJavaProject javaProject = JavaCore.create(project);
 		IResource[] members = project.members();

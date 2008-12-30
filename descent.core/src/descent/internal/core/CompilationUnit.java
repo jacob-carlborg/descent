@@ -1220,6 +1220,19 @@ public descent.core.dom.CompilationUnit getResolvedAtCompileTime(int astLevel) t
 	return (descent.core.dom.CompilationUnit) converter.convert(result.module, this);
 }
 
+public boolean hasMainMethod() throws JavaModelException {
+	IJavaElement[] children= getChildren();
+	for (int i= 0; i < children.length; i++) {
+		if (children[i] instanceof IMethod) {
+			IMethod method = (IMethod) children[i];
+			if (method.isMainMethod()) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 /**
  * Debugging purposes
  */

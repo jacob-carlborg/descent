@@ -604,13 +604,13 @@
             class="descent.internal.ui.preferences.JavadocConfigurationPropertyPage"
             id="descent.internal.ui.preferences.JavadocConfigurationPropertyPage3">
       </page>
+      -->
       <page
             objectClass="descent.core.IPackageFragmentRoot"
             name="%nativeLibraryPageName"
             class="descent.internal.ui.preferences.NativeLibrariesPropertyPage"
             id="descent.internal.ui.preferences.NativeLibrariesPropertyPage">
       </page>
-      -->
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">
@@ -666,7 +666,6 @@
             id="descent.ui.preferences.CodeFormatterPreferencePage">
             <keywordReference id="descent.ui.formatter"/>
       </page>
-      <!--
       <page
             name="%buildPathPrefName"
             category="descent.ui.preferences.JavaBasePreferencePage"
@@ -674,7 +673,6 @@
             id="descent.ui.preferences.BuildPathPreferencePage">
             <keywordReference id="descent.ui.buildpathoptions"/>
       </page>
-      -->
       <!--
       <page
             name="%classPathVarPrefName"
@@ -684,7 +682,6 @@
             <keywordReference id="descent.ui.cpvars"/>
       </page>
       -->
-      <!--
       <page
             name="%userLibrariesPrefName"
             category="descent.ui.preferences.BuildPathPreferencePage"
@@ -692,7 +689,6 @@
             id="descent.ui.preferences.UserLibraryPreferencePage">
             <keywordReference id="descent.ui.userlibs"/>
       </page>
-      -->
       <page
             name="%editorPrefName"
             category="descent.ui.preferences.JavaBasePreferencePage"
@@ -3663,4 +3659,14 @@
       </view>
    </extension>
  -->
+ 
+	<extension
+         point="descent.ui.classpathContainerPage">
+      <classpathContainerPage
+            name="%userLibrary.name"
+            class="descent.internal.ui.wizards.buildpaths.UserLibraryWizardPage"
+            id="descent.USER_LIBRARY">
+      </classpathContainerPage>
+   </extension>
+ 
 </plugin>

@@ -101,5 +101,16 @@
          <run class="descent.internal.core.builder.JavaBuilder"/>
       </builder>
    </extension>
+   
+   <!-- =================================================================================== -->
+	<!-- Extension: User Library Container                                                   -->
+	<!-- =================================================================================== -->
+	<extension
+	      point="descent.core.classpathContainerInitializer">
+	      <classpathContainerInitializer
+	            class="descent.internal.core.UserLibraryClasspathContainerInitializer"
+	            id="descent.USER_LIBRARY">
+	      </classpathContainerInitializer>
+	   </extension>
 
 </plugin>

@@ -395,7 +395,7 @@ public class JavaElementImageProvider {
 			}
 		} else if (renderFlags == 3 && element instanceof ICompilationUnit) {
 			try {
-				if (JavaModelUtil.hasMainMethod((ICompilationUnit) element)) {
+				if (((ICompilationUnit) element).hasMainMethod()) {
 					flags |= JavaElementImageDescriptor.RUNNABLE;
 				}
 			} catch (JavaModelException e) {
