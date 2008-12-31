@@ -81,7 +81,7 @@ public class StaticAssert extends Dsymbol {
 				}
 			}
 			if (context.global.gag == 0) {
-				fatal(context);
+//				fatal(context);
 			}
 		} else if (!e.isBool(true)) {
 			if (context.acceptsErrors()) {

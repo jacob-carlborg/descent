@@ -303,6 +303,11 @@ public class Module extends Package {
 				continue;
 			}
 			
+			if (s instanceof AggregateDeclaration) {
+				templateSemantic(sc, context, ((AggregateDeclaration) s).members, semanticPass);
+				continue;
+			}
+			
 			if (s instanceof TemplateDeclaration) {
 				TemplateDeclaration td = (TemplateDeclaration) s;
 				if (semanticPass == 0) {
