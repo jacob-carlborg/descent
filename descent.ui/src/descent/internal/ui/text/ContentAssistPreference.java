@@ -62,7 +62,6 @@ public class ContentAssistPreference {
 	/** Preference key for prefix completion. */
 	private static final String PREFIX_COMPLETION= PreferenceConstants.CODEASSIST_PREFIX_COMPLETION;
 
-
 	private static Color getColor(IPreferenceStore store, String key, IColorManager manager) {
 		RGB rgb= PreferenceConverter.getColor(store, key);
 		return manager.getColor(rgb);

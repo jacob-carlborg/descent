@@ -107,7 +107,9 @@ public class Module extends Package {
 		semantic3(null, context);
 	
 		// Added for Descent
-		templateSemantic(context);
+		if (this == context.Module_rootModule) {
+			templateSemantic(context);
+		}
 	}	
 
 	@Override
@@ -259,11 +261,11 @@ public class Module extends Package {
 	private void templateSemantic(SemanticContext context) {
 		if (members == null) return;
 		
-//		context.countErrors = false;
+		context.templateSemanticStarted = true;
 		context.muteProblems++;
 		
 		Scope sc = Scope.createGlobal(this, context); // create root scope
-		for (int semanticPass = 1; semanticPass <= 3; semanticPass++) {
+		for (int semanticPass = 0; semanticPass <= 3; semanticPass++) {
 			templateSemantic(sc, context, members, semanticPass);
 		}
 		
@@ -303,7 +305,7 @@ public class Module extends Package {
 			
 			if (s instanceof TemplateDeclaration) {
 				TemplateDeclaration td = (TemplateDeclaration) s;
-				if (semanticPass == 1) {
+				if (semanticPass == 0) {
 					td.symtab = new DsymbolTable();
 				}
 				sc = sc.push(td);
@@ -311,16 +313,14 @@ public class Module extends Package {
 				if (td.members != null) {
 					int count2 = td.members.size();
 					
-					if (semanticPass == 1) {
-						for(int j = 0; j < count2; j++) {
-							Dsymbol s2 = td.members.get(j);
-							s2.addMember(sc, td, 1, context);
-						}
-					}
-					
 					for(int j = 0; j < count2; j++) {
 						Dsymbol s2 = td.members.get(j);
 						switch(semanticPass) {
+						case 0:
+							
+							
+							s2.addMember(sc, td, 1, context);
+							break;
 						case 1:
 							s2.semantic(sc, context);
 							break;

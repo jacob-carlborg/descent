@@ -28,9 +28,6 @@ public class ArrayScopeSymbol extends ScopeDsymbol {
 		Assert.isTrue(e.op == TOK.TOKindex || e.op == TOK.TOKslice);
 		this.exp = e;
 		this.sc = sc;
-		if (sc == null) {
-			System.out.println(123456);
-		}
 	}
 	
 	public ArrayScopeSymbol(Scope sc, TupleDeclaration s) {
@@ -38,9 +35,6 @@ public class ArrayScopeSymbol extends ScopeDsymbol {
 		this.type = null;
 		this.td = s;
 		this.sc = sc;
-		if (sc == null) {
-			System.out.println(123456);
-		}
 	}
 	
 	public ArrayScopeSymbol(Scope sc, TypeTuple t) {

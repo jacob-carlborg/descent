@@ -2,7 +2,7 @@
 <feature
       id="descent.ui"
       label="Descent"
-      version="0.5.3.20081230"
+      version="0.5.3.20081231"
       provider-name="Descent">
 
    <description url="http://dsource.org/projects/descent">
@@ -127,7 +127,7 @@ WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
    </license>
 
    <url>
-      <update label="Descent Update Site" url="http://svn.dsource.org/projects/descent/trunk/descent.update-site/"/>
+      <update label="Descent Update Site" url="http://downloads.dsource.org/projects/descent/update-site/"/>
       <discovery label="Descent at Dsource" url="http://www.dsource.org/projects/descent"/>
    </url>
 

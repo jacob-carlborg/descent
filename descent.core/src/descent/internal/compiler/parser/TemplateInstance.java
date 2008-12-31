@@ -682,6 +682,12 @@ public class TemplateInstance extends ScopeDsymbol {
 				}
 			}
 		}
+		
+		// Descent: added to avoid errors in Module::templateSemantic
+		if (context.templateSemanticStarted) {
+//			computeAliasDecl(tempdecl.members, context);
+			return;
+		}
 
 		// Copy the syntax trees from the TemplateDeclaration
 		members = Dsymbol.arraySyntaxCopy(tempdecl.members, context);
@@ -715,22 +721,8 @@ public class TemplateInstance extends ScopeDsymbol {
 				Dsymbol s = members.get(i);
 				memnum |= s.addMember(scope, this, memnum, context);
 			}
-	
-			/* See if there is only one member of template instance, and that
-			 * member has the same name as the template instance.
-			 * If so, this template instance becomes an alias for that member.
-			 */
-			if (members.size() > 0) {
-				Dsymbol[] s = new Dsymbol[] { null };
-				if (Dsymbol.oneMembers(members, s, context) && null != s[0]) {
-					if (null != s[0].ident && equals(s[0].ident, tempdecl.ident)) {
-						aliasdecl = new AliasDeclaration(loc, s[0].ident, s[0]);
-						
-						// Descent
-						aliasdecl.isTemplateParameter = true;
-					}
-				}
-			}
+			
+			computeAliasDecl(members, context);
 	
 			// Do semantic() analysis on template instance members
 			Scope sc2;
@@ -790,6 +782,24 @@ public class TemplateInstance extends ScopeDsymbol {
 			}
 		} finally {
 			context.endTemplateEvaluation();
+		}
+	}
+	
+	private void computeAliasDecl(Dsymbols members, SemanticContext context) {
+		/* See if there is only one member of template instance, and that
+		 * member has the same name as the template instance.
+		 * If so, this template instance becomes an alias for that member.
+		 */
+		if (members.size() > 0) {
+			Dsymbol[] s = new Dsymbol[] { null };
+			if (Dsymbol.oneMembers(members, s, context) && null != s[0]) {
+				if (null != s[0].ident && equals(s[0].ident, tempdecl.ident)) {
+					aliasdecl = new AliasDeclaration(loc, s[0].ident, s[0]);
+					
+					// Descent
+					aliasdecl.isTemplateParameter = true;
+				}
+			}
 		}
 	}
 

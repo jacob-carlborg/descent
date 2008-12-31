@@ -398,14 +398,14 @@ public abstract class JavaElement extends PlatformObject implements IJavaElement
 					int start = range.getOffset();
 					int end = start + range.getLength();
 					if (start <= position && position <= end) {
-						if (child instanceof IField) {
+						if (child instanceof IMember) {
 							// check muti-declaration case (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=39943)
 							int declarationStart = start;
 							SourceRefElement candidate = null;
 							do {
 								// check name range
-								range = ((IField)child).getNameRange();
-								if (position <= range.getOffset() + range.getLength()) {
+								range = ((IMember)child).getNameRange();
+								if (range != null && position <= range.getOffset() + range.getLength()) {
 									candidate = child;
 								} else {
 									return candidate == null ? child.getSourceElementAt(position) : candidate.getSourceElementAt(position);

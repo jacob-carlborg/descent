@@ -491,9 +491,11 @@ public class SourceElementParser extends AstVisitorAdapter {
 			Dsymbol wrappedSymbol = node.members.get(0); // SEMANTIC
 			if (wrappedSymbol.getNodeType() == ASTDmdNode.FUNC_DECLARATION) {
 				visit((FuncDeclaration) wrappedSymbol, node);
+				pushLevelInAttribDeclarationStack();
 				return true;
 			} else {
 				visit((AggregateDeclaration) wrappedSymbol, node);
+				pushLevelInAttribDeclarationStack();
 				return true;
 			}
 		}
@@ -1160,9 +1162,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		} else {
 			requestor.exitType(end);
 		}
-		if (!node.wrapper) {
-			popLevelInAttribDeclarationStack();
-		}
+		popLevelInAttribDeclarationStack();
 	}
 	
 	@Override

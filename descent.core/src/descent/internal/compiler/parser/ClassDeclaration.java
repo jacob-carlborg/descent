@@ -1017,7 +1017,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		}
 
 		 // Allocate instance of each new interface
-        for (int i = 0; i < vtblInterfaces.size(); i++)
+        for (int i = 0; i < size(vtblInterfaces); i++)
         {
             BaseClass b = vtblInterfaces.get(i);
             int thissize = Type.PTRSIZE;

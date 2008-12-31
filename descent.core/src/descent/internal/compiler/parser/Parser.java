@@ -3005,9 +3005,6 @@ public class Parser extends Lexer {
 		    check(TOKlparen);
 		    t = parseType();
 		    check(TOKrparen);
-		    if (t == null) {
-		    	System.out.println(123456);
-		    }
 		    t = t.makeInvariant(start, prevToken.ptr + prevToken.sourceLen - start);
 		    break;
 		}

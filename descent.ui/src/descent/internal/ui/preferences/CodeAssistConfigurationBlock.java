@@ -56,6 +56,7 @@ class CodeAssistConfigurationBlock extends OptionsConfigurationBlock {
 	private static final Key PREF_CODEASSIST_FILL_ARGUMENT_NAMES= getJDTUIKey(PreferenceConstants.CODEASSIST_FILL_ARGUMENT_NAMES);
 	private static final Key PREF_CODEASSIST_GUESS_METHOD_ARGUMENTS= getJDTUIKey(PreferenceConstants.CODEASSIST_GUESS_METHOD_ARGUMENTS);
 	private static final Key PREF_CODEASSIST_PREFIX_COMPLETION= getJDTUIKey(PreferenceConstants.CODEASSIST_PREFIX_COMPLETION);
+	private static final Key PREF_CODEASSIST_DOT_INSERTS= getJDTUIKey(PreferenceConstants.CODEASSIST_DOT_INSERTS);
 	private static final Key PREF_CODEASSIST_FORBIDDEN_REFERENCE_CHECK= getJDTCoreKey(JavaCore.CODEASSIST_FORBIDDEN_REFERENCE_CHECK);
 	private static final Key PREF_CODEASSIST_DISCOURAGED_REFERENCE_CHECK= getJDTCoreKey(JavaCore.CODEASSIST_DISCOURAGED_REFERENCE_CHECK);
 	private static final Key PREF_CODEASSIST_DEPRECATION_CHECK= getJDTCoreKey(JavaCore.CODEASSIST_DEPRECATION_CHECK);
@@ -153,6 +154,9 @@ class CodeAssistConfigurationBlock extends OptionsConfigurationBlock {
 		
 		label= PreferencesMessages.JavaEditorPreferencePage_completePrefixes; 
 		addCheckBox(composite, label, PREF_CODEASSIST_PREFIX_COMPLETION, trueFalse, 0);
+		
+		label= PreferencesMessages.JavaEditorPreferencePage_dotInserts; 
+		addCheckBox(composite, label, PREF_CODEASSIST_DOT_INSERTS, trueFalse, 0);
 		
 //		label= PreferencesMessages.JavaEditorPreferencePage_automaticallyAddImportInsteadOfQualifiedName; 
 //		addCheckBox(composite, label, PREF_CODEASSIST_ADDIMPORT, trueFalse, 0);
