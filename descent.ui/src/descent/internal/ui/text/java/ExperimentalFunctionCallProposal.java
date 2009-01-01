@@ -42,7 +42,7 @@ public final class ExperimentalFunctionCallProposal extends JavaMethodCompletion
 		int baseOffset= getReplacementOffset();
 		String replacement= getReplacementString();
 
-		if (fProposal.wantArguments() && fArgumentOffsets != null && getTextViewer() != null) {
+		if (!mustInsertDot(trigger) && fProposal.wantArguments() && fArgumentOffsets != null && getTextViewer() != null) {
 			try {
 				LinkedModeModel model= new LinkedModeModel();
 				for (int i= 0; i != fArgumentOffsets.length; i++) {

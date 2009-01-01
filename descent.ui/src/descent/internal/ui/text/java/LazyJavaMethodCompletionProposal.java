@@ -367,7 +367,7 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 				setCursorPosition(getCursorPosition());
 			}
 			
-			if (fProposal.wantArguments() && fArgumentOffsets != null && fArgumentOffsets.length > 0 && getTextViewer() != null && !isGetter()) {
+			if (!mustInsertDot(trigger) && fProposal.wantArguments() && fArgumentOffsets != null && fArgumentOffsets.length > 0 && getTextViewer() != null && !isGetter()) {
 				try {
 					LinkedModeModel model= new LinkedModeModel();
 					for (int i= 0; i != fArgumentOffsets.length; i++) {

@@ -50,7 +50,7 @@ public class JavaMethodCompletionProposal extends LazyJavaCompletionProposal {
 		if (trigger == ' ' || trigger == '(')
 			trigger= '\0';
 		super.apply(document, trigger, offset);
-		if (needsLinkedMode()) {
+		if (!mustInsertDot(trigger) && needsLinkedMode()) {
 			setUpLinkedMode(document, ')');
 		}
 	}

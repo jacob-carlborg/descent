@@ -19,15 +19,6 @@ import descent.internal.core.CompilerConfiguration;
 import descent.internal.core.util.Util;
 
 public class SemanticContext {
-	
-	public static class ModuleMissingSemantic {
-		public Module module;
-		public Dsymbol symbol;
-		public ModuleMissingSemantic(Module module, Dsymbol symbol) {
-			this.module = module;
-			this.symbol = symbol;
-		}
-	}
 
 	public boolean BREAKABI = true;
 	public boolean IN_GCC = false;

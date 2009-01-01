@@ -137,12 +137,19 @@ public class InternalSignature {
 				public void acceptIdentifier(char[][] compoundName, String signature) {
 					Stack<Type> sub = stack.peek();
 					
-					TypeIdentifier type = new TypeIdentifier(Loc.ZERO, compoundName[0]);
-					for (int i = 1; i < compoundName.length; i++) {
-						type.idents.add(new IdentifierExp(compoundName[i]));
+					if (sub.size() > 0 && sub.get(sub.size() - 1) instanceof TypeInstance) {
+						TypeInstance ti = (TypeInstance) sub.get(sub.size() - 1);
+						for(char[] name : compoundName) {
+							ti.idents.add(new IdentifierExp(name));
+						}
+					} else {
+						TypeIdentifier type = new TypeIdentifier(Loc.ZERO, compoundName[0]);
+						for (int i = 1; i < compoundName.length; i++) {
+							type.idents.add(new IdentifierExp(compoundName[i]));
+						}
+						
+						sub.push(type);
 					}
-					
-					sub.push(type);
 				}
 				@Override
 				public void acceptDelegate(String signature) {
@@ -216,34 +223,44 @@ public class InternalSignature {
 					Objects tiargs = tiargsStack.pop();
 					
 					Stack<Type> previous = stack.peek();
-					TypeIdentifier typeIdent = (TypeIdentifier) previous.pop();
-					
-					if (typeIdent.idents == null || typeIdent.idents.isEmpty()) {
-						TemplateInstance templInstance = new TemplateInstance(Loc.ZERO, typeIdent.ident, encoder);
-						templInstance.tiargs = tiargs;
+					Type previousType = previous.pop();
+					if (previousType instanceof TypeIdentifier) {
+						TypeIdentifier typeIdent = (TypeIdentifier) previousType;
 						
-						if (previous.isEmpty()) {
-							TypeInstance typeInstance = new TypeInstance(Loc.ZERO, templInstance);
-							previous.push(typeInstance);
+						if (typeIdent.idents == null || typeIdent.idents.isEmpty()) {
+							TemplateInstance templInstance = new TemplateInstance(Loc.ZERO, typeIdent.ident, encoder);
+							templInstance.tiargs = tiargs;
+							
+							if (previous.isEmpty()) {
+								TypeInstance typeInstance = new TypeInstance(Loc.ZERO, templInstance);
+								previous.push(typeInstance);
+							} else {
+								TypeInstance previousInstance = (TypeInstance) previous.peek();
+								previousInstance.idents.add(new TemplateInstanceWrapper(Loc.ZERO, templInstance));
+							}
 						} else {
-							TypeInstance previousInstance = (TypeInstance) previous.peek();
-							previousInstance.idents.add(new TemplateInstanceWrapper(Loc.ZERO, templInstance));
-						}
-					} else {
-						TemplateInstance templInstance = new TemplateInstance(Loc.ZERO, typeIdent.idents.get(typeIdent.idents.size() - 1), encoder);
-						templInstance.tiargs = tiargs;
-						
-						typeIdent.idents.set(typeIdent.idents.size() - 1, new TemplateInstanceWrapper(Loc.ZERO, templInstance));
-						
-						if (previous.isEmpty()) {
-							previous.push(typeIdent);
-						} else {
-							TypeIdentifier previousIdent = (TypeIdentifier) previous.peek();
-							previousIdent.idents.add(typeIdent.ident);
-							for(IdentifierExp ident : typeIdent.idents) {
-								previousIdent.idents.add(ident);
+							TemplateInstance templInstance = new TemplateInstance(Loc.ZERO, typeIdent.idents.get(typeIdent.idents.size() - 1), encoder);
+							templInstance.tiargs = tiargs;
+							
+							typeIdent.idents.set(typeIdent.idents.size() - 1, new TemplateInstanceWrapper(Loc.ZERO, templInstance));
+							
+							if (previous.isEmpty()) {
+								previous.push(typeIdent);
+							} else {
+								TypeIdentifier previousIdent = (TypeIdentifier) previous.peek();
+								previousIdent.idents.add(typeIdent.ident);
+								for(IdentifierExp ident : typeIdent.idents) {
+									previousIdent.idents.add(ident);
+								}
 							}
 						}
+					} else {
+						TypeInstance typeIdent = (TypeInstance) previousType;
+						
+						TemplateInstance templInstance = new TemplateInstance(Loc.ZERO, typeIdent.idents.get(typeIdent.idents.size() - 1), encoder);
+						templInstance.tiargs = tiargs;
+						typeIdent.idents.set(typeIdent.idents.size() - 1, new TemplateInstanceWrapper(Loc.ZERO, templInstance));
+						previous.push(typeIdent);
 					}
 				}
 			});

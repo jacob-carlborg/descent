@@ -255,6 +255,17 @@ public class SignatureToType_Test extends AbstractSignatureTest implements ISign
 		assertEquals("?3one3two3Foo!^i'?5three4four3Bar!^i\'", getTypeSignature("one.two.Foo!(int).three.four.Bar!(int)"));
 	}
 	
+	public void testInstanceDotIdentifier() {
+		TypeInstance typeInstance = (TypeInstance) InternalSignature.toType("?3Foo!^?3Bar!\'?3Baz\'", new ASTNodeEncoder(AST.D1));
+		TemplateInstance tempInst = typeInstance.tempinst;
+		assertEquals("Foo", tempInst.name.toString());
+		assertEquals(1, tempInst.tiargs.size());
+		TypeInstance typeInstance2 = (TypeInstance) tempInst.tiargs.get(0);
+		TemplateInstance tempInst2 = typeInstance2.tempinst;
+		assertEquals("Bar", tempInst2.name.toString());
+		assertEquals("Baz", typeInstance2.idents.get(0).toString());
+	}
+	
 	private String getTypeSignature(String type) {
 		Parser parser = new Parser(AST.D1, type + "x;");
 		parser.nextToken();

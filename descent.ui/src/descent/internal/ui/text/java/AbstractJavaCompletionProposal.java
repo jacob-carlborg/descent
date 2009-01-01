@@ -294,9 +294,11 @@ public abstract class AbstractJavaCompletionProposal implements IJavaCompletionP
 					setCursorPosition(getCursorPosition() + 1);
 				}
 				
-				if (trigger == '.' && !dotInserts()) {
+				if (mustInsertDot(trigger)) {
 					buffer.setLength(0);
+					buffer.append(document.get(getReplacementOffset(), getReplacementLength()));
 					buffer.append('.');
+					setCursorPosition(getReplacementOffset() + buffer.length());
 				}
 	
 				replacement= buffer.toString();
@@ -322,9 +324,13 @@ public abstract class AbstractJavaCompletionProposal implements IJavaCompletionP
 		}
 	}
 
-	private boolean dotInserts() {
+	protected boolean dotInserts() {
 		IPreferenceStore preferenceStore= JavaPlugin.getDefault().getPreferenceStore();
 		return preferenceStore.getBoolean(PreferenceConstants.CODEASSIST_DOT_INSERTS);
+	}
+	
+	protected boolean mustInsertDot(char trigger) {
+		return trigger == '.' && !dotInserts();
 	}
 
 	protected boolean isSmartTrigger(char trigger) {

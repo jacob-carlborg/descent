@@ -40,7 +40,7 @@ public final class ExperimentalTemplatedFunctionProposal extends JavaTemplatedFu
 		int baseOffset= getReplacementOffset();
 		String replacement= getReplacementString();
 
-		if (fProposal.wantArguments() && (fArgumentOffsets != null || fTempArgumentOffsets != null) && getTextViewer() != null) {
+		if (!mustInsertDot(trigger) && fProposal.wantArguments() && (fArgumentOffsets != null || fTempArgumentOffsets != null) && getTextViewer() != null) {
 			try {
 				LinkedModeModel model= new LinkedModeModel();
 				

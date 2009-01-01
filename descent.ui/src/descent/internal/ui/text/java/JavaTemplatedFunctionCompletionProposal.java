@@ -45,7 +45,7 @@ public class JavaTemplatedFunctionCompletionProposal extends LazyJavaCompletionP
 		if (trigger == ' ' || trigger == '(')
 			trigger= '\0';
 		super.apply(document, trigger, offset);
-		if (needsLinkedMode()) {
+		if (!mustInsertDot(trigger) && needsLinkedMode()) {
 			setUpLinkedMode(document, ')');
 		}
 	}
