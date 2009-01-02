@@ -298,7 +298,7 @@ public abstract class AbstractJavaCompletionProposal implements IJavaCompletionP
 					buffer.setLength(0);
 					buffer.append(document.get(getReplacementOffset(), getReplacementLength()));
 					buffer.append('.');
-					setCursorPosition(getReplacementOffset() + buffer.length());
+					setCursorPosition(buffer.length());
 				}
 	
 				replacement= buffer.toString();
