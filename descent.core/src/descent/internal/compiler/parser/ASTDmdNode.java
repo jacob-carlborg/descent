@@ -261,6 +261,8 @@ public abstract class ASTDmdNode extends ASTNode {
 	public final static int POSTBLIT_DECLARATION = 201;
 	public final static int TEMPLATE_THIS_PARAMETER = 202;
 	public final static int OVER_EXP = 203;
+	public final static int STRUCT_LITERAL_EXP = 204;
+	public final static int INDEX_EXP = 205;
 
 	// Defined here because MATCH and Match overlap on Windows
 	public static class Match {

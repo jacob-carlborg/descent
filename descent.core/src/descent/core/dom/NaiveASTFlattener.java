@@ -1469,7 +1469,9 @@ class NaiveASTFlattener extends ASTVisitor {
 
 	@Override
 	public boolean visit(StringLiteral node) {
+		this.buffer.append("\"");
 		this.buffer.append(node.getEscapedValue());
+		this.buffer.append("\"");
 		return false;
 	}
 	
@@ -1483,6 +1485,14 @@ class NaiveASTFlattener extends ASTVisitor {
 	public boolean visit(StructInitializer node) {
 		this.buffer.append("{ ");
 		visitList(node.fragments(), ", ");
+		this.buffer.append("}");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(StructExpression node) {
+		this.buffer.append("{ ");
+		visitList(node.expressions(), ", ");
 		this.buffer.append("}");
 		return false;
 	}

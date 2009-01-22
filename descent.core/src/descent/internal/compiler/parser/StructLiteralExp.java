@@ -95,7 +95,7 @@ public class StructLiteralExp extends Expression {
 
 	@Override
 	public int getNodeType() {
-		return 0;
+		return STRUCT_LITERAL_EXP;
 	}
 	
 	@Override

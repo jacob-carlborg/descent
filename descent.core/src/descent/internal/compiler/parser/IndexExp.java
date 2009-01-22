@@ -31,7 +31,7 @@ public class IndexExp extends BinExp {
 
 	@Override
 	public int getNodeType() {
-		return 0;
+		return INDEX_EXP;
 	}
 
 	@Override

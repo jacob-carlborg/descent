@@ -28,8 +28,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.forms,
  org.eclipse.team.core,
  descent.core,
- descent.launching,
- org.eclipse.jdt.ui
+ descent.launching
 Eclipse-LazyStart: true
 Eclipse-BuddyPolicy: registered
 Export-Package: descent.internal.ui,

@@ -247,6 +247,8 @@ public class CompileTimeASTConverter {
 			return convert((DollarExp) symbol);
 		case ASTDmdNode.DOT_ID_EXP:
 			return convert((DotIdExp) symbol);
+		case ASTDmdNode.DOT_VAR_EXP:
+			return convert((DotVarExp) symbol);
 		case ASTDmdNode.DOT_TEMPLATE_INSTANCE_EXP:
 			return convert((DotTemplateInstanceExp) symbol);
 		// ->
@@ -295,6 +297,8 @@ public class CompileTimeASTConverter {
 			return convert((Import) symbol);
 		case ASTDmdNode.IN_EXP:
 			return convert((BinExp) symbol, InfixExpression.Operator.IN);
+		case ASTDmdNode.INDEX_EXP:
+			return convert((IndexExp) symbol);
 		case ASTDmdNode.INTEGER_EXP:
 			return convert((IntegerExp) symbol);
 		case ASTDmdNode.INTERFACE_DECLARATION:
@@ -396,6 +400,8 @@ public class CompileTimeASTConverter {
 			return convert((StructDeclaration) symbol);
 		case ASTDmdNode.STRUCT_INITIALIZER:
 			return convert((StructInitializer) symbol);
+		case ASTDmdNode.STRUCT_LITERAL_EXP:
+			return convert((StructLiteralExp) symbol);
 		case ASTDmdNode.SUPER_EXP:
 			return convert((SuperExp) symbol);
 		case ASTDmdNode.SYNCHRONIZED_STATEMENT:
@@ -434,6 +440,8 @@ public class CompileTimeASTConverter {
 			return convert((TypeAArray) symbol);
 		case ASTDmdNode.TYPE_BASIC:
 			return convert((TypeBasic) symbol);
+		case ASTDmdNode.TYPE_CLASS:
+			return convert((TypeClass) symbol);
 		case ASTDmdNode.TYPE_D_ARRAY:
 			return convert((TypeDArray) symbol);
 		case ASTDmdNode.TYPE_DELEGATE:
@@ -455,6 +463,8 @@ public class CompileTimeASTConverter {
 			return convert((TypeSArray) symbol);
 		case ASTDmdNode.TYPE_SLICE:
 			return convert((TypeSlice) symbol);
+		case ASTDmdNode.TYPE_STRUCT:
+			return convert((TypeStruct) symbol);
 		case ASTDmdNode.TYPE_TYPEOF:
 			return convert((TypeTypeof) symbol);
 		case ASTDmdNode.TYPE_RETURN:
@@ -1445,7 +1455,21 @@ public class CompileTimeASTConverter {
 				setSourceRange(b, a.ident.start, a.ident.length);
 			}
 		} else {
-			descent.core.dom.Initializer init = (descent.core.dom.Initializer) convert(a.init); // SEMANTIC
+			// Dmd semantic leaves:
+			//   int x = 2;
+			// like:
+			//   int x = <<int x>> = 2;
+			// where <<int x>> is a VarExp, so we just remove that from the conversion. 
+			Initializer aInit = a.init;
+			if (aInit instanceof ExpInitializer) {
+				ExpInitializer expInit = (ExpInitializer) aInit;
+				if (expInit.exp instanceof AssignExp) {
+					AssignExp assignExp = (AssignExp) expInit.exp;
+					aInit = new ExpInitializer(Loc.ZERO, assignExp.e2);
+				}
+			}
+			
+			descent.core.dom.Initializer init = (descent.core.dom.Initializer) convert(aInit); // SEMANTIC
 			if (init != null) {
 				b.setInitializer(init);
 				if (a.ident != null) {
@@ -2022,20 +2046,31 @@ public class CompileTimeASTConverter {
 	
 	public void fillFunction(descent.core.dom.AbstractFunctionDeclaration b, FuncDeclaration a) {
 		if (a.frequire != null) {
-			b.setPrecondition((Block) convert(a.frequire));
+			b.setPrecondition((Block) convert(removeRedundantCompoundStatement(a.frequire)));
 		}
 		if (a.fensure != null) {
-			b.setPostcondition((Block) convert(a.fensure));
+			b.setPostcondition((Block) convert(removeRedundantCompoundStatement(a.fensure)));
 		}
 		if (a.outId != null) {
 			b.setPostconditionVariableName((SimpleName) convert(a.outId));
 		}
 		if (a.fbody != null) {
-			descent.core.dom.Block convertedBody = (Block) convert(a.fbody);
+			descent.core.dom.Block convertedBody = (Block) convert(removeRedundantCompoundStatement(a.fbody));
 			if (convertedBody != null) {
 				b.setBody(convertedBody);
 			}
 		}
+	}
+	
+	private Statement removeRedundantCompoundStatement(Statement stm) {
+		if (stm instanceof CompoundStatement) {
+			CompoundStatement cstm = (CompoundStatement) stm;
+			if(cstm.statements != null && cstm.statements.size() == 1 &&
+					cstm.statements.get(0) instanceof CompoundStatement) {
+				stm = cstm.statements.get(0);
+			}
+		}
+		return stm;
 	}
 	
 	public void fillDeclaration(descent.core.dom.Declaration b, ASTDmdNode a) {
@@ -2698,6 +2733,24 @@ public class CompileTimeASTConverter {
 		return convertParenthesizedExpression(a, b);
 	}
 	
+	public descent.core.dom.Expression convert(IndexExp a) {
+		descent.core.dom.ArrayAccess b = new descent.core.dom.ArrayAccess(ast);
+		if (a.e1 != null) {
+			descent.core.dom.Expression convertedExp = convert(a.e1);
+			if (convertedExp != null) {
+				b.setArray(convertedExp);
+			}
+		}
+		b.indexes().add(convert(a.e2));
+		setSourceRange(b, a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
+		return convertParenthesizedExpression(a, b);
+	}
+	
 	public descent.core.dom.ArrayInitializer convert(ArrayInitializer a) {
 		descent.core.dom.ArrayInitializer b = new descent.core.dom.ArrayInitializer(ast);
 		if (a.index != null) {
@@ -2736,6 +2789,18 @@ public class CompileTimeASTConverter {
 					setSourceRange(fragment, index.start, value.start + value.length - index.start);
 				}
 				b.fragments().add(fragment);
+			}
+		}
+		setSourceRange(b, a.start, a.length);
+		return b;
+	}
+	
+	public descent.core.dom.StructExpression convert(StructLiteralExp a) {
+		descent.core.dom.StructExpression b = new descent.core.dom.StructExpression(ast);
+		if (a.elements != null) {
+			for(int i = 0; i < a.elements.size(); i++) {
+				Expression value = a.elements.get(i);
+				b.expressions().add(convert(value));
 			}
 		}
 		setSourceRange(b, a.start, a.length);
@@ -2830,6 +2895,26 @@ public class CompileTimeASTConverter {
 			}
 		}
 		convertExpressions(b.arguments(), a.arguments);
+		setSourceRange(b, a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
+		return convertParenthesizedExpression(a, b);
+	}
+	
+	public descent.core.dom.Expression convert(DotVarExp a) {
+		descent.core.dom.DotIdentifierExpression b = new descent.core.dom.DotIdentifierExpression(ast);
+		if (a.e1 != null) {
+			b.setExpression(convert(a.e1));
+		}
+		if (a.var.ident != null) {
+			SimpleName convertedIdent = (SimpleName) convert(a.var.ident);
+			if (convertedIdent != null) {
+				b.setName(convertedIdent);
+			}
+		}
 		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
@@ -3074,7 +3159,29 @@ public class CompileTimeASTConverter {
 	
 	public descent.core.dom.Expression convert(RealExp a) {
 		descent.core.dom.NumberLiteral b = new descent.core.dom.NumberLiteral(ast);
-		b.internalSetToken(new String(a.str));
+		if (a.value != null) {
+			if (a.value.isNaN() || a.value.isInfinite()) {
+				StringBuilder sb = new StringBuilder();
+				if (a.value.isNegativeInfinity()) {
+					sb.append("-");
+				}
+				if (a.type.ty == TY.Tfloat32) {
+					sb.append("float.");
+				} else {
+					sb.append("double.");
+				}
+				if (a.value.isNaN()) {
+					sb.append("nan");
+				} else {
+					sb.append("infinity");
+				}
+				b.internalSetToken(sb.toString());
+			} else {
+				b.internalSetToken(a.value.toString());
+			}
+		} else if (a.str != null ){
+			b.internalSetToken(new String(a.str));
+		}
 		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
@@ -3304,6 +3411,14 @@ public class CompileTimeASTConverter {
 		return convertModifiedType(a, b);
 	}
 	
+	public descent.core.dom.Type convert(TypeClass a) {
+		return ast.newSimpleType(ast.newSimpleName(new String(a.sym.ident.ident)));
+	}
+	
+	public descent.core.dom.Type convert(TypeStruct a) {
+		return ast.newSimpleType(ast.newSimpleName(new String(a.sym.ident.ident)));
+	}
+	
 	private descent.core.dom.Type convertModifiedType(Type a, descent.core.dom.Type b) {
 		if (a.modifications != null) {
 			for(Modification modification : a.modifications) {
@@ -3432,11 +3547,34 @@ public class CompileTimeASTConverter {
 		if (source == null || source.isEmpty()) return;
 		for(int i = 0; i < source.size(); i++) {
 			Dsymbol symbol = (Dsymbol) source.get(i);
-			i = convertOneOfManyDeclarations(destination, source, i, symbol);
+			if (!(symbol instanceof TemplateInstance)) {
+				i = convertOneOfManyDeclarations(destination, source, i, symbol);
+			}
+		}
+	}
+	
+	protected int convertOneOfManyDeclarations(List<Declaration> destination, List<Dsymbol> source, int i, Dsymbol symbol) {
+		switch(symbol.getNodeType()) {
+		case ASTDmdNode.CONDITIONAL_DECLARATION:
+			ConditionalDeclaration decl = (ConditionalDeclaration) symbol;
+			switch(decl.condition.inc) {
+			case 0:
+				destination.add((Declaration) convert(symbol));
+				break;
+			case 1:
+				convertDeclarations(destination, decl.decl);
+				break;
+			case 2:
+				convertDeclarations(destination, decl.elsedecl);
+				break;
+			}
+			return i;
+		default:
+			return convertOneOfManyDeclarations0(destination, source, i, symbol);
 		}
 	}
 
-	protected int convertOneOfManyDeclarations(List<Declaration> destination, List<Dsymbol> source, int i, Dsymbol symbol) {
+	protected int convertOneOfManyDeclarations0(List<Declaration> destination, List<Dsymbol> source, int i, Dsymbol symbol) {
 		switch(symbol.getNodeType()) {
 		case ASTDmdNode.IMPORT:
 			Import import1 = (Import) symbol;
@@ -3578,8 +3716,22 @@ public class CompileTimeASTConverter {
 			stm = convertOneOfManyStatements(destination, stm);
 		}
 	}
-
+	
 	protected Statement convertOneOfManyStatements(List<descent.core.dom.Statement> destination, Statement stm) {
+		switch(stm.getNodeType()) {
+		case ASTDmdNode.CONDITIONAL_STATEMENT:
+			ConditionalStatement condStm = (ConditionalStatement) stm;
+			switch(condStm.condition.inc) {
+			case 1:
+				stm = condStm.ifbody;
+				stm = extractSingleCompoundStatement(stm);
+				break;
+			case 2:
+				stm = condStm.elsebody;
+				stm = extractSingleCompoundStatement(stm);
+				break;
+			}
+		}
 		descent.core.dom.Statement convertStm = convert(stm);
 		if (convertStm != null) {
 			destination.add(convertStm);
@@ -3962,6 +4114,16 @@ public class CompileTimeASTConverter {
 	
 	protected void setSourceRange(ASTNode node, int start, int length) {
 //		node.setSourceRange(start, length);
+	}
+	
+	private Statement extractSingleCompoundStatement(Statement stm) {
+		if (stm instanceof CompoundStatement) {
+			CompoundStatement cs = (CompoundStatement) stm;
+			if (cs.statements != null && cs.statements.size() == 1) {
+				stm = cs.statements.get(0);
+			}
+		}
+		return stm;
 	}
 
 }

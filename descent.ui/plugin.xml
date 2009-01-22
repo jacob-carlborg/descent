@@ -3197,7 +3197,6 @@
             class="descent.internal.ui.infoviews.SourceView"
             id="descent.ui.SourceView">
       </view>
-      <!--
       <view
             name="Compile-time"
             icon="$nl$/icons/full/eview16/source.gif"
@@ -3205,7 +3204,6 @@
             class="descent.internal.ui.infoviews.CompileTimeView"
             id="descent.ui.CompileTimeView">
       </view>
-      -->
       <view
             name="%JavadocView"
             icon="$nl$/icons/full/eview16/javadoc.gif"

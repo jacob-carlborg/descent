@@ -1135,6 +1135,13 @@ public abstract class ASTNode {
 	public static final int THIS_TEMPLATE_PARAMETER = 140;
 	
 	/**
+	 * Node type constant indicating a node of type 
+	 * <code>StructExpression</code>.
+	 * @see StructExpression
+	 */
+	public static final int STRUCT_EXPRESSION = 141;
+	
+	/**
 	 * Returns the node class for the corresponding node type.
 	 * 
 	 * @param nodeType AST node type
@@ -1425,6 +1432,8 @@ public abstract class ASTNode {
 			return PostblitDeclaration.class;
 		case THIS_TEMPLATE_PARAMETER:
 			return ThisTemplateParameter.class;
+		case STRUCT_EXPRESSION:
+			return StructExpression.class;
 		}
 		return null;
 	}

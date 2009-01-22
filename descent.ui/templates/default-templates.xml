@@ -123,4 +123,232 @@
 	${line_selection}${cursor}
 }</template>
 
+<template name="opNeg" description="%Templates.opNeg" id="descent.ui.templates.opNeg" context="d" enabled="true" autoinsert="false">${type} opNeg() {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opPos" description="%Templates.opPos" id="descent.ui.templates.opPos" context="d" enabled="true" autoinsert="false">${type} opPos() {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opCom" description="%Templates.opCom" id="descent.ui.templates.opCom" context="d" enabled="true" autoinsert="false">${type} opCom() {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opPostInc" description="%Templates.opPostInc" id="descent.ui.templates.opPostInc" context="d" enabled="true" autoinsert="false">${type} opPostInc() {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opPostDec" description="%Templates.opPostDec" id="descent.ui.templates.opPostDec" context="d" enabled="true" autoinsert="false">${type} opPostDec() {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opCast" description="%Templates.opCast" id="descent.ui.templates.opCast" context="d" enabled="true" autoinsert="false">${type} opCast() {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opAdd" description="%Templates.opAdd" id="descent.ui.templates.opAdd" context="d" enabled="true" autoinsert="false">${type} opAdd(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opAdd_r" description="%Templates.opAdd_r" id="descent.ui.templates.opAdd_r" context="d" enabled="true" autoinsert="false">${type} opAdd_r(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opSub" description="%Templates.opSub" id="descent.ui.templates.opSub" context="d" enabled="true" autoinsert="false">${type} opSub(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opSub_r" description="%Templates.opSub_r" id="descent.ui.templates.opSub_r" context="d" enabled="true" autoinsert="false">${type} opSub_r(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opMul" description="%Templates.opMul" id="descent.ui.templates.opMul" context="d" enabled="true" autoinsert="false">${type} opMul(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opMul_r" description="%Templates.opMul_r" id="descent.ui.templates.opMul_r" context="d" enabled="true" autoinsert="false">${type} opMul_r(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opDiv" description="%Templates.opDiv" id="descent.ui.templates.opDiv" context="d" enabled="true" autoinsert="false">${type} opDiv(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opDiv_r" description="%Templates.opDiv_r" id="descent.ui.templates.opDiv_r" context="d" enabled="true" autoinsert="false">${type} opDiv_r(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opMod" description="%Templates.opMod" id="descent.ui.templates.opMod" context="d" enabled="true" autoinsert="false">${type} opMod(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opMod_r" description="%Templates.opMod_r" id="descent.ui.templates.opMod_r" context="d" enabled="true" autoinsert="false">${type} opMod_r(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opAnd" description="%Templates.opAnd" id="descent.ui.templates.opAnd" context="d" enabled="true" autoinsert="false">${type} opAnd(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opAnd_r" description="%Templates.opAnd_r" id="descent.ui.templates.opAnd_r" context="d" enabled="true" autoinsert="false">${type} opAnd_r(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opOr" description="%Templates.opOr" id="descent.ui.templates.opOr" context="d" enabled="true" autoinsert="false">${type} opOr(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opOr_r" description="%Templates.opOr_r" id="descent.ui.templates.opOr_r" context="d" enabled="true" autoinsert="false">${type} opOr_r(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opXor" description="%Templates.opXor" id="descent.ui.templates.opXor" context="d" enabled="true" autoinsert="false">${type} opXor(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opXor_r" description="%Templates.opXor_r" id="descent.ui.templates.opXor_r" context="d" enabled="true" autoinsert="false">${type} opXor_r(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opShl" description="%Templates.opShl" id="descent.ui.templates.opShl" context="d" enabled="true" autoinsert="false">${type} opShl(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opShl_r" description="%Templates.opShl_r" id="descent.ui.templates.opShl_r" context="d" enabled="true" autoinsert="false">${type} opShl_r(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opShr" description="%Templates.opShr" id="descent.ui.templates.opShr" context="d" enabled="true" autoinsert="false">${type} opShr(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opShr_r" description="%Templates.opShr_r" id="descent.ui.templates.opShr_r" context="d" enabled="true" autoinsert="false">${type} opShr_r(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opUShr" description="%Templates.opUShr" id="descent.ui.templates.opUShr" context="d" enabled="true" autoinsert="false">${type} opUShr(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opUShr_r" description="%Templates.opUShr_r" id="descent.ui.templates.opUShr_r" context="d" enabled="true" autoinsert="false">${type} opUShr_r(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opCat" description="%Templates.opCat" id="descent.ui.templates.opCat" context="d" enabled="true" autoinsert="false">${type} opCat(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opCat_r" description="%Templates.opCat_r" id="descent.ui.templates.opCat_r" context="d" enabled="true" autoinsert="false">${type} opCat_r(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opAddAssign" description="%Templates.opAddAssign" id="descent.ui.templates.opAddAssign" context="d" enabled="true" autoinsert="false">${type} opAddAssign(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opSubAssign" description="%Templates.opSubAssign" id="descent.ui.templates.opSubAssign" context="d" enabled="true" autoinsert="false">${type} opSubAssign(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opMulAssign" description="%Templates.opMulAssign" id="descent.ui.templates.opMulAssign" context="d" enabled="true" autoinsert="false">${type} opMulAssign(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opDivAssign" description="%Templates.opDivAssign" id="descent.ui.templates.opDivAssign" context="d" enabled="true" autoinsert="false">${type} opDivAssign(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opModAssign" description="%Templates.opModAssign" id="descent.ui.templates.opModAssign" context="d" enabled="true" autoinsert="false">${type} opModAssign(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opAndAssign" description="%Templates.opAndAssign" id="descent.ui.templates.opAndAssign" context="d" enabled="true" autoinsert="false">${type} opAndAssign(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opOrAssign" description="%Templates.opOrAssign" id="descent.ui.templates.opOrAssign" context="d" enabled="true" autoinsert="false">${type} opOrAssign(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opXorAssign" description="%Templates.opXorAssign" id="descent.ui.templates.opXorAssign" context="d" enabled="true" autoinsert="false">${type} opXorAssign(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opShlAssign" description="%Templates.opShlAssign" id="descent.ui.templates.opShlAssign" context="d" enabled="true" autoinsert="false">${type} opShlAssign(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opShrAssign" description="%Templates.opShrAssign" id="descent.ui.templates.opShrAssign" context="d" enabled="true" autoinsert="false">${type} opShrAssign(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opUShrAssign" description="%Templates.opUShrAssign" id="descent.ui.templates.opUShrAssign" context="d" enabled="true" autoinsert="false">${type} opUShrAssign(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opCatAssign" description="%Templates.opCatAssign" id="descent.ui.templates.opCatAssign" context="d" enabled="true" autoinsert="false">${type} opCatAssign(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opIn" description="%Templates.opIn" id="descent.ui.templates.opIn" context="d" enabled="true" autoinsert="false">${type} opIn(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opIn_r" description="%Templates.opIn_r" id="descent.ui.templates.opIn_r" context="d" enabled="true" autoinsert="false">${type} opIn_r(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opAssign" description="%Templates.opAssign" id="descent.ui.templates.opAssign" context="d" enabled="true" autoinsert="false">${type} opAssign(${type} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opEquals" description="%Templates.opEquals" id="descent.ui.templates.opEquals" context="d" enabled="true" autoinsert="false">int opEquals(${Object} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opCmp" description="%Templates.opCmp" id="descent.ui.templates.opCmp" context="d" enabled="true" autoinsert="false">int opCmp(${Object} ${other}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opCall" description="%Templates.opCall" id="descent.ui.templates.opCall" context="d" enabled="true" autoinsert="false">${ret} opCall(${type} ${arg}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opIndex" description="%Templates.opIndex" id="descent.ui.templates.opIndex" context="d" enabled="true" autoinsert="false">${ret} opIndex(${type} ${index}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opIndexAssign" description="%Templates.opIndexAssign" id="descent.ui.templates.opIndexAssign" context="d" enabled="true" autoinsert="false">${ret} opIndexAssign(${indexType} ${index}, ${valueType} ${value}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opSlice" description="%Templates.opSlice1" id="descent.ui.templates.opSlice1" context="d" enabled="true" autoinsert="false">${ret} opSlice() {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opSlice" description="%Templates.opSlice2" id="descent.ui.templates.opSlice2" context="d" enabled="true" autoinsert="false">${ret} opSlice(${type} ${index}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opSliceAssign" description="%Templates.opSliceAssign1" id="descent.ui.templates.opSliceAssign1" context="d" enabled="true" autoinsert="false">${ret} opSliceAssign(${type} ${value}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opSliceAssign" description="%Templates.opSliceAssign2" id="descent.ui.templates.opSliceAssign2" context="d" enabled="true" autoinsert="false">${ret} opSliceAssign(${indexType} ${index}, ${valueType} ${value}) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opApply" description="%Templates.opApply" id="descent.ui.templates.opApply" context="d" enabled="true" autoinsert="false">int opApply(int delegate(${type}) dg) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opApplyReverse" description="%Templates.opApplyReverse" id="descent.ui.templates.opApplyReverse" context="d" enabled="true" autoinsert="false">int opApplyReverse(int delegate(ref ${type}) dg) {
+	${line_selection}${cursor}
+}</template>
+
+<template name="opDot" description="%Templates.opDot" id="descent.ui.templates.opDot" context="d" enabled="true" autoinsert="false">${type} opDot() {
+	${line_selection}${cursor}
+}</template>
+
 </templates>
