@@ -1467,7 +1467,15 @@ public class CompletionEngine extends Engine
 		if (node.scope != null) {
 			currentName = computePrefixAndSourceRange(node.name);
 			
+			if (rootScope == null) {
+				rootScope = node.scope;
+			}
+			
 			completeScope(node.scope, INCLUDE_ALL);
+			
+			if (currentName.length > 0) {
+				nameEnvironment.findPrefixDeclarations(currentName, false, options.camelCaseMatch, this);
+			}
 		}
 	}
 	

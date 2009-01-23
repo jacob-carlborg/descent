@@ -107,7 +107,7 @@ public class Module extends Package {
 		semantic3(null, context);
 	
 		// Added for Descent
-		if (this == context.Module_rootModule) {
+		if (context.doTemplateSemantic && this == context.Module_rootModule) {
 			templateSemantic(context);
 		}
 	}	

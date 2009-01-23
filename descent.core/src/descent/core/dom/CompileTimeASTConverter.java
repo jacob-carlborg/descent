@@ -95,7 +95,11 @@ public class CompileTimeASTConverter {
 	public void init(IJavaProject project, SemanticContext context, WorkingCopyOwner owner) {
 		BindingTables tables = new BindingTables();
 		ast.setBindingResolver(new DefaultBindingResolver(project, context, owner, tables));
+		
+		this.context = context;
 	}
+	
+	private SemanticContext context;
 	
 	public CompilationUnit convert(Module module, ICompilationUnit cu) {
 		CompilationUnit unit = new CompilationUnit(ast);
@@ -172,6 +176,8 @@ public class CompileTimeASTConverter {
 			return convert((ArrayExp) symbol);
 		case ASTDmdNode.ARRAY_INITIALIZER:
 			return convert((ArrayInitializer) symbol);
+		case ASTDmdNode.ARRAY_LENGTH_EXP:
+			return convert((ArrayLengthExp) symbol);
 		case ASTDmdNode.ARRAY_LITERAL_EXP:
 			return convert((ArrayLiteralExp) symbol);
 		case ASTDmdNode.ASM_BLOCK:
@@ -204,6 +210,8 @@ public class CompileTimeASTConverter {
 			return convert((CmpExp) symbol);
 		case ASTDmdNode.COM_EXP:
 			return convert((UnaExp) symbol, PrefixExpression.Operator.INVERT);
+		case ASTDmdNode.COMPLEX_EXP:
+			return convert((ComplexExp) symbol);
 		case ASTDmdNode.COMMA_EXP:
 			return convert((BinExp) symbol, InfixExpression.Operator.COMMA);
 		case ASTDmdNode.COMPILE_DECLARATION:
@@ -233,6 +241,8 @@ public class CompileTimeASTConverter {
 			return convert((DeclarationStatement) symbol);
 		case ASTDmdNode.DEFAULT_STATEMENT:
 			return convert((DefaultStatement) symbol);
+		case ASTDmdNode.DELEGATE_EXP:
+			return convert((DelegateExp) symbol);
 		case ASTDmdNode.DELETE_DECLARATION:
 			return convert((DeleteDeclaration) symbol);
 		case ASTDmdNode.DELETE_EXP:
@@ -329,7 +339,7 @@ public class CompileTimeASTConverter {
 		case ASTDmdNode.MODIFIER:
 			return convert((Modifier) symbol);
 		case ASTDmdNode.MODULE:
-			return convert((Module) symbol);
+			return null;
 		case ASTDmdNode.MODULE_DECLARATION:
 			return convert((ModuleDeclaration) symbol);
 		case ASTDmdNode.MUL_ASSIGN_EXP:
@@ -404,6 +414,8 @@ public class CompileTimeASTConverter {
 			return convert((StructLiteralExp) symbol);
 		case ASTDmdNode.SUPER_EXP:
 			return convert((SuperExp) symbol);
+		case ASTDmdNode.SYM_OFF_EXP:
+			return convert((SymOffExp) symbol);
 		case ASTDmdNode.SYNCHRONIZED_STATEMENT:
 			return convert((SynchronizedStatement) symbol);
 		case ASTDmdNode.SWITCH_STATEMENT:
@@ -448,6 +460,8 @@ public class CompileTimeASTConverter {
 			return convert((TypeDelegate) symbol);
 		case ASTDmdNode.TYPE_DOT_ID_EXP:
 			return convert((TypeDotIdExp) symbol);
+		case ASTDmdNode.TYPE_ENUM:
+			return convert((TypeEnum) symbol);
 		case ASTDmdNode.TYPE_EXP:
 			return convert((TypeExp) symbol);
 		case ASTDmdNode.TYPE_FUNCTION:
@@ -496,11 +510,19 @@ public class CompileTimeASTConverter {
 		case ASTDmdNode.XOR_EXP:
 			return convert((BinExp) symbol, InfixExpression.Operator.XOR);
 		}
+//		System.out.println(symbol.getClass());
 		return null;
 	}
 	
+	public descent.core.dom.Expression convert(DelegateExp a) {
+		PrefixExpression prefix = ast.newPrefixExpression();
+		prefix.setOperand(convert(a.e1));
+		prefix.setOperator(PrefixExpression.Operator.ADDRESS);
+		return prefix;
+	}
+	
 	public descent.core.dom.Expression convert(VarExp a) {
-		SimpleName b = (SimpleName) convert(a.var.ident);
+		descent.core.dom.Expression b = toExp(a.var);
 		setSourceRange(b, a.start, a.length);
 		
 		if (resolveBindings) {
@@ -508,6 +530,37 @@ public class CompileTimeASTConverter {
 		}
 		
 		return convertParenthesizedExpression(a, b);
+	}
+	
+	private descent.core.dom.Expression toExp(Dsymbol var) {
+		if (var instanceof TypeInfoDeclaration) {
+			TypeidExpression exp = ast.newTypeidExpression();
+			exp.setType(convert(((TypeInfoDeclaration) var).tinfo));
+			return exp;
+		}
+		
+		return toName(var);
+	}
+	
+	private descent.core.dom.Name toName(Dsymbol var) {
+		while(var instanceof TemplateInstance) {
+			var = var.parent;
+		}
+		if (var instanceof Module || var == null) {
+			return null;
+		}
+		if (var.parent instanceof FuncDeclaration) {
+			return ast.newSimpleName(new String(var.ident.ident));
+		}
+		
+		SimpleName sName = ast.newSimpleName(new String(var.ident.ident));
+		Name name = toName(var.parent);
+		
+		if (name == null) {
+			return sName;
+		} else {
+			return ast.newQualifiedName(name, sName);
+		}
 	}
 	
 	public descent.core.dom.Expression convert(TraitsExp a) {
@@ -568,10 +621,31 @@ public class CompileTimeASTConverter {
 	}
 	
 	public void convert(StorageClassDeclaration a, List<Declaration> toAdd) {
+		if (a.stc == STC.STCin) {
+			convertDeclarations(toAdd, a.decl);
+			return;
+		}
+		
 		descent.core.dom.Modifier modifier = null;
 		
 		if (a.modifier != null) {
 			modifier = convert(a.modifier);
+		} else {
+			if (a.decl != null && a.decl.size() == 1) {
+				a.single = true;
+			}
+			
+			if (a.modifiers == null) a.modifiers = new ArrayList<Modifier>();
+			
+			if ((a.stc & STC.STCstatic) != 0) if (modifier == null) modifier = ast.newModifier(ModifierKeyword.STATIC_KEYWORD); else a.modifiers.add(new Modifier(TOK.TOKstatic, 0, 0, 0));
+			if ((a.stc & STC.STCextern) != 0) if (modifier == null) modifier = ast.newModifier(ModifierKeyword.EXTERN_KEYWORD); else a.modifiers.add(new Modifier(TOK.TOKextern, 0, 0, 0));
+			if ((a.stc & STC.STCconst) != 0) if (modifier == null) modifier = ast.newModifier(ModifierKeyword.CONST_KEYWORD); else a.modifiers.add(new Modifier(TOK.TOKconst, 0, 0, 0));
+			if ((a.stc & STC.STCfinal) != 0) if (modifier == null) modifier = ast.newModifier(ModifierKeyword.FINAL_KEYWORD); else a.modifiers.add(new Modifier(TOK.TOKfinal, 0, 0, 0));
+			if ((a.stc & STC.STCabstract) != 0) if (modifier == null) modifier = ast.newModifier(ModifierKeyword.ABSTRACT_KEYWORD); else a.modifiers.add(new Modifier(TOK.TOKabstract, 0, 0, 0));
+			if ((a.stc & STC.STCoverride) != 0) if (modifier == null) modifier = ast.newModifier(ModifierKeyword.OVERRIDE_KEYWORD); else a.modifiers.add(new Modifier(TOK.TOKoverride, 0, 0, 0));
+			if ((a.stc & STC.STCsynchronized) != 0) if (modifier == null) modifier = ast.newModifier(ModifierKeyword.SYNCHRONIZED_KEYWORD); else a.modifiers.add(new Modifier(TOK.TOKsynchronized, 0, 0, 0));
+			if ((a.stc & STC.STCdeprecated) != 0) if (modifier == null) modifier = ast.newModifier(ModifierKeyword.DEPRECATED_KEYWORD); else a.modifiers.add(new Modifier(TOK.TOKdeprecated, 0, 0, 0));
+			if ((a.stc & STC.STCinvariant) != 0) if (modifier == null) modifier = ast.newModifier(ModifierKeyword.INVARIANT_KEYWORD); else a.modifiers.add(new Modifier(TOK.TOKinvariant, 0, 0, 0));
 		}
 		
 		if (a.single && a.decl != null && a.decl.size() >= 1) {
@@ -649,9 +723,26 @@ public class CompileTimeASTConverter {
 	}
 
 	public void convert(ProtDeclaration a, List<Declaration> toAdd) {
+		if (a.protection == PROT.PROTpublic) {
+			convertDeclarations(toAdd, a.decl);
+			return;
+		}
+		
 		descent.core.dom.Modifier modifier = null;
 		if (a.modifier != null) {
 			modifier = convert(a.modifier);
+		} else {
+			if (a.decl != null && a.decl.size() == 1) {
+				a.single = true;
+			}
+			
+			switch(a.protection) {
+			case PROTexport: modifier = ast.newModifier(ModifierKeyword.EXPORT_KEYWORD); break;
+			case PROTpackage: modifier = ast.newModifier(ModifierKeyword.PACKAGE_KEYWORD); break;
+			case PROTprivate: modifier = ast.newModifier(ModifierKeyword.PRIVATE_KEYWORD); break;
+			case PROTprotected: modifier = ast.newModifier(ModifierKeyword.PROTECTED_KEYWORD); break;
+			case PROTpublic: modifier = ast.newModifier(ModifierKeyword.PUBLIC_KEYWORD); break;
+			}
 		}
 		
 		if (a.single && a.decl != null && a.decl.size() > 0) {
@@ -1592,7 +1683,7 @@ public class CompileTimeASTConverter {
 	public descent.core.dom.InvariantDeclaration convert(InvariantDeclaration a) {
 		descent.core.dom.InvariantDeclaration b = new descent.core.dom.InvariantDeclaration(ast);
 		if (a.fbody != null) {
-			descent.core.dom.Statement convertedBody = convert(a.fbody);
+			descent.core.dom.Statement convertedBody = convertToBlock(a.fbody);
 			if (convertedBody != null && convertedBody instanceof Block) {
 				b.setBody((Block) convertedBody);
 			}
@@ -1604,7 +1695,7 @@ public class CompileTimeASTConverter {
 	public descent.core.dom.UnitTestDeclaration convert(UnitTestDeclaration a) {
 		descent.core.dom.UnitTestDeclaration b = new descent.core.dom.UnitTestDeclaration(ast);
 		if (a.fbody != null) {
-			Block convertedBlock = (Block) convert(a.fbody);
+			Block convertedBlock = (Block) convertToBlock(a.fbody);
 			if (convertedBlock != null) {
 				b.setBody(convertedBlock);
 			}
@@ -1700,6 +1791,17 @@ public class CompileTimeASTConverter {
 	}
 	
 	public descent.core.dom.FunctionDeclaration convert(FuncDeclaration a) {
+		if (a.getJavaElement() != null) {
+			FuncDeclaration materialized = a.materialize();
+			if (materialized != null) {
+				Scope scope = a.scope;
+				a = materialized;
+				a.semantic(scope, context);
+				a.semantic2(scope, context);
+				a.semantic3(scope, context);
+			}
+		}
+		
 		descent.core.dom.FunctionDeclaration b = new descent.core.dom.FunctionDeclaration(ast);
 		TypeFunction ty = (TypeFunction) a.type;
 		b.setVariadic(ty.varargs != 0);
@@ -1731,16 +1833,16 @@ public class CompileTimeASTConverter {
 		descent.core.dom.PostblitDeclaration b = new descent.core.dom.PostblitDeclaration(ast);
 		
 		if (a.frequire != null) {
-			b.setPrecondition((Block) convert(a.frequire));
+			b.setPrecondition((Block) convertToBlock(a.frequire));
 		}
 		if (a.fensure != null) {
-			b.setPostcondition((Block) convert(a.fensure));
+			b.setPostcondition((Block) convertToBlock(a.fensure));
 		}
 		if (a.outId != null) {
 			b.setPostconditionVariableName((SimpleName) convert(a.outId));
 		}
 		if (a.fbody != null) {
-			descent.core.dom.Block convertedBody = (Block) convert(a.fbody);
+			descent.core.dom.Block convertedBody = (Block) convertToBlock(a.fbody);
 			if (convertedBody != null) {
 				b.setBody(convertedBody);
 			}
@@ -2028,16 +2130,16 @@ public class CompileTimeASTConverter {
 	
 	public void fillFunction(descent.core.dom.FunctionLiteralDeclarationExpression b, FuncDeclaration a) {
 		if (a.frequire != null) {
-			b.setPrecondition((Block) convert(a.frequire));
+			b.setPrecondition((Block) convertToBlock(a.frequire));
 		}
 		if (a.fensure != null) {
-			b.setPostcondition((Block) convert(a.fensure));
+			b.setPostcondition((Block) convertToBlock(a.fensure));
 		}
 		if (a.outId != null) {
 			b.setPostconditionVariableName((SimpleName) convert(a.outId));
 		}
 		if (a.fbody != null) {
-			Block convertedBody = (Block) convert(a.fbody);
+			Block convertedBody = (Block) convertToBlock(a.fbody);
 			if (convertedBody != null) {
 				b.setBody(convertedBody);
 			}
@@ -2046,35 +2148,24 @@ public class CompileTimeASTConverter {
 	
 	public void fillFunction(descent.core.dom.AbstractFunctionDeclaration b, FuncDeclaration a) {
 		if (a.frequire != null) {
-			b.setPrecondition((Block) convert(removeRedundantCompoundStatement(a.frequire)));
+			b.setPrecondition((Block) convertToBlock(a.frequire));
 		}
 		if (a.fensure != null) {
-			b.setPostcondition((Block) convert(removeRedundantCompoundStatement(a.fensure)));
+			b.setPostcondition((Block) convertToBlock(a.fensure));
 		}
 		if (a.outId != null) {
 			b.setPostconditionVariableName((SimpleName) convert(a.outId));
 		}
 		if (a.fbody != null) {
-			descent.core.dom.Block convertedBody = (Block) convert(removeRedundantCompoundStatement(a.fbody));
+			descent.core.dom.Block convertedBody = (Block) convertToBlock(a.fbody);
 			if (convertedBody != null) {
 				b.setBody(convertedBody);
 			}
 		}
 	}
 	
-	private Statement removeRedundantCompoundStatement(Statement stm) {
-		if (stm instanceof CompoundStatement) {
-			CompoundStatement cstm = (CompoundStatement) stm;
-			if(cstm.statements != null && cstm.statements.size() == 1 &&
-					cstm.statements.get(0) instanceof CompoundStatement) {
-				stm = cstm.statements.get(0);
-			}
-		}
-		return stm;
-	}
-	
 	public void fillDeclaration(descent.core.dom.Declaration b, ASTDmdNode a) {
-		convertModifiers(b.modifiers(), a.modifiers);
+		convertModifiers(b.modifiers(), a.modifiers, a);
 		processDdocs(b, a);
 	}
 	
@@ -2169,6 +2260,20 @@ public class CompileTimeASTConverter {
 			}
 		}
 		setSourceRange(b, a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
+		return convertParenthesizedExpression(a, b);
+	}
+	
+	public descent.core.dom.Expression convert(ArrayLengthExp a) {
+		descent.core.dom.DotIdentifierExpression b = new descent.core.dom.DotIdentifierExpression(ast);
+		if (a.e1 != null) {
+			b.setExpression(convert(a.e1));
+		}
+		b.setName(ast.newSimpleName("length"));
 		
 		if (resolveBindings) {
 			recordNodes(b, a);
@@ -2477,7 +2582,7 @@ public class CompileTimeASTConverter {
 	public descent.core.dom.DefaultStatement convert(DefaultStatement a) {
 		descent.core.dom.DefaultStatement b = new descent.core.dom.DefaultStatement(ast);
 		if(!(a.statement instanceof SwitchErrorStatement))
-			convertStatements(b.statements(), ((CompoundStatement) ((ScopeStatement) a.statement).statement).statements);
+			convertStatements(b.statements(), ensureBlock((ensureScope(a.statement)).statement).statements);
 		setSourceRange(b, a.start, a.length);
 		return b;
 	}
@@ -2751,6 +2856,21 @@ public class CompileTimeASTConverter {
 		return convertParenthesizedExpression(a, b);
 	}
 	
+	public descent.core.dom.Expression convert(SymOffExp a) {
+		descent.core.dom.ArrayAccess b = new descent.core.dom.ArrayAccess(ast);
+		if (a.var != null) {
+			b.setArray(toExp(a.var));
+		}
+		b.indexes().add(ast.newNumberLiteral(a.offset.toString()));
+		setSourceRange(b, a.start, a.length);
+		
+		if (resolveBindings) {
+			recordNodes(b, a);
+		}
+		
+		return convertParenthesizedExpression(a, b);
+	}
+	
 	public descent.core.dom.ArrayInitializer convert(ArrayInitializer a) {
 		descent.core.dom.ArrayInitializer b = new descent.core.dom.ArrayInitializer(ast);
 		if (a.index != null) {
@@ -2936,8 +3056,8 @@ public class CompileTimeASTConverter {
 			b.expressions().add(convert(x.exp));
 		}
 		
-		if (x.statement != null && ((CompoundStatement) ((ScopeStatement) x.statement).statement).statements.size() > 0) {
-			convertStatements(b.statements(), ((CompoundStatement) ((ScopeStatement) x.statement).statement).statements);
+		if (x.statement != null && ensureBlock((ensureScope(x.statement)).statement).statements.size() > 0) {
+			convertStatements(b.statements(), ensureBlock((ensureScope(x.statement)).statement).statements);
 		}
 		setSourceRange(b, a.start, a.length);
 		return b;
@@ -3115,6 +3235,24 @@ public class CompileTimeASTConverter {
 		}
 		
 		return convertParenthesizedExpression(a, b);
+	}
+	
+	public descent.core.dom.Expression convert(ComplexExp a) {
+		if (a.value.re.equals(real_t.ZERO)) {
+			if (a.value.im.equals(real_t.ZERO)) {
+				return ast.newNumberLiteral("0");
+			} else {
+				return ast.newNumberLiteral(a.value.im.toString() + "i");
+			}
+		} else if (a.value.im.equals(real_t.ZERO)) {
+			return ast.newNumberLiteral(a.value.re.toString());
+		} else {
+			InfixExpression exp = ast.newInfixExpression();
+			exp.setLeftOperand(ast.newNumberLiteral(a.value.re.toString()));
+			exp.setRightOperand(ast.newNumberLiteral(a.value.im.toString() + "i"));
+			exp.setOperator(InfixExpression.Operator.PLUS);
+			return exp;
+		}
 	}
 	
 	public descent.core.dom.Expression convert(IntegerExp a) {
@@ -3419,6 +3557,10 @@ public class CompileTimeASTConverter {
 		return ast.newSimpleType(ast.newSimpleName(new String(a.sym.ident.ident)));
 	}
 	
+	public descent.core.dom.Type convert(TypeEnum a) {
+		return ast.newSimpleType(ast.newSimpleName(new String(a.sym.ident.ident)));
+	}
+	
 	private descent.core.dom.Type convertModifiedType(Type a, descent.core.dom.Type b) {
 		if (a.modifications != null) {
 			for(Modification modification : a.modifications) {
@@ -3547,6 +3689,22 @@ public class CompileTimeASTConverter {
 		if (source == null || source.isEmpty()) return;
 		for(int i = 0; i < source.size(); i++) {
 			Dsymbol symbol = (Dsymbol) source.get(i);
+			
+			if (symbol instanceof CompileDeclaration) {
+				convertDeclarations(destination, ((CompileDeclaration) symbol).decl);
+				continue;
+			}
+			
+			if (symbol instanceof TemplateMixin) {
+				TemplateMixin mixin = (TemplateMixin) symbol;
+				if (mixin.sourceIdent != null) {
+					i = convertOneOfManyDeclarations(destination, source, i, symbol);
+				} else {
+					convertDeclarations(destination, mixin.members);
+				}
+				continue;
+			}
+			
 			if (!(symbol instanceof TemplateInstance)) {
 				i = convertOneOfManyDeclarations(destination, source, i, symbol);
 			}
@@ -3724,11 +3882,9 @@ public class CompileTimeASTConverter {
 			switch(condStm.condition.inc) {
 			case 1:
 				stm = condStm.ifbody;
-				stm = extractSingleCompoundStatement(stm);
 				break;
 			case 2:
 				stm = condStm.elsebody;
-				stm = extractSingleCompoundStatement(stm);
 				break;
 			}
 		}
@@ -3755,8 +3911,19 @@ public class CompileTimeASTConverter {
 	}
 	
 	public void convertModifiers(List<descent.core.dom.Modifier> destination, List<Modifier> source) {
+		convertModifiers(destination, source, null);
+	}
+	
+	public void convertModifiers(List<descent.core.dom.Modifier> destination, List<Modifier> source, ASTDmdNode node) {
+		boolean isResolvedVar = node instanceof VarDeclaration && ((VarDeclaration) node).type != null;
+		
 		if (source == null || source.isEmpty()) return;
-		for(Modifier m : source) destination.add(convert(m));
+		for(Modifier m : source) {
+			// Remove auto for resolved vars
+			if (isResolvedVar && m.tok == TOK.TOKauto) continue;
+			
+			destination.add(convert(m));
+		}
 	}
 	
 	public descent.core.dom.Expression convert(BinExp a, Assignment.Operator op) {
@@ -3962,7 +4129,32 @@ public class CompileTimeASTConverter {
 	}
 	
 	public descent.core.dom.Statement convert(descent.internal.compiler.parser.Statement stm) {
+		stm = extractSingleCompoundStatement(stm);
+		
 		return (descent.core.dom.Statement) convert((ASTDmdNode) stm);
+	}
+	
+	public descent.core.dom.Statement convertToBlock(descent.internal.compiler.parser.Statement stm) {
+		stm = extractSingleCompoundStatement(stm);
+		stm = ensureBlock(stm);
+		
+		return (descent.core.dom.Statement) convert((ASTDmdNode) stm);
+	}
+	
+	public descent.internal.compiler.parser.CompoundStatement ensureBlock(descent.internal.compiler.parser.Statement stm) {
+		if (!(stm instanceof CompoundStatement)) {
+			Statements stms = new Statements();
+			stms.add(stm);
+			stm = new CompoundStatement(Loc.ZERO, stms);
+		}
+		return (CompoundStatement) stm;
+	}
+	
+	public descent.internal.compiler.parser.ScopeStatement ensureScope(descent.internal.compiler.parser.Statement stm) {
+		if (!(stm instanceof ScopeStatement)) {
+			stm = new ScopeStatement(Loc.ZERO, stm);
+		}
+		return (ScopeStatement) stm;
 	}
 	
 	public descent.core.dom.Type convert(descent.internal.compiler.parser.Type type) {
@@ -4117,11 +4309,10 @@ public class CompileTimeASTConverter {
 	}
 	
 	private Statement extractSingleCompoundStatement(Statement stm) {
-		if (stm instanceof CompoundStatement) {
-			CompoundStatement cs = (CompoundStatement) stm;
-			if (cs.statements != null && cs.statements.size() == 1) {
-				stm = cs.statements.get(0);
-			}
+		while (stm instanceof CompoundStatement &&
+				((CompoundStatement) stm).statements != null && 
+				((CompoundStatement) stm).statements.size() == 1) {
+			stm = ((CompoundStatement) stm).statements.get(0);
 		}
 		return stm;
 	}

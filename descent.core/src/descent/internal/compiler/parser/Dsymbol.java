@@ -719,12 +719,12 @@ public class Dsymbol extends ASTDmdNode {
 		} else {
 			switch(protection) {
 			case PROTexport: flags |= Flags.AccExport; break;
-			case PROTnone: flags |= Flags.AccPublic; break;
-			case PROTpackage: flags |= Flags.AccPublic; break;
+			case PROTnone: break;
+			case PROTpackage: flags |= Flags.AccPackage; break;
 			case PROTprivate: flags |= Flags.AccPrivate; break;
 			case PROTprotected: flags |= Flags.AccProtected; break;
 			case PROTpublic: flags |= Flags.AccPublic; break;
-			case PROTundefined: flags |= Flags.AccPublic; break;
+			case PROTundefined: break;
 			}
 		}
 		

@@ -1544,7 +1544,11 @@ class NaiveASTFlattener extends ASTVisitor {
 		visitModifiers(node.modifiers());
 		this.buffer.append("template ");
 		node.getName().accept(this);
-		visitList(node.templateParameters(), ", ", "(", ")");
+		if (node.templateParameters().isEmpty()) {
+			this.buffer.append("()");
+		} else {
+			visitList(node.templateParameters(), ", ", "(", ")");
+		}
 		this.buffer.append(" {\n");
 		this.indent++;
 		visitList(node.declarations(), LINE_END, EMPTY, LINE_END);

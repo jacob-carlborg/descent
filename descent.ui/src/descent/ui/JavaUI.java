@@ -181,6 +181,16 @@ public final class JavaUI {
 	public static final String ID_SOURCE_VIEW=	"descent.ui.SourceView"; //$NON-NLS-1$
 	
 	/** 
+	 * The view part id of the compile-time view
+	 * (value <code>"descent.ui.CompileTimeView"</code>).
+	 *
+	 * @see org.eclipse.ui.IWorkbenchPage#findView(java.lang.String)
+	 * @see org.eclipse.ui.IWorkbenchPage#showView(java.lang.String)
+	 * @since 3.0
+	 */ 
+	public static final String ID_COMPILE_TIME_VIEW=	"descent.ui.CompileTimeView"; //$NON-NLS-1$
+	
+	/** 
 	 * The view part id of the Javadoc view
 	 * (value <code>"descent.ui.JavadocView"</code>).
 	 *

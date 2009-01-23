@@ -1823,11 +1823,13 @@
       <key
             sequence="M2+M3+S"
             commandId="descent.ui.edit.text.java.source.quickMenu"
+            contextId="descent.ui.dEditorScope"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
             sequence="M2+M3+S"
             commandId=""
+            contextId="descent.ui.dEditorScope"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
@@ -1879,15 +1881,18 @@
       <key
             sequence="M1+M2+O"
             commandId="descent.ui.edit.text.java.organize.imports"
+            contextId="descent.ui.dEditorScope"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             sequence="M2+M3+J"
             commandId="descent.ui.edit.text.java.add.javadoc.comment"
+            contextId="descent.ui.dEditorScope"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
             sequence="M2+M3+J"
             commandId=""
+            contextId="descent.ui.dEditorScope"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
@@ -1971,12 +1976,14 @@
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>              
        <key
             sequence="M2+M3+Z"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.surround.with.quickMenu"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>        
        <key
             platform="carbon"
             sequence="M2+M3+Z"
             commandId=""
+            contextId="descent.ui.dEditorScope"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
        <key
             platform="carbon"
@@ -1988,11 +1995,13 @@
       <key
             sequence="M2+M3+T"
             commandId="descent.ui.edit.text.java.refactor.quickMenu"
+            contextId="descent.ui.dEditorScope"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
             sequence="M2+M3+T"
             commandId=""
+            contextId="descent.ui.dEditorScope"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
@@ -2001,11 +2010,13 @@
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             sequence="M2+M3+R"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.rename.element"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
             sequence="M2+M3+R"
+            contextId="descent.ui.dEditorScope"
             commandId=""
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
@@ -2017,11 +2028,13 @@
       <key
             sequence="M2+M3+V"
             commandId="descent.ui.edit.text.java.move.element"
+            contextId="descent.ui.dEditorScope"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
             sequence="M2+M3+V"
             commandId=""
+            contextId="descent.ui.dEditorScope"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
@@ -2032,11 +2045,13 @@
       <key
             sequence="M2+M3+C"
             commandId="descent.ui.edit.text.java.modify.method.parameters"
+            contextId="descent.ui.dEditorScope"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
             sequence="M2+M3+C"
             commandId=""
+            contextId="descent.ui.dEditorScope"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
@@ -2047,11 +2062,13 @@
       <key
             sequence="M2+M3+I"
             commandId="descent.ui.edit.text.java.inline"
+            contextId="descent.ui.dEditorScope"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
             sequence="M2+M3+I"
             commandId=""
+            contextId="descent.ui.dEditorScope"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
@@ -2062,11 +2079,13 @@
       <key
             sequence="M2+M3+M"
             commandId="descent.ui.edit.text.java.extract.method"
+            contextId="descent.ui.dEditorScope"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
             sequence="M2+M3+M"
             commandId=""
+            contextId="descent.ui.dEditorScope"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
@@ -2077,11 +2096,13 @@
       <key
             sequence="M2+M3+L"
             commandId="descent.ui.edit.text.java.extract.local.variable"
+            contextId="descent.ui.dEditorScope"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
             sequence="M2+M3+L"
             commandId=""
+            contextId="descent.ui.dEditorScope"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
@@ -3199,7 +3220,7 @@
       </view>
       <view
             name="Compile-time"
-            icon="$nl$/icons/full/eview16/source.gif"
+            icon="$nl$/icons/full/eview16/compile-time.gif"
             category="descent.ui.java"
             class="descent.internal.ui.infoviews.CompileTimeView"
             id="descent.ui.CompileTimeView">

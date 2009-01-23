@@ -372,6 +372,8 @@ public class SemanticContext {
 	}
 
 	private Map<Type, TypeInfoDeclaration> typeInfoDeclarations = new HashMap<Type, TypeInfoDeclaration>();
+	public boolean doTemplateSemantic = true;
+	
 	public TypeInfoDeclaration getTypeInfo(Type t) {
 		return typeInfoDeclarations.get(t);
 	}

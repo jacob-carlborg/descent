@@ -41,6 +41,7 @@ public class JavaPerspectiveFactory implements IPerspectiveFactory {
 		outputfolder.addView(IPageLayout.ID_PROBLEM_VIEW);
 		outputfolder.addView(JavaUI.ID_JAVADOC_VIEW);
 		outputfolder.addView(JavaUI.ID_SOURCE_VIEW);
+		outputfolder.addView(JavaUI.ID_COMPILE_TIME_VIEW);
 		//outputfolder.addPlaceholder(NewSearchUI.SEARCH_VIEW_ID);
 		outputfolder.addPlaceholder(IConsoleConstants.ID_CONSOLE_VIEW);
 		outputfolder.addPlaceholder(IPageLayout.ID_BOOKMARKS);

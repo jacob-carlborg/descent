@@ -1586,17 +1586,29 @@ public class CodeFormatterVisitor extends ASTVisitor
 			arr.getComponentType().accept(this);
 			scribe.printNextToken(TOK.TOKlbracket,
 					prefs.insert_space_before_opening_bracket_in_array_constructors);
-			if(prefs.insert_space_after_opening_bracket_in_array_constructors)
+			
+			if(isNextToken(TOK.TOKrbracket)) {
+				scribe.printNextToken(TOK.TOKrbracket,
+						prefs.insert_space_between_empty_brackets_in_dynamic_array_type);
+				scribe.printNextToken(TOK.TOKlparen);
+				formatCSV(node.constructorArguments(),
+						prefs.insert_space_before_comma_in_function_invocation_arguments,
+						prefs.insert_space_after_comma_in_function_invocation_arguments,
+						DefaultCodeFormatterConstants.DO_NOT_WRAP);
+				scribe.printNextToken(TOK.TOKrparen);
+			} else {
+				if(prefs.insert_space_after_opening_bracket_in_array_constructors)
+					scribe.space();
+				formatCSV(node.constructorArguments(),
+						prefs.insert_space_before_comma_in_function_invocation_arguments,
+						prefs.insert_space_after_comma_in_function_invocation_arguments,
+						DefaultCodeFormatterConstants.DO_NOT_WRAP);
+				scribe.printNextToken(TOK.TOKrbracket, 
+						prefs.insert_space_before_closing_bracket_in_array_constructors);
+				if(isNextToken(TOK.TOKlbracket) && 
+						prefs.insert_space_between_adjacent_brackets_in_multidimensional_arrays)
 				scribe.space();
-			formatCSV(node.constructorArguments(),
-					prefs.insert_space_before_comma_in_function_invocation_arguments,
-					prefs.insert_space_after_comma_in_function_invocation_arguments,
-					DefaultCodeFormatterConstants.DO_NOT_WRAP);
-			scribe.printNextToken(TOK.TOKrbracket, 
-					prefs.insert_space_before_closing_bracket_in_array_constructors);
-			if(isNextToken(TOK.TOKlbracket) && 
-					prefs.insert_space_between_adjacent_brackets_in_multidimensional_arrays)
-				scribe.space();
+			}
 			return false;
 		}
 		type.accept(this);

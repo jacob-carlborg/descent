@@ -11,6 +11,7 @@ import descent.core.dom.AST;
 import descent.core.dom.ASTConverter;
 import descent.core.dom.CompilationUnit;
 import descent.core.dom.CompilationUnitResolver;
+import descent.core.dom.CompileTimeASTConverter;
 import descent.core.dom.CompilationUnitResolver.ParseResult;
 import descent.internal.compiler.env.ICompilationUnit;
 import descent.internal.compiler.impl.CompilerOptions;
@@ -26,6 +27,7 @@ import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.EnumMember;
 import descent.internal.compiler.parser.ExpInitializer;
 import descent.internal.compiler.parser.Expression;
+import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Initializer;
 import descent.internal.compiler.parser.IntegerExp;
@@ -128,11 +130,9 @@ public class EvaluationEngine extends AstVisitorAdapter {
 			} else if (node.resolvedExpression != null) {
 				evalExp(node.resolvedExpression);
 			} else if (node.templateInstance != null && node.templateInstance.members != null) {
-				ASTConverter converter = new EvaluationASTConverter(false, null);
+				CompileTimeASTConverter converter = new CompileTimeASTConverter(false, null);
 				converter.setAST(AST.newAST(Util.getApiLevel(javaProject)));
 				converter.init(javaProject, context, null);
-				
-				
 				
 				Module module = new Module(null, null);
 				module.members = new Dsymbols();
@@ -208,6 +208,18 @@ public class EvaluationEngine extends AstVisitorAdapter {
 				if (var.isConst()) { 
 					evalInit(var.init);
 				}
+			} else if (decl instanceof FuncDeclaration) {
+				CompileTimeASTConverter converter = new CompileTimeASTConverter(false, null);
+				converter.setAST(AST.newAST(Util.getApiLevel(javaProject)));
+				converter.init(javaProject, context, null);
+				
+				Module module = new Module(null, null);
+				module.members = new Dsymbols();
+				module.members.add(decl);
+				module.sourceMembers = module.members;
+				
+				CompilationUnit unit = converter.convert(module, null);
+				result = new EvaluationResult(unit, IEvaluationResult.COMPILATION_UNIT);
 			}
 		} else if (exp instanceof StructLiteralExp) {
 			StructLiteralExp sle = (StructLiteralExp) exp;
