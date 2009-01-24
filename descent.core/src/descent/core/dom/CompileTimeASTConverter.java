@@ -553,14 +553,18 @@ public class CompileTimeASTConverter {
 			return ast.newSimpleName(new String(var.ident.ident));
 		}
 		
-		SimpleName sName = ast.newSimpleName(new String(var.ident.ident));
 		Name name = toName(var.parent);
 		
-		if (name == null) {
-			return sName;
-		} else {
-			return ast.newQualifiedName(name, sName);
+		String next = new String(var.ident.ident);
+		String[] pieces = next.split("\\.");
+		for (int i = 0; i < pieces.length; i++) {
+			if (name == null) {
+				name = ast.newSimpleName(pieces[i]);
+			} else {
+				name = ast.newQualifiedName(name, ast.newSimpleName(pieces[i]));
+			}
 		}
+		return name;
 	}
 	
 	public descent.core.dom.Expression convert(TraitsExp a) {
@@ -3315,7 +3319,11 @@ public class CompileTimeASTConverter {
 				}
 				b.internalSetToken(sb.toString());
 			} else {
-				b.internalSetToken(a.value.toString());
+				String val = a.value.toString();
+				if (val.startsWith("0E")) {
+					val = "0.1E" + val.substring(2);
+				}
+				b.internalSetToken(val);
 			}
 		} else if (a.str != null ){
 			b.internalSetToken(new String(a.str));
@@ -3379,7 +3387,7 @@ public class CompileTimeASTConverter {
 		} else {
 			descent.core.dom.StringLiteral b = new descent.core.dom.StringLiteral(ast);
 			b.internalSetEscapedValue(a.string == null ?
-					"" : new String(a.string));
+					"" : escape(new String(a.string)));
 			setSourceRange(b, a.start, a.length);
 			
 			if (resolveBindings) {
@@ -3390,6 +3398,10 @@ public class CompileTimeASTConverter {
 		}
 	}
 	
+	private static String escape(String string) {
+		return string.replace("\\", "\\\\").replace("\"", "\\\"");
+	}
+
 	public descent.core.dom.Type convert(TypeIdentifier a) {
 		descent.core.dom.SimpleType b;
 		if (a.ident != null && !CharOperation.equals(a.ident.ident, Id.empty)) {
@@ -3870,8 +3882,19 @@ public class CompileTimeASTConverter {
 	
 	public void convertStatements(List<descent.core.dom.Statement> destination, List<Statement> source) {
 		if (source == null || source.isEmpty()) return;
-		for(Statement stm : source) {
-			stm = convertOneOfManyStatements(destination, stm);
+		for (int i = 0; i < source.size(); i++) {
+			Statement stm = source.get(i);
+			
+			if (stm instanceof AsmStatement) {
+				descent.core.dom.AsmBlock block = ast.newAsmBlock();
+				for (; i < source.size() && source.get(i) instanceof AsmStatement; i++) {
+					block.statements().add(convert(source.get(i)));
+				}
+				destination.add(block);
+				i--;
+			} else {
+				stm = convertOneOfManyStatements(destination, stm);
+			}
 		}
 	}
 	

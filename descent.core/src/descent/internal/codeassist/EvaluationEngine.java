@@ -19,6 +19,7 @@ import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.ArrayInitializer;
 import descent.internal.compiler.parser.ArrayLiteralExp;
 import descent.internal.compiler.parser.CallExp;
+import descent.internal.compiler.parser.CompileDeclaration;
 import descent.internal.compiler.parser.ComplexExp;
 import descent.internal.compiler.parser.Declaration;
 import descent.internal.compiler.parser.Dsymbol;
@@ -92,6 +93,36 @@ public class EvaluationEngine extends AstVisitorAdapter {
 		}
 	}
 	
+	private void evalMembers(Dsymbols symbols) {
+		CompileTimeASTConverter converter = new CompileTimeASTConverter(false, null);
+		converter.setAST(AST.newAST(Util.getApiLevel(javaProject)));
+		converter.init(javaProject, context, null);
+		
+		Module module = new Module(null, null);
+		module.members = new Dsymbols();
+		for(Dsymbol sym : symbols) {
+			if (sym instanceof TemplateInstance && !(sym instanceof TemplateMixin)) {
+				continue;
+			}
+			module.members.add(sym);
+		}
+		
+		module.sourceMembers = module.members;
+		
+		CompilationUnit unit = converter.convert(module, null);
+		result = new EvaluationResult(unit, IEvaluationResult.COMPILATION_UNIT);
+	}
+	
+	@Override
+	public boolean visit(CompileDeclaration node) {
+		// If between the mixin keyword
+		if (node.start <= offset && offset + length <= node.start + 5) {
+			evalMembers(node.decl);
+			return false;
+		}
+		return true;
+	}
+	
 	@Override
 	public boolean visit(VarDeclaration node) {
 		if (result == null) {
@@ -130,23 +161,7 @@ public class EvaluationEngine extends AstVisitorAdapter {
 			} else if (node.resolvedExpression != null) {
 				evalExp(node.resolvedExpression);
 			} else if (node.templateInstance != null && node.templateInstance.members != null) {
-				CompileTimeASTConverter converter = new CompileTimeASTConverter(false, null);
-				converter.setAST(AST.newAST(Util.getApiLevel(javaProject)));
-				converter.init(javaProject, context, null);
-				
-				Module module = new Module(null, null);
-				module.members = new Dsymbols();
-				for(Dsymbol sym : node.templateInstance.members) {
-					if (sym instanceof TemplateInstance && !(sym instanceof TemplateMixin)) {
-						continue;
-					}
-					module.members.add(sym);
-				}
-				
-				module.sourceMembers = module.members;
-				
-				CompilationUnit unit = converter.convert(module, null);
-				result = new EvaluationResult(unit, IEvaluationResult.COMPILATION_UNIT);
+				evalMembers(node.templateInstance.members);
 			}
 		}
 		
@@ -209,17 +224,9 @@ public class EvaluationEngine extends AstVisitorAdapter {
 					evalInit(var.init);
 				}
 			} else if (decl instanceof FuncDeclaration) {
-				CompileTimeASTConverter converter = new CompileTimeASTConverter(false, null);
-				converter.setAST(AST.newAST(Util.getApiLevel(javaProject)));
-				converter.init(javaProject, context, null);
-				
-				Module module = new Module(null, null);
-				module.members = new Dsymbols();
-				module.members.add(decl);
-				module.sourceMembers = module.members;
-				
-				CompilationUnit unit = converter.convert(module, null);
-				result = new EvaluationResult(unit, IEvaluationResult.COMPILATION_UNIT);
+				Dsymbols symbols = new Dsymbols();
+				symbols.add(decl);
+				evalMembers(symbols);
 			}
 		} else if (exp instanceof StructLiteralExp) {
 			StructLiteralExp sle = (StructLiteralExp) exp;

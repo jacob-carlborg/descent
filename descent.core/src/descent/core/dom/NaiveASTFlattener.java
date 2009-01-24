@@ -596,7 +596,7 @@ class NaiveASTFlattener extends ASTVisitor {
 	
 	@Override
 	public boolean visit(DeclarationStatement node) {
-		printIndent();
+		//printIndent();
 		node.getDeclaration().accept(this);
 		return false;
 	}
@@ -656,7 +656,10 @@ class NaiveASTFlattener extends ASTVisitor {
 	@Override
 	public boolean visit(DotIdentifierExpression node) {
 		if (node.getExpression() != null) {
+			boolean needsParens = needsParens(node.getExpression());
+			if (needsParens) this.buffer.append("(");
 			node.getExpression().accept(this);
+			if (needsParens) this.buffer.append(")");
 		}
 		this.buffer.append(".");
 		node.getName().accept(this);
@@ -1936,6 +1939,28 @@ class NaiveASTFlattener extends ASTVisitor {
 		node.getComponentType().accept(this);
 		this.buffer.append(")");
 		return false;
+	}
+	
+	private static boolean needsParens(Expression exp) {
+		final boolean[] needs = { false };
+		exp.accept(new ASTVisitor() {
+			@Override
+			public boolean visit(InfixExpression node) {
+				needs[0] = true;
+				return false;
+			}
+			@Override
+			public boolean visit(PostfixExpression node) {
+				needs[0] = true;
+				return false;
+			}
+			@Override
+			public boolean visit(PrefixExpression node) {
+				needs[0] = true;
+				return false;
+			}
+		});
+		return needs[0];
 	}
 	
 }
