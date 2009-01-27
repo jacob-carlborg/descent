@@ -555,6 +555,10 @@ public class CompileTimeASTConverter {
 		
 		Name name = toName(var.parent);
 		
+		if (var.ident == null || var.ident.ident == null) {
+			return name;
+		}
+		
 		String next = new String(var.ident.ident);
 		String[] pieces = next.split("\\.");
 		for (int i = 0; i < pieces.length; i++) {
