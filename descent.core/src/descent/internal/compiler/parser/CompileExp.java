@@ -39,6 +39,7 @@ public class CompileExp extends UnaExp {
 			type = Type.terror;
 			return this;
 		}
+		
 		StringExp se = (StringExp) e1;
 		se = se.toUTF8(sc, context);
 		Parser p = new Parser(context.Module_rootModule.apiLevel, se.string);

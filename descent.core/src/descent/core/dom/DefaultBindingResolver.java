@@ -407,7 +407,12 @@ class DefaultBindingResolver extends BindingResolver {
 								Type type = oldExp.type;
 								if (type == null) {
 									if (oldExp.resolvedExpression != null) {
-										type = oldExp.resolvedExpression.type;
+										if (oldExp.resolvedSymbol != null && oldExp.resolvedSymbol.type() != null
+												&& oldExp.resolvedSymbol.type() instanceof TypeDelegate) {
+											type = oldExp.resolvedSymbol.type();
+										} else {
+											type = oldExp.resolvedExpression.type;
+										}
 									}
 									if (type == null) {
 										if (oldExp.resolvedSymbol != null) {
@@ -561,6 +566,22 @@ class DefaultBindingResolver extends BindingResolver {
 							+ ((TypeAArray) type).next.toString();
 					binding = new BuiltinPropertyBinding(this, new TypeDArray(
 							((TypeAArray) type).next), type, identifier, otherSignature);
+				}
+			} else if (type instanceof TypeClass) {
+				if (CharOperation.equals(prop, Id.classinfo)) {
+					binding = new BuiltinPropertyBinding(this, type,
+							context.ClassDeclaration_classinfo.type, identifier, signature);
+				}
+			} else if (type instanceof TypeDelegate) {
+				if (CharOperation.equals(prop, Id.ptr)) {
+					binding = new BuiltinPropertyBinding(this, type,
+							context.Type_tvoidptr, identifier, signature);
+				} else if (CharOperation.equals(prop, Id.funcptr)) {
+					TypePointer tp = new TypePointer(type.next);
+					String newSignature = "P" + signature.substring(1);
+					
+					binding = new BuiltinPropertyBinding(this, type,
+							tp, identifier, newSignature);
 				}
 			}
 		}

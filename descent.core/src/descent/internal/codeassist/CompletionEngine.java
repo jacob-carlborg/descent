@@ -51,6 +51,7 @@ import descent.internal.compiler.env.AccessRestriction;
 import descent.internal.compiler.env.ICompilationUnit;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.ASTNodeEncoder;
+import descent.internal.compiler.parser.AddrExp;
 import descent.internal.compiler.parser.AggregateDeclaration;
 import descent.internal.compiler.parser.AliasDeclaration;
 import descent.internal.compiler.parser.Argument;
@@ -1697,6 +1698,11 @@ public class CompletionEngine extends Engine
 		}
 	}
 	private void completeExpression(Expression e1, IdentifierExp ident) throws JavaModelException {
+		if (e1 instanceof AddrExp) {
+			completeExpression(((AddrExp)e1).e1, ident);
+			return;
+		}
+		
 		isBetweenMethodName = ident != null && ident.resolvedSymbol != null;
 		
 		while(e1 instanceof CommaExp) {
@@ -1881,9 +1887,11 @@ public class CompletionEngine extends Engine
 				completeTypeStruct((TypeStruct) pointer.next, onlyStatics);
 			}
 			break;
+		case ASTDmdNode.TYPE_DELEGATE:
+			suggestTypeDelegateProperties((TypeDelegate) type);
+			break;
 		}
 	}
-	
 	private void suggestExtensionMethods(TypeArray array) {
 		suggestExtensionMethods(array, module, true);
 	}
@@ -2169,6 +2177,18 @@ public class CompletionEngine extends Engine
 				R_INTERESTING_BUILTIN_PROPERTY);
 	}
 	
+	public final static char[][] typeDelegateProperties = { Id.ptr, Id.funcptr };
+	private void suggestTypeDelegateProperties(TypeDelegate type) {
+		suggestProperties(
+				type.getSignature().toCharArray(),
+				typeDelegateProperties,
+				new Type[] { 
+					semanticContext.Type_tvoidptr, 
+					new TypePointer(type.next),
+					},
+				R_INTERESTING_BUILTIN_PROPERTY);
+	}
+	
 	private void completeTypeClass(TypeClass type, boolean onlyStatics) {
 		// Keep a hashtable of already used signatures, in order to avoid
 		// suggesting overriden functions
@@ -2176,6 +2196,14 @@ public class CompletionEngine extends Engine
 		
 		// And also all type's properties
 		suggestAllTypesProperties(type);
+		
+		// Also suggest classinfo
+		suggestClassInfo();
+		
+		// And outer, if available
+		if (!onlyStatics) {
+			suggestOuter(type);
+		}
 	}
 	
 	private void completeTypeClassRecursively(TypeClass type, boolean onlyStatics, HashtableOfCharArrayAndObject funcSignatures) {
@@ -2199,6 +2227,27 @@ public class CompletionEngine extends Engine
 			for(BaseClass baseClass : baseClasses) {
 				completeTypeClassRecursively((TypeClass) baseClass.base.type, onlyStatics, funcSignatures);
 			}
+		}
+	}
+	
+	public final static char[][] classInfoProperty = { Id.classinfo };
+	public final static char[][] outerProperty = { Id.outer };
+	
+	private void suggestClassInfo() {
+		suggestProperties(
+				semanticContext.ClassDeclaration_classinfo.getSignature().toCharArray(),
+				classInfoProperty,
+				new Type[] { semanticContext.ClassDeclaration_classinfo.type },
+				R_BUILTIN_PROPERTY);
+	}
+	
+	private void suggestOuter(TypeClass type) {
+		if (type.sym.isnested) {
+			suggestProperties(
+					type.sym.parent.type().getSignature().toCharArray(),
+					outerProperty,
+					new Type[] { type.sym.parent.type() },
+					R_BUILTIN_PROPERTY);
 		}
 	}
 	

@@ -1537,10 +1537,14 @@ public class CompileTimeASTConverter {
 	
 	public descent.core.dom.VariableDeclarationFragment convert(VarDeclaration a) {
 		descent.core.dom.VariableDeclarationFragment b = new descent.core.dom.VariableDeclarationFragment(ast);
-		if (a.ident != null) {
-			SimpleName convertedName = (SimpleName) convert(a.ident);
-			if (convertedName != null) {
-				b.setName(convertedName);
+		if (a instanceof ThisDeclaration) {
+			b.setName(ast.newSimpleName("outer"));
+		} else {
+			if (a.ident != null) {
+				SimpleName convertedName = (SimpleName) convert(a.ident);
+				if (convertedName != null) {
+					b.setName(convertedName);
+				}
 			}
 		}
 		if (a.init == null) {
@@ -3033,8 +3037,8 @@ public class CompileTimeASTConverter {
 		if (a.e1 != null) {
 			b.setExpression(convert(a.e1));
 		}
-		if (a.var.ident != null) {
-			SimpleName convertedIdent = (SimpleName) convert(a.var.ident);
+		if (a.ident != null) {
+			SimpleName convertedIdent = (SimpleName) convert(a.ident);
 			if (convertedIdent != null) {
 				b.setName(convertedIdent);
 			}

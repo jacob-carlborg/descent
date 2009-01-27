@@ -167,7 +167,7 @@ public class ReconcileWorkingCopyOperation extends JavaModelOperation {
 			    try {
 			    	
 			    	// find problems
-			    	CompilationUnitResolver.resolve(module, 
+			    	parseResult.context = CompilationUnitResolver.resolve(module, 
 			    			workingCopy.getJavaProject(),
 			    			this.workingCopyOwner, parseResult.encoder);
 			    	
