@@ -118,7 +118,7 @@ public class CompileTimeASTConverter {
 			unit.setModuleDeclaration(convert(module.md));
 		}
 		convertDeclarations(unit.declarations(), module.members);
-		setSourceRange(unit, module.start, module.length);		
+		setSourceRange(unit, module.start, module.length);
 		return unit;
 	}
 
@@ -3892,6 +3892,7 @@ public class CompileTimeASTConverter {
 		if (source == null || source.isEmpty()) return;
 		for (int i = 0; i < source.size(); i++) {
 			Statement stm = source.get(i);
+			if (stm == null) continue;
 			
 			if (stm instanceof AsmStatement) {
 				descent.core.dom.AsmBlock block = ast.newAsmBlock();

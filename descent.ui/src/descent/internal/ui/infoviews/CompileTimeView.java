@@ -160,7 +160,9 @@ public class CompileTimeView extends AbstractInfoView implements IMenuListener {
 	private SelectAllAction fSelectAllAction;
 	/** Element opened by the open action. */
 	private IJavaElement fLastOpenedElement;
-
+	
+	private ICompilationUnit lastCompilationUnit;
+	private boolean maintainTopIndex;
 
 	/*
 	 * @see AbstractInfoView#internalCreatePartControl(Composite)
@@ -373,6 +375,10 @@ public class CompileTimeView extends AbstractInfoView implements IMenuListener {
 			return null;
 		
 		ICompilationUnit unit = (ICompilationUnit) input;
+		
+		maintainTopIndex = lastCompilationUnit != null && unit.equals(lastCompilationUnit);
+		lastCompilationUnit = unit;
+		
 		CompilationUnit comp;
 		try {
 			comp = unit.getResolvedAtCompileTime(AST.D1);
@@ -380,6 +386,9 @@ public class CompileTimeView extends AbstractInfoView implements IMenuListener {
 			return "";
 		}
 		String result = comp.toString();
+		if (result.startsWith("!descent.core.dom.CompilationUnit")) {
+			return "Module " + unit.getFullyQualifiedName() + " has syntax or semantic errors due to mixins";
+		}
 		return format(result);
 	}
 	
@@ -403,6 +412,8 @@ public class CompileTimeView extends AbstractInfoView implements IMenuListener {
 	 * @see AbstractInfoView#setInput(Object)
 	 */
 	protected void setInput(Object input) {
+		int topIndex = fViewer.getTopIndex();
+		
 		if (input instanceof IDocument)
 			fViewer.setInput(input);
 		else if (input == null)
@@ -411,6 +422,10 @@ public class CompileTimeView extends AbstractInfoView implements IMenuListener {
 			IDocument document= new Document(input.toString());
 			JavaPlugin.getDefault().getJavaTextTools().setupJavaDocumentPartitioner(document, IJavaPartitions.JAVA_PARTITIONING);			
 			fViewer.setInput(document);
+		}
+
+		if (maintainTopIndex) { 
+			fViewer.setTopIndex(topIndex);
 		}
 	}
 	
