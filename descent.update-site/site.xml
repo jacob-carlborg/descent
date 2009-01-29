@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/descent.ui_0.5.4.20090127.jar" id="descent.ui" version="0.5.4.20090127">
+   <feature url="features/descent.ui_0.5.4.20090129.jar" id="descent.ui" version="0.5.4.20090129">
       <category name="Descent plugin for Eclipse"/>
    </feature>
    <category-def name="Descent plugin for Eclipse" label="Descent">

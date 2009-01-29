@@ -3048,8 +3048,8 @@ public class CompileTimeASTConverter {
 		if (a.e1 != null) {
 			b.setExpression(convert(a.e1));
 		}
-		if (a.ident != null) {
-			SimpleName convertedIdent = (SimpleName) convert(a.ident);
+		if (a.var != null && a.var.ident != null) {
+			SimpleName convertedIdent = (SimpleName) convert(a.var.ident);
 			if (convertedIdent != null) {
 				b.setName(convertedIdent);
 			}
@@ -3585,6 +3585,10 @@ public class CompileTimeASTConverter {
 	}
 	
 	public descent.core.dom.Type convert(TypeStruct a) {
+		if (a.sym.parent instanceof TemplateInstance) {
+			return (descent.core.dom.Type) convert(a.sym.parent);
+		}
+		
 		return ast.newSimpleType(ast.newSimpleName(new String(a.sym.ident.ident)));
 	}
 	
