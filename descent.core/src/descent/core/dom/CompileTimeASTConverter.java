@@ -3021,9 +3021,16 @@ public class CompileTimeASTConverter {
 	public descent.core.dom.Expression convert(CallExp a) {
 		descent.core.dom.CallExpression b = new descent.core.dom.CallExpression(ast);
 		if (a.e1 != null) {
-			descent.core.dom.Expression convertedExp = convert(a.e1);
-			if (convertedExp != null) {
-				b.setExpression(convertedExp);
+			if (a.e1 instanceof IntegerExp && ((IntegerExp)a.e1).value.equals(1)) {
+				descent.core.dom.Expression convertedExp = convert(a.sourceE1);
+				if (convertedExp != null) {
+					b.setExpression(convertedExp);
+				}
+			} else {
+				descent.core.dom.Expression convertedExp = convert(a.e1);
+				if (convertedExp != null) {
+					b.setExpression(convertedExp);
+				}
 			}
 		}
 		convertExpressions(b.arguments(), a.arguments);
@@ -3570,6 +3577,10 @@ public class CompileTimeASTConverter {
 	}
 	
 	public descent.core.dom.Type convert(TypeClass a) {
+		if (a.sym.parent instanceof TemplateInstance) {
+			return (descent.core.dom.Type) convert(a.sym.parent);
+		}
+		
 		return ast.newSimpleType(ast.newSimpleName(new String(a.sym.ident.ident)));
 	}
 	
@@ -3806,6 +3817,11 @@ public class CompileTimeASTConverter {
 				if (first) {
 					if (a.type != null) {
 						descent.core.dom.Type convertedType = convert(a.type);
+						if (convertedType != null) {
+							b.setType(convertedType);
+						}
+					} else if (a.aliassym != null && a.aliassym.type() != null) {
+						descent.core.dom.Type convertedType = convert(a.aliassym.type());
 						if (convertedType != null) {
 							b.setType(convertedType);
 						}
