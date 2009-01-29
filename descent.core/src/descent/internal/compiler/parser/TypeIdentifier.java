@@ -77,11 +77,13 @@ public class TypeIdentifier extends TypeQualified {
 		resolveHelper(loc, sc, s, scopesym[0], pe, pt, ps, context);
 		
 		if (pt != null && pt.length > 0 && pt[0] != null && 
-				s != null &&
-				!(pt[0] instanceof TypeClass) &&
-				!(pt[0] instanceof TypeStruct) &&
-				!(pt[0] instanceof TypeEnum) &&
-				!(pt[0] instanceof TypeTypedef)) {
+				s != null 
+//				&&
+//				!(pt[0] instanceof TypeClass) &&
+//				!(pt[0] instanceof TypeStruct) &&
+//				!(pt[0] instanceof TypeEnum) &&
+//				!(pt[0] instanceof TypeTypedef)
+				) {
 			if (pt[0] instanceof TypeBasic) {
 				pt[0] = new TypeBasic(pt[0]);
 			}
