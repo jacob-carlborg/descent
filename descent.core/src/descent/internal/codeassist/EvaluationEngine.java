@@ -8,7 +8,6 @@ import descent.core.IJavaProject;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
 import descent.core.dom.AST;
-import descent.core.dom.ASTConverter;
 import descent.core.dom.CompilationUnit;
 import descent.core.dom.CompilationUnitResolver;
 import descent.core.dom.CompileTimeASTConverter;
@@ -157,14 +156,14 @@ public class EvaluationEngine extends AstVisitorAdapter {
 	@Override
 	public boolean visit(IdentifierExp node) {
 		if (result == null && isInRange(node)) {
-			if (node.evaluatedExpression != null) {
+			if (node.resolvedSymbol != null && node.resolvedSymbol instanceof AliasDeclaration) {
+				evalAlias((AliasDeclaration) node.resolvedSymbol);
+			} else if (node.evaluatedExpression != null) {
 				evalExp(node.evaluatedExpression);
 			} else if (node.resolvedExpression != null) {
 				evalExp(node.resolvedExpression);
 			} else if (node.templateInstance != null && node.templateInstance.members != null) {
 				evalMembers(node.templateInstance.members);
-			} else if (node.resolvedSymbol != null && node.resolvedSymbol instanceof AliasDeclaration) {
-				evalAlias((AliasDeclaration) node.resolvedSymbol);
 			}
 		}
 		
@@ -172,7 +171,9 @@ public class EvaluationEngine extends AstVisitorAdapter {
 	}
 	
 	private void evalAlias(AliasDeclaration alias) {
-		//System.out.println(alias);
+		Dsymbols symbols = new Dsymbols();
+		symbols.add(alias);
+		evalMembers(symbols);
 	}
 
 	private void evalInit(Initializer init) {

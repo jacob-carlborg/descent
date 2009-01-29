@@ -630,10 +630,12 @@ public class SelectionEngine extends AstVisitorAdapter {
 
 		JavaElement func = (JavaElement) selectedElements
 				.remove(selectedElements.size() - 1);
+		
+		String signature = node.type != null ? node.type.getSignature() : node.getSignature();
+		
 		addJavaElement(new LocalVariable(func, node.ident.toString(),
 				node.start, node.start + node.length - 1, node.ident.start,
-				node.ident.start + node.ident.length - 1, node.type
-						.getSignature(), modifiers));
+				node.ident.start + node.ident.length - 1, signature, modifiers));
 	}
 
 	private void add(Type type) {

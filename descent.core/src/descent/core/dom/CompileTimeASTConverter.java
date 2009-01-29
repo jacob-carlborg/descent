@@ -3819,15 +3819,27 @@ public class CompileTimeASTConverter {
 			while(symbol.getNodeType() == ASTDmdNode.ALIAS_DECLARATION) {
 				AliasDeclaration a = (AliasDeclaration) symbol;
 				if (first) {
+					Dsymbol aliassym = a.aliassym;
+					while(aliassym != null && aliassym instanceof AliasDeclaration) {
+						aliassym = ((AliasDeclaration) aliassym).aliassym;
+					}
+					
 					if (a.type != null) {
 						descent.core.dom.Type convertedType = convert(a.type);
 						if (convertedType != null) {
 							b.setType(convertedType);
 						}
-					} else if (a.aliassym != null && a.aliassym.type() != null) {
-						descent.core.dom.Type convertedType = convert(a.aliassym.type());
-						if (convertedType != null) {
-							b.setType(convertedType);
+					} else if (aliassym != null) {
+						if (aliassym instanceof VarDeclaration) {
+							VarDeclaration var = (VarDeclaration) aliassym;
+							if (var.ident != null) {
+								b.setType(ast.newSimpleType(ast.newSimpleName(var.ident.toString())));
+							}
+						} else if (aliassym.type() != null) {
+							descent.core.dom.Type convertedType = convert(aliassym.type());
+							if (convertedType != null) {
+								b.setType(convertedType);
+							}
 						}
 					}
 					convertModifiers(b.modifiers(), a.modifiers);
