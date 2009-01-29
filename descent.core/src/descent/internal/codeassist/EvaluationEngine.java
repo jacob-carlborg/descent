@@ -16,6 +16,7 @@ import descent.core.dom.CompilationUnitResolver.ParseResult;
 import descent.internal.compiler.env.ICompilationUnit;
 import descent.internal.compiler.impl.CompilerOptions;
 import descent.internal.compiler.parser.ASTDmdNode;
+import descent.internal.compiler.parser.AliasDeclaration;
 import descent.internal.compiler.parser.ArrayInitializer;
 import descent.internal.compiler.parser.ArrayLiteralExp;
 import descent.internal.compiler.parser.CallExp;
@@ -162,12 +163,18 @@ public class EvaluationEngine extends AstVisitorAdapter {
 				evalExp(node.resolvedExpression);
 			} else if (node.templateInstance != null && node.templateInstance.members != null) {
 				evalMembers(node.templateInstance.members);
+			} else if (node.resolvedSymbol != null && node.resolvedSymbol instanceof AliasDeclaration) {
+				evalAlias((AliasDeclaration) node.resolvedSymbol);
 			}
 		}
 		
 		return false;
 	}
 	
+	private void evalAlias(AliasDeclaration alias) {
+		//System.out.println(alias);
+	}
+
 	private void evalInit(Initializer init) {
 		if (init.isVoidInitializer() != null) {
 			result = new EvaluationResult(null, IEvaluationResult.VOID);

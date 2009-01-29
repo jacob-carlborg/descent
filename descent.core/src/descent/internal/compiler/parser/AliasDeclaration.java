@@ -47,6 +47,8 @@ public class AliasDeclaration extends Declaration {
 		this.inSemantic = 0;
 
 		Assert.isNotNull(s);
+		
+		if (id != null) id.resolvedSymbol = this;
 	}
 
 	public AliasDeclaration(Loc loc, IdentifierExp id, Type type) {
@@ -59,6 +61,8 @@ public class AliasDeclaration extends Declaration {
 		this.haliassym = null;
 		this.overnext = null;
 		this.inSemantic = 0;
+		
+		if (id != null) id.resolvedSymbol = this;
 	}
 
 	@Override

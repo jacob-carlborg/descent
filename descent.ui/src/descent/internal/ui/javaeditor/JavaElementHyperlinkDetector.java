@@ -48,7 +48,7 @@ public class JavaElementHyperlinkDetector implements IHyperlinkDetector {
 	 * @see org.eclipse.jface.text.hyperlink.IHyperlinkDetector#detectHyperlinks(org.eclipse.jface.text.ITextViewer, org.eclipse.jface.text.IRegion, boolean)
 	 */
 	public IHyperlink[] detectHyperlinks(ITextViewer textViewer, IRegion region, boolean canShowMultipleHyperlinks) {
-		if (region == null || canShowMultipleHyperlinks || !(fTextEditor instanceof JavaEditor))
+		if (region == null /* || canShowMultipleHyperlinks */ || !(fTextEditor instanceof JavaEditor))
 			return null;
 
 		IAction openAction= fTextEditor.getAction("OpenEditor"); //$NON-NLS-1$
