@@ -378,4 +378,30 @@ public class real_t {
 		return new real_t(Math.abs(val));
 	}
 
+	public static BigDecimal strtold(String string) {
+		String base = string;
+		
+		boolean isNegative = base.length() >= 1 && base.charAt(0) == '-';
+		if (isNegative) {
+			base = base.substring(1);
+		}
+		
+		boolean isHex = base.length() >= 2 &&
+			base.charAt(0) == '0' && (base.charAt(1) == 'x' || base.charAt(1) == 'X');
+		
+		if (isHex) {
+			int exponentIndex = base.indexOf('p');
+			if (exponentIndex == -1) {
+				exponentIndex = base.indexOf('P');
+			}
+			if (exponentIndex != -1) {
+				return new BigDecimal(Double.parseDouble(string));
+			} else {
+				return new BigDecimal(Double.parseDouble(string + "p0"));
+			}
+		} else {
+			return new BigDecimal(Double.parseDouble(string));
+		}
+	}
+
 }

@@ -84,7 +84,6 @@ import static descent.internal.compiler.parser.TOK.TOKwhitespace;
 import static descent.internal.compiler.parser.TOK.TOKxor;
 import static descent.internal.compiler.parser.TOK.TOKxorass;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -5416,14 +5415,8 @@ public class Lexer implements IProblemRequestor {
 		return result;
 	}
 
-	// TODO implement these functions well
 	private real_t strod(StringBuilder data) {
-		try {
-			BigDecimal bd = new BigDecimal(data.toString());
-			return new real_t(bd);
-		} catch (Exception e) {
-			return real_t.ZERO;
-		}
+		return new real_t(real_t.strtold(data.toString()));
 	}
 
 	private real_t strof(StringBuilder data) {
