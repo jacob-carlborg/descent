@@ -43,7 +43,7 @@ public class CodeFormatterConfigurationBlock extends ProfileConfigurationBlock {
 	/**
      * Some D source code used for preview.
      */
-    protected final String PREVIEW= "module HelloWorld;\nimport std.stdio;void main(char[][] args){writefln(\"Hello World, Reloaded\");foreach(argc,argv;args){" + //$NON-NLS-1$
+    protected final String PREVIEW= "module HelloWorld;import std.stdio;void main(char[][] args){writefln(\"Hello World, Reloaded\");foreach(argc,argv;args){" + //$NON-NLS-1$
     		"CmdLin cl=new CmdLin(argc,argv);writefln(cl.argnum,cl.suffix,\" arg: %s\",cl.argv);delete cl;}" + //$NON-NLS-1$
     		"struct specs{int count,allocated;}specs argspecs(){specs* s=new specs;s.count=args.length;" + //$NON-NLS-1$
     		"s.allocated=typeof(args).sizeof;foreach(argv;args)s.allocated+=argv.length*typeof(argv[0]).sizeof;return *s;}" + //$NON-NLS-1$

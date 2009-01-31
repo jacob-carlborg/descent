@@ -62,6 +62,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 			if (hasComments())
 				scribe.printNewLine();
 			scribe.printComment();
+			if (hasPragmas())
+				scribe.printNewLine();
+			scribe.printPragma();
 		} catch (AbortFormatting e)
 		{
 			return failedToFormat(e);
@@ -90,6 +93,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 			startup(src, expression);
 			expression.accept(this);
 			scribe.printComment();
+			scribe.printPragma();
 		} catch (AbortFormatting e)
 		{
 			return failedToFormat(e);
@@ -369,6 +373,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 	public boolean visit(AsmBlock node)
 	{
 		scribe.printComment();
+		scribe.printPragma();
 		scribe.dontFormat(node.getStartPosition(), node.getLength());
 		scribe.printTrailingComment();
 		return false;
@@ -580,6 +585,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 			if (hasComments()) {
 				this.scribe.printComment();
 			}
+			if (hasPragmas()) {
+				this.scribe.printPragma();
+			}
 			int blankLinesBeforePackage = this.prefs.blank_lines_before_module;
 			if (blankLinesBeforePackage > 0) {
 				this.scribe.printEmptyLines(blankLinesBeforePackage);
@@ -595,6 +603,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 			}
 		} else {
 			scribe.printComment();
+			scribe.printPragma();
 		}
 		formatDeclarations(node.declarations());
 		scribe.printEndOfCompilationUnit();
@@ -3078,6 +3087,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		int statementsLength = statements.size();
 		if (statementsLength == 0) {
 			scribe.printComment();
+			scribe.printPragma();
 			return;
 		}
 		else if (statementsLength == 1) {
@@ -3327,6 +3337,12 @@ public class CodeFormatterVisitor extends ASTVisitor
 	{
 		lexer.reset(scribe.lexer.base, scribe.scannerEndPosition - 1);
 		return isComment(lexer.nextToken());
+	}
+	
+	private boolean hasPragmas()
+	{
+		lexer.reset(scribe.lexer.base, scribe.scannerEndPosition - 1);
+		return lexer.nextToken() == TOK.TOKPRAGMA;
 	}
 	
 	/**

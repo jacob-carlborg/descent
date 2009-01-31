@@ -126,7 +126,7 @@ public class CompileTimeASTConverter {
 		Pragma[] to = new Pragma[from == null ? 0 : from.length];
 		for(int i = 0; i < (from == null ? 0 : from.length); i++) {
 			to[i] = ast.newPragma();
-			setSourceRange(to[i], from[i].start, from[i].length);
+			to[i].setSourceRange(from[i].start, from[i].length);
 		}
 		return to;
 	}

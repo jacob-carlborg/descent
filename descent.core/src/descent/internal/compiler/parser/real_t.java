@@ -400,7 +400,7 @@ public class real_t {
 				return new BigDecimal(Double.parseDouble(string + "p0"));
 			}
 		} else {
-			return new BigDecimal(Double.parseDouble(string));
+			return new BigDecimal(string);
 		}
 	}
 

@@ -194,6 +194,7 @@ public class Scribe {	private static final int INITIAL_SIZE = 100;
 	
 	public void consumeNextToken() {
 		printComment();
+		printPragma();
 		currentToken = lexer.nextToken();
 		addDeleteEdit(lexer.token.ptr, currentTokenEndPosition());
 	}
@@ -887,6 +888,69 @@ public class Scribe {	private static final int INITIAL_SIZE = 100;
 			}
 	}
 	
+	public void printPragma() {
+		// if we have a space between two tokens we ensure it will be dumped in the formatted string
+		int currentTokenStartPosition = lexer.p;
+		boolean hasLinePragma = false;
+		boolean hasWhitespace = false;
+		int count = 0;
+		while ((this.currentToken = this.lexer.nextToken()) != TOK.TOKeof) {
+			switch(this.currentToken) {
+				case TOKwhitespace :
+					char[] whiteSpaces = this.lexer.token.getRawTokenSource();
+					count = 0;
+					for (int i = 0, max = whiteSpaces.length; i < max; i++) {
+						switch(whiteSpaces[i]) {
+							case '\r' :
+								if ((i + 1) < max) {
+									if (whiteSpaces[i + 1] == '\n') {
+										i++;
+									}
+								}
+								count++;
+								break;
+							case '\n' :
+								count++;
+						}
+					}
+					if (count == 0) {
+						hasWhitespace = true;
+						addDeleteEdit(lexer.token.ptr, currentTokenEndPosition());
+					} else if (hasLinePragma) {
+						this.preserveEmptyLines(count, lexer.token.ptr);
+						addDeleteEdit(lexer.token.ptr, currentTokenEndPosition());
+					} else if (count != 0 && this.formatter.prefs.number_of_empty_lines_to_preserve != 0) {
+						addReplaceEdit(lexer.token.ptr, currentTokenEndPosition(), this.getPreserveEmptyLines(count - 1));
+					} else {
+						addDeleteEdit(lexer.token.ptr, currentTokenEndPosition());
+					}
+					currentTokenStartPosition = lexer.p;						
+					break;
+				case TOKPRAGMA:
+					if (count >= 1) {
+						if (count > 1) {
+							preserveEmptyLines(count - 1, lexer.token.ptr);
+						} else if (count == 1) {
+							printNewLine(lexer.token.ptr);
+						}
+					} else if (hasWhitespace) {
+						space();
+					} 
+					hasWhitespace = false;
+					
+					this.printCommentLine(lexer.token.getRawTokenSource());
+					currentTokenStartPosition = lexer.p;
+					hasLinePragma = true;		
+					count = 0;
+					break;
+				default :
+					// step back one token
+					lexer.reset(currentTokenStartPosition, this.scannerEndPosition - 1);
+					return;
+			}
+		}
+}
+	
 	private void printCommentLine(char[] s) {
 		int currentTokenStartPosition = lexer.token.ptr;
 		int currentTokenEndPosition = currentTokenEndPosition() + 1;
@@ -1083,6 +1147,7 @@ public class Scribe {	private static final int INITIAL_SIZE = 100;
 	public void printAnyToken(boolean considerSpaceIfAny)
 	{
 		printComment();
+		printPragma();
 		char[] currentTokenSource = lexer.token.getRawTokenSource();
 		this.print(currentTokenSource, considerSpaceIfAny);
 	}
@@ -1093,6 +1158,7 @@ public class Scribe {	private static final int INITIAL_SIZE = 100;
 
 	public void printNextToken(TOK expectedTokenType, boolean considerSpaceIfAny){
 		printComment();
+		printPragma();
 			this.currentToken = lexer.nextToken();
 			char[] currentTokenSource = lexer.token.getRawTokenSource();
 			if (expectedTokenType != this.currentToken) {
@@ -1107,6 +1173,7 @@ public class Scribe {	private static final int INITIAL_SIZE = 100;
 
 	public void printNextToken(TOK[] expectedTokenTypes, boolean considerSpaceIfAny){
 		printComment();
+		printPragma();
 			this.currentToken = lexer.nextToken();
 			char[] currentTokenSource = lexer.token.getRawTokenSource();
 			if (Arrays.binarySearch(expectedTokenTypes, this.currentToken) < 0) {
