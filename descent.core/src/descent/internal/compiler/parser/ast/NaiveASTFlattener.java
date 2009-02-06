@@ -109,8 +109,9 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		this.buffer.append(pre);
 		if (useResolved)
 			node.e1.accept(this);
-		else
+		else {
 			node.sourceE1.accept(this);
+		}
 	}
 	
 	void visitPost(UnaExp node, String post) {
@@ -1018,10 +1019,12 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	}
 
 	public boolean visit(DotIdExp node) {
+		this.buffer.append('(');
 		Expression exp = useResolved ? node.e1 : node.sourceE1;
 		if (exp != null) {
 			exp.accept(this);
 		}
+		this.buffer.append(')');
 		this.buffer.append(".");
 		node.ident.accept(this);
 		return false;

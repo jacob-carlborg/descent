@@ -394,10 +394,17 @@ public class real_t {
 			if (exponentIndex == -1) {
 				exponentIndex = base.indexOf('P');
 			}
-			if (exponentIndex != -1) {
-				return new BigDecimal(Double.parseDouble(string));
-			} else {
-				return new BigDecimal(Double.parseDouble(string + "p0"));
+			try {
+				if (exponentIndex != -1) {
+					return new BigDecimal(Double.parseDouble(string));
+				} else {
+					return new BigDecimal(Double.parseDouble(string + "p0"));
+				}
+			} catch (NumberFormatException e) {
+				// XXX fix this, for really big exponents like:
+				// 0x1.6a09e667f3bcc908p+16383
+				// it is not working :-(
+				return BigDecimal.ZERO;
 			}
 		} else {
 			return new BigDecimal(string);
