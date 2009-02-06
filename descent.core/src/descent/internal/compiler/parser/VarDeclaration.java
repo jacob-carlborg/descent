@@ -602,9 +602,12 @@ public class VarDeclaration extends Declaration {
 						e = e.optimize(WANTvalue | WANTinterpret, context);
 						if (e.op == TOKint64 || e.op == TOKstring) {
 							// TODO Descent: instead of copying the result, do semantic analysis again,
-							// in order to get binding resolution
-							ei.exp.semantic(sc, context);
-							//							ei.exp = e;		// no errors, keep result
+							// in order to get binding resolution, but only for the root module
+							if (this.getModule() == context.Module_rootModule) {
+								ei.exp = ei.exp.semantic(sc, context);	
+							} else {
+								ei.exp = e;		// no errors, keep result
+							}
 						}
 					} else {
 						init = i2; // no errors, keep result

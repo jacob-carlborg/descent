@@ -149,6 +149,10 @@ class DefaultBindingResolver extends BindingResolver {
 	@Override
 	public Boolean resolveConditionalDeclaration(
 			descent.core.dom.ConditionalDeclaration declaration) {
+		if (parentIsTemplate(declaration)) {
+			return null;
+		}
+		
 		ASTDmdNode old = newAstToOldAst.get(declaration);
 		if (!(old instanceof ConditionalDeclaration)) {
 			return false;
@@ -161,6 +165,10 @@ class DefaultBindingResolver extends BindingResolver {
 	@Override
 	public Boolean resolveConditionalStatement(
 			descent.core.dom.ConditionalStatement statement) {
+		if (parentIsTemplate(statement)) {
+			return null;
+		}
+		
 		ASTDmdNode old = newAstToOldAst.get(statement);
 		if (!(old instanceof ConditionalStatement)) {
 			return false;
@@ -168,6 +176,30 @@ class DefaultBindingResolver extends BindingResolver {
 
 		Condition condition = ((ConditionalStatement) old).condition;
 		return resolveCondition(condition);
+	}
+
+	private boolean parentIsTemplate(descent.core.dom.ASTNode node) {
+		ASTNode parent = node.getParent();
+		while(parent != null) {
+			switch(parent.getNodeType()) {
+			case ASTNode.TEMPLATE_DECLARATION:
+				return true;
+			case ASTNode.FUNCTION_DECLARATION:
+				FunctionDeclaration func = (FunctionDeclaration) parent;
+				if (func.templateParameters().size() > 0) {
+					return true;
+				}
+				break;
+			case ASTNode.AGGREGATE_DECLARATION:
+				AggregateDeclaration agg = (AggregateDeclaration) parent;
+				if (agg.templateParameters().size() > 0) {
+					return true;
+				}
+				break;
+			}
+			parent = parent.getParent();
+		}
+		return false;
 	}
 
 	private Boolean resolveCondition(Condition condition) {

@@ -6,7 +6,9 @@ import descent.internal.compiler.parser.ASTNodeEncoder;
 import descent.internal.compiler.parser.Argument;
 import descent.internal.compiler.parser.IntegerExp;
 import descent.internal.compiler.parser.LINK;
+import descent.internal.compiler.parser.MinExp;
 import descent.internal.compiler.parser.Module;
+import descent.internal.compiler.parser.Objects;
 import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.STC;
 import descent.internal.compiler.parser.TemplateInstance;
@@ -264,6 +266,18 @@ public class SignatureToType_Test extends AbstractSignatureTest implements ISign
 		TemplateInstance tempInst2 = typeInstance2.tempinst;
 		assertEquals("Bar", tempInst2.name.toString());
 		assertEquals("Baz", typeInstance2.idents.get(0).toString());
+	}
+	
+	public void testInstanceBug_20090206() {
+		TypeInstance instance = (TypeInstance) InternalSignature.toType("?11dynArgTypes!^?1i^?13sliceOffTuple!^?10FuncParams^?8SkipType6length\'?3res^?5Tuple!^.?9BoundArgs4type~1.18.__dollar\'-31-minParamsLeft - SkipType.length\'?3res", new ASTNodeEncoder(AST.D1));
+		Objects args = instance.tempinst.tiargs;
+		assertEquals(4, args.size());
+		
+		assertTrue(args.get(0) instanceof TypeIdentifier);
+		TypeIdentifier id1 = (TypeIdentifier) args.get(0);
+		assertEquals("i", id1.ident.toString());
+		
+		assertTrue(args.get(3) instanceof MinExp);
 	}
 	
 	private String getTypeSignature(String type) {

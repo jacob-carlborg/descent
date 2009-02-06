@@ -332,7 +332,10 @@ public class SignatureProcessor {
 					if (c == Signature.C_TEMPLATE_ALIAS_PARAMETER ||
 						c == Signature.C_TEMPLATE_TYPE_PARAMETER ||
 						c == Signature.C_TEMPLATE_VALUE_PARAMETER ||
-						c == Signature.C_TEMPLATE_TUPLE_PARAMETER) {
+						c == Signature.C_TEMPLATE_TUPLE_PARAMETER ||
+						c == Signature.C_TEMPLATE_INSTANCE_SYMBOL_PARAMETER ||
+						c == Signature.C_TEMPLATE_INSTANCE_TYPE_PARAMETER ||
+						c == Signature.C_TEMPLATE_INSTANCE_VALUE_PARAMETER) {
 						return i;
 					}
 				}

@@ -2660,7 +2660,9 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	public boolean visit(TypeClass node) {
 		appendStartCompilerNode();
 		this.buffer.append("TypeClass: ");
-		if (node.sym.ident != null) {
+		if (node.sym.parent instanceof TemplateInstance) {
+			this.buffer.append(node.sym.parent);
+		} else if (node.sym.ident != null) {
 			this.buffer.append(node.sym.ident.ident);
 		}
 		appendEndCompilerNode();
@@ -2951,7 +2953,9 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	public boolean visit(TypeStruct node) {
 		appendStartCompilerNode();
 		this.buffer.append("TypeStruct: ");
-		if (node.sym.ident != null) {
+		if (node.sym.parent instanceof TemplateInstance) {
+			this.buffer.append(node.sym.parent);
+		} else if (node.sym.ident != null) {
 			this.buffer.append(node.sym.ident.ident);
 		}
 		appendEndCompilerNode();
