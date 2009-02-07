@@ -658,6 +658,13 @@ public final class JavaCore extends AbstractUIPlugin {
 	 * @since 2.0
 	 */
 	public static final String COMPILER_ALLOW_DEPRECATED = PLUGIN_ID + ".compiler.allowDeprecated"; //$NON-NLS-1$
+	
+	/**
+	 * Possible  configurable option ID.
+	 * @see #getDefaultOptions()
+	 * @since 2.0
+	 */
+	public static final String COMPILER_ANALYZE_TEMPLATES = PLUGIN_ID + ".compiler.analyzeTemplates"; //$NON-NLS-1$
 	/**
 	 * Possible  configurable option ID.
 	 * @see #getDefaultOptions()

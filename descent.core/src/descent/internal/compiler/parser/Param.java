@@ -29,6 +29,7 @@ public class Param {
 	public boolean release;	// build release version
 	public boolean preservePaths;	// !=0 means don't strip path from source file
 	public boolean warnings = true;	// enable warnings
+	public boolean analyzeTemplates = true;	// analyze templates (Descent)
 	public char pic;		// generate position-independent-code for shared libs
 	public char cov;		// generate code coverage data
 	public char nofloat;	// code should not pull in floating point support

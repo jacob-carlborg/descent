@@ -377,8 +377,10 @@ public class SignatureProcessor {
 				i = end[0];
 				requestor.acceptIdentifier(compoundName, substring(signature, start, i, wantSignature));
 				
-				// A template instance may follow an identifier
-				if (i < signature.length() && signature.charAt(i) == Signature.C_TEMPLATE_INSTANCE) {
+				// A template instance may follow an identifier, or another identifier may follow
+				if (i < signature.length() && 
+						(signature.charAt(i) == Signature.C_TEMPLATE_INSTANCE ||
+						 signature.charAt(i) == Signature.C_IDENTIFIER)) {
 					continue;
 				} else {
 					return i;

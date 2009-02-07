@@ -280,6 +280,13 @@ public class SignatureToType_Test extends AbstractSignatureTest implements ISign
 		assertTrue(args.get(3) instanceof MinExp);
 	}
 	
+	public void testInstanceBug_20090207() {
+		TypeInstance instance = (TypeInstance) InternalSignature.toType("?14getDynArgTypes!^?10FuncParams^?12AllBoundArgs^?11minFuncArgs'?3res?4type", new ASTNodeEncoder(AST.D1));
+		assertEquals(2, instance.idents.size());
+		assertEquals("res", instance.idents.get(0).toString());
+		assertEquals("type", instance.idents.get(1).toString());
+	}
+	
 	private String getTypeSignature(String type) {
 		Parser parser = new Parser(AST.D1, type + "x;");
 		parser.nextToken();

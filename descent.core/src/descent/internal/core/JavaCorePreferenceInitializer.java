@@ -59,6 +59,7 @@ public class JavaCorePreferenceInitializer extends AbstractPreferenceInitializer
 		defaultOptionsMap.put(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS, "0");
 		defaultOptionsMap.put(JavaCore.COMPILER_ENABLE_WARNINGS, JavaCore.ENABLED);
 		defaultOptionsMap.put(JavaCore.COMPILER_ALLOW_DEPRECATED, JavaCore.DISABLED);
+		defaultOptionsMap.put(JavaCore.COMPILER_ANALYZE_TEMPLATES, JavaCore.ENABLED);
 		
 		// Builder settings
 		defaultOptionsMap.put(JavaCore.CORE_JAVA_BUILD_RESOURCE_COPY_FILTER, ""); //$NON-NLS-1$

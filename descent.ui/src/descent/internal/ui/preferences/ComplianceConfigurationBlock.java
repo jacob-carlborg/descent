@@ -39,6 +39,7 @@ public class ComplianceConfigurationBlock extends OptionsConfigurationBlock {
 	private static final Key PREF_SHOW_SEMANTIC_ERRORS= getJDTCoreKey(JavaCore.COMPILER_SHOW_SEMANTIC_ERRORS);
 	private static final Key PREF_ENABLE_WARNINGS= getJDTCoreKey(JavaCore.COMPILER_ENABLE_WARNINGS);
 	private static final Key PREF_ALLOW_DEPRECATED= getJDTCoreKey(JavaCore.COMPILER_ALLOW_DEPRECATED);
+	private static final Key PREF_ANALYZE_TEMPLATES= getJDTCoreKey(JavaCore.COMPILER_ANALYZE_TEMPLATES);
 
 	private static final Key INTR_DEFAULT_COMPLIANCE= getJDTUIKey("internal.default.compliance"); //$NON-NLS-1$
 
@@ -84,6 +85,7 @@ public class ComplianceConfigurationBlock extends OptionsConfigurationBlock {
 				PREF_SHOW_SEMANTIC_ERRORS,
 				PREF_ENABLE_WARNINGS,
 				PREF_ALLOW_DEPRECATED,
+				PREF_ANALYZE_TEMPLATES,
 			};
 	}
 		
@@ -194,6 +196,7 @@ public class ComplianceConfigurationBlock extends OptionsConfigurationBlock {
 			addComboBox(group, "Show semantic errors", PREF_SHOW_SEMANTIC_ERRORS, new String[] { "0", "1", "2" }, new String[] { "No", "Some (EXPERIMENTAL)", "All (EXPERIMENTAL)" }, 0);
 			addCheckBox(group, "Enable warnings", PREF_ENABLE_WARNINGS, trueFalse, 0);
 			addCheckBox(group, "Allow deprecated features", PREF_ALLOW_DEPRECATED, trueFalse, 0);
+			addCheckBox(group, "Analyze templates", PREF_ANALYZE_TEMPLATES, trueFalse, 0);
 		
 		//label= PreferencesMessages.ComplianceConfigurationBlock_default_settings_label; 
 		//addCheckBox(group, label, INTR_DEFAULT_COMPLIANCE, new String[] { DEFAULT_CONF, USER_CONF }, 0);

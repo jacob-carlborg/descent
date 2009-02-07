@@ -165,23 +165,10 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			boolean recordLineSeparator,
 			boolean statementsRecovery,
 			IProgressMonitor monitor) throws JavaModelException {
-		return resolve(apiLevel, sourceUnit, javaProject, options, owner, recordLineSeparator, statementsRecovery, true, monitor);
-	}
-	
-	public static ParseResult resolve(
-			int apiLevel,
-			descent.internal.compiler.env.ICompilationUnit sourceUnit,
-			IJavaProject javaProject,
-			Map options,
-			WorkingCopyOwner owner,
-			boolean recordLineSeparator,
-			boolean statementsRecovery,
-			boolean doTemplateSemantic,
-			IProgressMonitor monitor) throws JavaModelException {
 		
 		ParseResult result = parse(apiLevel, sourceUnit, options, recordLineSeparator, statementsRecovery, false);
 		result.module.moduleName = sourceUnit.getFullyQualifiedName();
-		result.context = resolve(result.module, javaProject, owner, result.encoder, doTemplateSemantic);
+		result.context = resolve(result.module, javaProject, owner, result.encoder);
 		return result;
 	}
 	
@@ -191,21 +178,11 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			final WorkingCopyOwner owner,
 			final ASTNodeEncoder encoder) 
 		throws JavaModelException {
-		return resolve(module, project, owner, encoder, true);
-	}
-	
-	public static SemanticContext resolve(
-			final Module module, 
-			final IJavaProject project,
-			final WorkingCopyOwner owner,
-			final ASTNodeEncoder encoder,
-			final boolean doTemplateSemantic) 
-		throws JavaModelException {
 		
 		CompilerConfiguration config = new CompilerConfiguration();
 		
 		Global global = prepareForSemantic(project, config);
-		return resolve(module, project, global, owner, config, encoder, doTemplateSemantic);
+		return resolve(module, project, global, owner, config, encoder);
 	}
 	
 	private static SemanticContext resolve(
@@ -214,8 +191,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			final Global global,
 			final WorkingCopyOwner owner,
 			final CompilerConfiguration config,
-			final ASTNodeEncoder encoder,
-			final boolean doTemplateSemantic) throws JavaModelException {
+			final ASTNodeEncoder encoder) throws JavaModelException {
 		
 		long time = System.currentTimeMillis();
 		
@@ -373,7 +349,6 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 				global,
 				config,
 				encoder);
-		context.doTemplateSemantic = doTemplateSemantic;
 		
 		if (!RESOLVE) return context;
 		
@@ -425,6 +400,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		addIdentifiers(config.debugIdentifiers, global.params.debugids);
 		global.params.useDeprecated = config.useDeprecated;
 		global.params.warnings = config.warnings;
+		global.params.analyzeTemplates = config.analyzeTemplates;
 		
 		return global;
 	}

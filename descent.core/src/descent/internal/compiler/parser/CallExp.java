@@ -208,7 +208,7 @@ public class CallExp extends UnaExp {
 	}
 
 	@Override
-	public Expression semantic(Scope sc, SemanticContext context) {		
+	public Expression semantic(Scope sc, SemanticContext context) {
 		TypeFunction tf;
 		FuncDeclaration f = null;
 		//int i;
@@ -443,6 +443,7 @@ public class CallExp extends UnaExp {
 
 					f = dve.var.isFuncDeclaration();
 					Assert.isNotNull(f);
+					
 					f = f.overloadResolve(loc, ue.e1, arguments, context, this);
 
 					ad = f.toParent().isAggregateDeclaration();
@@ -805,6 +806,7 @@ public class CallExp extends UnaExp {
 		// Rewrite as e1.call(arguments)
 		Expression e = new DotIdExp(loc, e1, Id.call);
 		e = new CallExp(loc, e, arguments);
+		e.copySourceRange(this);
 		e = e.semantic(sc, context);
 		return e;
 	}

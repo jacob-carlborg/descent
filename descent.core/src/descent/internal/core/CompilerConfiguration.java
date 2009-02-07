@@ -19,6 +19,7 @@ public class CompilerConfiguration {
 	public HashtableOfCharArrayAndObject debugIdentifiers;
 	public boolean useDeprecated;
 	public boolean warnings;
+	public boolean analyzeTemplates;
 	
 	public CompilerConfiguration() {
 		this(JavaCore.create(ResourcesPlugin.getWorkspace().getRoot()).getActiveProject());
@@ -45,6 +46,7 @@ public class CompilerConfiguration {
 		
 		useDeprecated = getOption(JavaCore.COMPILER_ALLOW_DEPRECATED).equals(JavaCore.ENABLED);
 		warnings = getOption(JavaCore.COMPILER_ENABLE_WARNINGS).equals(JavaCore.ENABLED);
+		analyzeTemplates = getOption(JavaCore.COMPILER_ANALYZE_TEMPLATES).equals(JavaCore.ENABLED);
 	}
 	
 	public boolean isVersionEnabled(char[] version) {

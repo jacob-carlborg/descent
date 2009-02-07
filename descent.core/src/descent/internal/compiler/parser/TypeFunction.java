@@ -696,7 +696,7 @@ public class TypeFunction extends Type implements Cloneable {
 		sb.append(linkageChar == 0 ? LINK.LINKd.mangleChar : linkageChar);
 		if (parameters != null) {
 			for(Argument arg : parameters) {
-				arg.appendSignature(sb);
+				appendArgumentSignature(arg, sb);
 			}
 		}
 		sb.append((char) ('Z' - varargs));
@@ -706,7 +706,18 @@ public class TypeFunction extends Type implements Cloneable {
 			next.appendSignature(sb);
 		}
 	}
-
+	
+	private void appendArgumentSignature(Argument arg, StringBuilder sb) {
+//		if (arg.type instanceof TypeTuple) {
+//			TypeTuple tuple = (TypeTuple) arg.type;
+//			for(Argument arg2 : tuple.arguments) {
+//				appendArgumentSignature(arg2, sb);
+//			}
+//		} else {
+			arg.appendSignature(sb);
+//		}
+	}
+	
 	// PERHAPS type *toCtype();
 	// PERHAPS enum RET retStyle();
 	// PERHAPS unsigned totym();
