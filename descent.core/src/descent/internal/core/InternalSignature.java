@@ -265,7 +265,8 @@ public class InternalSignature {
 				}
 			});
 		
-		return stack.peek().pop();
+		Type ret = stack.peek().pop();
+		return ret;
 	}
 	
 	public static void appendPackageName(char[] packageName, StringBuilder sb) {

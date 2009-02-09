@@ -124,6 +124,15 @@ public class CompletionProposalLabelProvider {
 		for (int i= 0; i < parameterTypes.length; i++) {
 			parameterTypes[i]= createTypeDisplayName(parameterTypes[i]);
 		}
+		
+		// This might be the case of a tuple expansion
+		if (parameterNames.length != parameterTypes.length) {
+			parameterNames = new char[parameterTypes.length][];
+			for (int i = 0; i < parameterTypes.length; i++) {
+				parameterNames[i] = ("arg" + i).toCharArray();
+			}
+		}
+		
 		return appendParameterSignature(buffer, parameterTypes, parameterNames, parameterDefaultValues, methodProposal.getKind());
 	}
 	

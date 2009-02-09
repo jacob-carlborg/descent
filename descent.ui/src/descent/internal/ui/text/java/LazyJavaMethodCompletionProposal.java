@@ -136,6 +136,16 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 				return replacement + "()"; //$NON-NLS-1$
 			}
 			
+			int parameterCount = Signature.getParameterCount(fProposal.getTypeSignature());
+			
+			// Check if this is a tuple expansion
+			if (parameterCount != parameterNames.length) {
+				parameterNames = new char[parameterCount][];
+				for (int i = 0; i < parameterCount; i++) {
+					parameterNames[i] = ("arg" + i).toCharArray();
+				}
+			}
+			
 			if (fProposal.getKind() == CompletionProposal.EXTENSION_METHOD) {
 				char[][] newParameterNames = new char[parameterNames.length - 1][];
 				System.arraycopy(parameterNames, 1, newParameterNames, 0, newParameterNames.length);

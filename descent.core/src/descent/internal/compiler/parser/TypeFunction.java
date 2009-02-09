@@ -708,14 +708,14 @@ public class TypeFunction extends Type implements Cloneable {
 	}
 	
 	private void appendArgumentSignature(Argument arg, StringBuilder sb) {
-//		if (arg.type instanceof TypeTuple) {
-//			TypeTuple tuple = (TypeTuple) arg.type;
-//			for(Argument arg2 : tuple.arguments) {
-//				appendArgumentSignature(arg2, sb);
-//			}
-//		} else {
+		if (arg.type instanceof TypeTuple) {
+			TypeTuple tuple = (TypeTuple) arg.type;
+			for(Argument arg2 : tuple.arguments) {
+				appendArgumentSignature(arg2, sb);
+			}
+		} else {
 			arg.appendSignature(sb);
-//		}
+		}
 	}
 	
 	// PERHAPS type *toCtype();
