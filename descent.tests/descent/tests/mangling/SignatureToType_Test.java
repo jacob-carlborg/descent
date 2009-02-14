@@ -246,7 +246,7 @@ public class SignatureToType_Test extends AbstractSignatureTest implements ISign
 	}
 	
 	public void testTypeGetSignature2() {
-		assertEquals("?3Foo!^i'?3Bar!^i'", getTypeSignature("Foo!(int).Bar!(int)"));
+		assertEquals("?3Foo!^i'n?3Bar!^i'", getTypeSignature("Foo!(int).Bar!(int)"));
 	}
 	
 	public void testTypeGetSignature3() {
@@ -269,7 +269,7 @@ public class SignatureToType_Test extends AbstractSignatureTest implements ISign
 	}
 	
 	public void testInstanceBug_20090206() {
-		TypeInstance instance = (TypeInstance) InternalSignature.toType("?11dynArgTypes!^?1i^?13sliceOffTuple!^?10FuncParams^?8SkipType6length\'?3res^?5Tuple!^.?9BoundArgs4type~1.18.__dollar\'-31-minParamsLeft - SkipType.length\'?3res", new ASTNodeEncoder(AST.D1));
+		TypeInstance instance = (TypeInstance) InternalSignature.toType("?11dynArgTypes!^?1i^?13sliceOffTuple!^?10FuncParams^?8SkipType6length\'n?3res^?5Tuple!^.?9BoundArgs4type~1.18.__dollar\'-31-minParamsLeft - SkipType.length\'n?3res", new ASTNodeEncoder(AST.D1));
 		Objects args = instance.tempinst.tiargs;
 		assertEquals(4, args.size());
 		
@@ -281,10 +281,37 @@ public class SignatureToType_Test extends AbstractSignatureTest implements ISign
 	}
 	
 	public void testInstanceBug_20090207() {
-		TypeInstance instance = (TypeInstance) InternalSignature.toType("?14getDynArgTypes!^?10FuncParams^?12AllBoundArgs^?11minFuncArgs'?3res?4type", new ASTNodeEncoder(AST.D1));
+		TypeInstance instance = (TypeInstance) InternalSignature.toType("?14getDynArgTypes!^?10FuncParams^?12AllBoundArgs^?11minFuncArgs'n?3resn?4type", new ASTNodeEncoder(AST.D1));
 		assertEquals(2, instance.idents.size());
 		assertEquals("res", instance.idents.get(0).toString());
 		assertEquals("type", instance.idents.get(1).toString());
+	}
+	
+	public void testBug_20090214_1() {
+		TypeFunction func = (TypeFunction) InternalSignature.toType("F?1a?1bZv", new ASTNodeEncoder(AST.D1));
+		assertEquals(2, func.parameters.size());
+		assertEquals("a", func.parameters.get(0).toString());
+		assertEquals("b", func.parameters.get(1).toString());
+		assertEquals(STC.STCin, func.parameters.get(0).storageClass);
+		assertEquals(STC.STCin, func.parameters.get(1).storageClass);
+	}
+	
+	public void testBug_20090214_2() {
+		TypeFunction func = (TypeFunction) InternalSignature.toType("FJ?1a?1bZv", new ASTNodeEncoder(AST.D1));
+		assertEquals(2, func.parameters.size());
+		assertEquals("a", func.parameters.get(0).toString());
+		assertEquals("b", func.parameters.get(1).toString());
+		assertEquals(STC.STCout, func.parameters.get(0).storageClass);
+		assertEquals(STC.STCin, func.parameters.get(1).storageClass);
+	}
+	
+	public void testBug_20090214_3() {
+		TypeFunction func = (TypeFunction) InternalSignature.toType("F?1aJ?1bZv", new ASTNodeEncoder(AST.D1));
+		assertEquals(2, func.parameters.size());
+		assertEquals("a", func.parameters.get(0).toString());
+		assertEquals("b", func.parameters.get(1).toString());
+		assertEquals(STC.STCin, func.parameters.get(0).storageClass);
+		assertEquals(STC.STCout, func.parameters.get(1).storageClass);
 	}
 	
 	private String getTypeSignature(String type) {

@@ -224,6 +224,8 @@ import descent.internal.core.SignatureRequestorAdapter;
  * This class provides static methods and constants only; it is not intended to be
  * instantiated or subclassed by clients.
  * </p>
+ * 
+ * TODO explain {@link #C_DOT}
  */
 public final class Signature {
 	
@@ -697,6 +699,12 @@ public final class Signature {
 	 * Value is <code>'y'</code>.
 	 */
 	public static final char C_INVARIANT 									= 'y';
+	
+	/**
+	 * Character constant indicating a dot in a signature.
+	 * Value is <code>'n'</code>.
+	 */
+	public static final char C_DOT										= 'n';
 	
 	/**
 	 * String constant for the signature of the primitive type void.

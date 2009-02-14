@@ -1470,7 +1470,8 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 			sb.append(Signature.C_CONST);
 		}
 		
-		if (alias != null && !(alias instanceof AliasDeclaration && ((AliasDeclaration) alias).isTemplateParameter)) {
+		if (alias != null && 
+				!(alias instanceof AliasDeclaration && ((AliasDeclaration) alias).isTemplateParameter)) {
 			StringBuilder sb2 = new StringBuilder();
 			alias.appendSignature(sb2);
 			if (sb2.length() > 0) {

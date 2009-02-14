@@ -266,6 +266,7 @@ public class TypeInstance extends TypeQualified {
 		
 		if (idents != null) {
 			for(IdentifierExp ident : idents) {
+				sb.append(Signature.C_DOT);
 				sb.append(Signature.C_IDENTIFIER);
 				if (ident == null) {
 					sb.append(0);

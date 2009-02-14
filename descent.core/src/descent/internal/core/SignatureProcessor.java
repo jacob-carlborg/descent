@@ -337,6 +337,9 @@ public class SignatureProcessor {
 						c == Signature.C_TEMPLATE_INSTANCE_TYPE_PARAMETER ||
 						c == Signature.C_TEMPLATE_INSTANCE_VALUE_PARAMETER) {
 						return i;
+					} else if (c == Signature.C_DOT) {
+						i++;
+						continue;
 					}
 				}
 				
@@ -377,10 +380,14 @@ public class SignatureProcessor {
 				i = end[0];
 				requestor.acceptIdentifier(compoundName, substring(signature, start, i, wantSignature));
 				
-				// A template instance may follow an identifier, or another identifier may follow
+				// A template instance may follow an identifier,
+				// or a dot
 				if (i < signature.length() && 
-						(signature.charAt(i) == Signature.C_TEMPLATE_INSTANCE ||
-						 signature.charAt(i) == Signature.C_IDENTIFIER)) {
+						signature.charAt(i) == Signature.C_TEMPLATE_INSTANCE) {
+					continue;
+				} else if (i < signature.length() && 
+						signature.charAt(i) == Signature.C_DOT) {
+					i++;
 					continue;
 				} else {
 					return i;
