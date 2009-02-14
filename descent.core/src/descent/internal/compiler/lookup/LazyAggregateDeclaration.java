@@ -6,6 +6,7 @@ import java.util.List;
 import descent.core.IJavaElement;
 import descent.core.JavaModelException;
 import descent.internal.compiler.lookup.ModuleBuilder.FillResult;
+import descent.internal.compiler.parser.AttribDeclaration;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.DsymbolTable;
 import descent.internal.compiler.parser.Dsymbols;
@@ -94,6 +95,8 @@ public class LazyAggregateDeclaration {
 						for(Dsymbol sym : symbols) {
 							lazy.runMissingSemantic(sym, context);
 						}
+					} else {
+						assignParent(symbols);
 					}
 					
 					s = symbols.get(0);
@@ -174,6 +177,8 @@ public class LazyAggregateDeclaration {
 					sym.addMember(lazy.semanticScope(), lazy.asScopeDsymbol(), 0, context);
 					lazy.runMissingSemantic(sym, context);
 				}
+			} else {
+				assignParent(lazy.members());
 			}
 		}
 		
@@ -194,6 +199,16 @@ public class LazyAggregateDeclaration {
 			}
 		}
 		context.muteProblems--;
+	}
+	
+	private void assignParent(Dsymbols members) {
+		for(Dsymbol sym : members) {
+			if (sym instanceof AttribDeclaration) {
+				assignParent(((AttribDeclaration) sym).decl);
+			} else {
+				sym.parent = (Dsymbol) this.lazy;
+			}
+		}
 	}
 
 }
