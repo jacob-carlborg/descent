@@ -2,7 +2,7 @@ package mmrnmhrm.ui.text;
 
 import java.util.List;
 
-import melnorme.miscutil.AssertIn;
+import melnorme.miscutil.Check;
 import melnorme.miscutil.ExceptionAdapter;
 import mmrnmhrm.ui.text.color.IDeeColorConstants;
 import mmrnmhrm.ui.text.color.LangColorPreferences;
@@ -72,8 +72,8 @@ public class DeeCodeScannerWithLexer extends AbstractScriptScanner {
 	@Override
 	public void setRange(IDocument document, int offset, int length) {
 		Logg.codeScanner.println(">> DeeCodeScanner#setRange: " + offset + ","+ length);
-		AssertIn.isTrue(offset >= 0 && length >= 1);
-		AssertIn.isTrue(offset + length <= document.get().length());
+		Check.isTrue(offset >= 0 && length >= 1);
+		Check.isTrue(offset + length <= document.get().length());
 		try {
 			Logg.codeScanner.println(document.get(offset, length) );
 			char[] srcAr = document.get(offset, length).toCharArray();

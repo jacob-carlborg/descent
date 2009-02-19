@@ -17,7 +17,6 @@ Export-Package: descent.core,
  descent.internal.compiler.parser.ast,
  descent.internal.ddoc,
  melnorme.miscutil,
- melnorme.miscutil.log,
  melnorme.miscutil.tree
 Eclipse-BuddyPolicy: registered
 Bundle-ClassPath: .

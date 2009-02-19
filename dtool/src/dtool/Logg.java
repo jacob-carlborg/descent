@@ -1,6 +1,5 @@
 package dtool;
 
-import melnorme.miscutil.log.SimpleLogger;
 
 /** dtool's and upwards log streams */
 public class Logg {

@@ -1,7 +1,7 @@
 package descent.internal.compiler.parser.ast;
 
 import melnorme.miscutil.Assert;
-import melnorme.miscutil.AssertIn;
+import melnorme.miscutil.Check;
 import melnorme.miscutil.tree.IElement;
 import melnorme.miscutil.tree.IVisitable;
 import descent.internal.compiler.parser.ASTDmdNode;
@@ -54,7 +54,7 @@ public abstract class ASTNode
 	}
 	/** Sets the source range end position (start position + length). */
 	public final void setEndPos(int endPos) {
-		AssertIn.isTrue(endPos >= start);
+		Check.isTrue(endPos >= start);
 		Assert.isTrue(start != -1);
 		length = endPos - start ;
 	}
@@ -88,7 +88,7 @@ public abstract class ASTNode
 	
 	/** {@inheritDoc} */
 	public void accept(IASTVisitor visitor) {
-		AssertIn.isNotNull(visitor);
+		Check.isNotNull(visitor);
 
 		// begin with the generic pre-visit
 		visitor.preVisit(this);
@@ -117,6 +117,7 @@ public abstract class ASTNode
 
 
 	/** Returns a simple string representation of the node. */
+	@Override
 	public String toString() {
 		StringBuffer buffer = new StringBuffer();
 		int p = buffer.length();
