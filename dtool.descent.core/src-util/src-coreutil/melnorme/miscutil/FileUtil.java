@@ -11,6 +11,7 @@
 package melnorme.miscutil;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -101,23 +102,11 @@ public final class FileUtil {
 	    return chars;
 	}
 	
-	/** Read all chars in the given Reader until the end of the stream. */
-	public static char[] readCharsFromReader(Reader reader) throws IOException {
-	    char[] buffer = new char[1024];
-
-	    // Read in the bytes
-	    char[] chars = new char[0];
-	    int offset = 0;
-
-	    int numRead = 0;
-	    while ( (numRead = reader.read(buffer, 0, 1024)) >= 0) {
-	    	chars = ArrayUtil.copyFrom(chars, offset + numRead);
-	    	System.arraycopy(buffer, 0, chars, offset, numRead);
-	    	offset += numRead;
-	    }
-	    
-	    return chars;
+	/** Read all chars available in the given File, returns a String */
+	public static String readStringFromFile(File file) throws IOException {
+		return new String(readCharsFromFile(file));
 	}
+	
 	
 	/** Write the given array of bytes to given file */
 	public static void writeBytesToFile(byte[] bytes, File file) throws FileNotFoundException,
@@ -130,21 +119,64 @@ public final class FileUtil {
 			fileBOS.close();
 		}
 	}
-
-	/** Read all chars available in the given File, returns a String */
-	public static String readStringFromFile(File file) throws IOException {
-		return new String(readCharsFromFile(file));
-	}
-
 	
-	/** Read all chars available in the given Reader, returns a String. */
+	
+	private static char[] doReadCharsFromReader(Reader reader) throws IOException {
+		char[] buffer = new char[1024];
+
+	    // Read in the bytes
+	    char[] chars = new char[0];
+	    int offset = 0;
+
+	    int numRead = 0;
+	    while ((numRead = reader.read(buffer, 0, 1024)) >= 0) {
+	    	chars = ArrayUtil.copyFrom(chars, offset + numRead);
+	    	System.arraycopy(buffer, 0, chars, offset, numRead);
+	    	offset += numRead;
+	    }
+	    return chars;
+	}
+	
+	/** Read and returns all chars in the given Reader until the end of the stream.
+	 * Closes reader. */
+	public static char[] readCharsFromReader(Reader reader) throws IOException {
+		try {
+		    return doReadCharsFromReader(reader);
+		} finally {
+			reader.close();
+		}
+	}
+	
+	/** Read all chars available in the given Reader, returns a String. 
+	 * Closes reader. */
 	public static String readStringFromReader(Reader reader) throws IOException {
 		return new String(readCharsFromReader(reader));
 	}
 
-	/** Read all chars available in the given InputStream, returns a String. */
+	/** Read all chars available in the given InputStream, returns a String. 
+	 *  Closes inputStream. */
 	public static String readStringFromStream(InputStream inputStream) throws IOException {
-		return readStringFromReader(new InputStreamReader(inputStream));
+		try {
+			int availableToRead = inputStream.available();
+			return doReadStringFromReader(inputStream, availableToRead);
+		} finally {
+			inputStream.close();
+		}
+	}
+
+	private static String doReadStringFromReader(InputStream inputStream, int toRead) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+		try {
+			char[] chars = new char[toRead];
+			int read = br.read(chars);
+			if (read != toRead) {
+				throw new IOException("Failed to read requested amount of characters. Read " + read
+						+ " of " + toRead);
+			}
+			return new String(chars);
+		} finally {
+			//br.close();  Commented because it will cause inputStream to be closed 
+		}
 	}
 	
 	

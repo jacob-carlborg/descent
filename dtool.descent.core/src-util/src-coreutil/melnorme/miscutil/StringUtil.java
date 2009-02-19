@@ -14,47 +14,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
 /**
  * Miscelleanous String utilities 
  */
 public final class StringUtil {
 
-	/* ****************************************************** */
-	
-	public static String newSpaceFilledString(int indent) {
-		return newFilledString(indent, ' ');
-	}
 
-	public static String newFilledString(int indent, char ch) {
-		char str[] = new char[indent];
-		Arrays.fill(str, ch);
-		return new String(str);
-	}
-
-	public static String newFilledString(int indent, String str) { 
-		StringBuffer sb = new StringBuffer(indent);
-		for (int i = 0; i < indent; i++ )
-			sb = sb.append(str);
-		
-		return sb.toString();
-	}
-
-	/**
-	 * Append a string if the string isn't empty
-	 */
-	public static String trailString(String str, String strtrail) {
-		if(str.length() > 0)
-			return str + strtrail;
-		else 
-			return str;
-	}	
-	
-	
-	
-	/**
-	 * Returns a String of the given Collection elements with the 
-	 * given separator String.
-	 */	
+	/** @return a String of the given Collection elements with the given separator String. */
 	public static String collToString(Collection<?> coll, String sep) {
 		//if(coll == null) return "<null>";
 		
@@ -71,7 +38,7 @@ public final class StringUtil {
 	}
 
 	
-	/** Create a String from the given coll with a given separator String */	
+	/** @return a String from the given coll with a given separator String. */	
 	public static String collToString(Object[] coll, String sep) {
 		StringBuilder sb = new StringBuilder();
 		boolean first = true;
@@ -98,8 +65,7 @@ public final class StringUtil {
 		return strs;
 	}
 
-	/** Returns str with the given range (repOffset and repLen) substituted 
-	 * for repStr. */
+	/** @return str with the given range (repOffset and repLen) substituted for repStr. */
 	public static String replaceStr(String str, int repOffset, int repLen,
 			String repStr) {
 		return str.substring(0, repOffset) + repStr
@@ -107,7 +73,7 @@ public final class StringUtil {
 	}
 
 	/** Replace str with strRep in the given strb StringBuilder, if str occurs.
-	 * Return true if str occurs in strb. */
+	 * @return true if str occurs in strb. */
 	public static boolean replace(StringBuilder strb, String str, String repStr) {
 		int ix = strb.indexOf(str);
 		if(ix != -1) {
@@ -117,12 +83,55 @@ public final class StringUtil {
 		return false;
 	}
 
-	/** Return "" if string is null, or the unmodified string otherwise. */
+	/** @return "" if string is null, or the unmodified string otherwise. */
 	public static String nullAsEmpty(String string) {
 		if(string == null)
 			return "";
 		return string;
 	}
 
+	/** @return given string with strtrail appended, if given string isn't empty. */
+	public static String trailString(String string, String strtrail) {
+		if(string.length() > 0)
+			return string + strtrail;
+		else 
+			return string;
+	}
+	
+	/** @return a substring of given string starting from the end of the last occurrence of given
+	 *  match. */
+	public static String fromLastIndexOf(String match, String string) {
+		int lastIx = string.lastIndexOf(match);
+		return (lastIx == -1) ? string : string.substring(lastIx + match.length());
+	}
+
+	/** @return a copy of given string without leading spaces. */
+	public static String trimLeadingSpaces(String string) {
+		int pos = 0;
+		while(pos < string.length() && string.charAt(pos) == ' ')
+			pos++;
+		return string.substring(pos);
+	}
+
+	/** @return a String of given length filled with spaces. */
+	public static String newSpaceFilledString(int length) {
+		return newFilledString(length, ' ');
+	}
+
+	/** @return a String of given length filled with given ch. */
+	public static String newFilledString(int length, char ch) {
+		char str[] = new char[length];
+		Arrays.fill(str, ch);
+		return new String(str);
+	}
+
+	/** @return a String of given length filled with given str. */
+	public static String newFilledString(int length, String str) { 
+		StringBuffer sb = new StringBuffer(length * str.length());
+		for (int i = 0; i < length; i++ )
+			sb = sb.append(str);
+		
+		return sb.toString();
+	}
 
 }

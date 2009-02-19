@@ -21,6 +21,16 @@ import java.util.Collection;
 
 public class MiscUtil {
 
+	/** @return whether the two given objects are the same (including null) or equal. */
+	public static boolean areEqual(Object o1, Object o2) {
+		return (o1 == o2) || (o1 != null && o2 != null && o1.equals(o2));
+	}
+
+	/** @return whether the two given arrays are the same (including null) or deep equal. */
+	public static boolean areDeepEqual(Object[] a1, Object[] a2) {
+		return (a1 == a2) || (a1 != null && a2 != null && Arrays.deepEquals(a1, a2));
+	}
+	
 	/** Combines two hash codes to make a new one. */
 	public static int combineHashCodes(int hashCode1, int hashCode2) {
 		return hashCode1 * 17 + hashCode2;
@@ -54,9 +64,7 @@ public class MiscUtil {
 		}
 	}
 
-	/**
-	 * Counts the active flags in the given bitfield
-	 */
+	/** Counts the active flags in the given bitfield */
 	public static int countActiveFlags(int bitfield, int[] flags) {
 		int count = 0;
 		for (int i = 0; i < flags.length; i++) {
@@ -70,6 +78,15 @@ public class MiscUtil {
 	public static <T> T getSingleElement(Collection<T> singletonDefunits) {
 		assertTrue(singletonDefunits.size() == 1);
 		return singletonDefunits.iterator().next();
+	}
+
+	/** Returns a copy of given collection, synchs on the collection. */
+	public static <T> Collection<T> getThreadSafeCopy(Collection<T> collection) {
+		ArrayList<T> listenersToIterate;
+		synchronized (collection) {
+			listenersToIterate = new ArrayList<T>(collection);
+		}
+		return listenersToIterate;
 	}
 
 }

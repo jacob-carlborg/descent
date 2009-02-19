@@ -17,8 +17,7 @@ import java.util.List;
 
 public class ArrayUtil {
 	
-	/** Creates a new array with the given length, and of the same type
-	 * as the given array. */
+	/** Creates a new array with the given length, and of the same type as the given array. */
 	@SuppressWarnings("unchecked")
 	public static <T> T[] copyFrom(T[] array, int newLength) {
         T[] copy = (T[]) Array.newInstance(array.getClass().getComponentType(), newLength);
@@ -123,8 +122,7 @@ public class ArrayUtil {
         return copy;
     }
     
-    /** Create an array from the given list, with the given run-time 
-     * component type.
+    /** Create an array from the given list, with the given run-time component type.
      * If the list is null, a zero-length array is created. */
 	@SuppressWarnings("unchecked")
 	public static <T> T[] createFrom(List<T> list, Class<T> cpType) {
@@ -223,10 +221,8 @@ public class ArrayUtil {
 		return -1;
 	}
 
-
 	
-	/** Finds the index in the given array of the element that
-	 * equal given elem. */
+	/** Finds the index in the given array of the element that equal given elem. */
 	public static <T> int getIndexOfEquals(T[] arr, T elem) {
 		for (int i = 0; i < arr.length; i++) {
 			if(arr[i].equals(elem));

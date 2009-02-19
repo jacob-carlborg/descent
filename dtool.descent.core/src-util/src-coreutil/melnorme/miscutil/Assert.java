@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007 IBM Corporation and others.
+ * Copyright (c) 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  *     Bruno Medeiros - next implementation
  *******************************************************************************/
 package melnorme.miscutil;
+
 
 
 /**
@@ -60,7 +61,7 @@ public abstract class Assert {
 	 */
 	public static boolean isTrue(boolean expression, String message) {
 		if (!expression) {
-			expression = false;  // dummy statement to allow breakpoint placement
+			expression = false;  // BREAKPOINT: dummy statement to allow breakpoint placement
 			throw new AssertionFailedException(message); //$NON-NLS-1$
 		}
 		return expression;
@@ -131,16 +132,24 @@ public abstract class Assert {
 		Assert.isTrue(object1.equals(object2));
 	}
 
-	
-	/** Causes an inconditional assertion failure, with message msg. 
-	 * Never returns.
+	/** Asserts that given obj1 and obj2 are the same (including null) or are equal.
+	 * (also tests the equality simetrically) 
 	 */
+	public static void assertAreEqual(Object obj1, Object obj2) {
+		if(obj1 == obj2) {
+			return;
+		} else {
+			assertTrue(obj1 != null && obj2 != null);
+			assertTrue(obj1.equals(obj2));
+			assertTrue(obj2.equals(obj1));
+		}
+	}
+	
+	/** Causes an inconditional assertion failure, with message msg. Never returns. */
 	public static AssertionFailedException fail(String msg) {
 		throw new AssertionFailedException(msg);
 	}
-	/** Causes an inconditional assertion failure, with message msg. 
-	 * Never returns.
-	 */
+	/** Causes an inconditional assertion failure, with message msg. Never returns. */
 	public static AssertionFailedException assertFail(String msg) {
 		return Assert.fail(msg);
 	}
