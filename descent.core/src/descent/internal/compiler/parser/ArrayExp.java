@@ -49,6 +49,11 @@ public class ArrayExp extends UnaExp {
 
 		super.semantic(sc, context);
 		e1 = resolveProperties(sc, e1, context);
+		
+		// Added for Descent
+		if ((e1 == null || e1.type == null) && context.global.errors > 0) {
+			return new IntegerExp(0);
+		}
 
 		t1 = e1.type.toBasetype(context);
 		if (t1.ty != TY.Tclass && t1.ty != TY.Tstruct) {

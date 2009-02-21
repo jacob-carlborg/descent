@@ -2499,7 +2499,13 @@ public class CompletionEngine extends Engine
 					char[] typeName = var.type().getSignature().toCharArray();
 					
 					int relevance = computeBaseRelevance();
-					relevance += computeRelevanceForInterestingProposal();
+					if ((var.isConst() || var.isStatic()) && !onlyStatics) {
+						// If it's a constant but instance members are also requested, that
+						// means the user is dealing with an instance and probably won't want
+						// to use a constant or a static field/method
+					} else {
+						relevance += computeRelevanceForInterestingProposal();
+					}
 					relevance += computeRelevanceForCaseMatching(currentName, ident);
 					relevance += computeRelevanceForExpectedType(var.type());
 					

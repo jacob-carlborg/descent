@@ -176,13 +176,13 @@ public class StructInitializer extends Initializer {
 	public Initializer syntaxCopy(SemanticContext context) {
 		StructInitializer ai = new StructInitializer(loc);
 
-		if (field.size() != value.size()) {
+		if (size(field) != size(value)) {
 			throw new IllegalStateException("assert(field.dim == value.dim);");
 		}
 
-		ai.field = new Identifiers(field.size());
-		ai.value = new Initializers(value.size());
-		for (int i = 0; i < field.size(); i++) {
+		ai.field = new Identifiers(size(field));
+		ai.value = new Initializers(size(value));
+		for (int i = 0; i < size(field); i++) {
 			ai.field.set(i, field.get(i));
 
 			Initializer init = value.get(i);

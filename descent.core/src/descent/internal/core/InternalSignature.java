@@ -231,13 +231,8 @@ public class InternalSignature {
 							TemplateInstance templInstance = new TemplateInstance(Loc.ZERO, typeIdent.ident, encoder);
 							templInstance.tiargs = tiargs;
 							
-							if (previous.isEmpty()) {
-								TypeInstance typeInstance = new TypeInstance(Loc.ZERO, templInstance);
-								previous.push(typeInstance);
-							} else {
-								TypeInstance previousInstance = (TypeInstance) previous.peek();
-								previousInstance.idents.add(new TemplateInstanceWrapper(Loc.ZERO, templInstance));
-							}
+							TypeInstance typeInstance = new TypeInstance(Loc.ZERO, templInstance);
+							previous.push(typeInstance);
 						} else {
 							TemplateInstance templInstance = new TemplateInstance(Loc.ZERO, typeIdent.idents.get(typeIdent.idents.size() - 1), encoder);
 							templInstance.tiargs = tiargs;

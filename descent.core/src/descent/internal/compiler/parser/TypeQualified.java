@@ -72,6 +72,11 @@ public abstract class TypeQualified extends Type {
 						}
 						sm = ti.toAlias(context);
 					} else {
+						// Added for Descent
+						if (s == null && context.global.errors > 0) {
+							return;
+						}
+						
 						sm = s.search(loc, id, 0, context);
 						
 						// Descent: for binding resolution

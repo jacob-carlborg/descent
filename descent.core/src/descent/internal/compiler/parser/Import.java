@@ -178,6 +178,10 @@ public class Import extends Dsymbol {
 			SemanticContext context) {
 		if (null == pkg) {
 			load(null, context);
+			// Added for Descent
+			if (null == pkg) {
+				return null;
+			}
 		}
 
 		// Forward it to the package/module
@@ -258,7 +262,7 @@ public class Import extends Dsymbol {
 		Import si;
 		si = new Import(loc, packages, id, aliasId, isstatic);
 
-		for (int i = 0; i < names.size(); i++) {
+		for (int i = 0; i < size(names); i++) {
 			si.addAlias(names.get(i), aliases.get(i));
 		}
 

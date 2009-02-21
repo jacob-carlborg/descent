@@ -107,6 +107,11 @@ public class IntegerExp extends Expression {
 	public MATCH implicitConvTo(Type t, SemanticContext context) {
 		TY ty;
 		TY toty;
+		
+		// Added for Descent
+		if ((type == null || t == null) && context.global.errors > 0) {
+			return MATCHnomatch;
+		}
 
 		if (context.isD2()) {
 			MATCH m = type.implicitConvTo(t, context);

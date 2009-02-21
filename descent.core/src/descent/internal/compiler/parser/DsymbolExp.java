@@ -56,10 +56,22 @@ public class DsymbolExp extends Expression {
 			if (type != null) {
 				return this;
 			}
+			
+			// Added for Descent
+			if (s == null && context.global.errors > 0) {
+				return this;
+			}
+			
 			if (s.isFuncDeclaration() == null) {
 				checkDeprecated(sc, s, context);
 			}
 			s = s.toAlias(context);
+			
+			// Added for Descent
+			if (s == null && context.global.errors > 0) {
+				return this;
+			}
+			
 			if (s.isFuncDeclaration() == null) {
 				checkDeprecated(sc, s, context);
 			}
@@ -259,11 +271,15 @@ public class DsymbolExp extends Expression {
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
+		if (s == null) return;
+		
 		buf.writestring(s.toChars(context));
 	}
 
 	@Override
 	public String toChars(SemanticContext context) {
+		if (s == null) return "";
+		
 		return s.toChars(context);
 	}
 

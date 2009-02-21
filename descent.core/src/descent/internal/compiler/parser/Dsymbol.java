@@ -507,6 +507,12 @@ public class Dsymbol extends ASTDmdNode {
 	public Dsymbol searchX(Loc loc, Scope sc, IdentifierExp id,
 			SemanticContext context) {
 		Dsymbol s = this.toAlias(context);
+		
+		// Added for Descent
+		if (s == null && context.global.errors > 0) {
+			return null;
+		}
+		
 		Dsymbol sm;
 
 		switch (id.dyncast()) {

@@ -324,6 +324,11 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		if (e != this) {
 			return e.implicitCastTo(sc, t, context);
 		}
+		
+		// Added for Descent
+		if (t == null && context.global.errors > 0) {
+			return new IntegerExp(0);
+		}
 
 		if (t.deco == null) { /*
 		 * Can happen with: enum E { One } class A {
@@ -365,6 +370,10 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		}
 
 		if (!context.isD2()) {
+			// Added for Descent
+			if (t == null && context.global.errors > 0) {
+				return MATCHnomatch;
+			}
 			if (t.ty == Tbit && isBit()) {
 				return MATCHconvert;
 			}

@@ -224,6 +224,12 @@ public class TypeStruct extends Type {
 			if (ti != null) {
 				if (0 == ti.semanticdone)
 					ti.semantic(sc, context);
+				
+				// Added for Descent
+				if ((ti == null || ti.inst == null) && context.global.errors > 0) {
+					return new IntegerExp(0);
+				}
+				
 				s = ti.inst.toAlias(context);
 				if (null == s.isTemplateInstance()) {
 					// goto L1;

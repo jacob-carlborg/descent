@@ -281,21 +281,28 @@ public class DotIdExp extends UnaExp {
 			}
 			type = Type.tvoid;
 			return this;
-		} else if (e1.type.ty == Tpointer && !equals(ident, Id.init)
-				&& !equals(ident, Id.__sizeof) && !equals(ident, Id.alignof)
-				&& !equals(ident, Id.offsetof) && !equals(ident, Id.mangleof)
-				&& !equals(ident, Id.stringof)) {
-			e = new PtrExp(loc, e1);
-			e.type = e1.type.next;
-			return e.type.dotExp(sc, e, ident, context);
 		} else {
-			// Ident may be null if completing (Foo).|
-			if (ident == null) {
-				return e1;
+			// Added for Descent
+			if (e1.type == null && context.global.errors > 0) {
+				return this;
 			}
-			e = e1.type.dotExp(sc, e1, ident, context);
-			e = e.semantic(sc, context);
-			return e;
+			
+			if (e1.type.ty == Tpointer && !equals(ident, Id.init)
+					&& !equals(ident, Id.__sizeof) && !equals(ident, Id.alignof)
+					&& !equals(ident, Id.offsetof) && !equals(ident, Id.mangleof)
+					&& !equals(ident, Id.stringof)) {
+				e = new PtrExp(loc, e1);
+				e.type = e1.type.next;
+				return e.type.dotExp(sc, e, ident, context);
+			} else {
+				// Ident may be null if completing (Foo).|
+				if (ident == null) {
+					return e1;
+				}
+				e = e1.type.dotExp(sc, e1, ident, context);
+				e = e.semantic(sc, context);
+				return e;
+			}
 		}
 	}
 

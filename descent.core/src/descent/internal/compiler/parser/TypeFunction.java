@@ -598,7 +598,7 @@ public class TypeFunction extends Type implements Cloneable {
 				}
 				break;
 			default:
-				throw new IllegalStateException("assert(0);");
+				throw new IllegalStateException("Unknown linkage: " + linkage);
 			}
 		}
 
@@ -644,8 +644,16 @@ public class TypeFunction extends Type implements Cloneable {
 			case LINKcpp:
 				p = "C++ ";
 				break;
+			// Added for Descent
+			case LINKsystem:
+				if (context._WIN32) {
+					p = "Windows ";
+				} else {
+					p = "C ";
+				}
+				break;
 			default:
-				throw new IllegalStateException("assert(0);");
+				throw new IllegalStateException("Unknown linkage: " + linkage);
 			}
 		}
 

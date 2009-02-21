@@ -314,6 +314,12 @@ public class SignatureToType_Test extends AbstractSignatureTest implements ISign
 		assertEquals(STC.STCout, func.parameters.get(1).storageClass);
 	}
 	
+	public void testBug_20090221() {
+		TypeAArray asoc = (TypeAArray) InternalSignature.toType("H?4cols?6Column!^?3flt^?4rows'", new ASTNodeEncoder(AST.D1));
+		assertEquals("Column!(flt, rows)[cols]", asoc.toString());
+	}
+	
+	
 	private String getTypeSignature(String type) {
 		Parser parser = new Parser(AST.D1, type + "x;");
 		parser.nextToken();
