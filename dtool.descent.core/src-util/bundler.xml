@@ -4,14 +4,17 @@
 
 	<property file="bundler.properties"/>
 
-	<property name="projectdir" value="${basedir}/../org.dsource.melnorme"/>
-	<property name="library.output" value="${basedir}/lib/org.dsource.melnorme.jar"/>
+	<property name="projectdir" value="${basedir}"/>
+	<property name="library.output" value="${basedir}/org.dsource.melnorme.jar"/>
 	
 	
 	<target name="build" depends="" description="Default build cmd.">
+		<delete dir="bin"/>
+		<mkdir dir="bin"/>
+		<javac srcdir="${projectdir}/src-coreutil" destdir="bin" />
 		<jar destfile="${library.output}" manifest="${projectdir}/META-INF/MANIFEST.MF" >
 			<fileset dir="${projectdir}/bin"/>
-			<!-- <fileset dir="${projectdir}/src-coreutil"/> -->
+			<fileset dir="${projectdir}/src-coreutil"/>
 			<filename name="${projectdir}/about.html"/>
 		</jar>
 	</target>
