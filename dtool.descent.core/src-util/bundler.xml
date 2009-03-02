@@ -11,7 +11,7 @@
 	<target name="build" depends="" description="Default build cmd.">
 		<delete dir="bin"/>
 		<mkdir dir="bin"/>
-		<javac srcdir="${projectdir}/src-coreutil" destdir="bin" />
+		<javac debug="true" srcdir="${projectdir}/src-coreutil" destdir="bin" />
 		<jar destfile="${library.output}" manifest="${projectdir}/META-INF/MANIFEST.MF" >
 			<fileset dir="${projectdir}/bin"/>
 			<fileset dir="${projectdir}/src-coreutil"/>
