@@ -146,8 +146,9 @@ public abstract class Assert {
 	}
 	
 	/** Causes an inconditional assertion failure, with message msg. Never returns. */
-	public static AssertionFailedException fail(String msg) {
-		throw new AssertionFailedException(msg);
+	public static AssertionFailedException fail(String message) {
+		assertTrue(false, message);
+		return null;
 	}
 	/** Causes an inconditional assertion failure, with message msg. Never returns. */
 	public static AssertionFailedException assertFail(String msg) {
@@ -157,7 +158,8 @@ public abstract class Assert {
 	
 	/** Like {@link #fail(String)} with empty message. */
 	public static AssertionFailedException fail() {
-		throw new AssertionFailedException("fail.");
+		assertTrue(false, "fail.");
+		return null;
 	}
 	/** Like {@link #fail(String)} with empty message. */
 	public static AssertionFailedException assertFail() {

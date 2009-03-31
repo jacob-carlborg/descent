@@ -98,6 +98,11 @@ public final class StringUtil {
 			return string;
 	}
 	
+	/** @return given string up until first match of given match string (not included) */
+	public static String upUntil(String string, String match) {
+		return string.substring(0, string.indexOf(match));
+	}
+	
 	/** @return a substring of given string starting from the end of the last occurrence of given
 	 *  match. */
 	public static String fromLastIndexOf(String match, String string) {

@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 public class MiscUtil {
 
@@ -25,9 +26,16 @@ public class MiscUtil {
 	public static boolean areEqual(Object o1, Object o2) {
 		return (o1 == o2) || (o1 != null && o2 != null && o1.equals(o2));
 	}
+	
+	/** @return whether the two given arrays are the same (including null) or equal 
+	 * according to {@link Arrays#equals(Object[], Object[])}. */
+	public static boolean areArrayEqual(Object[] a1, Object[] a2) {
+		return (a1 == a2) || (a1 != null && a2 != null && Arrays.equals(a1, a2));
+	}
 
-	/** @return whether the two given arrays are the same (including null) or deep equal. */
-	public static boolean areDeepEqual(Object[] a1, Object[] a2) {
+	/** @return whether the two given arrays are the same (including null) or equal. 
+	 * according to {@link Arrays#deepEquals(Object[], Object[])}.*/
+	public static boolean areArrayDeepEqual(Object[] a1, Object[] a2) {
 		return (a1 == a2) || (a1 != null && a2 != null && Arrays.deepEquals(a1, a2));
 	}
 	
@@ -80,13 +88,28 @@ public class MiscUtil {
 		return singletonDefunits.iterator().next();
 	}
 
-	/** Returns a copy of given collection, synchs on the collection. */
-	public static <T> Collection<T> getThreadSafeCopy(Collection<T> collection) {
-		ArrayList<T> listenersToIterate;
-		synchronized (collection) {
-			listenersToIterate = new ArrayList<T>(collection);
-		}
-		return listenersToIterate;
+	/** Returns a copy of given collection, synchs on the given collection. */
+	@Deprecated
+	public static <T> List<T> getThreadSafeCopy(Collection<T> collection) {
+		return synchronizedCreateCopy(collection);
 	}
-
+	
+	/** Returns a copy of given collection, synchs on the given collection. */
+	public static <T> List<T> synchronizedCreateCopy(Collection<T> collection) {
+		ArrayList<T> newCollection;
+		synchronized (collection) {
+			newCollection = new ArrayList<T>(collection);
+		}
+		return newCollection;
+	}
+	
+	/** Sleeps current thread for given millis amount. 
+	 * If interrupted throws an unchecked exception. */
+	public static void sleepUnchecked(int millis) {
+		try {
+			Thread.sleep(millis);
+		} catch (InterruptedException e) {
+			throw melnorme.miscutil.ExceptionAdapter.unchecked(e);
+		}
+	}
 }

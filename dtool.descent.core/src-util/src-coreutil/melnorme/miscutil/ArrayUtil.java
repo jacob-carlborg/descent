@@ -13,9 +13,21 @@ package melnorme.miscutil;
 import static melnorme.miscutil.Assert.assertTrue;
 
 import java.lang.reflect.Array;
+import java.util.Collection;
 import java.util.List;
 
 public class ArrayUtil {
+	
+	/** Creates a new array of given length, and same component type as given compType. */
+	@SuppressWarnings("unchecked")
+	public static <T> T[] create(int length, T[] compType) {
+		return (T[]) Array.newInstance(compType.getClass().getComponentType(), length);
+	}
+	
+	@Deprecated
+	public static char[] createNew(char[] array, int length) {
+		return copyFrom(array, length);
+	}
 	
 	/** Creates a new array with the given length, and of the same type as the given array. */
 	@SuppressWarnings("unchecked")
@@ -37,11 +49,6 @@ public class ArrayUtil {
 		byte[] copy = (byte[]) Array.newInstance(array.getClass().getComponentType(), newLength);
     	System.arraycopy(array, 0, copy, 0, Math.min(array.length, newLength));
     	return copy;
-	}
-	
-	@Deprecated
-	public static char[] createNew(char[] array, int length) {
-		return copyFrom(array, length);
 	}
 
 	
@@ -125,11 +132,11 @@ public class ArrayUtil {
     /** Create an array from the given list, with the given run-time component type.
      * If the list is null, a zero-length array is created. */
 	@SuppressWarnings("unchecked")
-	public static <T> T[] createFrom(List<T> list, Class<T> cpType) {
+	public static <T> T[] createFrom(Collection<T> list, Class<? super T> cpType) {
 		if(list == null)
-			return (T[])Array.newInstance(cpType, 0);
-	
-		return list.toArray((T[])Array.newInstance(cpType, list.size()));
+			return (T[]) Array.newInstance(cpType, 0);
+		else
+			return list.toArray((T[])Array.newInstance(cpType, list.size()));
 	}
 
 	/** Creates an array with the same size as the given list.
@@ -137,9 +144,9 @@ public class ArrayUtil {
 	@SuppressWarnings("unchecked")
 	public static <T> T[] newSameSize(List<?> list, Class<T> cpType) {
 		if(list == null)
-			return (T[])Array.newInstance(cpType, 0);
-		
-		return (T[])Array.newInstance(cpType, list.size());
+			return (T[]) Array.newInstance(cpType, 0);
+		else 
+			return (T[]) Array.newInstance(cpType, list.size());
 	}
 
     /** Copies src array range [0 .. src.length] to dest array starting at destIx. */
@@ -229,6 +236,31 @@ public class ArrayUtil {
 				return i;
 		}
 		return -1;
+	}
+	
+	/** Return true if array contains an element that matched given predicate */
+	public static <T> boolean search(T[] array, IPredicate<T> predicate) {
+		for(T elem: array) {
+			if(predicate.evaluate(elem))
+				return true;
+		}
+		return false;
+	}
+	
+	/** Filters given array, using given predicate, creating a new array. */
+	public static <T> T[] filter(T[] array, IPredicate<T> predicate) {
+		T[] newArray = create(array.length, array);
+		assertTrue(newArray.length <= array.length);
+		int newIx = 0, arrayIx = 0;
+		while(arrayIx < array.length) {
+			if(predicate.evaluate(array[arrayIx])) {
+				newArray[newIx] = array[arrayIx];
+				newIx++; arrayIx++;
+			} else {
+				arrayIx++;
+			}
+		}
+		return newIx == arrayIx ? newArray : ArrayUtil.copyOfRange(newArray, 0, newIx);
 	}
 
 }
