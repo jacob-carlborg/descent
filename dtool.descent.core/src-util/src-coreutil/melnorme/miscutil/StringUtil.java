@@ -83,7 +83,7 @@ public final class StringUtil {
 		return false;
 	}
 
-	/** @return "" if string is null, or the unmodified string otherwise. */
+	/** @return "" if string is null, or the given string otherwise. */
 	public static String nullAsEmpty(String string) {
 		if(string == null)
 			return "";
@@ -98,13 +98,15 @@ public final class StringUtil {
 			return string;
 	}
 	
-	/** @return given string up until first match of given match string (not included) */
+	/** @return a substring of given string up until the beggining of first match 
+	 * of given match, or the whole string if no match is found. */
 	public static String upUntil(String string, String match) {
-		return string.substring(0, string.indexOf(match));
+		final int index = string.indexOf(match);
+		return (index == -1) ? string : string.substring(0, index);
 	}
 	
-	/** @return a substring of given string starting from the end of the last occurrence of given
-	 *  match. */
+	/** @return a substring of given string starting from the end of the last occurrence 
+	 * of given match, or the whole string if no match is found. */
 	public static String fromLastIndexOf(String match, String string) {
 		int lastIx = string.lastIndexOf(match);
 		return (lastIx == -1) ? string : string.substring(lastIx + match.length());

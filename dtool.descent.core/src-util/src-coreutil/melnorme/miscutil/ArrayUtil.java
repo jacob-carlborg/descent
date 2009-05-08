@@ -24,11 +24,6 @@ public class ArrayUtil {
 		return (T[]) Array.newInstance(compType.getClass().getComponentType(), length);
 	}
 	
-	@Deprecated
-	public static char[] createNew(char[] array, int length) {
-		return copyFrom(array, length);
-	}
-	
 	/** Creates a new array with the given length, and of the same type as the given array. */
 	@SuppressWarnings("unchecked")
 	public static <T> T[] copyFrom(T[] array, int newLength) {
@@ -37,20 +32,32 @@ public class ArrayUtil {
     	return copy;
 	}
 	
-	/** Creates a new array with the given length, and of type char[] */
+	/** Creates a copy of given array with the given newlength, and of type char[]. */
 	public static char[] copyFrom(char[] array, int newLength) {
-        char[] copy = (char[]) Array.newInstance(array.getClass().getComponentType(), newLength);
+        char[] copy = (char[]) Array.newInstance(Character.TYPE, newLength);
     	System.arraycopy(array, 0, copy, 0, Math.min(array.length, newLength));
     	return copy;
 	}
 	
-	/** Creates a new array with the given length, and of type char[] */
+	/** Creates a copy of given array with the given newlength, and of type byte[]. */
 	public static byte[] copyFrom(byte[] array, int newLength) {
-		byte[] copy = (byte[]) Array.newInstance(array.getClass().getComponentType(), newLength);
+		byte[] copy = (byte[]) Array.newInstance(Byte.TYPE, newLength);
     	System.arraycopy(array, 0, copy, 0, Math.min(array.length, newLength));
     	return copy;
 	}
-
+	
+	/** Creates a copy of given array with the given newlength, and of type int[]. */
+	public static int[] copyFrom(int[] array, int newLength) {
+		int[] copy = (int[]) Array.newInstance(Integer.TYPE, newLength);
+    	System.arraycopy(array, 0, copy, 0, Math.min(array.length, newLength));
+    	return copy;
+	}
+	
+	/** Creates a copy of given array, and of type int[]. */
+	public static int[] copyFrom(int[] array) {
+		return copyFrom(array, array.length);
+	}
+	
 	
     /**
      * Copies the specified range of the specified array into a new array.
@@ -138,6 +145,16 @@ public class ArrayUtil {
 		else
 			return list.toArray((T[])Array.newInstance(cpType, list.size()));
 	}
+	
+	/** Creates an int[] from given coll of Integers. */
+	public static int[] createIntArray(List<? extends Integer> coll) {
+		int[] array = new int[coll.size()];
+		for (int i = 0; i < coll.size(); i++) {
+			array[i] = coll.get(i);
+		}
+		return array;
+	}
+	
 
 	/** Creates an array with the same size as the given list.
 	 * If the list is null, a zero-length array is created. */

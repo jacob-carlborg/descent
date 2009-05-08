@@ -12,7 +12,6 @@
 package melnorme.miscutil;
 
 
-
 /**
  * <code>Assert</code> is util code for contract checking (assertions)
  * <p>
@@ -146,24 +145,26 @@ public abstract class Assert {
 	}
 	
 	/** Causes an inconditional assertion failure, with message msg. Never returns. */
-	public static AssertionFailedException fail(String message) {
-		assertTrue(false, message);
+	public static <T> T fail(String message) {
+		Assert.isTrue(false, message);
 		return null;
 	}
 	/** Causes an inconditional assertion failure, with message msg. Never returns. */
-	public static AssertionFailedException assertFail(String msg) {
-		return Assert.fail(msg);
+	public static <T> T assertFail(String message) {
+		Assert.isTrue(false, message);
+		return null;
 	}
 	
 	
 	/** Like {@link #fail(String)} with empty message. */
-	public static AssertionFailedException fail() {
-		assertTrue(false, "fail.");
+	public static <T> T fail() {
+		Assert.isTrue(false, "fail.");
 		return null;
 	}
 	/** Like {@link #fail(String)} with empty message. */
-	public static AssertionFailedException assertFail() {
-		return Assert.fail();
+	public static <T> T assertFail() {
+		Assert.isTrue(false, "fail.");
+		return null;
 	}
 	
 	
@@ -173,21 +174,7 @@ public abstract class Assert {
 	}
 	/** Like {@link #fail()}, specifically signals unreachable code */
 	public static AssertionFailedException assertUnreachable() {
-		throw Assert.unreachable();
-	}
-
-	
-	/** Causes an Assert.failt signaling a feature that is not yet implemented. 
-	 * Uses the Deprecated annotation solely to cause a warning. */
-	@Deprecated
-	public static void failTODO() {
-		Assert.fail("TODO");
-	}
-	/** Causes an Assert.failt signaling a feature that is not yet implemented. 
-	 * Uses the Deprecated annotation solely to cause a warning. */
-	@Deprecated
-	public static void assertFailTODO() {
-		Assert.fail("TODO");
+		return Assert.fail("Unreachable code.");
 	}
 
 }

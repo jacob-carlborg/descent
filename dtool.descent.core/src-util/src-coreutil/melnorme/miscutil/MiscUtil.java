@@ -22,22 +22,6 @@ import java.util.List;
 
 public class MiscUtil {
 
-	/** @return whether the two given objects are the same (including null) or equal. */
-	public static boolean areEqual(Object o1, Object o2) {
-		return (o1 == o2) || (o1 != null && o2 != null && o1.equals(o2));
-	}
-	
-	/** @return whether the two given arrays are the same (including null) or equal 
-	 * according to {@link Arrays#equals(Object[], Object[])}. */
-	public static boolean areArrayEqual(Object[] a1, Object[] a2) {
-		return (a1 == a2) || (a1 != null && a2 != null && Arrays.equals(a1, a2));
-	}
-
-	/** @return whether the two given arrays are the same (including null) or equal. 
-	 * according to {@link Arrays#deepEquals(Object[], Object[])}.*/
-	public static boolean areArrayDeepEqual(Object[] a1, Object[] a2) {
-		return (a1 == a2) || (a1 != null && a2 != null && Arrays.deepEquals(a1, a2));
-	}
 	
 	/** Combines two hash codes to make a new one. */
 	public static int combineHashCodes(int hashCode1, int hashCode2) {
@@ -88,12 +72,6 @@ public class MiscUtil {
 		return singletonDefunits.iterator().next();
 	}
 
-	/** Returns a copy of given collection, synchs on the given collection. */
-	@Deprecated
-	public static <T> List<T> getThreadSafeCopy(Collection<T> collection) {
-		return synchronizedCreateCopy(collection);
-	}
-	
 	/** Returns a copy of given collection, synchs on the given collection. */
 	public static <T> List<T> synchronizedCreateCopy(Collection<T> collection) {
 		ArrayList<T> newCollection;
