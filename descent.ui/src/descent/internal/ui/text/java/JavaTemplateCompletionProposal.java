@@ -70,7 +70,7 @@ public class JavaTemplateCompletionProposal extends LazyJavaCompletionProposal {
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=94654
 		if ((fProposal.getKind() == CompletionProposal.TEMPLATE_REF || fProposal.getKind() == CompletionProposal.TEMPLATED_AGGREGATE_REF) 
 				&& hasParameters() && (getReplacementString().endsWith(RPAREN) || getReplacementString().length() == 0)) {
-			ProposalContextInformation contextInformation= new ProposalContextInformation(fProposal);
+			ProposalContextInformation contextInformation= new ProposalContextInformation(fProposal, expandFunctionTemplateArguments());
 			if (fContextInformationPosition != 0 && fProposal.getCompletion().length == 0)
 				contextInformation.setContextInformationPosition(fContextInformationPosition);
 			return contextInformation;

@@ -125,10 +125,15 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 				}
 			}
 			
+			char[][] templateParameterNames = null;
 			
-			char[][] templateParameterNames = fProposal.getKind() == CompletionProposal.EXTENSION_METHOD ? new char[0][] : fProposal.findTemplateParameterNames(null);
-			if (templateParameterNames == null) {
-				templateParameterNames = CharOperation.NO_CHAR_CHAR;
+			boolean expandFunctionTemplateArguments = expandFunctionTemplateArguments();
+			
+			if (expandFunctionTemplateArguments) {
+				templateParameterNames = fProposal.getKind() == CompletionProposal.EXTENSION_METHOD ? new char[0][] : fProposal.findTemplateParameterNames(null);
+				if (templateParameterNames == null) {
+					templateParameterNames = CharOperation.NO_CHAR_CHAR;
+				}
 			}
 			
 			char[][] parameterNames= fProposal.findParameterNames(null);
@@ -136,7 +141,7 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 				return replacement + "()"; //$NON-NLS-1$
 			}
 			
-			int parameterCount = Signature.getParameterCount(fProposal.getTypeSignature());
+			int parameterCount = getParameterCount();
 			
 			// Check if this is a tuple expansion
 			if (parameterCount != parameterNames.length) {
@@ -153,7 +158,13 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 			}
 			
 			// If it's a template opCall, don't suggest template parameters
-			int templateParameterCount = isOpCall() ? 0 : templateParameterNames.length;
+			int templateParameterCount;
+			
+			if (expandFunctionTemplateArguments) {
+				templateParameterCount = isOpCall() ? 0 : templateParameterNames.length;
+			} else {
+				templateParameterCount  = 0;
+			}
 			
 			int count= templateParameterCount + parameterNames.length;
 			fArgumentOffsets= new int[count];
@@ -629,7 +640,7 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 	}
 	
 	private boolean computeHasParameters() throws IllegalArgumentException {
-		int count = Signature.getParameterCount(fProposal.getTypeSignature());
+		int count = getParameterCount();
 		if (fProposal.getKind() == CompletionProposal.EXTENSION_METHOD) {
 			return count > 1;
 		} else {
@@ -646,7 +657,7 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 			return false;
 		}
 		
-		return Signature.getParameterCount(fProposal.getTypeSignature()) == 1;
+		return getParameterCount() == 1;
 	}
 	
 	private boolean computeIsGetter() throws IllegalArgumentException {
@@ -711,7 +722,7 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 		if ((fProposal.getKind() == CompletionProposal.METHOD_REF || fProposal.getKind() == CompletionProposal.OP_CALL || fProposal.getKind() == CompletionProposal.EXTENSION_METHOD) &&  hasParameters() && 
 				(getReplacementString().endsWith(RPAREN) || getReplacementString().length() == 0
 						|| isSetter())) {
-			ProposalContextInformation contextInformation= new ProposalContextInformation(fProposal);
+			ProposalContextInformation contextInformation= new ProposalContextInformation(fProposal, expandFunctionTemplateArguments());
 			if (fContextInformationPosition != 0 && fProposal.getCompletion().length == 0)
 				contextInformation.setContextInformationPosition(fContextInformationPosition);
 			return contextInformation;

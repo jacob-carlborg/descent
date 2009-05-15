@@ -3236,6 +3236,26 @@ public class PreferenceConstants {
 	 * @since 3.0
 	 */
 	public final static String CODEASSIST_DOT_INSERTS= "content_assist_dot_inserts"; //$NON-NLS-1$
+	
+	/**
+	 * A named preference that controls if content assist expand function default arguments.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 * 
+	 * @since 3.0
+	 */
+	public final static String CODEASSIST_EXPAND_FUNCTION_DEFAULT_ARGUMENTS= "content_assist_expand_function_default_arguments"; //$NON-NLS-1$
+	
+	/**
+	 * A named preference that controls if content assist expand function template arguments.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 * 
+	 * @since 3.0
+	 */
+	public final static String CODEASSIST_EXPAND_FUNCTION_TEMPLATE_ARGUMENTS= "content_assist_expand_function_template_arguments"; //$NON-NLS-1$
 
 	/**
 	 * A named preference that controls which completion proposal categories
@@ -3855,6 +3875,8 @@ public class PreferenceConstants {
 		store.setDefault(PreferenceConstants.CODEASSIST_GUESS_METHOD_ARGUMENTS, false);
 		store.setDefault(PreferenceConstants.CODEASSIST_PREFIX_COMPLETION, false);
 		store.setDefault(PreferenceConstants.CODEASSIST_DOT_INSERTS, false);
+		store.setDefault(PreferenceConstants.CODEASSIST_EXPAND_FUNCTION_DEFAULT_ARGUMENTS, false);
+		store.setDefault(PreferenceConstants.CODEASSIST_EXPAND_FUNCTION_TEMPLATE_ARGUMENTS, false);
 		store.setDefault(PreferenceConstants.CODEASSIST_EXCLUDED_CATEGORIES, "descent.ui.spellingProposalCategory\0descent.ui.textProposalCategory\0"); //$NON-NLS-1$
 		store.setDefault(PreferenceConstants.CODEASSIST_CATEGORY_ORDER, "descent.ui.spellingProposalCategory:65545\0descent.ui.javaTypeProposalCategory:65540\0descent.ui.javaNoTypeProposalCategory:65539\0descent.ui.textProposalCategory:65541\0descent.ui.templateProposalCategory:2\0"); //$NON-NLS-1$
 		store.setDefault(PreferenceConstants.CODEASSIST_LRU_HISTORY, ""); //$NON-NLS-1$

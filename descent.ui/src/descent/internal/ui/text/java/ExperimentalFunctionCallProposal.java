@@ -97,7 +97,7 @@ public final class ExperimentalFunctionCallProposal extends JavaMethodCompletion
 				parameterNames[i] = ("p" + i).toCharArray();
 			}
 	
-			int count= parameterNames.length;
+			int count= getParameterCount();
 			fArgumentOffsets= new int[count];
 			fArgumentLengths= new int[count];
 			StringBuffer buffer= new StringBuffer(String.valueOf(fProposal.getName()));

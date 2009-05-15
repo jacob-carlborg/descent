@@ -72,7 +72,7 @@ public class JavaTemplatedFunctionCompletionProposal extends LazyJavaCompletionP
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=94654
 		if (fProposal.getKind() == CompletionProposal.TEMPLATED_FUNCTION_REF &&  
 				(hasParameters() || hasTemplateParameters()) && (getReplacementString().endsWith(RPAREN) || getReplacementString().length() == 0)) {
-			ProposalContextInformation contextInformation= new ProposalContextInformation(fProposal);
+			ProposalContextInformation contextInformation= new ProposalContextInformation(fProposal, expandFunctionTemplateArguments());
 			if (fContextInformationPosition != 0 && fProposal.getCompletion().length == 0)
 				contextInformation.setContextInformationPosition(fContextInformationPosition);
 			return contextInformation;
@@ -112,7 +112,11 @@ public class JavaTemplatedFunctionCompletionProposal extends LazyJavaCompletionP
 	protected final boolean hasTemplateParameters() {
 		if (!fHasTemplateParametersComputed) {
 			fHasTemplateParametersComputed= true;
-			fHasTemplateParameters= computeHasTemplateParameters();
+			if (expandFunctionTemplateArguments()) {
+				fHasTemplateParameters= computeHasTemplateParameters();
+			} else {
+				fHasTemplateParameters = false;
+			}
 		}
 		return fHasTemplateParameters;
 	}
@@ -162,30 +166,34 @@ public class JavaTemplatedFunctionCompletionProposal extends LazyJavaCompletionP
 			buffer.append(fProposal.getName());
 	
 			FormatterPrefs prefs= getFormatterPrefs();
-			if (prefs.beforeOpeningParen)
-				buffer.append(SPACE);
-			buffer.append(EXCLAMATION);
-			buffer.append(LPAREN);
 			
-			if (hasTemplateParameters()) {
-				setCursorPosition(buffer.length());
-				
-				if (prefs.afterOpeningParen)
+			boolean expandFunctionTemplateArguments = expandFunctionTemplateArguments();
+			if (expandFunctionTemplateArguments) {
+				if (prefs.beforeOpeningParen)
 					buffer.append(SPACE);
+				buffer.append(EXCLAMATION);
+				buffer.append(LPAREN);
 				
-	
-				// don't add the trailing space, but let the user type it in himself - typing the closing paren will exit
-	//			if (prefs.beforeClosingParen)
-	//				buffer.append(SPACE);
-			} else {
-				if (prefs.inEmptyList)
-					buffer.append(SPACE);
+				if (hasTemplateParameters()) {
+					setCursorPosition(buffer.length());
+					
+					if (prefs.afterOpeningParen)
+						buffer.append(SPACE);
+					
+		
+					// don't add the trailing space, but let the user type it in himself - typing the closing paren will exit
+		//			if (prefs.beforeClosingParen)
+		//				buffer.append(SPACE);
+				} else {
+					if (prefs.inEmptyList)
+						buffer.append(SPACE);
+				}
+				buffer.append(RPAREN);
 			}
-			buffer.append(RPAREN);
 			
 			buffer.append(LPAREN);
 			if (hasParameters()) {
-				if (!hasTemplateParameters()) {
+				if (!expandFunctionTemplateArguments || !hasTemplateParameters()) {
 					setCursorPosition(buffer.length());
 				}
 				

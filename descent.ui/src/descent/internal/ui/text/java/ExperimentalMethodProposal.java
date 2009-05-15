@@ -91,7 +91,7 @@ public final class ExperimentalMethodProposal extends JavaMethodCompletionPropos
 			}
 			
 			char[][] parameterNames= fProposal.findParameterNames(null);
-			int count= parameterNames.length;
+			int count= getParameterCount();
 			fArgumentOffsets= new int[count];
 			fArgumentLengths= new int[count];
 			StringBuffer buffer= new StringBuffer(String.valueOf(fProposal.getName()));

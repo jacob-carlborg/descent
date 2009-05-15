@@ -39,11 +39,11 @@ public final class ProposalContextInformation implements IContextInformation, IC
 	/**
 	 * Creates a new context information.
 	 */
-	public ProposalContextInformation(CompletionProposal proposal) {
+	public ProposalContextInformation(CompletionProposal proposal, boolean expandFunctionTemplateArguments) {
 		// don't cache the core proposal because the ContentAssistant might
 		// hang on to the context info.
 		CompletionProposalLabelProvider labelProvider= new CompletionProposalLabelProvider();
-		fInformationDisplayString= labelProvider.createParameterList(proposal);
+		fInformationDisplayString= labelProvider.createParameterList(proposal, expandFunctionTemplateArguments);
 		ImageDescriptor descriptor= labelProvider.createImageDescriptor(proposal);
 		if (descriptor != null)
 			fImage= JavaPlugin.getImageDescriptorRegistry().get(descriptor);

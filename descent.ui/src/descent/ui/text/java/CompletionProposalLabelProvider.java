@@ -66,7 +66,7 @@ public class CompletionProposalLabelProvider {
 	 *        for. Must be of kind {@link CompletionProposal#METHOD_REF}.
 	 * @return the list of comma-separated parameters suitable for display
 	 */
-	public String createParameterList(CompletionProposal methodProposal) {
+	public String createParameterList(CompletionProposal methodProposal, boolean expandFunctionTemplateArguments) {
 		Assert.isTrue(methodProposal.getKind() == CompletionProposal.METHOD_REF ||
 				methodProposal.getKind() == CompletionProposal.EXTENSION_METHOD ||
 				methodProposal.getKind() == CompletionProposal.OP_CALL ||
@@ -77,9 +77,11 @@ public class CompletionProposalLabelProvider {
 		
 		StringBuffer sb1 = new StringBuffer();
 		
-		if (methodProposal.getKind() != CompletionProposal.OP_CALL &&
-				methodProposal.getKind() != CompletionProposal.EXTENSION_METHOD) {
-			appendTemplateParameterList(sb1, methodProposal);
+		if (expandFunctionTemplateArguments) {
+			if (methodProposal.getKind() != CompletionProposal.OP_CALL &&
+					methodProposal.getKind() != CompletionProposal.EXTENSION_METHOD) {
+				appendTemplateParameterList(sb1, methodProposal);
+			}
 		}
 		
 		StringBuffer sb2 = new StringBuffer();
@@ -121,8 +123,16 @@ public class CompletionProposalLabelProvider {
 		char[][] parameterNames= methodProposal.findParameterNames(null);
 		char[][] parameterDefaultValues = methodProposal.findParameterDefaultValues(null);
 		char[][] parameterTypes= Signature.getParameterTypes(signature);
-		for (int i= 0; i < parameterTypes.length; i++) {
-			parameterTypes[i]= createTypeDisplayName(parameterTypes[i]);
+		char[][] templateParameterNames = methodProposal.findTemplateParameterNames(null);
+		
+		int c = 0;
+		for (int i = 0; i < parameterTypes.length; i++) {
+			if (parameterTypes[i].length == 1 && parameterTypes[i][0] == 'v' && c < templateParameterNames.length) {
+				parameterTypes[i] = templateParameterNames[c];
+				c++;
+			} else {
+				parameterTypes[i]= createTypeDisplayName(parameterTypes[i]);
+			}
 		}
 		
 		// This might be the case of a tuple expansion

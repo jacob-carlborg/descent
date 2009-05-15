@@ -459,7 +459,7 @@ public class CompletionProposalCollector extends CompletionRequestor {
 	protected final IContextInformation createMethodContextInformation(CompletionProposal methodProposal) {
 		Assert.isTrue(methodProposal.getKind() == CompletionProposal.METHOD_REF ||
 				methodProposal.getKind() == CompletionProposal.OP_CALL);
-		return new ProposalContextInformation(methodProposal);
+		return new ProposalContextInformation(methodProposal, true);
 	}
 
 	/**

@@ -19,7 +19,9 @@ import org.eclipse.swt.graphics.Image;
 
 import descent.core.CompletionProposal;
 import descent.core.ICompilationUnit;
+import descent.core.IJavaElement;
 import descent.core.IJavaProject;
+import descent.core.IMethod;
 import descent.core.JavaCore;
 import descent.core.Signature;
 import descent.core.formatter.DefaultCodeFormatterConstants;
@@ -437,4 +439,44 @@ public class LazyJavaCompletionProposal extends AbstractJavaCompletionProposal {
 		}
 		return fFormatterPrefs;
 	}
+	
+	private int fDefaultArgumentsCount = -1;
+	
+	protected int getDefaultArgumentsCount() {
+		if (fDefaultArgumentsCount == -1) {
+			fDefaultArgumentsCount = 0;
+			try {
+				IJavaElement elem = fProposal.getJavaElement();
+				if (elem instanceof IMethod) {
+					IMethod method = (IMethod) elem;
+					String[] values = method.getParameterDefaultValues();
+					fDefaultArgumentsCount = 0;
+					for(String value : values) {
+						if (value != null)
+							fDefaultArgumentsCount++;
+					}
+				}
+			} catch (Exception e) {
+				
+			}
+		}
+		return fDefaultArgumentsCount;
+	}
+	
+	protected int fParameterCount = -1;
+	
+	protected final int getParameterCount() {
+		if (fParameterCount == -1) {
+			if (expandFunctionDefaultArguments()) {
+				fParameterCount = Signature.getParameterTypes(fProposal.getTypeSignature()).length;	
+			} else {
+				fParameterCount = Signature.getParameterCount(fProposal.getTypeSignature());
+				if (!expandFunctionDefaultArguments()) {
+					fParameterCount -= getDefaultArgumentsCount();
+				}
+			}
+		}
+		return fParameterCount;
+	}
+	
 }

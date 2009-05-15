@@ -329,6 +329,16 @@ public abstract class AbstractJavaCompletionProposal implements IJavaCompletionP
 		return preferenceStore.getBoolean(PreferenceConstants.CODEASSIST_DOT_INSERTS);
 	}
 	
+	protected boolean expandFunctionDefaultArguments() {
+		IPreferenceStore preferenceStore= JavaPlugin.getDefault().getPreferenceStore();
+		return preferenceStore.getBoolean(PreferenceConstants.CODEASSIST_EXPAND_FUNCTION_DEFAULT_ARGUMENTS);
+	}
+	
+	protected boolean expandFunctionTemplateArguments() {
+		IPreferenceStore preferenceStore= JavaPlugin.getDefault().getPreferenceStore();
+		return preferenceStore.getBoolean(PreferenceConstants.CODEASSIST_EXPAND_FUNCTION_TEMPLATE_ARGUMENTS);
+	}
+	
 	protected boolean mustInsertDot(char trigger) {
 		return trigger == '.' && !dotInserts();
 	}

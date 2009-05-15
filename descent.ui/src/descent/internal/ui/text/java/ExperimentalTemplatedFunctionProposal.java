@@ -44,10 +44,12 @@ public final class ExperimentalTemplatedFunctionProposal extends JavaTemplatedFu
 			try {
 				LinkedModeModel model= new LinkedModeModel();
 				
-				for (int i= 0; i != fTempArgumentOffsets.length; i++) {
-					LinkedPositionGroup group= new LinkedPositionGroup();
-					group.addPosition(new LinkedPosition(document, baseOffset + fTempArgumentOffsets[i], fTempArgumentLengths[i], LinkedPositionGroup.NO_STOP));
-					model.addGroup(group);
+				if (expandFunctionTemplateArguments()) {
+					for (int i= 0; i != fTempArgumentOffsets.length; i++) {
+						LinkedPositionGroup group= new LinkedPositionGroup();
+						group.addPosition(new LinkedPosition(document, baseOffset + fTempArgumentOffsets[i], fTempArgumentLengths[i], LinkedPositionGroup.NO_STOP));
+						model.addGroup(group);
+					}
 				}
 				
 				for (int i= 0; i != fArgumentOffsets.length; i++) {
@@ -102,47 +104,51 @@ public final class ExperimentalTemplatedFunctionProposal extends JavaTemplatedFu
 			fTempArgumentLengths= new int[tempCount];
 			
 			char[][] parameterNames= fProposal.findParameterNames(null);
-			int count= parameterNames.length;
+			int count= getParameterCount();
 			fArgumentOffsets= new int[count];
 			fArgumentLengths= new int[count];
 			
 			StringBuffer buffer= new StringBuffer(String.valueOf(fProposal.getName()));
 			
 			FormatterPrefs prefs= getFormatterPrefs();
-			if (prefs.beforeOpeningParen)
-				buffer.append(SPACE);
-			buffer.append(EXCLAMATION);
-			buffer.append(LPAREN);
 			
-			if (tempCount > 0) {
-				setCursorPosition(buffer.length());
-			}
-			
-			if (prefs.afterOpeningParen)
-				buffer.append(SPACE);
-			
-			for (int i= 0; i != tempCount; i++) {
-				if (i != 0) {
-					if (prefs.beforeFunctionComma)
-						buffer.append(SPACE);
-					buffer.append(COMMA);
-					if (prefs.afterFunctionComma)
-						buffer.append(SPACE);
+			boolean expandFunctionTemplateArguments = expandFunctionTemplateArguments();
+			if (expandFunctionTemplateArguments) {
+				if (prefs.beforeOpeningParen)
+					buffer.append(SPACE);
+				buffer.append(EXCLAMATION);
+				buffer.append(LPAREN);
+				
+				if (tempCount > 0) {
+					setCursorPosition(buffer.length());
 				}
 				
-				fTempArgumentOffsets[i]= buffer.length();
-				buffer.append(tempParameterNames[i]);
-				fTempArgumentLengths[i]= tempParameterNames[i].length;
+				if (prefs.afterOpeningParen)
+					buffer.append(SPACE);
+				
+				for (int i= 0; i != tempCount; i++) {
+					if (i != 0) {
+						if (prefs.beforeFunctionComma)
+							buffer.append(SPACE);
+						buffer.append(COMMA);
+						if (prefs.afterFunctionComma)
+							buffer.append(SPACE);
+					}
+					
+					fTempArgumentOffsets[i]= buffer.length();
+					buffer.append(tempParameterNames[i]);
+					fTempArgumentLengths[i]= tempParameterNames[i].length;
+				}
+				
+				if (prefs.beforeFunctionClosingParen)
+					buffer.append(SPACE);
+		
+				buffer.append(RPAREN);
 			}
-			
-			if (prefs.beforeFunctionClosingParen)
-				buffer.append(SPACE);
-	
-			buffer.append(RPAREN);
 			
 			buffer.append(LPAREN);
 			
-			if (tempCount == 0) {
+			if (tempCount == 0 || !expandFunctionTemplateArguments) {
 				setCursorPosition(buffer.length());
 			}
 			
