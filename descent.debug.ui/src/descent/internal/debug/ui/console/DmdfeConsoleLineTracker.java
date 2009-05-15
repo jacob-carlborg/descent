@@ -26,12 +26,17 @@ public class DmdfeConsoleLineTracker implements IConsoleLineTracker
 		
 		private TextConsole console;
 		private IDocument doc;
+		private ResourceSearch resourceSearch;
 		
 		public void connect(TextConsole console) { this.console = console; this.doc = console.getDocument(); }
 		public void disconnect() { }
 		public String getLineQualifier() { return null; } // PERHAPS
 		public int getCompilerFlags() { return 0; }
 		public String getPattern() { return ERROR_REGEX; }
+		
+		public DmdfeErrorMatchListener() {
+			this.resourceSearch = new ResourceSearch();
+		}
 
 		public void matchFound(PatternMatchEvent event)
 		{
@@ -45,7 +50,7 @@ public class DmdfeConsoleLineTracker implements IConsoleLineTracker
 					return;
 				String file = split.group(1);
 				int line = Integer.parseInt(split.group(2));
-				console.addHyperlink(new DLocationHyperlink(file, line), linkOfs, linkLength);
+				console.addHyperlink(new DLocationHyperlink(resourceSearch, file, line), linkOfs, linkLength);
 			}
 			catch(Exception e)
 			{
@@ -60,9 +65,11 @@ public class DmdfeConsoleLineTracker implements IConsoleLineTracker
 		private final int line;
 		private boolean doneSearch = false;
 		private IFile cached = null;
+		private ResourceSearch resourceSearch;
 		
-		public DLocationHyperlink(String filename, int line)
+		public DLocationHyperlink(ResourceSearch resourceSearch, String filename, int line)
 		{
+			this.resourceSearch = resourceSearch;
 			this.filename = filename;
 			this.line = line;
 		}
@@ -76,7 +83,7 @@ public class DmdfeConsoleLineTracker implements IConsoleLineTracker
 			{
 				if(!doneSearch)
 				{
-					cached = ResourceSearch.search(filename);
+					cached = resourceSearch.search(filename);
 					doneSearch = true;
 				}
 				if(null == cached)
@@ -96,7 +103,10 @@ public class DmdfeConsoleLineTracker implements IConsoleLineTracker
 		}
 	}
 	
-	public void init(IConsole console) { console.addPatternMatchListener(new DmdfeErrorMatchListener()); }
+	public void init(IConsole console) { 
+		console.addPatternMatchListener(new DmdfeErrorMatchListener());
+	}
+	
 	public void dispose() { }
 	public void lineAppended(IRegion line) { }
 }
