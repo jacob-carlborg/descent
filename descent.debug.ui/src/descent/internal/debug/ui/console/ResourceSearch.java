@@ -28,8 +28,6 @@ import descent.core.JavaModelException;
 		{
 			TernaryTree<IFile> tree = new TernaryTree<IFile>();
 			enumerateProjects(ResourcesPlugin.getWorkspace().getRoot().members(), tree);
-			for(IFile file : tree)
-				System.out.println(file);
 			while(path.segmentCount() > 0)
 			{
 				String prefix = reverse(path.toPortableString());

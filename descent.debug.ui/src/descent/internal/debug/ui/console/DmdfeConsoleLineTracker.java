@@ -58,6 +58,8 @@ public class DmdfeConsoleLineTracker implements IConsoleLineTracker
 	{
 		private final String filename;
 		private final int line;
+		private boolean doneSearch = false;
+		private IFile cached = null;
 		
 		public DLocationHyperlink(String filename, int line)
 		{
@@ -69,13 +71,17 @@ public class DmdfeConsoleLineTracker implements IConsoleLineTracker
 		public void linkExited() { }
 		
 		public void linkActivated()
-		{	
+		{
 			try
 			{
-				IFile file = ResourceSearch.search(filename);
-				if(null == file)
+				if(!doneSearch)
+				{
+					cached = ResourceSearch.search(filename);
+					doneSearch = true;
+				}
+				if(null == cached)
 					return;
-				ITextEditor editor = (ITextEditor) EditorUtility.openInEditor(file);
+				ITextEditor editor = (ITextEditor) EditorUtility.openInEditor(cached);
 				if(null == editor)
 					return;
 				IDocument document = editor.getDocumentProvider().getDocument(editor.getEditorInput());
