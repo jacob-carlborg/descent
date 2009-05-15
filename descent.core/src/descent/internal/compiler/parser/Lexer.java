@@ -2229,6 +2229,30 @@ public class Lexer implements IProblemRequestor {
 							}
 						}
 					}
+				} else if (apiLevel == D2 && input(p) == 'm') {
+					p++;
+					if (input(p) == 'u') {
+						p++;
+						if (input(p) == 't') {
+							p++;
+							if (input(p) == 'a') {
+								p++;
+								if (input(p) == 'b') {
+									p++;
+									if (input(p) == 'l') {
+										p++;
+										if (input(p) == 'e'
+												&& !Chars.isidchar(input(p + 1))) {
+											t.value = TOK.TOKimmutable;
+											t.sourceLen = 9;
+											p++;
+											return;
+										}
+									}
+								}
+							}
+						}
+					}
 				}
 				break;
 			case 'n':
@@ -2948,6 +2972,23 @@ public class Lexer implements IProblemRequestor {
 							t.sourceLen = 5;
 							p++;
 							return;
+						}
+					}
+				} else if (apiLevel == D2 && input(p) == 'a') {
+					p++;
+					if (input(p) == 'a') {
+						p++;
+						if (input(p) == 'r') {
+							p++;
+							if (input(p) == 'e') {
+								p++;
+								if (input(p) == 'd' && !Chars.isidchar(input(p + 1))) {
+									t.value = TOK.TOKshared;
+									t.sourceLen = 6;
+									p++;
+									return;
+								}
+							}
 						}
 					}
 				}

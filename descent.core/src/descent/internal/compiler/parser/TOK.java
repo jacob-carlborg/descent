@@ -155,7 +155,8 @@ public enum TOK implements ITerminalSymbols {
 	TOKoverloadset("__overloadset", TokenName__overloadset),
 	TOKnothrow("nothrow", TokenNamenothrow),
 	TOKpure("pure", TokenNamepure),
-
+	TOKshared("shared", TokenNameshared),
+	TOKimmutable("immutable", TokenNameimmutable),
 	
 	// Additional in Descent
 	TOKwhitespace(TokenNameWHITESPACE), TOKPRAGMA(TokenNamePRAGMA),

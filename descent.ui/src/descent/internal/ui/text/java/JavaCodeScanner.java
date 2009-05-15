@@ -156,8 +156,10 @@ public final class JavaCodeScanner extends AbstractJavaScanner {
 		"__traits", //$NON-NLS-1$,
 		"__overloadset", //$NON-NLS-1$
 		"__thread", //$NON-NLS-1$
+		"immutable", //$NON-NLS-1$
 		"nothrow", //$NON-NLS-1$
 		"pure", //$NON-NLS-1$
+		"shared", //$NON-NLS-1$
 	};
 
 	private static final String RETURN= "return"; //$NON-NLS-1$

@@ -33,6 +33,7 @@ public class STC {
 	public final static int STCpure	    = 0x4000000;	// pure function
 	public final static int STCtls	    = 0x8000000;	// thread local
 	public final static int STCalias	    = 0x10000000;	// alias parameter
+	public final static int STCshared	    = 0x20000000;	// accessible from multiple threads
 	
 	public static int fromTOK(TOK tok) {
 		switch(tok) {
@@ -52,6 +53,8 @@ public class STC {
 		case TOKpure: return STCpure;
 		case TOKenum: return STCmanifest;
 		case TOKtls: return STCtls;
+		case TOKshared: return STCshared;
+		case TOKimmutable: return STCinvariant;
 		}
 		throw new IllegalStateException();
 	}

@@ -1034,6 +1034,9 @@ public class JavaAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 			case 'e':
 				smartIndentUponE(document, command);
 				break;
+			case 't':
+				smartIndentUponT(document, command);
+				break;
 		}
 	}
 
@@ -1124,6 +1127,59 @@ public class JavaAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 				return;
 			}
 
+		} catch (BadLocationException e) {
+			JavaPlugin.log(e);
+		}
+	}
+	
+	private void smartIndentUponT(IDocument d, DocumentCommand c) {
+		if (c.offset < 7 || d.getLength() == 0)
+			return;
+
+		try {
+			String content= d.get(c.offset - 6, 6);
+			if (content.equals("defaul")) { //$NON-NLS-1$
+				JavaHeuristicScanner scanner= new JavaHeuristicScanner(d);
+				int p= c.offset - 6;
+
+				// current line
+				int line= d.getLineOfOffset(p);
+				int lineOffset= d.getLineOffset(line);
+
+				// make sure we don't have any leading comments etc.
+				if (d.get(lineOffset, p - lineOffset).trim().length() != 0)
+					return;
+
+				// line of last javacode
+				int pos= scanner.findNonWhitespaceBackward(p - 1, JavaHeuristicScanner.UNBOUND);
+				if (pos == -1)
+					return;
+				int lastLine= d.getLineOfOffset(pos);
+
+				// only shift if the last java line is further up and is a braceless block candidate
+				if (lastLine < line) {
+
+					JavaIndenter indenter= new JavaIndenter(d, scanner, fProject);
+					int ref= indenter.findReferencePosition(p, false, false, false, true);
+					if (ref == JavaHeuristicScanner.NOT_FOUND)
+						return;
+					int refLine= d.getLineOfOffset(ref);
+					int nextToken= scanner.nextToken(ref, JavaHeuristicScanner.UNBOUND);
+					String indent;
+					if (nextToken == Symbols.TokenCASE || nextToken == Symbols.TokenDEFAULT)
+						indent= getIndentOfLine(d, refLine);
+					else // at the brace of the switch
+						indent= indenter.computeIndentation(p).toString();
+
+					if (indent != null) {
+						c.text= indent.toString() + "default"; //$NON-NLS-1$
+						c.length += c.offset - lineOffset;
+						c.offset= lineOffset;
+					}
+				}
+
+				return;
+			}
 		} catch (BadLocationException e) {
 			JavaPlugin.log(e);
 		}

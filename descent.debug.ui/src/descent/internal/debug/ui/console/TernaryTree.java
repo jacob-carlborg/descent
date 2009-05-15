@@ -28,13 +28,11 @@ import java.util.Stack;
 				stack.add(start);
 		}
 
-		@Override
 		public boolean hasNext()
 		{
 			return !stack.isEmpty();
 		}
 
-		@Override
 		public T next()
 		{
 			TreeNode<T> node = stack.pop();
@@ -53,7 +51,6 @@ import java.util.Stack;
 			}
 		}
 
-		@Override
 		public void remove()
 		{
 			throw new RuntimeException();

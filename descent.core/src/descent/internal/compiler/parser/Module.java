@@ -5,10 +5,11 @@ import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.ICompilationUnit;
+import descent.core.JavaCore;
 import descent.core.Signature;
-import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import descent.internal.core.util.Util;
 
 
 public class Module extends Package {
@@ -108,7 +109,11 @@ public class Module extends Package {
 	
 		// Added for Descent
 		if (context.global.params.analyzeTemplates && this == context.Module_rootModule) {
-			templateSemantic(context);
+			try {
+				templateSemantic(context);
+			} catch (Exception e) {
+				Util.log(e, "Exception in template semantic in module " + moduleName);
+			}
 		}
 	}	
 
@@ -126,6 +131,7 @@ public class Module extends Package {
 		Scope sc = Scope.createGlobal(this, context);
 		semanticScope(sc);
 
+		boolean imObject;
 		if (ident == null || ident.ident != Id.object) {
 			Import im = new Import(Loc.ZERO, null,
 					new IdentifierExp(Id.object), null, false);
@@ -134,11 +140,12 @@ public class Module extends Package {
 				members = new Dsymbols();
 			}
 			members.add(0, im);
+			imObject = false;
+		} else {
+			imObject = true;
 		}
 
 		symtab = new DsymbolTable();
-		
-		boolean imObject = CharOperation.equals(ident.ident, Id.object);
 		
 		// Add all symbols into module's symbol table
 		// But, if this i'm module object, assign to SemanticContext's variables
@@ -156,9 +163,25 @@ public class Module extends Package {
 				s.addMember(null, sc.scopesym, 1, context);
 			}
 		}
+		
+		int i = 0;
+		if (!imObject) {
+			// The first symbol should be "import object";
+			// If some error happened, singal a fatal error
+			Dsymbol s = members.get(i);
+			s.semantic(sc, context);
+			runDeferredSemantic(context);
+			
+			if (context.global.errors > 0) {
+				context.fatalWasSignaled = true;
+				return;
+			}
+			
+			i++;
+		}
 
 		// Pass 1 semantic routines: do public side of the definition
-		for (int i = 0; i < size(members); i++) {
+		for (; i < size(members); i++) {
 			Dsymbol s = members.get(i);
 			
 			s.semantic(sc, context);

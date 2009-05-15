@@ -217,6 +217,8 @@ public interface ITerminalSymbols {
 	int TokenName__overloadset = 185;
 	int TokenNamenothrow = 186;
 	int TokenNamepure = 187;
+	int TokenNameshared = 188;
+	int TokenNameimmutable = 189;
 
 }
 

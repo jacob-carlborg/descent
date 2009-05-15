@@ -34,6 +34,8 @@ import descent.core.Flags;
  *    <b>enum</b>
  *    <b>pure</b>
  *    <b>nothrow</b>
+ *    <b>shared</b>
+ *    <b>immutable</b>
  * </pre>
  */
 public class Modifier extends ASTNode {
@@ -68,6 +70,8 @@ public class Modifier extends ASTNode {
 		PURE_KEYWORD("pure", PURE),
 		NOTHROW_KEYWORD("nothrow", NOTHROW),
 		THREAD_KEYWORD("__thread", THREAD),
+		SHARED_KEYWORD("shared", SHARED),
+		IMMUTABLE_KEYWORD("immutable", IMMUTABLE),
 		;
 		
 		private String keyword;
@@ -274,6 +278,16 @@ public class Modifier extends ASTNode {
 	 * "__thread" modifier constant (bit mask).
 	 */
 	public static final int THREAD = Flags.AccThread;
+	
+	/**
+	 * "immutable" modifier constant (bit mask).
+	 */
+	public static final int IMMUTABLE = Flags.AccImmutable;
+	
+	/**
+	 * "shared" modifier constant (bit mask).
+	 */
+	public static final int SHARED = Flags.AccShared;
 	
 	/**
 	 * The "modifierKeyword" structural property of this node type.

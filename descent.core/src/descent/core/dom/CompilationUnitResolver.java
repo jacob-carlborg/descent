@@ -178,8 +178,21 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			final WorkingCopyOwner owner,
 			final ASTNodeEncoder encoder) 
 		throws JavaModelException {
+		return resolve(module, project, owner, encoder, true);
+	}
+	
+	public static SemanticContext resolve(
+			final Module module, 
+			final IJavaProject project,
+			final WorkingCopyOwner owner,
+			final ASTNodeEncoder encoder,
+			final boolean analayzeTemplates) 
+		throws JavaModelException {
 		
 		CompilerConfiguration config = new CompilerConfiguration();
+		if (!analayzeTemplates) {
+			config.analyzeTemplates = false;
+		}
 		
 		Global global = prepareForSemantic(project, config);
 		return resolve(module, project, global, owner, config, encoder);

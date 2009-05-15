@@ -17,6 +17,7 @@ import static descent.internal.compiler.parser.STC.STCmanifest;
 import static descent.internal.compiler.parser.STC.STCout;
 import static descent.internal.compiler.parser.STC.STCref;
 import static descent.internal.compiler.parser.STC.STCscope;
+import static descent.internal.compiler.parser.STC.STCshared;
 import static descent.internal.compiler.parser.STC.STCstatic;
 import static descent.internal.compiler.parser.TOK.*;
 import static descent.internal.compiler.parser.TY.Taarray;
@@ -646,6 +647,52 @@ public class Parser extends Lexer {
 					s= parseDeclDefs_Lstc2(isSingle, modifier, stc, decldefs);
 					break;
 				}
+			case TOKimmutable:
+				if (apiLevel == D2) {
+					if (peek(token).value == TOKlparen) {
+						// goto Ldeclaration
+						a = parseDeclarations(lastComments);
+						decldefs.addAll(a);
+						continue;
+					} else {
+						stc = STCinvariant;
+						
+						Modifier modifier = newModifier();
+						
+						// goto Lstc;
+						nextToken();
+						
+						s= parseDeclDefs_Lstc2(isSingle, modifier, stc, decldefs);
+						break;
+					}
+				} else {
+					parsingErrorDeleteToken(token);
+					nextToken();
+					continue;
+				}
+			case TOKshared:
+				if (apiLevel == D2) {
+					if (peek(token).value == TOKlparen) {
+						// goto Ldeclaration
+						a = parseDeclarations(lastComments);
+						decldefs.addAll(a);
+						continue;
+					} else {
+						stc = STCshared;
+						
+						Modifier modifier = newModifier();
+						
+						// goto Lstc;
+						nextToken();
+						
+						s= parseDeclDefs_Lstc2(isSingle, modifier, stc, decldefs);
+						break;
+					}
+				} else {
+					parsingErrorDeleteToken(token);
+					nextToken();
+					continue;
+				}
 			case TOKfinal:
 			case TOKauto:
 			case TOKscope:
@@ -655,7 +702,14 @@ public class Parser extends Lexer {
 			case TOKdeprecated:
 			case TOKnothrow:
 			case TOKpure:
+			case TOKref:
 			case TOKtls:
+				if (apiLevel < D2 && token.value == TOKref) {
+					parsingErrorDeleteToken(token);
+					nextToken();
+					continue;
+				}
+				
 				stc = STC.fromTOK(token.value);
 				
 				Modifier modifier = newModifier();
@@ -947,6 +1001,8 @@ public class Parser extends Lexer {
 			{
 			    case TOKconst:
 			    case TOKinvariant:
+			    case TOKimmutable:
+			    case TOKshared:
 			    	if (apiLevel == D2) {
 						// If followed by a (, it is not a storage class
 						if (peek(token).value == TOKlparen) {
@@ -955,6 +1011,8 @@ public class Parser extends Lexer {
 						}
 						if (token.value == TOKconst) {
 						    stc |= STCconst;
+						} else if (token.value == TOKshared) {
+							stc |= STCshared;
 						} else {
 						    stc |= STCinvariant;
 						}
@@ -978,6 +1036,7 @@ public class Parser extends Lexer {
 			    case TOKdeprecated:
 			    case TOKnothrow:
 			    case TOKpure:
+			    case TOKref:
 			    case TOKtls:
 			    	stc |= STC.fromTOK(token.value);
 			    	
@@ -1757,11 +1816,23 @@ public class Parser extends Lexer {
 					    continue loopFor;
 				    }
 				case TOKinvariant:
+				case TOKimmutable:
 				    if (peek(token).value == TOKlparen) {
 				    	// goto Ldefault;
 				    	break;
 				    } else {
 					    stc = STCinvariant;
+					    modifiers.add(newModifier());
+					    // goto L2;
+					    storageClass = parseParametersD2_L2(storageClass, stc);
+					    continue loopFor;
+				    }
+				case TOKshared:
+				    if (peek(token).value == TOKlparen) {
+				    	// goto Ldefault;
+				    	break;
+				    } else {
+					    stc = STCshared;
 					    modifiers.add(newModifier());
 					    // goto L2;
 					    storageClass = parseParametersD2_L2(storageClass, stc);

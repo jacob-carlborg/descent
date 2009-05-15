@@ -272,6 +272,18 @@ public final class Flags {
 	public static final int AccInvariant = 0x40000000;
 	
 	/**
+	 * Shared property flag.
+	 * @since 2.0
+	 */
+	public static final int AccShared = 0x04000000;
+	
+	/**
+	 * Immutable property flag.
+	 * @since 2.0
+	 */
+	public static final int AccImmutable = 0x02000000;
+	
+	/**
 	 * UnitTest property flag.
 	 * @since 2.0
 	 */
