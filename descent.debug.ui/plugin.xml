@@ -111,4 +111,42 @@
          <viewShortcut id="org.eclipse.debug.ui.MemoryView"/>
       </perspectiveExtension>
    </extension>
+   <extension
+         point="org.eclipse.debug.ui.consoleLineTrackers">
+      <consoleLineTracker
+            class="descent.internal.debug.ui.console.DmdfeConsoleLineTracker"
+            id="descent.console.dmdfeConsoleLineTracker.dsss"
+            processType="dsss">
+      </consoleLineTracker>
+      <consoleLineTracker
+            class="descent.internal.debug.ui.console.DmdfeConsoleLineTracker"
+            id="descent.console.dmdfeConsoleLineTracker.rebuild"
+            processType="rebuild">
+      </consoleLineTracker>
+      <consoleLineTracker
+            class="descent.internal.debug.ui.console.DmdfeConsoleLineTracker"
+            id="descent.console.dmdfeConsoleLineTracker.dmd"
+            processType="dmd">
+      </consoleLineTracker>
+      <consoleLineTracker
+            class="descent.internal.debug.ui.console.DmdfeConsoleLineTracker"
+            id="descent.console.dmdfeConsoleLineTracker.gdc"
+            processType="gdc">
+      </consoleLineTracker>
+      <consoleLineTracker
+            class="descent.internal.debug.ui.console.DmdfeConsoleLineTracker"
+            id="descent.console.dmdfeConsoleLineTracker.ldc"
+            processType="ldc">
+      </consoleLineTracker>
+      <consoleLineTracker
+            class="descent.internal.debug.ui.console.DmdfeConsoleLineTracker"
+            id="descent.console.dmdfeConsoleLineTracker.gdmd"
+            processType="gdmd">
+      </consoleLineTracker>
+      <consoleLineTracker
+            class="descent.internal.debug.ui.console.DmdfeConsoleLineTracker"
+            id="descent.console.dmdfeConsoleLineTracker.bud"
+            processType="bud">
+      </consoleLineTracker>
+   </extension>
 </plugin>
