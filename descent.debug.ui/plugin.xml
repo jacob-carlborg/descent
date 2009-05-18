@@ -44,13 +44,15 @@
             label="D Application"
             modes="run,debug">
          <perspective id="descent.ui.JavaPerspective"/>
-         <perspective id="org.eclipse.jdt.ui.JavaPerspective"/>
          <contextualLaunch>
             <enablement>
                <with variable="selection">
                   <count value="1"/>
                   <iterate>
-                     <adapt type="org.eclipse.core.resources.IResource"/>
+                     <and>
+	                     <test property="descent.launching.hasProjectNature" args="descent.core.dnature"/>
+	                     <test property="descent.launching.isExecutable"/>
+                     </and>
                   </iterate>
                </with>
             </enablement>

@@ -112,5 +112,15 @@
 	            id="descent.USER_LIBRARY">
 	      </classpathContainerInitializer>
 	   </extension>
+	
+	
+	<extension point="org.eclipse.core.expressions.propertyTesters">
+      <propertyTester
+            class="descent.internal.core.DLaunchableTester"
+            id="descent.launching.DLaunchableTester"
+            namespace="descent.launching"
+            properties="hasProjectNature, isExecutable"
+            type="org.eclipse.core.runtime.IAdaptable"/>            
+   </extension>
 
 </plugin>

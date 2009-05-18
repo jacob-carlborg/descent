@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: descent.core;singleton:=true
-Bundle-Version: 0.5.4.20090221
+Bundle-Version: 0.5.5.20090518
 Bundle-Activator: descent.core.JavaCore
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
@@ -13,7 +13,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
  org.eclipse.ui.console,
  org.eclipse.ant.core,
- org.apache.ant
+ org.apache.ant,
+ org.eclipse.core.expressions
 Eclipse-LazyStart: true
 Export-Package: descent.core,
  descent.core.compiler,

@@ -2748,9 +2748,19 @@ public class CompletionEngine extends Engine
 				if (opCall && funcNameIsOpCall) {
 					proposal.setName(currentName);
 					proposal.setCompletion(currentName);
+					if (wantMethodContextInfo) {
+						handleContextInfo((FuncDeclaration) temp.members.get(0), funcNameIsOpCall, proposal);
+					} else {
+						handleMethodCompletion(proposal, currentName);
+					}
 				} else {
 					proposal.setName(ident);
 					proposal.setCompletion(ident);
+					if (wantMethodContextInfo) {
+						handleContextInfo((FuncDeclaration) temp.members.get(0), funcNameIsOpCall, proposal);
+					} else {
+						handleMethodCompletion(proposal, ident);							
+					}
 				}
 				
 				char[] sig = member.getSignature().toCharArray();
