@@ -16,6 +16,34 @@ import descent.internal.formatter.Alignment;
  */
 public class DefaultCodeFormatterConstants {
 	
+	/**
+	 * <pre>
+	 * FORMATTER / The wrapping is done by indenting by one compare to the current indentation.
+	 * </pre>
+	 * @since 3.0
+	 */
+	public static final int INDENT_BY_ONE= 2;
+	
+	/**
+	 * <pre>
+	 * FORMATTER / The wrapping is done by using the current indentation.
+	 * </pre>
+	 * @since 3.0
+	 */
+	public static final int INDENT_DEFAULT= 0;
+	/**
+	 * <pre>
+	 * FORMATTER / The wrapping is done by indenting on column under the splitting location.
+	 * </pre>
+	 * @since 3.0
+	 */
+	public static final int INDENT_ON_COLUMN = 1;
+	
+	/*
+	 * Private constants. Not in javadoc
+	 */
+	private static final IllegalArgumentException WRONG_ARGUMENT = new IllegalArgumentException();
+	
 	public static final String PROFILE_DESCENT_DEFAULTS = "descent.ui.formatter.defaults.descent_defaults";
 	public static final String PROFILE_JAVA_DEFAULTS = "descent.ui.formatter.defaults.java_defaults";
 	public static final String PROFILE_C_SHARP_DEFAULTS = "decent.ui.formatter.defaults.c_sharp_defaults";
@@ -387,5 +415,35 @@ public class DefaultCodeFormatterConstants {
 	
 	public static Map getDefaultSettings() {
 		return DefaultCodeFormatterOptions.getBuiltInProfile(DEFAULT_PROFILE).getMap();
+	}
+	
+	/**
+	 * <p>Return the indentation style of the given alignment value.
+	 * The given alignment value should be created using the <code>createAlignmentValue(boolean, int, int)</code>
+	 * API.
+	 * </p>
+	 *
+	 * @param value the given alignment value
+	 * @return the indentation style of the given alignment value
+	 * @see #createAlignmentValue(boolean, int, int)
+	 * @exception IllegalArgumentException if the given alignment value is null, or if it 
+	 * doesn't have a valid format.
+	 */
+	public static int getIndentStyle(String value) {
+		if (value == null) {
+			throw WRONG_ARGUMENT;
+		}
+		try {
+			int existingValue = Integer.parseInt(value);
+			if ((existingValue & Alignment.M_INDENT_BY_ONE) != 0) {
+				return INDENT_BY_ONE;
+			} else if ((existingValue & Alignment.M_INDENT_ON_COLUMN) != 0) {
+				return INDENT_ON_COLUMN;
+			} else {
+				return INDENT_DEFAULT;
+			}
+		} catch (NumberFormatException e) {
+			throw WRONG_ARGUMENT;
+		}
 	}
 }
