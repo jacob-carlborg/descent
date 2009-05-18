@@ -24,12 +24,6 @@
                id="descent.building.buildCommands">
          </actionSet>
       </perspectiveExtension>
-      <perspectiveExtension
-            targetID="descent.ui.JavaBrowsingPerspective">
-         <actionSet
-               id="descent.building.buildCommands">
-         </actionSet>
-      </perspectiveExtension>
    </extension>
    <extension
          point="org.eclipse.debug.ui.launchConfigurationTypeImages">

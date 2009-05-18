@@ -30,7 +30,6 @@ public class DLaunchableTester extends PropertyTester {
 	 */
 	private static final String PROPERTY_IS_EXECUTABLE = "isExecutable"; //$NON-NLS-1$
 
-	@Override
 	public boolean test(Object receiver, String property, Object[] args, Object expectedValue) {
 		IResource resource = null;
 		if (receiver instanceof IAdaptable) {
