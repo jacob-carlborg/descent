@@ -20,9 +20,12 @@ public class DmdfeConsoleLineTracker implements IConsoleLineTracker
 {
 	private static final class DmdfeErrorMatchListener implements IPatternMatchListener
 	{
-		private static final String ERROR_REGEX = ".*?\\(\\d+\\):";
-		private static final String SPLITTER_REGEX = "(.*?)\\((\\d+)\\)";
-		private static Pattern splitterPattern = Pattern.compile(SPLITTER_REGEX);
+		private static final String ERROR_REGEX   = ".*?:";
+		private static final String LINE_REGEX    = "^(.*?)\\((\\d+)\\):";
+		private static final String NO_LINE_REGEX = "^(.*?\\.di?):";
+		
+		private static Pattern linePattern   = Pattern.compile(LINE_REGEX);
+		private static Pattern noLinePattern = Pattern.compile(NO_LINE_REGEX);
 		
 		private TextConsole console;
 		private IDocument doc;
@@ -42,15 +45,28 @@ public class DmdfeConsoleLineTracker implements IConsoleLineTracker
 		{
 			try
 			{
-				int linkOfs = event.getOffset();
-				int linkLength = event.getLength() - 1;
-				String text = doc.get(linkOfs, linkLength);
-				Matcher split = splitterPattern.matcher(text);
-				if(!split.matches() || split.groupCount() != 2)
-					return;
-				String file = split.group(1);
-				int line = Integer.parseInt(split.group(2));
-				console.addHyperlink(new DLocationHyperlink(resourceSearch, file, line), linkOfs, linkLength);
+				int matchOfs = event.getOffset();
+				int matchLength = event.getLength();
+				String text = doc.get(matchOfs, matchLength);
+				
+				String file;
+				int line;
+				Matcher split = linePattern.matcher(text);
+				if(split.matches() && split.groupCount() == 2)
+				{
+					file = split.group(1);
+					line = Integer.parseInt(split.group(2));
+				}
+				else
+				{
+					split = noLinePattern.matcher(text);
+					if(!split.matches() || split.groupCount() != 1)
+						return;
+					file = split.group(1);
+					line = 0;
+				}
+				
+				console.addHyperlink(new DLocationHyperlink(resourceSearch, file, line), matchOfs, matchLength - 1);
 			}
 			catch(Exception e)
 			{
@@ -89,12 +105,15 @@ public class DmdfeConsoleLineTracker implements IConsoleLineTracker
 				if(null == cached)
 					return;
 				ITextEditor editor = (ITextEditor) EditorUtility.openInEditor(cached);
-				if(null == editor)
-					return;
-				IDocument document = editor.getDocumentProvider().getDocument(editor.getEditorInput());
-				if(null == document)
-					return;
-				editor.selectAndReveal(document.getLineOffset(line - 1), document.getLineLength(line - 1));
+				if(line > 0)
+				{
+					if(null == editor)
+						return;
+					IDocument document = editor.getDocumentProvider().getDocument(editor.getEditorInput());
+					if(null == document)
+						return;
+					editor.selectAndReveal(document.getLineOffset(line - 1), document.getLineLength(line - 1));
+				}
 			}
 			catch (Exception e)
 			{

@@ -15,7 +15,6 @@ import descent.internal.core.JavaProject;
 
 /*package*/ class ResourceSearch
 {
-	
 	private INameEnvironment env;
 	
 	public IFile search(String filename)
@@ -31,9 +30,14 @@ import descent.internal.core.JavaProject;
 		}
 		
 		char[][] compoundName = getCompoundName(filename);
-		ICompilationUnit unit = env.findCompilationUnit(compoundName);
-		if (unit != null)
-			return (IFile) unit.getResource();
+		
+		while(compoundName.length > 0)
+		{
+			ICompilationUnit unit = env.findCompilationUnit(compoundName);
+			if (unit != null)
+				return (IFile) unit.getResource();
+			compoundName = CharOperation.subarray(compoundName, 1, -1); // I miss slices...
+		}
 		return null;
 	}
 	
