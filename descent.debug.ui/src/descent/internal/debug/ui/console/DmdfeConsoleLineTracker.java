@@ -20,7 +20,7 @@ public class DmdfeConsoleLineTracker implements IConsoleLineTracker
 {
 	private static final class DmdfeErrorMatchListener implements IPatternMatchListener
 	{
-		private static final String ERROR_REGEX   = ".*?:";
+		private static final String ERROR_REGEX   = "(\\w:)?.*?:";
 		private static final String LINE_REGEX    = "^(.*?)\\((\\d+)\\):";
 		private static final String NO_LINE_REGEX = "^(.*?\\.di?):";
 		
@@ -80,7 +80,7 @@ public class DmdfeConsoleLineTracker implements IConsoleLineTracker
 		private final String filename;
 		private final int line;
 		private boolean doneSearch = false;
-		private IFile cached = null;
+		private Object cached = null;
 		private ResourceSearch resourceSearch;
 		
 		public DLocationHyperlink(ResourceSearch resourceSearch, String filename, int line)
