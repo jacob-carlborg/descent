@@ -31,6 +31,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.texteditor.ITextEditorExtension3;
 
 import descent.core.IJavaProject;
+import descent.core.JavaCore;
 import descent.core.ToolFactory;
 import descent.core.compiler.IScanner;
 import descent.core.compiler.ITerminalSymbols;
@@ -45,6 +46,7 @@ import descent.core.dom.ForStatement;
 import descent.core.dom.IfStatement;
 import descent.core.dom.Statement;
 import descent.core.dom.WhileStatement;
+import descent.core.formatter.DefaultCodeFormatterConstants;
 import descent.internal.corext.dom.NodeFinder;
 import descent.internal.corext.util.CodeFormatterUtil;
 import descent.internal.ui.JavaPlugin;
@@ -81,6 +83,7 @@ public class JavaAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 
 	private String fPartitioning;
 	private final IJavaProject fProject;
+	private final int fPrefBreakIndent;
 
 	/**
 	 * Creates a new Java auto indent strategy for the given document partitioning.
@@ -91,6 +94,7 @@ public class JavaAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 	public JavaAutoIndentStrategy(String partitioning, IJavaProject project) {
 		fPartitioning= partitioning;
 		fProject= project;
+		fPrefBreakIndent = prefBreakIndent();
  	}
 
 	private int getBracketCount(IDocument d, int startOffset, int endOffset, boolean ignoreCloseBrackets) throws BadLocationException {
@@ -1037,6 +1041,9 @@ public class JavaAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 			case 't':
 				smartIndentUponT(document, command);
 				break;
+			case ';':
+				smartIndentUponSemicolon(document, command);
+				break;
 		}
 	}
 
@@ -1173,6 +1180,62 @@ public class JavaAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 
 					if (indent != null) {
 						c.text= indent.toString() + "default"; //$NON-NLS-1$
+						c.length += c.offset - lineOffset;
+						c.offset= lineOffset;
+					}
+				}
+
+				return;
+			}
+		} catch (BadLocationException e) {
+			JavaPlugin.log(e);
+		}
+	}
+	
+	private void smartIndentUponSemicolon(IDocument d, DocumentCommand c) {
+		if (this.fPrefBreakIndent == DefaultCodeFormatterConstants.INDENT_ON_COLUMN)
+			return;
+		
+		if (c.offset < 6 || d.getLength() == 0)
+			return;
+
+		try {
+			String content= d.get(c.offset - 5, 5);
+			if (content.equals("break")) { //$NON-NLS-1$
+				JavaHeuristicScanner scanner= new JavaHeuristicScanner(d);
+				int p= c.offset - 5;
+
+				// current line
+				int line= d.getLineOfOffset(p);
+				int lineOffset= d.getLineOffset(line);
+
+				// make sure we don't have any leading comments etc.
+				if (d.get(lineOffset, p - lineOffset).trim().length() != 0)
+					return;
+
+				// line of last javacode
+				int pos= scanner.findNonWhitespaceBackward(p - 1, JavaHeuristicScanner.UNBOUND);
+				if (pos == -1)
+					return;
+				int lastLine= d.getLineOfOffset(pos);
+
+				// only shift if the last java line is further up and is a braceless block candidate
+				if (lastLine < line) {
+
+					JavaIndenter indenter= new JavaIndenter(d, scanner, fProject);
+					int ref= indenter.findReferencePosition(p, false, false, false, true);
+					if (ref == JavaHeuristicScanner.NOT_FOUND)
+						return;
+					int refLine= d.getLineOfOffset(ref);
+					int nextToken= scanner.nextToken(ref, JavaHeuristicScanner.UNBOUND);
+					String indent;
+					if (nextToken == Symbols.TokenCASE || nextToken == Symbols.TokenDEFAULT)
+						indent= getIndentOfLine(d, refLine);
+					else // at the brace of the switch
+						indent= indenter.computeIndentation(p).toString();
+
+					if (indent != null) {
+						c.text= indent.toString() + "break;"; //$NON-NLS-1$
 						c.length += c.offset - lineOffset;
 						c.offset= lineOffset;
 					}
@@ -1326,5 +1389,33 @@ public class JavaAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 		} catch (BadLocationException x) {
 			return null;
 		}
+	}
+	
+	/**
+	 * Returns the possibly project-specific core preference defined under <code>key</code>.
+	 *
+	 * @param key the key of the preference
+	 * @return the value of the preference
+	 * @since 3.1
+	 */
+	private String getCoreFormatterOption(String key) {
+		if (fProject == null)
+			return JavaCore.getOption(key);
+		return fProject.getOption(key, true);
+	}
+	
+	private int prefBreakIndent() {
+		if (DefaultCodeFormatterConstants.TRUE.equals(getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_INDENT_BREAK_COMPARE_TO_SWITCH)))
+			return prefBlockIndent();
+		else 
+			return 0;
+	}
+	
+	private int prefBlockIndent() {
+		/* String option= getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_INDENT_STATEMENTS_COMPARE_TO_BLOCK);
+		if (DefaultCodeFormatterConstants.FALSE.equals(option))
+			return 0; */
+
+		return 1; // sensible default
 	}
 }

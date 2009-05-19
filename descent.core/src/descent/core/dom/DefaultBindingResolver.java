@@ -9,6 +9,7 @@ import descent.core.JavaModelException;
 import descent.core.Signature;
 import descent.core.WorkingCopyOwner;
 import descent.core.compiler.CharOperation;
+import descent.internal.codeassist.CompletionEngine;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.AliasDeclaration;
 import descent.internal.compiler.parser.CallExp;
@@ -601,6 +602,16 @@ class DefaultBindingResolver extends BindingResolver {
 				}
 			} else if (type instanceof TypeClass) {
 				if (CharOperation.equals(prop, Id.classinfo)) {
+					binding = new BuiltinPropertyBinding(this, type,
+							context.ClassDeclaration_classinfo.type, identifier, signature);
+				} else if (CharOperation.equals(prop, Id.tupleof)) {
+					// TODO: use correct type for tupleof
+					binding = new BuiltinPropertyBinding(this, type,
+							context.ClassDeclaration_classinfo.type, identifier, signature);
+				}
+			} else if (type instanceof TypeStruct) {
+				if (CharOperation.equals(prop, Id.tupleof)) {
+					// TODO: use correct type for tupleof
 					binding = new BuiltinPropertyBinding(this, type,
 							context.ClassDeclaration_classinfo.type, identifier, signature);
 				}

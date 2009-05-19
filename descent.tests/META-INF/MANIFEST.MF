@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Tests
 Bundle-SymbolicName: descent.tests
-Bundle-Version: 0.5.5.20090520
+Bundle-Version: 0.5.5.20090523
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,

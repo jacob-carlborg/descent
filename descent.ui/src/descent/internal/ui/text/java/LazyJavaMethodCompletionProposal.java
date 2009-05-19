@@ -117,7 +117,11 @@ public class LazyJavaMethodCompletionProposal extends LazyJavaCompletionProposal
 			
 			if (!hasParameters() || !hasArgumentList()) {
 				if (fProposal.getCompletion().length > 0 && fProposal.getCompletion()[fProposal.getCompletion().length - 1] == ')') {
-					return replacement + "()"; //$NON-NLS-1$
+					if (isGetter()) {
+						return replacement;
+					} else {
+						return replacement + "()"; //$NON-NLS-1$
+					}
 				} else {
 					boolean variadic = getVariadic() != IMethod.VARARGS_NO;
 					setCursorPosition(replacement.length() + (variadic ? 1 : 2));

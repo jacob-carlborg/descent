@@ -2175,8 +2175,34 @@ public class CompletionEngine extends Engine
 					new TypeDArray(type.next),
 					type },
 				R_INTERESTING_BUILTIN_PROPERTY);
+		suggestRemove(type);
 	}
 	
+	private void suggestRemove(TypeAArray type) {
+		int relevance = RelevanceConstants.R_INTERESTING_BUILTIN_PROPERTY;
+		char[] property = Id.remove;
+		if (currentName.length == 0 || match(currentName, property)) {
+			StringBuilder sb = new StringBuilder();
+			sb.append(Signature.C_D_LINKAGE);
+			sb.append(type.index.getSignature());
+			sb.append(Signature.C_FUNCTION_PARAMTERS_BREAK);
+			sb.append(Signature.C_VOID);
+			
+			char[] signature = new char[sb.length()];
+			sb.getChars(0, sb.length(), signature, 0);
+			
+			CompletionProposal proposal = this.createProposal(CompletionProposal.METHOD_REF, this.actualCompletionPosition, null);
+			proposal.setRelevance(relevance);
+			proposal.setName(property);
+			proposal.setCompletion(property);
+			proposal.setSignature(signature);
+			proposal.setDeclarationSignature(type.getSignature().toCharArray());
+			proposal.setTypeSignature(sb.toString().toCharArray());
+			proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+			CompletionEngine.this.requestor.accept(proposal);
+		}
+	}
+
 	public final static char[][] typeDelegateProperties = { Id.ptr, Id.funcptr };
 	private void suggestTypeDelegateProperties(TypeDelegate type) {
 		suggestProperties(
@@ -2197,6 +2223,9 @@ public class CompletionEngine extends Engine
 		// And also all type's properties
 		suggestAllTypesProperties(type);
 		
+		// Suggest tupleof
+		suggestTupleof(type);
+		
 		// Also suggest classinfo
 		suggestClassInfo();
 		
@@ -2206,6 +2235,11 @@ public class CompletionEngine extends Engine
 		}
 	}
 	
+	public final static Type tupleType = new TypeIdentifier(Loc.ZERO, "Tuple".toCharArray());
+	private void suggestTupleof(Type type) {
+		suggestProperty(type.getSignature().toCharArray(), RelevanceConstants.R_INTERESTING_BUILTIN_PROPERTY, Id.tupleof, tupleType);
+	}
+
 	private void completeTypeClassRecursively(TypeClass type, boolean onlyStatics, HashtableOfCharArrayAndObject funcSignatures) {
 		ClassDeclaration decl = type.sym == null ? null : type.sym.unlazy(this.currentName, semanticContext);
 		if (decl == null) {
@@ -2262,6 +2296,9 @@ public class CompletionEngine extends Engine
 		
 		// And also all type's properties
 		suggestAllTypesProperties(type);
+		
+		// Suggest tupleof
+		suggestTupleof(type);
 	}
 	
 	private void completeTypeEnum(TypeEnum type) {
@@ -3051,18 +3088,23 @@ public class CompletionEngine extends Engine
 		for (int i = 0; i < properties.length; i++) {
 			char[] property = properties[i];
 			Type type = types[i];
-			if (currentName.length == 0 || match(currentName, property)) {
-				relevance += computeRelevanceForExpectedType(type);
-				
-				CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition, null);
-				proposal.setRelevance(relevance);
-				proposal.setName(property);
-				proposal.setCompletion(property);
-				proposal.setDeclarationSignature(declarationSignature);
-				proposal.setTypeSignature(type.getSignature().toCharArray());
-				proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
-				CompletionEngine.this.requestor.accept(proposal);
-			}
+			suggestProperty(declarationSignature, relevance, property, type);
+		}
+	}
+
+	private void suggestProperty(char[] declarationSignature, int relevance,
+			char[] property, Type type) {
+		if (currentName.length == 0 || match(currentName, property)) {
+			relevance += computeRelevanceForExpectedType(type);
+			
+			CompletionProposal proposal = this.createProposal(CompletionProposal.FIELD_REF, this.actualCompletionPosition, null);
+			proposal.setRelevance(relevance);
+			proposal.setName(property);
+			proposal.setCompletion(property);
+			proposal.setDeclarationSignature(declarationSignature);
+			proposal.setTypeSignature(type.getSignature().toCharArray());
+			proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
+			CompletionEngine.this.requestor.accept(proposal);
 		}
 	}
 	

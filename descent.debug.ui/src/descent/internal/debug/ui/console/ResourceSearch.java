@@ -2,7 +2,6 @@ package descent.internal.debug.ui.console;
 
 import java.io.File;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 
