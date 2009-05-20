@@ -261,7 +261,19 @@ public class EvaluationEngine extends AstVisitorAdapter {
 			}
 			
 			result = new EvaluationResult(er, IEvaluationResult.ARRAY);
-		}
+		} 
+		// TODO see how to evaluate tuples
+//		else if (exp instanceof TupleExp) {
+//			TupleExp tuple = (TupleExp) exp;
+//			
+//			IEvaluationResult[] er = new IEvaluationResult[tuple.exps.size()];
+//			for (int i = 0; i < tuple.exps.size(); i++) {
+//				evalExp(tuple.exps.get(i));
+//				er[i] = result;
+//			}
+//			
+//			result = new EvaluationResult(er, IEvaluationResult.TUPLE);
+//		}
 	}
 	
 	private void evalInt(IntegerExp exp) {

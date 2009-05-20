@@ -5,6 +5,7 @@ import org.jmock.Mockery;
 import org.jmock.Sequence;
 import org.jmock.integration.junit3.MockObjectTestCase;
 
+import descent.core.Signature;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.STC;
 import descent.internal.compiler.parser.Type;
@@ -571,6 +572,22 @@ public class SignatureProcessor_Test extends MockObjectTestCase implements ISign
 			one(requestor).acceptSymbol(CLASS.charAt(0), "Bar".toCharArray(), -1, "@4testC3Bar"); inSequence(s);
 			one(requestor).exitTemplateInstanceSymbol(TEMPLATE_INSTANCE_SYMBOL  + "@4testC3Bar"); inSequence(s);
 			one(requestor).exitTemplateInstance(sigInstance); inSequence(s);
+		}});
+		
+		SignatureProcessor.process(sigInstance, true, requestor);
+		
+		mockery.assertIsSatisfied();
+	}
+	
+	public void testTuple() {
+		final Sequence s = mockery.sequence("seq");
+		
+		final String sigInstance = String.valueOf(Signature.C_TUPLE) + "2" + String.valueOf(Signature.C_TUPLE) + Signature.SIG_INT + Signature.SIG_BOOL;
+		
+		checking(new Expectations() {{
+			one(requestor).acceptPrimitive(TypeBasic.tint32); inSequence(s);
+			one(requestor).acceptPrimitive(TypeBasic.tbool); inSequence(s);
+			one(requestor).acceptTuple(sigInstance, 2); inSequence(s);
 		}});
 		
 		SignatureProcessor.process(sigInstance, true, requestor);

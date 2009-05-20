@@ -220,15 +220,24 @@ public interface ISignatureRequestor {
 	void acceptSlice(char[] lwr, char[] upr, String signature);
 
 	/**
-	 * The processos has found a const type.
+	 * The processor has found a const type.
 	 */
 	void acceptConst(String signature);
 	
 	/**
-	 * The processos has found an invariant type.
+	 * The processor has found an invariant type.
 	 */
 	void acceptInvariant(String signature);
 
+	/**
+	 * The processor has found an automatic type.
+	 *
+	 */
 	void acceptAutomaticTypeInference();
+
+	/**
+	 * The processor has found a tuple type.
+	 */
+	void acceptTuple(String signature, int numberOftypes);
 
 }

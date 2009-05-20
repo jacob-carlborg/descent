@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -176,14 +177,13 @@ public class TypeTuple extends Type {
 	}
 	
 	@Override
-	public String getSignature0() {
-		// TODO Descent signature
-		return null;
-	}
-	
-	@Override
 	protected void appendSignature0(StringBuilder sb) {
-		// TODO Descent signature		
+		sb.append(Signature.C_TUPLE);
+		sb.append(size(arguments));
+		sb.append(Signature.C_TUPLE);
+		for(Argument argument : arguments) {
+			argument.type.appendSignature(sb);
+		}
 	}
 
 }

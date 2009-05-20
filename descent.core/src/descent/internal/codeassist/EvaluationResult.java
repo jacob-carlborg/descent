@@ -26,7 +26,11 @@ public class EvaluationResult implements IEvaluationResult {
 			IEvaluationResult[] results = (IEvaluationResult[]) value;
 			
 			StringBuilder sb = new StringBuilder();
-			sb.append("[");
+			if (kind == TUPLE) {
+				sb.append("Tuple!(");
+			} else {
+				sb.append("[");
+			}
 			for (int i = 0; i < results.length; i++) {
 				if (i != 0) {
 					sb.append(", ");
@@ -36,7 +40,11 @@ public class EvaluationResult implements IEvaluationResult {
 				}
 				sb.append(results[i]);
 			}
-			sb.append("]");
+			if (kind == TUPLE) {
+				sb.append(")");
+			} else {
+				sb.append("]");
+			}
 			return sb.toString();
 		}
 		if (kind == CHAR_ARRAY || kind == DCHAR_ARRAY || kind == WCHAR_ARRAY) {

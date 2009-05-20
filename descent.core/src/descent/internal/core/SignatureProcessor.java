@@ -163,6 +163,27 @@ public class SignatureProcessor {
 				requestor.acceptAssociativeArray(substring(signature, start, i, wantSignature));
 				return i;
 			}
+			case Signature.C_TUPLE: { // Type tuple
+				i++;
+				
+				c = signature.charAt(i);
+				
+				n = 0;
+				
+				while(c != Signature.C_TUPLE) {
+					n = 10 * n + (c - '0');
+					i++;
+					c = signature.charAt(i);
+				}
+				i++;
+				
+				for (int j = 0; j < n; j++) {
+					i = process0(signature, i, wantSignature, requestor);
+				}
+				
+				requestor.acceptTuple(substring(signature, start, i, wantSignature), n);
+				return i;
+			}
 			case Signature.C_D_LINKAGE: // Type function
 			case Signature.C_C_LINKAGE:
 			case Signature.C_WINDOWS_LINKAGE:

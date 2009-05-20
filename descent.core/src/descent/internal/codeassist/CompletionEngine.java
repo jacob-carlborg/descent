@@ -2255,7 +2255,11 @@ public class CompletionEngine extends Engine
 	
 	public final static Type tupleType = new TypeIdentifier(Loc.ZERO, "Tuple".toCharArray());
 	private void suggestTupleof(Type type) {
-		suggestProperty(type.getSignature().toCharArray(), RelevanceConstants.R_INTERESTING_BUILTIN_PROPERTY, Id.tupleof, tupleType);
+		TypeExp exp = new TypeExp(Loc.ZERO, type);
+		Expression e = type.dotExp(Scope.createGlobal(module, semanticContext), exp, new IdentifierExp(Id.tupleof), semanticContext);
+		if (e != null && e.type != null) {
+			suggestProperty(type.getSignature().toCharArray(), RelevanceConstants.R_INTERESTING_BUILTIN_PROPERTY, Id.tupleof, e.type);
+		}
 	}
 
 	private void completeTypeClassRecursively(TypeClass type, boolean onlyStatics, HashtableOfCharArrayAndObject funcSignatures) {

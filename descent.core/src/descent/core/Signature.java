@@ -50,6 +50,7 @@ import descent.internal.core.SignatureRequestorAdapter;
  *   | DelegateTypeSignature
  *   | IdentifierTypeSignature
  *   | SymbolTypeSignature
+ *   | TupleTypeSignature
  *   
  * PrimitiveTypeSignature ::=
  *     "v"  // void
@@ -149,6 +150,9 @@ import descent.internal.core.SignatureRequestorAdapter;
  *     ")"  // templated function
  *     Identifier FunctionTypeSignature TemplateParameters
  *   )*
+ *   
+ * TupleTypeSignature ::=
+ *   Number TupleTypeSignature (Type)*
  *   
  * ModuleSignature ::=
  *   "@" ( Identifier )*
@@ -421,6 +425,12 @@ public final class Signature {
 	 * Value is <code>'~'</code>.
 	 */
 	public static final char C_SLICE2									= '~';
+	
+	/**
+	 * Character constant indicating a tuple type in a signature.
+	 * Value is <code>'´'</code>.
+	 */
+	public static final char C_TUPLE									= '´';
 	
 	/**
 	 * Character constant indicating a D linkage in a function signature.
@@ -1006,6 +1016,13 @@ public final class Signature {
 	 */
 	public static final int TYPEOF_RETURN_SIGNATURE = 24;
 	
+	/**
+	 * Kind constant for a tuple type signature.
+	 * @see #getTypeSignatureKind(String)
+	 * @since 3.0
+	 */
+	public static final int TUPLE_TYPE_SIGNATURE = 25;
+	
 	
 		
 private Signature() {
@@ -1410,6 +1427,10 @@ public static String[] getParameterTypes(String methodSignature) throws IllegalA
 				replace(signature);
 			}
 			@Override
+			public void acceptTuple(String signature, int numberOfTypes) {
+				replace(signature);
+			}
+			@Override
 			public void acceptArgumentBreak(char c) {
 				if (functionCount == 1) {
 					foundArgumentBreak = true;
@@ -1534,6 +1555,9 @@ public static String getReturnType(String methodSignature) throws IllegalArgumen
 			}
 			@Override
 			public void acceptStaticArray(char[] dimension, String signature) {
+				copy(signature);
+			}
+			public void acceptTuple(String signature, int numberOfTypes) {
 				copy(signature);
 			}
 			@Override
@@ -1747,6 +1771,22 @@ public static String toString(String signature, final boolean fqn) throws Illega
 				sb.append(" .. ");
 				sb.append(upr);
 				sb.append(']');
+				
+				st.push(sb);
+			}
+			public void acceptTuple(String signature, int numberOfTypes) {
+				Stack<StringBuilder> st = stack.peek();
+				
+				StringBuilder sb = new StringBuilder();
+				sb.append("Tuple!(");
+				
+				for (int i = 0; i < numberOfTypes; i++) {
+					if (i != 0)
+						sb.append(", ");
+					sb.append(st.pop());
+				}
+				
+				sb.append(")");
 				
 				st.push(sb);
 			}
@@ -2311,6 +2351,9 @@ public static int getTypeSignatureKind(String signature) {
 		@Override
 		public void acceptIdentifier(char[][] compoundName, String signature) {
 			kind[0] = IDENTIFIER_TYPE_SIGNATURE;
+		}
+		public void acceptTuple(String signature, int numberOftypes) {
+			kind[0] = TUPLE_TYPE_SIGNATURE;
 		}
 		@Override
 		public void acceptModule(char[][] compoundName, String signature) {

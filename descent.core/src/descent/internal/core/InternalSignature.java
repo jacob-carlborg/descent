@@ -39,6 +39,7 @@ import descent.internal.compiler.parser.TypePointer;
 import descent.internal.compiler.parser.TypeReturn;
 import descent.internal.compiler.parser.TypeSArray;
 import descent.internal.compiler.parser.TypeSlice;
+import descent.internal.compiler.parser.TypeTuple;
 import descent.internal.compiler.parser.TypeTypeof;
 import descent.internal.core.util.Util;
 
@@ -89,6 +90,17 @@ public class InternalSignature {
 				public void acceptAssociativeArray(String signature) {
 					Stack<Type> sub = stack.peek();
 					sub.push(new TypeAArray(sub.pop(), sub.pop()));
+				}
+				@Override
+				public void acceptTuple(String signature, int numberOftypes) {
+					Stack<Type> sub = stack.peek();
+					
+					Arguments args = new Arguments();
+					for (int i = 0; i < numberOftypes; i++) {
+						args.add(new Argument(0, sub.pop(), null, null));
+					}
+					
+					sub.push(new TypeTuple(args));
 				}
 				@Override
 				public void acceptConst(String signature) {
@@ -318,6 +330,17 @@ public class InternalSignature {
 				public void acceptAssociativeArray(String signature) {
 					Stack<Type> sub = stack.peek();
 					sub.push(new TypeAArray(sub.pop(), sub.pop()));
+				}
+				@Override
+				public void acceptTuple(String signature, int numberOftypes) {
+					Stack<Type> sub = stack.peek();
+					
+					Arguments args = new Arguments();
+					for (int i = 0; i < numberOftypes; i++) {
+						args.add(new Argument(0, sub.pop(), null, null));
+					}
+					
+					sub.push(new TypeTuple(args));
 				}
 				@Override
 				public void acceptTypeof(char[] expression, String signature) {

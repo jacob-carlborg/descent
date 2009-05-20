@@ -185,6 +185,12 @@ public interface IEvaluationResult {
 	int STRUCT_LITERAL = COMPILATION_UNIT + 1;
 	
 	/**
+	 * A tuple result.
+	 * {@link #getValue()} can be safely cast to {@link IEvaluationResult[]}.
+	 */
+	int TUPLE = STRUCT_LITERAL + 1;
+	
+	/**
 	 * Returns the kind of this evaluation result. This is one of this
 	 * interface constants.
 	 * @return the kind of this evaluation result

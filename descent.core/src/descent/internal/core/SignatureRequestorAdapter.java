@@ -152,5 +152,9 @@ public class SignatureRequestorAdapter implements ISignatureRequestor {
 	public void acceptAutomaticTypeInference() {
 		
 	}
+	
+	public void acceptTuple(String signature, int numberOftypes) {
+		
+	}
 
 }

@@ -132,6 +132,9 @@ public class TypeStruct extends Type {
 			 */
 			e = e.semantic(sc, context);	// do this before turning on noaccesscheck
 			
+			// Added for Descent
+			sym = (StructDeclaration) sym.unlazy(context);
+			
 			Expressions exps = new Expressions(sym.fields.size());
 			for (VarDeclaration v_ : sym.fields) {
 				Expression fe = new DotVarExp(e.loc, e, v_);
