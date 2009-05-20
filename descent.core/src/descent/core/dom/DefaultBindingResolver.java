@@ -455,7 +455,7 @@ class DefaultBindingResolver extends BindingResolver {
 								}
 								if (type != null) {
 									IBinding binding = resolveBuiltinProperty(
-											type, (SimpleName) name);
+											exp, type, (SimpleName) name);
 									if (binding != null) {
 										return binding;
 									}
@@ -474,7 +474,7 @@ class DefaultBindingResolver extends BindingResolver {
 
 						TypeDotIdExp tdie = (TypeDotIdExp) old;
 						if (tdie.type != null) {
-							return resolveBuiltinProperty(tdie.type,
+							return resolveBuiltinProperty(null, tdie.type,
 									(SimpleName) name);
 						}
 					}
@@ -494,7 +494,7 @@ class DefaultBindingResolver extends BindingResolver {
 		return null;
 	}
 
-	private IBinding resolveBuiltinProperty(Type type, SimpleName name) {
+	private IBinding resolveBuiltinProperty(descent.core.dom.Expression exp, Type type, SimpleName name) {
 		String identifier = name.getIdentifier();
 		String signature = type.getSignature() + Signature.C_VARIABLE
 				+ identifier.length() + identifier;
@@ -515,6 +515,20 @@ class DefaultBindingResolver extends BindingResolver {
 				// TODO it's probably a static array, fix this
 				binding = new BuiltinPropertyBinding(this, type,
 						new TypeDArray(type), identifier, signature);
+			} else if (CharOperation.equals(prop, Id.offsetof)) {
+				if (exp instanceof DotIdentifierExpression) {
+					DotIdentifierExpression die = (DotIdentifierExpression) exp;
+					if (die.getExpression() != null) {
+						IBinding typeBinding = die.getExpression().resolveTypeBinding();
+						if (typeBinding != null && typeBinding.getKind() == IBinding.TYPE) {
+							ITypeBinding tb = (ITypeBinding) typeBinding;
+							if (tb.isClass() || tb.isStruct()) {
+								binding = new BuiltinPropertyBinding(this, Type.tuns32, type,
+										identifier, signature);
+							}
+						}
+					}
+				}
 			} else if ((type instanceof TypeBasic || type instanceof TypeEnum)
 					&& (CharOperation.equals(prop, Id.min) || CharOperation
 							.equals(prop, Id.max))) {

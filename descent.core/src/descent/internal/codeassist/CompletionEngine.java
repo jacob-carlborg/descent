@@ -1,5 +1,7 @@
 package descent.internal.codeassist;
 
+import static descent.internal.compiler.parser.STC.STCfield;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -1718,6 +1720,11 @@ public class CompletionEngine extends Engine
 			
 			Type type = decl.type();
 			completeType(type, ident, false /* not only statics */);
+			
+			// Suggest offsetof if this is a struct's field (static access)
+			if ((decl.storage_class & STCfield) != 0 && decl.parent != null && decl.parent.getType(semanticContext) instanceof TypeStruct) {
+				suggestOffsetof(decl, type);
+			}
 		} else if (e1 instanceof DotExp) {
 			// This is the case of a mixin
 			DotExp dot = (DotExp) e1;
@@ -1731,6 +1738,11 @@ public class CompletionEngine extends Engine
 			
 			Type type = decl.type();
 			completeType(type, ident, false /* not only statics */);
+			
+			// Suggest offsetof if this is a class' or struct's field
+			if ((decl.storage_class & STCfield) != 0) {
+				suggestOffsetof(decl, type);
+			}
 		} else if (e1 instanceof CallExp) {
 			Type type = ((CallExp) e1).type;
 			completeType(type, ident, false /* not only statics */);
@@ -1803,6 +1815,12 @@ public class CompletionEngine extends Engine
 			suggestDsymbol(ident.resolvedSymbol, INCLUDE_ALL);
 			return;
 		}
+	}
+
+	private void suggestOffsetof(Declaration decl, Type type) {
+		suggestProperty(type.getSignature().toCharArray(), 
+				RelevanceConstants.R_INTERESTING_BUILTIN_PROPERTY, 
+				Id.offsetof, Type.tuns32);
 	}
 	
 	private void completePackage(Package sds, char[] name, IdentifierExp ident) {
