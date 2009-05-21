@@ -1780,10 +1780,15 @@ public static String toString(String signature, final boolean fqn) throws Illega
 				StringBuilder sb = new StringBuilder();
 				sb.append("Tuple!(");
 				
+				List<StringBuilder> list = new ArrayList<StringBuilder>(numberOfTypes);
+				for (int i = 0; i < numberOfTypes; i++) {
+					list.add(0, st.pop());
+				}
+				
 				for (int i = 0; i < numberOfTypes; i++) {
 					if (i != 0)
 						sb.append(", ");
-					sb.append(st.pop());
+					sb.append(list.get(i));
 				}
 				
 				sb.append(")");

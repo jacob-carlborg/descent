@@ -40,6 +40,10 @@ public class SignatureToCharArray_Test extends AbstractSignatureTest {
 		tca("int[1 .. 3]", slice(i, "1", "3"));
 	}
 	
+	public void testTuple() {
+		tca("Tuple!(int, char)", Signature.C_TUPLE + "2" + Signature.C_TUPLE + i + a);
+	}
+	
 	public void testConst() {
 		tca("const(int)", Signature.C_CONST + i);
 	}
