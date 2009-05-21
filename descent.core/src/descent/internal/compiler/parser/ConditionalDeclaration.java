@@ -57,8 +57,9 @@ public class ConditionalDeclaration extends AttribDeclaration {
 		ConditionalDeclaration dd;
 
 		Assert.isTrue(s == null);
-		dd = new ConditionalDeclaration(condition.syntaxCopy(context), Dsymbol
+		dd = context.newConditionalDeclaration(condition.syntaxCopy(context), Dsymbol
 				.arraySyntaxCopy(decl, context), Dsymbol.arraySyntaxCopy(elsedecl, context));
+		dd.copySourceRange(this);
 		return dd;
 	}
 

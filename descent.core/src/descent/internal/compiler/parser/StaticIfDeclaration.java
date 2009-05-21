@@ -63,8 +63,9 @@ public class StaticIfDeclaration extends ConditionalDeclaration {
 		StaticIfDeclaration dd;
 
 		Assert.isTrue(s == null);
-		dd = new StaticIfDeclaration(condition.syntaxCopy(context), Dsymbol
+		dd = context.newStaticIfDeclaration(condition.syntaxCopy(context), Dsymbol
 				.arraySyntaxCopy(decl, context), Dsymbol.arraySyntaxCopy(elsedecl, context));
+		dd.copySourceRange(this);
 		return dd;
 	}
 

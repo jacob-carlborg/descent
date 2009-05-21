@@ -1,0 +1,202 @@
+package descent.internal.core.ctfe;
+
+import org.eclipse.debug.core.DebugException;
+import org.eclipse.debug.core.model.IDebugTarget;
+import org.eclipse.debug.core.model.IRegisterGroup;
+import org.eclipse.debug.core.model.IStackFrame;
+import org.eclipse.debug.core.model.IThread;
+import org.eclipse.debug.core.model.IVariable;
+
+import descent.core.ICompilationUnit;
+
+public class DescentCtfeStackFrame extends DescentCtfeDebugElement implements IStackFrame {
+
+	private final IThread fThread;
+	private final IDebugger fDebugger;
+	private String fName;
+	private int fNumber;
+	private ICompilationUnit fUnit;
+	private int fLineNumber;
+	
+	private IVariable[] fVariables;
+	
+	public DescentCtfeStackFrame(IDebugTarget target, IDebugger debugger, IThread thread, String name, int number, ICompilationUnit unit, int lineNumber) {
+		super(target);
+		this.fDebugger = debugger;
+		this.fThread = thread;
+		this.fName = name;
+		this.fNumber = number;
+		this.fUnit = unit;
+		this.fLineNumber = lineNumber;
+	}
+	
+	public IDebugger getDebugger() {
+		return fDebugger;
+	}
+	
+	public int getNumber() {
+		return fNumber;
+	}
+	
+	public int getCharEnd() throws DebugException {
+		return -1;
+	}
+
+	public int getCharStart() throws DebugException {
+		return -1;
+	}
+
+	public int getLineNumber() throws DebugException {
+		return fLineNumber;
+	}
+	
+	public ICompilationUnit getCompilationUnit() {
+		return fUnit;
+	}
+
+	public String getName() throws DebugException {
+		StringBuilder sb = new StringBuilder();
+		sb.append(fName);
+		if (fLineNumber != -1) {
+			sb.append(": line "); //$NON-NLS-1$
+			sb.append(fLineNumber);
+		}
+		return sb.toString();
+	}
+
+	public IRegisterGroup[] getRegisterGroups() throws DebugException {
+		return new IRegisterGroup[0];
+	}
+
+	public IThread getThread() {
+		return fThread;
+	}
+
+	public IVariable[] getVariables() throws DebugException {
+		IVariable[] newVariables = fDebugger.getVariables(fNumber);
+		fVariables = mergeVariables(fVariables, newVariables);
+		return fVariables;
+	}
+
+	private IVariable[] mergeVariables(IVariable[] oldVariables, IVariable[] newVariables) throws DebugException {
+		if (oldVariables == null) {
+			return newVariables;
+		}
+		
+		for(int i = 0; i < oldVariables.length && i < newVariables.length; i++) {
+			DescentCtfeVariable oldVar = (DescentCtfeVariable) oldVariables[i];
+			DescentCtfeVariable newVar = (DescentCtfeVariable) newVariables[i];
+			if (oldVar.getName().equals(newVar.getName())) {
+				DescentCtfeValue oldValue = oldVar.getValue();
+				DescentCtfeValue newValue = newVar.getValue();
+				
+				if (oldValue != null && newValue != null && oldValue.getValueString() != null && newValue.getValueString() != null) {				
+					if (!oldValue.getValueString().equals(newValue.getValueString())) {
+						newVar.setHasValueChanged(true);
+					}
+					if (!oldValue.isLazy() && !newValue.isLazy() && oldValue.hasVariables() &&  oldValue.hasVariables() == newValue.hasVariables()) {
+						mergeVariables(oldValue.getVariables(), newValue.getVariables());
+					}
+				}
+			}
+		}
+		
+		return newVariables;
+	}
+
+	public boolean hasRegisterGroups() throws DebugException {
+		return false;
+	}
+
+	public boolean hasVariables() throws DebugException {
+		return true;
+	}
+
+	public boolean canStepInto() {
+		return getThread().canStepInto();
+	}
+
+	public boolean canStepOver() {
+		return getThread().canStepOver();
+	}
+
+	public boolean canStepReturn() {
+		return getThread().canStepReturn();
+	}
+
+	public boolean isStepping() {
+		return getThread().isStepping();
+	}
+
+	public void stepInto() throws DebugException {
+		getThread().stepInto();
+	}
+
+	public void stepOver() throws DebugException {
+		getThread().stepOver();
+	}
+
+	public void stepReturn() throws DebugException {
+		getThread().stepReturn();
+	}
+
+	public boolean canResume() {
+		return getThread().canResume();
+	}
+
+	public boolean canSuspend() {
+		return getThread().canSuspend();
+	}
+
+	public boolean isSuspended() {
+		return getThread().isSuspended();
+	}
+
+	public void resume() throws DebugException {
+		getThread().resume();
+	}
+
+	public void suspend() throws DebugException {
+		getThread().suspend();
+	}
+
+	public boolean canTerminate() {
+		return getThread().canTerminate();
+	}
+
+	public boolean isTerminated() {
+		return getThread().isTerminated();
+	}
+
+	public void terminate() throws DebugException {
+		getThread().terminate();
+	}
+	
+	public boolean isInSameFunction(DescentCtfeStackFrame other) {
+		if (fName != null && other.fName != null && fName.equals(other.fName) && fNumber == other.fNumber) {
+			if (fUnit != null && other.fUnit != null && fUnit.equals(other.fUnit)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public void merge(DescentCtfeStackFrame other) {
+		this.fLineNumber = other.fLineNumber;
+		this.fName = other.fName;
+		this.fNumber = other.fNumber;
+		this.fUnit = other.fUnit;
+	}
+	
+	@Override
+	public String toString() {
+		try {
+			return getName();
+		} catch (DebugException e) {
+			return super.toString();
+		}
+	}
+
+	
+
+}

@@ -614,7 +614,7 @@ public class Parser extends Lexer {
 						nextToken();
 						aelse = parseBlock();
 					}					
-					s = new StaticIfDeclaration(condition, a, aelse);
+					s = newStaticIfDeclaration(condition, a, aelse);
 					attachLeadingComments = prevToken.value == TOKrcurly;
 					break;
 				} else if (token.value == TOKimport) {
@@ -858,7 +858,7 @@ public class Parser extends Lexer {
 					aelse = parseBlock();
 				}
 				
-				s = new ConditionalDeclaration(debugCondition, a, aelse);
+				s = newConditionalDeclaration(debugCondition, a, aelse);
 				attachLeadingComments = prevToken.value == TOKrcurly;
 				break;
 
@@ -889,7 +889,7 @@ public class Parser extends Lexer {
 					aelse = parseBlock();
 				}
 				
-				s = new ConditionalDeclaration(versionCondition, a, aelse);
+				s = newConditionalDeclaration(versionCondition, a, aelse);
 				attachLeadingComments = prevToken.value == TOKrcurly;
 				break;
 
@@ -903,7 +903,7 @@ public class Parser extends Lexer {
 					aelse = parseBlock();
 				}				
 
-				s = new ConditionalDeclaration(iftypeCondition, a, aelse);
+				s = newConditionalDeclaration(iftypeCondition, a, aelse);
 				attachLeadingComments = prevToken.value == TOKrcurly;
 				break;
 
@@ -938,7 +938,7 @@ public class Parser extends Lexer {
 		} while (!once);
 		return decldefs;
 	}
-	
+
 	/*****************************************
 	 * Parse a postblit definition:
 	 *	=this() { body }
@@ -8298,6 +8298,14 @@ public class Parser extends Lexer {
 	
 	protected TemplateInstance newTemplateInstance(Loc loc, IdentifierExp id, ASTNodeEncoder encoder) {
 		return new TemplateInstance(loc, id, encoder);
+	}
+	
+	protected ConditionalDeclaration newConditionalDeclaration(Condition condition, Dsymbols a, Dsymbols aelse) {
+		return new ConditionalDeclaration(condition, a, aelse);
+	}
+	
+	protected StaticIfDeclaration newStaticIfDeclaration(StaticIfCondition condition, Dsymbols a, Dsymbols aelse) {
+		return new StaticIfDeclaration(condition, a, aelse);
 	}
 	
 	protected AggregateDeclaration endAggregateDeclaration(AggregateDeclaration a) {

@@ -649,7 +649,7 @@ public class VarDeclaration extends Declaration {
 				// init.isExpInitializer().exp.dump(0);
 			}
 
-			sv = new VarDeclaration(loc, type != null ? type.syntaxCopy(context)
+			sv = context.newVarDeclaration(loc, type != null ? type.syntaxCopy(context)
 					: null, ident.syntaxCopy(context), init);
 			sv.storage_class = storage_class;
 		}

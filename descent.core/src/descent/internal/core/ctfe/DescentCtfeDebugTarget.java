@@ -13,7 +13,10 @@ import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.ILineBreakpoint;
 import org.eclipse.debug.core.model.IMemoryBlock;
 import org.eclipse.debug.core.model.IProcess;
+import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IThread;
+
+import descent.core.ICompilationUnit;
 
 public class DescentCtfeDebugTarget extends DescentCtfeDebugElement implements IDebugTarget {
 
@@ -136,12 +139,8 @@ public class DescentCtfeDebugTarget extends DescentCtfeDebugElement implements I
 		
 		fireResumeEvent(DebugEvent.CLIENT_REQUEST);
 		
-//		try {
-			fSuspended = false;
-//			fDebugger.resume();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
+		fSuspended = false;
+		fDebugger.resume();
 	}
 
 	public void suspend() throws DebugException {
@@ -201,18 +200,15 @@ public class DescentCtfeDebugTarget extends DescentCtfeDebugElement implements I
 	}
 
 	public void stepInto() {
-		// TODO Auto-generated method stub
-		
+		fDebugger.stepInto();
 	}
 
 	public void stepOver() {
-		// TODO Auto-generated method stub
-		
+		fDebugger.stepOver();
 	}
 
 	public void stepReturn() {
-		// TODO Auto-generated method stub
-		
+		fDebugger.stepReturn();
 	}
 	
 	public void breakpointHit(IResource resource, int lineNumber) throws DebugException {
@@ -247,6 +243,14 @@ public class DescentCtfeDebugTarget extends DescentCtfeDebugElement implements I
 			}
 		}
 		return null;
+	}
+
+	public IStackFrame[] getStackFrames() {
+		return fDebugger.getStackFrames();
+	}
+	
+	public IStackFrame newStackFrame(String name, int number, ICompilationUnit unit, int lineNumber) {
+		return new DescentCtfeStackFrame(this, fDebugger, fThreads[0], name, number, unit, lineNumber);
 	}
 
 }

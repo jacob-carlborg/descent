@@ -384,4 +384,16 @@ public class SemanticContext {
 		return apiLevel == Parser.D2;
 	}
 
+	protected VarDeclaration newVarDeclaration(Loc loc, Type type, IdentifierExp exp, Initializer init) {
+		return new VarDeclaration(loc, type, exp, init);
+	}
+
+	protected ConditionalDeclaration newConditionalDeclaration(Condition condition, Dsymbols a, Dsymbols elseDecl) {
+		return new ConditionalDeclaration(condition, a, elseDecl);
+	}
+
+	protected StaticIfDeclaration newStaticIfDeclaration(Condition condition, Dsymbols a, Dsymbols aelse) {
+		return new StaticIfDeclaration(condition, a, aelse);
+	}
+
 }

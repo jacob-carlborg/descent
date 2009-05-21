@@ -1,5 +1,6 @@
 package descent.internal.core.ctfe;
 
+import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.debug.core.model.IStackFrame;
@@ -17,6 +18,8 @@ public class DescentCtfeThread extends DescentCtfeDebugElement implements IThrea
 	 * Whether this thread is stepping
 	 */
 	private boolean fStepping = false;
+	private boolean fStackFramesInvalid;
+	private IStackFrame[] fStackFrames;
 	
 	private final IDebugger fDebugger;
 	
@@ -52,15 +55,45 @@ public class DescentCtfeThread extends DescentCtfeDebugElement implements IThrea
 	}
 
 	public IStackFrame[] getStackFrames() throws DebugException {
-		return new IStackFrame[0];
+		if (isSuspended() && !isTerminated()) {
+			if (fStackFramesInvalid) {
+				IStackFrame[] newStackFrames = ((DescentCtfeDebugTarget)getDebugTarget()).getStackFrames(); 
+				fStackFrames = mergeStackFrames(fStackFrames, newStackFrames);	
+				fStackFramesInvalid = false;
+				fireChangeEvent(DebugEvent.CONTENT);
+			}
+			return fStackFrames;
+		} else {
+			return new IStackFrame[0];
+		}
+	}
+	
+	private IStackFrame[] mergeStackFrames(IStackFrame[] stackFrames, IStackFrame[] newStackFrames) {
+		if (stackFrames == null || (stackFrames.length != newStackFrames.length)) {
+			return newStackFrames;
+		}
+		for(int i = 0; i < stackFrames.length; i++) {
+			DescentCtfeStackFrame oldSF = (DescentCtfeStackFrame) stackFrames[i];
+			DescentCtfeStackFrame newSF = (DescentCtfeStackFrame) newStackFrames[i];
+			if (oldSF.isInSameFunction(newSF)) {
+				oldSF.merge(newSF);
+			} else {
+				stackFrames[i] = newSF;
+			}
+		}
+		return stackFrames;
 	}
 
 	public IStackFrame getTopStackFrame() throws DebugException {
+		IStackFrame[] frames = getStackFrames();
+		if (frames.length > 0) {
+			return frames[0];
+		}
 		return null;
 	}
 
 	public boolean hasStackFrames() throws DebugException {
-		return false;
+		return isSuspended();
 	}
 
 	public boolean canResume() {
@@ -133,8 +166,11 @@ public class DescentCtfeThread extends DescentCtfeDebugElement implements IThrea
 	}
 	
 	public void invalidateChildren() {
-//		invalidateStackFrames();
-//		invalidateRegisters();
+		invalidateStackFrames();
+	}
+	
+	private void invalidateStackFrames() {
+		fStackFramesInvalid = true;
 	}
 
 }

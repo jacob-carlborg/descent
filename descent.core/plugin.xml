@@ -159,5 +159,11 @@
             id="descent.core.ctfe.launcConfigurationTabGroup.ctfeApplication"
             type="descent.debug.ctfe.application"/>
    </extension>
+   <extension
+         point="org.eclipse.debug.ui.debugModelPresentations">
+      <debugModelPresentation
+            class="descent.internal.core.ctfe.DescentCtfeDebugModelPresentation"
+            id="descent.debug.ctfe.model"/>
+   </extension>
 
 </plugin>
