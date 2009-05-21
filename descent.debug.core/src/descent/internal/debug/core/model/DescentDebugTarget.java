@@ -179,7 +179,7 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 	}
 	
 	public void suspend() throws DebugException {
-		
+		System.out.println("suspend()");
 	}
 
 	public void terminate() throws DebugException {

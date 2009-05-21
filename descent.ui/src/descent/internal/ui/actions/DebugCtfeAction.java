@@ -17,8 +17,8 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.TextEditorAction;
 
 import descent.core.IJavaElement;
-import descent.core.ISourceReference;
 import descent.core.ctfe.IDescentCtfeLaunchConfigurationConstants;
+import descent.internal.ui.javaeditor.EditorUtility;
 import descent.internal.ui.javaeditor.JavaEditor;
 
 public class DebugCtfeAction extends TextEditorAction {
@@ -42,6 +42,7 @@ public class DebugCtfeAction extends TextEditorAction {
 			return;
 		
 		JavaEditor jedit = (JavaEditor) editor;
+		IJavaElement inputElement = EditorUtility.getEditorInputJavaElement(jedit, false);
 		
 		try {
 			IJavaElement[] elements= SelectionConverter.codeResolveForked(jedit, false);
@@ -52,8 +53,8 @@ public class DebugCtfeAction extends TextEditorAction {
 			if (!(selection instanceof ITextSelection))
 				return;
 			
-			IJavaElement elem = elements[0];
-			debugAtCompileTime(elem, (ITextSelection) selection);
+			IJavaElement debugElement = elements[0];
+			debugAtCompileTime(inputElement, debugElement, (ITextSelection) selection);
 			
 			//DebugUITools.launch(configuration, mode)
 		} catch (InvocationTargetException e) {
@@ -63,21 +64,23 @@ public class DebugCtfeAction extends TextEditorAction {
 		}
 	}
 
-	private void debugAtCompileTime(IJavaElement elem, ITextSelection selection) {
-		ILaunchConfiguration config = createConfiguration(elem, selection);
+	private void debugAtCompileTime(IJavaElement inputElement, IJavaElement debugElement, ITextSelection selection) {
+		ILaunchConfiguration config = createConfiguration(inputElement, debugElement, selection);
 		DebugUITools.launch(config, "debug");
 	}
 	
-	protected ILaunchConfiguration createConfiguration(IJavaElement elem, ITextSelection selection) {
+	protected ILaunchConfiguration createConfiguration(IJavaElement inputElement, IJavaElement debugElement, ITextSelection selection) {
 		ILaunchConfiguration config = null;
 		ILaunchConfigurationWorkingCopy wc = null;
 		try {
+			String inputHandle = inputElement.getHandleIdentifier();
+			
 			ILaunchConfigurationType configType = getConfigurationType();
-			wc = configType.newInstance(null, getLaunchManager().generateUniqueLaunchConfigurationNameFrom(elem.getResource().getName()));
-			wc.setAttribute(IDescentCtfeLaunchConfigurationConstants.ATTR_PROGRAM_NAME, elem.getElementName());
-			wc.setAttribute(IDescentCtfeLaunchConfigurationConstants.ATTR_PROJECT_NAME, elem.getResource().getProject().getName());
-			wc.setAttribute(IDescentCtfeLaunchConfigurationConstants.ATTR_SOURCE_OFFSET, selection.getOffset());
-			wc.setMappedResources(new IResource[] {elem.getResource().getProject()});
+			wc = configType.newInstance(null, getLaunchManager().generateUniqueLaunchConfigurationNameFrom(debugElement.getResource().getName()));
+			wc.setAttribute(IDescentCtfeLaunchConfigurationConstants.ATTR_PROJECT_NAME, inputElement.getResource().getProject().getName());
+			wc.setAttribute(IDescentCtfeLaunchConfigurationConstants.ATTR_INPUT_ELEMENT_HANDLE_IDENTIFIER, inputHandle);
+			wc.setAttribute(IDescentCtfeLaunchConfigurationConstants.ATTR_INPUT_ELEMENT_SOURCE_OFFSET, selection.getOffset());
+			wc.setMappedResources(new IResource[] {inputElement.getResource().getProject()});
 			config = wc.doSave();
 		} catch (CoreException exception) {
 			exception.printStackTrace();

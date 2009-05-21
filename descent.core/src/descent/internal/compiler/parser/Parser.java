@@ -2678,7 +2678,7 @@ public class Parser extends Lexer {
 			}
 			
 			if (tiargs != null) {
-				TemplateInstance tempinst = new TemplateInstance(loc(), id, encoder);
+				TemplateInstance tempinst = newTemplateInstance(loc(), id, encoder);
 			    tempinst.tiargs(tiargs);
 			    tempinst.start = thisStart;
 			    tempinst.length = prevToken.ptr + prevToken.sourceLen - thisStart;
@@ -2966,7 +2966,7 @@ public class Parser extends Lexer {
 			nextToken();
 			if (token.value == TOKnot) {
 				nextToken();
-				tempinst = new TemplateInstance(loc(), id, encoder);
+				tempinst = newTemplateInstance(loc(), id, encoder);
 				tempinst.tiargs(parseTemplateArgumentList());
 				tempinst.setSourceRange(id.start, prevToken.ptr + prevToken.sourceLen - id.start);
 				tid = new TypeInstance(loc(), tempinst);
@@ -3099,7 +3099,7 @@ public class Parser extends Lexer {
 			nextToken();
 			if (token.value == TOKnot) {
 				nextToken();
-				tempinst[0] = new TemplateInstance(loc(), id[0], encoder);
+				tempinst[0] = newTemplateInstance(loc(), id[0], encoder);
 				tempinst[0].tiargs(parseTemplateArgumentList());
 				tempinst[0].setSourceRange(tempinstStart, prevToken.ptr + prevToken.sourceLen - tempinstStart);
 				tid[0].addIdent(new TemplateInstanceWrapper(loc(), tempinst[0]));
@@ -4647,7 +4647,6 @@ public class Parser extends Lexer {
 				Type tb;
 				IdentifierExp ai = null;
 				Type at;
-				@SuppressWarnings("unused")
 				int storageClass;
 				Argument a;
 				List<Modifier> modifiers = new ArrayList<Modifier>(1);
@@ -6338,7 +6337,7 @@ public class Parser extends Lexer {
 		    {	// identifier!(template-argument-list)
 		    	TemplateInstance tempinst;
 		    	
-		    	tempinst = new TemplateInstance(loc(), id, encoder);		    	
+		    	tempinst = newTemplateInstance(loc(), id, encoder);		    	
 		    	nextToken();
 		    	tempinst.tiargs(parseTemplateArgumentList());
 		    	tempinst.setSourceRange(id.start, prevToken.ptr + prevToken.sourceLen - id.start);
@@ -6841,7 +6840,7 @@ public class Parser extends Lexer {
 						// identifier!(template-argument-list)
 						TemplateInstance tempinst;
 						
-						tempinst = new TemplateInstance(loc(), id, encoder);						
+						tempinst = newTemplateInstance(loc(), id, encoder);						
 						nextToken();
 						
 						tempinst.tiargs(parseTemplateArgumentList());
@@ -8295,6 +8294,10 @@ public class Parser extends Lexer {
 	
 	protected TemplateMixin newTemplateMixin(Loc loc, IdentifierExp id, Type tqual, Identifiers idents, Objects tiargs) {
 		return new TemplateMixin(loc(), id, tqual, idents, tiargs, encoder);
+	}
+	
+	protected TemplateInstance newTemplateInstance(Loc loc, IdentifierExp id, ASTNodeEncoder encoder) {
+		return new TemplateInstance(loc, id, encoder);
 	}
 	
 	protected AggregateDeclaration endAggregateDeclaration(AggregateDeclaration a) {

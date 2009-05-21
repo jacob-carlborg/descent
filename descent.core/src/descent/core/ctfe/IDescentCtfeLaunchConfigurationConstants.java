@@ -49,12 +49,9 @@ public interface IDescentCtfeLaunchConfigurationConstants {
 	 */
 	public static final String ATTR_PROJECT_NAME = PREFIX + ".PROJECT_ATTR"; //$NON-NLS-1$
 	
-	/**
-	 * Launch configuration attribute key. The value is a path to the executable to launch.
-	 */
-	public static final String ATTR_PROGRAM_NAME = PREFIX + ".PROGRAM_NAME";	 //$NON-NLS-1$
+	public static final String ATTR_INPUT_ELEMENT_HANDLE_IDENTIFIER = PREFIX + ".INPUT_ELEMENT_HANDLE_IDENTIFIER";	 //$NON-NLS-1$
 	
-	public static final String ATTR_SOURCE_OFFSET = PREFIX + ".SOURCE_OFFSET"; //$NON-NLS-1$
+	public static final String ATTR_INPUT_ELEMENT_SOURCE_OFFSET = PREFIX + ".SOURCE_OFFSET"; //$NON-NLS-1$
 	
 	/**
 	 * Status code indicating the project associated with

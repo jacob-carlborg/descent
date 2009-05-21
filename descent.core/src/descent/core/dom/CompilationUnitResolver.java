@@ -38,6 +38,9 @@ import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.core.CancelableNameEnvironment;
 import descent.internal.core.CompilerConfiguration;
 import descent.internal.core.JavaProject;
+import descent.internal.core.ctfe.CompileTimeParser;
+import descent.internal.core.ctfe.CompileTimeSemanticContext;
+import descent.internal.core.ctfe.IDebugger;
 import descent.internal.core.util.Util;
 
 public class CompilationUnitResolver extends descent.internal.compiler.Compiler {
@@ -115,8 +118,17 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			boolean recordLineSeparator,
 			boolean statementsRecovery,
 			boolean diet) {
-		
-		return parse(apiLevel, sourceUnit.getContents(), sourceUnit.getFileName(), options, recordLineSeparator, statementsRecovery, diet);
+		return parse(apiLevel, sourceUnit, options, recordLineSeparator, statementsRecovery, diet, false);
+	}
+	
+	public static ParseResult parse(int apiLevel,
+			descent.internal.compiler.env.ICompilationUnit sourceUnit,
+			Map options, 
+			boolean recordLineSeparator,
+			boolean statementsRecovery,
+			boolean diet,
+			boolean debug) {
+		return parse(apiLevel, sourceUnit.getContents(), sourceUnit.getFileName(), options, recordLineSeparator, statementsRecovery, diet, debug);
 	}
 	
 	public static ParseResult parse(int apiLevel,
@@ -126,23 +138,45 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			boolean recordLineSeparator,
 			boolean statementsRecovery,
 			boolean diet) {
+		return parse(apiLevel,
+				source,
+				filename, 
+				options,
+				recordLineSeparator,
+				statementsRecovery,
+				diet,
+				false);
+	}
+	
+	public static ParseResult parse(int apiLevel,
+			char[] source,
+			char[] filename, 
+			Map options,
+			boolean recordLineSeparator,
+			boolean statementsRecovery,
+			boolean diet,
+			boolean debug) {
 		
 		descent.internal.compiler.parser.Parser parser;
-		if (options != null) {
-			String taskTags = (String) options.get(JavaCore.COMPILER_TASK_TAGS);
-			if (taskTags != null) {
-				parser = new Parser(apiLevel, source, 0, source.length, 
-						Util.toCharArrays(taskTags.split(",")),
-						Util.toCharArrays(((String) options.get(JavaCore.COMPILER_TASK_PRIORITIES)).split(",")),
-						recordLineSeparator,
-						JavaCore.ENABLED.equals(options.get(JavaCore.COMPILER_TASK_CASE_SENSITIVE)),
-						filename
-						);
+		if (debug) {
+			parser = new CompileTimeParser(apiLevel, source, 0, source.length, filename, recordLineSeparator);
+		} else {
+			if (options != null) {
+				String taskTags = (String) options.get(JavaCore.COMPILER_TASK_TAGS);
+				if (taskTags != null) {
+					parser = new Parser(apiLevel, source, 0, source.length, 
+							Util.toCharArrays(taskTags.split(",")),
+							Util.toCharArrays(((String) options.get(JavaCore.COMPILER_TASK_PRIORITIES)).split(",")),
+							recordLineSeparator,
+							JavaCore.ENABLED.equals(options.get(JavaCore.COMPILER_TASK_CASE_SENSITIVE)),
+							filename
+							);
+				} else {
+					parser = new Parser(apiLevel, source, 0, source.length, filename, recordLineSeparator);
+				}
 			} else {
 				parser = new Parser(apiLevel, source, 0, source.length, filename, recordLineSeparator);
 			}
-		} else {
-			parser = new Parser(apiLevel, source, 0, source.length, filename, recordLineSeparator);
 		}
 		
 		parser.diet = diet;
@@ -165,10 +199,23 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			boolean recordLineSeparator,
 			boolean statementsRecovery,
 			IProgressMonitor monitor) throws JavaModelException {
+		return resolve(apiLevel, sourceUnit, javaProject, options, owner, recordLineSeparator, statementsRecovery, null, monitor);
+	}
+	
+	public static ParseResult resolve(
+			int apiLevel,
+			descent.internal.compiler.env.ICompilationUnit sourceUnit,
+			IJavaProject javaProject,
+			Map options,
+			WorkingCopyOwner owner,
+			boolean recordLineSeparator,
+			boolean statementsRecovery,
+			IDebugger debugger,
+			IProgressMonitor monitor) throws JavaModelException {
 		
-		ParseResult result = parse(apiLevel, sourceUnit, options, recordLineSeparator, statementsRecovery, false);
+		ParseResult result = parse(apiLevel, sourceUnit, options, recordLineSeparator, statementsRecovery, false, debugger != null);
 		result.module.moduleName = sourceUnit.getFullyQualifiedName();
-		result.context = resolve(result.module, javaProject, owner, result.encoder);
+		result.context = resolve(result.module, javaProject, owner, result.encoder, true, debugger);
 		return result;
 	}
 	
@@ -188,6 +235,17 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			final ASTNodeEncoder encoder,
 			final boolean analayzeTemplates) 
 		throws JavaModelException {
+		return resolve(module, project, owner, encoder, analayzeTemplates, null);
+	}
+	
+	public static SemanticContext resolve(
+			final Module module, 
+			final IJavaProject project,
+			final WorkingCopyOwner owner,
+			final ASTNodeEncoder encoder,
+			final boolean analayzeTemplates,
+			final IDebugger debugger) 
+		throws JavaModelException {
 		
 		CompilerConfiguration config = new CompilerConfiguration();
 		if (!analayzeTemplates) {
@@ -195,7 +253,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		}
 		
 		Global global = prepareForSemantic(project, config);
-		return resolve(module, project, global, owner, config, encoder);
+		return resolve(module, project, global, owner, config, encoder, debugger);
 	}
 	
 	private static SemanticContext resolve(
@@ -204,7 +262,8 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			final Global global,
 			final WorkingCopyOwner owner,
 			final CompilerConfiguration config,
-			final ASTNodeEncoder encoder) throws JavaModelException {
+			final ASTNodeEncoder encoder,
+			final IDebugger debugger) throws JavaModelException {
 		
 		long time = System.currentTimeMillis();
 		
@@ -354,14 +413,19 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			}
 		};
 		
-		SemanticContext context = new SemanticContext(
-				problemRequestor, 
-				module, 
-				project,
-				new DescentModuleFinder(new CancelableNameEnvironment((JavaProject) project, owner, null), config, encoder),
-				global,
-				config,
-				encoder);
+		SemanticContext context;
+		
+		if (debugger == null) {
+			context = new SemanticContext(
+					problemRequestor, module, project,
+					new DescentModuleFinder(new CancelableNameEnvironment((JavaProject) project, owner, null), config, encoder),
+					global, config, encoder);
+		} else {
+			context = new CompileTimeSemanticContext(
+					problemRequestor, module, project,
+					new DescentModuleFinder(new CancelableNameEnvironment((JavaProject) project, owner, null), config, encoder),
+					global, config, encoder, debugger);
+		}
 		
 		if (!RESOLVE) return context;
 		
@@ -375,6 +439,10 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		
 		try {
 			module.semantic(context);
+			
+			if (debugger != null) {
+				debugger.terminate();
+			}
 		} catch (Throwable t) {
 			Util.log(t, "In module " + module.moduleName + ": " + t.getClass().getName() + ":" + t.getMessage());
 		}

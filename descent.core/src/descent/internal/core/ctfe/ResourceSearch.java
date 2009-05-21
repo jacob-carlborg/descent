@@ -1,4 +1,4 @@
-package descent.internal.debug.ui.console;
+package descent.internal.core.ctfe;
 
 import java.io.File;
 
@@ -20,8 +20,7 @@ import descent.internal.core.JavaProject;
 	private INameEnvironment env;
 	private IJavaProject activeProject;
 	
-	public ICompilationUnit search(String filename)
-	{
+	public INameEnvironment getNameEnvironment() {
 		if (this.env == null) {
 			activeProject = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot()).getActiveProject();
 			try {
@@ -31,6 +30,13 @@ import descent.internal.core.JavaProject;
 				return null;
 			}
 		}
+		return this.env;
+	}
+	
+	public ICompilationUnit search(String filename)
+	{
+		getNameEnvironment();
+		if (this.env == null) return null;
 		
 		// If the file exists, then this is an absolute path and it must
 		// be resolved in a library or include path --> IClassFile

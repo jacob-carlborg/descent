@@ -1,14 +1,16 @@
 package descent.internal.core.ctfe;
 
-import java.io.IOException;
-
 import org.eclipse.core.resources.IMarkerDelta;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
+import org.eclipse.debug.core.IBreakpointManager;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.debug.core.model.IDebugTarget;
+import org.eclipse.debug.core.model.ILineBreakpoint;
 import org.eclipse.debug.core.model.IMemoryBlock;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.model.IThread;
@@ -17,12 +19,51 @@ public class DescentCtfeDebugTarget extends DescentCtfeDebugElement implements I
 
 	private final ILaunch fLaunch;
 	private final IProcess fProcess;
+	private final IDebugger fDebugger;
+	
 	private boolean fSuspended;
+	private DescentCtfeThread fThread;
+	private DescentCtfeThread[] fThreads;
 
-	public DescentCtfeDebugTarget(ILaunch launch, IProcess process) {
+	public DescentCtfeDebugTarget(ILaunch launch, IProcess process, IDebugger debugger) {
 		super(null);
 		this.fLaunch = launch;
 		this.fProcess = process;
+		this.fDebugger = debugger;
+		
+		this.fThread = new DescentCtfeThread(this, fDebugger);
+		this.fThreads = new DescentCtfeThread[] { fThread };
+		
+		DebugPlugin.getDefault().getBreakpointManager().addBreakpointListener(this);
+	}
+	
+	/**
+	 * Adds the currently defined breakpoints to the debugger
+	 * interpreter, and starts the session.
+	 */
+	public void started() throws DebugException {
+		fireCreationEvent();
+		fThread.fireCreationEvent();
+		
+		installDeferredBreakpoints();
+		
+		fireResumeEvent(DebugEvent.CLIENT_REQUEST);
+		
+		fDebugger.start();
+		fSuspended = false;
+	}
+	
+	protected void installDeferredBreakpoints() {
+		try {
+			IBreakpointManager manager = DebugPlugin.getDefault().getBreakpointManager();
+			IBreakpoint[] breakpoints = manager.getBreakpoints("descent.debug.core.model");
+			for(IBreakpoint breakpoint : breakpoints) {
+				if (breakpoint.isEnabled()) {
+					fDebugger.addBreakpoint(breakpoint.getMarker().getResource(), ((ILineBreakpoint) breakpoint).getLineNumber());
+				}
+			}
+		} catch (CoreException e) {
+		}
 	}
 
 	public String getName() throws DebugException {
@@ -34,11 +75,11 @@ public class DescentCtfeDebugTarget extends DescentCtfeDebugElement implements I
 	}
 
 	public IThread[] getThreads() throws DebugException {
-		return new IThread[0];
+		return fThreads;
 	}
 
 	public boolean hasThreads() throws DebugException {
-		return false;
+		return true;
 	}
 
 	public boolean supportsBreakpoint(IBreakpoint breakpoint) {
@@ -64,21 +105,18 @@ public class DescentCtfeDebugTarget extends DescentCtfeDebugElement implements I
 	public void terminate() throws DebugException {
 		if (isTerminated()) return;
 		
-//		try {
-//			fDebugger.terminate();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
+		fProcess.terminate();
+		fDebugger.terminate();
 		
 		internalTerminate();
 	}
 	
 	private void internalTerminate() {
-//		fThread.fireTerminateEvent();
+		fThread.fireTerminateEvent();
 		
 //		fProcess.getStreamsProxy().getOutputStreamMonitor().removeListener(fOutStreamListener);		
 //		fProcess.getStreamsProxy().getErrorStreamMonitor().removeListener(fErrorStreamListener);
-//		DebugPlugin.getDefault().getBreakpointManager().removeBreakpointListener(this);
+		DebugPlugin.getDefault().getBreakpointManager().removeBreakpointListener(this);
 	}
 
 	public boolean canResume() {
@@ -110,18 +148,36 @@ public class DescentCtfeDebugTarget extends DescentCtfeDebugElement implements I
 	}
 
 	public void breakpointAdded(IBreakpoint breakpoint) {
-		// TODO Auto-generated method stub
+		if (isTerminated()) return;
 		
+		try {
+			fDebugger.addBreakpoint(breakpoint.getMarker().getResource(), ((ILineBreakpoint) breakpoint).getLineNumber());
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void breakpointChanged(IBreakpoint breakpoint, IMarkerDelta delta) {
-		// TODO Auto-generated method stub
-		
+		if (supportsBreakpoint(breakpoint)) {
+			try {
+				if (breakpoint.isEnabled()) {
+					breakpointAdded(breakpoint);
+				} else {
+					breakpointRemoved(breakpoint, null);
+				}
+			} catch (CoreException e) {
+			}
+		}
 	}
 
 	public void breakpointRemoved(IBreakpoint breakpoint, IMarkerDelta delta) {
-		// TODO Auto-generated method stub
+		if (isTerminated()) return;
 		
+		try {
+			fDebugger.removeBreakpoint(breakpoint.getMarker().getResource(), ((ILineBreakpoint) breakpoint).getLineNumber());
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public boolean canDisconnect() {
@@ -142,6 +198,55 @@ public class DescentCtfeDebugTarget extends DescentCtfeDebugElement implements I
 
 	public boolean supportsStorageRetrieval() {
 		return false;
+	}
+
+	public void stepInto() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void stepOver() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void stepReturn() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	public void breakpointHit(IResource resource, int lineNumber) throws DebugException {
+		fSuspended = true;
+		
+		if (resource != null) {
+			IBreakpoint breakpoint = findBreakpoint(resource, lineNumber);
+			if (breakpoint != null) {
+				fThread.setBreakpoints(new IBreakpoint[] { breakpoint });
+			}
+		}
+		
+		fThread.invalidateChildren();
+		fThread.fireSuspendEvent(DebugEvent.BREAKPOINT);
+	}
+	
+	private IBreakpoint findBreakpoint(IResource resource, int lineNumber) {
+		IBreakpoint[] breakpoints = DebugPlugin.getDefault().getBreakpointManager().getBreakpoints("descent.debug.core.model");
+		for (int i = 0; i < breakpoints.length; i++) {
+			IBreakpoint breakpoint = breakpoints[i];
+			if (supportsBreakpoint(breakpoint)) {
+				if (breakpoint instanceof ILineBreakpoint) {
+					ILineBreakpoint lineBreakpoint = (ILineBreakpoint) breakpoint;
+					try {
+						if (lineBreakpoint.getLineNumber() == lineNumber
+								&& breakpoint.getMarker().getResource().equals(resource)) {
+							return breakpoint;
+						}
+					} catch (CoreException e) {
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 }
