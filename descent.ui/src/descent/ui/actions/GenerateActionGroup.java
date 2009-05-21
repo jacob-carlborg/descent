@@ -410,6 +410,7 @@ public class GenerateActionGroup extends ActionGroup {
 //		added+= addAction(source, fGenerateConstructorUsingFields);
 //		added+= addAction(source, fAddUnimplementedConstructors);
 		source.add(new Separator(GROUP_CODE));
+		added+= addEditorAction(source, "DebugCtfe"); //$NON-NLS-1$
 		source.add(new Separator(GROUP_EXTERNALIZE));
 //		added+= addAction(source, fExternalizeStrings);
 		return added;

@@ -1149,6 +1149,12 @@
             id="descent.ui.edit.text.java.add.block.comment">
       </command>
       <command
+            name="%ActionDefinition.debugCtfe.name"
+            description="%ActionDefinition.debugCtfe.description"
+            categoryId="descent.ui.category.source"
+            id="descent.ui.edit.text.java.debug.ctfe">
+      </command>
+      <command
             name="%ActionDefinition.removeBlockComment.name"
             description="%ActionDefinition.removeBlockComment.description"
             categoryId="descent.ui.category.source"

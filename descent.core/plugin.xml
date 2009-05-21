@@ -122,5 +122,35 @@
             properties="hasProjectNature, isExecutable"
             type="org.eclipse.core.runtime.IAdaptable"/>            
    </extension>
+   
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="descent.internal.core.ctfe.DescentCtfeLaunchConfigurationDelegate"
+            id="descent.debug.ctfe.application"
+            modes="debug"
+            name="D CTFE Application"
+            sourceLocatorId="descent.debug.ctfe.descentCtfeSourceLookupDirector"
+            sourcePathComputerId="descent.debug.ctfe.descentCtfeSourcePathComputer"/>
+   </extension>
+   <extension
+         point="org.eclipse.debug.core.sourceLocators">
+      <sourceLocator
+            class="descent.internal.core.ctfe.DescentCtfeSourceLookupDirector"
+            id="descent.debug.ctfe.descentCtfeSourceLookupDirector"
+            name="Descent CTFE Source Lookup Director"/>
+   </extension>
+   <extension
+         point="org.eclipse.debug.core.sourcePathComputers">
+      <sourcePathComputer
+            class="descent.internal.core.ctfe.DescentCtfeSourceLookupParticipant"
+            id="descent.debug.ctfe.descentCtfeSourcePathComputer"/>
+   </extension>
+   <extension
+         point="org.eclipse.debug.core.watchExpressionDelegates">
+      <watchExpressionDelegate
+            debugModel="descent.debug.ctfe.model"
+            delegateClass="descent.internal.core.ctfe.DescentCtfeWatchExpressionDelegate"/>
+   </extension>
 
 </plugin>

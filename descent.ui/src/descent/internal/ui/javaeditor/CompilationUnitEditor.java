@@ -104,6 +104,7 @@ import descent.internal.ui.IJavaHelpContextIds;
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.actions.AddBlockCommentAction;
 import descent.internal.ui.actions.CompositeActionGroup;
+import descent.internal.ui.actions.DebugCtfeAction;
 import descent.internal.ui.actions.IndentAction;
 import descent.internal.ui.actions.RemoveBlockCommentAction;
 import descent.internal.ui.text.ContentAssistPreference;
@@ -1202,6 +1203,13 @@ public class CompilationUnitEditor extends JavaEditor implements IJavaReconcilin
 		markAsStateDependentAction("RemoveBlockComment", true); //$NON-NLS-1$
 		markAsSelectionDependentAction("RemoveBlockComment", true); //$NON-NLS-1$
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(action, IJavaHelpContextIds.REMOVE_BLOCK_COMMENT_ACTION);
+		
+		action= new DebugCtfeAction(JavaEditorMessages.getBundleForConstructedKeys(), "DebugCtfe.", this);  //$NON-NLS-1$
+		action.setActionDefinitionId(IJavaEditorActionDefinitionIds.DEBUG_CTFE);
+		setAction("DebugCtfe", action); //$NON-NLS-1$
+		markAsStateDependentAction("DebugCtfe", true); //$NON-NLS-1$
+		markAsSelectionDependentAction("DebugCtfe", true); //$NON-NLS-1$
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(action, IJavaHelpContextIds.DEBUG_CTFE_ACTION);
 
 		action= new IndentAction(JavaEditorMessages.getBundleForConstructedKeys(), "Indent.", this, false); //$NON-NLS-1$
 		action.setActionDefinitionId(IJavaEditorActionDefinitionIds.INDENT);

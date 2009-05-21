@@ -14,10 +14,12 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui.console,
  org.eclipse.ant.core,
  org.apache.ant,
- org.eclipse.core.expressions
+ org.eclipse.core.expressions,
+ org.eclipse.debug.core;bundle-version="3.4.0"
 Eclipse-LazyStart: true
 Export-Package: descent.core,
  descent.core.compiler,
+ descent.core.ctfe,
  descent.core.ddoc,
  descent.core.dom,
  descent.core.dom.rewrite,

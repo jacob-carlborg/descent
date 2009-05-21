@@ -219,6 +219,7 @@ public interface IJavaHelpContextIds {
 	public static final String OPEN_HIERARCHY_ACTION= 						PREFIX + "open_hierarchy_action"; 	 //$NON-NLS-1$	
 	public static final String TOGGLE_SMART_TYPING_ACTION= 					PREFIX + "toggle_smart_typing_action"; //$NON-NLS-1$
 	public static final String INDENT_ACTION= 								PREFIX + "indent_action"; //$NON-NLS-1$
+	public static final String DEBUG_CTFE_ACTION=				PREFIX + "debug_ctfe";	//$NON-NLS-1$
 
 	// Dialogs
 	public static final String MAINTYPE_SELECTION_DIALOG= PREFIX + "maintype_selection_dialog_context"; //$NON-NLS-1$

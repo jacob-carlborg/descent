@@ -130,6 +130,8 @@ public class JdtActionConstants {
 	 */
 	public static final String REMOVE_BLOCK_COMMENT= "descent.ui.actions.RemoveBlockComment"; //$NON-NLS-1$
 	
+	public static final String DEBUG_CTFE= "descent.ui.actions.DebugCtfe"; //$NON-NLS-1$
+	
 	/**
 	 * Source menu: name of standard Indent global action
 	 * (value <code>"descent.ui.actions.Indent"</code>).

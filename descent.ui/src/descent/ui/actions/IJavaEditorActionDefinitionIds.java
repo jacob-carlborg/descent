@@ -164,6 +164,8 @@ public interface IJavaEditorActionDefinitionIds extends ITextEditorActionDefinit
 	 */
 	public static final String REMOVE_BLOCK_COMMENT= "descent.ui.edit.text.java.remove.block.comment"; //$NON-NLS-1$
 	
+	public static final String DEBUG_CTFE= "descent.ui.edit.text.java.debug.ctfe"; //$NON-NLS-1$
+	
 	/**
 	 * Action definition ID of the source -> indent action
 	 * (value <code>"descent.ui.edit.text.java.indent"</code>).
