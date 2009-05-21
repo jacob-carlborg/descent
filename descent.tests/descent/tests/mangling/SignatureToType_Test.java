@@ -24,6 +24,7 @@ import descent.internal.compiler.parser.TypeInstance;
 import descent.internal.compiler.parser.TypePointer;
 import descent.internal.compiler.parser.TypeSArray;
 import descent.internal.compiler.parser.TypeSlice;
+import descent.internal.compiler.parser.TypeTuple;
 import descent.internal.compiler.parser.TypeTypeof;
 import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.core.InternalSignature;
@@ -79,6 +80,12 @@ public class SignatureToType_Test extends AbstractSignatureTest implements ISign
 		assertSame(Type.tint32, actual.next);
 		assertSame(1, ((IntegerExp) actual.lwr).value.intValue());
 		assertSame(3, ((IntegerExp) actual.upr).value.intValue());
+	}
+	
+	public void testTuple() {
+		TypeTuple actual = (TypeTuple) InternalSignature.toType("" + Signature.C_TUPLE + "2" + Signature.C_TUPLE + i + a, new ASTNodeEncoder(AST.D1));
+		assertSame(Type.tint32, actual.arguments.get(0).type);
+		assertSame(Type.tchar, actual.arguments.get(1).type);
 	}
 	
 	public void testFunction() {

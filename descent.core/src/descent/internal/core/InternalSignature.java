@@ -95,9 +95,9 @@ public class InternalSignature {
 				public void acceptTuple(String signature, int numberOftypes) {
 					Stack<Type> sub = stack.peek();
 					
-					Arguments args = new Arguments();
+					Arguments args = new Arguments(numberOftypes);
 					for (int i = 0; i < numberOftypes; i++) {
-						args.add(new Argument(0, sub.pop(), null, null));
+						args.add(0, new Argument(0, sub.pop(), null, null));
 					}
 					
 					sub.push(new TypeTuple(args));
@@ -335,9 +335,9 @@ public class InternalSignature {
 				public void acceptTuple(String signature, int numberOftypes) {
 					Stack<Type> sub = stack.peek();
 					
-					Arguments args = new Arguments();
+					Arguments args = new Arguments(numberOftypes);
 					for (int i = 0; i < numberOftypes; i++) {
-						args.add(new Argument(0, sub.pop(), null, null));
+						args.add(0, new Argument(0, sub.pop(), null, null));
 					}
 					
 					sub.push(new TypeTuple(args));
