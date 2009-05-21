@@ -111,4 +111,15 @@ public final class ArrayUtil_Test {
 		}), EMPTY_INTEGER_ARRAY);
 	}
 	
+	@Test
+	public void test_concat() {
+		Integer[] arr1 = array(0, 1, 2, 3, 4);
+		Integer[] arr2 = array(10, 11, 12, 13, 14);
+		
+		assertDeepEquals(ArrayUtil.concat(arr1, arr2), array(0, 1, 2, 3, 4, 10, 11, 12, 13, 14));
+		assertDeepEquals(ArrayUtil.concat(arr1, arr2, 0), array(0, 1, 2, 3, 4));
+		assertDeepEquals(ArrayUtil.concat(arr1, arr2, 2), array(0, 1, 2, 3, 4, 10, 11));
+		assertDeepEquals(ArrayUtil.concat(arr1, arr2, 5), array(0, 1, 2, 3, 4, 10, 11, 12, 13, 14));
+	}
+	
 }

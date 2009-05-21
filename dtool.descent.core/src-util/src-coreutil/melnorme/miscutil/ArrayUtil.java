@@ -172,27 +172,51 @@ public class ArrayUtil {
 		System.arraycopy(src, 0, dest, destIx, src.length);
 	}
 	
+	
 	/** Appends an element to array, creating a new array. */
-	public static <T> T[] append(T[] array, T element) {
-		T[] newArray = copyFrom(array, array.length + 1);
-		newArray[array.length] = element;
+	public static <T> T[] append(T[] base, T element) {
+		T[] newArray = copyFrom(base, base.length + 1);
+		newArray[base.length] = element;
 		return newArray;
 	}
 
-	/** Appends two arrays, creating a new array of the same runtime type as original. */
-	public static <T> T[] concat(T[] original, T... second) {
-		T[] newArray = copyFrom(original, original.length + second.length);
-    	System.arraycopy(second, 0, newArray, original.length, second.length);
+	/** Appends given array other to given array base, 
+	 * creating a new array of the same runtime type as original. */
+	public static <T> T[] concat(T[] base, T... other) {
+		return concat(base, other, other.length);
+	}
+	
+	/** Appends appendCount number of elements of given array other to given array base, 
+	 * creating a new array of the same runtime type as original. */
+	public static <T> T[] concat(T[] base, T[] other, int appendCount) {
+		T[] newArray = copyFrom(base, base.length + appendCount);
+		System.arraycopy(other, 0, newArray, base.length, appendCount);
+		return newArray;
+	}
+
+	/** Appends appendCount number of elements of given array other to given array base */
+	public static byte[] concat(byte[] base, byte[] other, int appendCount) {
+		final int length = base.length;
+		byte[] newArray = copyFrom(base, base.length + appendCount);
+		System.arraycopy(other, 0, newArray, length, appendCount);
+		return newArray;
+	}
+	
+	/** Appends appendCount number of elements of given array other to given array base */
+	public static char[] concat(char[] base, char[] other, int appendCount) {
+		final int length = base.length;
+		char[] newArray = copyFrom(base, base.length + appendCount);
+		System.arraycopy(other, 0, newArray, length, appendCount);
 		return newArray;
 	}
 	
 	/** Appends two arrays, creating a new array of given runtime type. */
 	@SuppressWarnings("unchecked")
-	public static <T> T[] concat(T[] original, T[] second, Class<?> arClass) {
-		int newSize = original.length + second.length;
+	public static <T> T[] concat(T[] base, T[] other, Class<?> arClass) {
+		int newSize = base.length + other.length;
 		T[] newArray = (T[]) Array.newInstance(arClass, newSize);
-		System.arraycopy(original, 0, newArray, 0, original.length);
-		System.arraycopy(second, 0, newArray, original.length, second.length);
+		System.arraycopy(base, 0, newArray, 0, base.length);
+		System.arraycopy(other, 0, newArray, base.length, other.length);
 		return newArray;
 	}
 	
@@ -279,5 +303,6 @@ public class ArrayUtil {
 		}
 		return newIx == arrayIx ? newArray : ArrayUtil.copyOfRange(newArray, 0, newIx);
 	}
+
 
 }

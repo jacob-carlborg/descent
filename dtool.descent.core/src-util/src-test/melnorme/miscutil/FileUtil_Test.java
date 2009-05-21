@@ -50,16 +50,12 @@ public final class FileUtil_Test {
 		
 		byte[] bytes = FileUtil.readBytesFromFile(tempFile);
 		assertTrue(bytes.length == FILE_LENGTH);
-		char[] chars = FileUtil.readCharsFromFile(tempFile);
-		assertTrue(chars.length == FILE_LENGTH);
-		String string = FileUtil.readStringFromFile(tempFile);
-		assertTrue(string.length() == FILE_LENGTH);
 
+		String string;
 		
-		
-		bytes = FileUtil.readBytesFromStream(new FileInputStream(tempFile));
+		bytes = FileUtil.readAvailableBytesFromStream(new FileInputStream(tempFile));
 		assertTrue(bytes.length == FILE_LENGTH);
-		string = FileUtil.readStringFromStream(new FileInputStream(tempFile));
+		string = new String(FileUtil.readAvailableBytesFromStream(new FileInputStream(tempFile)));
 		assertTrue(string.length() == FILE_LENGTH);
 		
 		bytes = FileUtil.readBytesFromStream(new FileInputStream(tempFile), 1000);
@@ -68,9 +64,9 @@ public final class FileUtil_Test {
 		
 		URL tempFileURL = tempFile.toURL();
 		
-		bytes = FileUtil.readBytesFromStream(tempFileURL.openStream());
+		bytes = FileUtil.readAvailableBytesFromStream(tempFileURL.openStream());
 		assertTrue(bytes.length == FILE_LENGTH);
-		string = FileUtil.readStringFromStream(tempFileURL.openStream());
+		string = new String(FileUtil.readAvailableBytesFromStream(tempFileURL.openStream()));
 		assertTrue(string.length() == FILE_LENGTH);
 		
 		bytes = FileUtil.readBytesFromStream(tempFileURL.openStream(), 1000);

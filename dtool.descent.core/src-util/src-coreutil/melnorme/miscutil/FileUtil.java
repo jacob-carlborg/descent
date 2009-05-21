@@ -15,7 +15,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -23,87 +22,24 @@ import java.io.Reader;
 /**
  * Miscellaneous file and stream utilities. 
  */
-public final class FileUtil {
+public final class FileUtil extends StreamUtil {
+	
+	private static final int EOF = -1;
+
 
 	/** Read all bytes of the given file. */
 	public static byte[] readBytesFromFile(File file) throws IOException, FileNotFoundException {
-		long length = file.length();
+		long fileLength = file.length();
 		/*
 		 * You cannot create an array using a long type. It needs to be an
-		 * int type. // Before converting to an int type, check to ensure
+		 * int type. Before converting to an int type, check to ensure
 		 * that file is not larger than Integer.MAX_VALUE.
 		 */
-		if (length > Integer.MAX_VALUE) 
-			throw new IOException("File is too large");
-		
-		byte[] bytes;
+		if (fileLength > Integer.MAX_VALUE) 
+			throw new IOException("File is too large, size is bigger than " + Integer.MAX_VALUE);
 		
 		FileInputStream fis = new FileInputStream(file);
-		try {
-			// Create the char array to hold the data
-			bytes = new byte[(int)length];
-			
-			// Read in the chars
-			int offset = 0;
-			int numRead = 0;
-			while (offset < bytes.length
-					&& (numRead = fis.read(bytes, offset, bytes.length-offset)) >= 0) {
-				offset += numRead;
-			}
-
-			// Ensure all the bytes have been read in
-			if (offset < bytes.length) {
-				throw new IOException("Could not completely read file " + file.getName());
-			}
-		} finally {
-			fis.close();
-		}
-	
-		return bytes;
-	}
-
-	
-	/** Read all chars of the given file. */
-	public static char[] readCharsFromFile(File file) throws IOException {
-
-		long length = file.length();
-	    /*
-		 * You cannot create an array using a long type. It needs to be an
-		 * int type. // Before converting to an int type, check to ensure
-		 * that file is not larger than Integer.MAX_VALUE.
-		 */
-	    if (length > Integer.MAX_VALUE) 
-	    	throw new IOException("File is too large");
-	    
-		char[] chars;
-
-		FileReader fr = new java.io.FileReader(file);
-		try {
-			// Create the char array to hold the data
-			chars = new char[(int)length];
-			
-			// Read in the chars
-			int offset = 0;
-			int numRead = 0;
-			while (offset < chars.length
-			       && (numRead = fr.read(chars, offset, chars.length-offset)) >= 0) {
-			    offset += numRead;
-			}
-			
-			// Ensure all the bytes have been read in
-			if (offset < chars.length) {
-			    throw new IOException("Could not completely read file " + file.getName());
-			}
-		} finally {
-		    fr.close();
-		}
-		
-	    return chars;
-	}
-	
-	/** Read all chars available in the given File, returns a String */
-	public static String readStringFromFile(File file) throws IOException {
-		return new String(readCharsFromFile(file));
+		return readBytesFromStream(fis, (int) fileLength);
 	}
 	
 	
@@ -119,64 +55,104 @@ public final class FileUtil {
 		}
 	}
 	
+	/* --- Stream util --- */
 	
-	/** Read all chars available in the given InputStream, returns them as String using default charset. 
-	 *  Closes inputStream. */
-	public static String readStringFromStream(InputStream inputStream) throws IOException {
-		return new String(readBytesFromStream(inputStream));
-	}
-
-	/** Read all bytes available from the given InputStream in one read, returns them. 
-	 *  Closes inputStream. */
-	public static byte[] readBytesFromStream(InputStream inputStream) throws IOException {
-		int availableToRead = inputStream.available();
-		return readBytesFromStream(inputStream, availableToRead);
-	}
-
 	
-	/** Read toRead amount of bytes from the given InputStream in one read, returns them. 
-	 *  Closes inputStream. */
-	public static byte[] readBytesFromStream(InputStream inputStream, int toRead) throws IOException {
+	/** Reads all bytes from given inputStream until an EOF is read. */
+	public static byte[] readAllBytesFromStream(InputStream inputStream) throws IOException {
 		try {
-			byte[] bytes = new byte[toRead];
-			int read = inputStream.read(bytes);
-			if (read != toRead) {
-				throw new IOException("Failed to read requested amount of characters. Read " + read
-						+ " of " + toRead);
+			final int BUFFER_SIZE = 1024;
+			byte[] buffer = new byte[BUFFER_SIZE];
+			byte[] bytes = new byte[0];
+			int totalRead = 0;
+
+			int read;
+			while((read = inputStream.read(buffer)) != EOF) {
+				bytes = ArrayUtil.concat(bytes, buffer, read);
+				totalRead += read;
 			}
 			return bytes;
 		} finally {
-			inputStream.close(); 
+			inputStream.close();
 		}
-	}
-	
-	/** Read all chars available in the given Reader, returns a String. 
-	 * Closes reader. */
-	public static String readStringFromReader(Reader reader) throws IOException {
-		return new String(readCharsFromReader(reader));
 	}
 	
 	/** Read and returns all chars in the given Reader until the end of the stream.
 	 * Closes reader. */
-	public static char[] readCharsFromReader(Reader reader) throws IOException {
+	public static char[] readAllCharsFromReader(Reader reader) throws IOException {
 		try {
-		    char[] buffer = new char[1024];
-			
-			// Read in the bytes
+			final int BUFFER_SIZE = 1024;
+			char[] buffer = new char[BUFFER_SIZE];
 			char[] chars = new char[0];
-			int offset = 0;
-			
-			int numRead = 0;
-			while ((numRead = reader.read(buffer, 0, 1024)) >= 0) {
-				chars = ArrayUtil.copyFrom(chars, offset + numRead);
-				System.arraycopy(buffer, 0, chars, offset, numRead);
-				offset += numRead;
+			int totalRead = 0;
+
+			int read;
+			while((read = reader.read(buffer)) != EOF) {
+				chars = ArrayUtil.concat(chars, buffer, read);
+				totalRead += read;
 			}
 			return chars;
 		} finally {
 			reader.close();
 		}
 	}
+
+	@Deprecated
+	public static char[] readCharsFromReader(Reader reader) throws IOException {
+		return readAllCharsFromReader(reader);
+	}
+	
+	
+	/** Reads count amount of bytes from the given InputStream, and returns them. 
+	 *  Closes given inputStream. 
+	 *  Throws an Exception if it fails to read given count amount of elements. */
+	public static byte[] readBytesFromStream(InputStream inputStream, int count) throws IOException {
+		try {
+			byte[] bytes = new byte[count];
+			int totalRead = 0;
+			do {
+				int read = inputStream.read(bytes, totalRead, count - totalRead);
+				if (read == -1) {
+					throw new IOException("Failed to read requested amount of characters. " +
+							"Read: " + totalRead + " of total requested: " + count);
+				}
+				totalRead += read;
+			} while (totalRead != count);
+			return bytes;
+		} finally {
+			inputStream.close(); 
+		}
+	}
+	
+	/** Reads count amount of chars from the given Reader, and returns them. 
+	 *  Closes given reader. 
+	 *  Throws an Exception if it fails to read given count amount of elements. */
+	public static char[] readCharsFromStream(Reader reader, int count) throws IOException {
+		try {
+			char[] chars = new char[count];
+			int totalRead = 0;
+			do {
+				int read = reader.read(chars, totalRead, count - totalRead);
+				if (read == -1) {
+					throw new IOException("Failed to read requested amount of characters. " +
+							"Read: " + totalRead + " of total requested: " + count);
+				}
+				totalRead += read;
+			} while (totalRead != count);
+			return chars;
+		} finally {
+			reader.close(); 
+		}
+	}
+	
+	/** Reads and returns all available bytes from the given InputStream, as specified by 
+	 * {@link InputStream#available()}. Closes inputStream afterwards. */
+	public static byte[] readAvailableBytesFromStream(InputStream inputStream) throws IOException {
+		int availableToRead = inputStream.available();
+		return readBytesFromStream(inputStream, availableToRead);
+	}
+	
+
 	
 	/** Performs an InputStream close, either ignoring IOExceptions, 
 	 * or rethrowing them unchecked, according to rethrowAsUnchecked. */
