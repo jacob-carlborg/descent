@@ -5,8 +5,8 @@ import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IVariable;
 
 import descent.internal.compiler.parser.ASTDmdNode;
+import descent.internal.compiler.parser.InterState;
 import descent.internal.compiler.parser.Scope;
-import descent.internal.compiler.parser.SemanticContext;
 
 public interface IDebugger {
 	
@@ -21,6 +21,10 @@ public interface IDebugger {
 	void stepBegin(ASTDmdNode node, Scope sc);
 	
 	void stepEnd(ASTDmdNode node, Scope sc);
+	
+	void stepBegin(ASTDmdNode node, InterState is);
+	
+	void stepEnd(ASTDmdNode node, InterState is);
 	
 	void enterStackFrame();
 	

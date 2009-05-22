@@ -187,7 +187,8 @@ public class IfStatement extends Statement {
 		}
 
 		Argument a = arg != null ? arg.syntaxCopy(context) : null;
-		IfStatement s = new IfStatement(loc, a, condition.syntaxCopy(context), i, e);
+		IfStatement s = context.newIfStatement(loc, a, condition.syntaxCopy(context), i, e);
+		s.copySourceRange(this);
 		return s;
 	}
 

@@ -356,7 +356,8 @@ public class ReturnStatement extends Statement {
 		if (exp != null) {
 			e = exp.syntaxCopy(context);
 		}
-		ReturnStatement s = new ReturnStatement(loc, e);
+		ReturnStatement s = context.newReturnStatement(loc, e);
+		s.copySourceRange(this);
 		return s;
 	}
 

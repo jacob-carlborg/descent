@@ -3841,7 +3841,7 @@ public class Parser extends Lexer {
 				TypeFunction typeFunction = (TypeFunction) t;
 				Expression constraint = null;
 				
-				FuncDeclaration f = new FuncDeclaration(loc(), ident, storage_class, typeFunction);
+				FuncDeclaration f = newFuncDeclaration(loc(), ident, storage_class, typeFunction);
 				
 				if (apiLevel >= 2) {
 					if (tpl != null) {
@@ -3945,7 +3945,7 @@ public class Parser extends Lexer {
 		
 		return a;
 	}
-	
+
 	/*****************************************
 	 * Parses default argument initializer expression that is an assign expression,
 	 * with special handling for __FILE__ and __LINE__.
@@ -4449,7 +4449,7 @@ public class Parser extends Lexer {
 			if (d != null) {
 				d.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 				d.preComments = lastComments;
-				s = new DeclarationStatement(loc(), d);
+				s = newDeclarationStatement(loc(), d);
 			}
 			break;
 		}
@@ -4487,7 +4487,7 @@ public class Parser extends Lexer {
 				if (d != null) {
 					d.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 					d.preComments = lastComments;
-					s = new DeclarationStatement(loc(), d);
+					s = newDeclarationStatement(loc(), d);
 				}
 			}
 			break;
@@ -4507,7 +4507,7 @@ public class Parser extends Lexer {
 				break;
 		    } else {			
 		    	d = parseMixin();
-		    	s = new DeclarationStatement(loc(), d);
+		    	s = newDeclarationStatement(loc(), d);
 		    	break;
 		    }
 		}
@@ -4839,7 +4839,7 @@ public class Parser extends Lexer {
 			} else {
 				elsebody2 = null;
 			}
-			s = new IfStatement(loc(), arg, condition2, ifbody2, elsebody2);
+			s = newIfStatement(loc(), arg, condition2, ifbody2, elsebody2);
 			break;
 		}
 
@@ -5401,7 +5401,7 @@ public class Parser extends Lexer {
 			for (int i = 0; i < a.size(); i++) {
 				Dsymbol d = (Dsymbol) a.get(i);
 				d.preComments = lastComments;
-				s[0] = new DeclarationStatement(loc(), d);
+				s[0] = newDeclarationStatement(loc(), d);
 				as.add(s[0]);
 			}
 			
@@ -5409,7 +5409,7 @@ public class Parser extends Lexer {
 		} else if (a.size() == 1) {
 			Dsymbol d = (Dsymbol) a.get(0);
 			d.preComments = lastComments;
-			s[0] = new DeclarationStatement(loc(), d);
+			s[0] = newDeclarationStatement(loc(), d);
 		} else {
 			parsingErrorDeleteToken(token);
 			nextToken();
@@ -5419,7 +5419,7 @@ public class Parser extends Lexer {
 			s[0] = new ScopeStatement(loc(), s[0]);
 		}
 	}
-	
+
 	private void check(TOK value) {
 		if (token.value != value) {
 			parsingErrorInsertTokenAfter(prevToken, value.toString());
@@ -8306,6 +8306,18 @@ public class Parser extends Lexer {
 	
 	protected StaticIfDeclaration newStaticIfDeclaration(StaticIfCondition condition, Dsymbols a, Dsymbols aelse) {
 		return new StaticIfDeclaration(condition, a, aelse);
+	}
+	
+	protected FuncDeclaration newFuncDeclaration(Loc loc, IdentifierExp ident, int storage_class, TypeFunction typeFunction) {
+		return new FuncDeclaration(loc, ident, storage_class, typeFunction);
+	}
+	
+	protected Statement newIfStatement(Loc loc, Argument arg, Expression condition, Statement ifbody, Statement elsebody) {
+		return new IfStatement(loc, arg, condition, ifbody, elsebody);
+	}
+	
+	protected Statement newDeclarationStatement(Loc loc, Dsymbol d) {
+		return new DeclarationStatement(loc, d);
 	}
 	
 	protected AggregateDeclaration endAggregateDeclaration(AggregateDeclaration a) {

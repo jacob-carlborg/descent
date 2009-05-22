@@ -2445,7 +2445,7 @@ public class FuncDeclaration extends Declaration {
 		if (s != null) {
 			f = (FuncDeclaration) s;
 		} else {
-			f = new FuncDeclaration(loc, ident, storage_class, type
+			f = context.newFuncDeclaration(loc, ident, storage_class, type
 					.syntaxCopy(context));
 		}
 

@@ -105,7 +105,7 @@ public class ExpStatement extends Statement {
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
 		Expression e = exp != null ? exp.syntaxCopy(context) : null;
-		ExpStatement es = new ExpStatement(loc, e);
+		ExpStatement es = context.newExpStatement(loc, e);
 		return es;
 	}
 

@@ -396,4 +396,29 @@ public class SemanticContext {
 		return new StaticIfDeclaration(condition, a, aelse);
 	}
 
+	protected Expression newCallExp(Loc loc, Expression e, Expressions args) {
+		return new CallExp(loc, e, args);
+	}
+
+	protected FuncDeclaration newFuncDeclaration(Loc loc, IdentifierExp ident,
+			int storage_class, Type syntaxCopy) {
+		return new FuncDeclaration(loc, ident, storage_class, syntaxCopy);
+	}
+
+	protected IfStatement newIfStatement(Loc loc, Argument a, Expression condition, Statement ifbody, Statement elsebody) {
+		return new IfStatement(loc, a, condition, ifbody, elsebody);
+	}
+
+	protected ReturnStatement newReturnStatement(Loc loc, Expression e) {
+		return new ReturnStatement(loc, e);
+	}
+
+	protected DeclarationStatement newDeclarationStatement(Loc loc, Expression e) {
+		return new DeclarationStatement(loc, e);
+	}
+
+	protected ExpStatement newExpStatement(Loc loc, Expression e) {
+		return new ExpStatement(loc, e);
+	}
+
 }

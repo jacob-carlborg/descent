@@ -5,16 +5,26 @@ import descent.core.IProblemRequestor;
 import descent.internal.compiler.env.IModuleFinder;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.ASTNodeEncoder;
+import descent.internal.compiler.parser.Argument;
 import descent.internal.compiler.parser.Condition;
 import descent.internal.compiler.parser.ConditionalDeclaration;
+import descent.internal.compiler.parser.DeclarationStatement;
 import descent.internal.compiler.parser.Dsymbols;
+import descent.internal.compiler.parser.ExpStatement;
+import descent.internal.compiler.parser.Expression;
+import descent.internal.compiler.parser.Expressions;
+import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.Global;
 import descent.internal.compiler.parser.IdentifierExp;
+import descent.internal.compiler.parser.IfStatement;
 import descent.internal.compiler.parser.Initializer;
+import descent.internal.compiler.parser.InterState;
 import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Module;
+import descent.internal.compiler.parser.ReturnStatement;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.SemanticContext;
+import descent.internal.compiler.parser.Statement;
 import descent.internal.compiler.parser.StaticIfDeclaration;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.VarDeclaration;
@@ -46,6 +56,20 @@ public class CompileTimeSemanticContext extends SemanticContext {
 		debugger.stepEnd(node, sc);
 	}
 	
+	public void stepBegin(ASTDmdNode node, InterState is) {
+		if (fDisabledStepping > 0)
+			return;
+		
+		debugger.stepBegin(node, is);
+	}
+	
+	public void stepEnd(ASTDmdNode node, InterState is) {
+		if (fDisabledStepping > 0)
+			return;
+		
+		debugger.stepEnd(node, is);
+	}
+	
 	@Override
 	public void startTemplateEvaluation(ASTDmdNode node) {
 		if (fDisabledStepping > 0)
@@ -66,6 +90,28 @@ public class CompileTimeSemanticContext extends SemanticContext {
 		debugger.exitStackFrame();
 	}
 	
+	public void enterFunctionInterpret() {
+		if (fDisabledStepping > 0)
+			return;
+		
+		debugger.enterStackFrame();
+	}
+	
+	public void exitFunctionInterpret() {
+		if (fDisabledStepping > 0)
+			return;
+		
+		debugger.exitStackFrame();
+	}
+	
+	public void disableStepping() {
+		fDisabledStepping++;
+	}
+
+	public void enableStepping() {
+		fDisabledStepping--;
+	}
+	
 	@Override
 	protected VarDeclaration newVarDeclaration(Loc loc, Type type, IdentifierExp exp, Initializer init) {
 		return new CompileTimeVarDeclaration(loc, type, exp, init);
@@ -81,12 +127,34 @@ public class CompileTimeSemanticContext extends SemanticContext {
 		return new CompileTimeStaticIfDeclaration(condition, a, aelse);
 	}
 
-	public void disableStepping() {
-		fDisabledStepping++;
+	@Override
+	public Expression newCallExp(Loc loc, Expression e, Expressions args) {
+		return new CompileTimeCallExp(loc, e, args);
 	}
-
-	public void enableStepping() {
-		fDisabledStepping--;
+	
+	@Override
+	protected FuncDeclaration newFuncDeclaration(Loc loc, IdentifierExp ident, int storage_class, Type syntaxCopy) {
+		return new CompileTimeFuncDeclaration(loc, ident, storage_class, syntaxCopy);
+	}
+	
+	@Override
+	protected IfStatement newIfStatement(Loc loc, Argument a, Expression condition, Statement ifbody, Statement elsebody) {
+		return new CompileTimeIfStatement(loc, a, condition, ifbody, elsebody);
+	}
+	
+	@Override
+	protected ReturnStatement newReturnStatement(Loc loc, Expression e) {
+		return new CompileTimeReturnStatement(loc, e);
+	}
+	
+	@Override
+	protected DeclarationStatement newDeclarationStatement(Loc loc, Expression e) {
+		return new CompileTimeDeclarationStatement(loc, e);
+	}
+	
+	@Override
+	protected ExpStatement newExpStatement(Loc loc, Expression e) {
+		return new CompileTimeExpStatement(loc, e);
 	}
 
 }

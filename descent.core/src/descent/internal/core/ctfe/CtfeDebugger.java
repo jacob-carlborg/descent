@@ -24,7 +24,10 @@ import descent.core.dom.CompilationUnitResolver.ParseResult;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.AliasDeclaration;
 import descent.internal.compiler.parser.Dsymbol;
+import descent.internal.compiler.parser.DsymbolTable;
 import descent.internal.compiler.parser.Expression;
+import descent.internal.compiler.parser.FuncDeclaration;
+import descent.internal.compiler.parser.InterState;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.Scope;
@@ -44,13 +47,14 @@ public class CtfeDebugger implements IDebugger {
 	private Semaphore fSemaphore;
 	
 	private ParseResult fParseResult;
-	private ASTDmdNode fCurrentNode;
 	private int fCurrentLine;
+	private int fCurrentStackFrame;
 	private ICompilationUnit fCurrentUnit;
 	private Scope fCurrentScope;
+	private InterState fCurrentInterState;
 	
 	private List<DescentCtfeStackFrame> fStackFrames = new ArrayList<DescentCtfeStackFrame>();
-	private List<IVariable[]> fVariables = new ArrayList<IVariable[]>();
+//	private List<IVariable[]> fVariables = new ArrayList<IVariable[]>();
 	
 	/**
 	 * This is the next stack frame where the user wants to be.
@@ -167,7 +171,35 @@ public class CtfeDebugger implements IDebugger {
 	}
 
 	public void stepBegin(ASTDmdNode node, Scope sc) {
-		ICompilationUnit unit = getCompilationUnit(sc);
+		fCurrentInterState = null;
+		fCurrentScope = sc;
+		
+		internalStepBegin(node);
+	}
+	
+	public void stepEnd(ASTDmdNode node, Scope sc) {
+		fCurrentInterState = null;
+		fCurrentScope = sc;
+		
+		internalStepEnd(node);
+	}
+	
+	public void stepBegin(ASTDmdNode node, InterState is) {
+		fCurrentInterState = is;
+		fCurrentScope = is == null ? ((FuncDeclaration) node).scope : is.fd.scope;
+		
+		internalStepBegin(node);
+	}
+	
+	public void stepEnd(ASTDmdNode node, InterState is) {
+		fCurrentInterState = is;
+		fCurrentScope = is == null ? ((FuncDeclaration) node).scope : is.fd.scope;
+		
+		internalStepEnd(node);
+	}
+	
+	private void internalStepBegin(ASTDmdNode node) {
+		ICompilationUnit unit = getCompilationUnit(fCurrentScope);
 		if (unit == null) return;
 		
 		if (fStartedDebugging == 0) {
@@ -178,54 +210,49 @@ public class CtfeDebugger implements IDebugger {
 			}
 		}
 		
+		if (fStartedDebugging <= 0)
+			return;
+		
 		try {
 			IDocument doc = new Document(unit.getSource());
 			int line = doc.getLineOfOffset(node.start) + 1;
 			
-			if (line == fCurrentLine)
+			if (line == fCurrentLine && fStackFrames.size() == fCurrentStackFrame)
 				return;
 			
-			fCurrentNode = node;
 			fCurrentLine = line;
 			fCurrentUnit = unit;
-			fCurrentScope = sc;
 			
 			if (fStackFrames.isEmpty()) {
 				enterStackFrame();
 				fNextStackFrame = 0;
 			}
 			
+			fCurrentStackFrame = fStackFrames.size();
+			
 			// Only hit breakpoint if the expected stack frame for the user
 			// is the same as the current one
 			if (fNextStackFrame >= fStackFrames.size() - 1) {
 				fDebugTarget.breakpointHit(unit.getResource(), line);
 				fSemaphore.acquire();
+			} else {
+				// See if we hit a breakpoint
+				if (hasBreakpoint(unit, fCurrentLine)) {
+					fDebugTarget.breakpointHit(unit.getResource(), line);
+					fSemaphore.acquire();
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-//		try {
-//			IDocument doc = new Document(unit.getSource());
-//			int line = doc.getLineOfOffset(node.start) + 1;
-//			
-//			if (hasBreakpoint(unit, line)) {
-//				fDebugTarget.breakpointHit(unit.getResource(), line);
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
 	}
 	
-	public void stepEnd(ASTDmdNode node, Scope sc) {
-		ICompilationUnit unit = getCompilationUnit(sc);
+	private void internalStepEnd(ASTDmdNode node) {
+		ICompilationUnit unit = getCompilationUnit(fCurrentScope);
 		if (unit == null) return;
 		
 		if (isTarget(node, unit)) {
 			fStartedDebugging--;
-			if (fStartedDebugging == 0) {
-				exitStackFrame();
-			}
 		}
 	}
 	
@@ -275,7 +302,7 @@ public class CtfeDebugger implements IDebugger {
 	}
 
 	public synchronized IVariable evaluateExpression(int stackFrame, String expression) {
-		DescentCtfeStackFrame sf = fStackFrames.get(fStackFrames.size() - stackFrame - 1);
+		DescentCtfeStackFrame sf = getStackFrame(stackFrame);
 		Scope scope = sf.getScope();
 		
 		Parser parser = new Parser(AST.D1, expression.toCharArray(), 0, expression.length(), null, null, false, false, fUnit.getFullyQualifiedName().toCharArray(), fParseResult.encoder);
@@ -326,48 +353,78 @@ public class CtfeDebugger implements IDebugger {
 	}
 
 	public IVariable[] getVariables(int stackFrame) {
-		while(fVariables.size() - 1 < stackFrame) {
-			fVariables.add(null);
-		}
+		List<DescentCtfeVariable> vars = new ArrayList<DescentCtfeVariable>();
 		
-		IVariable[] variables = fVariables.get(stackFrame);
-		if (variables == null) {
-			List<DescentCtfeVariable> vars = new ArrayList<DescentCtfeVariable>();
-			fillVariables(stackFrame, fCurrentScope, vars);
-			variables = vars.toArray(new DescentCtfeVariable[vars.size()]);
-			fVariables.set(stackFrame, variables);
+		DescentCtfeStackFrame sf = getStackFrame(stackFrame);
+		InterState is = sf.getInterState();
+		if (is == null) {
+			Scope scope = sf.getScope();		
+			fillVariables(stackFrame, scope, vars);
+		} else {
+			fillVariables(stackFrame, is, vars);
 		}
-		return variables;
+		return vars.toArray(new DescentCtfeVariable[vars.size()]);
 	}
 
 	private void fillVariables(int stackFrame, Scope currentScope, List<DescentCtfeVariable> vars) {
 		if (currentScope.scopesym != null && currentScope.scopesym.symtab != null) {
-			for(char[] key : currentScope.scopesym.symtab.keys()) {
-				if (key == null)
-					continue;
-				
-				Dsymbol dsymbol = currentScope.scopesym.symtab.lookup(key);
-				if (dsymbol instanceof VarDeclaration) {
-					VarDeclaration var = (VarDeclaration) dsymbol;
-					if (!var.isConst())
-						continue;
-					
-					vars.add(newVariable(0, var.ident.toString(), var.init.toString()));	
-				} else if (dsymbol instanceof AliasDeclaration) {
-					AliasDeclaration alias = (AliasDeclaration) dsymbol;
-					
-					if (alias.aliassym != null) {
-						vars.add(newVariable(stackFrame, alias.ident.toString(), alias.aliassym.ident.toString()));
-					} else if (alias.type != null){
-						vars.add(newVariable(stackFrame, alias.ident.toString(), alias.type.toString()));
-					}
-				}
-			}
+			fillVariables(stackFrame, currentScope.scopesym.symtab, vars);
 		}
 		
 		if (currentScope.enclosing != null) {
 			fillVariables(stackFrame, currentScope.enclosing, vars);
 		}
+	}
+	
+	private void fillVariables(int stackFrame, InterState is, List<DescentCtfeVariable> vars) {
+		if (is.vars != null) {
+			for(Dsymbol dsymbol : is.vars) {
+				DescentCtfeVariable var = toVariable(stackFrame, dsymbol);
+				if (var == null)
+					continue;
+				
+				vars.add(var);
+			}
+		}
+		
+		if (is.fd != null && is.fd.localsymtab != null) {
+			fillVariables(stackFrame, is.fd.localsymtab, vars);
+		}
+	}
+	
+	private void fillVariables(int stackFrame, DsymbolTable symtab, List<DescentCtfeVariable> vars) {
+		for(char[] key : symtab.keys()) {
+			if (key == null)
+				continue;
+			
+			Dsymbol dsymbol = symtab.lookup(key);
+			DescentCtfeVariable var = toVariable(stackFrame, dsymbol);
+			if (var == null)
+				continue;
+			
+			vars.add(var);
+		}
+	}
+	
+	private DescentCtfeVariable toVariable(int stackFrame, Dsymbol dsymbol) {
+		if (dsymbol instanceof VarDeclaration) {
+			VarDeclaration var = (VarDeclaration) dsymbol;
+			if (var.isConst()) {
+				return newVariable(0, var.ident.toString(), var.init.toString());	
+			} else if (var.value != null) {
+				return newVariable(0, var.ident.toString(), var.value.toString());
+			}
+		} else if (dsymbol instanceof AliasDeclaration) {
+			AliasDeclaration alias = (AliasDeclaration) dsymbol;
+			
+			if (alias.aliassym != null) {
+				return newVariable(stackFrame, alias.ident.toString(), alias.aliassym.ident.toString());
+			} else if (alias.type != null){
+				return newVariable(stackFrame, alias.ident.toString(), alias.type.toString());
+			}
+		}
+		
+		return null;
 	}
 
 	public IStackFrame[] getStackFrames() {
@@ -379,8 +436,12 @@ public class CtfeDebugger implements IDebugger {
 		return fStackFrames.toArray(new IStackFrame[fStackFrames.size()]);
 	}
 	
-	public void enterStackFrame() {
-		fStackFrames.add(0, newStackFrame());
+	private DescentCtfeStackFrame getStackFrame(int stackFrame) {
+		int index = fStackFrames.size() - stackFrame - 1;
+		if (index < 0 || index >= fStackFrames.size())
+			System.out.println(123456);
+		
+		return fStackFrames.get(index);
 	}
 	
 	private DescentCtfeVariable newVariable(int stackFrame, String name, String value) {
@@ -388,12 +449,19 @@ public class CtfeDebugger implements IDebugger {
 	}
 	
 	private DescentCtfeStackFrame newStackFrame() {
-		return fDebugTarget.newStackFrame(fCurrentUnit.getFullyQualifiedName(), fStackFrames.size(), fCurrentUnit, fCurrentLine, fCurrentScope);
+		return fDebugTarget.newStackFrame(fCurrentUnit.getFullyQualifiedName(), fStackFrames.size(), fCurrentUnit, fCurrentLine, fCurrentScope, fCurrentInterState);
+	}
+	
+	public void enterStackFrame() {
+		System.out.println("Enter stack frame");
+		
+		fStackFrames.add(0, newStackFrame());
 	}
 	
 	public void exitStackFrame() {
+		System.out.println("Exit stack frame");
+		
 		fStackFrames.remove(0);
-		fVariables.remove(0);
 	}
 
 }
