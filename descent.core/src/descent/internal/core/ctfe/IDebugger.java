@@ -6,6 +6,7 @@ import org.eclipse.debug.core.model.IVariable;
 
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.Scope;
+import descent.internal.compiler.parser.SemanticContext;
 
 public interface IDebugger {
 	

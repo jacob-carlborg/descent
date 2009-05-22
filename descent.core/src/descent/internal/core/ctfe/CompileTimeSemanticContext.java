@@ -23,6 +23,7 @@ import descent.internal.core.CompilerConfiguration;
 public class CompileTimeSemanticContext extends SemanticContext {
 	
 	private final IDebugger debugger;
+	private int fDisabledStepping;
 
 	public CompileTimeSemanticContext(IProblemRequestor problemRequestor,
 			Module module, IJavaProject project, IModuleFinder moduleFinder,
@@ -32,15 +33,24 @@ public class CompileTimeSemanticContext extends SemanticContext {
 	}
 	
 	public void stepBegin(ASTDmdNode node, Scope sc) {
+		if (fDisabledStepping > 0)
+			return;
+		
 		debugger.stepBegin(node, sc);
 	}
 	
 	public void stepEnd(ASTDmdNode node, Scope sc) {
+		if (fDisabledStepping > 0)
+			return;
+		
 		debugger.stepEnd(node, sc);
 	}
 	
 	@Override
 	public void startTemplateEvaluation(ASTDmdNode node) {
+		if (fDisabledStepping > 0)
+			return;
+		
 		super.startTemplateEvaluation(node);
 		
 		debugger.enterStackFrame();
@@ -48,6 +58,9 @@ public class CompileTimeSemanticContext extends SemanticContext {
 	
 	@Override
 	public void endTemplateEvaluation() {
+		if (fDisabledStepping > 0)
+			return;
+		
 		super.endTemplateEvaluation();
 		
 		debugger.exitStackFrame();
@@ -66,6 +79,14 @@ public class CompileTimeSemanticContext extends SemanticContext {
 	@Override
 	protected StaticIfDeclaration newStaticIfDeclaration(Condition condition, Dsymbols a, Dsymbols aelse) {
 		return new CompileTimeStaticIfDeclaration(condition, a, aelse);
+	}
+
+	public void disableStepping() {
+		fDisabledStepping++;
+	}
+
+	public void enableStepping() {
+		fDisabledStepping--;
 	}
 
 }

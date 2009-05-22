@@ -26,7 +26,7 @@ public class SemanticContext {
 	// If DMD is being run on Win32
 	public boolean _WIN32 = true;
 
-	private IProblemRequestor problemRequestor;
+	public IProblemRequestor problemRequestor;
 	public Global global;
 	public IJavaProject project;
 	public IModuleFinder moduleFinder;

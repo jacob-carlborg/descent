@@ -190,6 +190,29 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		return new ParseResult(module, scanner, parser.encoder);
 	}
 	
+	public static ParseResult prepareForResolve(int apiLevel,
+			descent.internal.compiler.env.ICompilationUnit sourceUnit,
+			IJavaProject javaProject,
+			Map options,
+			WorkingCopyOwner owner,
+			boolean recordLineSeparator,
+			boolean statementsRecovery,
+			IDebugger debugger,
+			IProgressMonitor monitor) throws JavaModelException {
+		
+		CompilerConfiguration config = new CompilerConfiguration();
+		config.analyzeTemplates = false;
+		
+		ParseResult result = parse(apiLevel, sourceUnit, options, recordLineSeparator, statementsRecovery, false, debugger != null);
+		result.module.moduleName = sourceUnit.getFullyQualifiedName();
+		result.context = getContext(result.module, javaProject, owner, config, result.encoder, debugger);
+		return result;
+	}
+	
+	public static void resolve(ParseResult result, IJavaProject javaProject, WorkingCopyOwner owner, IDebugger debugger) throws JavaModelException {
+		resolve(result.module, javaProject, owner, result.encoder, true, debugger);
+	}
+	
 	public static ParseResult resolve(
 			int apiLevel,
 			descent.internal.compiler.env.ICompilationUnit sourceUnit,
@@ -252,20 +275,56 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			config.analyzeTemplates = false;
 		}
 		
-		Global global = prepareForSemantic(project, config);
-		return resolve(module, project, global, owner, config, encoder, debugger);
+		return resolve(module, project, owner, config, encoder, debugger);
 	}
 	
 	private static SemanticContext resolve(
 			final Module module, 
 			final IJavaProject project,
-			final Global global,
 			final WorkingCopyOwner owner,
 			final CompilerConfiguration config,
 			final ASTNodeEncoder encoder,
 			final IDebugger debugger) throws JavaModelException {
 		
+		SemanticContext context = getContext(module, project, owner, config, encoder, debugger);
+		
+		if (!RESOLVE) 
+			return context;
+		
+		resolve(module, debugger, context);
+		
+		return context;
+	}
+
+	private static void resolve(final Module module, final IDebugger debugger,
+			final SemanticContext context) {
 		long time = System.currentTimeMillis();
+		
+		try {
+			module.semantic(context);
+			
+			if (debugger != null) {
+				debugger.terminate();
+			}
+		} catch (Throwable t) {
+			Util.log(t, "In module " + module.moduleName + ": " + t.getClass().getName() + ":" + t.getMessage());
+		}
+		
+		if (STATS) {
+			time = System.currentTimeMillis() - time;
+			if (time != 0) {
+				System.out.println("Resolve of " + module.moduleName + " took " + time + " miliseconds to complete.");
+			}
+		}
+	}
+	
+	private static SemanticContext getContext(final Module module, 
+			final IJavaProject project,
+			final WorkingCopyOwner owner,
+			final CompilerConfiguration config,
+			final ASTNodeEncoder encoder,
+			final IDebugger debugger) throws JavaModelException {
+		Global global = getGlobal(project, config);
 		
 		IProblemRequestor problemRequestor = new IProblemRequestor() {
 			public void acceptProblem(IProblem problem) {
@@ -427,37 +486,10 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 					global, config, encoder, debugger);
 		}
 		
-		if (!RESOLVE) return context;
-		
-		// First adhere to DMD: if there are syntaxis errors, don't do
-		// semantic analysis.
-		// COMMENTED THIS, since when there are syntax errors we would
-		// like to have a better recovery
-//		if (module.problems != null && module.problems.size() > 0) {
-//			return context;
-//		}
-		
-		try {
-			module.semantic(context);
-			
-			if (debugger != null) {
-				debugger.terminate();
-			}
-		} catch (Throwable t) {
-			Util.log(t, "In module " + module.moduleName + ": " + t.getClass().getName() + ":" + t.getMessage());
-		}
-		
-		if (STATS) {
-			time = System.currentTimeMillis() - time;
-			if (time != 0) {
-				System.out.println("Resolve of " + module.moduleName + " took " + time + " miliseconds to complete.");
-			}
-		}
-		
 		return context;
 	}
 	
-	private static Global prepareForSemantic(IJavaProject project, CompilerConfiguration config) {
+	private static Global getGlobal(IJavaProject project, CompilerConfiguration config) {
 		Global global = new Global();
 		try {
 			for(IPackageFragmentRoot root : project.getAllPackageFragmentRoots()) {

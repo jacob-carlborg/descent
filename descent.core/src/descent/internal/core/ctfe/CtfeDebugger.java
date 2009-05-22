@@ -13,17 +13,24 @@ import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 
 import descent.core.ICompilationUnit;
+import descent.core.IProblemRequestor;
 import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
+import descent.core.compiler.IProblem;
 import descent.core.dom.AST;
 import descent.core.dom.CompilationUnitResolver;
+import descent.core.dom.CompilationUnitResolver.ParseResult;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.AliasDeclaration;
 import descent.internal.compiler.parser.Dsymbol;
+import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.Module;
+import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.Scope;
+import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.VarDeclaration;
+import descent.internal.compiler.parser.ast.IProblemReporter;
 import descent.internal.core.CompilationUnit;
 
 public class CtfeDebugger implements IDebugger {
@@ -38,12 +45,13 @@ public class CtfeDebugger implements IDebugger {
 	private int fStartedDebugging;
 	private Semaphore fSemaphore;
 	
+	private ParseResult fParseResult;
 	private ASTDmdNode fCurrentNode;
 	private int fCurrentLine;
 	private ICompilationUnit fCurrentUnit;
 	private Scope fCurrentScope;
 	
-	private List<IStackFrame> fStackFrames = new ArrayList<IStackFrame>();
+	private List<DescentCtfeStackFrame> fStackFrames = new ArrayList<DescentCtfeStackFrame>();
 	private List<IVariable[]> fVariables = new ArrayList<IVariable[]>();
 	
 	private static class Breakpoint {
@@ -120,7 +128,7 @@ public class CtfeDebugger implements IDebugger {
 		Runnable runnable = new Runnable() {
 			public void run() {
 				try {
-					CompilationUnitResolver.resolve(AST.D1, 
+					fParseResult = CompilationUnitResolver.prepareForResolve(AST.D1, 
 							fUnit,
 							fUnit.getJavaProject(), 
 							JavaCore.getOptions(), 
@@ -129,6 +137,8 @@ public class CtfeDebugger implements IDebugger {
 							false, 
 							CtfeDebugger.this,
 							new NullProgressMonitor());
+					
+					CompilationUnitResolver.resolve(fParseResult, fUnit.getJavaProject(), null, CtfeDebugger.this);
 				} catch (JavaModelException e) {
 					e.printStackTrace();
 				}
@@ -244,8 +254,55 @@ public class CtfeDebugger implements IDebugger {
 		fSemaphore.release();
 	}
 
-	public IVariable evaluateExpression(int stackFrame, String expression) {
-		return null;
+	public synchronized IVariable evaluateExpression(int stackFrame, String expression) {
+		DescentCtfeStackFrame sf = fStackFrames.get(fStackFrames.size() - stackFrame - 1);
+		Scope scope = sf.getScope();
+		
+		Parser parser = new Parser(AST.D1, expression.toCharArray(), 0, expression.length(), null, null, false, false, fUnit.getFullyQualifiedName().toCharArray(), fParseResult.encoder);
+		parser.nextToken();
+		
+		Expression exp = parser.parseExpression();
+		if (parser.problems != null && !parser.problems.isEmpty()) {
+			return newVariable(stackFrame, expression, parser.problems.toString());	
+		} else {
+			((CompileTimeSemanticContext) fParseResult.context).disableStepping();
+			IProblemRequestor oldRequestor = fParseResult.context.problemRequestor;
+			int oldMuteProblems = fParseResult.context.muteProblems;
+			int oldGlobalErrors = fParseResult.context.global.errors; 
+			
+			fParseResult.context.muteProblems = 0;
+			fParseResult.context.global.errors = 0;
+			
+			final List<IProblem> problems = new ArrayList<IProblem>();
+			fParseResult.context.problemRequestor = new IProblemRequestor() {
+				public void acceptProblem(IProblem problem) {
+					problems.add(problem);
+				}
+				public void beginReporting() {
+				}
+				public void endReporting() {
+				}
+				public boolean isActive() {
+					return true;
+				}
+			};
+			
+			try {
+				Expression result = exp.semantic(scope, fParseResult.context);
+				result = result.optimize(ASTDmdNode.WANTflags | ASTDmdNode.WANTvalue | ASTDmdNode.WANTinterpret, fParseResult.context);
+				
+				if (problems.size() > 0) {
+					return newVariable(stackFrame, expression, problems.toString());
+				} else {
+					return newVariable(stackFrame, expression, result.toString());
+				}
+			} finally {
+				fParseResult.context.problemRequestor = oldRequestor;
+				fParseResult.context.muteProblems = oldMuteProblems;
+				fParseResult.context.global.errors = oldGlobalErrors;
+				((CompileTimeSemanticContext) fParseResult.context).enableStepping();
+			}
+		}
 	}
 
 	public IVariable[] getVariables(int stackFrame) {
@@ -256,14 +313,14 @@ public class CtfeDebugger implements IDebugger {
 		IVariable[] variables = fVariables.get(stackFrame);
 		if (variables == null) {
 			List<DescentCtfeVariable> vars = new ArrayList<DescentCtfeVariable>();
-			fillVariables(fCurrentScope, vars);
+			fillVariables(stackFrame, fCurrentScope, vars);
 			variables = vars.toArray(new DescentCtfeVariable[vars.size()]);
 			fVariables.set(stackFrame, variables);
 		}
 		return variables;
 	}
 
-	private void fillVariables(Scope currentScope, List<DescentCtfeVariable> vars) {
+	private void fillVariables(int stackFrame, Scope currentScope, List<DescentCtfeVariable> vars) {
 		if (currentScope.scopesym != null && currentScope.scopesym.symtab != null) {
 			for(char[] key : currentScope.scopesym.symtab.keys()) {
 				if (key == null)
@@ -275,27 +332,28 @@ public class CtfeDebugger implements IDebugger {
 					if (!var.isConst())
 						continue;
 					
-					vars.add(new DescentCtfeVariable(fDebugTarget, this, 0, var.ident.toString(), var.init.toString()));	
+					vars.add(newVariable(0, var.ident.toString(), var.init.toString()));	
 				} else if (dsymbol instanceof AliasDeclaration) {
 					AliasDeclaration alias = (AliasDeclaration) dsymbol;
 					
 					if (alias.aliassym != null) {
-						vars.add(new DescentCtfeVariable(fDebugTarget, this, 0, alias.ident.toString(), alias.aliassym.ident.toString()));
+						vars.add(newVariable(stackFrame, alias.ident.toString(), alias.aliassym.ident.toString()));
 					} else if (alias.type != null){
-						vars.add(new DescentCtfeVariable(fDebugTarget, this, 0, alias.ident.toString(), alias.type.toString()));
+						vars.add(newVariable(stackFrame, alias.ident.toString(), alias.type.toString()));
 					}
 				}
 			}
 		}
 		
 		if (currentScope.enclosing != null) {
-			fillVariables(currentScope.enclosing, vars);
+			fillVariables(stackFrame, currentScope.enclosing, vars);
 		}
 	}
 
 	public IStackFrame[] getStackFrames() {
 		if (!fStackFrames.isEmpty()) {
-			fStackFrames.set(0, newStackFrame());
+			fStackFrames.remove(0);
+			fStackFrames.add(0, newStackFrame());
 		}
 		
 		return fStackFrames.toArray(new IStackFrame[fStackFrames.size()]);
@@ -305,8 +363,12 @@ public class CtfeDebugger implements IDebugger {
 		fStackFrames.add(0, newStackFrame());
 	}
 	
-	private IStackFrame newStackFrame() {
-		return fDebugTarget.newStackFrame(fCurrentUnit.getFullyQualifiedName(), fStackFrames.size(), fCurrentUnit, fCurrentLine);
+	private DescentCtfeVariable newVariable(int stackFrame, String name, String value) {
+		return new DescentCtfeVariable(fDebugTarget, this, 0, name, value);
+	}
+	
+	private DescentCtfeStackFrame newStackFrame() {
+		return fDebugTarget.newStackFrame(fCurrentUnit.getFullyQualifiedName(), fStackFrames.size(), fCurrentUnit, fCurrentLine, fCurrentScope);
 	}
 	
 	public void exitStackFrame() {

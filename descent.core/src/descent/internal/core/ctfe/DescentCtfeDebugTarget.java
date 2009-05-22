@@ -17,6 +17,7 @@ import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IThread;
 
 import descent.core.ICompilationUnit;
+import descent.internal.compiler.parser.Scope;
 
 public class DescentCtfeDebugTarget extends DescentCtfeDebugElement implements IDebugTarget {
 
@@ -249,8 +250,8 @@ public class DescentCtfeDebugTarget extends DescentCtfeDebugElement implements I
 		return fDebugger.getStackFrames();
 	}
 	
-	public IStackFrame newStackFrame(String name, int number, ICompilationUnit unit, int lineNumber) {
-		return new DescentCtfeStackFrame(this, fDebugger, fThreads[0], name, number, unit, lineNumber);
+	public DescentCtfeStackFrame newStackFrame(String name, int number, ICompilationUnit unit, int lineNumber, Scope sc) {
+		return new DescentCtfeStackFrame(this, fDebugger, fThreads[0], name, number, unit, lineNumber, sc);
 	}
 
 }
