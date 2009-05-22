@@ -28,9 +28,7 @@ import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.Scope;
-import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.VarDeclaration;
-import descent.internal.compiler.parser.ast.IProblemReporter;
 import descent.internal.core.CompilationUnit;
 
 public class CtfeDebugger implements IDebugger {
@@ -53,6 +51,15 @@ public class CtfeDebugger implements IDebugger {
 	
 	private List<DescentCtfeStackFrame> fStackFrames = new ArrayList<DescentCtfeStackFrame>();
 	private List<IVariable[]> fVariables = new ArrayList<IVariable[]>();
+	
+	/**
+	 * This is the next stack frame where the user wants to be.
+	 * If it says: step over, it reamins the same.
+	 * If it says: step into, it is one + current number of stack frames.
+	 * If it says: step out, it it one - current number of stack frames.
+	 * If it says: continue, it is -1.
+	 */
+	private int fNextStackFrame = -1;
 	
 	private static class Breakpoint {
 		
@@ -183,12 +190,17 @@ public class CtfeDebugger implements IDebugger {
 			fCurrentUnit = unit;
 			fCurrentScope = sc;
 			
-			if (fStackFrames.isEmpty())
+			if (fStackFrames.isEmpty()) {
 				enterStackFrame();
+				fNextStackFrame = 0;
+			}
 			
-			fDebugTarget.breakpointHit(unit.getResource(), line);
-			
-			fSemaphore.acquire();
+			// Only hit breakpoint if the expected stack frame for the user
+			// is the same as the current one
+			if (fNextStackFrame >= fStackFrames.size() - 1) {
+				fDebugTarget.breakpointHit(unit.getResource(), line);
+				fSemaphore.acquire();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -239,18 +251,26 @@ public class CtfeDebugger implements IDebugger {
 	}
 
 	public void stepInto() {
+		fNextStackFrame = fStackFrames.size();
+		
 		fSemaphore.release();
 	}
 
 	public void stepOver() {
+		fNextStackFrame = fStackFrames.size() - 1;
+		
 		fSemaphore.release();
 	}
 
 	public void stepReturn() {
+		fNextStackFrame = fStackFrames.size() - 2;
+		
 		fSemaphore.release();
 	}
 	
 	public void resume() {
+		fNextStackFrame = -1;
+		
 		fSemaphore.release();
 	}
 
