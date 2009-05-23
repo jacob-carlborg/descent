@@ -92,8 +92,9 @@ public class TryFinallyStatement extends Statement {
 
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
-		TryFinallyStatement s = new TryFinallyStatement(loc, body.syntaxCopy(context),
+		TryFinallyStatement s = context.newTryFinallyStatement(loc, body.syntaxCopy(context),
 				finalbody.syntaxCopy(context));
+		s.copySourceRange(this);
 		return s;
 	}
 

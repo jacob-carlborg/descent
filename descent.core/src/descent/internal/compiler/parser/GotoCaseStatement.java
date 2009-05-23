@@ -83,7 +83,8 @@ public class GotoCaseStatement extends Statement {
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
 		Expression e = exp != null ? exp.syntaxCopy(context) : null;
-		GotoCaseStatement s = new GotoCaseStatement(loc, e);
+		GotoCaseStatement s = context.newGotoCaseStatement(loc, e);
+		s.copySourceRange(this);
 		return s;
 	}
 

@@ -38,9 +38,9 @@ import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.core.CancelableNameEnvironment;
 import descent.internal.core.CompilerConfiguration;
 import descent.internal.core.JavaProject;
-import descent.internal.core.ctfe.CompileTimeParser;
-import descent.internal.core.ctfe.CompileTimeSemanticContext;
 import descent.internal.core.ctfe.IDebugger;
+import descent.internal.core.ctfe.dom.CompileTimeParser;
+import descent.internal.core.ctfe.dom.CompileTimeSemanticContext;
 import descent.internal.core.util.Util;
 
 public class CompilationUnitResolver extends descent.internal.compiler.Compiler {
@@ -210,7 +210,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 	}
 	
 	public static void resolve(ParseResult result, IJavaProject javaProject, WorkingCopyOwner owner, IDebugger debugger) throws JavaModelException {
-		resolve(result.module, javaProject, owner, result.encoder, true, debugger);
+		resolve(result.module, debugger, result.context);
 	}
 	
 	public static ParseResult resolve(
@@ -476,13 +476,11 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		
 		if (debugger == null) {
 			context = new SemanticContext(
-					problemRequestor, module, project,
-					new DescentModuleFinder(new CancelableNameEnvironment((JavaProject) project, owner, null), config, encoder),
+					problemRequestor, module, project, owner,
 					global, config, encoder);
 		} else {
 			context = new CompileTimeSemanticContext(
-					problemRequestor, module, project,
-					new DescentModuleFinder(new CancelableNameEnvironment((JavaProject) project, owner, null), config, encoder),
+					problemRequestor, module, project, owner,
 					global, config, encoder, debugger);
 		}
 		

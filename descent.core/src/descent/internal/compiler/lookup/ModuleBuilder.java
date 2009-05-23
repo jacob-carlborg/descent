@@ -413,8 +413,9 @@ public class ModuleBuilder {
 			member.setJavaElement(method);
 			members.add(wrap(member, method));	
 		} else { 
-			FuncDeclaration member = new FuncDeclaration(getLoc(module, method), getIdent(method), getStorageClass(method), getType(method));
+			FuncDeclaration member = newFuncDeclaration(getLoc(module, method), getIdent(method), getStorageClass(method), getType(method));
 			member.setJavaElement(method);
+			member.setSourceRange(method.getSourceRange().getOffset(), method.getSourceRange().getLength());
 			members.add(wrapWithTemplate(module, member, method));
 		}
 	}
@@ -1041,6 +1042,10 @@ public class ModuleBuilder {
 		} catch (JavaModelException e) {
 			Util.log(e);
 		}
+	}
+	
+	protected FuncDeclaration newFuncDeclaration(Loc loc, IdentifierExp ident, int storageClass, Type type) {
+		return new FuncDeclaration(loc, ident, storageClass, type);
 	}
 
 }

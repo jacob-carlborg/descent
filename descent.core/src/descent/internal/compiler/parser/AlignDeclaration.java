@@ -49,7 +49,8 @@ public class AlignDeclaration extends AttribDeclaration {
 		AlignDeclaration ad;
 
 		Assert.isTrue(s == null);
-		ad = new AlignDeclaration(salign, Dsymbol.arraySyntaxCopy(decl, context));
+		ad = context.newAlignDeclaration(salign, Dsymbol.arraySyntaxCopy(decl, context));
+		ad.copySourceRange(this);
 		return ad;
 	}
 

@@ -1,18 +1,19 @@
-package descent.internal.core.ctfe;
+package descent.internal.core.ctfe.dom;
 
+import descent.internal.compiler.parser.DeclarationStatement;
+import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.InterState;
 import descent.internal.compiler.parser.Loc;
-import descent.internal.compiler.parser.ReturnStatement;
 import descent.internal.compiler.parser.SemanticContext;
 
-public class CompileTimeReturnStatement extends ReturnStatement {
+public class CompileTimeDeclarationStatement extends DeclarationStatement {
 
-	public CompileTimeReturnStatement(int loc, Expression exp) {
-		super(loc, exp);
+	public CompileTimeDeclarationStatement(Loc loc, Dsymbol s) {
+		super(loc, s);
 	}
 
-	public CompileTimeReturnStatement(Loc loc, Expression exp) {
+	public CompileTimeDeclarationStatement(Loc loc, Expression exp) {
 		super(loc, exp);
 	}
 	

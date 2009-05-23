@@ -838,7 +838,9 @@ public class CallExp extends UnaExp {
 
 	@Override
 	public Expression syntaxCopy(SemanticContext context) {
-		return context.newCallExp(loc, e1.syntaxCopy(context), arraySyntaxCopy(arguments, context));
+		Expression e = context.newCallExp(loc, e1.syntaxCopy(context), arraySyntaxCopy(arguments, context));
+		e.copySourceRange(this);
+		return e;
 	}
 
 	@Override

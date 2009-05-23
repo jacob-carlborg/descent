@@ -87,7 +87,8 @@ public class DefaultStatement extends Statement {
 
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
-		DefaultStatement s = new DefaultStatement(loc, statement.syntaxCopy(context));
+		DefaultStatement s = context.newDefaultStatement(loc, statement.syntaxCopy(context));
+		s.copySourceRange(this);
 		return s;
 	}
 

@@ -61,6 +61,7 @@ public class PragmaDeclaration extends AttribDeclaration {
 					e = e.semantic(sc, context);
 					e = e.optimize(WANTvalue | WANTinterpret, context);
 					if (e.op == TOKstring) {
+						message(e);
 					} else {
 						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
@@ -133,6 +134,10 @@ public class PragmaDeclaration extends AttribDeclaration {
 		return;
 	}
 
+	protected void message(Expression e) {
+		
+	}
+
 	private void semantic_Lnodecl(SemanticContext context) {
 		if (decl != null) {
 			if (context.acceptsErrors()) {
@@ -147,8 +152,9 @@ public class PragmaDeclaration extends AttribDeclaration {
 		PragmaDeclaration pd;
 
 		Assert.isTrue(s == null);
-		pd = new PragmaDeclaration(loc, ident, Expression.arraySyntaxCopy(args,
+		pd = context.newPragmaDeclaration(loc, ident, Expression.arraySyntaxCopy(args,
 				context), arraySyntaxCopy(decl, context));
+		pd.copySourceRange(this);
 		return pd;
 	}
 

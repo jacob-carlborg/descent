@@ -59,6 +59,10 @@ public class DescentCtfeStackFrame extends DescentCtfeDebugElement implements IS
 	public int getCharStart() throws DebugException {
 		return -1;
 	}
+	
+	public void setLineNumber(int lineNumber) {
+		fLineNumber = lineNumber;
+	}
 
 	public int getLineNumber() throws DebugException {
 		return fLineNumber;
@@ -210,7 +214,5 @@ public class DescentCtfeStackFrame extends DescentCtfeDebugElement implements IS
 			return super.toString();
 		}
 	}
-
-	
 
 }

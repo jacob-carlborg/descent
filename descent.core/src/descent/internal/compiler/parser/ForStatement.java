@@ -238,7 +238,8 @@ public class ForStatement extends Statement {
 		if (increment != null) {
 			inc = increment.syntaxCopy(context);
 		}
-		ForStatement s = new ForStatement(loc, i, c, inc, body.syntaxCopy(context));
+		ForStatement s = context.newForStatement(loc, i, c, inc, body.syntaxCopy(context));
+		s.copySourceRange(this);
 		return s;
 	}
 

@@ -106,7 +106,8 @@ public class ScopeStatement extends Statement {
 		Statement s;
 
 		s = statement != null ? statement.syntaxCopy(context) : null;
-		s = new ScopeStatement(loc, s);
+		s = context.newScopeStatement(loc, s);
+		s.copySourceRange(this);
 		return s;
 	}
 

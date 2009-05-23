@@ -114,9 +114,10 @@ public class ForeachRangeStatement extends Statement {
 
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
-		ForeachRangeStatement s = new ForeachRangeStatement(loc, op, arg
+		ForeachRangeStatement s = context.newForeachRangeStatement(loc, op, arg
 				.syntaxCopy(context), lwr.syntaxCopy(context), upr.syntaxCopy(context),
 				null != body ? body.syntaxCopy(context) : null);
+		s.copySourceRange(this);
 		return s;
 	}
 

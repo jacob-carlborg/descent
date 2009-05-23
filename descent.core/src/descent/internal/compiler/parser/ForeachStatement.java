@@ -826,8 +826,9 @@ public class ForeachStatement extends Statement {
 	public Statement syntaxCopy(SemanticContext context) {
 		Arguments args = Argument.arraySyntaxCopy(arguments, context);
 		Expression exp = aggr.syntaxCopy(context);
-		ForeachStatement s = new ForeachStatement(loc, op, args, exp,
+		ForeachStatement s = context.newForeachStatement(loc, op, args, exp,
 				body != null ? body.syntaxCopy(context) : null);
+		s.copySourceRange(this);
 		return s;
 	}
 

@@ -20,7 +20,7 @@ public class DescentCtfeLaunchConfigurationDelegate extends LaunchConfigurationD
 		CompilationUnit unit = (CompilationUnit) JavaCore.create(inputElementHandle);
 		
 		CtfeProcess iprocess = new CtfeProcess(launch);
-		CtfeDebugger debugger = new CtfeDebugger(unit, inputElementSourceOffset);
+		CtfeDebugger debugger = new CtfeDebugger(unit, inputElementSourceOffset, iprocess);
 		
 		DescentCtfeDebugTarget dbgTarget = new DescentCtfeDebugTarget(launch, iprocess, debugger);		
 		launch.addDebugTarget(dbgTarget);

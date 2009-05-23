@@ -57,6 +57,8 @@ import descent.core.JavaModelException;
 import descent.core.Signature;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.ASTNode;
+import descent.internal.compiler.parser.ast.AstVisitorAdapter;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import descent.internal.core.util.Util;
 
@@ -151,7 +153,7 @@ public class FuncDeclaration extends Declaration {
 	
 	private void resolveDiet(SemanticContext context) {
 		if (input != null) {
-			Parser parser = new Parser(context.apiLevel, CharOperation.subarray(input, startSkip, endSkip));
+			Parser parser = context.newParser(context.apiLevel, CharOperation.subarray(input, startSkip, endSkip));
 			parser.module = getModule();
 			
 			Statement body = parser.dietParseStatement(this); 
@@ -395,7 +397,7 @@ public class FuncDeclaration extends Declaration {
 				return null;
 			}
 			if (materialized == null) {
-				Dsymbol sym = internalMaterialize();
+				Dsymbol sym = internalMaterialize(context);
 				sym.semantic(scope.enclosing, context);
 				sym.semantic2(scope.enclosing, context);
 				sym.semantic3(scope.enclosing, context);
@@ -599,8 +601,8 @@ public class FuncDeclaration extends Declaration {
 		return e;
 	}
 	
-	public FuncDeclaration materialize() {
-		Dsymbol sym = internalMaterialize();
+	public FuncDeclaration materialize(SemanticContext context) {
+		Dsymbol sym = internalMaterialize(context);
 		if (sym == null) {
 			return null;
 		}
@@ -610,16 +612,27 @@ public class FuncDeclaration extends Declaration {
 		return (FuncDeclaration) sym;
 	}
 	
-	private Dsymbol internalMaterialize() {
+	private Dsymbol internalMaterialize(SemanticContext context) {
 		try {
 			String source = javaElement.getSource();
 			// TODO api level
-			Parser parser = new Parser(source.toCharArray(), 0, source
+			Parser parser = context.newParser(source.toCharArray(), 0, source
 					.length(), false, false, false, false, Lexer.D1,
 					null, null, false, null);
 			parser.nextToken();
 	
 			Module module = parser.parseModuleObj();
+			
+			module.accept(new AstVisitorAdapter() {
+				@Override
+				public void preVisit(ASTNode node) {
+					try {
+						node.start += javaElement.getSourceRange().getOffset();
+					} catch (JavaModelException e) {
+						e.printStackTrace();
+					}
+				}
+			});
 	
 			return module.members.get(0);
 		} catch (JavaModelException e1) {

@@ -25,22 +25,30 @@ import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.AliasDeclaration;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.DsymbolTable;
+import descent.internal.compiler.parser.Dsymbols;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.InterState;
+import descent.internal.compiler.parser.IsExp;
+import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.ScopeDsymbol;
+import descent.internal.compiler.parser.StaticIfCondition;
+import descent.internal.compiler.parser.StaticIfDeclaration;
 import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.core.CompilationUnit;
+import descent.internal.core.ctfe.dom.CompileTimeSemanticContext;
 
 public class CtfeDebugger implements IDebugger {
 
-	private ResourceSearch fSearch;
 	private final CompilationUnit fUnit;
 	private final int fOffset;
+	private final ICtfeOutput fOutput;
+	private int fLine;
 	private Thread fThread;
+	private ResourceSearch fSearch;
 	
 	private List<Breakpoint> breakpoints = new ArrayList<Breakpoint>();
 	private DescentCtfeDebugTarget fDebugTarget;
@@ -64,6 +72,7 @@ public class CtfeDebugger implements IDebugger {
 	 * If it says: continue, it is -1.
 	 */
 	private int fNextStackFrame = -1;
+	private boolean fNextStackFrameChanged = true;
 	
 	private static class Breakpoint {
 		
@@ -110,11 +119,19 @@ public class CtfeDebugger implements IDebugger {
 		
 	}
 
-	public CtfeDebugger(CompilationUnit unit, int offset) {
+	public CtfeDebugger(CompilationUnit unit, int offset, ICtfeOutput output) {
 		this.fUnit = unit;
 		this.fOffset = offset;
+		this.fOutput = output;
 		this.fSearch = new ResourceSearch();
 		this.fSemaphore = new Semaphore(0);
+		
+		try {
+			Document doc = new Document(unit.getSource());
+			fLine = doc.getLineOfOffset(fOffset) + 1;
+		} catch (Exception e) {
+			fLine = 0;
+		}
 	}
 	
 	public void setDebugTarget(DescentCtfeDebugTarget debugTarget) {
@@ -148,6 +165,45 @@ public class CtfeDebugger implements IDebugger {
 							false, 
 							CtfeDebugger.this,
 							new NullProgressMonitor());
+					fParseResult.context.problemRequestor = new IProblemRequestor() {
+						public void acceptProblem(IProblem problem) {
+							if (fCurrentUnit == null) {
+								fOutput.error(problem.toString());
+								return;
+							}
+							
+							try {
+								IDocument doc = new Document(fCurrentUnit.getSource());
+								int line = doc.getLineOfOffset(problem.getSourceStart()) + 1;
+								
+								fOutput.error(fCurrentUnit.getModuleName() + "(" + line + "): " + problem.toString());
+								
+								int oldLine = fCurrentLine;
+								fCurrentLine = line;
+								enterStackFrame();
+								
+								try {
+									fDebugTarget.breakpointHit(fCurrentUnit.getResource(), line);
+									fSemaphore.acquire();
+								} finally {
+									exitStackFrame();
+									fCurrentLine = oldLine;
+								}
+							} catch (Exception e) {
+								fOutput.error("Descent Bug, please report it ;-): " + e.getMessage());
+								return;
+							}
+							
+							
+						}
+						public void beginReporting() {
+						}
+						public void endReporting() {
+						}
+						public boolean isActive() {
+							return true;
+						}
+					};
 					
 					CompilationUnitResolver.resolve(fParseResult, fUnit.getJavaProject(), null, CtfeDebugger.this);
 				} catch (JavaModelException e) {
@@ -202,8 +258,20 @@ public class CtfeDebugger implements IDebugger {
 		ICompilationUnit unit = getCompilationUnit(fCurrentScope);
 		if (unit == null) return;
 		
+		fCurrentUnit = unit;
+		
+		IDocument doc = null;
+		int line = -1;
+		
 		if (fStartedDebugging == 0) {
-			if (isTarget(node, unit)) {
+			try {
+				doc = new Document(unit.getSource());
+				line = doc.getLineOfOffset(node.start) + 1;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			if (isTarget(unit, line)) {
 				fStartedDebugging++;
 			} else {
 				return;
@@ -214,14 +282,15 @@ public class CtfeDebugger implements IDebugger {
 			return;
 		
 		try {
-			IDocument doc = new Document(unit.getSource());
-			int line = doc.getLineOfOffset(node.start) + 1;
+			if (doc == null) {
+				doc = new Document(unit.getSource());
+				line = doc.getLineOfOffset(node.start) + 1;
+			}
 			
 			if (line == fCurrentLine && fStackFrames.size() == fCurrentStackFrame)
 				return;
 			
 			fCurrentLine = line;
-			fCurrentUnit = unit;
 			
 			if (fStackFrames.isEmpty()) {
 				enterStackFrame();
@@ -232,7 +301,7 @@ public class CtfeDebugger implements IDebugger {
 			
 			// Only hit breakpoint if the expected stack frame for the user
 			// is the same as the current one
-			if (fNextStackFrame >= fStackFrames.size() - 1) {
+			if (fNextStackFrame >= fCurrentStackFrame - 1) {
 				fDebugTarget.breakpointHit(unit.getResource(), line);
 				fSemaphore.acquire();
 			} else {
@@ -251,8 +320,42 @@ public class CtfeDebugger implements IDebugger {
 		ICompilationUnit unit = getCompilationUnit(fCurrentScope);
 		if (unit == null) return;
 		
-		if (isTarget(node, unit)) {
-			fStartedDebugging--;
+		fCurrentUnit = unit;
+		
+		IDocument doc = null;
+		int line = -1;
+		
+		if (fStartedDebugging > 0 && fNextStackFrameChanged) {
+			try {
+				doc = new Document(unit.getSource());
+				line = doc.getLineOfOffset(node.start) + 1;
+				
+				if (line == fCurrentLine && fStackFrames.size() == fCurrentStackFrame)
+					return;
+			
+				fCurrentLine = line;
+				fCurrentStackFrame = fStackFrames.size();
+				
+				if (fNextStackFrame == fCurrentStackFrame - 1) {
+					fDebugTarget.breakpointHit(unit.getResource(), line);
+					fSemaphore.acquire();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		if (doc == null) {
+			try {
+				doc = new Document(unit.getSource());
+				line = doc.getLineOfOffset(node.start) + 1;
+				
+				if (isTarget(unit, line)) {
+					fStartedDebugging--;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -265,8 +368,8 @@ public class CtfeDebugger implements IDebugger {
 		return unit;
 	}
 	
-	private boolean isTarget(ASTDmdNode node, ICompilationUnit unit) {
-		return unit.equals(fUnit) && node.start <= fOffset && fOffset <= node.start + node.length;
+	private boolean isTarget(ICompilationUnit unit, int line) {
+		return unit.equals(fUnit) && line == fLine;
 	}
 
 	private boolean hasBreakpoint(ICompilationUnit unit, int line) {
@@ -278,25 +381,32 @@ public class CtfeDebugger implements IDebugger {
 	}
 
 	public void stepInto() {
-		fNextStackFrame = fStackFrames.size();
+		int newStackFrame = fStackFrames.size();
+		fNextStackFrameChanged = newStackFrame != fNextStackFrame;
+		fNextStackFrame = newStackFrame;
 		
 		fSemaphore.release();
 	}
 
 	public void stepOver() {
+		fNextStackFrameChanged = false;
 		fNextStackFrame = fStackFrames.size() - 1;
 		
 		fSemaphore.release();
 	}
 
 	public void stepReturn() {
-		fNextStackFrame = fStackFrames.size() - 2;
+		int newStackFrame = fStackFrames.size() - 2;
+		fNextStackFrameChanged = newStackFrame != fNextStackFrame;
+		fNextStackFrame = newStackFrame;
 		
 		fSemaphore.release();
 	}
 	
 	public void resume() {
-		fNextStackFrame = -1;
+		int newStackFrame = -1;
+		fNextStackFrameChanged = newStackFrame != fNextStackFrame;
+		fNextStackFrame = newStackFrame;
 		
 		fSemaphore.release();
 	}
@@ -339,6 +449,8 @@ public class CtfeDebugger implements IDebugger {
 				Expression result;
 				
 				if (is == null) {
+					scope.flags |= Scope.SCOPEstaticif;
+					
 					result = exp.semantic(scope, fParseResult.context);
 					result = result.optimize(ASTDmdNode.WANTflags | ASTDmdNode.WANTvalue | ASTDmdNode.WANTinterpret, fParseResult.context);
 				} else {
@@ -357,6 +469,8 @@ public class CtfeDebugger implements IDebugger {
 					for(Dsymbol sym : is.vars) {
 						sc.scopesym.symtab.insert(sym);
 					}
+					
+					sc.flags |= Scope.SCOPEstaticif;
 					
 					result = exp.semantic(sc, fParseResult.context);
 					result = result.interpret(is, fParseResult.context);
@@ -380,6 +494,9 @@ public class CtfeDebugger implements IDebugger {
 		List<DescentCtfeVariable> vars = new ArrayList<DescentCtfeVariable>();
 		
 		DescentCtfeStackFrame sf = getStackFrame(stackFrame);
+		if (sf == null)
+			return new IVariable[0];
+		
 		InterState is = sf.getInterState();
 		if (is == null) {
 			Scope scope = sf.getScope();		
@@ -463,7 +580,7 @@ public class CtfeDebugger implements IDebugger {
 	private DescentCtfeStackFrame getStackFrame(int stackFrame) {
 		int index = fStackFrames.size() - stackFrame - 1;
 		if (index < 0 || index >= fStackFrames.size())
-			System.out.println(123456);
+			return null;
 		
 		return fStackFrames.get(index);
 	}
@@ -477,15 +594,15 @@ public class CtfeDebugger implements IDebugger {
 	}
 	
 	public void enterStackFrame() {
-		System.out.println("Enter stack frame");
-		
 		fStackFrames.add(0, newStackFrame());
 	}
 	
 	public void exitStackFrame() {
-		System.out.println("Exit stack frame");
-		
 		fStackFrames.remove(0);
+	}
+
+	public void message(String message) {
+		fOutput.message(message);
 	}
 
 }

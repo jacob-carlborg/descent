@@ -163,8 +163,9 @@ public class DoStatement extends Statement {
 
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
-		DoStatement s = new DoStatement(loc, body != null ? body.syntaxCopy(context)
+		DoStatement s = context.newDoStatement(loc, body != null ? body.syntaxCopy(context)
 				: null, condition.syntaxCopy(context));
+		s.copySourceRange(this);
 		return s;
 	}
 

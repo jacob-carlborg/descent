@@ -38,6 +38,8 @@ public interface IDebugger {
 
 	void resume();
 	
+	void message(String message);
+	
 	IStackFrame[] getStackFrames();
 
 	IVariable[] getVariables(int stackFrame);

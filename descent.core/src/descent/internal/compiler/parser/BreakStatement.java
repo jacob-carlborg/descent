@@ -130,7 +130,8 @@ public class BreakStatement extends Statement {
 
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
-		BreakStatement s = new BreakStatement(loc, ident);
+		BreakStatement s = context.newBreakStatement(loc, ident);
+		s.copySourceRange(this);
 		return s;
 	}
 

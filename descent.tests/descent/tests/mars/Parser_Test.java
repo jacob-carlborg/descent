@@ -147,20 +147,22 @@ public abstract class Parser_Test extends TestCase {
 		Global global = new Global();
 		global.params.warnings = true;
 		
-		SemanticContext context = new SemanticContext(new IProblemRequestor() {
-			public void acceptProblem(IProblem problem) {
-				result.module.problems.add(problem);
-			}
-			public void beginReporting() {
-			}
-			public void endReporting() {
-			}
-			public boolean isActive() {
-				return false;
-			}
-			
-		}, result.module, null, new DmdModuleFinder(global), global, new CompilerConfiguration(),
-		new ASTNodeEncoder(apiLevel));
+//		SemanticContext context = new SemanticContext(new IProblemRequestor() {
+//			public void acceptProblem(IProblem problem) {
+//				result.module.problems.add(problem);
+//			}
+//			public void beginReporting() {
+//			}
+//			public void endReporting() {
+//			}
+//			public boolean isActive() {
+//				return false;
+//			}
+//			
+//		}, result.module, null, new DmdModuleFinder(global), global, new CompilerConfiguration(),
+//		new ASTNodeEncoder(apiLevel));
+		
+		SemanticContext context = null;
 		
 		if (!(result.module.problems != null && result.module.problems.size() > 0)) {
 			result.module.semantic(context);

@@ -81,8 +81,9 @@ public class SynchronizedStatement extends Statement {
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
 		Expression e = exp != null ? exp.syntaxCopy(context) : null;
-		SynchronizedStatement s = new SynchronizedStatement(loc, e,
+		SynchronizedStatement s = context.newSynchronizedStatement(loc, e,
 				body != null ? body.syntaxCopy(context) : null);
+		s.copySourceRange(this);
 		return s;
 	}
 

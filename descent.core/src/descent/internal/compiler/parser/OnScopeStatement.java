@@ -89,8 +89,9 @@ public class OnScopeStatement extends Statement {
 
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
-		OnScopeStatement s = new OnScopeStatement(loc, tok, statement
+		OnScopeStatement s = context.newOnScopeStatement(loc, tok, statement
 				.syntaxCopy(context));
+		s.copySourceRange(this);
 		return s;
 	}
 

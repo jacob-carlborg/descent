@@ -70,8 +70,9 @@ public class ConditionalStatement extends Statement {
 		if (elsebody != null) {
 			e = elsebody.syntaxCopy(context);
 		}
-		ConditionalStatement s = new ConditionalStatement(loc, condition
+		ConditionalStatement s = context.newConditionalStatement(loc, condition
 				.syntaxCopy(context), ifbody.syntaxCopy(context), e);
+		s.copySourceRange(this);
 		return s;
 	}
 

@@ -1,15 +1,15 @@
-package descent.internal.core.ctfe;
+package descent.internal.core.ctfe.dom;
 
 import descent.internal.compiler.parser.Condition;
-import descent.internal.compiler.parser.ConditionalDeclaration;
 import descent.internal.compiler.parser.Dsymbols;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.ScopeDsymbol;
 import descent.internal.compiler.parser.SemanticContext;
+import descent.internal.compiler.parser.StaticIfDeclaration;
 
-public class CompileTimeConditionalDeclaration extends ConditionalDeclaration {
+public class CompileTimeStaticIfDeclaration extends StaticIfDeclaration {
 
-	public CompileTimeConditionalDeclaration(Condition condition, Dsymbols decl, Dsymbols elsedecl) {
+	public CompileTimeStaticIfDeclaration(Condition condition, Dsymbols decl, Dsymbols elsedecl) {
 		super(condition, decl, elsedecl);
 	}
 	

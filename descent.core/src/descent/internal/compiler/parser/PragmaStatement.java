@@ -65,7 +65,7 @@ public class PragmaStatement extends Statement {
 					e = e.semantic(sc, context);
 					e = e.optimize(WANTvalue | WANTinterpret, context);
 					if (e.op == TOK.TOKstring) {
-
+						message(e);
 					} else {
 						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
@@ -130,6 +130,10 @@ public class PragmaStatement extends Statement {
 		return body;
 	}
 
+	protected void message(Expression e) {
+		
+	}
+
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
@@ -165,8 +169,9 @@ public class PragmaStatement extends Statement {
 		Statement b = null;
 		if (body != null)
 			b = body.syntaxCopy(context);
-		PragmaStatement s = new PragmaStatement(loc, ident, Expression
+		PragmaStatement s = context.newPragmaStatement(loc, ident, Expression
 				.arraySyntaxCopy(args, context), b);
+		s.copySourceRange(this);
 		return s;
 	}
 	

@@ -133,7 +133,8 @@ public class ContinueStatement extends Statement {
 
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
-		ContinueStatement s = new ContinueStatement(loc, ident);
+		ContinueStatement s = context.newContinueStatement(loc, ident);
+		s.copySourceRange(this);
 		return s;
 	}
 

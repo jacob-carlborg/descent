@@ -105,8 +105,9 @@ public class LabelStatement extends Statement {
 
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
-		LabelStatement s = new LabelStatement(loc, ident, statement
+		LabelStatement s = context.newLabelStatement(loc, ident, statement
 				.syntaxCopy(context));
+		s.copySourceRange(this);
 		return s;
 	}
 

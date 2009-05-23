@@ -263,7 +263,8 @@ public class CompoundStatement extends Statement {
 			}
 			a.set(i, s);
 		}
-		CompoundStatement cs = new CompoundStatement(loc, a);
+		CompoundStatement cs = context.newCompoundStatement(loc, a);
+		cs.copySourceRange(this);
 		return cs;
 	}
 

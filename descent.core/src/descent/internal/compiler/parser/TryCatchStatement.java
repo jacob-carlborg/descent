@@ -117,7 +117,8 @@ public class TryCatchStatement extends Statement {
 			c = c.syntaxCopy(context);
 			a.set(i, c);
 		}
-		TryCatchStatement s = new TryCatchStatement(loc, body.syntaxCopy(context), a);
+		TryCatchStatement s = context.newTryCatchStatement(loc, body.syntaxCopy(context), a);
+		s.copySourceRange(this);
 		return s;
 	}
 

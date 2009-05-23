@@ -1,29 +1,65 @@
 package descent.internal.core.ctfe;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.IStreamListener;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IProcess;
+import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.debug.core.model.IStreamsProxy;
 
-public class CtfeProcess extends PlatformObject implements IProcess {
+public class CtfeProcess extends PlatformObject implements IProcess, IStreamsProxy, ICtfeOutput {
 	
-	private final ILaunch launch;
-	private boolean terminated;
+	private final class StreamMonitor implements IStreamMonitor {
+		
+		private List<IStreamListener> fListeners = new ArrayList<IStreamListener>();
+		private StringBuilder fContents = new StringBuilder();
+		
+		public final void addListener(IStreamListener listener) {
+			this.fListeners.add(listener);
+		}
+		
+		public final void removeListener(IStreamListener listener) {
+			this.fListeners.remove(listener);
+		}
+		
+		public String getContents() {
+			return fContents.toString();
+		}
+		
+		public final void append(String contents) {
+			fContents.append(contents + "\n");
+			
+			for(IStreamListener listener : fListeners) {
+				listener.streamAppended(contents + "\n", this);
+			}
+		}
+		
+	}
+	
+	private final ILaunch fLaunch;
+	private boolean fTerminated;
+	private StreamMonitor fErrorStreamMonitor;
+	private StreamMonitor fOutputStreamMonitor;
 
 	public CtfeProcess(ILaunch launch) {
-		this.launch = launch;
+		this.fLaunch = launch;
+		this.fErrorStreamMonitor = new StreamMonitor();
+		this.fOutputStreamMonitor = new StreamMonitor();
 		
 		launch.addProcess(this);
 		fireCreationEvent();
 	}
 
 	public String getAttribute(String key) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -36,12 +72,11 @@ public class CtfeProcess extends PlatformObject implements IProcess {
 	}
 
 	public ILaunch getLaunch() {
-		return launch;
+		return fLaunch;
 	}
 
 	public IStreamsProxy getStreamsProxy() {
-		// TODO Auto-generated method stub
-		return null;
+		return this;
 	}
 
 	public void setAttribute(String key, String value) {
@@ -76,11 +111,11 @@ public class CtfeProcess extends PlatformObject implements IProcess {
 	}
 
 	public boolean isTerminated() {
-		return terminated;
+		return fTerminated;
 	}
 
 	public void terminate() throws DebugException {
-		this.terminated = true;
+		this.fTerminated = true;
 		fireTerminateEvent();
 	}
 	
@@ -108,6 +143,26 @@ public class CtfeProcess extends PlatformObject implements IProcess {
 		if (manager != null) {
 			manager.fireDebugEventSet(new DebugEvent[]{event});
 		}
+	}
+
+	public IStreamMonitor getErrorStreamMonitor() {
+		return fErrorStreamMonitor;
+	}
+
+	public IStreamMonitor getOutputStreamMonitor() {
+		return fOutputStreamMonitor;
+	}
+
+	public void write(String input) throws IOException {
+		// Do nothing
+	}
+
+	public void message(String message) {
+		fOutputStreamMonitor.append(message);
+	}
+	
+	public void error(String message) {
+		fOutputStreamMonitor.append(message);
 	}
 
 }

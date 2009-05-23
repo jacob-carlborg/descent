@@ -1,4 +1,4 @@
-package descent.internal.core.ctfe;
+package descent.internal.core.ctfe.dom;
 
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Initializer;

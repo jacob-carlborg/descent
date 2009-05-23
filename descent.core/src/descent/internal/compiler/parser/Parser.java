@@ -793,7 +793,7 @@ public class Parser extends Lexer {
 					n = new Global().structalign; // default
 				}
 				a = parseBlock();
-				s = new AlignDeclaration((int) n, a);
+				s = newAlignDeclaration((int) n, a);
 				attachLeadingComments = prevToken.value == TOKrcurly;
 				break;
 			}
@@ -826,7 +826,7 @@ public class Parser extends Lexer {
 					a = parseBlock();
 				}
 				
-				s = new PragmaDeclaration(loc(), ident, args, a);
+				s = newPragmaDeclaration(loc(), ident, args, a);
 				attachLeadingComments = prevToken.value == TOKrcurly;
 				break;
 			}
@@ -4290,7 +4290,7 @@ public class Parser extends Lexer {
 				nextToken();
 				Statement body = parseStatement(PSsemi);
 				
-				s = new LabelStatement(loc(), ident, body);
+				s = newLabelStatement(loc(), ident, body);
 				s.start = ident.start;
 				s.length = prevToken.ptr + prevToken.sourceLen - ident.start;
 				break;
@@ -4373,7 +4373,7 @@ public class Parser extends Lexer {
 			if (t2.value == TOKassert) {
 				nextToken();
 				
-				s = new StaticAssertStatement(parseStaticAssert());
+				s = newStaticAssertStatement(parseStaticAssert());
 				break;
 			}
 			if (t2.value == TOKif) {
@@ -4389,7 +4389,7 @@ public class Parser extends Lexer {
 					elsebody = parseStatement(0 /*PSsemi*/);
 				}
 				
-				s = new ConditionalStatement(loc(), staticIfCondition, ifbody, elsebody);
+				s = newConditionalStatement(loc(), staticIfCondition, ifbody, elsebody);
 				break;
 			}
 			// goto Ldeclaration;
@@ -4503,7 +4503,7 @@ public class Parser extends Lexer {
 				Expression e = parseAssignExp();
 				check(TOKrparen);
 				check(TOKsemicolon);
-				s = new CompileStatement(loc(), e);
+				s = newCompileStatement(loc(), e);
 				break;
 		    } else {			
 		    	d = parseMixin();
@@ -4538,7 +4538,7 @@ public class Parser extends Lexer {
 			s = newBlock(statements, start, token.ptr + token.sourceLen - start);
 			
 			if ((flags & (PSscope | PScurlyscope)) != 0) {
-				s = new ScopeStatement(loc(), s);
+				s = newScopeStatement(loc(), s);
 				s.setSourceRange(start, token.ptr + token.sourceLen - start);
 			}
 			
@@ -4558,7 +4558,7 @@ public class Parser extends Lexer {
 			
 			body = parseStatement(PSscope);
 			
-			s = new WhileStatement(loc(), condition2, body);
+			s = newWhileStatement(loc(), condition2, body);
 			break;
 		}
 
@@ -4585,7 +4585,7 @@ public class Parser extends Lexer {
 			check(TOKlparen);
 			condition2 = parseExpression();
 			check(TOKrparen);
-			s = new DoStatement(loc(), body, condition2);
+			s = newDoStatement(loc(), body, condition2);
 			break;
 		}
 
@@ -4618,11 +4618,11 @@ public class Parser extends Lexer {
 				check(TOKrparen);
 			}
 			body = parseStatement(PSscope);
-			s = new ForStatement(loc(), init, condition2, increment, body);
+			s = newForStatement(loc(), init, condition2, increment, body);
 			if (init != null) {
 				s.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 				
-				s = new ScopeStatement(loc(), s);
+				s = newScopeStatement(loc(), s);
 				s.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 			}
 			break;
@@ -4720,7 +4720,7 @@ public class Parser extends Lexer {
 				check(TOKrparen);
 				body = parseStatement(0);
 				
-				s = new ForeachStatement(loc(), op, arguments, aggr, body);
+				s = newForeachStatement(loc(), op, arguments, aggr, body);
 			} else {
 			    if (token.value == TOKslice && arguments.size() == 1) {
 					Argument a = arguments.get(0);
@@ -4728,11 +4728,11 @@ public class Parser extends Lexer {
 					Expression upr = parseExpression();
 					check(TOKrparen);
 					body = parseStatement(0);
-					s = new ForeachRangeStatement(loc(), op, a, aggr, upr, body);
+					s = newForeachRangeStatement(loc(), op, a, aggr, upr, body);
 				} else {
 					check(TOKrparen);
 					body = parseStatement(0);
-					s = new ForeachStatement(loc(), op, arguments, aggr, body);
+					s = newForeachStatement(loc(), op, arguments, aggr, body);
 				}
 			}
 			break;
@@ -4888,7 +4888,7 @@ public class Parser extends Lexer {
 				check(TOKrparen);
 				Statement st = parseStatement(PScurlyscope);
 				
-				s = new OnScopeStatement(loc(), t2, st);
+				s = newOnScopeStatement(loc(), t2, st);
 				break;
 			}
 
@@ -4903,7 +4903,7 @@ public class Parser extends Lexer {
 			nextToken();
 			Statement st = parseStatement(PScurlyscope);
 			
-			s = new OnScopeStatement(loc(), t2, st);
+			s = newOnScopeStatement(loc(), t2, st);
 			break;
 		}
 
@@ -4922,7 +4922,7 @@ public class Parser extends Lexer {
 				elsebody = parseStatement(0 /*PSsemi*/);
 			}
 			
-			s = new ConditionalStatement(loc(), condition, ifbody, elsebody);
+			s = newConditionalStatement(loc(), condition, ifbody, elsebody);
 			break;
 
 		case TOKversion:
@@ -4940,7 +4940,7 @@ public class Parser extends Lexer {
 				elsebody = parseStatement(0 /*PSsemi*/);
 			}
 			
-			s = new ConditionalStatement(loc(), versionCondition, ifbody, elsebody);
+			s = newConditionalStatement(loc(), versionCondition, ifbody, elsebody);
 			break;
 
 		case TOKiftype:
@@ -4956,7 +4956,7 @@ public class Parser extends Lexer {
 				elsebody = parseStatement(0 /*PSsemi*/);
 			}
 			
-			s = new ConditionalStatement(loc(), iftypeCondition, ifbody, elsebody);
+			s = newConditionalStatement(loc(), iftypeCondition, ifbody, elsebody);
 			break;
 
 		case TOKpragma: {
@@ -4995,7 +4995,7 @@ public class Parser extends Lexer {
 				body = parseStatement(PSsemi);
 			}
 			
-			s = new PragmaStatement(loc(), ident, args, body);
+			s = newPragmaStatement(loc(), ident, args, body);
 			break;
 		}
 
@@ -5009,7 +5009,7 @@ public class Parser extends Lexer {
 			check(TOKrparen);
 			body = parseStatement(PSscope);
 			
-			s = new SwitchStatement(loc(), condition2, body);
+			s = newSwitchStatement(loc(), condition2, body);
 			break;
 		}
 
@@ -5053,7 +5053,7 @@ public class Parser extends Lexer {
 			
 			s = newBlock(statements, start, prevToken.ptr + prevToken.sourceLen - start);
 			
-			s = new ScopeStatement(loc(), s);
+			s = newScopeStatement(loc(), s);
 			s.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 
 			// Keep cases in order by building the case statements backwards
@@ -5080,10 +5080,10 @@ public class Parser extends Lexer {
 			
 			s = newBlock(statements, start, prevToken.ptr + prevToken.sourceLen - start);
 			
-			s = new ScopeStatement(loc(), s);
+			s = newScopeStatement(loc(), s);
 			s.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 			
-			s = new DefaultStatement(loc(), s);
+			s = newDefaultStatement(loc(), s);
 			break;
 		}
 
@@ -5144,7 +5144,7 @@ public class Parser extends Lexer {
 			nextToken();
 			if (token.value == TOKdefault) {
 				nextToken();
-				s = new GotoDefaultStatement(loc());
+				s = newGotoDefaultStatement(loc());
 			} else if (token.value == TOKcase) {
 				Expression exp = null;
 
@@ -5153,7 +5153,7 @@ public class Parser extends Lexer {
 					exp = parseExpression();
 				}
 				
-				s = new GotoCaseStatement(loc(), exp);
+				s = newGotoCaseStatement(loc(), exp);
 			} else {
 				if (token.value != TOKidentifier) {
 					parsingErrorInsertTokenAfter(prevToken, "Identifier");
@@ -5183,7 +5183,7 @@ public class Parser extends Lexer {
 			}
 			body = parseStatement(PSscope);
 			
-			s = new SynchronizedStatement(loc(), exp, body);
+			s = newSynchronizedStatement(loc(), exp, body);
 			break;
 		}
 
@@ -5198,7 +5198,7 @@ public class Parser extends Lexer {
 			
 			body = parseStatement(PSscope);
 			
-			s = new WithStatement(loc(), exp, body);
+			s = newWithStatement(loc(), exp, body);
 			break;
 		}
 
@@ -5259,13 +5259,13 @@ public class Parser extends Lexer {
 				parsingErrorInsertToComplete(prevToken, "Catch or finally", "TryStatement");
 			} else {
 				if (catches != null) {
-					s = new TryCatchStatement(loc(), body, catches);
+					s = newTryCatchStatement(loc(), body, catches);
 				}
 				if (finalbody != null) {
 					if (catches != null) {
 						s.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 					}
-					s = new TryFinallyStatement(loc(), s, finalbody, catches != null);
+					s = newTryFinallyStatement(loc(), s, finalbody, catches != null);
 				}
 			}
 			break;
@@ -5278,7 +5278,7 @@ public class Parser extends Lexer {
 			exp = parseExpression();
 			check(TOKsemicolon);
 			
-			s = new ThrowStatement(loc(), exp);
+			s = newThrowStatement(loc(), exp);
 			break;
 		}
 
@@ -5288,7 +5288,7 @@ public class Parser extends Lexer {
 			// TODO Descent parser use deprecated
 //		    if (!global.params.useDeprecated)
 //				error("volatile statements deprecated; used synchronized statements instead");
-			s = new VolatileStatement(loc(), s);
+			s = newVolatileStatement(loc(), s);
 			break;
 
 		case TOKasm: {
@@ -5341,7 +5341,7 @@ public class Parser extends Lexer {
 					toklist = new ArrayList<Token>(6);
 					
 					if (label != null) {
-						s = new LabelStatement(loc(), label, s);
+						s = newLabelStatement(loc(), label, s);
 						s.start = label.start;
 						s.length = token.ptr + token.sourceLen - label.start;
 						label = null;
@@ -5416,9 +5416,9 @@ public class Parser extends Lexer {
 			s[0] = null;
 		}
 		if ((flags & PSscope) != 0) {
-			s[0] = new ScopeStatement(loc(), s[0]);
+			s[0] = newScopeStatement(loc(), s[0]);
 		}
-	}
+	}	
 
 	private void check(TOK value) {
 		if (token.value != value) {
@@ -7770,17 +7770,17 @@ public class Parser extends Lexer {
 	}
 	
 	protected CompoundStatement newBlock(Statements statements, int start, int length) {
-		CompoundStatement cs = new CompoundStatement(loc(), statements);
+		CompoundStatement cs = newCompoundStatement(loc(), statements);
 		cs.setSourceRange(start, length);
 		return cs;
 	}
 	
 	private CompoundStatement newManyVarsBlock(Statements statements) {
-		CompoundStatement statement = new CompoundStatement(loc(), statements);
+		CompoundStatement statement = newCompoundStatement(loc(), statements);
 		statement.manyVars = true;
 		return statement;
 	}
-	
+
 	private DebugSymbol newDebugAssignmentForCurrentToken() {
 		if (token.value == TOKint32v) {
 			return new DebugSymbol(loc(), token.intValue.longValue(), newVersionForCurrentToken());
@@ -8312,7 +8312,7 @@ public class Parser extends Lexer {
 		return new FuncDeclaration(loc, ident, storage_class, typeFunction);
 	}
 	
-	protected Statement newIfStatement(Loc loc, Argument arg, Expression condition, Statement ifbody, Statement elsebody) {
+	protected IfStatement newIfStatement(Loc loc, Argument arg, Expression condition, Statement ifbody, Statement elsebody) {
 		return new IfStatement(loc, arg, condition, ifbody, elsebody);
 	}
 	
@@ -8320,8 +8320,108 @@ public class Parser extends Lexer {
 		return new DeclarationStatement(loc, d);
 	}
 	
+	protected CompileStatement newCompileStatement(Loc loc, Expression e) {
+		return new CompileStatement(loc, e);
+	}
+	
 	protected AggregateDeclaration endAggregateDeclaration(AggregateDeclaration a) {
 		return a;
+	}
+	
+	protected CompoundStatement newCompoundStatement(Loc loc, Statements statements) {
+		return new CompoundStatement(loc, statements);
+	}
+	
+	protected ConditionalStatement newConditionalStatement(Loc loc, Condition condition, Statement ifbody, Statement elsebody) {
+		return new ConditionalStatement(loc, condition, ifbody, elsebody);
+	}
+	
+	protected DefaultStatement newDefaultStatement(Loc loc, Statement s) {
+		return new DefaultStatement(loc, s);
+	}
+	
+	protected DoStatement newDoStatement(Loc loc, Statement body, Expression condition2) {
+		return new DoStatement(loc, body, condition2);
+	}
+	
+	protected ForeachRangeStatement newForeachRangeStatement(Loc loc, TOK op, Argument a, Expression aggr, Expression upr, Statement body) {
+		return new ForeachRangeStatement(loc, op, a, aggr, upr, body);
+	}
+	
+	protected ForeachStatement newForeachStatement(Loc loc, TOK op, Arguments arguments, Expression aggr, Statement body) {
+		return new ForeachStatement(loc, op, arguments, aggr, body);
+	}
+	
+	protected ForStatement newForStatement(Loc loc, Statement init, Expression condition2, Expression increment, Statement body) {
+		return new ForStatement(loc, init, condition2, increment, body);
+	}
+	
+	protected GotoCaseStatement newGotoCaseStatement(Loc loc, Expression exp) {
+		return new GotoCaseStatement(loc, exp);
+	}
+	
+	protected GotoDefaultStatement newGotoDefaultStatement(Loc loc) {
+		return new GotoDefaultStatement(loc);
+	}
+	
+	protected LabelStatement newLabelStatement(Loc loc, IdentifierExp label, Statement s) {
+		return new LabelStatement(loc, label, s);
+	}
+	
+	protected OnScopeStatement newOnScopeStatement(Loc loc, TOK t2, Statement st) {
+		return new OnScopeStatement(loc, t2, st);
+	}
+	
+	protected PragmaStatement newPragmaStatement(Loc loc, IdentifierExp ident, Expressions args, Statement body) {
+		return new PragmaStatement(loc, ident, args, body);
+	}
+	
+	protected ScopeStatement newScopeStatement(Loc loc, Statement statement) {
+		return new ScopeStatement(loc, statement);
+	}
+	
+	protected StaticAssertStatement newStaticAssertStatement(StaticAssert assert1) {
+		return new StaticAssertStatement(assert1);
+	}
+	
+	protected SwitchStatement newSwitchStatement(Loc loc, Expression condition2, Statement body) {
+		return new SwitchStatement(loc, condition2, body);
+	}
+	
+	protected SynchronizedStatement newSynchronizedStatement(Loc loc, Expression exp, Statement body) {
+		return new SynchronizedStatement(loc, exp, body);
+	}
+	
+	protected ThrowStatement newThrowStatement(Loc loc, Expression exp) {
+		return new ThrowStatement(loc, exp);
+	}
+	
+	protected TryCatchStatement newTryCatchStatement(Loc loc, Statement body, Array catches) {
+		return new TryCatchStatement(loc, body, catches);
+	}
+	
+	protected TryFinallyStatement newTryFinallyStatement(Loc loc, Statement s, Statement finalbody, boolean b) {
+		return new TryFinallyStatement(loc, s, finalbody, b);
+	}
+	
+	protected VolatileStatement newVolatileStatement(Loc loc, Statement s) {
+		return new VolatileStatement(loc, s);
+	}
+	
+	protected WhileStatement newWhileStatement(Loc loc, Expression condition2, Statement body) {
+		return new WhileStatement(loc, condition2, body);
+	}
+	
+	protected WithStatement newWithStatement(Loc loc, Expression exp, Statement body) {
+		return new WithStatement(loc, exp, body);
+	}
+	
+	protected PragmaDeclaration newPragmaDeclaration(Loc loc, IdentifierExp ident, Expressions args, Dsymbols a) {
+		return new PragmaDeclaration(loc, ident, args, a);
+	}
+	
+	protected AlignDeclaration newAlignDeclaration(int i, Dsymbols a) {
+		return new AlignDeclaration(i, a);
 	}
 	
 	protected Import addImportAlias(Import s, IdentifierExp name, IdentifierExp alias) {

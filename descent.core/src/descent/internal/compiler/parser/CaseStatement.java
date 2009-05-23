@@ -164,7 +164,8 @@ public class CaseStatement extends Statement {
 	
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
-		CaseStatement s = new CaseStatement(loc, exp.syntaxCopy(context), statement.syntaxCopy(context));
+		CaseStatement s = context.newCaseStatement(loc, exp.syntaxCopy(context), statement.syntaxCopy(context));
+		s.copySourceRange(this);
 	    return s;
 	}
 	

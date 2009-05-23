@@ -1804,7 +1804,7 @@ public class CompileTimeASTConverter {
 	
 	public descent.core.dom.FunctionDeclaration convert(FuncDeclaration a) {
 		if (a.getJavaElement() != null) {
-			FuncDeclaration materialized = a.materialize();
+			FuncDeclaration materialized = a.materialize(context);
 			if (materialized != null) {
 				Scope scope = a.scope;
 				a = materialized;

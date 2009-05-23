@@ -64,8 +64,9 @@ public class VolatileStatement extends Statement {
 
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
-		VolatileStatement s = new VolatileStatement(loc,
+		VolatileStatement s = context.newVolatileStatement(loc,
 				statement != null ? statement.syntaxCopy(context) : null);
+		s.copySourceRange(this);
 		return s;
 	}
 

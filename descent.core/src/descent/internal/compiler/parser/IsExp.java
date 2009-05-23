@@ -57,7 +57,7 @@ public class IsExp extends Expression {
 		if (null != id && ((sc.flags & Scope.SCOPEstaticif) == 0)) {
 			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.CanOnlySliceTupleTypes, this));
+						IProblem.CanOnlyDeclareTypeAliasesWithinStaticIfConditionals, this));
 			}
 		}
 

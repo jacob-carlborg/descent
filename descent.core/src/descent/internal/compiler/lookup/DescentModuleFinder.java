@@ -15,7 +15,11 @@ public class DescentModuleFinder implements IModuleFinder {
 
 	public DescentModuleFinder(INameEnvironment environment, CompilerConfiguration config, ASTNodeEncoder encoder) {
 		this.environment = environment;
-		this.builder = new ModuleBuilder(config, encoder);
+		this.builder = newModuleBuilder(config, encoder);
+	}
+	
+	protected ModuleBuilder newModuleBuilder(CompilerConfiguration config, ASTNodeEncoder encoder) {
+		return new ModuleBuilder(config, encoder);
 	}
 
 	public Module findModule(char[][] compoundName, SemanticContext context) {

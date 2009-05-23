@@ -100,7 +100,8 @@ public class GotoStatement extends Statement {
 
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
-		GotoStatement s = new GotoStatement(loc, ident);
+		GotoStatement s = context.newGotoStatement(loc, ident);
+		s.copySourceRange(this);
 		return s;
 	}
 

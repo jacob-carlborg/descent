@@ -247,8 +247,9 @@ public class SwitchStatement extends Statement {
 
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
-		SwitchStatement s = new SwitchStatement(loc, condition.syntaxCopy(context),
+		SwitchStatement s = context.newSwitchStatement(loc, condition.syntaxCopy(context),
 				body.syntaxCopy(context));
+		s.copySourceRange(this);
 		return s;
 	}
 
