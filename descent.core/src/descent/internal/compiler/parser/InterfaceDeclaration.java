@@ -318,7 +318,7 @@ public class InterfaceDeclaration extends ClassDeclaration {
 		if (s != null) {
 			id = (InterfaceDeclaration) s;
 		} else {
-			id = new InterfaceDeclaration(loc, ident, null);
+			id = context.newInterfaceDeclaration(loc, ident, null);
 		}
 
 		super.syntaxCopy(id, context);

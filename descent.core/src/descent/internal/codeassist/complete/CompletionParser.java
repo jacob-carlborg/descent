@@ -13,6 +13,7 @@ import descent.internal.compiler.parser.BaseClasses;
 import descent.internal.compiler.parser.BreakStatement;
 import descent.internal.compiler.parser.CaseStatement;
 import descent.internal.compiler.parser.Chars;
+import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.CompoundStatement;
 import descent.internal.compiler.parser.ContinueStatement;
 import descent.internal.compiler.parser.DebugCondition;
@@ -30,6 +31,7 @@ import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Identifiers;
 import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.Initializer;
+import descent.internal.compiler.parser.InterfaceDeclaration;
 import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.ModuleDeclaration;
@@ -37,6 +39,7 @@ import descent.internal.compiler.parser.Objects;
 import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.Statement;
 import descent.internal.compiler.parser.Statements;
+import descent.internal.compiler.parser.StructDeclaration;
 import descent.internal.compiler.parser.SuperExp;
 import descent.internal.compiler.parser.TOK;
 import descent.internal.compiler.parser.TemplateMixin;
@@ -46,6 +49,7 @@ import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeDotIdExp;
 import descent.internal.compiler.parser.TypeFunction;
 import descent.internal.compiler.parser.TypeQualified;
+import descent.internal.compiler.parser.UnionDeclaration;
 import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.compiler.parser.Version;
 import descent.internal.compiler.parser.VersionCondition;
@@ -910,7 +914,7 @@ public class CompletionParser extends Parser {
 	}
 	
 	@Override
-	protected AggregateDeclaration newClassDeclaration(Loc loc, IdentifierExp id, BaseClasses baseClasses) {
+	protected ClassDeclaration newClassDeclaration(Loc loc, IdentifierExp id, BaseClasses baseClasses) {
 		// We don't want assist for an aggregate's name, but we do want it
 		// for base classes
 		if (prevToken.ptr + prevToken.sourceLen <= cursorLocation && cursorLocation <= token.ptr && 
@@ -918,7 +922,7 @@ public class CompletionParser extends Parser {
 			wantOnlyType = true;
 			
 			assistNode = new CompletionOnClassDeclaration(loc, id, baseClasses);
-			return (AggregateDeclaration) assistNode;
+			return (ClassDeclaration) assistNode;
 		}
 		
 		// If it's class NOT_IDENTIFIER and the cursor is after class,
@@ -937,7 +941,7 @@ public class CompletionParser extends Parser {
 					
 					assistNode = new CompletionOnClassDeclaration(loc, id, baseClasses);
 					((CompletionOnClassDeclaration) assistNode).baseClassIndex = i;
-					return (AggregateDeclaration) assistNode;
+					return (ClassDeclaration) assistNode;
 				}
 				i++;
 			}
@@ -962,7 +966,7 @@ public class CompletionParser extends Parser {
 	}
 	
 	@Override
-	protected AggregateDeclaration newInterfaceDeclaration(Loc loc, IdentifierExp id, BaseClasses baseClasses) {
+	protected InterfaceDeclaration newInterfaceDeclaration(Loc loc, IdentifierExp id, BaseClasses baseClasses) {
 		// We don't want assist for an aggregate's name, but we do want it
 		// for base classes
 		if (prevToken.ptr + prevToken.sourceLen <= cursorLocation && cursorLocation <= token.ptr && 
@@ -970,7 +974,7 @@ public class CompletionParser extends Parser {
 			wantOnlyType = true;
 			
 			assistNode = new CompletionOnInterfaceDeclaration(loc, id, baseClasses);
-			return (AggregateDeclaration) assistNode;
+			return (InterfaceDeclaration) assistNode;
 		}
 		
 		// If it's interface NOT_IDENTIFIER and the cursor is after class, 
@@ -978,7 +982,7 @@ public class CompletionParser extends Parser {
 		if (prevToken.value == TOK.TOKinterface && token.value != TOK.TOKidentifier
 				&& cursorLocation > prevToken.ptr + prevToken.sourceLen) {
 			this.wantAssist = false;
-			return super.newClassDeclaration(loc, id, baseClasses);
+			return super.newInterfaceDeclaration(loc, id, baseClasses);
 		}
 		
 		if (baseClasses != null) {
@@ -989,7 +993,7 @@ public class CompletionParser extends Parser {
 					
 					assistNode = new CompletionOnInterfaceDeclaration(loc, id, baseClasses);
 					((CompletionOnInterfaceDeclaration) assistNode).baseClassIndex = i;
-					return (AggregateDeclaration) assistNode;
+					return (InterfaceDeclaration) assistNode;
 				}
 				i++;
 			}
@@ -999,7 +1003,7 @@ public class CompletionParser extends Parser {
 	}
 	
 	@Override
-	protected AggregateDeclaration newStructDeclaration(Loc loc, IdentifierExp id) {
+	protected StructDeclaration newStructDeclaration(Loc loc, IdentifierExp id) {
 		// We don't want assist for an aggregate's name
 		if (prevToken.ptr + prevToken.sourceLen < cursorLocation && cursorLocation <= token.ptr) {
 			wantAssist = false;
@@ -1009,7 +1013,7 @@ public class CompletionParser extends Parser {
 	}
 	
 	@Override
-	protected AggregateDeclaration newUnionDeclaration(Loc loc, IdentifierExp id) {
+	protected UnionDeclaration newUnionDeclaration(Loc loc, IdentifierExp id) {
 		// We don't want assist for an aggregate's name
 		if (prevToken.ptr + prevToken.sourceLen < cursorLocation && cursorLocation <= token.ptr) {
 			wantAssist = false;

@@ -89,8 +89,9 @@ public class InvariantDeclaration extends FuncDeclaration {
 		if (s != null) {
 			throw new IllegalStateException("assert(!s);");
 		}
-		id = new InvariantDeclaration(loc);
+		id = context.newInvariantDeclaration(loc);
 		super.syntaxCopy(id, context);
+		id.copySourceRange(this);
 		return id;
 	}
 

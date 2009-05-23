@@ -45,7 +45,7 @@ public class CompileStatement extends Statement {
 		}
 		StringExp se = (StringExp) exp;
 		se = se.toUTF8(sc, context);
-		Parser p = new Parser(context.Module_rootModule.apiLevel, se.string);
+		Parser p = context.newParser(context.Module_rootModule.apiLevel, se.string);
 		p.loc = loc;
 
 		Statements a = new Statements();

@@ -11,14 +11,31 @@ import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.Type;
 
 public class CompileTimeFuncDeclaration extends FuncDeclaration {
-
+	
+	private boolean fNotifySemanticAnalaysis;
+	private boolean fAlreadyNotified;
+	
 	public CompileTimeFuncDeclaration(Loc loc, IdentifierExp ident,
 			int storage_class, Type type) {
+		this(loc, ident, storage_class, type, true);
+	}
+	
+	public CompileTimeFuncDeclaration(Loc loc, IdentifierExp ident,
+			int storage_class, Type type, boolean notifySemanticAnalaysis) {
 		super(loc, ident, storage_class, type);
+		
+		fNotifySemanticAnalaysis = notifySemanticAnalaysis;
 	}
 	
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
+		if (!fNotifySemanticAnalaysis && !fAlreadyNotified) {
+			fAlreadyNotified = true;
+			
+			super.semantic(sc, context);
+			return;
+		}
+		
 		try {
 			((CompileTimeSemanticContext) context).stepBegin(this, sc);
 			

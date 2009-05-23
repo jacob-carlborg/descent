@@ -259,9 +259,9 @@ public class AliasDeclaration extends Declaration {
 		Assert.isTrue(s == null);
 		AliasDeclaration sa;
 		if (type != null) {
-			sa = new AliasDeclaration(loc, ident, type.syntaxCopy(context));
+			sa = context.newAliasDeclaration(loc, ident, type.syntaxCopy(context));
 		} else {
-			sa = new AliasDeclaration(loc, ident, aliassym.syntaxCopy(null, context));
+			sa = context.newAliasDeclaration(loc, ident, aliassym.syntaxCopy(null, context));
 		}
 		// Syntax copy for header file
 		if (htype == null) // Don't overwrite original

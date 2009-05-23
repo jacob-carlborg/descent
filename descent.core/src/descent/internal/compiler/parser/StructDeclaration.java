@@ -570,7 +570,7 @@ public class StructDeclaration extends AggregateDeclaration {
 		if (s != null) {
 			sd = (StructDeclaration) s;
 		} else {
-			sd = new StructDeclaration(loc, ident);
+			sd = context.newStructDeclaration(loc, ident);
 		}
 		super.syntaxCopy(sd, context);
 		

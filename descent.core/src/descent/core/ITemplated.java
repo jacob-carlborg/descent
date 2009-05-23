@@ -3,7 +3,7 @@ package descent.core;
 /**
  * An element that can possible have template parameters.
  */
-public interface ITemplated {
+public interface ITemplated extends ISourceReference {
 	
 	/**
 	 * Returns whether this type represents a template, or is a templated

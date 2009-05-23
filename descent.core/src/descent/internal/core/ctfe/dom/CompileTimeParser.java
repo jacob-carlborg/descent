@@ -1,23 +1,34 @@
 package descent.internal.core.ctfe.dom;
 
 import descent.internal.compiler.parser.ASTNodeEncoder;
+import descent.internal.compiler.parser.AliasDeclaration;
 import descent.internal.compiler.parser.AlignDeclaration;
+import descent.internal.compiler.parser.AnonDeclaration;
 import descent.internal.compiler.parser.Argument;
 import descent.internal.compiler.parser.Arguments;
 import descent.internal.compiler.parser.Array;
+import descent.internal.compiler.parser.BaseClasses;
 import descent.internal.compiler.parser.BreakStatement;
 import descent.internal.compiler.parser.CaseStatement;
+import descent.internal.compiler.parser.ClassDeclaration;
+import descent.internal.compiler.parser.CompileDeclaration;
 import descent.internal.compiler.parser.CompileStatement;
 import descent.internal.compiler.parser.CompoundStatement;
 import descent.internal.compiler.parser.Condition;
 import descent.internal.compiler.parser.ConditionalDeclaration;
 import descent.internal.compiler.parser.ConditionalStatement;
 import descent.internal.compiler.parser.ContinueStatement;
+import descent.internal.compiler.parser.CtorDeclaration;
+import descent.internal.compiler.parser.DebugSymbol;
 import descent.internal.compiler.parser.DeclarationStatement;
 import descent.internal.compiler.parser.DefaultStatement;
+import descent.internal.compiler.parser.DeleteDeclaration;
 import descent.internal.compiler.parser.DoStatement;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.Dsymbols;
+import descent.internal.compiler.parser.DtorDeclaration;
+import descent.internal.compiler.parser.EnumDeclaration;
+import descent.internal.compiler.parser.EnumMember;
 import descent.internal.compiler.parser.ExpStatement;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.Expressions;
@@ -31,10 +42,16 @@ import descent.internal.compiler.parser.GotoStatement;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.IfStatement;
 import descent.internal.compiler.parser.Initializer;
+import descent.internal.compiler.parser.InterfaceDeclaration;
+import descent.internal.compiler.parser.InvariantDeclaration;
+import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.LabelStatement;
+import descent.internal.compiler.parser.LinkDeclaration;
 import descent.internal.compiler.parser.Loc;
+import descent.internal.compiler.parser.NewDeclaration;
 import descent.internal.compiler.parser.OnScopeStatement;
 import descent.internal.compiler.parser.Parser;
+import descent.internal.compiler.parser.PostBlitDeclaration;
 import descent.internal.compiler.parser.PragmaDeclaration;
 import descent.internal.compiler.parser.PragmaStatement;
 import descent.internal.compiler.parser.ReturnStatement;
@@ -43,18 +60,28 @@ import descent.internal.compiler.parser.Statement;
 import descent.internal.compiler.parser.Statements;
 import descent.internal.compiler.parser.StaticAssert;
 import descent.internal.compiler.parser.StaticAssertStatement;
+import descent.internal.compiler.parser.StaticCtorDeclaration;
+import descent.internal.compiler.parser.StaticDtorDeclaration;
 import descent.internal.compiler.parser.StaticIfCondition;
 import descent.internal.compiler.parser.StaticIfDeclaration;
+import descent.internal.compiler.parser.StructDeclaration;
 import descent.internal.compiler.parser.SwitchStatement;
 import descent.internal.compiler.parser.SynchronizedStatement;
 import descent.internal.compiler.parser.TOK;
+import descent.internal.compiler.parser.TemplateDeclaration;
 import descent.internal.compiler.parser.TemplateInstance;
+import descent.internal.compiler.parser.TemplateParameters;
 import descent.internal.compiler.parser.ThrowStatement;
 import descent.internal.compiler.parser.TryCatchStatement;
 import descent.internal.compiler.parser.TryFinallyStatement;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeFunction;
+import descent.internal.compiler.parser.TypedefDeclaration;
+import descent.internal.compiler.parser.UnionDeclaration;
+import descent.internal.compiler.parser.UnitTestDeclaration;
 import descent.internal.compiler.parser.VarDeclaration;
+import descent.internal.compiler.parser.Version;
+import descent.internal.compiler.parser.VersionSymbol;
 import descent.internal.compiler.parser.VolatileStatement;
 import descent.internal.compiler.parser.WhileStatement;
 import descent.internal.compiler.parser.WithStatement;
@@ -260,6 +287,131 @@ public class CompileTimeParser extends Parser {
 	@Override
 	protected AlignDeclaration newAlignDeclaration(int i, Dsymbols a) {
 		return new CompileTimeAlignDeclaration(i, a);
+	}
+	
+	@Override
+	protected AnonDeclaration newAnonDeclaration(Loc loc, boolean b, Dsymbols decl) {
+		return new CompileTimeAnonDeclaration(loc, b, decl);
+	}
+	
+	@Override
+	protected CompileDeclaration newCompileDeclaration(Loc loc, Expression e) {
+		return new CompileTimeCompileDeclaration(loc, e);
+	}
+	
+	@Override
+	protected LinkDeclaration newLinkDeclaration(LINK link, Dsymbols ax) {
+		return new CompileTimeLinkDeclaration(link, ax);
+	}
+	
+	@Override
+	protected DebugSymbol newDebugSymbol(Loc loc, IdentifierExp id, Version version) {
+		return new CompileTimeDebugSymbol(loc, id, version);
+	}
+	
+	@Override
+	protected AliasDeclaration newAliasDeclaration(Loc loc, IdentifierExp ident, Type t) {
+		return new CompileTimeAliasDeclaration(loc, ident, t);
+	}
+	
+	@Override
+	protected CtorDeclaration newCtorDeclaration(Loc loc, Arguments arguments, int i) {
+		return new CompileTimeCtorDeclaration(loc, arguments, i);
+	}
+	
+	@Override
+	protected DeleteDeclaration newDeleteDeclaration(Loc loc, Arguments arguments) {
+		return new CompileTimeDeleteDeclaration(loc, arguments);
+	}
+	
+	@Override
+	protected DtorDeclaration newDtorDeclaration(Loc loc) {
+		return new CompileTimeDtorDeclaration(loc);
+	}
+	
+	@Override
+	protected InvariantDeclaration newInvariantDeclaration(Loc loc) {
+		return new CompileTimeInvariantDeclaration(loc);
+	}
+	
+	@Override
+	protected NewDeclaration newNewDeclaration(Loc loc, Arguments arguments, int i) {
+		return new CompileTimeNewDeclaration(loc, arguments, i);
+	}
+	
+	@Override
+	protected PostBlitDeclaration newPostBlitDeclaration(Loc loc) {
+		return new CompileTimePostBlitDeclaration(loc);
+	}
+	
+	@Override
+	protected StaticCtorDeclaration newStaticCtorDeclaration(Loc loc) {
+		return new CompileTimeStaticCtorDeclaration(loc);
+	}
+	
+	@Override
+	protected StaticDtorDeclaration newStaticDtorDeclaration(Loc loc) {
+		return new CompileTimeStaticDtorDeclaration(loc);
+	}
+	
+	@Override
+	protected UnitTestDeclaration newUnitTestDeclaration(Loc loc) {
+		return new CompileTimeUnitTestDeclaration(loc);
+	}
+	
+	@Override
+	protected TypedefDeclaration newTypedefDeclaration(Loc loc, IdentifierExp ident, Type t, Initializer init) {
+		return new CompileTimeTypedefDeclaration(loc, ident, t, init);
+	}
+	
+	@Override
+	protected EnumMember newEnumMember(Loc loc, IdentifierExp ident, Expression value) {
+		return new CompileTimeEnumMember(loc, ident, value);
+	}
+	
+	@Override
+	protected EnumMember newEnumMember(Loc loc, IdentifierExp exp, Expression value, Type type) {
+		return new CompileTimeEnumMember(loc, exp, value, type);
+	}
+	
+	@Override
+	protected StaticAssert newStaticAssert(Loc loc, Expression exp, Expression msg) {
+		return new CompileTimeStaticAssert(loc, exp, msg);
+	}
+	
+	@Override
+	protected VersionSymbol newVersionSymbol(Loc loc, IdentifierExp id, Version version) {
+		return new CompileTimeVersionSymbol(loc, id, version);
+	}
+	
+	@Override
+	protected ClassDeclaration newClassDeclaration(Loc loc, IdentifierExp id, BaseClasses baseClasses) {
+		return new CompileTimeClassDeclaration(loc, id, baseClasses);
+	}
+	
+	@Override
+	protected InterfaceDeclaration newInterfaceDeclaration(Loc loc, IdentifierExp id, BaseClasses baseClasses) {
+		return new CompileTimeInterfaceDeclaration(loc, id, baseClasses);
+	}
+	
+	@Override
+	protected UnionDeclaration newUnionDeclaration(Loc loc, IdentifierExp id) {
+		return new CompileTimeUnionDeclaration(loc, id);
+	}
+	
+	@Override
+	protected StructDeclaration newStructDeclaration(Loc loc, IdentifierExp id) {
+		return new CompileTimeStructDeclaration(loc, id);
+	}
+	
+	@Override
+	protected EnumDeclaration newEnumDeclaration(Loc loc, IdentifierExp id, Type t) {
+		return new CompileTimeEnumDeclaration(loc, id, t);
+	}
+	
+	@Override
+	protected TemplateDeclaration newTemplateDeclaration(Loc loc, IdentifierExp ident, TemplateParameters tpl, Expression constraint, Dsymbols decldefs) {
+		return new CompileTimeTemplateDeclaration(loc, ident, tpl, constraint, decldefs);
 	}
 
 }

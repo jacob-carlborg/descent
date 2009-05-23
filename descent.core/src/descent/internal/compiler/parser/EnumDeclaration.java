@@ -545,7 +545,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 			ed = (EnumDeclaration) s;
 			ed.memtype = t;
 		} else {
-			ed = new EnumDeclaration(loc, ident, t);
+			ed = context.newEnumDeclaration(loc, ident, t);
 		}
 		super.syntaxCopy(ed, context);
 		

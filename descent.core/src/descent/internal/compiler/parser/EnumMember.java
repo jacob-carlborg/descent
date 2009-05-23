@@ -79,7 +79,7 @@ public class EnumMember extends Dsymbol {
 			em.value = e;
 			em.type = t;
 		} else {
-			em = new EnumMember(loc, ident, e, t);
+			em = context.newEnumMember(loc, ident, e, t);
 		}
 		
 		em.copySourceRange(this);

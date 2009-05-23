@@ -47,7 +47,7 @@ public class UnionDeclaration extends StructDeclaration {
 		if (s != null) {
 			ud = (UnionDeclaration) s;
 		} else {
-			ud = new UnionDeclaration(loc, ident);
+			ud = context.newUnionDeclaration(loc, ident);
 		}
 		super.syntaxCopy(ud, context);
 		

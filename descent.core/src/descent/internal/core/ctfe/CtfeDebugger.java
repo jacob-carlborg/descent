@@ -25,18 +25,13 @@ import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.AliasDeclaration;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.DsymbolTable;
-import descent.internal.compiler.parser.Dsymbols;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.InterState;
-import descent.internal.compiler.parser.IsExp;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.ScopeDsymbol;
-import descent.internal.compiler.parser.StaticIfCondition;
-import descent.internal.compiler.parser.StaticIfDeclaration;
 import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.core.CompilationUnit;
 import descent.internal.core.ctfe.dom.CompileTimeSemanticContext;
@@ -193,8 +188,6 @@ public class CtfeDebugger implements IDebugger {
 								fOutput.error("Descent Bug, please report it ;-): " + e.getMessage());
 								return;
 							}
-							
-							
 						}
 						public void beginReporting() {
 						}

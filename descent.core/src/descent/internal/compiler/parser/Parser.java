@@ -489,7 +489,7 @@ public class Parser extends Lexer {
 				    Expression e = parseAssignExp();
 				    check(TOKrparen);
 				    check(TOKsemicolon);
-				    s = new CompileDeclaration(loc(), e);
+				    s = newCompileDeclaration(loc(), e);
 				    break;
 				}
 
@@ -736,7 +736,7 @@ public class Parser extends Lexer {
 					LINK linksave = linkage;
 					LINK linkage = parseLinkage();
 					a = parseBlock();
-					s = new LinkDeclaration(linkage, a);
+					s = newLinkDeclaration(linkage, a);
 					attachLeadingComments = prevToken.value == TOKrcurly;
 					linkage = linksave;
 					break;
@@ -955,7 +955,7 @@ public class Parser extends Lexer {
 		check(TOKlparen);
 		check(TOKrparen);
 
-		PostBlitDeclaration f = new PostBlitDeclaration(loc);
+		PostBlitDeclaration f = newPostBlitDeclaration(loc);
 		f.thisStart = start;
 		parseContracts(f);
 		return f;
@@ -1269,9 +1269,9 @@ public class Parser extends Lexer {
 		check(TOKrparen);
 		check(TOKsemicolon);
 
-		return new StaticAssert(loc(), exp, msg);
+		return newStaticAssert(loc(), exp, msg);
 	}
-	
+
 	/***********************************
 	 * Parse typeof(expression).
 	 * Current token is on the 'typeof'.
@@ -1516,21 +1516,21 @@ public class Parser extends Lexer {
         	nextToken();
         	nextToken();
         	check(TOKrparen);
-        	PostBlitDeclaration f = new PostBlitDeclaration(loc);
+        	PostBlitDeclaration f = newPostBlitDeclaration(loc);
         	f.thisStart = start;
         	parseContracts(f);
         	return f;
 	    } else {
 		    int[] varargs = new int[1];	    
 		    Arguments arguments = parseParameters(varargs);
-		    CtorDeclaration f = new CtorDeclaration(loc(), arguments, varargs[0]);
+		    CtorDeclaration f = newCtorDeclaration(loc(), arguments, varargs[0]);
 		    f.thisStart = start;
 		    parseContracts(f);
 		    f.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 		    return f;
 	    }
-	}
-	
+	}	
+
 	private DtorDeclaration parseDtor() {
 		int start = token.ptr;
 		nextToken();
@@ -1542,13 +1542,13 @@ public class Parser extends Lexer {
 	    check(TOKlparen);
 	    check(TOKrparen);
 		
-		DtorDeclaration f = new DtorDeclaration(loc());
+		DtorDeclaration f = newDtorDeclaration(loc());
 		f.thisStart = thisStart;
 	    parseContracts(f);
 	    f.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 	    return f;
 	}
-	
+
 	private StaticCtorDeclaration parseStaticCtor() {
 		int start = token.ptr;
 		
@@ -1556,14 +1556,14 @@ public class Parser extends Lexer {
 	    check(TOKlparen);
 	    check(TOKrparen);
 
-	    StaticCtorDeclaration f = new StaticCtorDeclaration(loc());
+	    StaticCtorDeclaration f = newStaticCtorDeclaration(loc());
 	    f.thisStart = start;
 	    
 		f.setSourceRange(start, 0);
 	    parseContracts(f);
 	    return f;
 	}
-	
+
 	private StaticDtorDeclaration parseStaticDtor() {
 		int start = token.ptr;
 		nextToken();
@@ -1575,13 +1575,13 @@ public class Parser extends Lexer {
 	    check(TOKlparen);
 	    check(TOKrparen);
 		
-		StaticDtorDeclaration f = new StaticDtorDeclaration(loc());
+		StaticDtorDeclaration f = newStaticDtorDeclaration(loc());
 		f.thisStart = thisStart;
 		f.setSourceRange(start, 0);
 	    parseContracts(f);
 	    return f;
 	}
-	
+
 	private InvariantDeclaration parseInvariant() {
 		int start = token.ptr;
 	    nextToken();
@@ -1592,23 +1592,23 @@ public class Parser extends Lexer {
 			check(TOKrparen);
 	    }
 
-	    InvariantDeclaration invariant = new InvariantDeclaration(loc());
+	    InvariantDeclaration invariant = newInvariantDeclaration(loc());
 	    invariant.invariantStart = start;
 	    invariant.setFbody(dietParseStatement(invariant));
 	    invariant.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 	    return invariant;
 	}
-	
+
 	private UnitTestDeclaration parseUnitTest() {
 		int start = token.ptr;
 		nextToken();
 		
-		UnitTestDeclaration unitTest = new UnitTestDeclaration(loc());
+		UnitTestDeclaration unitTest = newUnitTestDeclaration(loc());
 		unitTest.setFbody(dietParseStatement(unitTest));
 	    unitTest.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 	    return unitTest;
 	}
-	
+
 	private NewDeclaration parseNew() {
 		int start = token.ptr;
 		
@@ -1616,13 +1616,13 @@ public class Parser extends Lexer {
 		int[] varargs = new int[1];
 		Arguments arguments = parseParameters(varargs);
 		
-		NewDeclaration f = new NewDeclaration(loc(), arguments, varargs[0]);
+		NewDeclaration f = newNewDeclaration(loc(), arguments, varargs[0]);
 		f.newStart = start;
 	    parseContracts(f);
 	    f.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 	    return f;
 	}
-	
+
 	private FuncDeclaration parseDelete() {
 		int start = token.ptr;
 		int startLine = token.lineNumber;
@@ -1639,13 +1639,13 @@ public class Parser extends Lexer {
 	    			startLine, name);
 	    }
 		
-		DeleteDeclaration f = new DeleteDeclaration(loc(), arguments);
+		DeleteDeclaration f = newDeleteDeclaration(loc(), arguments);
 		f.deleteStart = start;
 	    parseContracts(f);
 	    f.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 	    return f;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private Arguments parseParameters(int[] pvarargs) {
 		if (apiLevel < D2) {
@@ -2009,7 +2009,7 @@ public class Parser extends Lexer {
 			t = null;
 		}
 		
-		EnumDeclaration e = new EnumDeclaration(loc(), id, t);
+		EnumDeclaration e = newEnumDeclaration(loc(), id, t);
 		
 		if (token.value == TOKsemicolon && id != null) {
 			e.setSourceRange(enumTokenStart, token.ptr + token.sourceLen - enumTokenStart);
@@ -2063,7 +2063,7 @@ public class Parser extends Lexer {
 					
 					lastComments = getLastComments();
 					
-				    em = new EnumMember(loc, ident[0], value, type);
+				    em = newEnumMember(loc, ident[0], value, type);
 				} else {
 					if (token.value == TOKidentifier) {
 						Expression value;
@@ -2081,7 +2081,7 @@ public class Parser extends Lexer {
 //							lastComments = null;
 //						}
 						
-						em = new EnumMember(loc(), ident, value);
+						em = newEnumMember(loc(), ident, value);
 					} else {
 						parsingErrorInsertToComplete(prevToken, "EnumMember", "EnumDeclaration");
 						nextToken();
@@ -2120,7 +2120,7 @@ public class Parser extends Lexer {
 		
 		return e;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private Dsymbol parseAggregate() {
 		AggregateDeclaration a = null;
@@ -2203,7 +2203,7 @@ public class Parser extends Lexer {
 			}
 			if (anon != 0) {
 				nextToken();
-			    return new AnonDeclaration(loc(), anon == 1, decl);
+			    return newAnonDeclaration(loc(), anon == 1, decl);
 			}
 			a.members = decl;
 			a.sourceMembers = new Dsymbols(decl);
@@ -2260,7 +2260,7 @@ public class Parser extends Lexer {
 			// Wrap a template around the aggregate declaration
 			decldefs = new Dsymbols();
 			decldefs.add(a);
-			tempdecl = new TemplateDeclaration(loc(), id, tpl, constraint, decldefs);
+			tempdecl = newTemplateDeclaration(loc(), id, tpl, constraint, decldefs);
 			tempdecl.setSourceRange(a.start, a.length);
 			tempdecl.wrapper = true;
 			a.templated = true;
@@ -2268,7 +2268,7 @@ public class Parser extends Lexer {
 	    }
 
 		return a;
-	}
+	}	
 
 	private BaseClasses parseBaseClasses() {
 		PROT protection = PROT.PROTpublic;
@@ -2365,7 +2365,7 @@ public class Parser extends Lexer {
 			nextToken();
 		}
 
-		TemplateDeclaration tempdecl = new TemplateDeclaration(loc(), id, tpl, constraint,  decldefs);
+		TemplateDeclaration tempdecl = newTemplateDeclaration(loc(), id, tpl, constraint,  decldefs);
 		tempdecl.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 		
 		if (malformed[0]) {
@@ -3766,7 +3766,7 @@ public class Parser extends Lexer {
 				TypedefDeclaration td = null;
 				AliasDeclaration ad = null;
 				if (tok == TOKtypedef) {
-					td = new TypedefDeclaration(loc(), ident, t, init);
+					td = newTypedefDeclaration(loc(), ident, t, init);
 					td.first = first;
 					v = td;
 					if (previousTypedef != null) {
@@ -3778,7 +3778,7 @@ public class Parser extends Lexer {
 						error(IProblem.AliasCannotHaveInitializer, assignTokenLine, assignTokenStart,  init.start + init.length - assignTokenStart);
 					}
 					
-					ad = new AliasDeclaration(loc(), ident, t);
+					ad = newAliasDeclaration(loc(), ident, t);
 					ad.first = first;
 					v = ad;
 					if (previousAlias != null) {
@@ -3797,7 +3797,7 @@ public class Parser extends Lexer {
 			    	// TODO: this is never reached by tests
 			    	Dsymbols ax = new Dsymbols();
 			    	ax.add(v);
-			    	Dsymbol s = new LinkDeclaration(link, ax);
+			    	Dsymbol s = newLinkDeclaration(link, ax);
 			    	a.add(s);
 			    }
 				
@@ -3862,7 +3862,7 @@ public class Parser extends Lexer {
 				} else {
 					Dsymbols ax = new Dsymbols();
 					ax.add(f);
-					s = new LinkDeclaration(link, ax);
+					s = newLinkDeclaration(link, ax);
 				}
 					
 				if (tpl != null) { // it's a function template
@@ -3872,7 +3872,7 @@ public class Parser extends Lexer {
 					// Wrap a template around the aggregate declaration
 					decldefs = new Dsymbols();
 					decldefs.add(s);
-					tempdecl = new TemplateDeclaration(loc(), s.ident, tpl, constraint, decldefs);
+					tempdecl = newTemplateDeclaration(loc(), s.ident, tpl, constraint, decldefs);
 					tempdecl.setSourceRange(s.start, s.length);
 					tempdecl.wrapper = true;
 					s = tempdecl;
@@ -7680,7 +7680,7 @@ public class Parser extends Lexer {
 			}
 
 			IdentifierExp id = null;
-			ClassDeclaration cd = new ClassDeclaration(loc(), id, baseClasses);
+			ClassDeclaration cd = newClassDeclaration(loc(), id, baseClasses);
 
 			if (token.value != TOKlcurly) {
 				parsingErrorInsertToComplete(prevToken, "{ members }", "AnnonymousClassDeclaration");
@@ -7795,10 +7795,10 @@ public class Parser extends Lexer {
 		Version version;
 		
 		if (token.value == TOKint32v) {
-			version = new Version(loc(), token.sourceString);
+			version = newVersion(loc(), token.sourceString);
 			version.setSourceRange(token.ptr, token.sourceLen);
 		} else if (token.value == TOKidentifier) {
-			version = new Version(loc(), token.sourceString);
+			version = newVersion(loc(), token.sourceString);
 			version.setSourceRange(token.ptr, token.sourceLen);
 		} else {
 			throw new RuntimeException("Can't happen");
@@ -7806,16 +7806,16 @@ public class Parser extends Lexer {
 		
 		return version;
 	}
-	
+
 	private VersionSymbol newVersionAssignmentForCurrentToken() {
 		if (token.value == TOKint32v) {
-			return new VersionSymbol(loc(), token.intValue.longValue(), newVersionForCurrentToken());
+			return newVersionSymbol(loc(), token.intValue.longValue(), newVersionForCurrentToken());
 		} else if (token.value == TOKidentifier) {
 			return newVersionSymbol(loc(), newIdentifierExp(), newVersionForCurrentToken());
 		} else {
 			throw new RuntimeException("Can't happen");
 		}
-	}
+	}	
 
 	private VoidInitializer newVoidInitializerForToken(Token token) {
 		VoidInitializer voidInitializer = new VoidInitializer(loc());
@@ -8092,6 +8092,10 @@ public class Parser extends Lexer {
 		return new VersionSymbol(loc, id, version);
 	}
 	
+	protected VersionSymbol newVersionSymbol(Loc loc, long l, Version version) {
+		return new VersionSymbol(loc, l, version);
+	}
+	
 	protected DebugCondition newDebugCondition(Module module, Loc loc, long level, char[] id) {
 		return new DebugCondition(module, loc, level, id);
 	}
@@ -8276,19 +8280,19 @@ public class Parser extends Lexer {
 		return new ReturnStatement(loc, exp);
 	}
 	
-	protected AggregateDeclaration newUnionDeclaration(Loc loc, IdentifierExp id) {
+	protected UnionDeclaration newUnionDeclaration(Loc loc, IdentifierExp id) {
 		return new UnionDeclaration(loc, id);
 	}
 
-	protected AggregateDeclaration newStructDeclaration(Loc loc, IdentifierExp id) {
+	protected StructDeclaration newStructDeclaration(Loc loc, IdentifierExp id) {
 		return new StructDeclaration(loc, id);
 	}
 
-	protected AggregateDeclaration newInterfaceDeclaration(Loc loc, IdentifierExp id, BaseClasses baseClasses) {
+	protected InterfaceDeclaration newInterfaceDeclaration(Loc loc, IdentifierExp id, BaseClasses baseClasses) {
 		return new InterfaceDeclaration(loc, id, baseClasses);
 	}
 
-	protected AggregateDeclaration newClassDeclaration(Loc loc, IdentifierExp id, BaseClasses baseClasses) {
+	protected ClassDeclaration newClassDeclaration(Loc loc, IdentifierExp id, BaseClasses baseClasses) {
 		return new ClassDeclaration(loc, id, baseClasses);
 	}
 	
@@ -8422,6 +8426,86 @@ public class Parser extends Lexer {
 	
 	protected AlignDeclaration newAlignDeclaration(int i, Dsymbols a) {
 		return new AlignDeclaration(i, a);
+	}
+	
+	protected AnonDeclaration newAnonDeclaration(Loc loc, boolean b, Dsymbols decl) {
+		return new AnonDeclaration(loc, b, decl);
+	}
+	
+	protected CompileDeclaration newCompileDeclaration(Loc loc, Expression e) {
+		return new CompileDeclaration(loc, e);
+	}
+	
+	protected LinkDeclaration newLinkDeclaration(LINK link, Dsymbols ax) {
+		return new LinkDeclaration(link, ax);
+	}
+	
+	protected AliasDeclaration newAliasDeclaration(Loc loc, IdentifierExp ident, Type t) {
+		return new AliasDeclaration(loc, ident, t);
+	}
+	
+	protected CtorDeclaration newCtorDeclaration(Loc loc, Arguments arguments, int i) {
+		return new CtorDeclaration(loc, arguments, i);
+	}
+	
+	protected DeleteDeclaration newDeleteDeclaration(Loc loc, Arguments arguments) {
+		return new DeleteDeclaration(loc, arguments);
+	}
+	
+	protected DtorDeclaration newDtorDeclaration(Loc loc) {
+		return new DtorDeclaration(loc);
+	}
+	
+	protected InvariantDeclaration newInvariantDeclaration(Loc loc) {
+		return new InvariantDeclaration(loc);
+	}
+	
+	protected NewDeclaration newNewDeclaration(Loc loc, Arguments arguments, int i) {
+		return new NewDeclaration(loc, arguments, i);
+	}
+	
+	protected PostBlitDeclaration newPostBlitDeclaration(Loc loc) {
+		return new PostBlitDeclaration(loc);
+	}
+	
+	protected StaticCtorDeclaration newStaticCtorDeclaration(Loc loc) {
+		return new StaticCtorDeclaration(loc);
+	}
+	
+	protected StaticDtorDeclaration newStaticDtorDeclaration(Loc loc) {
+		return new StaticDtorDeclaration(loc);
+	}
+	
+	protected UnitTestDeclaration newUnitTestDeclaration(Loc loc) {
+		return new UnitTestDeclaration(loc);
+	}
+	
+	protected TypedefDeclaration newTypedefDeclaration(Loc loc, IdentifierExp ident, Type t, Initializer init) {
+		return new TypedefDeclaration(loc, ident, t, init);
+	}
+	
+	protected EnumMember newEnumMember(Loc loc, IdentifierExp ident, Expression value) {
+		return new EnumMember(loc, ident, value);
+	}
+	
+	protected EnumMember newEnumMember(Loc loc, IdentifierExp exp, Expression value, Type type) {
+		return newEnumMember(loc, exp, value, type);
+	}
+	
+	protected StaticAssert newStaticAssert(Loc loc, Expression exp, Expression msg) {
+		return new StaticAssert(loc, exp, msg);
+	}
+	
+	protected Version newVersion(Loc loc, char[] sourceString) {
+		return new Version(loc, sourceString);
+	}
+	
+	protected EnumDeclaration newEnumDeclaration(Loc loc, IdentifierExp id, Type t) {
+		return new EnumDeclaration(loc, id, t);
+	}
+	
+	protected TemplateDeclaration newTemplateDeclaration(Loc loc, IdentifierExp ident, TemplateParameters tpl, Expression constraint, Dsymbols decldefs) {
+		return new TemplateDeclaration(loc, ident, tpl, constraint, decldefs);
 	}
 	
 	protected Import addImportAlias(Import s, IdentifierExp name, IdentifierExp alias) {

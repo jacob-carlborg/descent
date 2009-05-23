@@ -66,7 +66,8 @@ public class LinkDeclaration extends AttribDeclaration {
 		LinkDeclaration ld;
 
 		Assert.isNotNull(s);
-		ld = new LinkDeclaration(linkage, Dsymbol.arraySyntaxCopy(decl, context));
+		ld = context.newLinkDeclaration(linkage, Dsymbol.arraySyntaxCopy(decl, context));
+		ld.copySourceRange(this);
 		return ld;
 	}
 

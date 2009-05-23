@@ -83,7 +83,8 @@ public class UnitTestDeclaration extends FuncDeclaration {
 		if (s != null) {
 			throw new IllegalStateException("assert(!s);");
 		}
-		UnitTestDeclaration utd = new UnitTestDeclaration(loc);
+		UnitTestDeclaration utd = context.newUnitTestDeclaration(loc);
+		utd.copySourceRange(this);
 		return super.syntaxCopy(utd, context);
 	}
 

@@ -99,8 +99,9 @@ public class StaticAssert extends Dsymbol {
 		if (s != null) {
 			throw new IllegalStateException("assert(!s);");
 		}
-		sa = new StaticAssert(loc, exp.syntaxCopy(context), msg != null ? msg
+		sa = context.newStaticAssert(loc, exp.syntaxCopy(context), msg != null ? msg
 				.syntaxCopy(context) : null);
+		sa.copySourceRange(this);
 		return sa;
 	}
 

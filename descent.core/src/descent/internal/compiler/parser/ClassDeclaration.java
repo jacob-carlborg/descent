@@ -867,7 +867,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		if (s != null) {
 			cd = (ClassDeclaration) s;
 		} else {
-			cd = new ClassDeclaration(loc, ident, null);
+			cd = context.newClassDeclaration(loc, ident, null);
 		}
 		
 		// Descent

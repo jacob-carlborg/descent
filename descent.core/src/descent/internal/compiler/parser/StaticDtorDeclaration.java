@@ -110,7 +110,8 @@ public class StaticDtorDeclaration extends FuncDeclaration {
 			throw new IllegalStateException("assert(!s);");
 		}
 
-		StaticDtorDeclaration sdd = new StaticDtorDeclaration(loc);
+		StaticDtorDeclaration sdd = context.newStaticDtorDeclaration(loc);
+		sdd.copySourceRange(this);
 		return super.syntaxCopy(sdd, context);
 	}
 

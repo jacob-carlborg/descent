@@ -101,7 +101,7 @@ public class DtorDeclaration extends FuncDeclaration {
 			throw new IllegalStateException("assert(!s);");
 		}
 
-		DtorDeclaration dd = new DtorDeclaration(loc, ident);
+		DtorDeclaration dd = context.newDtorDeclaration(loc, ident);
 		dd.javaElement = javaElement;
 		dd.copySourceRange(this);
 		return super.syntaxCopy(dd, context);

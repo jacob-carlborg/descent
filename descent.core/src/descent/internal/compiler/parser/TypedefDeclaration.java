@@ -127,7 +127,7 @@ public class TypedefDeclaration extends Declaration {
 
 		Assert.isTrue(s == null);
 		TypedefDeclaration st;
-		st = new TypedefDeclaration(loc, ident, basetype, init);
+		st = context.newTypedefDeclaration(loc, ident, basetype, init);
 		// Syntax copy for header file
 		if (htype == null) // Don't overwrite original
 		{

@@ -63,7 +63,7 @@ public class CompileDeclaration extends AttribDeclaration {
 	    {
 	    	StringExp se = (StringExp) exp;
 			se = se.toUTF8(sc, context);
-			Parser p = new Parser(context.Module_rootModule.apiLevel, se.string);
+			Parser p = context.newParser(context.Module_rootModule.apiLevel, se.string);
 			// p.nextToken();
 			p.loc = loc;
 			decl = p.parseModule();
@@ -120,7 +120,8 @@ public class CompileDeclaration extends AttribDeclaration {
 
 	@Override
 	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
-		CompileDeclaration sc = new CompileDeclaration(loc, exp.syntaxCopy(context));
+		CompileDeclaration sc = context.newCompileDeclaration(loc, exp.syntaxCopy(context));
+		sc.copySourceRange(this);
 		return sc;
 	}
 

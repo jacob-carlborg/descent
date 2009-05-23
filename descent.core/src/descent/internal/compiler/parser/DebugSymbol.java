@@ -87,8 +87,9 @@ public class DebugSymbol extends Dsymbol {
 		if (s != null) {
 			throw new IllegalStateException("assert(!s)");
 		}
-		DebugSymbol ds = new DebugSymbol(loc, ident, version);
+		DebugSymbol ds = context.newDebugSymbol(loc, ident, version);
 		ds.level = level;
+		ds.copySourceRange(this);
 		return ds;
 	}
 	

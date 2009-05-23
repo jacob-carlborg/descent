@@ -88,8 +88,9 @@ public class VersionSymbol extends Dsymbol {
 		if (s != null) {
 			throw new IllegalStateException("assert(!s)");
 		}
-		VersionSymbol ds = new VersionSymbol(loc, ident, version);
+		VersionSymbol ds = context.newVersionSymbol(loc, ident, version);
 		ds.level = level;
+		ds.copySourceRange(this);
 		return ds;
 	}
 

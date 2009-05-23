@@ -5,6 +5,7 @@ import descent.internal.compiler.lookup.DescentModuleFinder;
 import descent.internal.compiler.lookup.ModuleBuilder;
 import descent.internal.compiler.parser.ASTNodeEncoder;
 import descent.internal.core.CompilerConfiguration;
+import descent.internal.core.ctfe.dom.CompileTimeModuleBuilder;
 
 public class CompileTimeDescentModuleFinder extends DescentModuleFinder {
 

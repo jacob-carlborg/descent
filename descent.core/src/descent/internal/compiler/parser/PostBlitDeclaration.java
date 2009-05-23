@@ -18,7 +18,7 @@ public class PostBlitDeclaration extends FuncDeclaration {
 	
 	@Override
 	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
-		PostBlitDeclaration dd = new PostBlitDeclaration(loc, ident);
+		PostBlitDeclaration dd = context.newPostBlitDeclaration(loc, ident);
 		dd.copySourceRange(this);
 	    return super.syntaxCopy(dd, context);
 	}

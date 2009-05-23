@@ -115,7 +115,8 @@ public class StaticCtorDeclaration extends FuncDeclaration {
 			throw new IllegalStateException("assert(!s);");
 		}
 
-		StaticCtorDeclaration scd = new StaticCtorDeclaration(loc);
+		StaticCtorDeclaration scd = context.newStaticCtorDeclaration(loc);
+		scd.copySourceRange(this);
 		return super.syntaxCopy(scd, context);
 	}
 

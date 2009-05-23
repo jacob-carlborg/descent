@@ -974,7 +974,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		}
 		
 		d = Dsymbol.arraySyntaxCopy(members, context);
-		td = new TemplateDeclaration(loc, ident, p, c, d);
+		td = context.newTemplateDeclaration(loc, ident, p, c, d);
 		td.copySourceRange(this);
 		td.javaElement = javaElement;
 		td.wrapper = wrapper;

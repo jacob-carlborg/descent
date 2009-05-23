@@ -106,7 +106,7 @@ public class NewDeclaration extends FuncDeclaration {
 	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		NewDeclaration f;
 
-		f = new NewDeclaration(loc, null, varargs);
+		f = context.newNewDeclaration(loc, null, varargs);
 
 		super.syntaxCopy(f, context);
 

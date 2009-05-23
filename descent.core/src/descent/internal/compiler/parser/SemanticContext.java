@@ -560,4 +560,104 @@ public class SemanticContext {
 		return new AlignDeclaration(salign, dsymbols);
 	}
 
+	protected AnonDeclaration newAnonDeclaration(Loc loc, boolean isunion, Dsymbols dsymbols) {
+		return new AnonDeclaration(loc, isunion, dsymbols);
+	}
+
+	protected CompileDeclaration newCompileDeclaration(Loc loc, Expression expression) {
+		return new CompileDeclaration(loc, expression);
+	}
+
+	protected LinkDeclaration newLinkDeclaration(LINK linkage, Dsymbols dsymbols) {
+		return new LinkDeclaration(linkage, dsymbols);
+	}
+
+	protected DebugSymbol newDebugSymbol(Loc loc, IdentifierExp ident, Version version) {
+		return new DebugSymbol(loc, ident, version);
+	}
+
+	protected AliasDeclaration newAliasDeclaration(Loc loc, IdentifierExp ident, Type type) {
+		return new AliasDeclaration(loc, ident, type);
+	}
+
+	protected AliasDeclaration newAliasDeclaration(Loc loc, IdentifierExp ident, Dsymbol dsymbol) {
+		return new AliasDeclaration(loc, ident, dsymbol);
+	}
+
+	protected CtorDeclaration newCtorDeclaration(Loc loc, Arguments arguments, int varargs) {
+		return new CtorDeclaration(loc, arguments, varargs);
+	}
+
+	protected DeleteDeclaration newDeleteDeclaration(Loc loc, Arguments arguments) {
+		return new DeleteDeclaration(loc, arguments);
+	}
+
+	protected DtorDeclaration newDtorDeclaration(Loc loc, IdentifierExp ident) {
+		return new DtorDeclaration(loc, ident);
+	}
+
+	protected InvariantDeclaration newInvariantDeclaration(Loc loc) {
+		return new InvariantDeclaration(loc);
+	}
+
+	protected NewDeclaration newNewDeclaration(Loc loc, Arguments arguments, int varargs) {
+		return new NewDeclaration(loc, arguments, varargs);
+	}
+
+	protected PostBlitDeclaration newPostBlitDeclaration(Loc loc, IdentifierExp ident) {
+		return new PostBlitDeclaration(loc, ident);
+	}
+
+	protected StaticCtorDeclaration newStaticCtorDeclaration(Loc loc) {
+		return new StaticCtorDeclaration(loc);
+	}
+
+	protected StaticDtorDeclaration newStaticDtorDeclaration(Loc loc) {
+		return new StaticDtorDeclaration(loc);
+	}
+
+	protected UnitTestDeclaration newUnitTestDeclaration(Loc loc) {
+		return new UnitTestDeclaration(loc);
+	}
+
+	protected TypedefDeclaration newTypedefDeclaration(Loc loc, IdentifierExp ident, Type basetype, Initializer init) {
+		return new TypedefDeclaration(loc, ident, basetype, init);
+	}
+
+	protected EnumMember newEnumMember(Loc loc, IdentifierExp ident, Expression e, Type t) {
+		return new EnumMember(loc, ident, e, t);
+	}
+
+	protected StaticAssert newStaticAssert(Loc loc, Expression expression, Expression expression2) {
+		return new StaticAssert(loc, expression, expression2);
+	}
+
+	protected VersionSymbol newVersionSymbol(Loc loc, IdentifierExp ident, Version version) {
+		return new VersionSymbol(loc, ident, version);
+	}
+
+	protected ClassDeclaration newClassDeclaration(Loc loc, IdentifierExp ident, BaseClasses baseClasses) {
+		return new ClassDeclaration(loc, ident, baseClasses);
+	}
+
+	protected InterfaceDeclaration newInterfaceDeclaration(Loc loc, IdentifierExp ident, BaseClasses baseClasses) {
+		return new InterfaceDeclaration(loc, ident, baseClasses);
+	}
+
+	protected UnionDeclaration newUnionDeclaration(Loc loc, IdentifierExp ident) {
+		return new UnionDeclaration(loc, ident);
+	}
+
+	protected StructDeclaration newStructDeclaration(Loc loc, IdentifierExp ident) {
+		return new StructDeclaration(loc, ident);
+	}
+
+	protected EnumDeclaration newEnumDeclaration(Loc loc, IdentifierExp ident, Type t) {
+		return new EnumDeclaration(loc, ident, t);
+	}
+
+	protected TemplateDeclaration newTemplateDeclaration(Loc loc, IdentifierExp ident, TemplateParameters p, Expression c, Dsymbols d) {
+		return new TemplateDeclaration(loc, ident, p, c, d);
+	}
+
 }

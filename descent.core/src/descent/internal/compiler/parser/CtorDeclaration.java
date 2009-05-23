@@ -124,7 +124,7 @@ public class CtorDeclaration extends FuncDeclaration {
 	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		CtorDeclaration f;
 
-		f = new CtorDeclaration(loc, null, varargs);
+		f = context.newCtorDeclaration(loc, null, varargs);
 
 		f.outId = outId;
 		f.frequire = frequire != null ? frequire.syntaxCopy(context) : null;
