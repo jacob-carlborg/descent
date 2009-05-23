@@ -31,6 +31,7 @@ import descent.internal.compiler.parser.InterState;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.Scope;
+import descent.internal.compiler.parser.ScopeDsymbol;
 import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.core.CompilationUnit;
 
@@ -54,7 +55,6 @@ public class CtfeDebugger implements IDebugger {
 	private InterState fCurrentInterState;
 	
 	private List<DescentCtfeStackFrame> fStackFrames = new ArrayList<DescentCtfeStackFrame>();
-//	private List<IVariable[]> fVariables = new ArrayList<IVariable[]>();
 	
 	/**
 	 * This is the next stack frame where the user wants to be.
@@ -304,6 +304,7 @@ public class CtfeDebugger implements IDebugger {
 	public synchronized IVariable evaluateExpression(int stackFrame, String expression) {
 		DescentCtfeStackFrame sf = getStackFrame(stackFrame);
 		Scope scope = sf.getScope();
+		InterState is = sf.getInterState();
 		
 		Parser parser = new Parser(AST.D1, expression.toCharArray(), 0, expression.length(), null, null, false, false, fUnit.getFullyQualifiedName().toCharArray(), fParseResult.encoder);
 		parser.nextToken();
@@ -335,8 +336,31 @@ public class CtfeDebugger implements IDebugger {
 			};
 			
 			try {
-				Expression result = exp.semantic(scope, fParseResult.context);
-				result = result.optimize(ASTDmdNode.WANTflags | ASTDmdNode.WANTvalue | ASTDmdNode.WANTinterpret, fParseResult.context);
+				Expression result;
+				
+				if (is == null) {
+					result = exp.semantic(scope, fParseResult.context);
+					result = result.optimize(ASTDmdNode.WANTflags | ASTDmdNode.WANTvalue | ASTDmdNode.WANTinterpret, fParseResult.context);
+				} else {
+					// Need a synthetic scope with the function's local symbol table
+					// and the variables being interpreted
+					Scope sc = Scope.copy(scope);
+					sc.scopesym = new ScopeDsymbol();
+					sc.scopesym.symtab = new DsymbolTable();					
+					
+					for(char[] key : is.fd.localsymtab.keys()) {
+						if (key == null)
+							continue;
+						sc.scopesym.symtab.insert(key, is.fd.localsymtab.lookup(key));
+					}
+					
+					for(Dsymbol sym : is.vars) {
+						sc.scopesym.symtab.insert(sym);
+					}
+					
+					result = exp.semantic(sc, fParseResult.context);
+					result = result.interpret(is, fParseResult.context);
+				}
 				
 				if (problems.size() > 0) {
 					return newVariable(stackFrame, expression, problems.toString());

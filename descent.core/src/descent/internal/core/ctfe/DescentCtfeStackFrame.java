@@ -8,6 +8,8 @@ import org.eclipse.debug.core.model.IThread;
 import org.eclipse.debug.core.model.IVariable;
 
 import descent.core.ICompilationUnit;
+import descent.internal.compiler.parser.InterState;
+import descent.internal.compiler.parser.Scope;
 
 public class DescentCtfeStackFrame extends DescentCtfeDebugElement implements IStackFrame {
 
@@ -19,8 +21,10 @@ public class DescentCtfeStackFrame extends DescentCtfeDebugElement implements IS
 	private int fLineNumber;
 	
 	private IVariable[] fVariables;
+	private final Scope scope;
+	private final InterState is;
 	
-	public DescentCtfeStackFrame(IDebugTarget target, IDebugger debugger, IThread thread, String name, int number, ICompilationUnit unit, int lineNumber) {
+	public DescentCtfeStackFrame(IDebugTarget target, IDebugger debugger, IThread thread, String name, int number, ICompilationUnit unit, int lineNumber, Scope scope, InterState is) {
 		super(target);
 		this.fDebugger = debugger;
 		this.fThread = thread;
@@ -28,6 +32,16 @@ public class DescentCtfeStackFrame extends DescentCtfeDebugElement implements IS
 		this.fNumber = number;
 		this.fUnit = unit;
 		this.fLineNumber = lineNumber;
+		this.scope = scope;
+		this.is = is;
+	}
+	
+	public Scope getScope() {
+		return scope;
+	}
+	
+	public InterState getInterState() {
+		return is;
 	}
 	
 	public IDebugger getDebugger() {
