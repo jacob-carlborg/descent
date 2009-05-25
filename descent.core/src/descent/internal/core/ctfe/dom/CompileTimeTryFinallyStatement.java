@@ -27,5 +27,5 @@ public class CompileTimeTryFinallyStatement extends TryFinallyStatement {
 			((CompileTimeSemanticContext) context).stepEnd(this, istate);
 		}
 	}
-
+	
 }

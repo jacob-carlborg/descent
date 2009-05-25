@@ -9,10 +9,8 @@ import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.VarDeclaration;
 
 public class CompileTimeVarDeclaration extends VarDeclaration {
-
-	public CompileTimeVarDeclaration(Loc loc, Type type, char[] ident, Initializer init) {
-		super(loc, type, ident, init);
-	}
+	
+	private boolean fAlreadyNotified;
 
 	public CompileTimeVarDeclaration(Loc loc, Type type, IdentifierExp id, Initializer init) {
 		super(loc, type, id, init);
@@ -20,6 +18,13 @@ public class CompileTimeVarDeclaration extends VarDeclaration {
 	
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
+		if (!fAlreadyNotified) {
+			fAlreadyNotified = true;
+			
+			super.semantic(sc, context);
+			return;
+		}
+		
 		try {
 			((CompileTimeSemanticContext) context).stepBegin(this, sc);
 			

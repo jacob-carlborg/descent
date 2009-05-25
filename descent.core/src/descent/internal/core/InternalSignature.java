@@ -52,6 +52,10 @@ public class InternalSignature {
 	}
 	
 	public static Type toType(String signature, final ASTNodeEncoder encoder) {
+		return toType(signature, encoder, 0, 0);
+	}
+	
+	public static Type toType(String signature, final ASTNodeEncoder encoder, final int startPosition, final int length) {
 		final Stack<Stack<Type>> stack = new Stack<Stack<Type>>();
 		stack.push(new Stack<Type>());
 		
@@ -74,22 +78,30 @@ public class InternalSignature {
 				@Override
 				public void acceptPointer(String signature) {
 					Stack<Type> sub = stack.peek();
-					sub.push(new TypePointer(sub.pop()));
+					TypePointer type = new TypePointer(sub.pop());
+					type.setSourceRange(startPosition, length);
+					sub.push(type);
 				}
 				@Override
 				public void acceptStaticArray(char[] dimension, String signature) {
 					Stack<Type> sub = stack.peek();
-					sub.push(new TypeSArray(sub.pop(), encoder.decodeExpression(dimension), encoder));
+					TypeSArray type = new TypeSArray(sub.pop(), encoder.decodeExpression(dimension), encoder);
+					type.setSourceRange(startPosition, length);
+					sub.push(type);
 				}
 				@Override
 				public void acceptDynamicArray(String signature) {
 					Stack<Type> sub = stack.peek();
-					sub.push(new TypeDArray(sub.pop()));
+					TypeDArray type = new TypeDArray(sub.pop());
+					type.setSourceRange(startPosition, length);
+					sub.push(type);
 				}
 				@Override
 				public void acceptAssociativeArray(String signature) {
 					Stack<Type> sub = stack.peek();
-					sub.push(new TypeAArray(sub.pop(), sub.pop()));
+					TypeAArray type = new TypeAArray(sub.pop(), sub.pop());
+					type.setSourceRange(startPosition, length);
+					sub.push(type);
 				}
 				@Override
 				public void acceptTuple(String signature, int numberOftypes) {
@@ -97,10 +109,14 @@ public class InternalSignature {
 					
 					Arguments args = new Arguments(numberOftypes);
 					for (int i = 0; i < numberOftypes; i++) {
-						args.add(0, new Argument(0, sub.pop(), null, null));
+						Argument argument = new Argument(0, sub.pop(), null, null);
+						argument.setSourceRange(startPosition, length);
+						args.add(0, argument);
 					}
 					
-					sub.push(new TypeTuple(args));
+					TypeTuple type = new TypeTuple(args);
+					type.setSourceRange(startPosition, length);
+					sub.push(type);
 				}
 				@Override
 				public void acceptConst(String signature) {
@@ -109,6 +125,7 @@ public class InternalSignature {
 					// TypeBasic is like a singleton, and we don't want to modify all of them
 					if (type instanceof TypeBasic) {
 						type = new TypeBasic(type.singleton);
+						type.setSourceRange(startPosition, length);
 						type.mod |= Type.MODconst;
 						sub.pop();
 						sub.push(type);
@@ -123,6 +140,7 @@ public class InternalSignature {
 					// TypeBasic is like a singleton, and we don't want to modify all of them
 					if (type instanceof TypeBasic) {
 						type = new TypeBasic(type.singleton);
+						type.setSourceRange(startPosition, length);
 						type.mod |= Type.MODinvariant;
 						sub.pop();
 						sub.push(type);
@@ -133,17 +151,23 @@ public class InternalSignature {
 				@Override
 				public void acceptTypeof(char[] expression, String signature) {
 					Stack<Type> sub = stack.peek();
-					sub.push(new TypeTypeof(Loc.ZERO, encoder.decodeExpression(expression), encoder));
+					TypeTypeof type = new TypeTypeof(Loc.ZERO, encoder.decodeExpression(expression), encoder);
+					type.setSourceRange(startPosition, length);
+					sub.push(type);
 				}
 				@Override
 				public void acceptTypeofReturn() {
 					Stack<Type> sub = stack.peek();
-					sub.push(new TypeReturn(Loc.ZERO));
+					TypeReturn type = new TypeReturn(Loc.ZERO);
+					type.setSourceRange(startPosition, length);
+					sub.push(type);
 				}
 				@Override
 				public void acceptSlice(char[] lwr, char[] upr, String signature) {
 					Stack<Type> sub = stack.peek();
-					sub.push(new TypeSlice(sub.pop(), encoder.decodeExpression(lwr), encoder.decodeExpression(upr), encoder));
+					TypeSlice type = new TypeSlice(sub.pop(), encoder.decodeExpression(lwr), encoder.decodeExpression(upr), encoder);
+					type.setSourceRange(startPosition, length);
+					sub.push(type);
 				}
 				@Override
 				public void acceptIdentifier(char[][] compoundName, String signature) {
@@ -152,12 +176,16 @@ public class InternalSignature {
 					if (sub.size() > 0 && sub.get(sub.size() - 1) instanceof TypeInstance) {
 						TypeInstance ti = (TypeInstance) sub.get(sub.size() - 1);
 						for(char[] name : compoundName) {
-							ti.idents.add(new IdentifierExp(name));
+							IdentifierExp id = new IdentifierExp(name);
+							id.setSourceRange(startPosition, length);
+							ti.idents.add(id);
 						}
 					} else {
 						TypeIdentifier type = new TypeIdentifier(Loc.ZERO, compoundName[0]);
 						for (int i = 1; i < compoundName.length; i++) {
-							type.idents.add(new IdentifierExp(compoundName[i]));
+							IdentifierExp id = new IdentifierExp(compoundName[i]);
+							id.setSourceRange(startPosition, length);
+							type.idents.add(id);
 						}
 						
 						sub.push(type);
@@ -166,7 +194,9 @@ public class InternalSignature {
 				@Override
 				public void acceptDelegate(String signature) {
 					Stack<Type> sub = stack.peek();
-					sub.push(new TypeDelegate(sub.pop()));
+					TypeDelegate type = new TypeDelegate(sub.pop());
+					type.setSourceRange(startPosition, length);
+					sub.push(type);
 				}
 				@Override
 				public void enterFunctionType() {
@@ -190,6 +220,7 @@ public class InternalSignature {
 					for (int i = 0; i < sub.size(); i++) {
 						// TODO signature default arg
 						Argument arg = new Argument(modifiersSub.get(i), sub.get(i), null, null);
+						arg.setSourceRange(startPosition, length);
 						args.add(arg);
 					}
 					
@@ -198,6 +229,7 @@ public class InternalSignature {
 					link = LINK.LINKd;
 					
 					TypeFunction type = new TypeFunction(args, tret, 'Z' - argumentBreak, link);
+					type.setSourceRange(startPosition, length);
 					
 					sub = stack.peek();
 					sub.push(type);
@@ -241,15 +273,20 @@ public class InternalSignature {
 						
 						if (typeIdent.idents == null || typeIdent.idents.isEmpty()) {
 							TemplateInstance templInstance = new TemplateInstance(Loc.ZERO, typeIdent.ident, encoder);
+							templInstance.setSourceRange(startPosition, length);
 							templInstance.tiargs = tiargs;
 							
 							TypeInstance typeInstance = new TypeInstance(Loc.ZERO, templInstance);
+							typeInstance.setSourceRange(startPosition, length);
 							previous.push(typeInstance);
 						} else {
 							TemplateInstance templInstance = new TemplateInstance(Loc.ZERO, typeIdent.idents.get(typeIdent.idents.size() - 1), encoder);
+							templInstance.setSourceRange(startPosition, length);
 							templInstance.tiargs = tiargs;
 							
-							typeIdent.idents.set(typeIdent.idents.size() - 1, new TemplateInstanceWrapper(Loc.ZERO, templInstance));
+							TemplateInstanceWrapper wrapper = new TemplateInstanceWrapper(Loc.ZERO, templInstance);
+							wrapper.setSourceRange(startPosition, length);
+							typeIdent.idents.set(typeIdent.idents.size() - 1, wrapper);
 							
 							if (previous.isEmpty()) {
 								previous.push(typeIdent);
@@ -265,8 +302,11 @@ public class InternalSignature {
 						TypeInstance typeIdent = (TypeInstance) previousType;
 						
 						TemplateInstance templInstance = new TemplateInstance(Loc.ZERO, typeIdent.idents.get(typeIdent.idents.size() - 1), encoder);
+						templInstance.setSourceRange(startPosition, length);
 						templInstance.tiargs = tiargs;
-						typeIdent.idents.set(typeIdent.idents.size() - 1, new TemplateInstanceWrapper(Loc.ZERO, templInstance));
+						TemplateInstanceWrapper wrapper = new TemplateInstanceWrapper(Loc.ZERO, templInstance);
+						wrapper.setSourceRange(startPosition, length);
+						typeIdent.idents.set(typeIdent.idents.size() - 1, wrapper);
 						previous.push(typeIdent);
 					}
 				}
@@ -289,8 +329,12 @@ public class InternalSignature {
 		sb.append(name.length);
 		sb.append(name);
 	}
-
+	
 	public static TemplateParameter toTemplateParameter(String signature, final String defaultValue, final ASTNodeEncoder encoder) {
+		return toTemplateParameter(signature, defaultValue, encoder, 0, 0);
+	}
+
+	public static TemplateParameter toTemplateParameter(String signature, final String defaultValue, final ASTNodeEncoder encoder, final int startPosition, final int length) {
 		final TemplateParameter[] param = { null };
 		final Stack<Stack<Type>> stack = new Stack<Stack<Type>>();
 		stack.push(new Stack<Type>());
@@ -314,22 +358,30 @@ public class InternalSignature {
 				@Override
 				public void acceptPointer(String signature) {
 					Stack<Type> sub = stack.peek();
-					sub.push(new TypePointer(sub.pop()));
+					TypePointer type = new TypePointer(sub.pop());
+					type.setSourceRange(startPosition, length);
+					sub.push(type);
 				}
 				@Override
 				public void acceptStaticArray(char[] dimension, String signature) {
 					Stack<Type> sub = stack.peek();
-					sub.push(new TypeSArray(sub.pop(), encoder.decodeExpression(dimension), encoder));
+					TypeSArray type = new TypeSArray(sub.pop(), encoder.decodeExpression(dimension), encoder);
+					type.setSourceRange(startPosition, length);
+					sub.push(type);
 				}
 				@Override
 				public void acceptDynamicArray(String signature) {
 					Stack<Type> sub = stack.peek();
-					sub.push(new TypeDArray(sub.pop()));
+					TypeDArray type = new TypeDArray(sub.pop());
+					type.setSourceRange(startPosition, length);
+					sub.push(type);
 				}
 				@Override
 				public void acceptAssociativeArray(String signature) {
 					Stack<Type> sub = stack.peek();
-					sub.push(new TypeAArray(sub.pop(), sub.pop()));
+					TypeAArray type = new TypeAArray(sub.pop(), sub.pop());
+					type.setSourceRange(startPosition, length);
+					sub.push(type);
 				}
 				@Override
 				public void acceptTuple(String signature, int numberOftypes) {
@@ -337,20 +389,28 @@ public class InternalSignature {
 					
 					Arguments args = new Arguments(numberOftypes);
 					for (int i = 0; i < numberOftypes; i++) {
-						args.add(0, new Argument(0, sub.pop(), null, null));
+						Argument argument = new Argument(0, sub.pop(), null, null);
+						argument.setSourceRange(startPosition, length);
+						args.add(0, argument);
 					}
 					
-					sub.push(new TypeTuple(args));
+					TypeTuple type = new TypeTuple(args);
+					type.setSourceRange(startPosition, length);
+					sub.push(type);
 				}
 				@Override
 				public void acceptTypeof(char[] expression, String signature) {
 					Stack<Type> sub = stack.peek();
-					sub.push(new TypeTypeof(Loc.ZERO, encoder.decodeExpression(expression), encoder));
+					TypeTypeof type = new TypeTypeof(Loc.ZERO, encoder.decodeExpression(expression), encoder);
+					type.setSourceRange(startPosition, length);
+					sub.push(type);
 				}
 				@Override
 				public void acceptTypeofReturn() {
 					Stack<Type> sub = stack.peek();
-					sub.push(new TypeReturn(Loc.ZERO));
+					TypeReturn type = new TypeReturn(Loc.ZERO);
+					type.setSourceRange(startPosition, length);
+					sub.push(type);
 				}
 				@Override
 				public void acceptConst(String signature) {
@@ -359,6 +419,7 @@ public class InternalSignature {
 					// TypeBasic is like a singleton, and we don't want to modify all of them
 					if (type instanceof TypeBasic) {
 						type = new TypeBasic(type.singleton);
+						type.setSourceRange(startPosition, length);
 						type.mod |= Type.MODconst;
 						sub.pop();
 						sub.push(type);
@@ -373,6 +434,7 @@ public class InternalSignature {
 					// TypeBasic is like a singleton, and we don't want to modify all of them
 					if (type instanceof TypeBasic) {
 						type = new TypeBasic(type.singleton);
+						type.setSourceRange(startPosition, length);
 						type.mod |= Type.MODinvariant;
 						sub.pop();
 						sub.push(type);
@@ -383,15 +445,20 @@ public class InternalSignature {
 				@Override
 				public void acceptSlice(char[] lwr, char[] upr, String signature) {
 					Stack<Type> sub = stack.peek();
-					sub.push(new TypeSlice(sub.pop(), encoder.decodeExpression(lwr), encoder.decodeExpression(upr), encoder));
+					TypeSlice type = new TypeSlice(sub.pop(), encoder.decodeExpression(lwr), encoder.decodeExpression(upr), encoder);
+					type.setSourceRange(startPosition, length);
+					sub.push(type);
 				}
 				@Override
 				public void acceptIdentifier(char[][] compoundName, String signature) {
 					Stack<Type> sub = stack.peek();
 					
 					TypeIdentifier type = new TypeIdentifier(Loc.ZERO, compoundName[compoundName.length - 1]);
+					type.setSourceRange(startPosition, length);
 					for (int i = 0; i < compoundName.length - 1; i++) {
-						type.idents.add(new IdentifierExp(compoundName[i]));
+						IdentifierExp id = new IdentifierExp(compoundName[i]);
+						id.setSourceRange(startPosition, length);
+						type.idents.add(id);
 					}
 					
 					sub.push(type);
@@ -399,7 +466,9 @@ public class InternalSignature {
 				@Override
 				public void acceptDelegate(String signature) {
 					Stack<Type> sub = stack.peek();
-					sub.push(new TypeDelegate(sub.pop()));
+					TypeDelegate type = new TypeDelegate(sub.pop());
+					type.setSourceRange(startPosition, length);
+					sub.push(type);
 				}
 				@Override
 				public void enterFunctionType() {
@@ -423,10 +492,12 @@ public class InternalSignature {
 					for (int i = 0; i < sub.size(); i++) {
 						// TODO signature default arg
 						Argument arg = new Argument(modifiersSub.get(i), sub.get(i), null, null);
+						arg.setSourceRange(startPosition, length);
 						args.add(arg);
 					}
 					
 					TypeFunction type = new TypeFunction(args, tret, 'Z' - argumentBreak, link);
+					type.setSourceRange(startPosition, length);
 					
 					sub = stack.peek();
 					sub.push(type);
@@ -434,22 +505,25 @@ public class InternalSignature {
 				@Override
 				public void acceptTemplateTupleParameter() {
 					param[0] = new TemplateTupleParameter(Loc.ZERO, null);
+					param[0].setSourceRange(startPosition, length);
 				}
 				@Override
 				public void exitTemplateTypeParameter(String signature) {
 					Stack<Type> types = stack.peek();
 					Type type = types.isEmpty() ? null : types.get(0);				
-					Type def = defaultValue == null ? null : toType(defaultValue, encoder);
+					Type def = defaultValue == null ? null : toType(defaultValue, encoder, startPosition,  length);
 					
 					param[0] = new TemplateTypeParameter(Loc.ZERO, null, type, def);
+					param[0].setSourceRange(startPosition, length);
 				}
 				@Override
 				public void exitTemplateAliasParameter(String signature) {
 					Stack<Type> types = stack.peek();
 					Type type = types.isEmpty() ? null : types.get(0);
-					Type def = defaultValue == null ? null : toType(defaultValue, encoder);
+					Type def = defaultValue == null ? null : toType(defaultValue, encoder, startPosition, length);
 					
 					param[0] = new TemplateAliasParameter(Loc.ZERO, null, type, def);
+					param[0].setSourceRange(startPosition, length);
 				}
 				@Override
 				public void acceptTemplateValueParameterSpecificValue(char[] exp) {
@@ -462,6 +536,7 @@ public class InternalSignature {
 					Expression def = defaultValue == null ? null : encoder.decodeExpression(defaultValue.toCharArray());
 					
 					param[0] = new TemplateValueParameter(Loc.ZERO, null, type, specValue[0], def, encoder);
+					param[0].setSourceRange(startPosition, length);
 				}
 				
 			});

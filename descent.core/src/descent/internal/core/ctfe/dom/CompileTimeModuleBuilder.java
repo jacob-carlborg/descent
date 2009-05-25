@@ -48,7 +48,7 @@ public class CompileTimeModuleBuilder extends ModuleBuilder {
 	
 	@Override
 	protected FuncDeclaration newFuncDeclaration(Loc loc, IdentifierExp ident, int storageClass, Type type) {
-		return new CompileTimeFuncDeclaration(loc, ident, storageClass, type, false);
+		return new CompileTimeFuncDeclaration(loc, ident, storageClass, type);
 	}
 	
 	@Override

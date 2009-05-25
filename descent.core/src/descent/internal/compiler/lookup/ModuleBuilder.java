@@ -539,17 +539,17 @@ public class ModuleBuilder {
 
 	public void fillField(Module module, Dsymbols members, final IField field) throws JavaModelException {
 		if (field.isVariable() || field.isEnumConstant()) { // enum constant for D2, like "enum int foo = 2;"
-			VarDeclaration member = newVarDeclaration(getLoc(module, field), getType(field.getTypeSignature()), getIdent(field), getInitializer(field));
+			VarDeclaration member = newVarDeclaration(getLoc(module, field), getType(field), getIdent(field), getInitializer(field));
 			copySourceRange(member, field);
 			member.setJavaElement(field);
 			members.add(wrap(member, field));
 		} else if (field.isAlias()) {
-			AliasDeclaration member = newAliasDeclaration(getLoc(module, field), getIdent(field), getType(field.getTypeSignature()));
+			AliasDeclaration member = newAliasDeclaration(getLoc(module, field), getIdent(field), getType(field));
 			copySourceRange(member, field);
 			member.setJavaElement(field);
 			members.add(wrap(member, field));
 		} else if (field.isTypedef()) {
-			TypedefDeclaration member = newTypedefDeclaration(getLoc(module, field), getIdent(field), getType(field.getTypeSignature()), getInitializer(field));
+			TypedefDeclaration member = newTypedefDeclaration(getLoc(module, field), getIdent(field), getType(field), getInitializer(field));
 			copySourceRange(member, field);
 			member.setJavaElement(field);
 			members.add(wrap(member, field));
@@ -669,7 +669,9 @@ public class ModuleBuilder {
 		if (source == null) {
 			return null;
 		} else {
-			return encoder.decodeInitializer(source.toCharArray());
+			Initializer init = encoder.decodeInitializer(source.toCharArray());
+			copySourceRange(init, field);
+			return init;
 		}
 	}
 	
@@ -678,28 +680,34 @@ public class ModuleBuilder {
 		if (source == null) {
 			return null;
 		} else {
-			return encoder.decodeExpression(source.toCharArray());
+			Expression exp = encoder.decodeExpression(source.toCharArray());
+			copySourceRange(exp, field);
+			return exp;
 		}
 	}
 
-	public static IdentifierExp getIdent(IJavaElement element) {
+	public static IdentifierExp getIdent(IJavaElement element) throws JavaModelException {
 		String name = element.getElementName();
 		if (name.length() == 0) {
 			return null;
 		} else {
-			return new IdentifierExp(name.toCharArray());
+			IdentifierExp id = new IdentifierExp(name.toCharArray());
+			if (element instanceof ISourceReference) {
+				copySourceRange(id, (ISourceReference) element);
+			}
+			return id;
 		}
 	}
 	
 	public BaseClasses getBaseClasses(IType type) throws JavaModelException {
 		BaseClasses baseClasses = new BaseClasses();
-		BaseClass baseClass = getBaseClass(type.getSuperclassTypeSignature());
+		BaseClass baseClass = getBaseClass(type.getSuperclassTypeSignature(), type);
 		if (baseClass != null) {
 			baseClasses.add(baseClass);
 		}
 		
 		for(String signature : type.getSuperInterfaceTypeSignatures()) {
-			baseClass = getBaseClass(signature);
+			baseClass = getBaseClass(signature, type);
 			if (baseClass != null) {
 				baseClasses.add(baseClass);
 			}
@@ -707,29 +715,41 @@ public class ModuleBuilder {
 		return baseClasses;
 	}
 	
-	public BaseClass getBaseClass(String signature) {
+	public BaseClass getBaseClass(String signature, ISourceReference sourceReference) throws JavaModelException {
 		if (signature == null) {
 			return null;
 		}
-		Type type = InternalSignature.toType(signature, encoder);
+		ISourceRange range = sourceReference.getSourceRange();
+		Type type = InternalSignature.toType(signature, encoder, range.getOffset(), range.getLength());
 		return new BaseClass(type, PROT.PROTpublic);
 	}
 	
-	private Type getType(String signature) {
-		if (signature == null || signature.length() == 0) {
-			return null;
-		}
-		return InternalSignature.toType(signature, encoder);
+	private Type getType(IField field) throws JavaModelException {
+		Type type = getType(field.getTypeSignature(), field);
+		copySourceRange(type, field);
+		return type;
 	}
 	
 	private Type getType(IMethod method) throws JavaModelException {
-		Type returnType = getType(method.getReturnType());
+		Type returnType = getType(method.getReturnType(), method);
+		copySourceRange(returnType, method);
 		Arguments args = getArguments(method);
 		
 		// TODO linkage
-		return new TypeFunction(args, returnType, 
+		TypeFunction type = new TypeFunction(args, returnType, 
 				getVarargs(method), 
 				LINK.LINKd);
+		ISourceRange sourceRange = method.getSourceRange();
+		type.setSourceRange(sourceRange.getOffset(), sourceRange.getLength());
+		return type;
+	}
+	
+	private Type getType(String signature, ISourceReference sourceReference) throws JavaModelException {
+		if (signature == null || signature.length() == 0) {
+			return null;
+		}
+		ISourceRange range = sourceReference.getSourceRange();
+		return InternalSignature.toType(signature, encoder, range.getOffset(), range.getLength());
 	}
 	
 	private int getVarargs(IMethod method) throws JavaModelException {
@@ -742,12 +762,14 @@ public class ModuleBuilder {
 		String[] types = method.getParameterTypes();
 		String[] defaultValues = method.getParameterDefaultValues();
 		for (int i = 0; i < types.length; i++) {
-			args.add(getArgument(names[i], types[i], defaultValues == null ? null : defaultValues[i]));
+			Argument argument = getArgument(names[i], types[i], defaultValues == null ? null : defaultValues[i], method);
+			copySourceRange(argument, method);
+			args.add(argument);
 		}
 		return args;
 	}
 	
-	private Argument getArgument(String name, String signature, String defaultValue) {
+	private Argument getArgument(String name, String signature, String defaultValue, ISourceReference sourceReference) throws JavaModelException {
 		int stc = STC.STCin;
 		if (signature.charAt(0) == 'J') {
 			stc = STC.STCout;
@@ -761,7 +783,7 @@ public class ModuleBuilder {
 		}
 		
 		return new Argument(stc, 
-				getType(signature), 
+				getType(signature, sourceReference), 
 				name == null || name.length() == 0 ? null : new IdentifierExp(name.toCharArray()), 
 				defaultValue == null ? null : 
 					encoder.decodeExpression(defaultValue.toCharArray()));
@@ -801,7 +823,7 @@ public class ModuleBuilder {
 		int storage_class = 0;
 		
 		if ((flags & Flags.AccAbstract) != 0) storage_class |= STC.STCabstract;
-		if ((flags & Flags.AccAuto) != 0) storage_class |= STC.STCauto;
+//		if ((flags & Flags.AccAuto) != 0) storage_class |= STC.STCauto;
 		// STC.STCcomdat
 		if ((flags & Flags.AccConst) != 0) storage_class |= STC.STCconst;
 		// STC.STCctorinit
@@ -810,14 +832,14 @@ public class ModuleBuilder {
 		// STC.STCfield
 		if ((flags & Flags.AccFinal) != 0) storage_class |= STC.STCfinal;
 		// STC.STCforeach
-		if ((flags & Flags.AccIn) != 0) storage_class |= STC.STCin;
+//		if ((flags & Flags.AccIn) != 0) storage_class |= STC.STCin;
 		if ((flags & Flags.AccInvariant) != 0) storage_class |= STC.STCinvariant;
-		if ((flags & Flags.AccLazy) != 0) storage_class |= STC.STClazy;
-		if ((flags & Flags.AccOut) != 0) storage_class |= STC.STCout;
+//		if ((flags & Flags.AccLazy) != 0) storage_class |= STC.STClazy;
+//		if ((flags & Flags.AccOut) != 0) storage_class |= STC.STCout;
 		if ((flags & Flags.AccOverride) != 0) storage_class |= STC.STCoverride;
 		// STC.STCparameter
-		if ((flags & Flags.AccRef) != 0) storage_class |= STC.STCref;
-		if ((flags & Flags.AccScope) != 0) storage_class |= STC.STCscope;
+//		if ((flags & Flags.AccRef) != 0) storage_class |= STC.STCref;
+//		if ((flags & Flags.AccScope) != 0) storage_class |= STC.STCscope;
 		if ((flags & Flags.AccStatic) != 0) storage_class |= STC.STCstatic;
 		if ((flags & Flags.AccSynchronized) != 0) storage_class |= STC.STCsynchronized;
 		// STC.STCtemplateparameter
@@ -1069,7 +1091,7 @@ public class ModuleBuilder {
 		}
 	}
 	
-	private void copySourceRange(ASTDmdNode node, ISourceReference sourceReference) throws JavaModelException {
+	private static void copySourceRange(ASTDmdNode node, ISourceReference sourceReference) throws JavaModelException {
 		ISourceRange range = sourceReference.getSourceRange();
 		node.setSourceRange(range.getOffset(), range.getLength());
 	}

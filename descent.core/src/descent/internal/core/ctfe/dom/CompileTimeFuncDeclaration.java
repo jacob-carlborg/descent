@@ -12,24 +12,16 @@ import descent.internal.compiler.parser.Type;
 
 public class CompileTimeFuncDeclaration extends FuncDeclaration {
 	
-	private boolean fNotifySemanticAnalaysis;
 	private boolean fAlreadyNotified;
 	
 	public CompileTimeFuncDeclaration(Loc loc, IdentifierExp ident,
 			int storage_class, Type type) {
-		this(loc, ident, storage_class, type, true);
-	}
-	
-	public CompileTimeFuncDeclaration(Loc loc, IdentifierExp ident,
-			int storage_class, Type type, boolean notifySemanticAnalaysis) {
 		super(loc, ident, storage_class, type);
-		
-		fNotifySemanticAnalaysis = notifySemanticAnalaysis;
 	}
 	
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-		if (!fNotifySemanticAnalaysis && !fAlreadyNotified) {
+		if (!fAlreadyNotified) {
 			fAlreadyNotified = true;
 			
 			super.semantic(sc, context);
@@ -49,11 +41,15 @@ public class CompileTimeFuncDeclaration extends FuncDeclaration {
 	public Expression interpret(InterState istate, Expressions arguments,
 			SemanticContext context) {
 		try {
-			((CompileTimeSemanticContext) context).enterFunctionInterpret();
+			if (javaElement == null) {
+				((CompileTimeSemanticContext) context).enterFunctionInterpret();
+			}
 			
 			return super.interpret(istate, arguments, context);
 		} finally {
-			((CompileTimeSemanticContext) context).exitFunctionInterpret();
+			if (javaElement == null) {
+				((CompileTimeSemanticContext) context).exitFunctionInterpret();
+			}
 		}
 	}
 

@@ -396,20 +396,21 @@ public class FuncDeclaration extends Declaration {
 			if (scope == null) {
 				return null;
 			}
+			
 			if (materialized == null) {
 				Dsymbol sym = internalMaterialize(context);
-				sym.semantic(scope.enclosing, context);
-				sym.semantic2(scope.enclosing, context);
-				sym.semantic3(scope.enclosing, context);
 				materialized = extractFunction(sym);
-			}
-			if (materialized != null) {
-				this.fbody = materialized.fbody;
-				this.frequire = materialized.frequire;
-				this.fensure = materialized.fensure;
-				this.outId = materialized.outId;
-				
-				return materialized.interpret(istate, arguments, context);
+			
+				if (materialized != null) {
+					this.fbody = materialized.fbody;
+					this.frequire = materialized.frequire;
+					this.fensure = materialized.fensure;
+					this.outId = materialized.outId;
+					
+					semantic(scope.enclosing, context);
+					semantic2(scope.enclosing, context);
+					semantic3(scope.enclosing, context);
+				}
 			}
 		}
 
@@ -1014,6 +1015,19 @@ public class FuncDeclaration extends Declaration {
 
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
+		if (templated && javaElement != null && materialized == null) {
+			Dsymbol sym = internalMaterialize(context);
+			
+			materialized = extractFunction(sym);
+			
+			if (materialized != null) {
+				this.fbody = materialized.fbody;
+				this.frequire = materialized.frequire;
+				this.fensure = materialized.fensure;
+				this.outId = materialized.outId;
+			}
+		}
+		
 		boolean gotoL1 = false;
 		boolean gotoL2 = false;
 		boolean gotoLmainerr = false;
@@ -2453,6 +2467,8 @@ public class FuncDeclaration extends Declaration {
 
 	@Override
 	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
+		System.out.println("FuncDeclaration::syntaxCopy (" + this + ")");
+		
 		FuncDeclaration f;
 
 		if (s != null) {

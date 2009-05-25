@@ -10,6 +10,8 @@ import descent.internal.compiler.parser.TemplateDeclaration;
 import descent.internal.compiler.parser.TemplateInstance;
 
 public class CompileTimeTemplateInstance extends TemplateInstance {
+	
+	private boolean fSemanticRun;
 
 	public CompileTimeTemplateInstance(Loc loc, IdentifierExp id,
 			ASTNodeEncoder encoder) {
@@ -23,6 +25,13 @@ public class CompileTimeTemplateInstance extends TemplateInstance {
 	
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
+		if (fSemanticRun) {
+			super.semantic(sc, context);
+			return;
+		}
+		
+		fSemanticRun = true;
+		
 		try {
 			((CompileTimeSemanticContext) context).stepBegin(this, sc);
 			

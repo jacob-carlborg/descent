@@ -1173,6 +1173,10 @@ public abstract class BinExp extends Expression {
 	
 	@Override
 	public Expression optimize(int result, SemanticContext context) {
+		if (this instanceof CatAssignExp) {
+			System.out.println(123456);
+		}
+		
 		e1 = e1.optimize(result, context);
 		e2 = e2.optimize(result, context);
 		if (op == TOKshlass || op == TOKshrass || op == TOKushrass) {

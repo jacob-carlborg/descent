@@ -57,6 +57,7 @@ public class DeclarationStatement extends ExpStatement {
 	public Statement syntaxCopy(SemanticContext context) {
 		DeclarationStatement ds = context.newDeclarationStatement(loc, exp
 				.syntaxCopy(context));
+		ds.copySourceRange(this);
 		return ds;
 	}
 

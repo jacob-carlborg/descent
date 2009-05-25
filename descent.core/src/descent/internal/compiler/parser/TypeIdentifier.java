@@ -21,10 +21,6 @@ public class TypeIdentifier extends TypeQualified {
 	public TypeIdentifier(Loc loc, IdentifierExp ident) {
 		super(loc, TY.Tident);
 		this.ident = ident;
-		
-		if ("T".equals(ident.toString())) {
-			System.out.println(123456);
-		}
 	}
 
 	@Override
