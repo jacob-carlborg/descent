@@ -2552,6 +2552,12 @@ public class CompletionEngine extends Engine
 			VarDeclaration var = member.isVarDeclaration();
 			if (var != null && ident != null) {
 				if (currentName.length == 0 || match(currentName, ident)) {
+					// If the type of the variable is a pointer to a function, suggest the call
+//					if (isPointerToFunction(var.type)) {
+////						suggestMember(var.type, ident, onlyStatics, flags, funcSignatures, includes);
+//						return;
+//					}
+					
 					String signature = var.getSignature();
 					
 					char[] sig = signature.toCharArray();
@@ -2936,6 +2942,10 @@ public class CompletionEngine extends Engine
 		}
 	}
 	
+	private boolean isPointerToFunction(Type type) {
+		return type instanceof TypePointer && type.next instanceof TypeFunction;
+	}
+
 	private void handleMethodCompletion(CompletionProposal proposal, char[] ident) {
 		if (isBetweenMethodName) {
 			if (parser.completionToken != null && parser.completionTokenEnd == actualCompletionPosition) {

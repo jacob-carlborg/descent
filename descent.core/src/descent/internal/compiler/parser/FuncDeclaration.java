@@ -2467,8 +2467,6 @@ public class FuncDeclaration extends Declaration {
 
 	@Override
 	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
-		System.out.println("FuncDeclaration::syntaxCopy (" + this + ")");
-		
 		FuncDeclaration f;
 
 		if (s != null) {

@@ -20,13 +20,13 @@ public class CompileTimeCompoundStatement extends CompoundStatement {
 	
 	@Override
 	public Expression interpret(InterState istate, SemanticContext context) {
-		try {
-			((CompileTimeSemanticContext) context).stepBegin(this, istate);
-			
+//		try {
+//			((CompileTimeSemanticContext) context).stepBegin(this, istate);
+//			
 			return super.interpret(istate, context);
-		} finally {
-			((CompileTimeSemanticContext) context).stepEnd(this, istate);
-		}
+//		} finally {
+//			((CompileTimeSemanticContext) context).stepEnd(this, istate);
+//		}
 	}
 
 }

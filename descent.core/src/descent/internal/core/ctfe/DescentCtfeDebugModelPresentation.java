@@ -26,7 +26,11 @@ public class DescentCtfeDebugModelPresentation extends LabelProvider implements 
 	public void computeDetail(IValue value, IValueDetailListener listener) {
 		String detail = "";
 		try {
-			detail = value.getValueString();
+			if (value instanceof DescentCtfeValue) {
+				detail = ((DescentCtfeValue) value).getDetail();
+			} else {
+				detail = value.getValueString();
+			}
 		} catch (DebugException e) {
 		}
 		listener.detailComputed(value, detail);

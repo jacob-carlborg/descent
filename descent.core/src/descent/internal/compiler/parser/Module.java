@@ -282,7 +282,6 @@ public class Module extends Package {
 	// definition work inside templates. We just make a fake semantic
 	// pass over those symbols that are templates
 	private void templateSemantic(SemanticContext context) {
-		System.out.println(" == Module::templateSemantic == ");
 		if (members == null) return;
 		
 		context.templateSemanticStarted = true;

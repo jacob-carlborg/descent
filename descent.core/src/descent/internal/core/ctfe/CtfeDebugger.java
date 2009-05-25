@@ -34,10 +34,12 @@ import descent.internal.compiler.parser.ExpInitializer;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.InterState;
+import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.ScopeDsymbol;
+import descent.internal.compiler.parser.StringExp;
 import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.core.CompilationUnit;
 import descent.internal.core.ctfe.dom.CompileTimeSemanticContext;
@@ -492,7 +494,7 @@ public class CtfeDebugger implements IDebugger {
 				if (problems.size() > 0) {
 					return newVariable(stackFrame, expression, problems.toString());
 				} else {
-					return newVariable(stackFrame, expression, result.toString());
+					return newVariable(stackFrame, expression, result);
 				}
 			} finally {
 				fParseResult.context.problemRequestor = oldRequestor;
@@ -564,16 +566,7 @@ public class CtfeDebugger implements IDebugger {
 		if (dsymbol instanceof VarDeclaration) {
 			VarDeclaration var = (VarDeclaration) dsymbol;
 			if (var.value != null) {
-				return newVariable(0, var.ident.toString(), var.value.toString());
-			} else if (var.init != null) {
-				Object init = var.init;
-				if (init instanceof ExpInitializer) {
-					ExpInitializer exp = (ExpInitializer) init;
-					if (exp.exp instanceof AssignExp) {
-						init = ((AssignExp)exp.exp).e2;
-					}
-				}
-				return newVariable(0, var.ident.toString(), init.toString());	
+				return newVariable(0, var.ident.toString(), var.value);
 			}
 		} else if (dsymbol instanceof AliasDeclaration) {
 			AliasDeclaration alias = (AliasDeclaration) dsymbol;
@@ -584,7 +577,6 @@ public class CtfeDebugger implements IDebugger {
 				return newVariable(stackFrame, alias.ident.toString(), alias.type.toString());
 			}
 		}
-		
 		return null;
 	}
 
@@ -605,8 +597,12 @@ public class CtfeDebugger implements IDebugger {
 		return fStackFrames.get(index);
 	}
 	
-	private DescentCtfeVariable newVariable(int stackFrame, String name, String value) {
+	protected DescentCtfeVariable newVariable(int stackFrame, String name, Expression value) {
 		return new DescentCtfeVariable(fDebugTarget, this, 0, name, value);
+	}
+	
+	protected DescentCtfeVariable newVariable(int stackFrame, String name, String value) {
+		return new DescentCtfeVariable(fDebugTarget, this, 0, name, new StringExp(Loc.ZERO, value.toCharArray()));
 	}
 	
 	private DescentCtfeStackFrame newStackFrame() {
