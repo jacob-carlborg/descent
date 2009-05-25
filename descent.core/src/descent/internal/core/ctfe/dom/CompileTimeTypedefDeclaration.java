@@ -1,5 +1,6 @@
 package descent.internal.core.ctfe.dom;
 
+import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Initializer;
 import descent.internal.compiler.parser.Loc;
@@ -16,6 +17,11 @@ public class CompileTimeTypedefDeclaration extends TypedefDeclaration {
 	
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
+		if (sc.parent instanceof FuncDeclaration) {
+			super.semantic(sc, context);
+			return;
+		}
+		
 		try {
 			((CompileTimeSemanticContext) context).stepBegin(this, sc);
 			

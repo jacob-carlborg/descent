@@ -26,7 +26,6 @@ import descent.core.dom.CompilationUnitResolver;
 import descent.core.dom.CompilationUnitResolver.ParseResult;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.AliasDeclaration;
-import descent.internal.compiler.parser.AssignExp;
 import descent.internal.compiler.parser.CallExp;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.DsymbolTable;
@@ -40,6 +39,7 @@ import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.ScopeDsymbol;
 import descent.internal.compiler.parser.StringExp;
+import descent.internal.compiler.parser.TemplateInstance;
 import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.core.CompilationUnit;
 import descent.internal.core.ctfe.dom.CompileTimeSemanticContext;
@@ -309,18 +309,16 @@ public class CtfeDebugger implements IDebugger {
 			// Only hit breakpoint if the expected stack frame for the user
 			// is the same as the current one
 			if (fNextStackFrame >= fCurrentStackFrame - 1) {
-				if (node instanceof CallExp && !justStartedDebugging)
+				if ((node instanceof CallExp || node instanceof TemplateInstance) && !justStartedDebugging)
 					return;
 				
 				fDebugTarget.breakpointHit(unit.getResource(), line);
 				fSemaphore.acquire();
-				System.out.println("");
 			} else {
 				// See if we hit a breakpoint
 				if (hasBreakpoint(unit, fCurrentLine)) {
 					fDebugTarget.breakpointHit(unit.getResource(), line);
 					fSemaphore.acquire();
-					System.out.println("");
 				}
 			}
 		} catch (Exception e) {
@@ -353,7 +351,6 @@ public class CtfeDebugger implements IDebugger {
 			if (fNextStackFrame == fCurrentStackFrame - 1) {
 				fDebugTarget.breakpointHit(unit.getResource(), line);
 				fSemaphore.acquire();
-				System.out.println("");
 			}
 		} catch (Exception e) {
 			bug(e);
@@ -513,10 +510,9 @@ public class CtfeDebugger implements IDebugger {
 			return new IVariable[0];
 		
 		InterState is = sf.getInterState();
-		if (is == null) {
-			Scope scope = sf.getScope();		
-			fillVariables(stackFrame, scope, vars);
-		} else {
+		Scope scope = sf.getScope();		
+		fillVariables(stackFrame, scope, vars);
+		if (is != null) {
 			fillVariables(stackFrame, is, vars);
 		}
 		return vars.toArray(new DescentCtfeVariable[vars.size()]);
@@ -567,6 +563,10 @@ public class CtfeDebugger implements IDebugger {
 			VarDeclaration var = (VarDeclaration) dsymbol;
 			if (var.value != null) {
 				return newVariable(0, var.ident.toString(), var.value);
+			} else if (var.init != null) {
+				if (var.init instanceof ExpInitializer) {
+					return newVariable(0, var.ident.toString(), ((ExpInitializer) var.init).exp);
+				}
 			}
 		} else if (dsymbol instanceof AliasDeclaration) {
 			AliasDeclaration alias = (AliasDeclaration) dsymbol;

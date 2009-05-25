@@ -1,6 +1,10 @@
 package descent.internal.core.ctfe.dom;
 
+import descent.core.ISourceRange;
+import descent.core.ISourceReference;
+import descent.core.JavaModelException;
 import descent.internal.compiler.lookup.ModuleBuilder;
+import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.ASTNodeEncoder;
 import descent.internal.compiler.parser.AliasDeclaration;
 import descent.internal.compiler.parser.AlignDeclaration;
@@ -38,6 +42,8 @@ import descent.internal.compiler.parser.UnionDeclaration;
 import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.compiler.parser.Version;
 import descent.internal.compiler.parser.VersionSymbol;
+import descent.internal.compiler.parser.ast.ASTNode;
+import descent.internal.compiler.parser.ast.AstVisitorAdapter;
 import descent.internal.core.CompilerConfiguration;
 
 public class CompileTimeModuleBuilder extends ModuleBuilder {
@@ -170,6 +176,20 @@ public class CompileTimeModuleBuilder extends ModuleBuilder {
 	@Override
 	protected VersionSymbol newVersionSymbol(Loc loc, long level, Version version) {
 		return new CompileTimeVersionSymbol(loc, level, version);
+	}
+	
+	@Override
+	protected void copySourceRangeRecursive(ASTDmdNode node, ISourceReference sourceReference) throws JavaModelException {
+		ISourceRange range = sourceReference.getSourceRange();
+		final int start = range.getOffset();
+		final int length = range.getLength();
+		
+		node.accept(new AstVisitorAdapter() {
+			@Override
+			public void preVisit(ASTNode node) {
+				node.setSourceRange(start, length);
+			}
+		});
 	}
 
 }

@@ -1,5 +1,8 @@
 package descent.internal.core.ctfe.dom;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import descent.core.IJavaProject;
 import descent.core.IProblemRequestor;
 import descent.core.JavaModelException;
@@ -66,6 +69,7 @@ import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.PostBlitDeclaration;
 import descent.internal.compiler.parser.PragmaDeclaration;
 import descent.internal.compiler.parser.PragmaStatement;
+import descent.internal.compiler.parser.Problem;
 import descent.internal.compiler.parser.ReturnStatement;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.ScopeStatement;
@@ -184,6 +188,16 @@ public class CompileTimeSemanticContext extends SemanticContext {
 
 	public void enableStepping() {
 		fDisabledStepping--;
+	}
+	
+	@Override
+	public void acceptProblem(Problem problem) {
+		List<ASTDmdNode> temp = this.templateEvaluationStack;
+		this.templateEvaluationStack = new ArrayList<ASTDmdNode>(0);
+		
+		super.acceptProblem(problem);
+		
+		this.templateEvaluationStack = temp;
 	}
 	
 	@Override

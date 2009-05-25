@@ -90,7 +90,7 @@ public class SemanticContext {
 	
 	public final ASTNodeEncoder encoder;
 	public boolean alwaysResolveFunctionSemanticRest;
-	private final List<ASTDmdNode> templateEvaluationStack;
+	protected List<ASTDmdNode> templateEvaluationStack;
 	
 	/*
 	 * This is for autocompletion, for suggesting overloads of
@@ -235,11 +235,11 @@ public class SemanticContext {
 		if (global.gag == 0 && muteProblems == 0 && problemRequestor != null) {
 //			System.out.println("~~~" + problem);
 			
-//			if (!templateEvaluationStack.isEmpty()) {
-//				ASTDmdNode target = templateEvaluationStack.get(0);
-//				problem.setSourceStart(target.start);
-//				problem.setSourceEnd(target.start + target.length - 1);				
-//			}
+			if (!templateEvaluationStack.isEmpty()) {
+				ASTDmdNode target = templateEvaluationStack.get(0);
+				problem.setSourceStart(target.start);
+				problem.setSourceEnd(target.start + target.length - 1);				
+			}
 			
 			problemRequestor.acceptProblem(problem);
 		}

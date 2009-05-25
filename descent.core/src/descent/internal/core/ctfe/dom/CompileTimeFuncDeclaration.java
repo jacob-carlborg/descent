@@ -12,8 +12,6 @@ import descent.internal.compiler.parser.Type;
 
 public class CompileTimeFuncDeclaration extends FuncDeclaration {
 	
-	private boolean fAlreadyNotified;
-	
 	public CompileTimeFuncDeclaration(Loc loc, IdentifierExp ident,
 			int storage_class, Type type) {
 		super(loc, ident, storage_class, type);
@@ -21,9 +19,7 @@ public class CompileTimeFuncDeclaration extends FuncDeclaration {
 	
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-		if (!fAlreadyNotified) {
-			fAlreadyNotified = true;
-			
+		if (sc.parent instanceof FuncDeclaration) {
 			super.semantic(sc, context);
 			return;
 		}

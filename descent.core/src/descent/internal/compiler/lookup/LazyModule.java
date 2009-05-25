@@ -313,21 +313,21 @@ public class LazyModule extends Module implements ILazy {
 					IType type = (IType) target;
 					if (!type.isTemplate() && !type.isForwardDeclaration()) {
 						if (LAZY_CLASSES && type.isClass()) {
-							ClassDeclaration cd = new LazyClassDeclaration(builder.getLoc(this, type), ModuleBuilder.getIdent(type), builder.getBaseClasses(type), builder);
+							ClassDeclaration cd = new LazyClassDeclaration(builder.getLoc(this, type), builder.getIdent(type), builder.getBaseClasses(type), builder);
 							cd.setJavaElement(type);
 							cd.members = new Dsymbols();
 							s = builder.wrap(cd, type);
 							members.add(s);
 							done = true;
 						} else if (LAZY_INTERFACES && type.isInterface()) {
-							InterfaceDeclaration cd = new LazyInterfaceDeclaration(builder.getLoc(this, type), ModuleBuilder.getIdent(type), builder.getBaseClasses(type), builder);
+							InterfaceDeclaration cd = new LazyInterfaceDeclaration(builder.getLoc(this, type), builder.getIdent(type), builder.getBaseClasses(type), builder);
 							cd.setJavaElement(type);
 							cd.members = new Dsymbols();
 							s = builder.wrap(cd, type);
 							members.add(s);
 							done = true;
 						} else if (LAZY_STRUCTS && type.isStruct()) {
-							StructDeclaration cd = new LazyStructDeclaration(builder.getLoc(this, type), ModuleBuilder.getIdent(type), builder);
+							StructDeclaration cd = new LazyStructDeclaration(builder.getLoc(this, type), builder.getIdent(type), builder);
 							cd.setJavaElement(type);
 							cd.members = new Dsymbols();
 							s = builder.wrap(cd, type);

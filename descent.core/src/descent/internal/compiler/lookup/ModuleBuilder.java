@@ -80,6 +80,8 @@ import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.compiler.parser.Version;
 import descent.internal.compiler.parser.VersionCondition;
 import descent.internal.compiler.parser.VersionSymbol;
+import descent.internal.compiler.parser.ast.ASTNode;
+import descent.internal.compiler.parser.ast.AstVisitorAdapter;
 import descent.internal.core.CompilationUnit;
 import descent.internal.core.CompilationUnitElementInfo;
 import descent.internal.core.CompilerConfiguration;
@@ -670,7 +672,7 @@ public class ModuleBuilder {
 			return null;
 		} else {
 			Initializer init = encoder.decodeInitializer(source.toCharArray());
-			copySourceRange(init, field);
+			copySourceRangeRecursive(init, field);
 			return init;
 		}
 	}
@@ -681,12 +683,12 @@ public class ModuleBuilder {
 			return null;
 		} else {
 			Expression exp = encoder.decodeExpression(source.toCharArray());
-			copySourceRange(exp, field);
+			copySourceRangeRecursive(exp, field);
 			return exp;
 		}
 	}
 
-	public static IdentifierExp getIdent(IJavaElement element) throws JavaModelException {
+	public IdentifierExp getIdent(IJavaElement element) throws JavaModelException {
 		String name = element.getElementName();
 		if (name.length() == 0) {
 			return null;
@@ -1091,9 +1093,13 @@ public class ModuleBuilder {
 		}
 	}
 	
-	private static void copySourceRange(ASTDmdNode node, ISourceReference sourceReference) throws JavaModelException {
+	private void copySourceRange(ASTDmdNode node, ISourceReference sourceReference) throws JavaModelException {
 		ISourceRange range = sourceReference.getSourceRange();
 		node.setSourceRange(range.getOffset(), range.getLength());
+	}
+	
+	protected void copySourceRangeRecursive(ASTDmdNode node, ISourceReference sourceReference) throws JavaModelException {
+		copySourceRange(node, sourceReference);
 	}
 	
 	protected FuncDeclaration newFuncDeclaration(Loc loc, IdentifierExp ident, int storageClass, Type type) {
