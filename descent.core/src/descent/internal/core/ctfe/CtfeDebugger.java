@@ -8,6 +8,7 @@ import java.util.concurrent.Semaphore;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IVariable;
@@ -44,7 +45,7 @@ import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.core.CompilationUnit;
 import descent.internal.core.ctfe.dom.CompileTimeSemanticContext;
 
-public class CtfeDebugger implements IDebugger {
+public class CtfeDebugger implements ICtfeDebugger {
 
 	private final CompilationUnit fUnit;
 	private final int fOffset;
@@ -189,7 +190,7 @@ public class CtfeDebugger implements IDebugger {
 								enterStackFrame();
 								
 								try {
-									fDebugTarget.breakpointHit(fCurrentUnit.getResource(), line);
+									fDebugTarget.stepEnded();
 									fSemaphore.acquire();
 								} finally {
 									exitStackFrame();
@@ -312,7 +313,7 @@ public class CtfeDebugger implements IDebugger {
 				if ((node instanceof CallExp || node instanceof TemplateInstance) && !justStartedDebugging)
 					return;
 				
-				fDebugTarget.breakpointHit(unit.getResource(), line);
+				fDebugTarget.stepEnded();
 				fSemaphore.acquire();
 			} else {
 				// See if we hit a breakpoint
@@ -349,7 +350,7 @@ public class CtfeDebugger implements IDebugger {
 			fCurrentStackFrame = fStackFrames.size();
 			
 			if (fNextStackFrame == fCurrentStackFrame - 1) {
-				fDebugTarget.breakpointHit(unit.getResource(), line);
+				fDebugTarget.stepEnded();
 				fSemaphore.acquire();
 			}
 		} catch (Exception e) {
@@ -398,6 +399,7 @@ public class CtfeDebugger implements IDebugger {
 		fNextStackFrame = newStackFrame;
 		
 		fSemaphore.release();
+		fDebugTarget.resumed(DebugEvent.STEP_INTO);
 	}
 
 	public void stepOver() {
@@ -405,6 +407,7 @@ public class CtfeDebugger implements IDebugger {
 		fNextStackFrame = fStackFrames.size() - 1;
 		
 		fSemaphore.release();
+		fDebugTarget.resumed(DebugEvent.STEP_OVER);
 	}
 
 	public void stepReturn() {
@@ -413,6 +416,7 @@ public class CtfeDebugger implements IDebugger {
 		fNextStackFrame = newStackFrame;
 		
 		fSemaphore.release();
+		fDebugTarget.resumed(DebugEvent.STEP_RETURN);
 	}
 	
 	public void resume() {
@@ -421,6 +425,7 @@ public class CtfeDebugger implements IDebugger {
 		fNextStackFrame = newStackFrame;
 		
 		fSemaphore.release();
+		fDebugTarget.resumed(DebugEvent.RESUME);
 	}
 
 	public synchronized IVariable evaluateExpression(int stackFrame, String expression) {

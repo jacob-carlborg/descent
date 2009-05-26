@@ -38,7 +38,7 @@ import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.core.CancelableNameEnvironment;
 import descent.internal.core.CompilerConfiguration;
 import descent.internal.core.JavaProject;
-import descent.internal.core.ctfe.IDebugger;
+import descent.internal.core.ctfe.ICtfeDebugger;
 import descent.internal.core.ctfe.dom.CompileTimeParser;
 import descent.internal.core.ctfe.dom.CompileTimeSemanticContext;
 import descent.internal.core.util.Util;
@@ -197,7 +197,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			WorkingCopyOwner owner,
 			boolean recordLineSeparator,
 			boolean statementsRecovery,
-			IDebugger debugger,
+			ICtfeDebugger debugger,
 			IProgressMonitor monitor) throws JavaModelException {
 		
 		CompilerConfiguration config = new CompilerConfiguration();
@@ -209,7 +209,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		return result;
 	}
 	
-	public static void resolve(ParseResult result, IJavaProject javaProject, WorkingCopyOwner owner, IDebugger debugger) throws JavaModelException {
+	public static void resolve(ParseResult result, IJavaProject javaProject, WorkingCopyOwner owner, ICtfeDebugger debugger) throws JavaModelException {
 		resolve(result.module, debugger, result.context);
 	}
 	
@@ -233,7 +233,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			WorkingCopyOwner owner,
 			boolean recordLineSeparator,
 			boolean statementsRecovery,
-			IDebugger debugger,
+			ICtfeDebugger debugger,
 			IProgressMonitor monitor) throws JavaModelException {
 		
 		ParseResult result = parse(apiLevel, sourceUnit, options, recordLineSeparator, statementsRecovery, false, debugger != null);
@@ -267,7 +267,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			final WorkingCopyOwner owner,
 			final ASTNodeEncoder encoder,
 			final boolean analayzeTemplates,
-			final IDebugger debugger) 
+			final ICtfeDebugger debugger) 
 		throws JavaModelException {
 		
 		CompilerConfiguration config = new CompilerConfiguration();
@@ -284,7 +284,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			final WorkingCopyOwner owner,
 			final CompilerConfiguration config,
 			final ASTNodeEncoder encoder,
-			final IDebugger debugger) throws JavaModelException {
+			final ICtfeDebugger debugger) throws JavaModelException {
 		
 		SemanticContext context = getContext(module, project, owner, config, encoder, debugger);
 		
@@ -296,7 +296,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		return context;
 	}
 
-	private static void resolve(final Module module, final IDebugger debugger,
+	private static void resolve(final Module module, final ICtfeDebugger debugger,
 			final SemanticContext context) {
 		long time = System.currentTimeMillis();
 		
@@ -323,7 +323,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			final WorkingCopyOwner owner,
 			final CompilerConfiguration config,
 			final ASTNodeEncoder encoder,
-			final IDebugger debugger) throws JavaModelException {
+			final ICtfeDebugger debugger) throws JavaModelException {
 		Global global = getGlobal(project, config);
 		
 		IProblemRequestor problemRequestor = new IProblemRequestor() {

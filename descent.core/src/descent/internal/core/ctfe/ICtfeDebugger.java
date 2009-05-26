@@ -8,7 +8,7 @@ import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.InterState;
 import descent.internal.compiler.parser.Scope;
 
-public interface IDebugger {
+public interface ICtfeDebugger {
 	
 	void start();
 

@@ -14,7 +14,7 @@ import descent.internal.compiler.parser.Scope;
 public class DescentCtfeStackFrame extends DescentCtfeDebugElement implements IStackFrame {
 
 	private final IThread fThread;
-	private final IDebugger fDebugger;
+	private final ICtfeDebugger fDebugger;
 	private String fName;
 	private int fNumber;
 	private ICompilationUnit fUnit;
@@ -24,7 +24,7 @@ public class DescentCtfeStackFrame extends DescentCtfeDebugElement implements IS
 	private final Scope scope;
 	private final InterState is;
 	
-	public DescentCtfeStackFrame(IDebugTarget target, IDebugger debugger, IThread thread, String name, int number, ICompilationUnit unit, int lineNumber, Scope scope, InterState is) {
+	public DescentCtfeStackFrame(IDebugTarget target, ICtfeDebugger debugger, IThread thread, String name, int number, ICompilationUnit unit, int lineNumber, Scope scope, InterState is) {
 		super(target);
 		this.fDebugger = debugger;
 		this.fThread = thread;
@@ -44,7 +44,7 @@ public class DescentCtfeStackFrame extends DescentCtfeDebugElement implements IS
 		return is;
 	}
 	
-	public IDebugger getDebugger() {
+	public ICtfeDebugger getDebugger() {
 		return fDebugger;
 	}
 	

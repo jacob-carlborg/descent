@@ -102,16 +102,16 @@ import descent.internal.compiler.parser.WhileStatement;
 import descent.internal.compiler.parser.WithStatement;
 import descent.internal.core.CompilerConfiguration;
 import descent.internal.core.ctfe.CompileTimeDescentModuleFinder;
-import descent.internal.core.ctfe.IDebugger;
+import descent.internal.core.ctfe.ICtfeDebugger;
 
 public class CompileTimeSemanticContext extends SemanticContext {
 	
-	private final IDebugger debugger;
+	private final ICtfeDebugger debugger;
 	private int fDisabledStepping;
 
 	public CompileTimeSemanticContext(IProblemRequestor problemRequestor,
 			Module module, IJavaProject project, WorkingCopyOwner owner,
-			Global global, CompilerConfiguration config, ASTNodeEncoder encoder, IDebugger debugger) throws JavaModelException {
+			Global global, CompilerConfiguration config, ASTNodeEncoder encoder, ICtfeDebugger debugger) throws JavaModelException {
 		super(problemRequestor, module, project, owner, global, config, encoder);
 		this.debugger = debugger;
 	}

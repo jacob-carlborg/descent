@@ -24,13 +24,13 @@ public class DescentCtfeDebugTarget extends DescentCtfeDebugElement implements I
 
 	private final ILaunch fLaunch;
 	private final IProcess fProcess;
-	private final IDebugger fDebugger;
+	private final ICtfeDebugger fDebugger;
 	
 	private boolean fSuspended;
 	private DescentCtfeThread fThread;
 	private DescentCtfeThread[] fThreads;
 
-	public DescentCtfeDebugTarget(ILaunch launch, IProcess process, IDebugger debugger) {
+	public DescentCtfeDebugTarget(ILaunch launch, IProcess process, ICtfeDebugger debugger) {
 		super(null);
 		this.fLaunch = launch;
 		this.fProcess = process;
@@ -213,20 +213,6 @@ public class DescentCtfeDebugTarget extends DescentCtfeDebugElement implements I
 		fDebugger.stepReturn();
 	}
 	
-	public void breakpointHit(IResource resource, int lineNumber) throws DebugException {
-		fSuspended = true;
-		
-		if (resource != null) {
-			IBreakpoint breakpoint = findBreakpoint(resource, lineNumber);
-			if (breakpoint != null) {
-				fThread.setBreakpoints(new IBreakpoint[] { breakpoint });
-			}
-		}
-		
-		fThread.invalidateChildren();
-		fThread.fireSuspendEvent(DebugEvent.BREAKPOINT);
-	}
-	
 	private IBreakpoint findBreakpoint(IResource resource, int lineNumber) {
 		IBreakpoint[] breakpoints = DebugPlugin.getDefault().getBreakpointManager().getBreakpoints("descent.debug.core.model");
 		for (int i = 0; i < breakpoints.length; i++) {
@@ -253,6 +239,41 @@ public class DescentCtfeDebugTarget extends DescentCtfeDebugElement implements I
 	
 	public DescentCtfeStackFrame newStackFrame(String name, int number, ICompilationUnit unit, int lineNumber, Scope sc, InterState is) {
 		return new DescentCtfeStackFrame(this, fDebugger, fThreads[0], name, number, unit, lineNumber, sc, is);
+	}
+	
+	public void stepEnded() {
+		fSuspended = true;
+		fThread.setBreakpoints(null);
+		fThread.invalidateChildren();
+		fThread.fireSuspendEvent(DebugEvent.STEP_END);
+	}
+	
+	public void breakpointHit(IResource resource, int lineNumber) throws DebugException {
+		fSuspended = true;
+		
+		if (resource != null) {
+			IBreakpoint breakpoint = findBreakpoint(resource, lineNumber);
+			if (breakpoint != null) {
+				fThread.setBreakpoints(new IBreakpoint[] { breakpoint });
+			}
+		}
+		
+		fThread.invalidateChildren();
+		fThread.fireSuspendEvent(DebugEvent.BREAKPOINT);
+	}
+	
+	public void resumed(int detail) {
+		fSuspended = false;
+		
+		if ((detail & DebugEvent.STEP_INTO) != 0 ||
+				(detail & DebugEvent.STEP_OVER) != 0 ||
+				(detail & DebugEvent.STEP_RETURN) != 0) {
+			fThread.setStepping(true);
+		} else {
+			fThread.setStepping(false);
+		}
+		
+		fThread.fireResumeEvent(detail);
 	}
 
 }

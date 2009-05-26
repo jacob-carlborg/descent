@@ -13,7 +13,7 @@ public class DescentCtfeWatchExpressionDelegate implements IWatchExpressionDeleg
 	public void evaluateExpression(final String expression, final IDebugElement context, IWatchExpressionListener listener) {
 		if (context instanceof DescentCtfeStackFrame) {
 			final DescentCtfeStackFrame stackFrame = (DescentCtfeStackFrame) context;
-			final IDebugger debugger = stackFrame.getDebugger();
+			final ICtfeDebugger debugger = stackFrame.getDebugger();
 			final IVariable variable = debugger.evaluateExpression(stackFrame.getNumber(), expression);
 			if (variable == null) {
 				listener.watchEvaluationFinished(new IWatchExpressionResult() {
