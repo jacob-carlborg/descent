@@ -21,11 +21,8 @@ public class DescentCtfeThread extends DescentCtfeDebugElement implements IThrea
 	private boolean fStackFramesInvalid;
 	private IStackFrame[] fStackFrames;
 	
-	private final ICtfeDebugger fDebugger;
-	
-	public DescentCtfeThread(DescentCtfeDebugTarget target, ICtfeDebugger debugger) {
+	public DescentCtfeThread(DescentCtfeDebugTarget target) {
 		super(target);
-		this.fDebugger = debugger;
 	}
 	
 	/**

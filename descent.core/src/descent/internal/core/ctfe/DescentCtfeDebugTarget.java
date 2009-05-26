@@ -36,7 +36,7 @@ public class DescentCtfeDebugTarget extends DescentCtfeDebugElement implements I
 		this.fProcess = process;
 		this.fDebugger = debugger;
 		
-		this.fThread = new DescentCtfeThread(this, fDebugger);
+		this.fThread = new DescentCtfeThread(this);
 		this.fThreads = new DescentCtfeThread[] { fThread };
 		
 		DebugPlugin.getDefault().getBreakpointManager().addBreakpointListener(this);

@@ -26,8 +26,6 @@ import descent.internal.compiler.parser.complex_t;
 import descent.internal.compiler.parser.real_t;
 
 public class DescentCtfeValue extends DescentCtfeDebugElement implements IValue {
-	
-	private final static IVariable[] NO_VARIABLES = new IVariable[0];
 
 	private final String fName;
 	private final Expression fExpression;
