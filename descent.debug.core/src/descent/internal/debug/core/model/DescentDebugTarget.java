@@ -402,13 +402,13 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 		fireCreationEvent();
 		fThread.fireCreationEvent();
 		
-		try {
-			addSearchPaths();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (CoreException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			addSearchPaths();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		} catch (CoreException e) {
+//			e.printStackTrace();
+//		}
 		installDeferredBreakpoints();
 		
 		fireResumeEvent(DebugEvent.CLIENT_REQUEST);

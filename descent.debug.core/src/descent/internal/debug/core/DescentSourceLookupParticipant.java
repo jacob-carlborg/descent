@@ -10,7 +10,6 @@ import org.eclipse.debug.core.sourcelookup.AbstractSourceLookupParticipant;
 import org.eclipse.debug.core.sourcelookup.ISourceContainer;
 import org.eclipse.debug.core.sourcelookup.containers.DirectorySourceContainer;
 import org.eclipse.debug.core.sourcelookup.containers.FolderSourceContainer;
-import org.eclipse.debug.core.sourcelookup.containers.LocalFileStorage;
 import org.eclipse.debug.core.sourcelookup.containers.ProjectSourceContainer;
 
 import descent.internal.debug.core.model.DescentStackFrame;
@@ -75,8 +74,7 @@ public class DescentSourceLookupParticipant extends AbstractSourceLookupParticip
 			
 			if (DirectorySourceContainer.TYPE_ID.equals(typeId)) {
 				DirectorySourceContainer directoryContainer = (DirectorySourceContainer) container;
-				File directory = directoryContainer.getDirectory();
-				Object possible = findSourceElement(sourceName, directory);
+				Object possible = findSourceElement(sourceName, directoryContainer);
 				if (possible != null) {
 					return new Object[] { possible };
 				}
@@ -104,12 +102,14 @@ public class DescentSourceLookupParticipant extends AbstractSourceLookupParticip
 		return null;
 	}
 	
-	private Object findSourceElement(String sourceName, File containerFile) {
-		String containerAbsolutePath = containerFile.getAbsolutePath();
-		if (sourceName.startsWith(containerAbsolutePath)) {
-			return new LocalFileStorage(new File(sourceName));
+	private Object findSourceElement(String sourceName, DirectorySourceContainer containerFile) throws CoreException {
+		String absolutePath = containerFile.getDirectory().getAbsolutePath();
+		if (sourceName.startsWith(absolutePath)) {
+			sourceName = sourceName.substring(absolutePath.length());
+			return containerFile.findSourceElements(sourceName);
+		} else {
+			return null;
 		}
-		return null;
 	}
 
 }

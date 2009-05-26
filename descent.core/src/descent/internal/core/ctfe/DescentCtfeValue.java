@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IDebugTarget;
-import org.eclipse.debug.core.model.IValue;
 import org.eclipse.debug.core.model.IVariable;
 
+import descent.core.ctfe.IDescentCtfeValue;
 import descent.internal.compiler.parser.ArrayLiteralExp;
 import descent.internal.compiler.parser.ComplexExp;
 import descent.internal.compiler.parser.Expression;
@@ -25,7 +25,7 @@ import descent.internal.compiler.parser.VarExp;
 import descent.internal.compiler.parser.complex_t;
 import descent.internal.compiler.parser.real_t;
 
-public class DescentCtfeValue extends DescentCtfeDebugElement implements IValue {
+public class DescentCtfeValue extends DescentCtfeDebugElement implements IDescentCtfeValue {
 
 	private final String fName;
 	private final Expression fExpression;

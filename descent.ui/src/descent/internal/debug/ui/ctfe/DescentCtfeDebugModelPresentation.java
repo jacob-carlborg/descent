@@ -1,4 +1,4 @@
-package descent.internal.core.ctfe;
+package descent.internal.debug.ui.ctfe;
 
 import java.util.Stack;
 
@@ -20,14 +20,16 @@ import org.eclipse.ui.part.FileEditorInput;
 
 import descent.core.IJavaElement;
 import descent.core.IMember;
+import descent.core.ctfe.BreakpointUtils;
+import descent.core.ctfe.IDescentCtfeValue;
 
 public class DescentCtfeDebugModelPresentation extends LabelProvider implements IDebugModelPresentation {
 
 	public void computeDetail(IValue value, IValueDetailListener listener) {
 		String detail = "";
 		try {
-			if (value instanceof DescentCtfeValue) {
-				detail = ((DescentCtfeValue) value).getDetail();
+			if (value instanceof IDescentCtfeValue) {
+				detail = ((IDescentCtfeValue) value).getDetail();
 			} else {
 				detail = value.getValueString();
 			}

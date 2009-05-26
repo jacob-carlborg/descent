@@ -152,18 +152,4 @@
             debugModel="descent.debug.ctfe.model"
             delegateClass="descent.internal.core.ctfe.DescentCtfeWatchExpressionDelegate"/>
    </extension>
-   <extension
-         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
-      <launchConfigurationTabGroup
-            class="descent.internal.core.ctfe.DescentCtfeLaunchConfigurationTabGroup"
-            id="descent.core.ctfe.launcConfigurationTabGroup.ctfeApplication"
-            type="descent.debug.ctfe.application"/>
-   </extension>
-   <extension
-         point="org.eclipse.debug.ui.debugModelPresentations">
-      <debugModelPresentation
-            class="descent.internal.core.ctfe.DescentCtfeDebugModelPresentation"
-            id="descent.debug.ctfe.model"/>
-   </extension>
-
 </plugin>

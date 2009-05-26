@@ -1,4 +1,4 @@
-package descent.internal.core.ctfe;
+package descent.internal.debug.ui.ctfe;
 
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTabGroup;
 import org.eclipse.debug.ui.CommonTab;
