@@ -8,6 +8,8 @@ import descent.internal.compiler.parser.Scope;
 public interface IDebugElementFactory {
 
 	IDescentVariable newVariable(int stackFrame, String name, Expression value);
+	
+	IDescentVariable newVariable(int stackFrame, String name, String value);
 
 	IDescentStackFrame newStackFrame(String name, int number,
 			ICompilationUnit unit, int line, Scope scope, InterState is);

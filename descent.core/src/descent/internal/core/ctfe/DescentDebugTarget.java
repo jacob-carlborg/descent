@@ -24,7 +24,9 @@ import descent.core.ctfe.IDescentStackFrame;
 import descent.core.ctfe.IDescentVariable;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.InterState;
+import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Scope;
+import descent.internal.compiler.parser.StringExp;
 
 public class DescentDebugTarget extends DescentDebugElement implements IDebugTarget, IDebuggerListener, IDebugElementFactory {
 
@@ -258,6 +260,11 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 	public IDescentVariable newVariable(int stackFrame, String name,
 			Expression value) {
 		return new DescentVariable(this, this, stackFrame, name, value);
+	}
+	
+	public IDescentVariable newVariable(int stackFrame, String name,
+			String value) {
+		return newVariable(stackFrame, name, new StringExp(Loc.ZERO, value.toCharArray()));
 	}
 	
 	public void stepEnded() {

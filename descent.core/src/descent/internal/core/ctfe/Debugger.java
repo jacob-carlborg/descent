@@ -13,42 +13,27 @@ import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IVariable;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
-import org.eclipse.jface.text.IDocument;
 
 import descent.core.ICompilationUnit;
-import descent.core.IProblemRequestor;
 import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
-import descent.core.compiler.IProblem;
 import descent.core.ctfe.IDebugElementFactory;
 import descent.core.ctfe.IDebugger;
 import descent.core.ctfe.IDebuggerListener;
 import descent.core.ctfe.IDescentStackFrame;
-import descent.core.ctfe.IDescentVariable;
 import descent.core.ctfe.IOutput;
 import descent.core.dom.AST;
 import descent.core.dom.CompilationUnitResolver;
 import descent.core.dom.CompilationUnitResolver.ParseResult;
 import descent.internal.compiler.parser.ASTDmdNode;
-import descent.internal.compiler.parser.AliasDeclaration;
 import descent.internal.compiler.parser.CallExp;
-import descent.internal.compiler.parser.Dsymbol;
-import descent.internal.compiler.parser.DsymbolTable;
-import descent.internal.compiler.parser.ExpInitializer;
-import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.InterState;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Module;
-import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.Scope;
-import descent.internal.compiler.parser.ScopeDsymbol;
-import descent.internal.compiler.parser.StringExp;
 import descent.internal.compiler.parser.TemplateInstance;
-import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.core.CompilationUnit;
-import descent.internal.core.ctfe.dom.CompileTimeSemanticContext;
 
 public class Debugger implements IDebugger {
 
@@ -59,6 +44,8 @@ public class Debugger implements IDebugger {
 	final Map<ICompilationUnit, Document> fCompilationUnitDocuments;
 	Thread fThread;
 	ResourceSearch fSearch;
+	ExpressionEvaluator fEvaluator;
+	VariablesFinder fVariablesFinder;
 	
 	List<Breakpoint> breakpoints = new ArrayList<Breakpoint>();
 	IDebuggerListener fListener;
@@ -92,14 +79,7 @@ public class Debugger implements IDebugger {
 		this.fSearch = new ResourceSearch();
 		this.fSemaphore = new Semaphore(0);
 		this.fCompilationUnitDocuments = new HashMap<ICompilationUnit, Document>();
-		
-		Document doc = getDocument(unit);
-		try {
-			fLine = doc.getLineOfOffset(fOffset) + 1;
-		} catch (BadLocationException e) {
-			bug(e);
-			fLine = 0;
-		}
+		this.fLine = getLine(fUnit, fOffset);
 	}
 	
 	public void initialize(IDebuggerListener listener, IDebugElementFactory elementFactory) {
@@ -129,6 +109,8 @@ public class Debugger implements IDebugger {
 							fUnit, fUnit.getJavaProject(), JavaCore.getOptions(), 
 							null, false, false, Debugger.this, new NullProgressMonitor());
 					fParseResult.context.problemRequestor = new ProblemRequestor(Debugger.this);
+					fEvaluator = new ExpressionEvaluator(fUnit, fParseResult, fElementFactory);
+					fVariablesFinder = new VariablesFinder(fElementFactory);
 					CompilationUnitResolver.resolve(fParseResult, fUnit.getJavaProject(), null, Debugger.this);
 				} catch (JavaModelException e) {
 					bug(e);
@@ -175,23 +157,24 @@ public class Debugger implements IDebugger {
 	}
 	
 	private void internalStepBegin(ASTDmdNode node) {
+		try {
+			internalStepBegin0(node);
+		} catch (InterruptedException e) {
+			bug(e);
+		}
+	}
+	
+	private void internalStepBegin0(ASTDmdNode node) throws InterruptedException {
 		ICompilationUnit unit = getCompilationUnit(fCurrentScope);
 		if (unit == null) return;
 		
 		fCurrentUnit = unit;
 		
-		IDocument doc = null;
 		int line = -1;
-		
 		boolean justStartedDebugging = false;
 		
 		if (fStartedDebugging == 0) {
-			try {
-				doc = getDocument(unit);
-				line = doc.getLineOfOffset(node.start) + 1;
-			} catch (Exception e) {
-				bug(e);
-			}
+			line = getLine(unit, node);
 			
 			if (isTarget(unit, line)) {
 				justStartedDebugging = true;
@@ -204,89 +187,81 @@ public class Debugger implements IDebugger {
 		if (fStartedDebugging <= 0)
 			return;
 		
-		try {
-			if (doc == null) {
-				doc = getDocument(unit);
-				line = doc.getLineOfOffset(node.start) + 1;
-			}
+		if (line == -1)
+			line = getLine(unit, node);
+		
+		if (line == fCurrentLine && fStackFrames.size() == fCurrentStackFrame)
+			return;
+		
+		fCurrentLine = line;
+		
+		if (fStackFrames.isEmpty()) {
+			enterStackFrame();
+			fNextStackFrame = 0;
+		}
+		
+		fCurrentStackFrame = fStackFrames.size();
+		
+		// Only hit breakpoint if the expected stack frame for the user
+		// is the same as the current one
+		if (fNextStackFrame >= fCurrentStackFrame - 1) {
 			
-			if (line == fCurrentLine && fStackFrames.size() == fCurrentStackFrame)
+			// This is if we didn't just started debugging and the node
+			// is one of the ones that can be debugged, don't suspend the exeuction
+			if ((node instanceof CallExp || node instanceof TemplateInstance) && !justStartedDebugging)
 				return;
 			
-			fCurrentLine = line;
-			
-			if (fStackFrames.isEmpty()) {
-				enterStackFrame();
-				fNextStackFrame = 0;
-			}
-			
-			fCurrentStackFrame = fStackFrames.size();
-			
-			// Only hit breakpoint if the expected stack frame for the user
-			// is the same as the current one
-			if (fNextStackFrame >= fCurrentStackFrame - 1) {
-				if ((node instanceof CallExp || node instanceof TemplateInstance) && !justStartedDebugging)
-					return;
-				
-				if (justStartedDebugging) {
-					fListener.breakpointHit(unit, line);
-				} else {
-					fListener.stepEnded();
-				}
-				fSemaphore.acquire();
+			if (justStartedDebugging) {
+				fListener.breakpointHit(unit, line);
 			} else {
-				// See if we hit a breakpoint
-				if (hasBreakpoint(unit, fCurrentLine)) {
-					fListener.breakpointHit(unit, line);
-					fSemaphore.acquire();
-				}
+				fListener.stepEnded();
 			}
-		} catch (Exception e) {
-			bug(e);
+			fSemaphore.acquire();
+		} else {
+			// See if we hit a breakpoint
+			if (hasBreakpoint(unit, fCurrentLine)) {
+				fListener.breakpointHit(unit, line);
+				fSemaphore.acquire();
+			}
 		}
 	}
 	
 	private void internalStepEnd(ASTDmdNode node) {
+		try {
+			internalStepEnd0(node);
+		} catch (InterruptedException e) {
+			bug(e);
+		}
+	}
+	
+	private void internalStepEnd0(ASTDmdNode node) throws InterruptedException {
 		ICompilationUnit unit = getCompilationUnit(fCurrentScope);
 		if (unit == null) return;
 		
 		fCurrentUnit = unit;
 		
-		IDocument doc = null;
-		int line = -1;
-		
 		if (fStartedDebugging <= 0)
 			return;
 		
+		int line = -1;
+		
 		if (fNextStackFrameChanged) {
-			try {
-				doc = getDocument(unit);
-				line = doc.getLineOfOffset(node.start) + 1;
+			line = getLine(unit, node);
 				
-				if (line == fCurrentLine && fStackFrames.size() == fCurrentStackFrame)
-					return;
+			if (line == fCurrentLine && fStackFrames.size() == fCurrentStackFrame)
+				return;
+		
+			fCurrentLine = line;
+			fCurrentStackFrame = fStackFrames.size();
 			
-				fCurrentLine = line;
-				fCurrentStackFrame = fStackFrames.size();
-				
-				if (fNextStackFrame == fCurrentStackFrame - 1) {
-					fListener.stepEnded();
-					fSemaphore.acquire();
-				}
-			} catch (Exception e) {
-				bug(e);
+			if (fNextStackFrame == fCurrentStackFrame - 1) {
+				fListener.stepEnded();
+				fSemaphore.acquire();
 			}
 		}
 		
-		if (doc == null) {
-			try {
-				doc = getDocument(unit);
-				line = doc.getLineOfOffset(node.start) + 1;
-			} catch (Exception e) {
-				bug(e);
-				return;
-			}
-		}
+		if (line == -1)
+			line = getLine(unit, node);
 		
 		if (isTarget(unit, line)) {
 			fStartedDebugging--;
@@ -351,159 +326,12 @@ public class Debugger implements IDebugger {
 
 	public synchronized IVariable evaluateExpression(int stackFrame, String expression) {
 		IDescentStackFrame sf = getStackFrame(stackFrame);
-		Scope scope = sf.getScope();
-		InterState is = sf.getInterState();
-		
-		Parser parser = new Parser(AST.D1, expression.toCharArray(), 0, expression.length(), null, null, false, false, fUnit.getFullyQualifiedName().toCharArray(), fParseResult.encoder);
-		parser.nextToken();
-		
-		Expression exp = parser.parseExpression();
-		if (parser.problems != null && !parser.problems.isEmpty()) {
-			return newVariable(stackFrame, expression, parser.problems.toString());	
-		} else {
-			((CompileTimeSemanticContext) fParseResult.context).disableStepping();
-			IProblemRequestor oldRequestor = fParseResult.context.problemRequestor;
-			int oldMuteProblems = fParseResult.context.muteProblems;
-			int oldGlobalErrors = fParseResult.context.global.errors; 
-			
-			fParseResult.context.muteProblems = 0;
-			fParseResult.context.global.errors = 0;
-			
-			final List<IProblem> problems = new ArrayList<IProblem>();
-			fParseResult.context.problemRequestor = new IProblemRequestor() {
-				public void acceptProblem(IProblem problem) {
-					problems.add(problem);
-				}
-				public void beginReporting() {
-				}
-				public void endReporting() {
-				}
-				public boolean isActive() {
-					return true;
-				}
-			};
-			
-			try {
-				Expression result;
-				
-				if (is == null) {
-					scope.flags |= Scope.SCOPEstaticif;
-					
-					result = exp.semantic(scope, fParseResult.context);
-					result = result.optimize(ASTDmdNode.WANTflags | ASTDmdNode.WANTvalue | ASTDmdNode.WANTinterpret, fParseResult.context);
-				} else {
-					// Need a synthetic scope with the function's local symbol table
-					// and the variables being interpreted
-					Scope sc = Scope.copy(scope);
-					sc.scopesym = new ScopeDsymbol();
-					sc.scopesym.symtab = new DsymbolTable();					
-					
-					for(char[] key : is.fd.localsymtab.keys()) {
-						if (key == null)
-							continue;
-						sc.scopesym.symtab.insert(key, is.fd.localsymtab.lookup(key));
-					}
-					
-					for(Dsymbol sym : is.vars) {
-						sc.scopesym.symtab.insert(sym);
-					}
-					
-					sc.flags |= Scope.SCOPEstaticif;
-					
-					result = exp.semantic(sc, fParseResult.context);
-					result = result.interpret(is, fParseResult.context);
-				}
-				
-				if (problems.size() > 0) {
-					return newVariable(stackFrame, expression, problems.toString());
-				} else {
-					return newVariable(stackFrame, expression, result);
-				}
-			} finally {
-				fParseResult.context.problemRequestor = oldRequestor;
-				fParseResult.context.muteProblems = oldMuteProblems;
-				fParseResult.context.global.errors = oldGlobalErrors;
-				((CompileTimeSemanticContext) fParseResult.context).enableStepping();
-			}
-		}
+		return fEvaluator.evaluate(sf, expression);
 	}
 
 	public IVariable[] getVariables(int stackFrame) {
-		List<IDescentVariable> vars = new ArrayList<IDescentVariable>();
-		
 		IDescentStackFrame sf = getStackFrame(stackFrame);
-		if (sf == null)
-			return new IVariable[0];
-		
-		InterState is = sf.getInterState();
-		Scope scope = sf.getScope();		
-		fillVariables(stackFrame, scope, vars);
-		if (is != null) {
-			fillVariables(stackFrame, is, vars);
-		}
-		return vars.toArray(new DescentVariable[vars.size()]);
-	}
-
-	private void fillVariables(int stackFrame, Scope currentScope, List<IDescentVariable> vars) {
-		if (currentScope.scopesym != null && currentScope.scopesym.symtab != null) {
-			fillVariables(stackFrame, currentScope.scopesym.symtab, vars);
-		}
-		
-		if (currentScope.enclosing != null) {
-			fillVariables(stackFrame, currentScope.enclosing, vars);
-		}
-	}
-	
-	private void fillVariables(int stackFrame, InterState is, List<IDescentVariable> vars) {
-		if (is.vars != null) {
-			for(Dsymbol dsymbol : is.vars) {
-				IDescentVariable var = toVariable(stackFrame, dsymbol);
-				if (var == null)
-					continue;
-				
-				vars.add(var);
-			}
-		}
-		
-		if (is.fd != null && is.fd.localsymtab != null) {
-			fillVariables(stackFrame, is.fd.localsymtab, vars);
-		}
-	}
-	
-	private void fillVariables(int stackFrame, DsymbolTable symtab, List<IDescentVariable> vars) {
-		for(char[] key : symtab.keys()) {
-			if (key == null)
-				continue;
-			
-			Dsymbol dsymbol = symtab.lookup(key);
-			IDescentVariable var = toVariable(stackFrame, dsymbol);
-			if (var == null)
-				continue;
-			
-			vars.add(var);
-		}
-	}
-	
-	private IDescentVariable toVariable(int stackFrame, Dsymbol dsymbol) {
-		if (dsymbol instanceof VarDeclaration) {
-			VarDeclaration var = (VarDeclaration) dsymbol;
-			if (var.value != null) {
-				return newVariable(0, var.ident.toString(), var.value);
-			} else if (var.init != null) {
-				if (var.init instanceof ExpInitializer) {
-					return newVariable(0, var.ident.toString(), ((ExpInitializer) var.init).exp);
-				}
-			}
-		} else if (dsymbol instanceof AliasDeclaration) {
-			AliasDeclaration alias = (AliasDeclaration) dsymbol;
-			
-			if (alias.aliassym != null) {
-				return newVariable(stackFrame, alias.ident.toString(), alias.aliassym.ident.toString());
-			} else if (alias.type != null){
-				return newVariable(stackFrame, alias.ident.toString(), alias.type.toString());
-			}
-		}
-		return null;
+		return fVariablesFinder.getVariables(sf);
 	}
 
 	public IStackFrame[] getStackFrames() {
@@ -523,14 +351,6 @@ public class Debugger implements IDebugger {
 		return fStackFrames.get(index);
 	}
 	
-	protected IDescentVariable newVariable(int stackFrame, String name, Expression value) {
-		return fElementFactory.newVariable(0, name, value);
-	}
-	
-	protected IDescentVariable newVariable(int stackFrame, String name, String value) {
-		return fElementFactory.newVariable(0, name, new StringExp(Loc.ZERO, value.toCharArray()));
-	}
-	
 	private IDescentStackFrame newStackFrame() {
 		return fElementFactory.newStackFrame(fCurrentUnit.getFullyQualifiedName(), fStackFrames.size(), fCurrentUnit, fCurrentLine, fCurrentScope, fCurrentInterState);
 	}
@@ -545,6 +365,20 @@ public class Debugger implements IDebugger {
 
 	public void message(String message) {
 		fOutput.message(message);
+	}
+	
+	private int getLine(ICompilationUnit unit, ASTDmdNode node) {
+		return getLine(unit, node.start);
+	}
+	
+	private int getLine(ICompilationUnit unit, int start) {
+		Document doc = getDocument(unit);
+		try {
+			return doc.getLineOfOffset(start) + 1;
+		} catch (BadLocationException e) {
+			bug(e);
+			return 0;
+		}
 	}
 	
 	Document getDocument(ICompilationUnit unit) {

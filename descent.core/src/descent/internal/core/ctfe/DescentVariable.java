@@ -5,7 +5,6 @@ import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IValue;
 
 import descent.core.ctfe.IDebugElementFactory;
-import descent.core.ctfe.IDebugger;
 import descent.core.ctfe.IDescentVariable;
 import descent.internal.compiler.parser.Expression;
 

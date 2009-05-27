@@ -6,6 +6,8 @@ import descent.internal.compiler.parser.InterState;
 import descent.internal.compiler.parser.Scope;
 
 public interface IDescentStackFrame extends IStackFrame {
+	
+	int getNumber();
 
 	InterState getInterState();
 
