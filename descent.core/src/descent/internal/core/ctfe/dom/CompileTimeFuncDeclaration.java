@@ -12,14 +12,30 @@ import descent.internal.compiler.parser.Type;
 
 public class CompileTimeFuncDeclaration extends FuncDeclaration {
 	
+	private final boolean fIgnoreFirstSemanticAnalysis;
+	private boolean fDoneSemanticAnalysis;
+
 	public CompileTimeFuncDeclaration(Loc loc, IdentifierExp ident,
 			int storage_class, Type type) {
+		this(loc, ident, storage_class, type, false);
+	}
+	
+	public CompileTimeFuncDeclaration(Loc loc, IdentifierExp ident,
+			int storage_class, Type type, boolean ignoreFirstSemanticAnalysis) {
 		super(loc, ident, storage_class, type);
+		
+		this.fIgnoreFirstSemanticAnalysis = ignoreFirstSemanticAnalysis;
 	}
 	
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
 		if (sc.parent instanceof FuncDeclaration) {
+			super.semantic(sc, context);
+			return;
+		}
+		
+		if (fIgnoreFirstSemanticAnalysis && !fDoneSemanticAnalysis) {
+			fDoneSemanticAnalysis = true;
 			super.semantic(sc, context);
 			return;
 		}
@@ -37,15 +53,13 @@ public class CompileTimeFuncDeclaration extends FuncDeclaration {
 	public Expression interpret(InterState istate, Expressions arguments,
 			SemanticContext context) {
 		try {
-			if (javaElement == null) {
-				((CompileTimeSemanticContext) context).enterFunctionInterpret();
-			}
+			((CompileTimeSemanticContext) context).enterFunctionInterpret();
+			((CompileTimeSemanticContext) context).stepBegin(this, istate);
 			
 			return super.interpret(istate, arguments, context);
 		} finally {
-			if (javaElement == null) {
-				((CompileTimeSemanticContext) context).exitFunctionInterpret();
-			}
+			((CompileTimeSemanticContext) context).stepEnd(this, istate);
+			((CompileTimeSemanticContext) context).exitFunctionInterpret();
 		}
 	}
 

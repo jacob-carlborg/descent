@@ -268,7 +268,11 @@ public class CtfeDebugger implements ICtfeDebugger {
 				if ((node instanceof CallExp || node instanceof TemplateInstance) && !justStartedDebugging)
 					return;
 				
-				fDebugTarget.stepEnded();
+				if (justStartedDebugging) {
+					fDebugTarget.breakpointHit(unit.getResource(), line);
+				} else {
+					fDebugTarget.stepEnded();
+				}
 				fSemaphore.acquire();
 				System.out.println("");
 			} else {
@@ -292,25 +296,27 @@ public class CtfeDebugger implements ICtfeDebugger {
 		IDocument doc = null;
 		int line = -1;
 		
-		if (fStartedDebugging <= 0 || !fNextStackFrameChanged)
+		if (fStartedDebugging <= 0)
 			return;
 		
-		try {
-			doc = getDocument(unit);
-			line = doc.getLineOfOffset(node.start) + 1;
+		if (fNextStackFrameChanged) {
+			try {
+				doc = getDocument(unit);
+				line = doc.getLineOfOffset(node.start) + 1;
+				
+				if (line == fCurrentLine && fStackFrames.size() == fCurrentStackFrame)
+					return;
 			
-			if (line == fCurrentLine && fStackFrames.size() == fCurrentStackFrame)
-				return;
-		
-			fCurrentLine = line;
-			fCurrentStackFrame = fStackFrames.size();
-			
-			if (fNextStackFrame == fCurrentStackFrame - 1) {
-				fDebugTarget.stepEnded();
-				fSemaphore.acquire();
+				fCurrentLine = line;
+				fCurrentStackFrame = fStackFrames.size();
+				
+				if (fNextStackFrame == fCurrentStackFrame - 1) {
+					fDebugTarget.stepEnded();
+					fSemaphore.acquire();
+				}
+			} catch (Exception e) {
+				bug(e);
 			}
-		} catch (Exception e) {
-			bug(e);
 		}
 		
 		if (doc == null) {
