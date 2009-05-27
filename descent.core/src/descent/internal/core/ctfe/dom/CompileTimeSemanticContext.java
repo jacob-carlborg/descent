@@ -7,6 +7,7 @@ import descent.core.IJavaProject;
 import descent.core.IProblemRequestor;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
+import descent.core.ctfe.IDebugger;
 import descent.internal.compiler.env.IModuleFinder;
 import descent.internal.compiler.env.INameEnvironment;
 import descent.internal.compiler.parser.ASTDmdNode;
@@ -101,17 +102,16 @@ import descent.internal.compiler.parser.VolatileStatement;
 import descent.internal.compiler.parser.WhileStatement;
 import descent.internal.compiler.parser.WithStatement;
 import descent.internal.core.CompilerConfiguration;
-import descent.internal.core.ctfe.CompileTimeDescentModuleFinder;
-import descent.internal.core.ctfe.ICtfeDebugger;
+import descent.internal.core.ctfe.CompileTimeModuleFinder;
 
 public class CompileTimeSemanticContext extends SemanticContext {
 	
-	private final ICtfeDebugger debugger;
+	private final IDebugger debugger;
 	private int fDisabledStepping;
 
 	public CompileTimeSemanticContext(IProblemRequestor problemRequestor,
 			Module module, IJavaProject project, WorkingCopyOwner owner,
-			Global global, CompilerConfiguration config, ASTNodeEncoder encoder, ICtfeDebugger debugger) throws JavaModelException {
+			Global global, CompilerConfiguration config, ASTNodeEncoder encoder, IDebugger debugger) throws JavaModelException {
 		super(problemRequestor, module, project, owner, global, config, encoder);
 		this.debugger = debugger;
 	}
@@ -202,7 +202,7 @@ public class CompileTimeSemanticContext extends SemanticContext {
 	
 	@Override
 	protected IModuleFinder newModuleFinder(INameEnvironment env, CompilerConfiguration config, ASTNodeEncoder encoder2) {
-		return new CompileTimeDescentModuleFinder(env, config, encoder2);
+		return new CompileTimeModuleFinder(env, config, encoder2);
 	}
 	
 	@Override

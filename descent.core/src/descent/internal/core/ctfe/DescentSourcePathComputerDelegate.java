@@ -17,14 +17,14 @@ import org.eclipse.debug.core.sourcelookup.containers.WorkspaceSourceContainer;
 import descent.core.IJavaProject;
 import descent.core.IPackageFragmentRoot;
 import descent.core.JavaCore;
-import descent.core.ctfe.IDescentCtfeLaunchConfigurationConstants;
+import descent.core.ctfe.IDescentLaunchConfigurationConstants;
 
-public class DescentCtfeSourcePathComputerDelegate implements ISourcePathComputerDelegate {
+public class DescentSourcePathComputerDelegate implements ISourcePathComputerDelegate {
 	
 	public ISourceContainer[] computeSourceContainers(ILaunchConfiguration configuration, IProgressMonitor monitor) throws CoreException {
 		List<ISourceContainer> containers = new ArrayList<ISourceContainer>();
 		
-		String projectName = configuration.getAttribute(IDescentCtfeLaunchConfigurationConstants.ATTR_PROJECT_NAME, (String) null);
+		String projectName = configuration.getAttribute(IDescentLaunchConfigurationConstants.ATTR_PROJECT_NAME, (String) null);
 		if (projectName != null) {
 			IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 			containers.add(new ProjectSourceContainer(project, false));

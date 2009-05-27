@@ -22,7 +22,7 @@ import org.eclipse.ui.part.FileEditorInput;
 import descent.core.IJavaElement;
 import descent.core.IMember;
 import descent.core.ctfe.BreakpointUtils;
-import descent.core.ctfe.IDescentCtfeValue;
+import descent.core.ctfe.IDescentValue;
 import descent.internal.ui.javaeditor.JarEntryEditorInput;
 
 public class DescentCtfeDebugModelPresentation extends LabelProvider implements IDebugModelPresentation {
@@ -30,8 +30,8 @@ public class DescentCtfeDebugModelPresentation extends LabelProvider implements 
 	public void computeDetail(IValue value, IValueDetailListener listener) {
 		String detail = "";
 		try {
-			if (value instanceof IDescentCtfeValue) {
-				detail = ((IDescentCtfeValue) value).getDetail();
+			if (value instanceof IDescentValue) {
+				detail = ((IDescentValue) value).getDetail();
 			} else {
 				detail = value.getValueString();
 			}

@@ -1,4 +1,4 @@
-package descent.internal.core.ctfe;
+package descent.core.ctfe;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.debug.core.model.IStackFrame;
@@ -8,7 +8,7 @@ import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.InterState;
 import descent.internal.compiler.parser.Scope;
 
-public interface ICtfeDebugger {
+public interface IDebugger {
 	
 	void start();
 

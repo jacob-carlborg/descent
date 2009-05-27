@@ -7,7 +7,7 @@ import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IVariable;
 
-import descent.core.ctfe.IDescentCtfeValue;
+import descent.core.ctfe.IDescentValue;
 import descent.internal.compiler.parser.ArrayLiteralExp;
 import descent.internal.compiler.parser.ComplexExp;
 import descent.internal.compiler.parser.Expression;
@@ -25,15 +25,15 @@ import descent.internal.compiler.parser.VarExp;
 import descent.internal.compiler.parser.complex_t;
 import descent.internal.compiler.parser.real_t;
 
-public class DescentCtfeValue extends DescentCtfeDebugElement implements IDescentCtfeValue {
+public class DescentValue extends DescentDebugElement implements IDescentValue {
 
 	private final String fName;
 	private final Expression fExpression;
-	private final CtfeDebugger fDebugger;
+	private final Debugger fDebugger;
 	private IVariable[] fVariables;
 	private final int fStackFrame;	
 
-	public DescentCtfeValue(IDebugTarget target, CtfeDebugger debugger, int stackFrame, String name, Expression value) {
+	public DescentValue(IDebugTarget target, Debugger debugger, int stackFrame, String name, Expression value) {
 		super(target);
 		this.fDebugger = debugger;
 		this.fStackFrame = stackFrame;

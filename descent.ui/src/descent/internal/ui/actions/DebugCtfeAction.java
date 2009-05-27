@@ -16,7 +16,7 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.TextEditorAction;
 
 import descent.core.IJavaElement;
-import descent.core.ctfe.IDescentCtfeLaunchConfigurationConstants;
+import descent.core.ctfe.IDescentLaunchConfigurationConstants;
 import descent.internal.ui.javaeditor.EditorUtility;
 import descent.internal.ui.javaeditor.JavaEditor;
 
@@ -63,9 +63,9 @@ public class DebugCtfeAction extends TextEditorAction {
 			
 			ILaunchConfigurationType configType = getConfigurationType();
 			wc = configType.newInstance(null, getLaunchManager().generateUniqueLaunchConfigurationNameFrom(inputElement.getResource().getName()));
-			wc.setAttribute(IDescentCtfeLaunchConfigurationConstants.ATTR_PROJECT_NAME, inputElement.getResource().getProject().getName());
-			wc.setAttribute(IDescentCtfeLaunchConfigurationConstants.ATTR_INPUT_ELEMENT_HANDLE_IDENTIFIER, inputHandle);
-			wc.setAttribute(IDescentCtfeLaunchConfigurationConstants.ATTR_INPUT_ELEMENT_SOURCE_OFFSET, selection.getOffset());
+			wc.setAttribute(IDescentLaunchConfigurationConstants.ATTR_PROJECT_NAME, inputElement.getResource().getProject().getName());
+			wc.setAttribute(IDescentLaunchConfigurationConstants.ATTR_INPUT_ELEMENT_HANDLE_IDENTIFIER, inputHandle);
+			wc.setAttribute(IDescentLaunchConfigurationConstants.ATTR_INPUT_ELEMENT_SOURCE_OFFSET, selection.getOffset());
 			wc.setMappedResources(new IResource[] {inputElement.getResource().getProject()});
 			config = wc.doSave();
 		} catch (CoreException exception) {
@@ -75,7 +75,7 @@ public class DebugCtfeAction extends TextEditorAction {
 	}
 	
 	protected ILaunchConfigurationType getConfigurationType() {
-		return getLaunchManager().getLaunchConfigurationType(IDescentCtfeLaunchConfigurationConstants.ID_D_APPLICATION);		
+		return getLaunchManager().getLaunchConfigurationType(IDescentLaunchConfigurationConstants.ID_D_APPLICATION);		
 	}
 	
 	protected ILaunchManager getLaunchManager() {

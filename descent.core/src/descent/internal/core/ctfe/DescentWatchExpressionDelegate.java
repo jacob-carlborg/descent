@@ -8,12 +8,14 @@ import org.eclipse.debug.core.model.IWatchExpressionDelegate;
 import org.eclipse.debug.core.model.IWatchExpressionListener;
 import org.eclipse.debug.core.model.IWatchExpressionResult;
 
-public class DescentCtfeWatchExpressionDelegate implements IWatchExpressionDelegate  {
+import descent.core.ctfe.IDebugger;
+
+public class DescentWatchExpressionDelegate implements IWatchExpressionDelegate  {
 	
 	public void evaluateExpression(final String expression, final IDebugElement context, IWatchExpressionListener listener) {
-		if (context instanceof DescentCtfeStackFrame) {
-			final DescentCtfeStackFrame stackFrame = (DescentCtfeStackFrame) context;
-			final ICtfeDebugger debugger = stackFrame.getDebugger();
+		if (context instanceof DescentStackFrame) {
+			final DescentStackFrame stackFrame = (DescentStackFrame) context;
+			final IDebugger debugger = stackFrame.getDebugger();
 			final IVariable variable = debugger.evaluateExpression(stackFrame.getNumber(), expression);
 			if (variable == null) {
 				listener.watchEvaluationFinished(new IWatchExpressionResult() {

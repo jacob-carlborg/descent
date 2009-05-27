@@ -22,6 +22,8 @@ import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
+import descent.core.ctfe.IDebugger;
+import descent.core.ctfe.IOutput;
 import descent.core.dom.AST;
 import descent.core.dom.CompilationUnitResolver;
 import descent.core.dom.CompilationUnitResolver.ParseResult;
@@ -45,18 +47,18 @@ import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.core.CompilationUnit;
 import descent.internal.core.ctfe.dom.CompileTimeSemanticContext;
 
-public class CtfeDebugger implements ICtfeDebugger {
+public class Debugger implements IDebugger {
 
 	private final CompilationUnit fUnit;
 	private final int fOffset;
 	private int fLine;
-	private final ICtfeOutput fOutput;	
+	private final IOutput fOutput;	
 	private final Map<ICompilationUnit, Document> fCompilationUnitDocuments;
 	private Thread fThread;
 	private ResourceSearch fSearch;
 	
 	private List<Breakpoint> breakpoints = new ArrayList<Breakpoint>();
-	private DescentCtfeDebugTarget fDebugTarget;
+	private DescentDebugTarget fDebugTarget;
 	private int fStartedDebugging;
 	private Semaphore fSemaphore;
 	
@@ -67,7 +69,7 @@ public class CtfeDebugger implements ICtfeDebugger {
 	private Scope fCurrentScope;
 	private InterState fCurrentInterState;
 	
-	private List<DescentCtfeStackFrame> fStackFrames = new ArrayList<DescentCtfeStackFrame>();
+	private List<DescentStackFrame> fStackFrames = new ArrayList<DescentStackFrame>();
 	
 	/**
 	 * This is the next stack frame where the user wants to be.
@@ -79,7 +81,7 @@ public class CtfeDebugger implements ICtfeDebugger {
 	private int fNextStackFrame = -1;
 	private boolean fNextStackFrameChanged = true;
 
-	public CtfeDebugger(CompilationUnit unit, int offset, ICtfeOutput output) {
+	public Debugger(CompilationUnit unit, int offset, IOutput output) {
 		this.fUnit = unit;
 		this.fOffset = offset;
 		this.fOutput = output;
@@ -96,7 +98,7 @@ public class CtfeDebugger implements ICtfeDebugger {
 		}
 	}
 	
-	public void setDebugTarget(DescentCtfeDebugTarget debugTarget) {
+	public void setDebugTarget(DescentDebugTarget debugTarget) {
 		fDebugTarget = debugTarget;
 	}
 
@@ -125,7 +127,7 @@ public class CtfeDebugger implements ICtfeDebugger {
 							null, 
 							false, 
 							false, 
-							CtfeDebugger.this,
+							Debugger.this,
 							new NullProgressMonitor());
 					fParseResult.context.problemRequestor = new IProblemRequestor() {
 						public void acceptProblem(IProblem problem) {
@@ -165,7 +167,7 @@ public class CtfeDebugger implements ICtfeDebugger {
 						}
 					};
 					
-					CompilationUnitResolver.resolve(fParseResult, fUnit.getJavaProject(), null, CtfeDebugger.this);
+					CompilationUnitResolver.resolve(fParseResult, fUnit.getJavaProject(), null, Debugger.this);
 				} catch (JavaModelException e) {
 					bug(e);
 				}
@@ -269,7 +271,7 @@ public class CtfeDebugger implements ICtfeDebugger {
 					return;
 				
 				if (justStartedDebugging) {
-					fDebugTarget.breakpointHit(unit.getResource(), line);
+					fDebugTarget.breakpointHit(unit, line);
 				} else {
 					fDebugTarget.stepEnded();
 				}
@@ -278,7 +280,7 @@ public class CtfeDebugger implements ICtfeDebugger {
 			} else {
 				// See if we hit a breakpoint
 				if (hasBreakpoint(unit, fCurrentLine)) {
-					fDebugTarget.breakpointHit(unit.getResource(), line);
+					fDebugTarget.breakpointHit(unit, line);
 					fSemaphore.acquire();
 				}
 			}
@@ -391,7 +393,7 @@ public class CtfeDebugger implements ICtfeDebugger {
 	}
 
 	public synchronized IVariable evaluateExpression(int stackFrame, String expression) {
-		DescentCtfeStackFrame sf = getStackFrame(stackFrame);
+		DescentStackFrame sf = getStackFrame(stackFrame);
 		Scope scope = sf.getScope();
 		InterState is = sf.getInterState();
 		
@@ -470,9 +472,9 @@ public class CtfeDebugger implements ICtfeDebugger {
 	}
 
 	public IVariable[] getVariables(int stackFrame) {
-		List<DescentCtfeVariable> vars = new ArrayList<DescentCtfeVariable>();
+		List<DescentVariable> vars = new ArrayList<DescentVariable>();
 		
-		DescentCtfeStackFrame sf = getStackFrame(stackFrame);
+		DescentStackFrame sf = getStackFrame(stackFrame);
 		if (sf == null)
 			return new IVariable[0];
 		
@@ -482,10 +484,10 @@ public class CtfeDebugger implements ICtfeDebugger {
 		if (is != null) {
 			fillVariables(stackFrame, is, vars);
 		}
-		return vars.toArray(new DescentCtfeVariable[vars.size()]);
+		return vars.toArray(new DescentVariable[vars.size()]);
 	}
 
-	private void fillVariables(int stackFrame, Scope currentScope, List<DescentCtfeVariable> vars) {
+	private void fillVariables(int stackFrame, Scope currentScope, List<DescentVariable> vars) {
 		if (currentScope.scopesym != null && currentScope.scopesym.symtab != null) {
 			fillVariables(stackFrame, currentScope.scopesym.symtab, vars);
 		}
@@ -495,10 +497,10 @@ public class CtfeDebugger implements ICtfeDebugger {
 		}
 	}
 	
-	private void fillVariables(int stackFrame, InterState is, List<DescentCtfeVariable> vars) {
+	private void fillVariables(int stackFrame, InterState is, List<DescentVariable> vars) {
 		if (is.vars != null) {
 			for(Dsymbol dsymbol : is.vars) {
-				DescentCtfeVariable var = toVariable(stackFrame, dsymbol);
+				DescentVariable var = toVariable(stackFrame, dsymbol);
 				if (var == null)
 					continue;
 				
@@ -511,13 +513,13 @@ public class CtfeDebugger implements ICtfeDebugger {
 		}
 	}
 	
-	private void fillVariables(int stackFrame, DsymbolTable symtab, List<DescentCtfeVariable> vars) {
+	private void fillVariables(int stackFrame, DsymbolTable symtab, List<DescentVariable> vars) {
 		for(char[] key : symtab.keys()) {
 			if (key == null)
 				continue;
 			
 			Dsymbol dsymbol = symtab.lookup(key);
-			DescentCtfeVariable var = toVariable(stackFrame, dsymbol);
+			DescentVariable var = toVariable(stackFrame, dsymbol);
 			if (var == null)
 				continue;
 			
@@ -525,7 +527,7 @@ public class CtfeDebugger implements ICtfeDebugger {
 		}
 	}
 	
-	private DescentCtfeVariable toVariable(int stackFrame, Dsymbol dsymbol) {
+	private DescentVariable toVariable(int stackFrame, Dsymbol dsymbol) {
 		if (dsymbol instanceof VarDeclaration) {
 			VarDeclaration var = (VarDeclaration) dsymbol;
 			if (var.value != null) {
@@ -556,7 +558,7 @@ public class CtfeDebugger implements ICtfeDebugger {
 		return fStackFrames.toArray(new IStackFrame[fStackFrames.size()]);
 	}
 	
-	private DescentCtfeStackFrame getStackFrame(int stackFrame) {
+	private DescentStackFrame getStackFrame(int stackFrame) {
 		int index = fStackFrames.size() - stackFrame - 1;
 		if (index < 0 || index >= fStackFrames.size())
 			return null;
@@ -564,15 +566,15 @@ public class CtfeDebugger implements ICtfeDebugger {
 		return fStackFrames.get(index);
 	}
 	
-	protected DescentCtfeVariable newVariable(int stackFrame, String name, Expression value) {
-		return new DescentCtfeVariable(fDebugTarget, this, 0, name, value);
+	protected DescentVariable newVariable(int stackFrame, String name, Expression value) {
+		return new DescentVariable(fDebugTarget, this, 0, name, value);
 	}
 	
-	protected DescentCtfeVariable newVariable(int stackFrame, String name, String value) {
-		return new DescentCtfeVariable(fDebugTarget, this, 0, name, new StringExp(Loc.ZERO, value.toCharArray()));
+	protected DescentVariable newVariable(int stackFrame, String name, String value) {
+		return new DescentVariable(fDebugTarget, this, 0, name, new StringExp(Loc.ZERO, value.toCharArray()));
 	}
 	
-	private DescentCtfeStackFrame newStackFrame() {
+	private DescentStackFrame newStackFrame() {
 		return fDebugTarget.newStackFrame(fCurrentUnit.getFullyQualifiedName(), fStackFrames.size(), fCurrentUnit, fCurrentLine, fCurrentScope, fCurrentInterState);
 	}
 	

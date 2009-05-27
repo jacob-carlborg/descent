@@ -8,7 +8,7 @@ package descent.core.ctfe;
  * </p>
  * @since 2.0
  */
-public interface IDescentCtfeLaunchConfigurationConstants {
+public interface IDescentLaunchConfigurationConstants {
 	
 	public static final String PREFIX = "descent.debug.ctfe";
 	

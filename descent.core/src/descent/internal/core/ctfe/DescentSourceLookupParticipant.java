@@ -15,19 +15,19 @@ import org.eclipse.debug.core.sourcelookup.containers.ProjectSourceContainer;
 
 import descent.core.ICompilationUnit;
 
-public class DescentCtfeSourceLookupParticipant extends AbstractSourceLookupParticipant {
+public class DescentSourceLookupParticipant extends AbstractSourceLookupParticipant {
 	
 	public String getSourceName(Object object) throws CoreException {
-		if (object instanceof DescentCtfeStackFrame) {
-			return ((DescentCtfeStackFrame) object).getCompilationUnit().getFullyQualifiedName();
+		if (object instanceof DescentStackFrame) {
+			return ((DescentStackFrame) object).getCompilationUnit().getFullyQualifiedName();
 		}
 		return null;
 	}
 	
 	@Override
 	public Object[] findSourceElements(Object object) throws CoreException {
-		if (object instanceof DescentCtfeStackFrame) {
-			DescentCtfeStackFrame frame = (DescentCtfeStackFrame) object;
+		if (object instanceof DescentStackFrame) {
+			DescentStackFrame frame = (DescentStackFrame) object;
 			ICompilationUnit unit = frame.getCompilationUnit();
 			IResource resource = unit.getResource();
 			if (resource != null) {

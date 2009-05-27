@@ -4,18 +4,19 @@ import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IValue;
 
+import descent.core.ctfe.IDescentVariable;
 import descent.internal.compiler.parser.Expression;
 
-public class DescentCtfeVariable extends DescentCtfeDebugElement implements IDescentCtfeVariable {
+public class DescentVariable extends DescentDebugElement implements IDescentVariable {
 
 	private final String fName;
-	private final DescentCtfeValue fValue;
+	private final DescentValue fValue;
 	private boolean fHasValueChanged;
 	
-	public DescentCtfeVariable(IDebugTarget target, CtfeDebugger debugger, int stackFrame, String name, Expression value) {
+	public DescentVariable(IDebugTarget target, Debugger debugger, int stackFrame, String name, Expression value) {
 		super(target);
 		this.fName = name;
-		this.fValue = new DescentCtfeValue(target, debugger, stackFrame, name, value);
+		this.fValue = new DescentValue(target, debugger, stackFrame, name, value);
 	}
 
 	public String getName() throws DebugException {
@@ -26,7 +27,7 @@ public class DescentCtfeVariable extends DescentCtfeDebugElement implements IDes
 		return fName;
 	}
 
-	public DescentCtfeValue getValue() throws DebugException {
+	public DescentValue getValue() throws DebugException {
 		return fValue;
 	}
 	

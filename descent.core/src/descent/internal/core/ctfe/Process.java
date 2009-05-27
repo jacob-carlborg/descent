@@ -16,9 +16,11 @@ import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.debug.core.model.IStreamsProxy;
 
-public class CtfeProcess extends PlatformObject implements IProcess, IStreamsProxy, ICtfeOutput {
+import descent.core.ctfe.IOutput;
+
+public class Process extends PlatformObject implements IProcess, IStreamsProxy, IOutput {
 	
-	private final class StreamMonitor implements IStreamMonitor {
+	private static class StreamMonitor implements IStreamMonitor {
 		
 		private List<IStreamListener> fListeners = new ArrayList<IStreamListener>();
 		private StringBuilder fContents = new StringBuilder();
@@ -50,7 +52,7 @@ public class CtfeProcess extends PlatformObject implements IProcess, IStreamsPro
 	private StreamMonitor fErrorStreamMonitor;
 	private StreamMonitor fOutputStreamMonitor;
 
-	public CtfeProcess(ILaunch launch) {
+	public Process(ILaunch launch) {
 		this.fLaunch = launch;
 		this.fErrorStreamMonitor = new StreamMonitor();
 		this.fOutputStreamMonitor = new StreamMonitor();

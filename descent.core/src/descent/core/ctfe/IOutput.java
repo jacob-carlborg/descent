@@ -1,6 +1,6 @@
-package descent.internal.core.ctfe;
+package descent.core.ctfe;
 
-public interface ICtfeOutput {
+public interface IOutput {
 	
 	void message(String message);
 	

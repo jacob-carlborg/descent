@@ -8,13 +8,14 @@ import org.eclipse.debug.core.model.IThread;
 import org.eclipse.debug.core.model.IVariable;
 
 import descent.core.ICompilationUnit;
+import descent.core.ctfe.IDebugger;
 import descent.internal.compiler.parser.InterState;
 import descent.internal.compiler.parser.Scope;
 
-public class DescentCtfeStackFrame extends DescentCtfeDebugElement implements IStackFrame {
+public class DescentStackFrame extends DescentDebugElement implements IStackFrame {
 
 	private final IThread fThread;
-	private final ICtfeDebugger fDebugger;
+	private final IDebugger fDebugger;
 	private String fName;
 	private int fNumber;
 	private ICompilationUnit fUnit;
@@ -24,7 +25,7 @@ public class DescentCtfeStackFrame extends DescentCtfeDebugElement implements IS
 	private final Scope scope;
 	private final InterState is;
 	
-	public DescentCtfeStackFrame(IDebugTarget target, ICtfeDebugger debugger, IThread thread, String name, int number, ICompilationUnit unit, int lineNumber, Scope scope, InterState is) {
+	public DescentStackFrame(IDebugTarget target, IDebugger debugger, IThread thread, String name, int number, ICompilationUnit unit, int lineNumber, Scope scope, InterState is) {
 		super(target);
 		this.fDebugger = debugger;
 		this.fThread = thread;
@@ -44,7 +45,7 @@ public class DescentCtfeStackFrame extends DescentCtfeDebugElement implements IS
 		return is;
 	}
 	
-	public ICtfeDebugger getDebugger() {
+	public IDebugger getDebugger() {
 		return fDebugger;
 	}
 	
@@ -102,11 +103,11 @@ public class DescentCtfeStackFrame extends DescentCtfeDebugElement implements IS
 		}
 		
 		for(int i = 0; i < oldVariables.length && i < newVariables.length; i++) {
-			DescentCtfeVariable oldVar = (DescentCtfeVariable) oldVariables[i];
-			DescentCtfeVariable newVar = (DescentCtfeVariable) newVariables[i];
+			DescentVariable oldVar = (DescentVariable) oldVariables[i];
+			DescentVariable newVar = (DescentVariable) newVariables[i];
 			if (oldVar.getName().equals(newVar.getName())) {
-				DescentCtfeValue oldValue = oldVar.getValue();
-				DescentCtfeValue newValue = newVar.getValue();
+				DescentValue oldValue = oldVar.getValue();
+				DescentValue newValue = newVar.getValue();
 				
 				if (oldValue != null && newValue != null && oldValue.getValueString() != null && newValue.getValueString() != null) {				
 					if (!oldValue.getValueString().equals(newValue.getValueString())) {
@@ -190,7 +191,7 @@ public class DescentCtfeStackFrame extends DescentCtfeDebugElement implements IS
 		getThread().terminate();
 	}
 	
-	public boolean isInSameFunction(DescentCtfeStackFrame other) {
+	public boolean isInSameFunction(DescentStackFrame other) {
 		if (fName != null && other.fName != null && fName.equals(other.fName) && fNumber == other.fNumber) {
 			if (fUnit != null && other.fUnit != null && fUnit.equals(other.fUnit)) {
 				return true;
@@ -199,7 +200,7 @@ public class DescentCtfeStackFrame extends DescentCtfeDebugElement implements IS
 		return false;
 	}
 	
-	public void merge(DescentCtfeStackFrame other) {
+	public void merge(DescentStackFrame other) {
 		this.fLineNumber = other.fLineNumber;
 		this.fName = other.fName;
 		this.fNumber = other.fNumber;

@@ -17,27 +17,28 @@ import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IThread;
 
 import descent.core.ICompilationUnit;
+import descent.core.ctfe.IDebugger;
 import descent.internal.compiler.parser.InterState;
 import descent.internal.compiler.parser.Scope;
 
-public class DescentCtfeDebugTarget extends DescentCtfeDebugElement implements IDebugTarget {
+public class DescentDebugTarget extends DescentDebugElement implements IDebugTarget {
 
 	private final ILaunch fLaunch;
 	private final IProcess fProcess;
-	private final ICtfeDebugger fDebugger;
+	private final IDebugger fDebugger;
 	
 	private boolean fSuspended;
-	private DescentCtfeThread fThread;
-	private DescentCtfeThread[] fThreads;
+	private DescentThread fThread;
+	private DescentThread[] fThreads;
 
-	public DescentCtfeDebugTarget(ILaunch launch, IProcess process, ICtfeDebugger debugger) {
+	public DescentDebugTarget(ILaunch launch, IProcess process, IDebugger debugger) {
 		super(null);
 		this.fLaunch = launch;
 		this.fProcess = process;
 		this.fDebugger = debugger;
 		
-		this.fThread = new DescentCtfeThread(this);
-		this.fThreads = new DescentCtfeThread[] { fThread };
+		this.fThread = new DescentThread(this);
+		this.fThreads = new DescentThread[] { fThread };
 		
 		DebugPlugin.getDefault().getBreakpointManager().addBreakpointListener(this);
 	}
@@ -237,8 +238,8 @@ public class DescentCtfeDebugTarget extends DescentCtfeDebugElement implements I
 		return fDebugger.getStackFrames();
 	}
 	
-	public DescentCtfeStackFrame newStackFrame(String name, int number, ICompilationUnit unit, int lineNumber, Scope sc, InterState is) {
-		return new DescentCtfeStackFrame(this, fDebugger, fThreads[0], name, number, unit, lineNumber, sc, is);
+	public DescentStackFrame newStackFrame(String name, int number, ICompilationUnit unit, int lineNumber, Scope sc, InterState is) {
+		return new DescentStackFrame(this, fDebugger, fThreads[0], name, number, unit, lineNumber, sc, is);
 	}
 	
 	public void stepEnded() {
@@ -248,11 +249,11 @@ public class DescentCtfeDebugTarget extends DescentCtfeDebugElement implements I
 		fThread.fireSuspendEvent(DebugEvent.STEP_END);
 	}
 	
-	public void breakpointHit(IResource resource, int lineNumber) throws DebugException {
+	public void breakpointHit(ICompilationUnit unit, int lineNumber) throws DebugException {
 		fSuspended = true;
 		
-		if (resource != null) {
-			IBreakpoint breakpoint = findBreakpoint(resource, lineNumber);
+		if (unit.getResource() != null) {
+			IBreakpoint breakpoint = findBreakpoint(unit.getResource(), lineNumber);
 			if (breakpoint != null) {
 				fThread.setBreakpoints(new IBreakpoint[] { breakpoint });
 			}

@@ -126,7 +126,7 @@
    <extension
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
-            delegate="descent.internal.core.ctfe.DescentCtfeLaunchConfigurationDelegate"
+            delegate="descent.internal.core.ctfe.DescentLaunchConfigurationDelegate"
             id="descent.debug.ctfe.application"
             modes="debug"
             name="D CTFE Application"
@@ -136,20 +136,20 @@
    <extension
          point="org.eclipse.debug.core.sourceLocators">
       <sourceLocator
-            class="descent.internal.core.ctfe.DescentCtfeSourceLookupDirector"
+            class="descent.internal.core.ctfe.DescentSourceLookupDirector"
             id="descent.debug.ctfe.descentCtfeSourceLookupDirector"
             name="Descent CTFE Source Lookup Director"/>
    </extension>
    <extension
          point="org.eclipse.debug.core.sourcePathComputers">
       <sourcePathComputer
-            class="descent.internal.core.ctfe.DescentCtfeSourcePathComputerDelegate"
+            class="descent.internal.core.ctfe.DescentSourcePathComputerDelegate"
             id="descent.debug.ctfe.descentCtfeSourcePathComputer"/>
    </extension>
    <extension
          point="org.eclipse.debug.core.watchExpressionDelegates">
       <watchExpressionDelegate
             debugModel="descent.debug.ctfe.model"
-            delegateClass="descent.internal.core.ctfe.DescentCtfeWatchExpressionDelegate"/>
+            delegateClass="descent.internal.core.ctfe.DescentWatchExpressionDelegate"/>
    </extension>
 </plugin>

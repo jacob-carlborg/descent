@@ -6,7 +6,7 @@ import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IThread;
 
-public class DescentCtfeThread extends DescentCtfeDebugElement implements IThread  {
+public class DescentThread extends DescentDebugElement implements IThread  {
 	
 	/**
 	 * Breakpoints this thread is suspended at or <code>null</code>
@@ -21,7 +21,7 @@ public class DescentCtfeThread extends DescentCtfeDebugElement implements IThrea
 	private boolean fStackFramesInvalid;
 	private IStackFrame[] fStackFrames;
 	
-	public DescentCtfeThread(DescentCtfeDebugTarget target) {
+	public DescentThread(DescentDebugTarget target) {
 		super(target);
 	}
 	
@@ -54,7 +54,7 @@ public class DescentCtfeThread extends DescentCtfeDebugElement implements IThrea
 	public IStackFrame[] getStackFrames() throws DebugException {
 		if (isSuspended() && !isTerminated()) {
 			if (fStackFramesInvalid) {
-				IStackFrame[] newStackFrames = ((DescentCtfeDebugTarget)getDebugTarget()).getStackFrames(); 
+				IStackFrame[] newStackFrames = ((DescentDebugTarget)getDebugTarget()).getStackFrames(); 
 				fStackFrames = mergeStackFrames(fStackFrames, newStackFrames);	
 				fStackFramesInvalid = false;
 				fireChangeEvent(DebugEvent.CONTENT);
@@ -70,8 +70,8 @@ public class DescentCtfeThread extends DescentCtfeDebugElement implements IThrea
 			return newStackFrames;
 		}
 		for(int i = 0; i < stackFrames.length; i++) {
-			DescentCtfeStackFrame oldSF = (DescentCtfeStackFrame) stackFrames[i];
-			DescentCtfeStackFrame newSF = (DescentCtfeStackFrame) newStackFrames[i];
+			DescentStackFrame oldSF = (DescentStackFrame) stackFrames[i];
+			DescentStackFrame newSF = (DescentStackFrame) newStackFrames[i];
 			if (oldSF.isInSameFunction(newSF)) {
 				oldSF.merge(newSF);
 			} else {
@@ -139,15 +139,15 @@ public class DescentCtfeThread extends DescentCtfeDebugElement implements IThrea
 	}
 
 	public void stepInto() throws DebugException {
-		((DescentCtfeDebugTarget)getDebugTarget()).stepInto();
+		((DescentDebugTarget)getDebugTarget()).stepInto();
 	}
 
 	public void stepOver() throws DebugException {
-		((DescentCtfeDebugTarget)getDebugTarget()).stepOver();
+		((DescentDebugTarget)getDebugTarget()).stepOver();
 	}
 
 	public void stepReturn() throws DebugException {
-		((DescentCtfeDebugTarget)getDebugTarget()).stepReturn();
+		((DescentDebugTarget)getDebugTarget()).stepReturn();
 	}
 
 	public boolean canTerminate() {

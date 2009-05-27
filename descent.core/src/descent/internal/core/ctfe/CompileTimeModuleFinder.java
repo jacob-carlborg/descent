@@ -7,9 +7,9 @@ import descent.internal.compiler.parser.ASTNodeEncoder;
 import descent.internal.core.CompilerConfiguration;
 import descent.internal.core.ctfe.dom.CompileTimeModuleBuilder;
 
-public class CompileTimeDescentModuleFinder extends DescentModuleFinder {
+public class CompileTimeModuleFinder extends DescentModuleFinder {
 
-	public CompileTimeDescentModuleFinder(INameEnvironment environment, CompilerConfiguration config, ASTNodeEncoder encoder) {
+	public CompileTimeModuleFinder(INameEnvironment environment, CompilerConfiguration config, ASTNodeEncoder encoder) {
 		super(environment, config, encoder);
 	}
 	

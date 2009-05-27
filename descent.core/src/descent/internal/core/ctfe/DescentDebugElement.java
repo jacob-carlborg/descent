@@ -9,19 +9,19 @@ import org.eclipse.debug.core.model.IDebugElement;
 import org.eclipse.debug.core.model.IDebugTarget;
 
 import descent.core.JavaCore;
-import descent.core.ctfe.IDescentCtfeLaunchConfigurationConstants;
+import descent.core.ctfe.IDescentLaunchConfigurationConstants;
 
-public class DescentCtfeDebugElement extends DebugElement implements IDebugElement {
+public class DescentDebugElement extends DebugElement implements IDebugElement {
 	
 	protected IDebugTarget target;
 	
-	public DescentCtfeDebugElement(IDebugTarget target) {
+	public DescentDebugElement(IDebugTarget target) {
 		super(target);
 		this.target = target;
 	}
 
 	public final String getModelIdentifier() {
-		return IDescentCtfeLaunchConfigurationConstants.ID_D_DEBUG_MODEL;
+		return IDescentLaunchConfigurationConstants.ID_D_DEBUG_MODEL;
 	}
 	
 	protected void abort(String message, Throwable e) throws DebugException {
