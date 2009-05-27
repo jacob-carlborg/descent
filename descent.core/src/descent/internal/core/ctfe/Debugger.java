@@ -9,7 +9,6 @@ import java.util.concurrent.Semaphore;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.debug.core.DebugEvent;
-import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IVariable;
 import org.eclipse.jface.text.BadLocationException;
@@ -22,7 +21,11 @@ import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
+import descent.core.ctfe.IDebugElementFactory;
 import descent.core.ctfe.IDebugger;
+import descent.core.ctfe.IDebuggerListener;
+import descent.core.ctfe.IDescentStackFrame;
+import descent.core.ctfe.IDescentVariable;
 import descent.core.ctfe.IOutput;
 import descent.core.dom.AST;
 import descent.core.dom.CompilationUnitResolver;
@@ -49,27 +52,28 @@ import descent.internal.core.ctfe.dom.CompileTimeSemanticContext;
 
 public class Debugger implements IDebugger {
 
-	private final CompilationUnit fUnit;
-	private final int fOffset;
-	private int fLine;
-	private final IOutput fOutput;	
-	private final Map<ICompilationUnit, Document> fCompilationUnitDocuments;
-	private Thread fThread;
-	private ResourceSearch fSearch;
+	final CompilationUnit fUnit;
+	final int fOffset;
+	int fLine;
+	final IOutput fOutput;	
+	final Map<ICompilationUnit, Document> fCompilationUnitDocuments;
+	Thread fThread;
+	ResourceSearch fSearch;
 	
-	private List<Breakpoint> breakpoints = new ArrayList<Breakpoint>();
-	private DescentDebugTarget fDebugTarget;
-	private int fStartedDebugging;
-	private Semaphore fSemaphore;
+	List<Breakpoint> breakpoints = new ArrayList<Breakpoint>();
+	IDebuggerListener fListener;
+	IDebugElementFactory fElementFactory;
+	int fStartedDebugging;
+	Semaphore fSemaphore;
 	
-	private ParseResult fParseResult;
-	private int fCurrentLine;
-	private int fCurrentStackFrame;
-	private ICompilationUnit fCurrentUnit;
-	private Scope fCurrentScope;
-	private InterState fCurrentInterState;
+	ParseResult fParseResult;
+	int fCurrentLine;
+	int fCurrentStackFrame;
+	ICompilationUnit fCurrentUnit;
+	Scope fCurrentScope;
+	InterState fCurrentInterState;
 	
-	private List<DescentStackFrame> fStackFrames = new ArrayList<DescentStackFrame>();
+	List<IDescentStackFrame> fStackFrames = new ArrayList<IDescentStackFrame>();
 	
 	/**
 	 * This is the next stack frame where the user wants to be.
@@ -78,8 +82,8 @@ public class Debugger implements IDebugger {
 	 * If it says: step out, it it one - current number of stack frames.
 	 * If it says: continue, it is -1.
 	 */
-	private int fNextStackFrame = -1;
-	private boolean fNextStackFrameChanged = true;
+	int fNextStackFrame = -1;
+	boolean fNextStackFrameChanged = true;
 
 	public Debugger(CompilationUnit unit, int offset, IOutput output) {
 		this.fUnit = unit;
@@ -98,8 +102,9 @@ public class Debugger implements IDebugger {
 		}
 	}
 	
-	public void setDebugTarget(DescentDebugTarget debugTarget) {
-		fDebugTarget = debugTarget;
+	public void initialize(IDebuggerListener listener, IDebugElementFactory elementFactory) {
+		this.fListener = listener;
+		this.fElementFactory = elementFactory;
 	}
 
 	public void addBreakpoint(IResource resource, int lineNumber) {
@@ -121,62 +126,15 @@ public class Debugger implements IDebugger {
 			public void run() {
 				try {
 					fParseResult = CompilationUnitResolver.prepareForResolve(AST.D1, 
-							fUnit,
-							fUnit.getJavaProject(), 
-							JavaCore.getOptions(), 
-							null, 
-							false, 
-							false, 
-							Debugger.this,
-							new NullProgressMonitor());
-					fParseResult.context.problemRequestor = new IProblemRequestor() {
-						public void acceptProblem(IProblem problem) {
-							if (fCurrentUnit == null) {
-								fOutput.error(problem.toString());
-								return;
-							}
-							
-							try {
-								IDocument doc = getDocument(fCurrentUnit);
-								int line = doc.getLineOfOffset(problem.getSourceStart()) + 1;
-								
-								fOutput.error(fCurrentUnit.getModuleName() + "(" + line + "): " + problem.toString());
-								
-								int oldLine = fCurrentLine;
-								fCurrentLine = line;
-								enterStackFrame();
-								
-								try {
-									fDebugTarget.stepEnded();
-									fSemaphore.acquire();
-								} finally {
-									exitStackFrame();
-									fCurrentLine = oldLine;
-								}
-							} catch (Exception e) {
-								bug(e);
-								return;
-							}
-						}
-						public void beginReporting() {
-						}
-						public void endReporting() {
-						}
-						public boolean isActive() {
-							return true;
-						}
-					};
-					
+							fUnit, fUnit.getJavaProject(), JavaCore.getOptions(), 
+							null, false, false, Debugger.this, new NullProgressMonitor());
+					fParseResult.context.problemRequestor = new ProblemRequestor(Debugger.this);
 					CompilationUnitResolver.resolve(fParseResult, fUnit.getJavaProject(), null, Debugger.this);
 				} catch (JavaModelException e) {
 					bug(e);
 				}
 				
-				try {
-					fDebugTarget.terminate();
-				} catch (DebugException e) {
-					bug(e);
-				}
+				fListener.terminated();
 			}
 		};
 		
@@ -271,16 +229,15 @@ public class Debugger implements IDebugger {
 					return;
 				
 				if (justStartedDebugging) {
-					fDebugTarget.breakpointHit(unit, line);
+					fListener.breakpointHit(unit, line);
 				} else {
-					fDebugTarget.stepEnded();
+					fListener.stepEnded();
 				}
 				fSemaphore.acquire();
-				System.out.println("");
 			} else {
 				// See if we hit a breakpoint
 				if (hasBreakpoint(unit, fCurrentLine)) {
-					fDebugTarget.breakpointHit(unit, line);
+					fListener.breakpointHit(unit, line);
 					fSemaphore.acquire();
 				}
 			}
@@ -313,7 +270,7 @@ public class Debugger implements IDebugger {
 				fCurrentStackFrame = fStackFrames.size();
 				
 				if (fNextStackFrame == fCurrentStackFrame - 1) {
-					fDebugTarget.stepEnded();
+					fListener.stepEnded();
 					fSemaphore.acquire();
 				}
 			} catch (Exception e) {
@@ -363,7 +320,7 @@ public class Debugger implements IDebugger {
 		fNextStackFrame = newStackFrame;
 		
 		fSemaphore.release();
-		fDebugTarget.resumed(DebugEvent.STEP_INTO);
+		fListener.resumed(DebugEvent.STEP_INTO);
 	}
 
 	public void stepOver() {
@@ -371,7 +328,7 @@ public class Debugger implements IDebugger {
 		fNextStackFrame = fStackFrames.size() - 1;
 		
 		fSemaphore.release();
-		fDebugTarget.resumed(DebugEvent.STEP_OVER);
+		fListener.resumed(DebugEvent.STEP_OVER);
 	}
 
 	public void stepReturn() {
@@ -380,7 +337,7 @@ public class Debugger implements IDebugger {
 		fNextStackFrame = newStackFrame;
 		
 		fSemaphore.release();
-		fDebugTarget.resumed(DebugEvent.STEP_RETURN);
+		fListener.resumed(DebugEvent.STEP_RETURN);
 	}
 	
 	public void resume() {
@@ -389,11 +346,11 @@ public class Debugger implements IDebugger {
 		fNextStackFrame = newStackFrame;
 		
 		fSemaphore.release();
-		fDebugTarget.resumed(DebugEvent.RESUME);
+		fListener.resumed(DebugEvent.RESUME);
 	}
 
 	public synchronized IVariable evaluateExpression(int stackFrame, String expression) {
-		DescentStackFrame sf = getStackFrame(stackFrame);
+		IDescentStackFrame sf = getStackFrame(stackFrame);
 		Scope scope = sf.getScope();
 		InterState is = sf.getInterState();
 		
@@ -472,9 +429,9 @@ public class Debugger implements IDebugger {
 	}
 
 	public IVariable[] getVariables(int stackFrame) {
-		List<DescentVariable> vars = new ArrayList<DescentVariable>();
+		List<IDescentVariable> vars = new ArrayList<IDescentVariable>();
 		
-		DescentStackFrame sf = getStackFrame(stackFrame);
+		IDescentStackFrame sf = getStackFrame(stackFrame);
 		if (sf == null)
 			return new IVariable[0];
 		
@@ -487,7 +444,7 @@ public class Debugger implements IDebugger {
 		return vars.toArray(new DescentVariable[vars.size()]);
 	}
 
-	private void fillVariables(int stackFrame, Scope currentScope, List<DescentVariable> vars) {
+	private void fillVariables(int stackFrame, Scope currentScope, List<IDescentVariable> vars) {
 		if (currentScope.scopesym != null && currentScope.scopesym.symtab != null) {
 			fillVariables(stackFrame, currentScope.scopesym.symtab, vars);
 		}
@@ -497,10 +454,10 @@ public class Debugger implements IDebugger {
 		}
 	}
 	
-	private void fillVariables(int stackFrame, InterState is, List<DescentVariable> vars) {
+	private void fillVariables(int stackFrame, InterState is, List<IDescentVariable> vars) {
 		if (is.vars != null) {
 			for(Dsymbol dsymbol : is.vars) {
-				DescentVariable var = toVariable(stackFrame, dsymbol);
+				IDescentVariable var = toVariable(stackFrame, dsymbol);
 				if (var == null)
 					continue;
 				
@@ -513,13 +470,13 @@ public class Debugger implements IDebugger {
 		}
 	}
 	
-	private void fillVariables(int stackFrame, DsymbolTable symtab, List<DescentVariable> vars) {
+	private void fillVariables(int stackFrame, DsymbolTable symtab, List<IDescentVariable> vars) {
 		for(char[] key : symtab.keys()) {
 			if (key == null)
 				continue;
 			
 			Dsymbol dsymbol = symtab.lookup(key);
-			DescentVariable var = toVariable(stackFrame, dsymbol);
+			IDescentVariable var = toVariable(stackFrame, dsymbol);
 			if (var == null)
 				continue;
 			
@@ -527,7 +484,7 @@ public class Debugger implements IDebugger {
 		}
 	}
 	
-	private DescentVariable toVariable(int stackFrame, Dsymbol dsymbol) {
+	private IDescentVariable toVariable(int stackFrame, Dsymbol dsymbol) {
 		if (dsymbol instanceof VarDeclaration) {
 			VarDeclaration var = (VarDeclaration) dsymbol;
 			if (var.value != null) {
@@ -558,7 +515,7 @@ public class Debugger implements IDebugger {
 		return fStackFrames.toArray(new IStackFrame[fStackFrames.size()]);
 	}
 	
-	private DescentStackFrame getStackFrame(int stackFrame) {
+	private IDescentStackFrame getStackFrame(int stackFrame) {
 		int index = fStackFrames.size() - stackFrame - 1;
 		if (index < 0 || index >= fStackFrames.size())
 			return null;
@@ -566,16 +523,16 @@ public class Debugger implements IDebugger {
 		return fStackFrames.get(index);
 	}
 	
-	protected DescentVariable newVariable(int stackFrame, String name, Expression value) {
-		return new DescentVariable(fDebugTarget, this, 0, name, value);
+	protected IDescentVariable newVariable(int stackFrame, String name, Expression value) {
+		return fElementFactory.newVariable(0, name, value);
 	}
 	
-	protected DescentVariable newVariable(int stackFrame, String name, String value) {
-		return new DescentVariable(fDebugTarget, this, 0, name, new StringExp(Loc.ZERO, value.toCharArray()));
+	protected IDescentVariable newVariable(int stackFrame, String name, String value) {
+		return fElementFactory.newVariable(0, name, new StringExp(Loc.ZERO, value.toCharArray()));
 	}
 	
-	private DescentStackFrame newStackFrame() {
-		return fDebugTarget.newStackFrame(fCurrentUnit.getFullyQualifiedName(), fStackFrames.size(), fCurrentUnit, fCurrentLine, fCurrentScope, fCurrentInterState);
+	private IDescentStackFrame newStackFrame() {
+		return fElementFactory.newStackFrame(fCurrentUnit.getFullyQualifiedName(), fStackFrames.size(), fCurrentUnit, fCurrentLine, fCurrentScope, fCurrentInterState);
 	}
 	
 	public void enterStackFrame() {
@@ -590,7 +547,7 @@ public class Debugger implements IDebugger {
 		fOutput.message(message);
 	}
 	
-	private Document getDocument(ICompilationUnit unit) {
+	Document getDocument(ICompilationUnit unit) {
 		Document document = fCompilationUnitDocuments.get(unit);
 		if (document == null) {
 			try {
@@ -603,7 +560,7 @@ public class Debugger implements IDebugger {
 		return document;
 	}
 	
-	private void bug(Exception e) {
+	void bug(Exception e) {
 		fOutput.error("Descent Bug, please report it ;-): " + e.getMessage());
 		for(StackTraceElement elem : e.getStackTrace()) {
 			fOutput.error(elem.toString());

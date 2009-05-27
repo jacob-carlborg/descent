@@ -4,6 +4,8 @@ import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IValue;
 
+import descent.core.ctfe.IDebugElementFactory;
+import descent.core.ctfe.IDebugger;
 import descent.core.ctfe.IDescentVariable;
 import descent.internal.compiler.parser.Expression;
 
@@ -13,10 +15,10 @@ public class DescentVariable extends DescentDebugElement implements IDescentVari
 	private final DescentValue fValue;
 	private boolean fHasValueChanged;
 	
-	public DescentVariable(IDebugTarget target, Debugger debugger, int stackFrame, String name, Expression value) {
+	public DescentVariable(IDebugTarget target, IDebugElementFactory elementFactory, int stackFrame, String name, Expression value) {
 		super(target);
 		this.fName = name;
-		this.fValue = new DescentValue(target, debugger, stackFrame, name, value);
+		this.fValue = new DescentValue(target, elementFactory, stackFrame, name, value);
 	}
 
 	public String getName() throws DebugException {

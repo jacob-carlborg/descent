@@ -10,6 +10,8 @@ import descent.internal.compiler.parser.Scope;
 
 public interface IDebugger {
 	
+	void initialize(IDebuggerListener listener, IDebugElementFactory elementFactory);
+	
 	void start();
 
 	void terminate();

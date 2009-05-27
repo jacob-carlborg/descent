@@ -430,14 +430,10 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 	
 	public void terminated() {
 		try {
-			fDebugger.terminate();
+			terminate();
 		} catch (DebugException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
-		
-		internalTerminate();
 	}
 	
 	private void internalTerminate() {

@@ -29,10 +29,6 @@ public class SingleThreadDebugger implements IDebugger {
 		this.fWriteLock = new ReentrantLock(true);
 	}
 	
-	public boolean isSingleThread() {
-		return true;
-	}
-	
 	public String getEndCommunicationString() {
 		return fDebugger.getEndCommunicationString();
 	}

@@ -7,6 +7,7 @@ import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IVariable;
 
+import descent.core.ctfe.IDebugElementFactory;
 import descent.core.ctfe.IDescentValue;
 import descent.internal.compiler.parser.ArrayLiteralExp;
 import descent.internal.compiler.parser.ComplexExp;
@@ -29,13 +30,13 @@ public class DescentValue extends DescentDebugElement implements IDescentValue {
 
 	private final String fName;
 	private final Expression fExpression;
-	private final Debugger fDebugger;
+	private final IDebugElementFactory fElementFactory;
 	private IVariable[] fVariables;
 	private final int fStackFrame;	
 
-	public DescentValue(IDebugTarget target, Debugger debugger, int stackFrame, String name, Expression value) {
+	public DescentValue(IDebugTarget target, IDebugElementFactory elementFactory, int stackFrame, String name, Expression value) {
 		super(target);
-		this.fDebugger = debugger;
+		this.fElementFactory = elementFactory;
 		this.fStackFrame = stackFrame;
 		this.fName = name;
 		this.fExpression = value;
@@ -67,18 +68,18 @@ public class DescentValue extends DescentDebugElement implements IDescentValue {
 				if (varExp.type instanceof TypeStruct) {
 					TypeStruct struct = (TypeStruct) varExp.type;
 					for(VarDeclaration var : struct.sym.fields) {
-						vars.add(fDebugger.newVariable(fStackFrame, var.ident.toString(), getDefaultValue(var.type)));
+						vars.add(fElementFactory.newVariable(fStackFrame, var.ident.toString(), getDefaultValue(var.type)));
 					}
 				}
 			} else if (fExpression instanceof StructLiteralExp) {
 				StructLiteralExp exp = (StructLiteralExp) fExpression;
 				for (int i = 0; i < exp.sd.fields.size(); i++) {
-					vars.add(fDebugger.newVariable(fStackFrame, exp.sd.fields.get(i).ident.toString(), exp.elements.get(i)));
+					vars.add(fElementFactory.newVariable(fStackFrame, exp.sd.fields.get(i).ident.toString(), exp.elements.get(i)));
 				}
 			} else if (fExpression instanceof ArrayLiteralExp) {
 				ArrayLiteralExp exp = (ArrayLiteralExp) fExpression;
 				for (int i = 0; i < exp.elements.size(); i++) {
-					vars.add(fDebugger.newVariable(fStackFrame, "[" + String.valueOf(i) + "]", exp.elements.get(i)));
+					vars.add(fElementFactory.newVariable(fStackFrame, "[" + String.valueOf(i) + "]", exp.elements.get(i)));
 				}
 			}
 			fVariables = vars.toArray(new IVariable[vars.size()]);

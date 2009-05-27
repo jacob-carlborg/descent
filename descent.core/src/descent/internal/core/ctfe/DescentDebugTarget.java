@@ -17,11 +17,16 @@ import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IThread;
 
 import descent.core.ICompilationUnit;
+import descent.core.ctfe.IDebugElementFactory;
 import descent.core.ctfe.IDebugger;
+import descent.core.ctfe.IDebuggerListener;
+import descent.core.ctfe.IDescentStackFrame;
+import descent.core.ctfe.IDescentVariable;
+import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.InterState;
 import descent.internal.compiler.parser.Scope;
 
-public class DescentDebugTarget extends DescentDebugElement implements IDebugTarget {
+public class DescentDebugTarget extends DescentDebugElement implements IDebugTarget, IDebuggerListener, IDebugElementFactory {
 
 	private final ILaunch fLaunch;
 	private final IProcess fProcess;
@@ -47,7 +52,7 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 	 * Adds the currently defined breakpoints to the debugger
 	 * interpreter, and starts the session.
 	 */
-	public void started() throws DebugException {
+	public void started() {
 		fireCreationEvent();
 		fThread.fireCreationEvent();
 		
@@ -115,6 +120,14 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 		fDebugger.terminate();
 		
 		internalTerminate();
+	}
+	
+	public void terminated() {
+		try {
+			terminate();
+		} catch (DebugException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private void internalTerminate() {
@@ -238,8 +251,13 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 		return fDebugger.getStackFrames();
 	}
 	
-	public DescentStackFrame newStackFrame(String name, int number, ICompilationUnit unit, int lineNumber, Scope sc, InterState is) {
+	public IDescentStackFrame newStackFrame(String name, int number, ICompilationUnit unit, int lineNumber, Scope sc, InterState is) {
 		return new DescentStackFrame(this, fDebugger, fThreads[0], name, number, unit, lineNumber, sc, is);
+	}
+	
+	public IDescentVariable newVariable(int stackFrame, String name,
+			Expression value) {
+		return new DescentVariable(this, this, stackFrame, name, value);
 	}
 	
 	public void stepEnded() {
@@ -249,7 +267,7 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 		fThread.fireSuspendEvent(DebugEvent.STEP_END);
 	}
 	
-	public void breakpointHit(ICompilationUnit unit, int lineNumber) throws DebugException {
+	public void breakpointHit(ICompilationUnit unit, int lineNumber) {
 		fSuspended = true;
 		
 		if (unit.getResource() != null) {

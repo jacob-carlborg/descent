@@ -7,6 +7,7 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.LaunchConfigurationDelegate;
 
 import descent.core.JavaCore;
+import descent.core.ctfe.IDebugger;
 import descent.core.ctfe.IDescentLaunchConfigurationConstants;
 import descent.internal.core.CompilationUnit;
 
@@ -20,12 +21,13 @@ public class DescentLaunchConfigurationDelegate extends LaunchConfigurationDeleg
 		CompilationUnit unit = (CompilationUnit) JavaCore.create(inputElementHandle);
 		
 		Process iprocess = new Process(launch);
-		Debugger debugger = new Debugger(unit, inputElementSourceOffset, iprocess);
+		IDebugger debugger = new Debugger(unit, inputElementSourceOffset, iprocess);
+		debugger = new SingleThreadDebugger(debugger);
 		
 		DescentDebugTarget dbgTarget = new DescentDebugTarget(launch, iprocess, debugger);		
 		launch.addDebugTarget(dbgTarget);
 		
-		debugger.setDebugTarget(dbgTarget);
+		debugger.initialize(dbgTarget, dbgTarget);
 		
 		dbgTarget.started();
 	}

@@ -3,16 +3,16 @@ package descent.internal.core.ctfe;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IRegisterGroup;
-import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IThread;
 import org.eclipse.debug.core.model.IVariable;
 
 import descent.core.ICompilationUnit;
 import descent.core.ctfe.IDebugger;
+import descent.core.ctfe.IDescentStackFrame;
 import descent.internal.compiler.parser.InterState;
 import descent.internal.compiler.parser.Scope;
 
-public class DescentStackFrame extends DescentDebugElement implements IStackFrame {
+public class DescentStackFrame extends DescentDebugElement implements IDescentStackFrame {
 
 	private final IThread fThread;
 	private final IDebugger fDebugger;
