@@ -2,9 +2,7 @@ package descent.internal.debug.core.model;
 
 import java.io.IOException;
 
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IMarkerDelta;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugEvent;
@@ -23,11 +21,6 @@ import org.eclipse.debug.core.model.IRegisterGroup;
 import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.debug.core.model.IThread;
-import org.eclipse.debug.core.sourcelookup.ISourceContainer;
-import org.eclipse.debug.core.sourcelookup.ISourceLookupDirector;
-import org.eclipse.debug.core.sourcelookup.containers.DirectorySourceContainer;
-import org.eclipse.debug.core.sourcelookup.containers.FolderSourceContainer;
-import org.eclipse.debug.core.sourcelookup.containers.ProjectSourceContainer;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import descent.debug.core.DescentDebugPlugin;
@@ -98,43 +91,6 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 			}
 		} catch (IOException e) {
 		} catch (CoreException e) {
-		}
-	}
-	
-	private void addSearchPaths() throws CoreException, IOException {
-		if (!(fLaunch.getSourceLocator() instanceof ISourceLookupDirector)) {
-			return;
-		}
-		
-		ISourceLookupDirector director = (ISourceLookupDirector) fLaunch.getSourceLocator();
-		addSearchPaths(director.getSourceContainers());
-	}
-	
-	private void addSearchPaths(ISourceContainer[] containers) throws CoreException, IOException {
-		for(ISourceContainer container : containers) {
-			String typeId = container.getType().getId();
-			
-			if (ProjectSourceContainer.TYPE_ID.equals(typeId)) {
-				ProjectSourceContainer projectContainer = (ProjectSourceContainer) container;
-				IProject project = projectContainer.getProject();
-				fDebugger.addSearchPath(project.getLocation().toOSString());
-			}
-			
-			if (FolderSourceContainer.TYPE_ID.equals(typeId)) {
-				FolderSourceContainer folderContainer = (FolderSourceContainer) container;
-				IContainer containerObj = folderContainer.getContainer();
-				fDebugger.addSearchPath(containerObj.getLocation().toOSString());
-			}
-			
-			if (DirectorySourceContainer.TYPE_ID.equals(typeId)) {
-				DirectorySourceContainer directoryContainer = (DirectorySourceContainer) container;
-				java.io.File directory = directoryContainer.getDirectory();
-				fDebugger.addSearchPath(directory.getAbsolutePath());
-			}
-			
-			if (container.isComposite()) {
-				addSearchPaths(container.getSourceContainers());
-			}
 		}
 	}
 
@@ -402,13 +358,6 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 		fireCreationEvent();
 		fThread.fireCreationEvent();
 		
-//		try {
-//			addSearchPaths();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		} catch (CoreException e) {
-//			e.printStackTrace();
-//		}
 		installDeferredBreakpoints();
 		
 		fireResumeEvent(DebugEvent.CLIENT_REQUEST);

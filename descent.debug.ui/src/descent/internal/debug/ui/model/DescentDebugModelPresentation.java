@@ -3,6 +3,7 @@ package descent.internal.debug.ui.model;
 import java.util.Stack;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IStorage;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IBreakpoint;
@@ -21,6 +22,7 @@ import org.eclipse.ui.part.FileEditorInput;
 import descent.core.IJavaElement;
 import descent.core.IMember;
 import descent.internal.debug.ui.BreakpointUtils;
+import descent.internal.ui.javaeditor.JarEntryEditorInput;
 import descent.ui.JavaElementLabels;
 
 public class DescentDebugModelPresentation extends LabelProvider implements IDebugModelPresentation {
@@ -38,7 +40,7 @@ public class DescentDebugModelPresentation extends LabelProvider implements IDeb
 	}
 
 	public String getEditorId(IEditorInput input, Object element) {
-		if (element instanceof IFile || element instanceof ILineBreakpoint) {
+		if (element instanceof IFile || element instanceof ILineBreakpoint || element instanceof IStorage) {
 			return "descent.ui.CompilationUnitEditor";
 		}
 		return null;
@@ -50,6 +52,9 @@ public class DescentDebugModelPresentation extends LabelProvider implements IDeb
 		}
 		if (element instanceof ILineBreakpoint) {
 			return new FileEditorInput((IFile)((ILineBreakpoint)element).getMarker().getResource());
+		}
+		if (element instanceof IStorage) {
+			return new JarEntryEditorInput((IStorage) element);
 		}
 		return null;
 	}

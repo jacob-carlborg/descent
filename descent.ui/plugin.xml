@@ -3537,6 +3537,8 @@
 							value="org.eclipse.ui.IFileEditorInput" />
 		         	<instanceof
 							value="descent.internal.ui.javaeditor.IClassFileEditorInput" />
+					<instanceof
+							value="descent.internal.ui.javaeditor.JarEntryEditorInput" />
 		         </or>
 	         </editorInputEnablement>
 	         <selectionEnablement>

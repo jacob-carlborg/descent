@@ -143,7 +143,7 @@
    <extension
          point="org.eclipse.debug.core.sourcePathComputers">
       <sourcePathComputer
-            class="descent.internal.core.ctfe.DescentCtfeSourceLookupParticipant"
+            class="descent.internal.core.ctfe.DescentCtfeSourcePathComputerDelegate"
             id="descent.debug.ctfe.descentCtfeSourcePathComputer"/>
    </extension>
    <extension

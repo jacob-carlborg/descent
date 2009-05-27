@@ -3,6 +3,7 @@ package descent.internal.debug.ui.ctfe;
 import java.util.Stack;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IStorage;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IBreakpoint;
@@ -22,6 +23,7 @@ import descent.core.IJavaElement;
 import descent.core.IMember;
 import descent.core.ctfe.BreakpointUtils;
 import descent.core.ctfe.IDescentCtfeValue;
+import descent.internal.ui.javaeditor.JarEntryEditorInput;
 
 public class DescentCtfeDebugModelPresentation extends LabelProvider implements IDebugModelPresentation {
 
@@ -42,7 +44,7 @@ public class DescentCtfeDebugModelPresentation extends LabelProvider implements 
 	}
 
 	public String getEditorId(IEditorInput input, Object element) {
-		if (element instanceof IFile || element instanceof ILineBreakpoint) {
+		if (element instanceof IFile || element instanceof ILineBreakpoint || element instanceof IStorage) {
 			return "descent.ui.CompilationUnitEditor";
 		}
 		return null;
@@ -54,6 +56,9 @@ public class DescentCtfeDebugModelPresentation extends LabelProvider implements 
 		}
 		if (element instanceof ILineBreakpoint) {
 			return new FileEditorInput((IFile)((ILineBreakpoint)element).getMarker().getResource());
+		}
+		if (element instanceof IStorage) {
+			return new JarEntryEditorInput((IStorage) element);
 		}
 		return null;
 	}

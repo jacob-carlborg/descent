@@ -22,6 +22,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IStorage;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
@@ -373,10 +374,8 @@ public class EditorUtility {
 		if (input instanceof IFile)
 			return new FileEditorInput((IFile) input);
 
-		/* TODO JDT UI jar
 		if (input instanceof IStorage)
 			return new JarEntryEditorInput((IStorage)input);
-		*/
 
 		return null;
 	}

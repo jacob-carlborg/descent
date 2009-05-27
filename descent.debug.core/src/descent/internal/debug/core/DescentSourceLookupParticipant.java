@@ -57,26 +57,26 @@ public class DescentSourceLookupParticipant extends AbstractSourceLookupParticip
 			if (ProjectSourceContainer.TYPE_ID.equals(typeId)) {
 				ProjectSourceContainer projectContainer = (ProjectSourceContainer) container;
 				IProject project = projectContainer.getProject();
-				Object possible = findSourceElement(sourceName, project);
+				Object[] possible = findSourceElements(sourceName, project);
 				if (possible != null) {
-					return new Object[] { possible };
+					return possible;
 				}
 			}
 			
 			if (FolderSourceContainer.TYPE_ID.equals(typeId)) {
 				FolderSourceContainer folderContainer = (FolderSourceContainer) container;
 				IContainer containerObj = folderContainer.getContainer();
-				Object possible = findSourceElement(sourceName, containerObj);
+				Object[] possible = findSourceElements(sourceName, containerObj);
 				if (possible != null) {
-					return new Object[] { possible };
+					return possible;
 				}
 			}
 			
 			if (DirectorySourceContainer.TYPE_ID.equals(typeId)) {
 				DirectorySourceContainer directoryContainer = (DirectorySourceContainer) container;
-				Object possible = findSourceElement(sourceName, directoryContainer);
+				Object[] possible = findSourceElements(sourceName, directoryContainer);
 				if (possible != null) {
-					return new Object[] { possible };
+					return possible;
 				}
 			}
 			
@@ -91,18 +91,18 @@ public class DescentSourceLookupParticipant extends AbstractSourceLookupParticip
 		return null;
 	}
 	
-	private Object findSourceElement(String sourceName, IContainer container) {
+	private Object[] findSourceElements(String sourceName, IContainer container) {
 		File containerFile = container.getLocation().toFile();
 		String containerAbsolutePath = containerFile.getAbsolutePath();
 		if (sourceName.startsWith(containerAbsolutePath)) {
 			String relativePathStr = sourceName.substring(containerAbsolutePath.length());
 			Path relativePathObj = new Path(relativePathStr);
-			return container.getFile(relativePathObj);
+			return new Object[] { container.getFile(relativePathObj) };
 		}
 		return null;
 	}
 	
-	private Object findSourceElement(String sourceName, DirectorySourceContainer containerFile) throws CoreException {
+	private Object[] findSourceElements(String sourceName, DirectorySourceContainer containerFile) throws CoreException {
 		String absolutePath = containerFile.getDirectory().getAbsolutePath();
 		if (sourceName.startsWith(absolutePath)) {
 			sourceName = sourceName.substring(absolutePath.length());

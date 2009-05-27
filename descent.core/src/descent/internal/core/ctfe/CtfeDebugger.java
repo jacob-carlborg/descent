@@ -270,6 +270,7 @@ public class CtfeDebugger implements ICtfeDebugger {
 				
 				fDebugTarget.stepEnded();
 				fSemaphore.acquire();
+				System.out.println("");
 			} else {
 				// See if we hit a breakpoint
 				if (hasBreakpoint(unit, fCurrentLine)) {
