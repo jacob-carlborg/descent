@@ -9,26 +9,29 @@ import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.SemanticContext;
 
 public class CompileTimeClassDeclaration extends ClassDeclaration {
-
-	public CompileTimeClassDeclaration(Loc loc, char[] id, BaseClasses baseclasses) {
-		super(loc, id, baseclasses);
-	}
-
-	public CompileTimeClassDeclaration(Loc loc, char[] id) {
-		super(loc, id);
-	}
+	
+	private final boolean fIgnoreFirstSemanticAnalysis;
+	private boolean fDoneSemanticAnalysis;
 
 	public CompileTimeClassDeclaration(Loc loc, IdentifierExp id, BaseClasses baseclasses) {
-		super(loc, id, baseclasses);
+		this(loc, id, baseclasses, false);
 	}
-
-	public CompileTimeClassDeclaration(Loc loc, IdentifierExp id) {
-		super(loc, id);
+	
+	public CompileTimeClassDeclaration(Loc loc, IdentifierExp id, BaseClasses baseclasses, boolean ignoreFirstSemanticAnalysis) {
+		super(loc, id, baseclasses);
+		
+		this.fIgnoreFirstSemanticAnalysis = ignoreFirstSemanticAnalysis;
 	}
 	
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
 		if (sc.parent instanceof FuncDeclaration) {
+			super.semantic(sc, context);
+			return;
+		}
+		
+		if (fIgnoreFirstSemanticAnalysis && !fDoneSemanticAnalysis) {
+			fDoneSemanticAnalysis = true;
 			super.semantic(sc, context);
 			return;
 		}

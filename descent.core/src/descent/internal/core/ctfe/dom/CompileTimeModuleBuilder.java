@@ -150,7 +150,7 @@ public class CompileTimeModuleBuilder extends ModuleBuilder {
 	@Override
 	protected TemplateDeclaration newTemplateDeclaration(Loc loc, IdentifierExp ident, TemplateParameters templateParameters, Expression constraint, Dsymbols symbols) {
 		return new CompileTimeTemplateDeclaration(loc, ident, templateParameters, constraint,
-				symbols);
+				symbols, true);
 	}
 	
 	@Override

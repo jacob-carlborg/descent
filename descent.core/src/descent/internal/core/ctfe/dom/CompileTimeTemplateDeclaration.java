@@ -10,13 +10,28 @@ import descent.internal.compiler.parser.TemplateDeclaration;
 import descent.internal.compiler.parser.TemplateParameters;
 
 public class CompileTimeTemplateDeclaration extends TemplateDeclaration {
+	
+	private final boolean fIgnoreFirstSemanticAnalysis;
+	private boolean fDoneSemanticAnalysis;
 
 	public CompileTimeTemplateDeclaration(Loc loc, IdentifierExp id, TemplateParameters parameters, Expression constraint, Dsymbols decldefs) {
+		this(loc, id, parameters, constraint, decldefs, false);
+	}
+	
+	public CompileTimeTemplateDeclaration(Loc loc, IdentifierExp id, TemplateParameters parameters, Expression constraint, Dsymbols decldefs, boolean ignoreFirstSemanticAnalysis) {
 		super(loc, id, parameters, constraint, decldefs);
+		
+		this.fIgnoreFirstSemanticAnalysis = ignoreFirstSemanticAnalysis;
 	}
 	
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
+		if (fIgnoreFirstSemanticAnalysis && !fDoneSemanticAnalysis) {
+			fDoneSemanticAnalysis = true;
+			super.semantic(sc, context);
+			return;
+		}
+		
 		try {
 			((CompileTimeSemanticContext) context).stepBegin(this, sc);
 			
