@@ -53,6 +53,21 @@ public interface IDescentLaunchConfigurationConstants {
 	public static final String ATTR_PROGRAM_NAME = DescentDebugPlugin.PLUGIN_ID + ".PROGRAM_NAME";	 //$NON-NLS-1$
 	
 	/**
+	 * Regular expression to use for stack tracing.
+	 */
+	public static final String ATTR_STACKTRACE_REGEX = DescentDebugPlugin.PLUGIN_ID + ".STACKTRACE_REGEX";	 //$NON-NLS-1$
+	
+	/**
+	 * Boolean value indicating whether we should set up a ConsoleLineTracker to track stack trace messages
+	 */
+	public static final String ATTR_LINK_STACKTRACE = DescentDebugPlugin.PLUGIN_ID + ".LINK_STACKTRACE";	 //$NON-NLS-1$
+	
+	/**
+	 * Default stack-trace-matching regex
+	 */
+	public static final String DEFAULT_STACKTRACE_REGEX = "(.*?)\\((\\d+)\\):";
+	
+	/**
 	 * Status code indicating the project associated with
 	 * a launch configuration is not a Java project.
 	 */
