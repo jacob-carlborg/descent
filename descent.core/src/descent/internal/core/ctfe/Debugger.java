@@ -294,8 +294,8 @@ public class Debugger implements IDebugger {
 		fNextStackFrameChanged = newStackFrame != fNextStackFrame;
 		fNextStackFrame = newStackFrame;
 		
-		fSemaphore.release();
 		fListener.resumed(DebugEvent.STEP_INTO);
+		fSemaphore.release();
 	}
 
 	public void stepOver() {

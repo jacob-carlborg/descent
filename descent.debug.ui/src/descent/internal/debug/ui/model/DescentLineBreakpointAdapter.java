@@ -18,13 +18,15 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import descent.core.JavaCore;
 import descent.debug.core.IDescentLaunchConfigurationConstants;
 import descent.debug.core.model.DescentLineBreakpoint;
+import descent.internal.ui.javaeditor.IClassFileEditorInput;
 
 public class DescentLineBreakpointAdapter implements IToggleBreakpointsTarget {
 
 	public void toggleLineBreakpoints(IWorkbenchPart part, ISelection selection) throws CoreException {
 		ITextEditor textEditor = getEditor(part);
 		if (textEditor != null && selection instanceof ITextSelection) {
-			IResource resource = (IResource) textEditor.getEditorInput().getAdapter(IResource.class);
+			IEditorInput input = textEditor.getEditorInput();
+			IResource resource = (IResource) input.getAdapter(IResource.class);
 			ITextSelection textSelection = (ITextSelection) selection;
 			int lineNumber = textSelection.getStartLine();
 			IBreakpoint[] breakpoints = DebugPlugin.getDefault().getBreakpointManager().getBreakpoints(IDescentLaunchConfigurationConstants.ID_D_DEBUG_MODEL);
@@ -39,12 +41,11 @@ public class DescentLineBreakpointAdapter implements IToggleBreakpointsTarget {
 				}
 			}
 			
-			IEditorInput editorInput = textEditor.getEditorInput();
             IDocumentProvider documentProvider = textEditor.getDocumentProvider();
             if (documentProvider == null) {
                 return;
             }
-            IDocument document = documentProvider.getDocument(editorInput);
+            IDocument document = documentProvider.getDocument(input);
             int lines = document.getNumberOfLines();
             int charStart = -1;
             int charEnd = -1;
@@ -76,8 +77,12 @@ public class DescentLineBreakpointAdapter implements IToggleBreakpointsTarget {
 	private ITextEditor getEditor(IWorkbenchPart part) {
 		if (part instanceof ITextEditor) {
 			ITextEditor editorPart = (ITextEditor) part;
-			IResource resource = (IResource) editorPart.getEditorInput().getAdapter(IResource.class);
+			IEditorInput input = editorPart.getEditorInput();
+			IResource resource = (IResource) input.getAdapter(IResource.class);
 			if (resource != null && JavaCore.isJavaLikeFileName(resource.getName())) {
+				return editorPart;
+			}
+			if (input instanceof IClassFileEditorInput) {
 				return editorPart;
 			}
 		}
