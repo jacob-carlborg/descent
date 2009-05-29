@@ -2553,10 +2553,13 @@ public class CompletionEngine extends Engine
 			if (var != null && ident != null) {
 				if (currentName.length == 0 || match(currentName, ident)) {
 					// If the type of the variable is a pointer to a function, suggest the call
-//					if (isPointerToFunction(var.type)) {
-////						suggestMember(var.type, ident, onlyStatics, flags, funcSignatures, includes);
-//						return;
-//					}
+					if (!parser.isInAddrExp && isPointerToFunction(var.type)) {
+						FuncDeclaration func = new FuncDeclaration(Loc.ZERO, var.ident, 0, var.type.next);
+						func.parent = var.parent;
+						func.copySourceRange(var);
+						suggestMember(func, onlyStatics, flags, funcSignatures, includes);
+						return;
+					}
 					
 					String signature = var.getSignature();
 					
