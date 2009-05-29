@@ -219,7 +219,7 @@ public class CompileTimeSemanticContext extends SemanticContext {
 	}
 	
 	@Override
-	protected boolean mustMopySourceRangeForMixins() {
+	protected boolean mustCopySourceRangeForMixins() {
 		return false;
 	}
 	

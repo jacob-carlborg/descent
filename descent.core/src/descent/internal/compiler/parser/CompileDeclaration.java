@@ -68,7 +68,7 @@ public class CompileDeclaration extends AttribDeclaration {
 			p.loc = loc;
 			decl = p.parseModule();
 			
-			if (context.mustMopySourceRangeForMixins()) {
+			if (context.mustCopySourceRangeForMixins()) {
 				for(Dsymbol s : decl) {
 					s.accept(new AstVisitorAdapter() {
 						@Override

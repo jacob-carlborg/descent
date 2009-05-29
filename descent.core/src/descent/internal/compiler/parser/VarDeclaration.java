@@ -780,6 +780,10 @@ public class VarDeclaration extends Declaration {
 	public IField getJavaElement() {
 		return javaElement;
 	}
+	
+	public boolean isTemplateArgument() {
+		return false;
+	}
 
     // PERHAPS Symbol *toSymbol();
 

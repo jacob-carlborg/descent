@@ -5,7 +5,6 @@ import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.ICompilationUnit;
-import descent.core.JavaCore;
 import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;

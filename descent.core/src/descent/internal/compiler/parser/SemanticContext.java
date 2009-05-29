@@ -407,8 +407,8 @@ public class SemanticContext {
 		return new Parser(source, offset, length, tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator, apiLevel, taskTags, taskPriorities, isTaskCaseSensitive, filename);
 	}
 	
-	protected boolean mustMopySourceRangeForMixins() {
-		return true;
+	protected boolean mustCopySourceRangeForMixins() {
+		return false;
 	}
 
 	protected VarDeclaration newVarDeclaration(Loc loc, Type type, IdentifierExp exp, Initializer init) {

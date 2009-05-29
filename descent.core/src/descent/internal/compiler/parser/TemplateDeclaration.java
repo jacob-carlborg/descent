@@ -99,7 +99,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 				throw new IllegalStateException("assert(tvp);");
 			}
 
-			VarDeclaration v = new VarDeclaration(loc, tvp.valType,
+			VarDeclaration v = new TemplateVarDeclaration(loc, tvp.valType,
 					tp.ident, init);
 			if (context.isD2()) {
 				v.storage_class = STCmanifest;

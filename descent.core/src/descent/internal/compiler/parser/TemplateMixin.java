@@ -247,7 +247,7 @@ public class TemplateMixin extends TemplateInstance {
 		if (null == members) {
 			return;
 		} else {
-			if (context.mustMopySourceRangeForMixins()) {
+			if (context.mustCopySourceRangeForMixins()) {
 				for(Dsymbol member : members) {
 					member.accept(new AstVisitorAdapter() {
 						@Override
