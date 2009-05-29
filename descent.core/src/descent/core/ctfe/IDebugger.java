@@ -28,7 +28,7 @@ public interface IDebugger {
 	
 	void stepEnd(ASTDmdNode node, InterState is);
 	
-	void enterStackFrame();
+	void enterStackFrame(ASTDmdNode node);
 	
 	void exitStackFrame();
 

@@ -709,7 +709,7 @@ public class CallExp extends UnaExp {
 					
 					// Descent: temporary adjust error position so errors doesn't
 					// appear inside templates, but always on the invocation site
-					context.startTemplateEvaluation(this);
+					context.startTemplateEvaluation(te.td);
 					try {
 						f = te.td.deduceFunctionTemplate(sc, loc, targsi, null, arguments, context);
 					} finally {

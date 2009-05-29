@@ -27,7 +27,7 @@ public class ProblemRequestor implements IProblemRequestor {
 			
 			int oldLine = debugger.fCurrentLine;
 			debugger.fCurrentLine = line;
-			debugger.enterStackFrame();
+			debugger.enterStackFrame(null);
 			
 			try {
 				debugger.fListener.stepEnded();

@@ -155,7 +155,7 @@ public class CompileTimeSemanticContext extends SemanticContext {
 		
 		super.startTemplateEvaluation(node);
 		
-		debugger.enterStackFrame();
+		debugger.enterStackFrame(node);
 	}
 	
 	@Override
@@ -168,11 +168,11 @@ public class CompileTimeSemanticContext extends SemanticContext {
 		debugger.exitStackFrame();
 	}
 	
-	public void enterFunctionInterpret() {
+	public void enterFunctionInterpret(ASTDmdNode node) {
 		if (fDisabledStepping > 0)
 			return;
 		
-		debugger.enterStackFrame();
+		debugger.enterStackFrame(node);
 	}
 	
 	public void exitFunctionInterpret() {

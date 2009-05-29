@@ -1,8 +1,6 @@
 package descent.internal.compiler.parser;
 
 import descent.core.compiler.CharOperation;
-import descent.internal.compiler.parser.ast.ASTNode;
-import descent.internal.compiler.parser.ast.AstVisitorAdapter;
 
 
 /**
@@ -26,7 +24,7 @@ public class ASTNodeEncoder {
 					boolean tokenizeComments, boolean tokenizePragmas, boolean tokenizeWhiteSpace, boolean recordLineSeparator,
 					int apiLevel, char[][] taskTags, char[][] taskPriorities, boolean isTaskCaseSensitive,
 					char[] filename) {
-				return newParser(source, offset, length, tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator, apiLevel, taskTags, taskPriorities, isTaskCaseSensitive, filename);
+				return new Parser(source, offset, length, tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator, apiLevel, taskTags, taskPriorities, isTaskCaseSensitive, filename);
 			}
 		};
 		
@@ -94,19 +92,6 @@ public class ASTNodeEncoder {
 		value = decodeForIndexer(value);
 		
 		return initParser(value).parseExpression();
-	}
-	
-	public Expression decodeExpression(char[] value, final int startPosition, final int length) {
-		Expression exp = decodeExpression(value);
-		if (exp != null) {
-			exp.accept(new AstVisitorAdapter() {
-				@Override
-				public void preVisit(ASTNode node) {
-					node.setSourceRange(startPosition, length);
-				}
-			});
-		}
-		return exp;
 	}
 	
 	public char[] encodeInitializer(Initializer init) {

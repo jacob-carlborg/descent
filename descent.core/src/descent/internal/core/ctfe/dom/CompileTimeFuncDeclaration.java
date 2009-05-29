@@ -53,7 +53,7 @@ public class CompileTimeFuncDeclaration extends FuncDeclaration {
 	public Expression interpret(InterState istate, Expressions arguments,
 			SemanticContext context) {
 		try {
-			((CompileTimeSemanticContext) context).enterFunctionInterpret();
+			((CompileTimeSemanticContext) context).enterFunctionInterpret(this);
 			((CompileTimeSemanticContext) context).stepBegin(this, istate);
 			
 			return super.interpret(istate, arguments, context);

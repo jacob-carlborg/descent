@@ -167,18 +167,20 @@ public class Debugger implements IDebugger {
 	}
 	
 	private void internalStepBegin0(ASTDmdNode node) throws InterruptedException {
-		ICompilationUnit unit = getCompilationUnit(node, fCurrentScope);
-		if (unit == null) return;
-		
-		fCurrentUnit = unit;
+		if (fStartedDebugging == 0) {
+			ICompilationUnit unit = getCompilationUnit(node, fCurrentScope);
+			if (unit == null) return;
+			
+			fCurrentUnit = unit;
+		}
 		
 		int line = -1;
 		boolean justStartedDebugging = false;
 		
 		if (fStartedDebugging == 0) {
-			line = getLine(unit, node);
+			line = getLine(fCurrentUnit, node);
 			
-			if (isTarget(unit, line)) {
+			if (isTarget(fCurrentUnit, line)) {
 				justStartedDebugging = true;
 				fStartedDebugging++;
 			} else {
@@ -190,7 +192,7 @@ public class Debugger implements IDebugger {
 			return;
 		
 		if (line == -1)
-			line = getLine(unit, node);
+			line = getLine(fCurrentUnit, node);
 		
 		if (line == fCurrentLine && fStackFrames.size() == fCurrentStackFrame)
 			return;
@@ -198,7 +200,7 @@ public class Debugger implements IDebugger {
 		fCurrentLine = line;
 		
 		if (fStackFrames.isEmpty()) {
-			enterStackFrame();
+			enterStackFrame(null);
 			fNextStackFrame = 0;
 		}
 		
@@ -214,15 +216,15 @@ public class Debugger implements IDebugger {
 				return;
 			
 			if (justStartedDebugging) {
-				fListener.breakpointHit(unit, line);
+				fListener.breakpointHit(fCurrentUnit, line);
 			} else {
 				fListener.stepEnded();
 			}
 			fSemaphore.acquire();
 		} else {
 			// See if we hit a breakpoint
-			if (hasBreakpoint(unit, fCurrentLine)) {
-				fListener.breakpointHit(unit, line);
+			if (hasBreakpoint(fCurrentUnit, fCurrentLine)) {
+				fListener.breakpointHit(fCurrentUnit, line);
 				fSemaphore.acquire();
 			}
 		}
@@ -237,10 +239,10 @@ public class Debugger implements IDebugger {
 	}
 	
 	private void internalStepEnd0(ASTDmdNode node) throws InterruptedException {
-		ICompilationUnit unit = getCompilationUnit(node, fCurrentScope);
-		if (unit == null) return;
-		
-		fCurrentUnit = unit;
+//		ICompilationUnit unit = getCompilationUnit(node, fCurrentScope);
+//		if (unit == null) return;
+//		
+//		fCurrentUnit = unit;
 		
 		if (fStartedDebugging <= 0)
 			return;
@@ -248,7 +250,7 @@ public class Debugger implements IDebugger {
 		int line = -1;
 		
 		if (fNextStackFrameChanged) {
-			line = getLine(unit, node);
+			line = getLine(fCurrentUnit, node);
 				
 			if (line == fCurrentLine && fStackFrames.size() == fCurrentStackFrame)
 				return;
@@ -263,14 +265,16 @@ public class Debugger implements IDebugger {
 		}
 		
 		if (line == -1)
-			line = getLine(unit, node);
+			line = getLine(fCurrentUnit, node);
 		
-		if (isTarget(unit, line)) {
+		if (isTarget(fCurrentUnit, line)) {
 			fStartedDebugging--;
 		}
 	}
 	
 	private ICompilationUnit getCompilationUnit(ASTDmdNode node, Scope sc) {
+		Module module = null;
+		
 		if (node instanceof Dsymbol) {
 			Dsymbol sym = (Dsymbol) node;
 			IJavaElement elem = sym.getJavaElement();
@@ -281,14 +285,23 @@ public class Debugger implements IDebugger {
 				}
 				return unit;
 			}
+			
+			module = sym.getModule();
 		}
 		
-		Module module = sc.module;
-		ICompilationUnit unit = module.getJavaElement();
-		if (unit == null) {
-			unit = fSearch.getNameEnvironment().findCompilationUnit(CharOperation.splitOn('.', module.moduleName.toCharArray()));
+		if (module == null && sc != null) {
+			module = sc.module;
 		}
-		return unit;
+		
+		if (module != null) {
+			ICompilationUnit unit = module.getJavaElement();
+			if (unit == null) {
+				unit = fSearch.getNameEnvironment().findCompilationUnit(CharOperation.splitOn('.', module.moduleName.toCharArray()));
+			}
+			return unit;
+		}
+		
+		return null;
 	}
 	
 	private boolean isTarget(ICompilationUnit unit, int line) {
@@ -369,7 +382,14 @@ public class Debugger implements IDebugger {
 		return fElementFactory.newStackFrame(fCurrentUnit.getFullyQualifiedName(), fStackFrames.size(), fCurrentUnit, fCurrentLine, fCurrentScope, fCurrentInterState);
 	}
 	
-	public void enterStackFrame() {
+	public void enterStackFrame(ASTDmdNode node) {
+		if (node != null) {
+			fCurrentUnit = getCompilationUnit(node, null);
+			if (fCurrentUnit == null) {
+				System.out.println(123456);
+			}
+		}
+		
 		fStackFrames.add(0, newStackFrame());
 	}
 	

@@ -1,5 +1,13 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+import static descent.internal.compiler.parser.STC.STCmanifest;
+import static descent.internal.compiler.parser.TOK.TOKfunction;
+import static descent.internal.compiler.parser.TOK.TOKtuple;
+import static descent.internal.compiler.parser.TOK.TOKtype;
+import static descent.internal.compiler.parser.TOK.TOKvar;
+import static descent.internal.compiler.parser.TY.Ttuple;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,16 +15,6 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import descent.internal.core.ctfe.dom.CompileTimeTemplateInstance;
-
-import static descent.internal.compiler.parser.STC.*;
-import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
-
-import static descent.internal.compiler.parser.TOK.*;
-import static descent.internal.compiler.parser.TOK.TOKtuple;
-import static descent.internal.compiler.parser.TOK.TOKvar;
-
-import static descent.internal.compiler.parser.TY.Ttuple;
 
 
 public class TemplateInstance extends ScopeDsymbol {
@@ -695,7 +693,7 @@ public class TemplateInstance extends ScopeDsymbol {
 		
 		// Descent: temporary adjust error position so errors doesn't
 		// appear inside templates, but always on the invocation site
-		context.startTemplateEvaluation(this);
+		context.startTemplateEvaluation(this.tempdecl);
 
 		try {
 			// Create our own scope for the template parameters

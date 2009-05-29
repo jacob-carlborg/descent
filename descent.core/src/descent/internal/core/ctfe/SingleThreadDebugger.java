@@ -36,10 +36,10 @@ public class SingleThreadDebugger implements IDebugger {
 		}
 	}
 
-	public void enterStackFrame() {
+	public void enterStackFrame(ASTDmdNode node) {
 		fLock.lock();
 		try {
-			fDebugger.enterStackFrame();
+			fDebugger.enterStackFrame(node);
 		} finally {
 			fLock.unlock();
 		}

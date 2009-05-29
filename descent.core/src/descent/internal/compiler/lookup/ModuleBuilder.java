@@ -655,13 +655,15 @@ public class ModuleBuilder {
 			params.add(getTemplateParameter(
 					typeParameter.getElementName(),
 					typeParameter.getSignature(),
-					typeParameter.getDefaultValue()));
+					typeParameter.getDefaultValue(),
+					templated));
 		}
 		return params;
 	}
 
-	private TemplateParameter getTemplateParameter(String name, String signature, String defaultValue) {
+	private TemplateParameter getTemplateParameter(String name, String signature, String defaultValue, ISourceReference sourceReference) throws JavaModelException {
 		TemplateParameter param = InternalSignature.toTemplateParameter(signature, defaultValue, encoder);
+		copySourceRangeRecursive(param, sourceReference);
 		param.ident = new IdentifierExp(name.toCharArray());
 		return param;
 	}
@@ -721,20 +723,17 @@ public class ModuleBuilder {
 		if (signature == null) {
 			return null;
 		}
-		ISourceRange range = sourceReference.getSourceRange();
-		Type type = InternalSignature.toType(signature, encoder, range.getOffset(), range.getLength());
+		Type type = getType(signature, sourceReference);
 		return new BaseClass(type, PROT.PROTpublic);
 	}
 	
 	private Type getType(IField field) throws JavaModelException {
 		Type type = getType(field.getTypeSignature(), field);
-		copySourceRange(type, field);
 		return type;
 	}
 	
 	private Type getType(IMethod method) throws JavaModelException {
 		Type returnType = getType(method.getReturnType(), method);
-		copySourceRange(returnType, method);
 		Arguments args = getArguments(method);
 		
 		// TODO linkage
@@ -751,7 +750,9 @@ public class ModuleBuilder {
 			return null;
 		}
 		ISourceRange range = sourceReference.getSourceRange();
-		return InternalSignature.toType(signature, encoder, range.getOffset(), range.getLength());
+		Type type = InternalSignature.toType(signature, encoder, range.getOffset(), range.getLength());
+		copySourceRangeRecursive(type, sourceReference);
+		return type;
 	}
 	
 	private int getVarargs(IMethod method) throws JavaModelException {
@@ -1102,8 +1103,10 @@ public class ModuleBuilder {
 		copySourceRange(node, sourceReference);
 	}
 	
-	protected Expression decodeExpression(char[] value, ISourceReference sourceReference) throws JavaModelException {
-		return encoder.decodeExpression(value);
+	private Expression decodeExpression(char[] value, ISourceReference sourceReference) throws JavaModelException {
+		Expression exp = encoder.decodeExpression(value);
+		copySourceRangeRecursive(exp, sourceReference);
+		return exp;
 	}
 	
 	protected FuncDeclaration newFuncDeclaration(Loc loc, IdentifierExp ident, int storageClass, Type type) {

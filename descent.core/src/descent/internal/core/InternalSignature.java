@@ -85,7 +85,7 @@ public class InternalSignature {
 				@Override
 				public void acceptStaticArray(char[] dimension, String signature) {
 					Stack<Type> sub = stack.peek();
-					TypeSArray type = new TypeSArray(sub.pop(), encoder.decodeExpression(dimension, startPosition, length), encoder);
+					TypeSArray type = new TypeSArray(sub.pop(), encoder.decodeExpression(dimension), encoder);
 					type.setSourceRange(startPosition, length);
 					sub.push(type);
 				}
@@ -151,7 +151,7 @@ public class InternalSignature {
 				@Override
 				public void acceptTypeof(char[] expression, String signature) {
 					Stack<Type> sub = stack.peek();
-					TypeTypeof type = new TypeTypeof(Loc.ZERO, encoder.decodeExpression(expression, startPosition, length), encoder);
+					TypeTypeof type = new TypeTypeof(Loc.ZERO, encoder.decodeExpression(expression), encoder);
 					type.setSourceRange(startPosition, length);
 					sub.push(type);
 				}
@@ -165,7 +165,7 @@ public class InternalSignature {
 				@Override
 				public void acceptSlice(char[] lwr, char[] upr, String signature) {
 					Stack<Type> sub = stack.peek();
-					TypeSlice type = new TypeSlice(sub.pop(), encoder.decodeExpression(lwr, startPosition, length), encoder.decodeExpression(upr), encoder);
+					TypeSlice type = new TypeSlice(sub.pop(), encoder.decodeExpression(lwr), encoder.decodeExpression(upr), encoder);
 					type.setSourceRange(startPosition, length);
 					sub.push(type);
 				}
@@ -260,7 +260,7 @@ public class InternalSignature {
 				}
 				@Override
 				public void acceptTemplateInstanceValue(char[] exp, String signature) {
-					tiargsStack.peek().add(encoder.decodeExpression(exp, startPosition, length));
+					tiargsStack.peek().add(encoder.decodeExpression(exp));
 				}
 				@Override
 				public void exitTemplateInstance(String signature) {
@@ -365,7 +365,7 @@ public class InternalSignature {
 				@Override
 				public void acceptStaticArray(char[] dimension, String signature) {
 					Stack<Type> sub = stack.peek();
-					TypeSArray type = new TypeSArray(sub.pop(), encoder.decodeExpression(dimension, startPosition, length), encoder);
+					TypeSArray type = new TypeSArray(sub.pop(), encoder.decodeExpression(dimension), encoder);
 					type.setSourceRange(startPosition, length);
 					sub.push(type);
 				}
@@ -401,7 +401,7 @@ public class InternalSignature {
 				@Override
 				public void acceptTypeof(char[] expression, String signature) {
 					Stack<Type> sub = stack.peek();
-					TypeTypeof type = new TypeTypeof(Loc.ZERO, encoder.decodeExpression(expression, startPosition, length), encoder);
+					TypeTypeof type = new TypeTypeof(Loc.ZERO, encoder.decodeExpression(expression), encoder);
 					type.setSourceRange(startPosition, length);
 					sub.push(type);
 				}
@@ -445,7 +445,7 @@ public class InternalSignature {
 				@Override
 				public void acceptSlice(char[] lwr, char[] upr, String signature) {
 					Stack<Type> sub = stack.peek();
-					TypeSlice type = new TypeSlice(sub.pop(), encoder.decodeExpression(lwr, startPosition, length), encoder.decodeExpression(upr), encoder);
+					TypeSlice type = new TypeSlice(sub.pop(), encoder.decodeExpression(lwr), encoder.decodeExpression(upr), encoder);
 					type.setSourceRange(startPosition, length);
 					sub.push(type);
 				}
@@ -527,13 +527,13 @@ public class InternalSignature {
 				}
 				@Override
 				public void acceptTemplateValueParameterSpecificValue(char[] exp) {
-					specValue[0] = encoder.decodeExpression(exp, startPosition, length);
+					specValue[0] = encoder.decodeExpression(exp);
 				}
 				@Override
 				public void exitTemplateValueParameter(String signature) {
 					Stack<Type> types = stack.peek();
 					Type type = types.get(0);
-					Expression def = defaultValue == null ? null : encoder.decodeExpression(defaultValue.toCharArray(), startPosition, length);
+					Expression def = defaultValue == null ? null : encoder.decodeExpression(defaultValue.toCharArray());
 					
 					param[0] = new TemplateValueParameter(Loc.ZERO, null, type, specValue[0], def, encoder);
 					param[0].setSourceRange(startPosition, length);

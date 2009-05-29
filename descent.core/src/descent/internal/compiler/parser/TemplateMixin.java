@@ -271,7 +271,7 @@ public class TemplateMixin extends TemplateInstance {
 		
 		// Descent: temporary adjust error position so errors doesn't
 		// appear inside templates, but always on the invocation site
-		context.startTemplateEvaluation(this);
+		context.startTemplateEvaluation(this.tempdecl);
 
 		try {
 			Scope scy = sc;
