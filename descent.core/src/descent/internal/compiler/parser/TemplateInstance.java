@@ -7,6 +7,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import descent.internal.core.ctfe.dom.CompileTimeTemplateInstance;
 
 import static descent.internal.compiler.parser.STC.*;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
@@ -864,12 +865,12 @@ public class TemplateInstance extends ScopeDsymbol {
 		if (s != null) {
 			ti = (TemplateInstance) s;
 		} else {
-			ti = new TemplateInstance(loc, name, context.encoder);
+			ti = context.newTemplateInstance(loc, name);
 		}
 
 		ti.tiargs = arraySyntaxCopy(tiargs, context);
-
 		super.syntaxCopy(ti, context);
+		ti.copySourceRange(this);
 		return ti;
 	}
 

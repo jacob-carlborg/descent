@@ -80,8 +80,6 @@ import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.compiler.parser.Version;
 import descent.internal.compiler.parser.VersionCondition;
 import descent.internal.compiler.parser.VersionSymbol;
-import descent.internal.compiler.parser.ast.ASTNode;
-import descent.internal.compiler.parser.ast.AstVisitorAdapter;
 import descent.internal.core.CompilationUnit;
 import descent.internal.core.CompilationUnitElementInfo;
 import descent.internal.core.CompilerConfiguration;
@@ -125,7 +123,7 @@ public class ModuleBuilder {
 		HashtableOfCharArrayAndObject debugs = new HashtableOfCharArrayAndObject();
 	}
 	
-	private final ASTNodeEncoder encoder;	
+	protected final ASTNodeEncoder encoder;	
 	public final CompilerConfiguration config;
 	
 	/**
@@ -255,11 +253,12 @@ public class ModuleBuilder {
 			Dsymbols elseDecls = new Dsymbols();
 			fill(module, elseDecls, cond.getElseChildren(), state);
 			
-			Expression exp = encoder.decodeExpression(cond.getElementName().toCharArray());
+			Expression exp = decodeExpression(cond.getElementName().toCharArray(), cond);
 			StaticIfCondition condition = new StaticIfCondition(getLoc(module, cond), exp);
 			
 			StaticIfDeclaration member = newStaticIfDeclaration(condition, thenDecls, elseDecls);
 			copySourceRange(member, cond);
+			member.setJavaElement(cond);
 			members.add(member);
 		} else if (cond.isVersionDeclaration()) {
 			String name = cond.getElementName();
@@ -333,6 +332,7 @@ public class ModuleBuilder {
 				new VersionCondition(module, Loc.ZERO, value, idC);
 		ConditionalDeclaration member = newConditionalDeclaration(condition, thenDecls, elseDecls);
 		copySourceRange(member, cond);
+		member.setJavaElement(cond);
 		members.add(member);
 	}
 
@@ -350,7 +350,7 @@ public class ModuleBuilder {
 		} else if (init.isVersionAssignment()) {
 			fillVersionAssignment(module, members, init, state);
 		} else if (init.isMixin()) {
-			Expression exp = encoder.decodeExpression(init.getElementName().toCharArray());
+			Expression exp = decodeExpression(init.getElementName().toCharArray(), init);
 			CompileDeclaration member = newCompileDeclaration(getLoc(module, init), exp);
 			copySourceRange(member, init);
 			member.setJavaElement(init);
@@ -682,7 +682,7 @@ public class ModuleBuilder {
 		if (source == null) {
 			return null;
 		} else {
-			Expression exp = encoder.decodeExpression(source.toCharArray());
+			Expression exp = decodeExpression(source.toCharArray(), field);
 			copySourceRangeRecursive(exp, field);
 			return exp;
 		}
@@ -788,7 +788,7 @@ public class ModuleBuilder {
 				getType(signature, sourceReference), 
 				name == null || name.length() == 0 ? null : new IdentifierExp(name.toCharArray()), 
 				defaultValue == null ? null : 
-					encoder.decodeExpression(defaultValue.toCharArray()));
+					decodeExpression(defaultValue.toCharArray(), sourceReference));
 	}
 	
 	
@@ -1100,6 +1100,10 @@ public class ModuleBuilder {
 	
 	protected void copySourceRangeRecursive(ASTDmdNode node, ISourceReference sourceReference) throws JavaModelException {
 		copySourceRange(node, sourceReference);
+	}
+	
+	protected Expression decodeExpression(char[] value, ISourceReference sourceReference) throws JavaModelException {
+		return encoder.decodeExpression(value);
 	}
 	
 	protected FuncDeclaration newFuncDeclaration(Loc loc, IdentifierExp ident, int storageClass, Type type) {

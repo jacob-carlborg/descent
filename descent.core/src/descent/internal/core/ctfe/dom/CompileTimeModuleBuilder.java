@@ -179,6 +179,13 @@ public class CompileTimeModuleBuilder extends ModuleBuilder {
 	}
 	
 	@Override
+	protected Expression decodeExpression(char[] value,
+			ISourceReference sourceReference) throws JavaModelException {
+		ISourceRange sourceRange = sourceReference.getSourceRange();
+		return encoder.decodeExpression(value, sourceRange.getOffset(), sourceRange.getLength());
+	}
+	
+	@Override
 	protected void copySourceRangeRecursive(ASTDmdNode node, ISourceReference sourceReference) throws JavaModelException {
 		ISourceRange range = sourceReference.getSourceRange();
 		final int start = range.getOffset();

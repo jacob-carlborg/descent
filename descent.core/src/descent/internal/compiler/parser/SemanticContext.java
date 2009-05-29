@@ -668,4 +668,8 @@ public class SemanticContext {
 		return new TemplateMixin(loc, ident, type, ids, tiargs, encoder);
 	}
 
+	public TemplateInstance newTemplateInstance(Loc loc, IdentifierExp name) {
+		return new TemplateInstance(loc, name, encoder);
+	}
+
 }

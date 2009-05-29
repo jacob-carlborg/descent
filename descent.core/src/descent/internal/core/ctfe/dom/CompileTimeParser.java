@@ -88,12 +88,26 @@ import descent.internal.compiler.parser.VersionSymbol;
 import descent.internal.compiler.parser.VolatileStatement;
 import descent.internal.compiler.parser.WhileStatement;
 import descent.internal.compiler.parser.WithStatement;
+import descent.internal.compiler.parser.ASTNodeEncoder.IParserFactory;
 
 public class CompileTimeParser extends Parser {
+	
+	private final static IParserFactory factory = new IParserFactory() {
+
+		public Parser newParser(char[] source, int offset, int length,
+				boolean tokenizeComments, boolean tokenizePragmas,
+				boolean tokenizeWhiteSpace, boolean recordLineSeparator,
+				int apiLevel, char[][] taskTags, char[][] taskPriorities,
+				boolean isTaskCaseSensitive, char[] filename) {
+			return new CompileTimeParser(apiLevel, source, offset, length, filename, recordLineSeparator);
+		}
+		
+	};
 
 	public CompileTimeParser(int apiLevel, char[] source, int offset, int length,
 			char[] filename, boolean recordLineSeparator) {
-		super(apiLevel, source, offset, length, filename, recordLineSeparator);
+		super(apiLevel, source, offset, length, null, null, recordLineSeparator, false, filename, 
+				new ASTNodeEncoder(apiLevel, factory));
 	}
 	
 	@Override

@@ -15,6 +15,7 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 
 import descent.core.ICompilationUnit;
+import descent.core.IJavaElement;
 import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
@@ -28,6 +29,7 @@ import descent.core.dom.CompilationUnitResolver;
 import descent.core.dom.CompilationUnitResolver.ParseResult;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.CallExp;
+import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.InterState;
 import descent.internal.compiler.parser.Module;
@@ -165,7 +167,7 @@ public class Debugger implements IDebugger {
 	}
 	
 	private void internalStepBegin0(ASTDmdNode node) throws InterruptedException {
-		ICompilationUnit unit = getCompilationUnit(fCurrentScope);
+		ICompilationUnit unit = getCompilationUnit(node, fCurrentScope);
 		if (unit == null) return;
 		
 		fCurrentUnit = unit;
@@ -235,7 +237,7 @@ public class Debugger implements IDebugger {
 	}
 	
 	private void internalStepEnd0(ASTDmdNode node) throws InterruptedException {
-		ICompilationUnit unit = getCompilationUnit(fCurrentScope);
+		ICompilationUnit unit = getCompilationUnit(node, fCurrentScope);
 		if (unit == null) return;
 		
 		fCurrentUnit = unit;
@@ -268,7 +270,19 @@ public class Debugger implements IDebugger {
 		}
 	}
 	
-	private ICompilationUnit getCompilationUnit(Scope sc) {
+	private ICompilationUnit getCompilationUnit(ASTDmdNode node, Scope sc) {
+		if (node instanceof Dsymbol) {
+			Dsymbol sym = (Dsymbol) node;
+			IJavaElement elem = sym.getJavaElement();
+			if (elem != null) {
+				ICompilationUnit unit = (ICompilationUnit) elem.getAncestor(IJavaElement.COMPILATION_UNIT);
+				if (unit == null) {
+					unit = (ICompilationUnit) elem.getAncestor(IJavaElement.CLASS_FILE);
+				}
+				return unit;
+			}
+		}
+		
 		Module module = sc.module;
 		ICompilationUnit unit = module.getJavaElement();
 		if (unit == null) {
@@ -302,8 +316,8 @@ public class Debugger implements IDebugger {
 		fNextStackFrameChanged = false;
 		fNextStackFrame = fStackFrames.size() - 1;
 		
-		fSemaphore.release();
 		fListener.resumed(DebugEvent.STEP_OVER);
+		fSemaphore.release();
 	}
 
 	public void stepReturn() {
@@ -311,8 +325,8 @@ public class Debugger implements IDebugger {
 		fNextStackFrameChanged = newStackFrame != fNextStackFrame;
 		fNextStackFrame = newStackFrame;
 		
-		fSemaphore.release();
 		fListener.resumed(DebugEvent.STEP_RETURN);
+		fSemaphore.release();
 	}
 	
 	public void resume() {
@@ -320,8 +334,8 @@ public class Debugger implements IDebugger {
 		fNextStackFrameChanged = newStackFrame != fNextStackFrame;
 		fNextStackFrame = newStackFrame;
 		
-		fSemaphore.release();
 		fListener.resumed(DebugEvent.RESUME);
+		fSemaphore.release();
 	}
 
 	public synchronized IVariable evaluateExpression(int stackFrame, String expression) {

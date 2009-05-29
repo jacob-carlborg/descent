@@ -1,6 +1,8 @@
 package descent.internal.compiler.parser;
 
 import descent.core.compiler.CharOperation;
+import descent.internal.compiler.parser.ast.ASTNode;
+import descent.internal.compiler.parser.ast.AstVisitorAdapter;
 
 
 /**
@@ -10,14 +12,35 @@ import descent.core.compiler.CharOperation;
  */
 public class ASTNodeEncoder {
 	
+	public static interface IParserFactory {
+		
+		Parser newParser(char[] source, int offset, int length,
+				boolean tokenizeComments, boolean tokenizePragmas,
+				boolean tokenizeWhiteSpace, boolean recordLineSeparator,
+				int apiLevel,
+				char[][] taskTags, char[][] taskPriorities, boolean isTaskCaseSensitive,
+				char[] filename);
+		
+		IParserFactory Default = new IParserFactory() {
+			public Parser newParser(char[] source, int offset, int length,
+					boolean tokenizeComments, boolean tokenizePragmas, boolean tokenizeWhiteSpace, boolean recordLineSeparator,
+					int apiLevel, char[][] taskTags, char[][] taskPriorities, boolean isTaskCaseSensitive,
+					char[] filename) {
+				return newParser(source, offset, length, tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator, apiLevel, taskTags, taskPriorities, isTaskCaseSensitive, filename);
+			}
+		};
+		
+	}
+	
 	private final static char[] nastyChar = { '/' };
 	private final static char[] nastyCharSoltuion = { '*', '!', '_', '!', '*' };
 	
 	private Parser parser;
+	private IParserFactory parserFactory;
 	private final int apiLevel;
 	private Parser initParser(char[] source) {
 		if (parser == null) {
-			parser = new Parser(source, 0, source.length, false, false, false, false, apiLevel, null, null, false, null);
+			parser = parserFactory.newParser(source, 0, source.length, false, false, false, false, apiLevel, null, null, false, null);
 		} else {
 			parser.reset(source, 0, source.length, false, false, false, false);
 		}
@@ -26,7 +49,12 @@ public class ASTNodeEncoder {
 	}
 	
 	public ASTNodeEncoder(int apiLevel) {
-		this.apiLevel = apiLevel;		
+		this(apiLevel, IParserFactory.Default);
+	}
+	
+	public ASTNodeEncoder(int apiLevel, IParserFactory parserFactory) {
+		this.apiLevel = apiLevel;
+		this.parserFactory = parserFactory;
 	}
 	
 	// TODO horrible hack: the indexer may get consufed if the expression has
@@ -66,6 +94,19 @@ public class ASTNodeEncoder {
 		value = decodeForIndexer(value);
 		
 		return initParser(value).parseExpression();
+	}
+	
+	public Expression decodeExpression(char[] value, final int startPosition, final int length) {
+		Expression exp = decodeExpression(value);
+		if (exp != null) {
+			exp.accept(new AstVisitorAdapter() {
+				@Override
+				public void preVisit(ASTNode node) {
+					node.setSourceRange(startPosition, length);
+				}
+			});
+		}
+		return exp;
 	}
 	
 	public char[] encodeInitializer(Initializer init) {

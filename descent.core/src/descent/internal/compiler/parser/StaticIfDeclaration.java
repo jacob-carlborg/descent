@@ -2,7 +2,6 @@ package descent.internal.compiler.parser;
 
 import org.eclipse.core.runtime.Assert;
 
-
 public class StaticIfDeclaration extends ConditionalDeclaration {
 
 	public ScopeDsymbol sd;
@@ -66,6 +65,7 @@ public class StaticIfDeclaration extends ConditionalDeclaration {
 		dd = context.newStaticIfDeclaration(condition.syntaxCopy(context), Dsymbol
 				.arraySyntaxCopy(decl, context), Dsymbol.arraySyntaxCopy(elsedecl, context));
 		dd.copySourceRange(this);
+		dd.setJavaElement(getJavaElement());
 		return dd;
 	}
 

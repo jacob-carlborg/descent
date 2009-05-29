@@ -89,6 +89,7 @@ import descent.internal.compiler.parser.SwitchStatement;
 import descent.internal.compiler.parser.SynchronizedStatement;
 import descent.internal.compiler.parser.TOK;
 import descent.internal.compiler.parser.TemplateDeclaration;
+import descent.internal.compiler.parser.TemplateInstance;
 import descent.internal.compiler.parser.TemplateMixin;
 import descent.internal.compiler.parser.TemplateParameters;
 import descent.internal.compiler.parser.ThrowStatement;
@@ -541,6 +542,11 @@ public class CompileTimeSemanticContext extends SemanticContext {
 	@Override
 	protected TemplateMixin newTemplateMixin(Loc loc, IdentifierExp ident, Type type, Identifiers ids, Objects tiargs) {
 		return new CompileTimeTemplateMixin(loc, ident, type, ids, tiargs, encoder);
+	}
+	
+	@Override
+	public TemplateInstance newTemplateInstance(Loc loc, IdentifierExp name) {
+		return new CompileTimeTemplateInstance(loc, name, encoder);
 	}
 
 }

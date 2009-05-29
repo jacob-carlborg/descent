@@ -91,7 +91,7 @@ public class VariablesFinder {
 			VarDeclaration var = (VarDeclaration) dsymbol;
 			if (var.value != null) {
 				return fElementFactory.newVariable(0, var.ident.toString(), var.value);
-			} else if (var.isTemplateArgument() && var.init != null) {
+			} else if ((var.isConst() || var.isTemplateArgument()) && var.init != null) {
 				if (var.init instanceof ExpInitializer) {
 					return fElementFactory.newVariable(0, var.ident.toString(), ((ExpInitializer) var.init).exp);
 				}
