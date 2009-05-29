@@ -9,6 +9,7 @@ import org.eclipse.debug.core.model.IVariable;
 import descent.core.ICompilationUnit;
 import descent.core.ctfe.IDebugger;
 import descent.core.ctfe.IDescentStackFrame;
+import descent.core.ctfe.IDescentValue;
 import descent.internal.compiler.parser.InterState;
 import descent.internal.compiler.parser.Scope;
 
@@ -106,8 +107,8 @@ public class DescentStackFrame extends DescentDebugElement implements IDescentSt
 			DescentVariable oldVar = (DescentVariable) oldVariables[i];
 			DescentVariable newVar = (DescentVariable) newVariables[i];
 			if (oldVar.getName().equals(newVar.getName())) {
-				DescentValue oldValue = oldVar.getValue();
-				DescentValue newValue = newVar.getValue();
+				IDescentValue oldValue = oldVar.getValue();
+				IDescentValue newValue = newVar.getValue();
 				
 				if (oldValue != null && newValue != null && oldValue.getValueString() != null && newValue.getValueString() != null) {				
 					if (!oldValue.getValueString().equals(newValue.getValueString())) {

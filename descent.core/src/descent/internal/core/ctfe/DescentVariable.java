@@ -5,19 +5,40 @@ import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IValue;
 
 import descent.core.ctfe.IDebugElementFactory;
+import descent.core.ctfe.IDescentValue;
 import descent.core.ctfe.IDescentVariable;
 import descent.internal.compiler.parser.Expression;
+import descent.internal.compiler.parser.TupleDeclaration;
+import descent.internal.compiler.parser.Type;
 
 public class DescentVariable extends DescentDebugElement implements IDescentVariable {
 
 	private final String fName;
-	private final DescentValue fValue;
+	private final IDescentValue fValue;
 	private boolean fHasValueChanged;
 	
 	public DescentVariable(IDebugTarget target, IDebugElementFactory elementFactory, int stackFrame, String name, Expression value) {
 		super(target);
 		this.fName = name;
-		this.fValue = new DescentValue(target, elementFactory, stackFrame, name, value);
+		this.fValue = new DescentExpressionValue(target, elementFactory, stackFrame, name, value);
+	}
+	
+	public DescentVariable(IDebugTarget target, IDebugElementFactory elementFactory, int stackFrame, String name, Type value) {
+		super(target);
+		this.fName = name;
+		this.fValue = new DescentTypeValue(target, name, value);
+	}
+	
+	public DescentVariable(IDebugTarget target, IDebugElementFactory elementFactory, int stackFrame, String name, String value) {
+		super(target);
+		this.fName = name;
+		this.fValue = new DescentIdentifierValue(target, name, value);
+	}
+	
+	public DescentVariable(IDebugTarget target, IDebugElementFactory elementFactory, int stackFrame, String name, TupleDeclaration value) {
+		super(target);
+		this.fName = name;
+		this.fValue = new DescentTupleValue(target, elementFactory, stackFrame, name, value);
 	}
 
 	public String getName() throws DebugException {
@@ -28,7 +49,7 @@ public class DescentVariable extends DescentDebugElement implements IDescentVari
 		return fName;
 	}
 
-	public DescentValue getValue() throws DebugException {
+	public IDescentValue getValue() throws DebugException {
 		return fValue;
 	}
 	

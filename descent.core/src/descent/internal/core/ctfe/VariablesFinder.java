@@ -10,8 +10,10 @@ import descent.internal.compiler.parser.AliasDeclaration;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.DsymbolTable;
 import descent.internal.compiler.parser.ExpInitializer;
+import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
 import descent.internal.compiler.parser.InterState;
 import descent.internal.compiler.parser.Scope;
+import descent.internal.compiler.parser.TupleDeclaration;
 import descent.internal.compiler.parser.VarDeclaration;
 
 public class VariablesFinder {
@@ -28,41 +30,46 @@ public class VariablesFinder {
 		
 		List<IDescentVariable> vars = new ArrayList<IDescentVariable>();
 		InterState is = sf.getInterState();
-		Scope scope = sf.getScope();		
-		fillVariables(sf.getNumber(), scope, vars);
+		Scope scope = sf.getScope();
+		HashtableOfCharArrayAndObject ids = new HashtableOfCharArrayAndObject();
+		
+		fillVariables(sf.getNumber(), scope, vars, ids);
 		if (is != null) {
-			fillVariables(sf.getNumber(), is, vars);
+			fillVariables(sf.getNumber(), is, vars, ids);
 		}
 		return vars.toArray(new DescentVariable[vars.size()]);
 	}
 	
-	private void fillVariables(int stackFrame, Scope currentScope, List<IDescentVariable> vars) {
+	private void fillVariables(int stackFrame, Scope currentScope, List<IDescentVariable> vars, HashtableOfCharArrayAndObject ids) {
 		if (currentScope.scopesym != null && currentScope.scopesym.symtab != null) {
-			fillVariables(stackFrame, currentScope.scopesym.symtab, vars);
+			fillVariables(stackFrame, currentScope.scopesym.symtab, vars, ids);
 		}
 		
 		if (currentScope.enclosing != null) {
-			fillVariables(stackFrame, currentScope.enclosing, vars);
+			fillVariables(stackFrame, currentScope.enclosing, vars, ids);
 		}
 	}
 	
-	private void fillVariables(int stackFrame, InterState is, List<IDescentVariable> vars) {
+	private void fillVariables(int stackFrame, InterState is, List<IDescentVariable> vars, HashtableOfCharArrayAndObject ids) {
 		if (is.vars != null) {
 			for(Dsymbol dsymbol : is.vars) {
 				IDescentVariable var = toVariable(stackFrame, dsymbol);
 				if (var == null)
 					continue;
 				
-				vars.add(var);
+				if (!ids.containsKey(dsymbol.ident.ident)) {
+					vars.add(var);
+					ids.put(dsymbol.ident.ident, this);
+				}
 			}
 		}
 		
 		if (is.fd != null && is.fd.localsymtab != null) {
-			fillVariables(stackFrame, is.fd.localsymtab, vars);
+			fillVariables(stackFrame, is.fd.localsymtab, vars, ids);
 		}
 	}
 	
-	private void fillVariables(int stackFrame, DsymbolTable symtab, List<IDescentVariable> vars) {
+	private void fillVariables(int stackFrame, DsymbolTable symtab, List<IDescentVariable> vars, HashtableOfCharArrayAndObject ids) {
 		for(char[] key : symtab.keys()) {
 			if (key == null)
 				continue;
@@ -72,7 +79,10 @@ public class VariablesFinder {
 			if (var == null)
 				continue;
 			
-			vars.add(var);
+			if (!ids.containsKey(dsymbol.ident.ident)) {
+				vars.add(var);
+				ids.put(dsymbol.ident.ident, this);
+			}
 		}
 	}
 	
@@ -92,8 +102,12 @@ public class VariablesFinder {
 			if (alias.aliassym != null) {
 				return fElementFactory.newVariable(stackFrame, alias.ident.toString(), alias.aliassym.ident.toString());
 			} else if (alias.type != null){
-				return fElementFactory.newVariable(stackFrame, alias.ident.toString(), alias.type.toString());
+				return fElementFactory.newVariable(stackFrame, alias.ident.toString(), alias.type);
 			}
+		} else if (dsymbol instanceof TupleDeclaration) {
+			TupleDeclaration tuple = (TupleDeclaration) dsymbol;
+			
+			return fElementFactory.newVariable(stackFrame, tuple.ident.toString(), tuple);
 		}
 		return null;
 	}
