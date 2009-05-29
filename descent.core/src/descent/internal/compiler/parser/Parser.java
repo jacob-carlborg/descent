@@ -8492,7 +8492,7 @@ public class Parser extends Lexer {
 	}
 	
 	protected EnumMember newEnumMember(Loc loc, IdentifierExp exp, Expression value, Type type) {
-		return newEnumMember(loc, exp, value, type);
+		return new EnumMember(loc, exp, value, type);
 	}
 	
 	protected StaticAssert newStaticAssert(Loc loc, Expression exp, Expression msg) {
