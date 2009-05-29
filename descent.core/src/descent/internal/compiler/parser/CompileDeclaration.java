@@ -67,20 +67,23 @@ public class CompileDeclaration extends AttribDeclaration {
 			// p.nextToken();
 			p.loc = loc;
 			decl = p.parseModule();
-			for(Dsymbol s : decl) {
-				s.accept(new AstVisitorAdapter() {
-					@Override
-					public void preVisit(ASTNode node) {
-						if (node instanceof ASTDmdNode) {
-							ASTDmdNode s = (ASTDmdNode) node;
-							s.synthetic = true;
-							s.setStart(getStart() + 1);
-							s.setLength(getLength());
-							s.setLineNumber(getLineNumber());					
-							s.creator = CompileDeclaration.this;
+			
+			if (context.mustMopySourceRangeForMixins()) {
+				for(Dsymbol s : decl) {
+					s.accept(new AstVisitorAdapter() {
+						@Override
+						public void preVisit(ASTNode node) {
+							if (node instanceof ASTDmdNode) {
+								ASTDmdNode s = (ASTDmdNode) node;
+								s.synthetic = true;
+								s.setStart(getStart() + 1);
+								s.setLength(getLength());
+								s.setLineNumber(getLineNumber());					
+								s.creator = CompileDeclaration.this;
+							}
 						}
-					}
-				});
+					});
+				}
 			}
 
 			// TODO semantic do this better

@@ -247,13 +247,15 @@ public class TemplateMixin extends TemplateInstance {
 		if (null == members) {
 			return;
 		} else {
-			for(Dsymbol member : members) {
-				member.accept(new AstVisitorAdapter() {
-					@Override
-					public void preVisit(ASTNode node) {
-						node.setSourceRange(start, length);
-					}
-				});
+			if (context.mustMopySourceRangeForMixins()) {
+				for(Dsymbol member : members) {
+					member.accept(new AstVisitorAdapter() {
+						@Override
+						public void preVisit(ASTNode node) {
+							node.setSourceRange(start, length);
+						}
+					});
+				}
 			}
 		}
 
@@ -405,8 +407,9 @@ public class TemplateMixin extends TemplateInstance {
 			ids.set(i, id);
 		}
 
-		tm = new TemplateMixin(loc, ident, (tqual != null ? tqual.syntaxCopy(context)
-				: null), ids, tiargs, context.encoder);
+		tm = context.newTemplateMixin(loc, ident, (tqual != null ? tqual.syntaxCopy(context)
+				: null), ids, tiargs);
+		tm.copySourceRange(this);
 		super.syntaxCopy(tm, context);
 		return tm;
 	}

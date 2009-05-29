@@ -2627,6 +2627,8 @@ public class Parser extends Lexer {
 		Type tqual;
 		Objects tiargs;
 		Identifiers idents;
+		
+		int start = token.ptr;
 
 		nextToken();
 		
@@ -2708,6 +2710,7 @@ public class Parser extends Lexer {
 		
 		tm = newTemplateMixin(loc(), id, tqual, idents, tiargs);
 		tm.setTypeSourceRange(typeStart, typeLength);
+		tm.setSourceRange(start, token.ptr + token.sourceLen - start);
 
 		//tm = new MixinDeclaration(ast, id, tqual, idents, tiargs);
 		if (token.value != TOKsemicolon) {

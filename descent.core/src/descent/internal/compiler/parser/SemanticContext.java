@@ -406,6 +406,10 @@ public class SemanticContext {
 			char[] filename) {
 		return new Parser(source, offset, length, tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator, apiLevel, taskTags, taskPriorities, isTaskCaseSensitive, filename);
 	}
+	
+	protected boolean mustMopySourceRangeForMixins() {
+		return true;
+	}
 
 	protected VarDeclaration newVarDeclaration(Loc loc, Type type, IdentifierExp exp, Initializer init) {
 		return new VarDeclaration(loc, type, exp, init);
@@ -658,6 +662,10 @@ public class SemanticContext {
 
 	protected TemplateDeclaration newTemplateDeclaration(Loc loc, IdentifierExp ident, TemplateParameters p, Expression c, Dsymbols d) {
 		return new TemplateDeclaration(loc, ident, p, c, d);
+	}
+
+	protected TemplateMixin newTemplateMixin(Loc loc, IdentifierExp ident, Type type, Identifiers ids, Objects tiargs) {
+		return new TemplateMixin(loc, ident, type, ids, tiargs, encoder);
 	}
 
 }

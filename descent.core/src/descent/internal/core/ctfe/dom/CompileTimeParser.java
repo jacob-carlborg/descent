@@ -40,6 +40,7 @@ import descent.internal.compiler.parser.GotoCaseStatement;
 import descent.internal.compiler.parser.GotoDefaultStatement;
 import descent.internal.compiler.parser.GotoStatement;
 import descent.internal.compiler.parser.IdentifierExp;
+import descent.internal.compiler.parser.Identifiers;
 import descent.internal.compiler.parser.IfStatement;
 import descent.internal.compiler.parser.Initializer;
 import descent.internal.compiler.parser.InterfaceDeclaration;
@@ -49,6 +50,7 @@ import descent.internal.compiler.parser.LabelStatement;
 import descent.internal.compiler.parser.LinkDeclaration;
 import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.NewDeclaration;
+import descent.internal.compiler.parser.Objects;
 import descent.internal.compiler.parser.OnScopeStatement;
 import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.PostBlitDeclaration;
@@ -70,6 +72,7 @@ import descent.internal.compiler.parser.SynchronizedStatement;
 import descent.internal.compiler.parser.TOK;
 import descent.internal.compiler.parser.TemplateDeclaration;
 import descent.internal.compiler.parser.TemplateInstance;
+import descent.internal.compiler.parser.TemplateMixin;
 import descent.internal.compiler.parser.TemplateParameters;
 import descent.internal.compiler.parser.ThrowStatement;
 import descent.internal.compiler.parser.TryCatchStatement;
@@ -412,6 +415,11 @@ public class CompileTimeParser extends Parser {
 	@Override
 	protected TemplateDeclaration newTemplateDeclaration(Loc loc, IdentifierExp ident, TemplateParameters tpl, Expression constraint, Dsymbols decldefs) {
 		return new CompileTimeTemplateDeclaration(loc, ident, tpl, constraint, decldefs);
+	}
+	
+	@Override
+	protected TemplateMixin newTemplateMixin(Loc loc, IdentifierExp id, Type tqual, Identifiers idents, Objects tiargs) {
+		return new CompileTimeTemplateMixin(loc, id, tqual, idents, tiargs, encoder);
 	}
 
 }

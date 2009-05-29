@@ -54,6 +54,7 @@ import descent.internal.compiler.parser.GotoCaseStatement;
 import descent.internal.compiler.parser.GotoDefaultStatement;
 import descent.internal.compiler.parser.GotoStatement;
 import descent.internal.compiler.parser.IdentifierExp;
+import descent.internal.compiler.parser.Identifiers;
 import descent.internal.compiler.parser.IfStatement;
 import descent.internal.compiler.parser.Initializer;
 import descent.internal.compiler.parser.InterState;
@@ -65,6 +66,7 @@ import descent.internal.compiler.parser.LinkDeclaration;
 import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.NewDeclaration;
+import descent.internal.compiler.parser.Objects;
 import descent.internal.compiler.parser.OnScopeStatement;
 import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.PostBlitDeclaration;
@@ -87,6 +89,7 @@ import descent.internal.compiler.parser.SwitchStatement;
 import descent.internal.compiler.parser.SynchronizedStatement;
 import descent.internal.compiler.parser.TOK;
 import descent.internal.compiler.parser.TemplateDeclaration;
+import descent.internal.compiler.parser.TemplateMixin;
 import descent.internal.compiler.parser.TemplateParameters;
 import descent.internal.compiler.parser.ThrowStatement;
 import descent.internal.compiler.parser.TryCatchStatement;
@@ -213,6 +216,11 @@ public class CompileTimeSemanticContext extends SemanticContext {
 	@Override
 	protected Parser newParser(char[] source, int offset, int length, boolean tokenizeComments, boolean tokenizePragmas, boolean tokenizeWhiteSpace, boolean recordLineSeparator, int apiLevel, char[][] taskTags, char[][] taskPriorities, boolean isTaskCaseSensitive, char[] filename) {
 		return new CompileTimeParser(apiLevel, source, offset, length, filename, recordLineSeparator);
+	}
+	
+	@Override
+	protected boolean mustMopySourceRangeForMixins() {
+		return false;
 	}
 	
 	@Override
@@ -528,6 +536,11 @@ public class CompileTimeSemanticContext extends SemanticContext {
 	@Override
 	protected TemplateDeclaration newTemplateDeclaration(Loc loc, IdentifierExp ident, TemplateParameters p, Expression c, Dsymbols d) {
 		return new CompileTimeTemplateDeclaration(loc, ident, p, c, d);
+	}
+	
+	@Override
+	protected TemplateMixin newTemplateMixin(Loc loc, IdentifierExp ident, Type type, Identifiers ids, Objects tiargs) {
+		return new CompileTimeTemplateMixin(loc, ident, type, ids, tiargs, encoder);
 	}
 
 }
