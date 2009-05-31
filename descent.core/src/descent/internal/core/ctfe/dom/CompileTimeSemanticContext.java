@@ -149,22 +149,24 @@ public class CompileTimeSemanticContext extends SemanticContext {
 	}
 	
 	@Override
-	public void startTemplateEvaluation(ASTDmdNode node) {
+	public void startTemplateEvaluation(TemplateDeclaration node, Scope sc) {
 		if (fDisabledStepping > 0)
 			return;
 		
-		super.startTemplateEvaluation(node);
-		
+		super.startTemplateEvaluation(node, sc);
+				
 		debugger.enterStackFrame(node);
+		debugger.stepBegin(node, sc);
 	}
 	
 	@Override
-	public void endTemplateEvaluation() {
+	public void endTemplateEvaluation(TemplateDeclaration node, Scope sc) {
 		if (fDisabledStepping > 0)
 			return;
 		
-		super.endTemplateEvaluation();
+		super.endTemplateEvaluation(node, sc);
 		
+		debugger.stepEnd(node, sc);
 		debugger.exitStackFrame();
 	}
 	

@@ -269,23 +269,24 @@ public class TemplateMixin extends TemplateInstance {
 			}
 		}
 		
+		Scope scy = sc;
+		scy = sc.push(this);
+		scy.parent = this;
+
+		argsym = new ScopeDsymbol();
+		argsym.parent = scy.parent;
+		Scope scope = scy.push(argsym);
+		
+	    int errorsave = context.global.errors;
+
+		// Declare each template parameter as an alias for the argument type
+		declareParameters(scope, context);
+		
 		// Descent: temporary adjust error position so errors doesn't
 		// appear inside templates, but always on the invocation site
-		context.startTemplateEvaluation(this.tempdecl);
+		context.startTemplateEvaluation(this.tempdecl, scope);
 
 		try {
-			Scope scy = sc;
-			scy = sc.push(this);
-			scy.parent = this;
-	
-			argsym = new ScopeDsymbol();
-			argsym.parent = scy.parent;
-			Scope scope = scy.push(argsym);
-			
-		    int errorsave = context.global.errors;
-	
-			// Declare each template parameter as an alias for the argument type
-			declareParameters(scope, context);
 	
 			// Add members to enclosing scope, as well as this scope
 			for (int i = 0; i < members.size(); i++) {
@@ -338,7 +339,7 @@ public class TemplateMixin extends TemplateInstance {
 		} finally {
 			// Descent: temporary adjust error position so errors doesn't
 			// appear inside templates, but always on the invocation site
-			context.endTemplateEvaluation();
+			context.endTemplateEvaluation(this.tempdecl, scope);
 		}
 	}
 

@@ -691,27 +691,28 @@ public class TemplateInstance extends ScopeDsymbol {
 		// Copy the syntax trees from the TemplateDeclaration
 		members = Dsymbol.arraySyntaxCopy(tempdecl.members, context);
 		
+		// Create our own scope for the template parameters
+		Scope scope = tempdecl.scope;
+		if (null == scope) {
+			if (context.acceptsErrors()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.ForwardReferenceToTemplateDeclaration, this, new String[] { tempdecl.toChars(context) }));
+			}
+			return;
+		}
+		argsym = new ScopeDsymbol();
+		argsym.parent = scope.parent;
+		scope = scope.push(argsym);
+			
+		// Declare each template parameter as an alias for the argument type
+		declareParameters(scope, context);
+		
+		
 		// Descent: temporary adjust error position so errors doesn't
 		// appear inside templates, but always on the invocation site
-		context.startTemplateEvaluation(this.tempdecl);
-
+		context.startTemplateEvaluation(this.tempdecl, scope);
+		
 		try {
-			// Create our own scope for the template parameters
-			Scope scope = tempdecl.scope;
-			if (null == scope) {
-				if (context.acceptsErrors()) {
-					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.ForwardReferenceToTemplateDeclaration, this, new String[] { tempdecl.toChars(context) }));
-				}
-				return;
-			}
-			argsym = new ScopeDsymbol();
-			argsym.parent = scope.parent;
-			scope = scope.push(argsym);
-	
-			// Declare each template parameter as an alias for the argument type
-			declareParameters(scope, context);
-	
 			// Add members of template instance to template instance symbol table
 			//	    parent = scope.scopesym;
 			symtab = new DsymbolTable();
@@ -780,7 +781,7 @@ public class TemplateInstance extends ScopeDsymbol {
 				}
 			}
 		} finally {
-			context.endTemplateEvaluation();
+			context.endTemplateEvaluation(this.tempdecl, scope);
 		}
 	}
 	

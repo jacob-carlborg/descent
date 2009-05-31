@@ -709,11 +709,11 @@ public class CallExp extends UnaExp {
 					
 					// Descent: temporary adjust error position so errors doesn't
 					// appear inside templates, but always on the invocation site
-					context.startTemplateEvaluation(te.td);
+					context.startTemplateEvaluation(te.td, sc);
 					try {
 						f = te.td.deduceFunctionTemplate(sc, loc, targsi, null, arguments, context);
 					} finally {
-						context.endTemplateEvaluation();
+						context.endTemplateEvaluation(te.td, sc);
 					}
 					if (f == null) {
 						type = Type.terror;

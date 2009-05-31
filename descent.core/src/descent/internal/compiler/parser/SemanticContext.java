@@ -285,11 +285,11 @@ public class SemanticContext {
 	}
 	
 	
-	public void startTemplateEvaluation(ASTDmdNode node) {
+	public void startTemplateEvaluation(TemplateDeclaration node, Scope sc) {
 		this.templateEvaluationStack.add(node);
 	}
 	
-	public void endTemplateEvaluation() {
+	public void endTemplateEvaluation(TemplateDeclaration node, Scope sc) {
 		this.templateEvaluationStack.remove(this.templateEvaluationStack.size() - 1);
 	}
 	
