@@ -80,7 +80,8 @@ public class ScopeStatement extends Statement {
 
 			a = statement.flatten(sc, context);
 			if (a != null) {
-				statement = new CompoundStatement(loc, a);
+				statement = context.newCompoundStatement(loc, a);
+				statement.copySourceRange(a);
 			}
 
 			statement = statement.semantic(sc, context);

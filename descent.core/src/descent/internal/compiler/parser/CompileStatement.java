@@ -89,7 +89,7 @@ public class CompileStatement extends Statement {
 	    if (null == a) {
 	    	return null;
 	    }
-	    Statement s = new CompoundStatement(loc, a);
+	    Statement s = context.newCompoundStatement(loc, a);
 	    return s.semantic(sc, context);
 	}
 

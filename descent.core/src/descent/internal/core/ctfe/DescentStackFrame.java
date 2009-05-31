@@ -3,19 +3,19 @@ package descent.internal.core.ctfe;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IRegisterGroup;
-import org.eclipse.debug.core.model.IThread;
 import org.eclipse.debug.core.model.IVariable;
 
 import descent.core.ICompilationUnit;
 import descent.core.ctfe.IDebugger;
 import descent.core.ctfe.IDescentStackFrame;
+import descent.core.ctfe.IDescentThread;
 import descent.core.ctfe.IDescentValue;
 import descent.internal.compiler.parser.InterState;
 import descent.internal.compiler.parser.Scope;
 
 public class DescentStackFrame extends DescentDebugElement implements IDescentStackFrame {
 
-	private final IThread fThread;
+	private final IDescentThread fThread;
 	private final IDebugger fDebugger;
 	private String fName;
 	private int fNumber;
@@ -26,7 +26,7 @@ public class DescentStackFrame extends DescentDebugElement implements IDescentSt
 	private final Scope scope;
 	private final InterState is;
 	
-	public DescentStackFrame(IDebugTarget target, IDebugger debugger, IThread thread, String name, int number, ICompilationUnit unit, int lineNumber, Scope scope, InterState is) {
+	public DescentStackFrame(IDebugTarget target, IDebugger debugger, IDescentThread thread, String name, int number, ICompilationUnit unit, int lineNumber, Scope scope, InterState is) {
 		super(target);
 		this.fDebugger = debugger;
 		this.fThread = thread;
@@ -88,7 +88,7 @@ public class DescentStackFrame extends DescentDebugElement implements IDescentSt
 		return new IRegisterGroup[0];
 	}
 
-	public IThread getThread() {
+	public IDescentThread getThread() {
 		return fThread;
 	}
 
@@ -149,15 +149,15 @@ public class DescentStackFrame extends DescentDebugElement implements IDescentSt
 	}
 
 	public void stepInto() throws DebugException {
-		getThread().stepInto();
+		getThread().stepInto(getNumber());
 	}
 
 	public void stepOver() throws DebugException {
-		getThread().stepOver();
+		getThread().stepOver(getNumber());
 	}
 
 	public void stepReturn() throws DebugException {
-		getThread().stepReturn();
+		getThread().stepReturn(getNumber());
 	}
 
 	public boolean canResume() {

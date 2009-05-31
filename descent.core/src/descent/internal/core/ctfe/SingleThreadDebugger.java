@@ -161,6 +161,15 @@ public class SingleThreadDebugger implements IDebugger {
 			fLock.unlock();
 		}
 	}
+	
+	public void stepInto(int stackFrame) {
+		fLock.lock();
+		try {
+			fDebugger.stepInto(stackFrame);
+		} finally {
+			fLock.unlock();
+		}
+	}
 
 	public void stepOver() {
 		fLock.lock();
@@ -170,11 +179,29 @@ public class SingleThreadDebugger implements IDebugger {
 			fLock.unlock();
 		}
 	}
+	
+	public void stepOver(int stackFrame) {
+		fLock.lock();
+		try {
+			fDebugger.stepOver(stackFrame);
+		} finally {
+			fLock.unlock();
+		}
+	}
 
 	public void stepReturn() {
 		fLock.lock();
 		try {
 			fDebugger.stepReturn();
+		} finally {
+			fLock.unlock();
+		}
+	}
+	
+	public void stepReturn(int stackFrame) {
+		fLock.lock();
+		try {
+			fDebugger.stepReturn(stackFrame);
 		} finally {
 			fLock.unlock();
 		}

@@ -2408,7 +2408,8 @@ public class FuncDeclaration extends Declaration {
 				}
 			}
 
-			fbody = new CompoundStatement(loc, a);
+			fbody = context.newCompoundStatement(loc, a);
+			fbody.copySourceRange(sourceFbody);
 			
 			if (context.isD2()) {
 				/* Append destructor calls for parameters as finally blocks.

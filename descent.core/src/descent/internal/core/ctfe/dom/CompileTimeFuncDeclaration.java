@@ -54,11 +54,9 @@ public class CompileTimeFuncDeclaration extends FuncDeclaration {
 			SemanticContext context) {
 		try {
 			((CompileTimeSemanticContext) context).enterFunctionInterpret(this);
-			((CompileTimeSemanticContext) context).stepBegin(this, istate);
 			
 			return super.interpret(istate, arguments, context);
 		} finally {
-			((CompileTimeSemanticContext) context).stepEnd(this, istate);
 			((CompileTimeSemanticContext) context).exitFunctionInterpret();
 		}
 	}

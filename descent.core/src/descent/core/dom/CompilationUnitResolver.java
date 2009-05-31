@@ -29,16 +29,13 @@ import descent.internal.compiler.IErrorHandlingPolicy;
 import descent.internal.compiler.IProblemFactory;
 import descent.internal.compiler.env.INameEnvironment;
 import descent.internal.compiler.impl.CompilerOptions;
-import descent.internal.compiler.lookup.DescentModuleFinder;
 import descent.internal.compiler.parser.ASTNodeEncoder;
 import descent.internal.compiler.parser.Global;
 import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.SemanticContext;
-import descent.internal.core.CancelableNameEnvironment;
 import descent.internal.core.CompilerConfiguration;
-import descent.internal.core.JavaProject;
 import descent.internal.core.ctfe.dom.CompileTimeParser;
 import descent.internal.core.ctfe.dom.CompileTimeSemanticContext;
 import descent.internal.core.util.Util;
@@ -222,7 +219,20 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			boolean recordLineSeparator,
 			boolean statementsRecovery,
 			IProgressMonitor monitor) throws JavaModelException {
-		return resolve(apiLevel, sourceUnit, javaProject, options, owner, recordLineSeparator, statementsRecovery, null, monitor);
+		return resolve(apiLevel, sourceUnit, javaProject, options, owner, recordLineSeparator, statementsRecovery, true, null);
+	}
+	
+	public static ParseResult resolve(
+			int apiLevel,
+			descent.internal.compiler.env.ICompilationUnit sourceUnit,
+			IJavaProject javaProject,
+			Map options,
+			WorkingCopyOwner owner,
+			boolean recordLineSeparator,
+			boolean statementsRecovery,
+			boolean resolveTemplates,
+			IProgressMonitor monitor) throws JavaModelException {
+		return resolve(apiLevel, sourceUnit, javaProject, options, owner, recordLineSeparator, statementsRecovery, resolveTemplates, null, monitor);
 	}
 	
 	public static ParseResult resolve(
@@ -235,10 +245,24 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			boolean statementsRecovery,
 			IDebugger debugger,
 			IProgressMonitor monitor) throws JavaModelException {
+		return resolve(apiLevel, sourceUnit, javaProject, options, owner, recordLineSeparator, statementsRecovery, true, debugger, monitor);
+	}
+	
+	public static ParseResult resolve(
+			int apiLevel,
+			descent.internal.compiler.env.ICompilationUnit sourceUnit,
+			IJavaProject javaProject,
+			Map options,
+			WorkingCopyOwner owner,
+			boolean recordLineSeparator,
+			boolean statementsRecovery,
+			boolean analyzeTemplates,
+			IDebugger debugger,
+			IProgressMonitor monitor) throws JavaModelException {
 		
 		ParseResult result = parse(apiLevel, sourceUnit, options, recordLineSeparator, statementsRecovery, false, debugger != null);
 		result.module.moduleName = sourceUnit.getFullyQualifiedName();
-		result.context = resolve(result.module, javaProject, owner, result.encoder, true, debugger);
+		result.context = resolve(result.module, javaProject, owner, result.encoder, analyzeTemplates, debugger);
 		return result;
 	}
 	

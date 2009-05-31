@@ -33,10 +33,16 @@ public interface IDebugger {
 	void exitStackFrame();
 
 	void stepInto();
+	
+	void stepInto(int stackFrame);
 
 	void stepOver();
+	
+	void stepOver(int stackFrame);
 
 	void stepReturn();
+	
+	void stepReturn(int stackFrame);
 
 	void resume();
 	

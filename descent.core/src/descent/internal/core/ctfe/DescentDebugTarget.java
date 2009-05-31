@@ -220,13 +220,25 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 	public void stepInto() {
 		fDebugger.stepInto();
 	}
+	
+	public void stepInto(int stackFrame) {
+		fDebugger.stepInto(stackFrame);
+	}
 
 	public void stepOver() {
 		fDebugger.stepOver();
 	}
+	
+	public void stepOver(int stackFrame) {
+		fDebugger.stepOver(stackFrame);
+	}
 
 	public void stepReturn() {
 		fDebugger.stepReturn();
+	}
+	
+	public void stepReturn(int stackFrame) {
+		fDebugger.stepReturn(stackFrame);
 	}
 	
 	private IBreakpoint findBreakpoint(IResource resource, int lineNumber) {

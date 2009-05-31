@@ -1005,7 +1005,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 			// toChars());
 			CtorDeclaration ctor = new CtorDeclaration(loc, null, 0);
 			ctor.synthetic = true;
-			ctor.fbody = new CompoundStatement(loc, new Statements());
+			ctor.fbody = context.newCompoundStatement(loc, new Statements());
 			this.ctor = ctor;
 			
 			members.add(ctor);

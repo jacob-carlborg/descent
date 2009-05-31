@@ -2250,6 +2250,8 @@ public class CompileTimeASTConverter {
 			descent.core.dom.Expression convertedExp = convert(a.exp);
 			if (convertedExp != null) {
 				b.setExpression(convertedExp);
+			} else {
+				return null;
 			}
 		}
 		setSourceRange(b, a.start, a.length);

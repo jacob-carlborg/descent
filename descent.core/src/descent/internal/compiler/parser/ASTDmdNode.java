@@ -1899,6 +1899,14 @@ public abstract class ASTDmdNode extends ASTNode {
 		this.length = last.start + last.length - first.start;
 	}
 	
+	public void copySourceRange(List<? extends ASTDmdNode> a) {
+		if (a.isEmpty()) {
+			return;
+		} else {
+			copySourceRange(a.get(0), a.get(a.size() - 1));
+		}
+	}
+	
 	protected char[] getFQN(Identifiers packages, IdentifierExp id) {
 		// TODO Descent char[] optimize, don't use StringBuilder
 		StringBuilder sb = new StringBuilder();

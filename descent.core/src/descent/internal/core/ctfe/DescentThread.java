@@ -4,9 +4,10 @@ import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.debug.core.model.IStackFrame;
-import org.eclipse.debug.core.model.IThread;
 
-public class DescentThread extends DescentDebugElement implements IThread  {
+import descent.core.ctfe.IDescentThread;
+
+public class DescentThread extends DescentDebugElement implements IDescentThread  {
 	
 	/**
 	 * Breakpoints this thread is suspended at or <code>null</code>
@@ -141,13 +142,25 @@ public class DescentThread extends DescentDebugElement implements IThread  {
 	public void stepInto() throws DebugException {
 		((DescentDebugTarget)getDebugTarget()).stepInto();
 	}
+	
+	public void stepInto(int stackFrame) throws DebugException {
+		((DescentDebugTarget)getDebugTarget()).stepInto(stackFrame);
+	}
 
 	public void stepOver() throws DebugException {
 		((DescentDebugTarget)getDebugTarget()).stepOver();
 	}
+	
+	public void stepOver(int stackFrame) throws DebugException {
+		((DescentDebugTarget)getDebugTarget()).stepOver(stackFrame);
+	}
 
 	public void stepReturn() throws DebugException {
 		((DescentDebugTarget)getDebugTarget()).stepReturn();
+	}
+	
+	public void stepReturn(int stackFrame) throws DebugException {
+		((DescentDebugTarget)getDebugTarget()).stepReturn(stackFrame);
 	}
 
 	public boolean canTerminate() {

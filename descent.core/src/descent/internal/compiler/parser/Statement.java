@@ -136,6 +136,6 @@ public abstract class Statement extends ASTDmdNode {
 	
 	public void setLineNumber(int lineNumber) {
 		this.loc.linnum = lineNumber;
-	}
+	}	
 
 }

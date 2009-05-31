@@ -191,7 +191,8 @@ public class CompoundStatement extends Statement {
 								for (int j = i + 1; j < statements.size(); j++) {
 									a2.add(statements.get(j));
 								}
-								body = new CompoundStatement(loc, a2);
+								body = context.newCompoundStatement(loc, a2);
+								body.copySourceRange(a2);
 								body = new ScopeStatement(loc, body);
 
 								char[] id = ("__o" + ++context.CompoundStatement_num).toCharArray();
