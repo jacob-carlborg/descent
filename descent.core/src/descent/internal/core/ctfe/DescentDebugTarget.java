@@ -23,6 +23,7 @@ import descent.core.ctfe.IDebuggerListener;
 import descent.core.ctfe.IDescentStackFrame;
 import descent.core.ctfe.IDescentVariable;
 import descent.internal.compiler.parser.Expression;
+import descent.internal.compiler.parser.Initializer;
 import descent.internal.compiler.parser.InterState;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.TupleDeclaration;
@@ -286,6 +287,11 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 	
 	public IDescentVariable newVariable(int stackFrame, String name,
 			TupleDeclaration value) {
+		return new DescentVariable(this, this, stackFrame, name, value);
+	}
+	
+	public IDescentVariable newVariable(int stackFrame, String name,
+			Initializer value) {
 		return new DescentVariable(this, this, stackFrame, name, value);
 	}
 	

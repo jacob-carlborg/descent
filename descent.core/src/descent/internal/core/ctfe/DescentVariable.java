@@ -7,9 +7,14 @@ import org.eclipse.debug.core.model.IValue;
 import descent.core.ctfe.IDebugElementFactory;
 import descent.core.ctfe.IDescentValue;
 import descent.core.ctfe.IDescentVariable;
+import descent.internal.compiler.parser.ArrayInitializer;
+import descent.internal.compiler.parser.ExpInitializer;
 import descent.internal.compiler.parser.Expression;
+import descent.internal.compiler.parser.Initializer;
+import descent.internal.compiler.parser.StructInitializer;
 import descent.internal.compiler.parser.TupleDeclaration;
 import descent.internal.compiler.parser.Type;
+import descent.internal.compiler.parser.VoidInitializer;
 
 public class DescentVariable extends DescentDebugElement implements IDescentVariable {
 
@@ -39,6 +44,22 @@ public class DescentVariable extends DescentDebugElement implements IDescentVari
 		super(target);
 		this.fName = name;
 		this.fValue = new DescentTupleValue(target, elementFactory, stackFrame, name, value);
+	}
+	
+	public DescentVariable(IDebugTarget target, IDebugElementFactory elementFactory, int stackFrame, String name, Initializer value) {
+		super(target);
+		this.fName = name;
+		if (value instanceof ExpInitializer) {
+			this.fValue = new DescentExpressionValue(target, elementFactory, stackFrame, name, ((ExpInitializer) value).exp);
+		} else if (value instanceof ArrayInitializer) {
+			this.fValue = new DescentArrayInitializerValue(target, elementFactory, stackFrame, name, (ArrayInitializer) value);
+		} else if (value instanceof StructInitializer) {
+			this.fValue = new DescentStructInitializerValue(target, elementFactory, stackFrame, name, (StructInitializer) value);
+		} else if (value instanceof VoidInitializer) {
+			this.fValue = new DescentIdentifierValue(target, name, "void");
+		} else {
+			throw new IllegalStateException("Unsupported initializer: " + value);
+		}
 	}
 
 	public String getName() throws DebugException {

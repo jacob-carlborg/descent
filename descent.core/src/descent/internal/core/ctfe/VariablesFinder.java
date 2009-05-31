@@ -9,11 +9,11 @@ import descent.core.ctfe.IDescentVariable;
 import descent.internal.compiler.parser.AliasDeclaration;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.DsymbolTable;
-import descent.internal.compiler.parser.ExpInitializer;
 import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
 import descent.internal.compiler.parser.InterState;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.TupleDeclaration;
+import descent.internal.compiler.parser.TypedefDeclaration;
 import descent.internal.compiler.parser.VarDeclaration;
 
 public class VariablesFinder {
@@ -92,9 +92,7 @@ public class VariablesFinder {
 			if (var.value != null) {
 				return fElementFactory.newVariable(0, var.ident.toString(), var.value);
 			} else if ((var.isConst() || var.isTemplateArgument()) && var.init != null) {
-				if (var.init instanceof ExpInitializer) {
-					return fElementFactory.newVariable(0, var.ident.toString(), ((ExpInitializer) var.init).exp);
-				}
+				return fElementFactory.newVariable(0, var.ident.toString(), var.init);
 			}
 		} else if (dsymbol instanceof AliasDeclaration) {
 			AliasDeclaration alias = (AliasDeclaration) dsymbol;
@@ -103,6 +101,12 @@ public class VariablesFinder {
 				return fElementFactory.newVariable(stackFrame, alias.ident.toString(), alias.aliassym.ident.toString());
 			} else if (alias.type != null){
 				return fElementFactory.newVariable(stackFrame, alias.ident.toString(), alias.type);
+			}
+		} else if (dsymbol instanceof TypedefDeclaration) {
+			TypedefDeclaration typedef = (TypedefDeclaration) dsymbol;
+			
+			if (typedef.basetype != null) {
+				return fElementFactory.newVariable(stackFrame, typedef.ident.toString(), typedef.basetype);
 			}
 		} else if (dsymbol instanceof TupleDeclaration) {
 			TupleDeclaration tuple = (TupleDeclaration) dsymbol;

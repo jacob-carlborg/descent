@@ -81,14 +81,18 @@ public class ExpressionEvaluator {
 					sc.scopesym = new ScopeDsymbol();
 					sc.scopesym.symtab = new DsymbolTable();					
 					
-					for(char[] key : is.fd.localsymtab.keys()) {
-						if (key == null)
-							continue;
-						sc.scopesym.symtab.insert(key, is.fd.localsymtab.lookup(key));
+					if (is.fd != null && is.fd.localsymtab != null) {
+						for(char[] key : is.fd.localsymtab.keys()) {
+							if (key == null)
+								continue;
+							sc.scopesym.symtab.insert(key, is.fd.localsymtab.lookup(key));
+						}
 					}
 					
-					for(Dsymbol sym : is.vars) {
-						sc.scopesym.symtab.insert(sym);
+					if (is.vars != null) {
+						for(Dsymbol sym : is.vars) {
+							sc.scopesym.symtab.insert(sym);
+						}
 					}
 					
 					sc.flags |= Scope.SCOPEstaticif;
