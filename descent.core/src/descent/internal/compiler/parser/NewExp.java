@@ -237,6 +237,7 @@ public class NewExp extends Expression {
 				FuncDeclaration f = cd.ctor(context);
 				if (f != null) {
 					f = f.overloadResolve(loc, null, arguments, context, this);
+					
 					checkDeprecated(sc, f, context);
 					member = f.isCtorDeclaration();
 					Assert.isNotNull(member);

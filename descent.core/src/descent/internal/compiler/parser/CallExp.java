@@ -445,6 +445,11 @@ public class CallExp extends UnaExp {
 					Assert.isNotNull(f);
 					
 					f = f.overloadResolve(loc, ue.e1, arguments, context, this);
+					
+					// Descent: for binding resolution
+					if (this.sourceE1 != null) {
+						this.sourceE1.setResolvedSymbol(f);
+					}
 
 					ad = f.toParent().isAggregateDeclaration();
 				} else {
@@ -626,10 +631,13 @@ public class CallExp extends UnaExp {
 						}
 
 						f = f.overloadResolve(loc, null, arguments, context, this);
-						checkDeprecated(sc, f, context);
 						
 						// Descent: for binding resolution
-						this.sourceE1.setResolvedSymbol(f);
+						if (this.sourceE1 != null) {
+							this.sourceE1.setResolvedSymbol(f);
+						}
+						
+						checkDeprecated(sc, f, context);
 						
 						e1 = new DotVarExp(e1.loc, e1, f);
 						e1 = e1.semantic(sc, context);
@@ -667,10 +675,13 @@ public class CallExp extends UnaExp {
 
 					f = cd.ctor(context);
 					f = f.overloadResolve(loc, null, arguments, context, this);
-					checkDeprecated(sc, f, context);
 					
 					// Descent: for binding resolution
-					this.sourceE1.setResolvedSymbol(f);
+					if (this.sourceE1 != null) {
+						this.sourceE1.setResolvedSymbol(f);
+					}
+					
+					checkDeprecated(sc, f, context);
 					
 					e1 = new DotVarExp(e1.loc, e1, f);
 					e1 = e1.semantic(sc, context);
@@ -771,10 +782,13 @@ public class CallExp extends UnaExp {
 				}
 
 				f = f.overloadResolve(loc, null, arguments, context, this);
-				checkDeprecated(sc, f, context);
 				
 				// Descent: for binding resolution
-				this.sourceE1.setResolvedSymbol(f);
+				if (this.sourceE1 != null) {
+					this.sourceE1.setResolvedSymbol(f);
+				}
+				
+				checkDeprecated(sc, f, context);
 
 				if (f.needThis() && hasThis(sc) != null) {
 					// Supply an implicit 'this', as in
