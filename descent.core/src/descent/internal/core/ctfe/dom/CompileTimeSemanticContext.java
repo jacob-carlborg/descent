@@ -167,7 +167,7 @@ public class CompileTimeSemanticContext extends SemanticContext {
 		super.endTemplateEvaluation(node, sc);
 		
 		debugger.stepEnd(node, sc);
-		debugger.exitStackFrame();
+		debugger.exitStackFrame(node);
 	}
 	
 	public void enterFunctionInterpret(ASTDmdNode node) {
@@ -177,11 +177,11 @@ public class CompileTimeSemanticContext extends SemanticContext {
 		debugger.enterStackFrame(node);
 	}
 	
-	public void exitFunctionInterpret() {
+	public void exitFunctionInterpret(ASTDmdNode node) {
 		if (fDisabledStepping > 0)
 			return;
 		
-		debugger.exitStackFrame();
+		debugger.exitStackFrame(node);
 	}
 	
 	public void message(String message) {

@@ -57,7 +57,7 @@ public class CompileTimeFuncDeclaration extends FuncDeclaration {
 			
 			return super.interpret(istate, arguments, context);
 		} finally {
-			((CompileTimeSemanticContext) context).exitFunctionInterpret();
+			((CompileTimeSemanticContext) context).exitFunctionInterpret(this);
 		}
 	}
 

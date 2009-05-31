@@ -3,6 +3,7 @@ package descent.internal.core.ctfe.dom;
 import descent.core.ISourceRange;
 import descent.core.ISourceReference;
 import descent.core.JavaModelException;
+import descent.core.dom.AST;
 import descent.internal.compiler.lookup.ModuleBuilder;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.ASTNodeEncoder;
@@ -28,12 +29,15 @@ import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Initializer;
 import descent.internal.compiler.parser.InterfaceDeclaration;
 import descent.internal.compiler.parser.LINK;
+import descent.internal.compiler.parser.Lexer;
 import descent.internal.compiler.parser.LinkDeclaration;
 import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.NewDeclaration;
+import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.StaticIfCondition;
 import descent.internal.compiler.parser.StaticIfDeclaration;
 import descent.internal.compiler.parser.StructDeclaration;
+import descent.internal.compiler.parser.TOK;
 import descent.internal.compiler.parser.TemplateDeclaration;
 import descent.internal.compiler.parser.TemplateParameters;
 import descent.internal.compiler.parser.Type;
@@ -47,6 +51,8 @@ import descent.internal.compiler.parser.ast.AstVisitorAdapter;
 import descent.internal.core.CompilerConfiguration;
 
 public class CompileTimeModuleBuilder extends ModuleBuilder {
+	
+	private Lexer fLexer;
 
 	public CompileTimeModuleBuilder(CompilerConfiguration config, ASTNodeEncoder encoder) {
 		super(config, encoder);
@@ -176,6 +182,35 @@ public class CompileTimeModuleBuilder extends ModuleBuilder {
 	@Override
 	protected VersionSymbol newVersionSymbol(Loc loc, long level, Version version) {
 		return new CompileTimeVersionSymbol(loc, level, version);
+	}
+	
+	@Override
+	protected void copySourceRange(ASTDmdNode node, ISourceReference sourceReference) throws JavaModelException {
+		// This is to assign a correct start position to the node.
+		// The sourceReference contains the start and end of any documentation comment
+		// preceding or following the declaration, so here we skip them.
+		
+		ISourceRange range = sourceReference.getSourceRange();
+		int start = range.getOffset();
+		int end = start + range.getLength();
+		
+		String source = sourceReference.getSource();
+		if (fLexer == null) {
+			fLexer = new Lexer(source, true, false, false, false, AST.D1);
+		} else {
+			fLexer.reset(source.toCharArray(), 0, source.length(), true, false, false, false);
+		}
+		
+		TOK tok = null;
+		do {
+			tok = fLexer.nextToken();
+		} while(tok == TOK.TOKlinecomment || tok == TOK.TOKdoclinecomment ||
+				tok == TOK.TOKblockcomment || tok == TOK.TOKdocblockcomment ||
+				tok == TOK.TOKpluscomment || tok == TOK.TOKdocpluscomment);
+		
+		start += fLexer.p;
+		
+		node.setSourceRange(start, end - start);
 	}
 	
 	@Override

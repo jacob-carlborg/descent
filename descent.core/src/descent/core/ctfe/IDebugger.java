@@ -30,7 +30,7 @@ public interface IDebugger {
 	
 	void enterStackFrame(ASTDmdNode node);
 	
-	void exitStackFrame();
+	void exitStackFrame(ASTDmdNode node);
 
 	void stepInto();
 	

@@ -625,7 +625,7 @@ public class ModuleBuilder {
 
 	private Dsymbol wrapWithTemplate(Module module, Dsymbol symbol, final ITemplated templated) throws JavaModelException {
 		if (templated.isTemplate()) {
-			TemplateDeclaration temp = new TemplateDeclaration(
+			TemplateDeclaration temp = newTemplateDeclaration(
 					getLoc(module, 
 							(ISourceReference) templated), 
 							getIdent((IJavaElement) templated), 
@@ -1094,7 +1094,7 @@ public class ModuleBuilder {
 		}
 	}
 	
-	private void copySourceRange(ASTDmdNode node, ISourceReference sourceReference) throws JavaModelException {
+	protected void copySourceRange(ASTDmdNode node, ISourceReference sourceReference) throws JavaModelException {
 		ISourceRange range = sourceReference.getSourceRange();
 		node.setSourceRange(range.getOffset(), range.getLength());
 	}

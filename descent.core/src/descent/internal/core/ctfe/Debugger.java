@@ -28,6 +28,7 @@ import descent.core.dom.CompilationUnitResolver;
 import descent.core.dom.CompilationUnitResolver.ParseResult;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.CallExp;
+import descent.internal.compiler.parser.ConditionalDeclaration;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.InterState;
@@ -393,10 +394,13 @@ public class Debugger implements IDebugger {
 	 * (non-Javadoc)
 	 * @see descent.core.ctfe.IDebugger#exitStackFrame()
 	 */
-	public void exitStackFrame() {
+	public void exitStackFrame(ASTDmdNode node) {
 		fStackFrames.remove(0);
 		if (fNextStackFrame > fStackFrames.size())
 			fNextStackFrame = fStackFrames.size();
+		
+		if (!fStackFrames.isEmpty())
+			fCurrentUnit = fStackFrames.get(0).getCompilationUnit();
 	}
 
 	/*
@@ -501,7 +505,7 @@ public class Debugger implements IDebugger {
 		fCurrentLine = line;
 		fCurrentStackFrame = fStackFrames.size() - 1;
 		
-		if (fCurrentStackFrame <= fNextStackFrame) {
+		if (!(node instanceof ConditionalDeclaration) && fCurrentStackFrame <= fNextStackFrame) {
 			fListener.stepEnded();
 			fSemaphore.acquire();
 		}
@@ -509,7 +513,7 @@ public class Debugger implements IDebugger {
 		if (node == fTarget) {
 			fStartedDebugging--;
 			if (fStartedDebugging == 0) {
-				exitStackFrame();
+				exitStackFrame(null);
 			}
 		}
 	}

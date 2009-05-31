@@ -33,7 +33,7 @@ public class ProblemRequestor implements IProblemRequestor {
 				debugger.fListener.stepEnded();
 				debugger.fSemaphore.acquire();
 			} finally {
-				debugger.exitStackFrame();
+				debugger.exitStackFrame(null);
 				debugger.fCurrentLine = oldLine;
 			}
 		} catch (Exception e) {
