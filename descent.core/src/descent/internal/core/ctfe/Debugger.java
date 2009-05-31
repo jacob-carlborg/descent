@@ -505,7 +505,9 @@ public class Debugger implements IDebugger {
 		fCurrentLine = line;
 		fCurrentStackFrame = fStackFrames.size() - 1;
 		
-		if (!(node instanceof ConditionalDeclaration) && fCurrentStackFrame <= fNextStackFrame) {
+		if (!(node instanceof ConditionalDeclaration) && 
+			!(node instanceof FuncDeclaration) &&
+				fCurrentStackFrame <= fNextStackFrame) {
 			fListener.stepEnded();
 			fSemaphore.acquire();
 		}

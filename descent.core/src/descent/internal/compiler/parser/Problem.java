@@ -78,6 +78,12 @@ public class Problem implements IProblem {
 	}
 	
 	public static Problem newSemanticTypeError(int id, ASTDmdNode n1, ASTDmdNode n2) {
+		if (n1.getStart() > n2.getStart()) {
+			ASTDmdNode temp = n1;
+			n1 = n2;
+			n2 = temp;
+		}
+
 		return newSemanticTypeProblem(id, n1.getLineNumber(), n1.getStart(), n2.getStart() + n2.getLength() - n1.getStart(), null, true);
 	}
 	

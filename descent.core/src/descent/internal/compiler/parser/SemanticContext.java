@@ -293,6 +293,14 @@ public class SemanticContext {
 		this.templateEvaluationStack.remove(this.templateEvaluationStack.size() - 1);
 	}
 	
+	public void startFunctionInterpret(CallExp fd) {
+		this.templateEvaluationStack.add(fd);
+	}
+	
+	public void endFunctionInterpret(CallExp fd) {
+		this.templateEvaluationStack.remove(this.templateEvaluationStack.size() - 1);
+	}
+	
 	public Module load(Loc loc, Identifiers packages,
 			IdentifierExp ident) {
 		

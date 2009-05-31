@@ -133,22 +133,27 @@ public class CallExp extends UnaExp {
 							e = expType(type, e, context);
 						}
 					} else {
-						Expression eresult = fd.interpret(istate, arguments,
-								context);
-						if (eresult != null) {
-							e = eresult;
-						} else if (fd.type.toBasetype(context).nextOf().ty == Tvoid && 0 == context.global.errors) {
-							e = EXP_VOID_INTERPRET;
-						} else {
-							if (istate.stackOverflow) {
-								if (context.acceptsErrors()) {
-									context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionLeadsToStackOverflowAtCompileTime, this, toChars(context)));
-								}
+						context.startFunctionInterpret(this);
+						try {
+							Expression eresult = fd.interpret(istate, arguments,
+									context);
+							if (eresult != null) {
+								e = eresult;
+							} else if (fd.type.toBasetype(context).nextOf().ty == Tvoid && 0 == context.global.errors) {
+								e = EXP_VOID_INTERPRET;
 							} else {
-								if (context.acceptsErrors()) {
-									context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionIsNotEvaluatableAtCompileTime, this, toChars(context)));
+								if (istate.stackOverflow) {
+									if (context.acceptsErrors()) {
+										context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionLeadsToStackOverflowAtCompileTime, this, toChars(context)));
+									}
+								} else {
+									if (context.acceptsErrors()) {
+										context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionIsNotEvaluatableAtCompileTime, this, toChars(context)));
+									}
 								}
 							}
+						} finally {
+							context.endFunctionInterpret(this);
 						}
 					}
 				}
@@ -180,14 +185,20 @@ public class CallExp extends UnaExp {
 					    e = this;		// evaluate at runtime
 					}
 			    } else {
-					Expression eresult = fd.interpret(null, arguments, context);
-					if (eresult != null && eresult != EXP_VOID_INTERPRET) {
-						e = eresult;
-					} else if ((result & WANTinterpret) != 0) {
-						if (context.acceptsErrors()) {
-							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionIsNotEvaluatableAtCompileTime, this, toChars(context)));
+			    	context.startFunctionInterpret(this);
+			    	
+			    	try {
+						Expression eresult = fd.interpret(null, arguments, context);
+						if (eresult != null && eresult != EXP_VOID_INTERPRET) {
+							e = eresult;
+						} else if ((result & WANTinterpret) != 0) {
+							if (context.acceptsErrors()) {
+								context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionIsNotEvaluatableAtCompileTime, this, toChars(context)));
+							}
 						}
-					}
+			    	} finally {
+			    		context.endFunctionInterpret(this);
+			    	}
 			    }
 			}
 		}
