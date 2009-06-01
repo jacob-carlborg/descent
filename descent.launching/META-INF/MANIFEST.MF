@@ -3,7 +3,7 @@ Bundle-Activator: descent.internal.launching.LaunchingPlugin
 Bundle-ManifestVersion: 2
 Bundle-Name: Descent Launching Plug-in
 Bundle-SymbolicName: descent.launching;singleton:=true
-Bundle-Version: 0.5.6.20090531
+Bundle-Version: 0.5.6.20090601
 Eclipse-LazyStart: true
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,

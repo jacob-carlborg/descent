@@ -2137,10 +2137,11 @@ public class JavaModelManager implements ISaveParticipant, IContentTypeChangeLis
 		try {
 			in = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
 			String projectName = in.readUTF();
-			
-			IResource resource = getJavaModel().getWorkspace().getRoot().findMember(projectName);
-			if (resource != null && resource instanceof IProject) {
-				getJavaModel().setActiveProject(JavaCore.create((IProject) resource));
+			if (projectName.length() > 0) {
+				IResource resource = getJavaModel().getWorkspace().getRoot().findMember(projectName);
+				if (resource != null && resource instanceof IProject) {
+					getJavaModel().setActiveProject(JavaCore.create((IProject) resource));
+				}
 			}
 		} catch (IOException e) {
 			if (file.exists())
@@ -3030,7 +3031,13 @@ public class JavaModelManager implements ISaveParticipant, IContentTypeChangeLis
 		DataOutputStream out = null;
 		try {
 			out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
-			out.writeUTF(getJavaModel().getActiveProject().getProject().getName());
+			IJavaProject activeProject = getJavaModel().getActiveProject();
+			
+			if (activeProject != null) {
+				out.writeUTF(activeProject.getProject().getName());
+			} else {
+				out.writeUTF("");
+			}
 		} catch (IOException e) {
 			IStatus status = new Status(IStatus.ERROR, JavaCore.PLUGIN_ID, IStatus.ERROR, "Problems while saving active project", e); //$NON-NLS-1$
 			throw new CoreException(status);
