@@ -33,6 +33,7 @@ import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.InterfaceDeclaration;
+import descent.internal.compiler.parser.Modifier;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.NewExp;
 import descent.internal.compiler.parser.PostBlitDeclaration;
@@ -41,6 +42,7 @@ import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.StorageClassDeclaration;
 import descent.internal.compiler.parser.StructDeclaration;
 import descent.internal.compiler.parser.SuperExp;
+import descent.internal.compiler.parser.TOK;
 import descent.internal.compiler.parser.TemplateDeclaration;
 import descent.internal.compiler.parser.TemplateInstance;
 import descent.internal.compiler.parser.ThisExp;
@@ -282,6 +284,19 @@ public class SelectionEngine extends AstVisitorAdapter {
 			add(node);
 			return false;
 		}
+		
+		// See if the "auto" modifier is selected
+		if (node.modifiers != null) {
+			for(Modifier modifier : node.modifiers) {
+				if (modifier.tok == TOK.TOKauto && isInRange(modifier)) {
+					doSemantic();
+					
+					add(node.type);
+					return false;
+				}
+			}
+		}
+		
 		return true;
 	}
 
