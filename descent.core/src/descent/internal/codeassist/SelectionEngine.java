@@ -50,6 +50,8 @@ import descent.internal.compiler.parser.Token;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeClass;
 import descent.internal.compiler.parser.TypeExp;
+import descent.internal.compiler.parser.TypeStruct;
+import descent.internal.compiler.parser.TypeTypedef;
 import descent.internal.compiler.parser.TypedefDeclaration;
 import descent.internal.compiler.parser.UnionDeclaration;
 import descent.internal.compiler.parser.VarDeclaration;
@@ -661,12 +663,17 @@ public class SelectionEngine extends AstVisitorAdapter {
 		if (type.getJavaElement() != null) {
 			addJavaElement(type.getJavaElement());
 			return;
+		} else {
+			if (type instanceof TypeClass) {
+				add(((TypeClass) type).sym);
+			} else if (type instanceof TypeStruct) {
+				add(((TypeStruct) type).sym);
+			} else if (type instanceof TypeTypedef) {
+				add(((TypeTypedef) type).sym);
+			} else if (type.alias != null) {
+				add(type.alias);
+			}
 		}
-
-		//		IJavaElement result = finder.find(type.getSignature());
-		//		if (result != null) {
-		//			addJavaElement(result);
-		//		}
 	}
 
 	private void addJavaElement(IJavaElement element) {
