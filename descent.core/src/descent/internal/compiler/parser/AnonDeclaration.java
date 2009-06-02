@@ -88,11 +88,7 @@ public class AnonDeclaration extends AttribDeclaration {
 
 			sc = sc.push();
 			
-			if (context.isD2()) {
-				sc.stc &= ~(STCauto | STCscope | STCstatic | STCtls);	
-			} else {
-				sc.stc &= ~(STCauto | STCscope | STCstatic);
-			}
+			sc.stc &= ~(STCauto | STCscope | STCstatic | STCtls);	
 			sc.inunion = isunion;
 			sc.offset = 0;
 			sc.flags = 0;

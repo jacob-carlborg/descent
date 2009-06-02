@@ -99,10 +99,10 @@ public class DelegateExp extends UnaExp {
 			// overloaded.
 
 			t = t.toBasetype(context);
-			if (type.ty == Tdelegate && type.next.ty == Tfunction
-					&& t.ty == Tdelegate && t.next.ty == Tfunction) {
+			if (type.ty == Tdelegate && type.nextOf().ty == Tfunction
+					&& t.ty == Tdelegate && t.nextOf().ty == Tfunction) {
 				if (func != null
-						&& func.overloadExactMatch(t.next, context) != null) {
+						&& func.overloadExactMatch(t.nextOf(), context) != null) {
 					result = MATCH.MATCHexact;
 				}
 			}

@@ -1,17 +1,8 @@
 package descent.internal.compiler.parser;
 
-import java.math.BigInteger;
-
-import org.eclipse.core.runtime.Assert;
-
-import descent.core.compiler.IProblem;
-import descent.internal.compiler.parser.Constfold.BinExp_fp;
-import descent.internal.compiler.parser.Constfold.BinExp_fp2;
 import static descent.internal.compiler.parser.Constfold.Equal;
 import static descent.internal.compiler.parser.Constfold.Index;
-
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
-
 import static descent.internal.compiler.parser.TOK.TOKadd;
 import static descent.internal.compiler.parser.TOK.TOKaddass;
 import static descent.internal.compiler.parser.TOK.TOKandass;
@@ -42,6 +33,7 @@ import static descent.internal.compiler.parser.TOK.TOKplusplus;
 import static descent.internal.compiler.parser.TOK.TOKremove;
 import static descent.internal.compiler.parser.TOK.TOKshlass;
 import static descent.internal.compiler.parser.TOK.TOKshrass;
+import static descent.internal.compiler.parser.TOK.TOKslice;
 import static descent.internal.compiler.parser.TOK.TOKstar;
 import static descent.internal.compiler.parser.TOK.TOKstring;
 import static descent.internal.compiler.parser.TOK.TOKstructliteral;
@@ -53,7 +45,6 @@ import static descent.internal.compiler.parser.TOK.TOKule;
 import static descent.internal.compiler.parser.TOK.TOKushrass;
 import static descent.internal.compiler.parser.TOK.TOKvar;
 import static descent.internal.compiler.parser.TOK.TOKxorass;
-
 import static descent.internal.compiler.parser.TY.Tarray;
 import static descent.internal.compiler.parser.TY.Tbool;
 import static descent.internal.compiler.parser.TY.Tclass;
@@ -62,6 +53,14 @@ import static descent.internal.compiler.parser.TY.Tpointer;
 import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Tstruct;
 import static descent.internal.compiler.parser.TY.Tvoid;
+
+import java.math.BigInteger;
+
+import org.eclipse.core.runtime.Assert;
+
+import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.Constfold.BinExp_fp;
+import descent.internal.compiler.parser.Constfold.BinExp_fp2;
 
 
 public abstract class BinExp extends Expression {
@@ -211,7 +210,7 @@ public abstract class BinExp extends Expression {
 			// Replace (ptr + int) with (ptr + (int * stride))
 			Type t = Type.tptrdiff_t;
 
-			stride = new BigInteger(String.valueOf(t1b.next.size(loc, context)));
+			stride = new BigInteger(String.valueOf(t1b.nextOf().size(loc, context)));
 			if (!t.equals(t2b)) {
 				e2 = e2.castTo(sc, t, context);
 			}
@@ -226,13 +225,12 @@ public abstract class BinExp extends Expression {
 			}
 			e2.type = t;
 			type = e1.type;
-			// TODO check "t2b.ty" 
-		} else if (t2b.ty != Tarray && t1b.isintegral()) { // Need to adjust operator by the stride
+		} else if (t2b.ty == Tpointer && t1b.isintegral()) { // Need to adjust operator by the stride
 			// Replace (int + ptr) with (ptr + (int * stride))
 			Type t = Type.tptrdiff_t;
 			Expression e;
 
-			stride = new BigInteger(String.valueOf(t2b.next.size(loc, context)));
+			stride = new BigInteger(String.valueOf(t2b.nextOf().size(loc, context)));
 			if (!t.equals(t1b)) {
 				e = e1.castTo(sc, t, context);
 			} else {
@@ -440,7 +438,7 @@ public abstract class BinExp extends Expression {
 				return typeCombine_Lincompatible_End(t, context);
 			}
 		} else if ((t1.ty == Tsarray || t1.ty == Tarray) && e2.op == TOKnull
-				&& t2.ty == Tpointer && t2.next.ty == Tvoid) {
+				&& t2.ty == Tpointer && t2.nextOf().ty == Tvoid) {
 			// goto Lx1;
 			t = t1.next.arrayOf(context);
 			e1 = e1.castTo(sc, t, context);
@@ -450,7 +448,7 @@ public abstract class BinExp extends Expression {
 			}
 			return this;
 		} else if ((t2.ty == Tsarray || t2.ty == Tarray) && e1.op == TOKnull
-				&& t1.ty == Tpointer && t1.next.ty == Tvoid) {
+				&& t1.ty == Tpointer && t1.nextOf().ty == Tvoid) {
 			// goto Lx2;
 			t = t2.next.arrayOf(context);
 			e1 = e1.castTo(sc, t, context);
@@ -552,18 +550,42 @@ public abstract class BinExp extends Expression {
 			return this;
 		} else if (t1.ty == Tsarray
 				&& t2.ty == Tsarray
-				&& e2.implicitConvTo(t1.next.arrayOf(context), context) != MATCHnomatch) {
-			t = t1.next.arrayOf(context);
+				&& e2.implicitConvTo(t1.nextOf().arrayOf(context), context) != MATCHnomatch) {
+			t = t1.nextOf().arrayOf(context);
 			e1 = e1.castTo(sc, t, context);
 			e2 = e2.castTo(sc, t, context);
 		} else if (t1.ty == Tsarray
 				&& t2.ty == Tsarray
-				&& e1.implicitConvTo(t2.next.arrayOf(context), context) != MATCHnomatch) {
-			t = t2.next.arrayOf(context);
+				&& e1.implicitConvTo(t2.nextOf().arrayOf(context), context) != MATCHnomatch) {
+			t = t2.nextOf().arrayOf(context);
 			e1 = e1.castTo(sc, t, context);
 			e2 = e2.castTo(sc, t, context);
+		} else if (t1.isintegral() && t2.isintegral()) {
+	    	throw new IllegalStateException("assert(0);");
+		} else if (e1.op == TOKslice && t1.ty == Tarray &&
+			     e2.implicitConvTo(t1.nextOf(), context) != MATCHnomatch)
+	    {	// T[] op T
+		e2 = e2.castTo(sc, t1.nextOf(), context);
+		t = t1.nextOf().arrayOf(context);
+	    } else if (e2.op == TOKslice && t2.ty == Tarray
+				&& e1.implicitConvTo(t2.nextOf(), context) != MATCHnomatch) { // T op T[]
+			e1 = e1.castTo(sc, t2.nextOf(), context);
+			t = t2.nextOf().arrayOf(context);
+
+			e1 = e1.optimize(WANTvalue, context);
+			if (isCommutative() && e1.isConst()) { 
+				/*
+				 * Swap operands to minimize number of functions generated
+				 */
+				Expression tmp = e1;
+				e1 = e2;
+				e2 = tmp;
+			}
 		} else {
 			incompatibleTypes(context);
+			type = Type.terror;
+			e1 = new ErrorExp();
+			e2 = new ErrorExp();
 		}
 		if (type == null) {
 			type = t;

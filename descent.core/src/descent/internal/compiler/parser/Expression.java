@@ -5,10 +5,16 @@ import static descent.internal.compiler.parser.MATCH.MATCHconst;
 import static descent.internal.compiler.parser.MATCH.MATCHconvert;
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+import static descent.internal.compiler.parser.TOK.TOKadd;
+import static descent.internal.compiler.parser.TOK.TOKand;
 import static descent.internal.compiler.parser.TOK.TOKdelegate;
 import static descent.internal.compiler.parser.TOK.TOKint64;
+import static descent.internal.compiler.parser.TOK.TOKmin;
+import static descent.internal.compiler.parser.TOK.TOKor;
+import static descent.internal.compiler.parser.TOK.TOKxor;
 import static descent.internal.compiler.parser.TY.Tbit;
 import static descent.internal.compiler.parser.TY.Tbool;
+import static descent.internal.compiler.parser.TY.Tint32;
 import static descent.internal.compiler.parser.TY.Tpointer;
 import static descent.internal.compiler.parser.TY.Treference;
 import static descent.internal.compiler.parser.TY.Tsarray;
@@ -293,9 +299,10 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	public Expression implicitCastTo(Scope sc, Type t, SemanticContext context) {
 		MATCH match = implicitConvTo(t, context);
 		if (match != MATCHnomatch) {
+			TY tyfrom = type.toBasetype(context).ty;
+			TY tyto = t.toBasetype(context).ty;
 			if (context.global.params.warnings
-					&& Type.impcnvWarn[type.toBasetype(context).ty.ordinal()][t
-							.toBasetype(context).ty.ordinal()]
+					&& Type.impcnvWarn[tyfrom.ordinal()][tyto.ordinal()]
 					&& op != TOKint64) {
 				Expression e = optimize(WANTflags | WANTvalue, context);
 
@@ -303,12 +310,27 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 					return e.implicitCastTo(sc, t, context);
 				}
 
-				if (context.acceptsWarnings()) {
-					context.acceptProblem(Problem.newSemanticTypeWarning(
-							IProblem.ImplicitConversionCanCauseLossOfData, 0,
-							start, length, new String[] { toChars(context),
-									type.toChars(context), t.toChars(context) }));
-				}
+				if (tyfrom == Tint32 &&
+			    		(op == TOKadd || op == TOKmin ||
+			    		 op == TOKand || op == TOKor || op == TOKxor)
+			    	       ) {
+			    		/* This is really only a semi-kludge fix,
+			    		 * we really should look at the operands of op
+			    		 * and see if they are narrower types.
+			    		 * For example, b=b|b and b=b|7 and s=b+b should be allowed,
+			    		 * but b=b|i should be an error.
+			    		 */
+			    		;
+	    	    }
+	    	    else
+	    	    {
+					if (context.acceptsWarnings()) {
+						context.acceptProblem(Problem.newSemanticTypeWarning(
+								IProblem.ImplicitConversionCanCauseLossOfData, 0,
+								start, length, new String[] { toChars(context),
+										type.toChars(context), t.toChars(context) }));
+					}
+			    }
 			}
 			if (context.isD2()) {
 				if (match == MATCHconst && t == type.constOf(context)) {
@@ -396,9 +418,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	}
 
 	public Expression integralPromotions(Scope sc, SemanticContext context) {
-		Expression e;
-
-		e = this;
+		Expression e = this;
 		switch (type.toBasetype(context).ty) {
 		case Tvoid:
 			if (context.acceptsErrors()) {

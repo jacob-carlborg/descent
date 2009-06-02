@@ -163,24 +163,23 @@ public class StorageClassDeclaration extends AttribDeclaration {
 				context), modifier, single, colon);
 		return scd;
 	}
-
-	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+	
+	public static void stcToCBuffer(OutBuffer buf, int stc,
 			SemanticContext context) {
-		boolean written = false;
-
 		SCstring[] theTable = context.isD2() ? table2 : table1;
 
 		for (SCstring sc : theTable) {
 			if ((stc & sc.stc) != 0) {
-				if (written) {
-					buf.writeByte(' ');
-				}
-				written = true;
 				buf.writestring(sc.tok.toString());
+				buf.writeByte(' ');
 			}
 		}
+	}
 
+	@Override
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
+		stcToCBuffer(buf, stc, context);
 		super.toCBuffer(buf, hgs, context);
 	}
 

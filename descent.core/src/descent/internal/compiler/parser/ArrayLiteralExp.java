@@ -123,7 +123,7 @@ public class ArrayLiteralExp extends Expression {
 
 			for (int i = 0; i < elements.size(); i++) {
 				Expression e = elements.get(i);
-				MATCH m = e.implicitConvTo(tb.next, context);
+				MATCH m = e.implicitConvTo(tb.nextOf(), context);
 				if (m.ordinal() < result.ordinal()) {
 					result = m; // remember worst match
 				}
