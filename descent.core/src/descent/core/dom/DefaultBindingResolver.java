@@ -42,6 +42,7 @@ import descent.internal.compiler.parser.TypePointer;
 import descent.internal.compiler.parser.TypeSArray;
 import descent.internal.compiler.parser.TypeSlice;
 import descent.internal.compiler.parser.TypeStruct;
+import descent.internal.compiler.parser.TypeTuple;
 import descent.internal.compiler.parser.TypedefDeclaration;
 import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.compiler.parser.VarExp;
@@ -581,7 +582,7 @@ class DefaultBindingResolver extends BindingResolver {
 				} else if (CharOperation.equals(prop, Id.length)
 						|| CharOperation.equals(prop, Id.ptr)) {
 					binding = new BuiltinPropertyBinding(this, type,
-							Type.tint32, identifier, signature);
+							Type.tuns32, identifier, signature);
 				} else if (apiLevel >= AST.D2) {
 					if (CharOperation.equals(prop, Id.idup)) {
 						String otherSignature = signature;
@@ -599,7 +600,7 @@ class DefaultBindingResolver extends BindingResolver {
 			} else if (type instanceof TypeAArray) {
 				if (CharOperation.equals(prop, Id.length)) {
 					binding = new BuiltinPropertyBinding(this, type,
-							Type.tint32, identifier, signature);
+							Type.tuns32, identifier, signature);
 				} else if (CharOperation.equals(prop, Id.rehash)) {
 					binding = new BuiltinPropertyBinding(this, type, type,
 							identifier, signature);
@@ -639,6 +640,11 @@ class DefaultBindingResolver extends BindingResolver {
 					
 					binding = new BuiltinPropertyBinding(this, type,
 							tp, identifier, newSignature);
+				}
+			} else if (type instanceof TypeTuple) {
+				if (CharOperation.equals(prop, Id.length)) {
+					binding = new BuiltinPropertyBinding(this, type,
+							Type.tuns32, identifier, signature);
 				}
 			}
 		}

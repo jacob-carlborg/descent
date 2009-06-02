@@ -120,6 +120,7 @@ import descent.internal.compiler.parser.TemplateExp;
 import descent.internal.compiler.parser.TemplateInstance;
 import descent.internal.compiler.parser.TemplateMixin;
 import descent.internal.compiler.parser.ThisExp;
+import descent.internal.compiler.parser.TupleExp;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeAArray;
 import descent.internal.compiler.parser.TypeArray;
@@ -134,6 +135,7 @@ import descent.internal.compiler.parser.TypeIdentifier;
 import descent.internal.compiler.parser.TypePointer;
 import descent.internal.compiler.parser.TypeSArray;
 import descent.internal.compiler.parser.TypeStruct;
+import descent.internal.compiler.parser.TypeTuple;
 import descent.internal.compiler.parser.TypeTypedef;
 import descent.internal.compiler.parser.TypedefDeclaration;
 import descent.internal.compiler.parser.UnionDeclaration;
@@ -1804,6 +1806,10 @@ public class CompletionEngine extends Engine
 			IndexExp index = (IndexExp) e1;
 			Type type = index.type;
 			completeType(type, ident, false);
+		} else if (e1 instanceof TupleExp) {
+			TupleExp tuple = (TupleExp) e1;
+			Type type = tuple.type;
+			completeType(type, ident, false);
 		} else if (ident.resolvedSymbol != null) {
 			// TODO check this
 			trySuggestCall(ident.resolvedSymbol.type(), ident.ident, CharOperation.NO_CHAR, true /* only statics */);
@@ -1907,6 +1913,9 @@ public class CompletionEngine extends Engine
 			break;
 		case ASTDmdNode.TYPE_DELEGATE:
 			suggestTypeDelegateProperties((TypeDelegate) type);
+			break;
+		case ASTDmdNode.TYPE_TUPLE:
+			suggestTypeTupleProperties((TypeTuple) type);
 			break;
 		}
 	}
@@ -2231,6 +2240,10 @@ public class CompletionEngine extends Engine
 					new TypePointer(type.next),
 					},
 				R_INTERESTING_BUILTIN_PROPERTY);
+	}
+	
+	private void suggestTypeTupleProperties(TypeTuple type) {
+		suggestProperty(type.getSignature().toCharArray(), R_INTERESTING_BUILTIN_PROPERTY, Id.length, Type.tuns32);
 	}
 	
 	private void completeTypeClass(TypeClass type, boolean onlyStatics) {
