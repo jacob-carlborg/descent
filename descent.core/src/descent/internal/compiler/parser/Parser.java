@@ -4500,13 +4500,19 @@ public class Parser extends Lexer {
 			Dsymbol d;
 			t = peek(token);
 		    if (t.value == TOKlparen)
-		    {	// mixin(string)
-				nextToken();
-				check(TOKlparen);
-				Expression e = parseAssignExp();
-				check(TOKrparen);
-				check(TOKsemicolon);
-				s = newCompileStatement(loc(), e);
+		    {
+		    	// mixin(string)
+		    	if (peekPastParen(t).value == TOKsemicolon) {
+		    		nextToken();
+					check(TOKlparen);
+					Expression e = parseAssignExp();
+					check(TOKrparen);
+					check(TOKsemicolon);
+					s = newCompileStatement(loc(), e);
+		    	} else {
+		    		Expression e = parseAssignExp();
+			    	s = new ExpStatement(loc(), e);
+		    	}
 				break;
 		    } else {			
 		    	d = parseMixin();

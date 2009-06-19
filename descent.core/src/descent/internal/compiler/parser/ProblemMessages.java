@@ -392,6 +392,7 @@ final class ProblemMessages extends NLS {
 	public static String CannotInheritFromFinalClass;
 	public static String StaticClassCannotInheritFromNestedClass;
 	public static String SuperClassIsNestedWithin;
+	public static String SuperClassIsNotNestedWithin;
 	public static String ArrayComparisonTypeMismatch;
 	public static String ConditionalExpressionIsNotAModifiableLvalue;
 	public static String CannotCastSymbolToSymbol;

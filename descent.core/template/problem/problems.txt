@@ -1142,7 +1142,10 @@ StaticClassCannotInheritFromNestedClass
 	formatString=Static class cannot inherit from nested class %1$s
 	numArgs=1
 SuperClassIsNestedWithin
-	formatString=Super class %1$s is nested within %2$s, not %3$s
+	formatString=Class %1$s is nested within %2$s, but super class %3$s is nested within %4$s
+	numArgs=3
+SuperClassIsNotNestedWithin
+	formatString=Class %1$s is not nested, but super class %2$s is nested within %3$s
 	numArgs=3
 ArrayComparisonTypeMismatch
 	formatString=Array comparison type mismatch, %1$s vs %2$s

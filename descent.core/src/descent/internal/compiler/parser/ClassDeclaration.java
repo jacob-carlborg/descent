@@ -117,7 +117,9 @@ public class ClassDeclaration extends AggregateDeclaration {
 		List vtbl = cd.vtbl;
 		while (true) {
 			for (int i = 0; i < vtbl.size(); i++) {
-				FuncDeclaration fd = (FuncDeclaration) vtbl.get(i);
+				FuncDeclaration fd = ((Dsymbol) vtbl.get(i)).isFuncDeclaration();
+				if (fd == null)
+					continue;		// the first entry might be a ClassInfo
 
 				if (equals(ident, fd.ident) && fd.type.covariant(tf, context) == 1) {
 					return fd;
@@ -657,12 +659,34 @@ public class ClassDeclaration extends AggregateDeclaration {
 					}
 				}
 				if (toParent2() != baseClass.toParent2()) {
-					if (context.acceptsErrors()) {
-						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.SuperClassIsNestedWithin, this, baseClass.toChars(context), baseClass.toParent2()
-										.toChars(context), toParent2().toChars(
-												context)));
+//					if (context.acceptsErrors()) {
+//						context.acceptProblem(Problem.newSemanticTypeError(
+//								IProblem.SuperClassIsNestedWithin, this, baseClass.toChars(context), baseClass.toParent2()
+//										.toChars(context), toParent2().toChars(
+//												context)));
+//					}
+					if (toParent2() != null)
+					{
+						if (context.acceptsErrors()) {
+						    context.acceptProblem(Problem.newSemanticTypeError(IProblem.SuperClassIsNestedWithin, 
+						    	this,
+						    	this.toChars(context),
+								toParent2().toChars(context),
+								baseClass.toChars(context),
+								baseClass.toParent2().toChars(context)));
+						}
 					}
+					else
+					{
+						if (context.acceptsErrors()) {
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.SuperClassIsNotNestedWithin, 
+						    	this,
+						    	this.toChars(context),
+								baseClass.toChars(context),
+								baseClass.toParent2().toChars(context)));
+						}
+					}
+					isnested = false;
 				}
 			} else if ((storage_class & STC.STCstatic) == 0) {
 				Dsymbol s = toParent2();
@@ -724,7 +748,11 @@ public class ClassDeclaration extends AggregateDeclaration {
 		sc.inunion = false;
 
 		if (isCOMclass()) {
-			sc.linkage = LINK.LINKwindows;
+			if (context._WIN32) {
+				sc.linkage = LINK.LINKwindows;
+			} else {
+				sc.linkage = LINK.LINKc;
+			}
 		}
 		sc.protection = PROT.PROTpublic;
 		sc.explicitProtection = 0;
@@ -736,8 +764,8 @@ public class ClassDeclaration extends AggregateDeclaration {
 			// if (isnested)
 			// sc.offset += PTRSIZE; // room for uplevel context pointer
 		} else {
-			sc.offset = 8; // allow room for vptr[] and monitor
-			alignsize = 4;
+			sc.offset = Type.PTRSIZE * 2; // allow room for vptr[] and monitor
+			alignsize = Type.PTRSIZE;
 		}
 		structsize = sc.offset;
 		
@@ -781,8 +809,8 @@ public class ClassDeclaration extends AggregateDeclaration {
 
 		context.Module_dprogress++;
 		
-		// TODO check if this is necessary for Descent
-//	    dtor = buildDtor(sc, context);
+		// TODO Semantic check if this is necessary for Descent
+		// dtor = buildDtor(sc, context);
 
 		sc.pop();
 	}
@@ -982,7 +1010,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		 * a base class.
 		 */
 		ctor = (CtorDeclaration) search(loc, Id.ctor, 0, context);
-		if (ctor != null && ctor.toParent() != this) {
+		if (ctor != null && (ctor.toParent() != this || ctor.isCtorDeclaration() == null)) {
 			ctor = null;
 		}
 

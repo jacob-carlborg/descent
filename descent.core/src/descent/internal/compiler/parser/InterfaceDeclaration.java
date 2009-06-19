@@ -62,10 +62,14 @@ public class InterfaceDeclaration extends ClassDeclaration {
 			if (SemanticMixin.equals(this, b.base)) {
 				if (poffset != null) {
 					poffset[0] = b.offset;
+					if (j != 0 && bc.base.isInterfaceDeclaration() != null)
+					    poffset[0] = OFFSET_RUNTIME;
 				}
 				return true;
 			}
 			if (this.isBaseOf(b, poffset)) {
+				if (j != 0 && poffset != null && bc.base.isInterfaceDeclaration() != null)
+					poffset[0] = OFFSET_RUNTIME;
 				return true;
 			}
 		}
@@ -300,7 +304,7 @@ public class InterfaceDeclaration extends ClassDeclaration {
 		}
 		sc.structalign = 8;
 		structalign = sc.structalign;
-		sc.offset = 8;
+		sc.offset = Type.PTRSIZE * 2;
 		
 		semanticScope(sc);
 

@@ -78,12 +78,6 @@ public class Problem implements IProblem {
 	}
 	
 	public static Problem newSemanticTypeError(int id, ASTDmdNode n1, ASTDmdNode n2) {
-		if (n1.getStart() > n2.getStart()) {
-			ASTDmdNode temp = n1;
-			n1 = n2;
-			n2 = temp;
-		}
-
 		return newSemanticTypeProblem(id, n1.getLineNumber(), n1.getStart(), n2.getStart() + n2.getLength() - n1.getStart(), null, true);
 	}
 	
@@ -897,6 +891,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.StaticClassCannotInheritFromNestedClass, arguments[0]);
 		case SuperClassIsNestedWithin:
 			return String.format(ProblemMessages.SuperClassIsNestedWithin, arguments[0], arguments[1], arguments[2]);
+		case SuperClassIsNotNestedWithin:
+			return String.format(ProblemMessages.SuperClassIsNotNestedWithin, arguments[0], arguments[1], arguments[2]);
 		case ArrayComparisonTypeMismatch:
 			return String.format(ProblemMessages.ArrayComparisonTypeMismatch, arguments[0], arguments[1]);
 		case ConditionalExpressionIsNotAModifiableLvalue:
