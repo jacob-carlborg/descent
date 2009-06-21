@@ -41,8 +41,8 @@ public enum TOK implements ITerminalSymbols {
 	// Operators
 	TOKlt("<", TokenNameLESS, PREC_rel), TOKgt(">", TokenNameGREATER, PREC_rel), 
 	TOKle("<=", TokenNameLESS_EQUAL, PREC_rel), TOKge(">=", TokenNameGREATER_EQUAL, PREC_rel), 
-	TOKequal("==", TokenNameEQUAL_EQUAL, PREC_equal), TOKnotequal("!=", TokenNameNOT_EQUAL, PREC_equal), 
-	TOKidentity("===", TokenNameEQUAL_EQUAL_EQUAL, PREC_equal), TOKnotidentity("!==", TokenNameNOT_EQUAL_EQUAL, PREC_equal), 
+	TOKequal("==", TokenNameEQUAL_EQUAL, PREC_rel), TOKnotequal("!=", TokenNameNOT_EQUAL, PREC_rel), 
+	TOKidentity("===", TokenNameEQUAL_EQUAL_EQUAL, PREC_rel), TOKnotidentity("!==", TokenNameNOT_EQUAL_EQUAL, PREC_rel), 
 	TOKindex, 
 	TOKis("is", TokenNameis, PREC_primary), 
 	TOKtobool(PREC_add),

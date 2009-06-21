@@ -317,7 +317,9 @@ public class IntegerExp extends Expression {
 					type = type.semantic(loc, sc, context);
 				}
 			} else {
-				type = type.semantic(loc, sc, context);
+				if (type.deco == null) {
+					type = type.semantic(loc, sc, context);
+				}
 			}
 		}
 		return this;
@@ -510,7 +512,6 @@ public class IntegerExp extends Expression {
 			case Tint32:
 				value = value.castToInt32();
 				break;
-			case Tpointer:
 			case Tdchar:
 			case Tuns32:
 				value = value.castToUns32();
@@ -521,7 +522,14 @@ public class IntegerExp extends Expression {
 			case Tuns64:
 				value = value.castToUns64();
 				break;
-
+			case Tpointer:
+                if (Type.PTRSIZE == 4)
+                    value = value.castToUns32();
+                else if (Type.PTRSIZE == 8)
+                    value = value.castToUns64();
+                else
+                	throw new IllegalStateException("Type.PTRSIZE must be 4 or 8");
+				break;
 			case Tenum: {
 				TypeEnum te = (TypeEnum) t;
 				t = te.sym.memtype;

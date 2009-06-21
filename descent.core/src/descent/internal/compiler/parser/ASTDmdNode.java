@@ -772,7 +772,9 @@ public abstract class ASTDmdNode extends ASTNode {
 			return;
 		}
 		
-		if (e.op.precedence.ordinal() < pr) {
+		if (e.op.precedence.ordinal() < pr ||
+				(pr == PREC.PREC_rel.ordinal() && e.op.precedence.ordinal() == pr)
+				) {
 			buf.writeByte('(');
 			e.toCBuffer(buf, hgs, context);
 			buf.writeByte(')');
@@ -885,7 +887,7 @@ public abstract class ASTDmdNode extends ASTNode {
 							// arg.type
 	
 							IdentifierExp id = context.uniqueId("__arrayArg");
-							Type t = new TypeSArray(tb.next, new IntegerExp(loc,
+							Type t = new TypeSArray(((TypeArray) tb).next, new IntegerExp(loc,
 									nargs - i), context.encoder);
 							t = t.semantic(loc, sc, context);
 							VarDeclaration v = new VarDeclaration(loc, t, id,
@@ -898,7 +900,7 @@ public abstract class ASTDmdNode extends ASTNode {
 	
 							for (int u = i; u < nargs; u++) {
 								Expression a = arguments.get(u);
-								if (tret != null && !tb.next.equals(a.type)) {
+								if (tret != null && !((TypeArray)tb).next.equals(a.type)) {
 									a = a.toDelegate(sc, tret, context);
 								}
 	
@@ -906,9 +908,7 @@ public abstract class ASTDmdNode extends ASTNode {
 								e = new IndexExp(loc, e, new IntegerExp(loc, u + 1
 										- nparams));
 								AssignExp ae = new AssignExp(loc, e, a);
-								if (context.isD2()) {
-									ae.op = TOK.TOKconstruct;
-								}
+								ae.op = TOK.TOKconstruct;
 								if (c != null) {
 									c = new CommaExp(loc, c, ae);
 								} else {

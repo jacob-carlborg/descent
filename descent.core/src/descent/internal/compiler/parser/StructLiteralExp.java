@@ -204,10 +204,8 @@ public class StructLiteralExp extends Expression {
 	public Expression semantic(Scope sc, SemanticContext context) {
 		Expression e;
 		
-		if (context.isD2()) {
-			if (type != null) {
-				return this;
-			}
+		if (type != null) {
+			return this;
 		}
 
 		// Run semantic() on each element

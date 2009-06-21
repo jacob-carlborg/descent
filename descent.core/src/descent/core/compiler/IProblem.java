@@ -693,5 +693,6 @@ public interface IProblem {
 	int SymbolCanOnlyBeCalledOnAnInvariantObject = 482;
 	int SymbolCanOnlyBeCalledOnAMutableObject = 483;
 	int CannotCallMutableMethodOnFinalStruct = 484;
+	int ForwardReferenceOfImport = 485;
 
 }

@@ -177,7 +177,7 @@ public class ArrayLiteralExp extends Expression {
 				t0 = e.type;
 				// Convert any static arrays to dynamic arrays
 				if (t0.ty == Tsarray) {
-					t0 = t0.next.arrayOf(context);
+					t0 = ((TypeSArray) t0).next.arrayOf(context);
 					e = e.implicitCastTo(sc, t0, context);
 				}
 			} else {

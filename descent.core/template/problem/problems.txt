@@ -1450,6 +1450,9 @@ SymbolCanOnlyBeCalledOnAMutableObject
 CannotCallMutableMethodOnFinalStruct
 	formatString=Cannot call mutable method on final struct
 	numArgs=0
+ForwardReferenceOfImport
+	formatString=Forward reference of improt %1$s
+	numArgs=1
 
 
 

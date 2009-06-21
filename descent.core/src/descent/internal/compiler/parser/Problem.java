@@ -1095,6 +1095,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.SymbolCanOnlyBeCalledOnAMutableObject, arguments[0], arguments[1]);
 		case CannotCallMutableMethodOnFinalStruct:
 			return String.format(ProblemMessages.CannotCallMutableMethodOnFinalStruct);
+		case ForwardReferenceOfImport:
+			return String.format(ProblemMessages.ForwardReferenceOfImport, arguments[0]);
 		default:
 			return "";
 		}

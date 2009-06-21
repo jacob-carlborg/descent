@@ -187,9 +187,15 @@ public class DsymbolExp extends Expression {
 			}
 			imp = s.isImport();
 			if (imp != null) {
-				ScopeExp ie;
-
-				ie = new ScopeExp(loc, imp.pkg);
+				if (imp.pkg == null)
+				{   
+					if (context.acceptsErrors()) {
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForwardReferenceOfImport, this, imp.toChars(context)));
+					}
+				    return this;
+				}
+				
+				ScopeExp ie = new ScopeExp(loc, imp.pkg);
 				ie.copySourceRange(this);
 				return ie.semantic(sc, context);
 			}

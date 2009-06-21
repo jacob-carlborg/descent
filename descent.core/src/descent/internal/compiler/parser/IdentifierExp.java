@@ -139,7 +139,9 @@ public class IdentifierExp extends Expression {
 						s.semantic(sc, context);
 					}
 				}
-				// Look to see if f is really a function template
+			    /* If f is really a function template,
+			     * then replace f with the function template declaration.
+			     */
 				FuncDeclaration f = s.isFuncDeclaration();
 				if (f != null && f.parent != null) {
 					TemplateInstance ti = f.parent.isTemplateInstance();

@@ -494,6 +494,7 @@ final class ProblemMessages extends NLS {
 	public static String SymbolCanOnlyBeCalledOnAnInvariantObject;
 	public static String SymbolCanOnlyBeCalledOnAMutableObject;
 	public static String CannotCallMutableMethodOnFinalStruct;
+	public static String ForwardReferenceOfImport;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);
