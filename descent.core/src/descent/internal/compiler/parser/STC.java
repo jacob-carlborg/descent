@@ -25,6 +25,7 @@ public class STC {
 	public final static int STCtemplateparameter = 0x40000;	// template parameter
 	public final static int STCscope	    = 0x80000;		// template parameter
 	public final static int STCinvariant	= 0x100000;
+	public final static int STCimmutable	= 0x100000;
 	public final static int STCref	    = 0x200000;
 	public final static int STCinit	    = 0x400000;		// has explicit initializer
 	public final static int STCmanifest	    = 0x800000;		// manifest constant
@@ -34,7 +35,9 @@ public class STC {
 	public final static int STCtls	    = 0x8000000;	// thread local
 	public final static int STCalias	    = 0x10000000;	// alias parameter
 	public final static int STCshared	    = 0x20000000;	// accessible from multiple threads
-	
+    public final static int STCgshared      = 0x40000000;	// accessible from multiple threads
+    public final static int STC_TYPECTOR    = (STCconst | STCimmutable | STCshared);
+
 	public static int fromTOK(TOK tok) {
 		switch(tok) {
 		case TOKstatic: return STCstatic;

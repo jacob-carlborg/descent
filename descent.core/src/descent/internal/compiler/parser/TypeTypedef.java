@@ -156,15 +156,15 @@ public class TypeTypedef extends Type {
 			}
 			return false; // assume not
 		}
-		if (sym.inuse) {
+		if (sym.inuse != 0) {
 			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CircularDefinition, this, new String[] { toChars(context) }));
 			}
 			sym.basetype = Type.terror;
 		}
-		sym.inuse = true;
+		sym.inuse = 1;
 		boolean result = sym.basetype.isZeroInit(context);
-		sym.inuse = false;
+		sym.inuse = 0;
 		return result;
 	}
 
@@ -186,16 +186,16 @@ public class TypeTypedef extends Type {
 
 	@Override
 	public Type toBasetype(SemanticContext context) {
-		if (sym.inuse) {
+		if (sym.inuse != 0) {
 			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CircularDefinition, this, new String[] { toChars(context) }));
 			}
 			sym.basetype = Type.terror;
 			return Type.terror;
 		}
-		sym.inuse = true;
+		sym.inuse = 1;
 		Type t = sym.basetype.toBasetype(context);
-		sym.inuse = false;
+		sym.inuse = 0;
 		return t;
 	}
 

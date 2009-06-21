@@ -8,9 +8,11 @@ import static descent.internal.compiler.parser.STC.STCextern;
 import static descent.internal.compiler.parser.STC.STCfield;
 import static descent.internal.compiler.parser.STC.STCforeach;
 import static descent.internal.compiler.parser.STC.STCin;
+import static descent.internal.compiler.parser.STC.STCinvariant;
 import static descent.internal.compiler.parser.STC.STClazy;
 import static descent.internal.compiler.parser.STC.STCout;
 import static descent.internal.compiler.parser.STC.STCparameter;
+import static descent.internal.compiler.parser.STC.STCpure;
 import static descent.internal.compiler.parser.STC.STCref;
 import static descent.internal.compiler.parser.STC.STCscope;
 import static descent.internal.compiler.parser.STC.STCstatic;
@@ -40,7 +42,6 @@ public class VarDeclaration extends Declaration {
 	public Dsymbol aliassym; // if redone as alias to another symbol
 	public Type htype;
 	public Initializer hinit;;
-	public int inuse;
 	public int offset;
 	public boolean noauto; // no auto semantics
 	public FuncDeclarations nestedrefs;// referenced by these lexically nested functions
@@ -53,7 +54,7 @@ public class VarDeclaration extends Declaration {
 							// (NULL if value not determinable)
 	public Object csym;
 	public Object isym;
-	public Scope scope;
+	public Scope scope;		// !=NULL means context to use
 	
 	private IField javaElement;
 	
@@ -76,7 +77,6 @@ public class VarDeclaration extends Declaration {
 		this.offset = 0;
 		this.noauto = false;
 		this.nestedref = 0;
-		this.inuse = 0;
 		this.ctorinit = false;
 		this.aliassym = null;
 		this.onstack = 0;
@@ -480,6 +480,9 @@ public class VarDeclaration extends Declaration {
 		}
 
 		if (init != null) {
+			sc = sc.push();
+			sc.stc &= ~(STCconst | STCinvariant | STCpure);
+			
 			ArrayInitializer ai = init.isArrayInitializer();
 			if (ai != null && tb.ty == Taarray) {
 				init = ai.toAssocArrayInitializer(context);
@@ -614,6 +617,8 @@ public class VarDeclaration extends Declaration {
 					}
 				}
 			}
+			
+			sc = sc.pop();
 		}
 	}
 	
@@ -688,12 +693,7 @@ public class VarDeclaration extends Declaration {
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
-		if ((storage_class & STCconst) != 0) {
-			buf.writestring("const ");
-		}
-		if ((storage_class & STCstatic) != 0) {
-			buf.writestring("static ");
-		}
+		StorageClassDeclaration.stcToCBuffer(buf, storage_class, context);
 		if (type != null) {
 			type.toCBuffer(buf, ident, hgs, context);
 		} else {

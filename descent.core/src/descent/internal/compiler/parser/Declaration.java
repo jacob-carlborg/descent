@@ -14,6 +14,7 @@ public abstract class Declaration extends Dsymbol {
 	public int storage_class;
 	public LINK linkage;
 	public PROT protection;
+	public int inuse;
 
 	public Declaration(IdentifierExp ident) {
 		super(ident);
@@ -22,6 +23,7 @@ public abstract class Declaration extends Dsymbol {
 		this.storage_class = STC.STCundefined;
 		this.protection = PROT.PROTundefined;
 		this.linkage = LINK.LINKdefault;
+		this.inuse = 0;
 	}
 
 	@Override

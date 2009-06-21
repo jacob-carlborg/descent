@@ -9,6 +9,10 @@ public class ThisDeclaration extends VarDeclaration {
 		super(loc, type, Id.This, null);
 	}
 	
+	public ThisDeclaration isThisDeclaration() {
+		return this;
+	}
+	
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		visitor.visit(this);

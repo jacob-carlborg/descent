@@ -24,7 +24,6 @@ public class TypedefDeclaration extends Declaration {
 	// 1: semantic() is in progress
 	// 2: semantic() has been run
 	// 3: semantic2() has been run
-	public boolean inuse;
 	
 	private IField javaElement;
 
@@ -41,7 +40,6 @@ public class TypedefDeclaration extends Declaration {
 		this.hbasetype = null;
 		this.init = init;
 		this.sem = 0;
-		this.inuse = false;
 	}
 
 	@Override

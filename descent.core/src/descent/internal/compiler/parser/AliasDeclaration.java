@@ -296,6 +296,7 @@ public class AliasDeclaration extends Declaration {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.CircularDefinition, ident, toChars(context)));
 			}
+			aliassym = new TypedefDeclaration(loc, ident, Type.terror, null);
 		}
 		Dsymbol s = aliassym != null ? aliassym.toAlias(context) : this;
 		return s;
