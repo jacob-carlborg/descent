@@ -461,7 +461,7 @@ public class Constfold {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.DivisionByZero, e1, e2));
 					}
-					e2 = new IntegerExp(Loc.ZERO, integer_t.ONE, e2.type);
+					e2 = new IntegerExp(loc, integer_t.ONE, e2.type);
 					n2 = integer_t.ONE;
 				}
 				if (e1.type.isunsigned() || e2.type.isunsigned()) {
@@ -518,7 +518,7 @@ public class Constfold {
 				if (n2.equals(0)) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.DivisionByZero, e1, e2));
-					e2 = new IntegerExp(Loc.ZERO, integer_t.ONE, e2.type);
+					e2 = new IntegerExp(loc, integer_t.ONE, e2.type);
 					n2 = integer_t.ONE;
 				}
 				if (e1.type.isunsigned() || e2.type.isunsigned()) {
@@ -633,9 +633,8 @@ public class Constfold {
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context) {
 			Expression e;
-			Loc loc = e1.loc;
 
-			e = new IntegerExp(loc, e1.toInteger(context).and(
+			e = new IntegerExp(e1.loc, e1.toInteger(context).and(
 					e2.toInteger(context)), type);
 			e.start = e1.start;
 			e.length = e2.start + e2.length - e1.start;
@@ -647,9 +646,8 @@ public class Constfold {
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context) {
 			Expression e;
-			Loc loc = e1.loc;
 
-			e = new IntegerExp(loc, e1.toInteger(context).or(
+			e = new IntegerExp(e1.loc, e1.toInteger(context).or(
 					e2.toInteger(context)), type);
 			e.copySourceRange(e1, e2);
 			return e;
@@ -660,9 +658,8 @@ public class Constfold {
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context) {
 			Expression e;
-			Loc loc = e1.loc;
 
-			e = new IntegerExp(loc, e1.toInteger(context).xor(
+			e = new IntegerExp(e1.loc, e1.toInteger(context).xor(
 					e2.toInteger(context)), type);
 			e.copySourceRange(e1, e2);
 			return e;
@@ -754,6 +751,8 @@ public class Constfold {
 			Expression e = EXP_CANT_INTERPRET;
 			Loc loc = e1.loc;
 			Type t;
+		    Type t1 = e1.type.toBasetype(context);
+		    Type t2 = e2.type.toBasetype(context);
 
 			if ((e1.op == TOKnull && (e2.op == TOKint64 || e2.op == TOKstructliteral))
 					|| ((e1.op == TOKint64 || e1.op == TOKstructliteral) && e2.op == TOKnull)) {
@@ -798,7 +797,13 @@ public class Constfold {
 						es1.string, es2.string), es1.len + es2.len);
 
 				int sz = es1.sz;
-				assert (sz == es2.sz);
+				if (sz != es2.sz) {
+				    /* Can happen with:
+				     *   auto s = "foo"d ~ "bar"c;
+				     */
+//				    assert(global.errors);
+				    return e;
+				}
 				es.sz = sz;
 				es.committed = es1.committed | es2.committed;
 				if (es1.committed) {
@@ -873,7 +878,33 @@ public class Constfold {
 					e.type = type;
 				}
 			}
+		    else if ((e1.op == TOKarrayliteral && e2.op == TOKnull && t1
+					.nextOf().equals(t2.nextOf()))
+					|| (e1.op == TOKnull && e2.op == TOKarrayliteral && t1
+							.nextOf().equals(t2.nextOf()))) {
+				if ((e1.op == TOKarrayliteral && e2.op == TOKnull && t1
+						.nextOf().equals(t2.nextOf()))) {
+					e = e1;
+				} else {
+					e = e2;
+				}
+				// L3:
+				// Concatenate the array with null
+				ArrayLiteralExp es = (ArrayLiteralExp) e;
 
+				es = new ArrayLiteralExp(es.loc, (Expressions) es.elements
+						.copy());
+				e = es;
+
+				if (type.toBasetype(context).ty == Tsarray) {
+					e.type = new TypeSArray(t1.nextOf(), new IntegerExp(loc,
+							ASTDmdNode.size(es.elements), Type.tindex),
+							context.encoder);
+					e.type = e.type.semantic(loc, null, context);
+				} else {
+					e.type = type;
+				}
+			}
 			else if ((e1.op == TOKarrayliteral || e1.op == TOKnull)
 					&& e1.type.toBasetype(context).nextOf().equals(e2.type)) {
 				ArrayLiteralExp es1;
@@ -887,7 +918,7 @@ public class Constfold {
 				e = es1;
 
 				if (type.toBasetype(context).ty == Tsarray) {
-					e.type = new TypeSArray(e2.type, new IntegerExp(Loc.ZERO,
+					e.type = new TypeSArray(e2.type, new IntegerExp(loc,
 							es1.elements.size(), Type.tindex), context.encoder);
 					e.type = e.type.semantic(loc, null, context);
 				} else {
@@ -906,7 +937,7 @@ public class Constfold {
 				e = ale;
 
 				if (type.toBasetype(context).ty == Tsarray) {
-					e.type = new TypeSArray(e1.type, new IntegerExp(Loc.ZERO,
+					e.type = new TypeSArray(e1.type, new IntegerExp(loc,
 							es2.elements.size(), Type.tindex), context.encoder);
 					e.type = e.type.semantic(loc, null, context);
 				} else {
@@ -984,7 +1015,10 @@ public class Constfold {
 				StringExp es1 = (StringExp) e1;
 				StringExp es2 = (StringExp) e2;
 
-				assert (es1.sz == es2.sz);
+				if (es1.sz != es2.sz) {
+//					assert(context.global.errors);
+					return EXP_CANT_INTERPRET;
+				}
 				if (es1.len == es2.len
 						&& CharOperation.equals(es1.string, es2.string)) {
 					cmp = true;
@@ -1526,8 +1560,6 @@ public class Constfold {
 						IProblem.CannotCastSymbolToSymbol, e1, e1.type.toChars(context),
 						        type.toChars(context)));
 			}
-			// Changed for Descent to not explode in other semantic
-			// e = new IntegerExp(loc, 0, type);
 			e = new IntegerExp(loc, 0, Type.tint32);
 		}
 		e.copySourceRange(e1);

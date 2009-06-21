@@ -14,7 +14,7 @@ func.c  --> missing StaticCtorDeclaration::StaticCtorDeclaration
             
 Remaining from DMD 1.045
 ------------------------------
-Ported until and including cond.c
+Ported until and including constfold.c
             
 Remaining from DMD 2.013
 ------------------------------
