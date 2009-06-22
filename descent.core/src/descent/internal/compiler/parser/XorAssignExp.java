@@ -40,5 +40,27 @@ public class XorAssignExp extends BinExp {
 	public Expression interpret(InterState istate, SemanticContext context) {
 		return interpretAssignCommon(istate, Xor, context);
 	}
+	
+	@Override
+	public void buildArrayIdent(OutBuffer buf, Expressions arguments) {
+		/* Evaluate assign expressions right to left
+	     */
+	    e2.buildArrayIdent(buf, arguments);
+	    e1.buildArrayIdent(buf, arguments);
+	    buf.writestring("Xor");
+	    buf.writestring("ass");
+	}
+	
+	@Override
+	public Expression buildArrayLoop(Arguments fparams, SemanticContext context) {
+		/* Evaluate assign expressions right to left
+	     */
+	    Expression ex2 = e2.buildArrayLoop(fparams, context);
+	    Expression ex1 = e1.buildArrayLoop(fparams, context);
+	    Argument param = (Argument) fparams.get(0);
+	    param.storageClass = 0;
+	    Expression e = new XorAssignExp(Loc.ZERO, ex1, ex2);
+	    return e;	
+	}
 
 }

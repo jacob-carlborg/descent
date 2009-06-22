@@ -95,7 +95,7 @@ public class CatExp extends BinExp {
 
 		if ((tb1.ty == TY.Tsarray || tb1.ty == TY.Tarray)
 				&& e2.type.equals(tb1.next)) {
-			type = tb1.next.arrayOf(context);
+			type = tb1.nextOf().arrayOf(context);
 			if (tb2.ty == TY.Tarray) {
 				// Make e2 into [e2]
 				Expressions elements = new Expressions(1);
@@ -108,7 +108,7 @@ public class CatExp extends BinExp {
 
 		else if ((tb2.ty == TY.Tsarray || tb2.ty == TY.Tarray)
 				&& e1.type.equals(tb2.next)) {
-			type = tb2.next.arrayOf(context);
+			type = tb2.nextOf().arrayOf(context);
 			if (tb1.ty == TY.Tarray) {
 				// Make e1 into [e1]
 				Expressions elements = new Expressions(1);

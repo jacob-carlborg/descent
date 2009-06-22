@@ -153,7 +153,7 @@ public class IsExp extends Expression {
 			case TOKdelegate:
 				if (targ.ty != TY.Tdelegate)
 					return no(context);
-				tded = targ.next; // the underlying function type
+				tded = ((TypeDelegate)targ).next; // the underlying function type
 				break;
 
 			case TOKfunction: {
@@ -182,7 +182,7 @@ public class IsExp extends Expression {
 				 * delegate, or pointer to function.
 				 */
 				if (targ.ty == TY.Tfunction)
-					tded = targ.next;
+					tded = ((TypeFunction)targ).next;
 				else if (targ.ty == TY.Tdelegate)
 					tded = targ.next.next;
 				else if (targ.ty == TY.Tpointer && targ.next.ty == TY.Tfunction)

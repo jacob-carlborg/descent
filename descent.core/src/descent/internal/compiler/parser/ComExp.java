@@ -3,6 +3,7 @@ package descent.internal.compiler.parser;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Constfold.Com;
+import static descent.internal.compiler.parser.TOK.TOKslice;
 
 
 public class ComExp extends UnaExp {
@@ -61,10 +62,25 @@ public class ComExp extends UnaExp {
 			}
 
 			e1.checkNoBool(context);
-			e1 = e1.checkIntegral(context);
+			if (e1.op != TOKslice) {
+				e1 = e1.checkIntegral(context);
+			}
 			type = e1.type;
 		}
 		return this;
+	}
+	
+	@Override
+	public void buildArrayIdent(OutBuffer buf, Expressions arguments) {
+		e1.buildArrayIdent(buf, arguments);
+	    buf.writestring("Com");
+	}
+	
+	@Override
+	public Expression buildArrayLoop(Arguments fparams, SemanticContext context) {
+		Expression ex1 = e1.buildArrayLoop(fparams, context);
+	    Expression e = new ComExp(Loc.ZERO, ex1);
+	    return e;
 	}
 
 }

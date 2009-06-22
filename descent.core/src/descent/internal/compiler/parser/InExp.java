@@ -69,7 +69,7 @@ public class InExp extends BinExp {
 			e1 = e1.implicitCastTo(sc, ta.index, context);
 
 			// Return type is pointer to value
-			type = ta.next.pointerTo(context);
+			type = ta.nextOf().pointerTo(context);
 		}
 		return this;
 	}

@@ -55,6 +55,12 @@ public class DotTemplateInstanceExp extends UnaExp {
 		if (t1 != null) {
 			t1 = t1.toBasetype(context);
 		}
+		
+	    /* Extract the following from e1:
+	     *	s: the symbol which ti should be a member of
+	     *	eleft: if not NULL, it is the 'this' pointer for ti
+	     */
+		
 		if (e1.op == TOKdotexp) {
 			DotExp de = (DotExp) e1;
 			eleft = de.e1;
@@ -83,7 +89,7 @@ public class DotTemplateInstanceExp extends UnaExp {
 			s = t1.toDsymbol(sc, context);
 			eleft = e1;
 		} else if (t1 != null && t1.ty == Tpointer) {
-			t1 = t1.next.toBasetype(context);
+			t1 = ((TypePointer)t1).next.toBasetype(context);
 			if (t1.ty != Tstruct) {
 				// goto L1;
 				if (context.acceptsErrors()) {
@@ -108,10 +114,10 @@ public class DotTemplateInstanceExp extends UnaExp {
 		id = ti.name.ident;
 		s2 = s.search(loc, id, 0, context);
 		if (s2 == null) {
-			if (s instanceof TemplateInstance) {
+			if (s.ident == null) {
 				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.TemplateIdentifierIsNotAMemberOf, this, new String(id), s.kind(), new String(((TemplateInstance) s).name.ident)));
+							IProblem.TemplateIdentifierIsNotAMemberOfUndefined, this, new String(id), s.kind()));
 				}
 			} else {
 				if (context.acceptsErrors()) {

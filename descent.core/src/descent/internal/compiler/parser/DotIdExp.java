@@ -1,15 +1,15 @@
 package descent.internal.compiler.parser;
 
-import melnorme.miscutil.tree.TreeVisitor;
-import descent.core.compiler.IProblem;
-import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.TOK.TOKdotexp;
+import static descent.internal.compiler.parser.TOK.TOKdottd;
 import static descent.internal.compiler.parser.TOK.TOKimport;
 import static descent.internal.compiler.parser.TOK.TOKsuper;
 import static descent.internal.compiler.parser.TOK.TOKthis;
 import static descent.internal.compiler.parser.TOK.TOKtuple;
-
 import static descent.internal.compiler.parser.TY.Tpointer;
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
 public class DotIdExp extends UnaExp {
@@ -106,22 +106,24 @@ public class DotIdExp extends UnaExp {
 			eright = e1;
 		}
 		
-		if (e1.op == TOKtuple && equals(ident, Id.offsetof)) {
-			/*
-			 * 'distribute' the .offsetof to each of the tuple elements.
-			 */
-			TupleExp te = (TupleExp) e1;
-			Expressions exps = new Expressions();
-			exps.setDim(size(te.exps));
-			for (int i = 0; i < size(exps); i++) {
-				Expression e2 = (Expression) te.exps.get(i);
-				e2 = e2.semantic(sc, context);
-				e2 = new DotIdExp(e2.loc, e2, Id.offsetof);
-				exps.set(i, e2);
+		if (context.isD2()) {
+			if (e1.op == TOKtuple && equals(ident, Id.offsetof)) {
+				/*
+				 * 'distribute' the .offsetof to each of the tuple elements.
+				 */
+				TupleExp te = (TupleExp) e1;
+				Expressions exps = new Expressions();
+				exps.setDim(size(te.exps));
+				for (int i = 0; i < size(exps); i++) {
+					Expression e2 = (Expression) te.exps.get(i);
+					e2 = e2.semantic(sc, context);
+					e2 = new DotIdExp(e2.loc, e2, Id.offsetof);
+					exps.set(i, e2);
+				}
+				e = new TupleExp(loc, exps);
+				e = e.semantic(sc, context);
+				return e;
 			}
-			e = new TupleExp(loc, exps);
-			e = e.semantic(sc, context);
-			return e;
 		}
 
 		if (e1.op == TOKtuple && !equals(ident, Id.length)) {
@@ -129,18 +131,36 @@ public class DotIdExp extends UnaExp {
 			e = new IntegerExp(loc, te.exps.size(), Type.tsize_t);
 			return e;
 		}
+		
+	    if (e1.op == TOKdottd) {
+	    	if (context.acceptsErrors()) {
+	    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.TemplateDoesNotHaveProperty, this, e1.toChars(context), ident.toChars()));
+	    	}
+			return e1;
+		}
+
+		if (null == e1.type) {
+			if (context.acceptsErrors()) {
+	    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionDoesNotHaveProperty, this, e1.toChars(context), ident.toChars()));
+	    	}
+			return e1;
+		}
 
 		if (eright.op == TOKimport) // also used for template alias's
 		{
-			Dsymbol s;
 			ScopeExp ie = (ScopeExp) eright;
 			
 			// Descent: if it's null, problems were reported
 			if (ie.sds == null) {
 				return this;
 			}
-
-			s = ie.sds.search(loc, ident, 0, context);
+			
+			/* Disable access to another module's private imports.
+			 * The check for 'is sds our current module' is because
+			 * the current module should have access to its own imports.
+			 */
+			Dsymbol s = ie.sds.search(loc, ident,
+			    (ie.sds.isModule() != null && ie.sds != sc.module) ? 1 : 0, context);
 			
 			// Descent: for binding resolution
 			ident.resolvedSymbol = s;
@@ -292,7 +312,7 @@ public class DotIdExp extends UnaExp {
 					&& !equals(ident, Id.offsetof) && !equals(ident, Id.mangleof)
 					&& !equals(ident, Id.stringof)) {
 				e = new PtrExp(loc, e1);
-				e.type = e1.type.next;
+				e.type = ((TypePointer) e1.type).next;
 				return e.type.dotExp(sc, e, ident, context);
 			} else {
 				// Ident may be null if completing (Foo).|

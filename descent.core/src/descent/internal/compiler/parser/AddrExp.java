@@ -221,9 +221,7 @@ public class AddrExp extends UnaExp {
 				FuncDeclaration f = dve.var.isFuncDeclaration();
 
 				if (f != null) {
-					Expression e;
-
-					e = new DelegateExp(loc, dve.e1, f);
+					Expression e = new DelegateExp(loc, dve.e1, f);
 					e = e.semantic(sc, context);	
 					return e;
 				}

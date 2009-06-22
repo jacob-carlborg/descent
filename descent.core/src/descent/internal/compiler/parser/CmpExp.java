@@ -86,8 +86,16 @@ public class CmpExp extends BinExp {
 		
 		e = op_overload(sc, context);
 		if (null != e) {
-			e = new CmpExp(loc, op, e, new IntegerExp(loc, 0, Type.tint32));
-			e = e.semantic(sc, context);
+			if (!e.type.isscalar(context) && e.type.equals(e1.type)) {
+				if (context.acceptsErrors()) {
+		    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.RecursiveOpCmpExpansion, this));
+		    	}
+				e = new ErrorExp();
+			} else {
+				e = new CmpExp(loc, op, e, new IntegerExp(loc, 0, Type.tint32));
+				e.copySourceRange(this);
+				e = e.semantic(sc, context);
+			}
 			return e;
 		}
 

@@ -1,12 +1,13 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.Constfold.ArrayLength;
+import static descent.internal.compiler.parser.PREC.PREC_assign;
+import static descent.internal.compiler.parser.STC.STCconst;
+import static descent.internal.compiler.parser.TOK.TOKstring;
+import static descent.internal.compiler.parser.TY.Tarray;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.PREC.PREC_assign;
-import static descent.internal.compiler.parser.TOK.TOKstring;
-import static descent.internal.compiler.parser.Constfold.ArrayLength;
-
 
 public class SliceExp extends UnaExp {
 
@@ -265,13 +266,17 @@ public class SliceExp extends UnaExp {
 				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.StringSliceIsOutOfBounds, this, new String[] { String.valueOf(i1), String.valueOf(i2) }));
 				}
-				e = e1;
+				e = new IntegerExp(0);
 			}
 			return e;
-		} else {
-			type = t.next.arrayOf(context);
-			return e;
 		}
+		
+	    if (t.ty == Tarray) {
+	    	type = e1.type;
+	    } else {
+	    	type = t.nextOf().arrayOf(context);
+	    }
+	    return e;
 	}
 
 	@Override
@@ -329,8 +334,27 @@ public class SliceExp extends UnaExp {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.SymbolCannotBeSlicedWithBrackets, this, new String[] { s }));
 		}
-		type = Type.terror;
+		e = new IntegerExp(0);
 		return e;
+	}
+	
+	@Override
+	public void buildArrayIdent(OutBuffer buf, Expressions arguments) {
+	    buf.writestring("Slice");
+	    arguments.shift(this);
+	}
+	
+	@Override
+	public Expression buildArrayLoop(Arguments fparams, SemanticContext context) {
+		IdentifierExp id = context.generateId("p", size(fparams));
+	    Argument param = new Argument(STCconst, type, id, null);
+	    fparams.shift(param);
+	    Expression e = new IdentifierExp(Loc.ZERO, id);
+	    Expressions arguments = new Expressions();
+	    Expression index = new IdentifierExp(Loc.ZERO, Id.p);
+	    arguments.add(index);
+	    e = new ArrayExp(Loc.ZERO, e, arguments);
+	    return e;
 	}
 
 }

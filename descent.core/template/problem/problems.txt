@@ -524,7 +524,7 @@ IncompatibleTypesForOperator
 	formatString=Types %1$s and %2$s are incompatible for %3$s
 	numArgs=3
 IncompatibleTypesForMinus
-	formatString=Incompatible types for -
+	formatString=Incompatible types for minus
 	numArgs=0
 SymbolNotDefined
 	formatString=%1$s is not defined
@@ -1165,6 +1165,9 @@ TemplateIsNotAMemberOf
 TemplateIdentifierIsNotAMemberOf
 	formatString=Template identifier %1$s is not a member of %2$s %3$s
 	numArgs=3
+TemplateIdentifierIsNotAMemberOfUndefined
+	formatString=Template identifier %1$s is not a member of undefined %2$s
+	numArgs=2
 CanOnlyInitiailizeConstMemberInsideConstructor
 	formatString=Can only initialize %1$sconst member %2$s inside %3$sconstructor
 	numArgs=3
@@ -1453,8 +1456,15 @@ CannotCallMutableMethodOnFinalStruct
 ForwardReferenceOfImport
 	formatString=Forward reference of improt %1$s
 	numArgs=1
-
-
+TemplateDoesNotHaveProperty
+	formatString=Template %1$s does not have property %2$s
+	numArgs=2
+ExpressionDoesNotHaveProperty
+	formatString=Expression %1$s does not have property %2$s
+	numArgs=2
+RecursiveOpCmpExpansion
+	formatString=Recursive opCmp expansion
+	numArgs=0
 
 
 

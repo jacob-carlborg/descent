@@ -356,7 +356,7 @@ public class NewExp extends Expression {
 						}
 					}
 					arguments.set(i, arg);
-					tb = tb.next.toBasetype(context);
+					tb = ((TypeDArray)tb).next.toBasetype(context);
 				}
 			} else if (tb.isscalar(context)) {
 				if (arguments != null && arguments.size() > 0) {

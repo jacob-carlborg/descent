@@ -399,6 +399,7 @@ final class ProblemMessages extends NLS {
 	public static String CannotDeleteInstanceOfComInterface;
 	public static String TemplateIsNotAMemberOf;
 	public static String TemplateIdentifierIsNotAMemberOf;
+	public static String TemplateIdentifierIsNotAMemberOfUndefined;
 	public static String CanOnlyInitiailizeConstMemberInsideConstructor;
 	public static String SymbolIsNotAMember;
 	public static String SymbolIsNotATemplate;
@@ -495,6 +496,9 @@ final class ProblemMessages extends NLS {
 	public static String SymbolCanOnlyBeCalledOnAMutableObject;
 	public static String CannotCallMutableMethodOnFinalStruct;
 	public static String ForwardReferenceOfImport;
+	public static String TemplateDoesNotHaveProperty;
+	public static String ExpressionDoesNotHaveProperty;
+	public static String RecursiveOpCmpExpansion;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

@@ -905,6 +905,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.TemplateIsNotAMemberOf, arguments[0], arguments[1]);
 		case TemplateIdentifierIsNotAMemberOf:
 			return String.format(ProblemMessages.TemplateIdentifierIsNotAMemberOf, arguments[0], arguments[1], arguments[2]);
+		case TemplateIdentifierIsNotAMemberOfUndefined:
+			return String.format(ProblemMessages.TemplateIdentifierIsNotAMemberOfUndefined, arguments[0], arguments[1]);
 		case CanOnlyInitiailizeConstMemberInsideConstructor:
 			return String.format(ProblemMessages.CanOnlyInitiailizeConstMemberInsideConstructor, arguments[0], arguments[1], arguments[2]);
 		case SymbolIsNotAMember:
@@ -1097,6 +1099,12 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.CannotCallMutableMethodOnFinalStruct);
 		case ForwardReferenceOfImport:
 			return String.format(ProblemMessages.ForwardReferenceOfImport, arguments[0]);
+		case TemplateDoesNotHaveProperty:
+			return String.format(ProblemMessages.TemplateDoesNotHaveProperty, arguments[0], arguments[1]);
+		case ExpressionDoesNotHaveProperty:
+			return String.format(ProblemMessages.ExpressionDoesNotHaveProperty, arguments[0], arguments[1]);
+		case RecursiveOpCmpExpansion:
+			return String.format(ProblemMessages.RecursiveOpCmpExpansion);
 		default:
 			return "";
 		}

@@ -631,6 +631,27 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		}
 		return ex;
 	}
+	
+	/******************************************
+	 * Construct the identifier for the array operation function,
+	 * and build the argument list to pass to it.
+	 */
+	public void buildArrayIdent(OutBuffer buf, Expressions arguments) {
+		buf.writestring("Exp");
+		arguments.shift(this);
+	}
+	
+	/******************************************
+	 * Construct the inner loop for the array operation function,
+	 * and build the parameter list.
+	 */
+	public Expression buildArrayLoop(Arguments fparams, SemanticContext context) {
+		IdentifierExp id = context.generateId("c", size(fparams));
+		Argument param = new Argument(0, type, id, null);
+		fparams.shift(param);
+		Expression e = new IdentifierExp(Loc.ZERO, id);
+		return e;
+	}
 
 	@Override
 	public int getLineNumber() {

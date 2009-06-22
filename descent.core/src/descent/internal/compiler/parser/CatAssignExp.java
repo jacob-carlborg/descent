@@ -76,9 +76,9 @@ public class CatAssignExp extends BinExp {
 		}
 
 		else if ((tb1.ty == TY.Tarray)
-				&& null != e2.implicitConvTo(tb1.next, context)) {
+				&& null != e2.implicitConvTo(tb1.nextOf(), context)) {
 			// Append element
-			e2 = e2.castTo(sc, tb1.next, context);
+			e2 = e2.castTo(sc, tb1.nextOf(), context);
 			type = e1.type;
 			e = this;
 		}

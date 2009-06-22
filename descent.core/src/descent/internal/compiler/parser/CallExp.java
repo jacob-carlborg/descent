@@ -284,58 +284,60 @@ public class CallExp extends UnaExp {
 						arguments = new Expressions();
 					}
 					arguments.add(0, dotid.e1);
-					e1 = new IdentifierExp(dotid.loc, dotid.ident);
+					if (context.isD2()) {
+						e1 = new DotIdExp(dotid.loc, new IdentifierExp(dotid.loc, Id.empty), dotid.ident);
+					} else {
+						e1 = new IdentifierExp(dotid.loc, dotid.ident);
+					}
 				}
 			}
 		}
 		
-		if (context.isD2()) {
-			/*
-			 * This recognizes: foo!(tiargs)(funcargs)
-			 */
-			if (e1.op == TOKimport && null == e1.type) {
-				ScopeExp se = (ScopeExp) e1;
-				TemplateInstance ti = se.sds.isTemplateInstance();
-				if (ti != null && 0 == ti.semanticdone) {
-					/*
-					 * Attempt to instantiate ti. If that works, go with it. If
-					 * not, go with partial explicit specialization.
-					 */
-					int errors = context.global.errors;
-					context.global.gag++;
-					ti.semantic(sc, context);
-					context.global.gag--;
-					if (errors != context.global.errors) {
-						context.global.errors = errors;
-						targsi = ti.tiargs;
-						e1 = new IdentifierExp(loc, ti.name);
-					}
+		/*
+		 * This recognizes: foo!(tiargs)(funcargs)
+		 */
+		if (e1.op == TOKimport && null == e1.type) {
+			ScopeExp se = (ScopeExp) e1;
+			TemplateInstance ti = se.sds.isTemplateInstance();
+			if (ti != null && 0 == ti.semanticdone) {
+				/*
+				 * Attempt to instantiate ti. If that works, go with it. If
+				 * not, go with partial explicit specialization.
+				 */
+				int errors = context.global.errors;
+				context.global.gag++;
+				ti.semantic(sc, context);
+				context.global.gag--;
+				if (errors != context.global.errors) {
+					context.global.errors = errors;
+					targsi = ti.tiargs;
+					e1 = new IdentifierExp(loc, ti.name);
 				}
 			}
+		}
 
-			/*
-			 * This recognizes: expr.foo!(tiargs)(funcargs)
-			 */
-			if (e1.op == TOK.TOKdotti && null == e1.type) {
-				DotTemplateInstanceExp se = (DotTemplateInstanceExp) e1;
-				TemplateInstance ti = se.ti;
-				if (0 == ti.semanticdone) {
-					/*
-					 * Attempt to instantiate ti. If that works, go with it. If
-					 * not, go with partial explicit specialization.
-					 */
-					Expression etmp;
-					int errors = context.global.errors;
-					context.global.gag++;
-					etmp = e1.semantic(sc, context);
-					context.global.gag--;
-					if (errors != context.global.errors) {
-						context.global.errors = errors;
-						targsi = ti.tiargs;
-						e1 = new DotIdExp(loc, se.e1, ti.name);
-					} else
-						e1 = etmp;
-				}
+		/*
+		 * This recognizes: expr.foo!(tiargs)(funcargs)
+		 */
+		if (e1.op == TOK.TOKdotti && null == e1.type) {
+			DotTemplateInstanceExp se = (DotTemplateInstanceExp) e1;
+			TemplateInstance ti = se.ti;
+			if (0 == ti.semanticdone) {
+				/*
+				 * Attempt to instantiate ti. If that works, go with it. If
+				 * not, go with partial explicit specialization.
+				 */
+				Expression etmp;
+				int errors = context.global.errors;
+				context.global.gag++;
+				etmp = e1.semantic(sc, context);
+				context.global.gag--;
+				if (errors != context.global.errors) {
+					context.global.errors = errors;
+					targsi = ti.tiargs;
+					e1 = new DotIdExp(loc, se.e1, ti.name);
+				} else
+					e1 = etmp;
 			}
 		}
 
@@ -715,15 +717,16 @@ public class CallExp extends UnaExp {
 				return this;
 			} else if (t1.ty != Tfunction) {
 				if (t1.ty == Tdelegate) {
-					Assert.isTrue(t1.next.ty == Tfunction);
-					tf = (TypeFunction) (t1.next);
+					TypeDelegate td = (TypeDelegate) t1;
+					Assert.isTrue(td.next.ty == Tfunction);
+					tf = (TypeFunction) (td.next);
 					// goto Lcheckargs;
 					return semantic_Lcheckargs(sc, tf, f, context);
-				} else if (t1.ty == Tpointer && t1.next.ty == Tfunction) {
+				} else if (t1.ty == Tpointer && ((TypePointer)t1).next.ty == Tfunction) {
 					Expression e;
 
 					e = new PtrExp(loc, e1);
-					t1 = t1.next;
+					t1 = ((TypePointer)t1).next;
 					e.type = t1;
 					e1 = e;
 				} else if (e1.op == TOKtemplate) {
@@ -851,9 +854,10 @@ public class CallExp extends UnaExp {
 		if (f != null && f.tintro() != null) {
 			Type t = type;
 			int[] offset = { 0 };
+			tf = (TypeFunction) f.tintro;
 
-			if (f.tintro().next.isBaseOf(t, offset, context) && offset[0] != 0) {
-				type = f.tintro().next;
+			if (tf.next.isBaseOf(t, offset, context) && offset[0] != 0) {
+				type = tf.next;
 				return castTo(sc, t, context);
 			}
 		}

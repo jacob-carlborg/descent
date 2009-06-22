@@ -87,12 +87,16 @@ public class MinExp extends BinExp {
 
 				typeCombine(sc, context); // make sure pointer types are compatible
 				type = Type.tptrdiff_t;
-				stride = t2.next.size(Loc.ZERO, context);
-				e_ = new DivExp(loc, this, new IntegerExp(Loc.ZERO,
-						new integer_t(stride), Type.tptrdiff_t));
-				e_.type = Type.tptrdiff_t;
-				e_.copySourceRange(this);
-				return e_;
+				stride = t2.nextOf().size(Loc.ZERO, context);
+			    if (stride == 0) {
+					e_ = new IntegerExp(loc, 0, Type.tptrdiff_t);
+				} else {
+					e_ = new DivExp(loc, this, new IntegerExp(Loc.ZERO,
+							new integer_t(stride), Type.tptrdiff_t));
+					e_.type = Type.tptrdiff_t;
+					e_.copySourceRange(this);
+				}
+			    return e_;
 			} else if (t2.isintegral()) {
 				e = scaleFactor(sc, context);
 			} else {
@@ -138,6 +142,25 @@ public class MinExp extends BinExp {
 		}
 
 		return e;
+	}
+	
+	@Override
+	public void buildArrayIdent(OutBuffer buf, Expressions arguments) {
+		/* Evaluate assign expressions left to right
+	     */
+	    e1.buildArrayIdent(buf, arguments);
+	    e2.buildArrayIdent(buf, arguments);
+	    buf.writestring("Min");
+	}
+	
+	@Override
+	public Expression buildArrayLoop(Arguments fparams, SemanticContext context) {
+		/* Evaluate assign expressions left to right
+	     */
+	    Expression ex1 = e1.buildArrayLoop(fparams, context);
+	    Expression ex2 = e2.buildArrayLoop(fparams, context);
+	    Expression e = new MinExp(Loc.ZERO, ex1, ex2);
+	    return e;
 	}
 
 }

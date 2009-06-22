@@ -1,9 +1,9 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.Constfold.Min;
+import static descent.internal.compiler.parser.TOK.TOKslice;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.Constfold.Min;
-
 
 public class MinAssignExp extends BinExp {
 	
@@ -53,6 +53,13 @@ public class MinAssignExp extends BinExp {
 		if (null != e) {
 			return e;
 		}
+		
+	    if (e1.op == TOKslice)
+	    {	// T[] -= ...
+			typeCombine(sc, context);
+			type = e1.type;
+			return arrayOp(sc, context);
+	    }
 
 		e1 = e1.modifiableLvalue(sc, e1, context);
 		e1.checkScalar(context);
@@ -72,6 +79,28 @@ public class MinAssignExp extends BinExp {
 		}
 		
 		return e;
+	}
+	
+	@Override
+	public void buildArrayIdent(OutBuffer buf, Expressions arguments) {
+		/* Evaluate assign expressions right to left
+	     */
+	    e2.buildArrayIdent(buf, arguments);
+	    e1.buildArrayIdent(buf, arguments);
+	    buf.writestring("Min");
+	    buf.writestring("ass");
+	}
+	
+	@Override
+	public Expression buildArrayLoop(Arguments fparams, SemanticContext context) {
+		/* Evaluate assign expressions right to left
+	     */
+	    Expression ex2 = e2.buildArrayLoop(fparams, context);
+	    Expression ex1 = e1.buildArrayLoop(fparams, context);
+	    Argument param = (Argument) fparams.get(0);
+	    param.storageClass = 0;
+	    Expression e = new MinAssignExp(Loc.ZERO, ex1, ex2);
+	    return e;	
 	}
 
 }

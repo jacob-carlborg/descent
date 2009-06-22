@@ -128,7 +128,7 @@ public class OrOrExp extends BinExp {
 		e2 = e2.checkToPointer(context);
 
 		type = Type.tboolean;
-		if (e1.type.ty == TY.Tvoid) {
+		if (e2.type.ty == TY.Tvoid) {
 			type = Type.tvoid;
 		}
 		if (e2.op == TOK.TOKtype || e2.op == TOK.TOKimport) {

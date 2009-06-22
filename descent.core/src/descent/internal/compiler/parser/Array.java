@@ -68,5 +68,9 @@ public class Array<T> extends ArrayList<T> {
 			set(i, other.get(i));
 		}
 	}
+	
+	public void shift(T obj) {
+		this.add(0, obj);
+	}
 
 }

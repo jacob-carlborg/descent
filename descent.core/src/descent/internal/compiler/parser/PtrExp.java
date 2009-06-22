@@ -15,6 +15,9 @@ public class PtrExp extends UnaExp {
 
 	public PtrExp(Loc loc, Expression e) {
 		super(loc, TOK.TOKstar, e);
+		if (e.type != null) {
+			type = ((TypePointer) e.type).next;
+		}
 	}
 
 	public PtrExp(Loc loc, Expression e, Type t) {

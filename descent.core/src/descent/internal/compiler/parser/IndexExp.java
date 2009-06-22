@@ -162,7 +162,7 @@ public class IndexExp extends BinExp {
 			e2 = e2.implicitCastTo(sc, Type.tsize_t, context);
 
 			//TypeSArray tsa = (TypeSArray) t1;
-			e.type = t1.next;
+			e.type = t1.nextOf();
 			break;
 		}
 

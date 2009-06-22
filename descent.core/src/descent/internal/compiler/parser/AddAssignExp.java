@@ -1,8 +1,9 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.Constfold.Add;
+import static descent.internal.compiler.parser.TOK.TOKslice;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.Constfold.Add;
 
 public class AddAssignExp extends BinExp {
 	
@@ -53,14 +54,20 @@ public class AddAssignExp extends BinExp {
 			return e;
 		}
 
-		e1 = e1.modifiableLvalue(sc, e1, context);
+	    Type tb1 = e1.type.toBasetype(context);
+	    Type tb2 = e2.type.toBasetype(context);
 
-		Type tb1 = e1.type.toBasetype(context);
-		Type tb2 = e2.type.toBasetype(context);
+	    if (e1.op == TOKslice) {
+			typeCombine(sc, context);
+			type = e1.type;
+			return arrayOp(sc, context);
+		} else {
+			e1 = e1.modifiableLvalue(sc, e1, context);
+		}
 
 		if ((tb1.ty == TY.Tarray || tb1.ty == TY.Tsarray)
 				&& (tb2.ty == TY.Tarray || tb2.ty == TY.Tsarray)
-				&& (tb1.next.equals(tb2.next))) {
+				&& (tb1.nextOf().equals(tb2.nextOf()))) {
 			type = e1.type;
 			e = this;
 		} else {
@@ -80,7 +87,7 @@ public class AddAssignExp extends BinExp {
 				e1.checkArithmetic(context);
 				e2.checkArithmetic(context);
 				if (type.isreal() || type.isimaginary()) {
-					// assert(global.errors || e2->type->isfloating());
+					// assert(global.errors || e2.type.isfloating());
 					e2 = e2.castTo(sc, e1.type, context);
 				}
 				e = this;
@@ -88,6 +95,28 @@ public class AddAssignExp extends BinExp {
 		}
 
 		return e;
+	}
+	
+	@Override
+	public void buildArrayIdent(OutBuffer buf, Expressions arguments) {
+		/* Evaluate assign expressions right to left
+	     */
+	    e2.buildArrayIdent(buf, arguments);
+	    e1.buildArrayIdent(buf, arguments);
+	    buf.writestring("Add");
+	    buf.writestring("ass");
+	}
+	
+	@Override
+	public Expression buildArrayLoop(Arguments fparams, SemanticContext context) {
+		/* Evaluate assign expressions right to left
+	     */
+	    Expression ex2 = e2.buildArrayLoop(fparams, context);
+	    Expression ex1 = e1.buildArrayLoop(fparams, context);
+	    Argument param = (Argument) fparams.get(0);
+	    param.storageClass = 0;
+	    Expression e = new AddAssignExp(Loc.ZERO, ex1, ex2);
+	    return e;	
 	}
 
 }

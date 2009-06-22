@@ -1,8 +1,9 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.Constfold.And;
+import static descent.internal.compiler.parser.TOK.TOKslice;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.Constfold.And;
 
 public class AndExp extends BinExp {
 
@@ -77,12 +78,34 @@ public class AndExp extends BinExp {
 				e = this;
 			} else {
 				typeCombine(sc, context);
-				e1.checkIntegral(context);
-				e2.checkIntegral(context);
+				
+			    if (e1.op != TOKslice && e2.op != TOKslice) {
+					e1.checkIntegral(context);
+					e2.checkIntegral(context);
+			    }
 			}
 		}
 		
 		return this;
+	}
+	
+	@Override
+	public void buildArrayIdent(OutBuffer buf, Expressions arguments) {
+		/* Evaluate assign expressions left to right
+	     */
+	    e1.buildArrayIdent(buf, arguments);
+	    e2.buildArrayIdent(buf, arguments);
+	    buf.writestring("And");
+	}
+	
+	@Override
+	public Expression buildArrayLoop(Arguments fparams, SemanticContext context) {
+		/* Evaluate assign expressions left to right
+	     */
+	    Expression ex1 = e1.buildArrayLoop(fparams, context);
+	    Expression ex2 = e2.buildArrayLoop(fparams, context);
+	    Expression e = new AndExp(Loc.ZERO, ex1, ex2);
+	    return e;
 	}
 
 }

@@ -1,9 +1,9 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.Constfold.Div;
+import static descent.internal.compiler.parser.TOK.TOKslice;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.Constfold.Div;
-
 
 public class DivExp extends BinExp {
 
@@ -71,8 +71,11 @@ public class DivExp extends BinExp {
 		}
 
 		typeCombine(sc, context);
-		e1.checkArithmetic(context);
-		e2.checkArithmetic(context);
+		
+	    if (e1.op != TOKslice && e2.op != TOKslice) {
+			e1.checkArithmetic(context);
+			e2.checkArithmetic(context);
+	    }
 		if (type.isfloating()) {
 			Type t1 = e1.type;
 			Type t2 = e2.type;
@@ -112,6 +115,25 @@ public class DivExp extends BinExp {
 		}
 		
 		return this;
+	}
+	
+	@Override
+	public void buildArrayIdent(OutBuffer buf, Expressions arguments) {
+		/* Evaluate assign expressions left to right
+	     */
+	    e1.buildArrayIdent(buf, arguments);
+	    e2.buildArrayIdent(buf, arguments);
+	    buf.writestring("Div");
+	}
+	
+	@Override
+	public Expression buildArrayLoop(Arguments fparams, SemanticContext context) {
+		/* Evaluate assign expressions left to right
+	     */
+	    Expression ex1 = e1.buildArrayLoop(fparams, context);
+	    Expression ex2 = e2.buildArrayLoop(fparams, context);
+	    Expression e = new DivExp(Loc.ZERO, ex1, ex2);
+	    return e;
 	}
 
 }

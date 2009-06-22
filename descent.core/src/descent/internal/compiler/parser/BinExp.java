@@ -3,7 +3,7 @@ package descent.internal.compiler.parser;
 import static descent.internal.compiler.parser.Constfold.Equal;
 import static descent.internal.compiler.parser.Constfold.Index;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
-import static descent.internal.compiler.parser.TOK.TOKadd;
+import static descent.internal.compiler.parser.TOK.*;
 import static descent.internal.compiler.parser.TOK.TOKaddass;
 import static descent.internal.compiler.parser.TOK.TOKandass;
 import static descent.internal.compiler.parser.TOK.TOKarrayliteral;
@@ -14,6 +14,7 @@ import static descent.internal.compiler.parser.TOK.TOKcast;
 import static descent.internal.compiler.parser.TOK.TOKcatass;
 import static descent.internal.compiler.parser.TOK.TOKconstruct;
 import static descent.internal.compiler.parser.TOK.TOKdivass;
+import static descent.internal.compiler.parser.TOK.TOKdottd;
 import static descent.internal.compiler.parser.TOK.TOKequal;
 import static descent.internal.compiler.parser.TOK.TOKge;
 import static descent.internal.compiler.parser.TOK.TOKgt;
@@ -53,8 +54,12 @@ import static descent.internal.compiler.parser.TY.Tpointer;
 import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Tstruct;
 import static descent.internal.compiler.parser.TY.Tvoid;
+import static descent.internal.compiler.parser.LINK.*;
+import static descent.internal.compiler.parser.STC.*;
+import static descent.internal.compiler.parser.PROT.*;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 
 import org.eclipse.core.runtime.Assert;
 
@@ -80,6 +85,119 @@ public abstract class BinExp extends Expression {
 		}
 	}
 	
+	public Expression arrayOp(Scope sc, SemanticContext context) {
+		Expressions arguments = new Expressions();
+
+		/*
+		 * The expression to generate an array operation for is mangled into a
+		 * name to use as the array operation function name. Mangle in the
+		 * operands and operators in RPN order, and type.
+		 */
+		OutBuffer buf = new OutBuffer();
+		buf.writestring("_array");
+		buildArrayIdent(buf, arguments);
+		buf.writeByte('_');
+
+		/*
+		 * Append deco of array element type
+		 */
+		if (context.isD2()) {
+			buf.writestring(type.toBasetype(context).nextOf().toBasetype(
+					context).mutableOf(context).deco);
+		} else {
+			buf.writestring(type.toBasetype(context).nextOf().toBasetype(
+					context).deco);
+		}
+
+		int namelen = buf.offset();
+		buf.writeByte(0);
+		String name = buf.extractData();
+
+		/*
+		 * Look up name in hash table
+		 */
+		StringValue sv = context.ArrayOp_arrayfuncs.update(name.toCharArray(),
+				0, namelen);
+		FuncDeclaration fd = (FuncDeclaration) sv.ptrvalue;
+		if (null == fd) {
+			int i = Arrays.binarySearch(libArrayopFuncs, name);
+			if (i == -1) {
+				/*
+				 * Not in library, so generate it. Construct the function body:
+				 * foreach (i; 0 .. p.length) for (size_t i = 0; i < p.length;
+				 * i++) loopbody; return p;
+				 */
+
+				Arguments fparams = new Arguments();
+				Expression loopbody = buildArrayLoop(fparams, context);
+				Argument p = (Argument) fparams.get(0 /* fparams.dim - 1 */);
+
+				Statement s1;
+				if (!context.isD2()) {
+					// for (size_t i = 0; i < p.length; i++)
+					Initializer init = new ExpInitializer(Loc.ZERO,
+							new IntegerExp(Loc.ZERO, 0, Type.tsize_t));
+					Dsymbol d = new VarDeclaration(Loc.ZERO, Type.tsize_t,
+							Id.p, init);
+					s1 = new ForStatement(Loc.ZERO, new DeclarationStatement(
+							Loc.ZERO, d), new CmpExp(Loc.ZERO, TOKlt,
+							new IdentifierExp(Loc.ZERO, Id.p),
+							new ArrayLengthExp(Loc.ZERO, new IdentifierExp(
+									Loc.ZERO, p.ident))), new PostExp(Loc.ZERO,
+							TOKplusplus, new IdentifierExp(Loc.ZERO, Id.p)),
+							new ExpStatement(Loc.ZERO, loopbody));
+				} else {
+					// foreach (i; 0 .. p.length)
+					s1 = new ForeachRangeStatement(
+							Loc.ZERO,
+							TOKforeach,
+							new Argument(0, null, new IdentifierExp(Id.p), null),
+							new IntegerExp(Loc.ZERO, 0, Type.tint32),
+							new ArrayLengthExp(Loc.ZERO, new IdentifierExp(
+									Loc.ZERO, p.ident)), new ExpStatement(
+									Loc.ZERO, loopbody));
+				}
+				Statement s2 = new ReturnStatement(Loc.ZERO, new IdentifierExp(
+						Loc.ZERO, p.ident));
+				Statement fbody = new CompoundStatement(Loc.ZERO, s1, s2);
+
+				/*
+				 * Construct the function
+				 */
+				TypeFunction ftype = new TypeFunction(fparams, type, 0, LINKc);
+				// printf("ftype: %s\n", ftype.toChars());
+				fd = new FuncDeclaration(Loc.ZERO, new IdentifierExp(name
+						.toCharArray()), STCundefined, ftype);
+				fd.fbody = fbody;
+				fd.protection = PROTpublic;
+				fd.linkage = LINKc;
+
+				sc.module.importedFrom.members.add(fd);
+
+				sc = sc.push();
+				sc.parent = sc.module.importedFrom;
+				sc.stc = 0;
+				sc.linkage = LINKc;
+				fd.semantic(sc, context);
+				sc.pop();
+			} else { /*
+						 * In library, refer to it.
+						 */
+				fd = context.genCfunc(type, name.toCharArray());
+			}
+			sv.ptrvalue = fd; // cache symbol in hash table
+		}
+
+		/*
+		 * Call the function fd(arguments)
+		 */
+		Expression ec = new VarExp(Loc.ZERO, fd);
+		Expression e = new CallExp(loc, ec, arguments);
+		e.copySourceRange(this);
+		e.type = type;
+		return e;
+	}
+	
 	@Override
 	public boolean canThrow(SemanticContext context) {
 		return e1.canThrow(context) || e2.canThrow(context);
@@ -91,7 +209,8 @@ public abstract class BinExp extends Expression {
 		// Descent: for binding resolution
 		sourceE1.resolvedExpression = e1;
 		
-		if (e1.type == null) {
+		if (e1.type == null &&
+				!(op == TOKassign && e1.op == TOKdottd)) {	// a.template = e2
 			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, e1, e1.toChars(context)));
 			}
@@ -108,7 +227,6 @@ public abstract class BinExp extends Expression {
 			}
 			e2.type = Type.terror;
 		}
-		Assert.isNotNull(e1.type);
 		return this;
 	}
 
@@ -138,6 +256,13 @@ public abstract class BinExp extends Expression {
 			if (e != null) {
 				return e;
 			}
+			
+			if (e1.op == TOKslice)
+			{   // T[] op= ...
+			    typeCombine(sc, context);
+			    type = e1.type;
+			    return arrayOp(sc, context);
+			}
 
 			e1 = e1.modifiableLvalue(sc, e1, context);
 			e1.checkScalar(context);
@@ -164,6 +289,13 @@ public abstract class BinExp extends Expression {
 			e = op_overload(sc, context);
 			if (e != null) {
 				return e;
+			}
+			
+			if (e1.op == TOKslice)
+			{   // T[] op= ...
+			    typeCombine(sc, context);
+			    type = e1.type;
+			    return arrayOp(sc, context);
 			}
 
 			e1 = e1.modifiableLvalue(sc, e1, context);
@@ -699,7 +831,7 @@ public abstract class BinExp extends Expression {
 					if (ve2.var.isSymbolDeclaration() != null) {
 					    /* This can happen if v is a struct initialized to
 					     * 0 using an __initZ SymbolDeclaration from
-					     * TypeStruct::defaultInit()
+					     * TypeStruct.defaultInit()
 					     */
 					} else {
 					    v = ve2.var.isVarDeclaration();
@@ -1215,5 +1347,172 @@ public abstract class BinExp extends Expression {
 
 		return this;
 	}
+	
+	/* Some of the array op functions are written as library functions,
+	 * presumably to optimize them with special CPU vector instructions.
+	 * List those library functions here, in alpha order.
+	 */
+	private static String[] libArrayopFuncs =
+	{
+	    "_arrayExpSliceAddass_a",
+	    "_arrayExpSliceAddass_d",		// T[]+=T
+	    "_arrayExpSliceAddass_f",		// T[]+=T
+	    "_arrayExpSliceAddass_g",
+	    "_arrayExpSliceAddass_h",
+	    "_arrayExpSliceAddass_i",
+	    "_arrayExpSliceAddass_k",
+	    "_arrayExpSliceAddass_s",
+	    "_arrayExpSliceAddass_t",
+	    "_arrayExpSliceAddass_u",
+	    "_arrayExpSliceAddass_w",
+
+	    "_arrayExpSliceDivass_d",		// T[]/=T
+	    "_arrayExpSliceDivass_f",		// T[]/=T
+
+	    "_arrayExpSliceMinSliceAssign_a",
+	    "_arrayExpSliceMinSliceAssign_d",	// T[]=T-T[]
+	    "_arrayExpSliceMinSliceAssign_f",	// T[]=T-T[]
+	    "_arrayExpSliceMinSliceAssign_g",
+	    "_arrayExpSliceMinSliceAssign_h",
+	    "_arrayExpSliceMinSliceAssign_i",
+	    "_arrayExpSliceMinSliceAssign_k",
+	    "_arrayExpSliceMinSliceAssign_s",
+	    "_arrayExpSliceMinSliceAssign_t",
+	    "_arrayExpSliceMinSliceAssign_u",
+	    "_arrayExpSliceMinSliceAssign_w",
+
+	    "_arrayExpSliceMinass_a",
+	    "_arrayExpSliceMinass_d",		// T[]-=T
+	    "_arrayExpSliceMinass_f",		// T[]-=T
+	    "_arrayExpSliceMinass_g",
+	    "_arrayExpSliceMinass_h",
+	    "_arrayExpSliceMinass_i",
+	    "_arrayExpSliceMinass_k",
+	    "_arrayExpSliceMinass_s",
+	    "_arrayExpSliceMinass_t",
+	    "_arrayExpSliceMinass_u",
+	    "_arrayExpSliceMinass_w",
+
+	    "_arrayExpSliceMulass_d",		// T[]*=T
+	    "_arrayExpSliceMulass_f",		// T[]*=T
+	    "_arrayExpSliceMulass_i",
+	    "_arrayExpSliceMulass_k",
+	    "_arrayExpSliceMulass_s",
+	    "_arrayExpSliceMulass_t",
+	    "_arrayExpSliceMulass_u",
+	    "_arrayExpSliceMulass_w",
+
+	    "_arraySliceExpAddSliceAssign_a",
+	    "_arraySliceExpAddSliceAssign_d",	// T[]=T[]+T
+	    "_arraySliceExpAddSliceAssign_f",	// T[]=T[]+T
+	    "_arraySliceExpAddSliceAssign_g",
+	    "_arraySliceExpAddSliceAssign_h",
+	    "_arraySliceExpAddSliceAssign_i",
+	    "_arraySliceExpAddSliceAssign_k",
+	    "_arraySliceExpAddSliceAssign_s",
+	    "_arraySliceExpAddSliceAssign_t",
+	    "_arraySliceExpAddSliceAssign_u",
+	    "_arraySliceExpAddSliceAssign_w",
+
+	    "_arraySliceExpDivSliceAssign_d",	// T[]=T[]/T
+	    "_arraySliceExpDivSliceAssign_f",	// T[]=T[]/T
+
+	    "_arraySliceExpMinSliceAssign_a",
+	    "_arraySliceExpMinSliceAssign_d",	// T[]=T[]-T
+	    "_arraySliceExpMinSliceAssign_f",	// T[]=T[]-T
+	    "_arraySliceExpMinSliceAssign_g",
+	    "_arraySliceExpMinSliceAssign_h",
+	    "_arraySliceExpMinSliceAssign_i",
+	    "_arraySliceExpMinSliceAssign_k",
+	    "_arraySliceExpMinSliceAssign_s",
+	    "_arraySliceExpMinSliceAssign_t",
+	    "_arraySliceExpMinSliceAssign_u",
+	    "_arraySliceExpMinSliceAssign_w",
+
+	    "_arraySliceExpMulSliceAddass_d",	// T[] += T[]*T
+	    "_arraySliceExpMulSliceAddass_f",
+	    "_arraySliceExpMulSliceAddass_r",
+
+	    "_arraySliceExpMulSliceAssign_d",	// T[]=T[]*T
+	    "_arraySliceExpMulSliceAssign_f",	// T[]=T[]*T
+	    "_arraySliceExpMulSliceAssign_i",
+	    "_arraySliceExpMulSliceAssign_k",
+	    "_arraySliceExpMulSliceAssign_s",
+	    "_arraySliceExpMulSliceAssign_t",
+	    "_arraySliceExpMulSliceAssign_u",
+	    "_arraySliceExpMulSliceAssign_w",
+
+	    "_arraySliceExpMulSliceMinass_d",	// T[] -= T[]*T
+	    "_arraySliceExpMulSliceMinass_f",
+	    "_arraySliceExpMulSliceMinass_r",
+
+	    "_arraySliceSliceAddSliceAssign_a",
+	    "_arraySliceSliceAddSliceAssign_d",	// T[]=T[]+T[]
+	    "_arraySliceSliceAddSliceAssign_f",	// T[]=T[]+T[]
+	    "_arraySliceSliceAddSliceAssign_g",
+	    "_arraySliceSliceAddSliceAssign_h",
+	    "_arraySliceSliceAddSliceAssign_i",
+	    "_arraySliceSliceAddSliceAssign_k",
+	    "_arraySliceSliceAddSliceAssign_r",	// T[]=T[]+T[]
+	    "_arraySliceSliceAddSliceAssign_s",
+	    "_arraySliceSliceAddSliceAssign_t",
+	    "_arraySliceSliceAddSliceAssign_u",
+	    "_arraySliceSliceAddSliceAssign_w",
+
+	    "_arraySliceSliceAddass_a",
+	    "_arraySliceSliceAddass_d",		// T[]+=T[]
+	    "_arraySliceSliceAddass_f",		// T[]+=T[]
+	    "_arraySliceSliceAddass_g",
+	    "_arraySliceSliceAddass_h",
+	    "_arraySliceSliceAddass_i",
+	    "_arraySliceSliceAddass_k",
+	    "_arraySliceSliceAddass_s",
+	    "_arraySliceSliceAddass_t",
+	    "_arraySliceSliceAddass_u",
+	    "_arraySliceSliceAddass_w",
+
+	    "_arraySliceSliceMinSliceAssign_a",
+	    "_arraySliceSliceMinSliceAssign_d",	// T[]=T[]-T[]
+	    "_arraySliceSliceMinSliceAssign_f",	// T[]=T[]-T[]
+	    "_arraySliceSliceMinSliceAssign_g",
+	    "_arraySliceSliceMinSliceAssign_h",
+	    "_arraySliceSliceMinSliceAssign_i",
+	    "_arraySliceSliceMinSliceAssign_k",
+	    "_arraySliceSliceMinSliceAssign_r",	// T[]=T[]-T[]
+	    "_arraySliceSliceMinSliceAssign_s",
+	    "_arraySliceSliceMinSliceAssign_t",
+	    "_arraySliceSliceMinSliceAssign_u",
+	    "_arraySliceSliceMinSliceAssign_w",
+
+	    "_arraySliceSliceMinass_a",
+	    "_arraySliceSliceMinass_d",		// T[]-=T[]
+	    "_arraySliceSliceMinass_f",		// T[]-=T[]
+	    "_arraySliceSliceMinass_g",
+	    "_arraySliceSliceMinass_h",
+	    "_arraySliceSliceMinass_i",
+	    "_arraySliceSliceMinass_k",
+	    "_arraySliceSliceMinass_s",
+	    "_arraySliceSliceMinass_t",
+	    "_arraySliceSliceMinass_u",
+	    "_arraySliceSliceMinass_w",
+
+	    "_arraySliceSliceMulSliceAssign_d",	// T[]=T[]*T[]
+	    "_arraySliceSliceMulSliceAssign_f",	// T[]=T[]*T[]
+	    "_arraySliceSliceMulSliceAssign_i",
+	    "_arraySliceSliceMulSliceAssign_k",
+	    "_arraySliceSliceMulSliceAssign_s",
+	    "_arraySliceSliceMulSliceAssign_t",
+	    "_arraySliceSliceMulSliceAssign_u",
+	    "_arraySliceSliceMulSliceAssign_w",
+
+	    "_arraySliceSliceMulass_d",		// T[]*=T[]
+	    "_arraySliceSliceMulass_f",		// T[]*=T[]
+	    "_arraySliceSliceMulass_i",
+	    "_arraySliceSliceMulass_k",
+	    "_arraySliceSliceMulass_s",
+	    "_arraySliceSliceMulass_t",
+	    "_arraySliceSliceMulass_u",
+	    "_arraySliceSliceMulass_w",
+	};
 
 }

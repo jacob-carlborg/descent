@@ -148,9 +148,10 @@ public class DotVarExp extends UnaExp {
 					}
 				}
 				
-				AggregateDeclaration ad = var.toParent()
-						.isAggregateDeclaration();
-				if (context.isD2()) {
+			    Dsymbol vparent = var.toParent();
+			    AggregateDeclaration ad = vparent != null ? vparent.isAggregateDeclaration() : null;
+
+			    if (context.isD2()) {
 					boolean repeat = true;
 				// L1:
 					while(repeat) {

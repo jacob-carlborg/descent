@@ -70,7 +70,7 @@ public class DeleteExp extends UnaExp {
 			break;
 		}
 		case Tpointer:
-			tb = tb.next.toBasetype(context);
+			tb = ((TypePointer) tb).next.toBasetype(context);
 			if (tb.ty == Tstruct) {
 				TypeStruct ts = (TypeStruct) tb;
 				StructDeclaration sd = ts.sym;

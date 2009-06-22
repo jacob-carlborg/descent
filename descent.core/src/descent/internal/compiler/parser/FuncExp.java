@@ -75,7 +75,7 @@ public class FuncExp extends Expression {
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
-		buf.writestring(fd.toChars(context));
+	    fd.toCBuffer(buf, hgs, context);
 	}
 
 	@Override

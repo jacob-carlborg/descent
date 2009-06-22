@@ -1,9 +1,9 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.Constfold.Neg;
+import static descent.internal.compiler.parser.TOK.TOKslice;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.Constfold.Neg;
-
 
 public class NegExp extends UnaExp {
 
@@ -62,10 +62,25 @@ public class NegExp extends UnaExp {
 			}
 
 			e1.checkNoBool(context);
-			e1.checkArithmetic(context);
+			if (e1.op != TOKslice) {
+				e1.checkArithmetic(context);
+			}
 			type = e1.type;
 		}
 		return this;
+	}
+	
+	@Override
+	public void buildArrayIdent(OutBuffer buf, Expressions arguments) {
+		e1.buildArrayIdent(buf, arguments);
+	    buf.writestring("Neg");
+	}
+	
+	@Override
+	public Expression buildArrayLoop(Arguments fparams, SemanticContext context) {
+		Expression ex1 = e1.buildArrayLoop(fparams, context);
+	    Expression e = new NegExp(Loc.ZERO, ex1);
+	    return e;
 	}
 
 }

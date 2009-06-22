@@ -72,6 +72,8 @@ public class SemanticContext {
 	public Dsymbol TemplateAliasParameter_sdummy = null;
 	public Expression TemplateValueParameter_edummy = null;
 	public TypeInfoDeclaration[] Type_internalTI = new TypeInfoDeclaration[TY.values().length];
+	public StringTable ArrayOp_arrayfuncs = new StringTable();
+	
 	public int apiLevel;
 	
 	public StringTable stringTable;
@@ -254,7 +256,11 @@ public class SemanticContext {
 	private int generatedIds;	
 
 	public IdentifierExp generateId(String prefix) {
-		String name = prefix + ++generatedIds;
+		return generateId(prefix, ++generatedIds);
+	}
+	
+	public IdentifierExp generateId(String prefix, int i) {
+		String name = prefix + i;
 		char[] id = name.toCharArray();
 		return new IdentifierExp(id);
 	}

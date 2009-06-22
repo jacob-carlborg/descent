@@ -1,10 +1,10 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.Constfold.Mod;
+import static descent.internal.compiler.parser.TOK.TOKslice;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.Constfold.Mod;
-
 
 public class ModExp extends BinExp {
 
@@ -71,8 +71,11 @@ public class ModExp extends BinExp {
 		}
 
 		typeCombine(sc, context);
-		e1.checkArithmetic(context);
-		e2.checkArithmetic(context);
+		
+	    if (e1.op != TOKslice && e2.op != TOKslice) {
+			e1.checkArithmetic(context);
+			e2.checkArithmetic(context);
+	    }
 		if (type.isfloating()) {
 			type = e1.type;
 			if (e2.type.iscomplex()) {
@@ -85,6 +88,25 @@ public class ModExp extends BinExp {
 		}
 		
 		return this;
+	}
+	
+	@Override
+	public void buildArrayIdent(OutBuffer buf, Expressions arguments) {
+		/* Evaluate assign expressions left to right
+	     */
+	    e1.buildArrayIdent(buf, arguments);
+	    e2.buildArrayIdent(buf, arguments);
+	    buf.writestring("Mod");
+	}
+	
+	@Override
+	public Expression buildArrayLoop(Arguments fparams, SemanticContext context) {
+		/* Evaluate assign expressions left to right
+	     */
+	    Expression ex1 = e1.buildArrayLoop(fparams, context);
+	    Expression ex2 = e2.buildArrayLoop(fparams, context);
+	    Expression e = new ModExp(Loc.ZERO, ex1, ex2);
+	    return e;
 	}
 
 }

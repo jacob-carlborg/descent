@@ -14,7 +14,7 @@ func.c  --> missing StaticCtorDeclaration::StaticCtorDeclaration
             
 Remaining from DMD 1.045
 ------------------------------
-Porting expression.c, will need to deal with the dissappearing of TypeDotIdExp :-(
+Porting up to and including expression.c.
             
 Remaining from DMD 2.013
 ------------------------------

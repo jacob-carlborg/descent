@@ -145,6 +145,16 @@ public class AssignExp extends BinExp {
 		Type t1;
 
 		super.semantic(sc, context);
+		
+	    if (e1.op == TOKdottd) {	
+	    	// Rewrite a.b=e2, when b is a template, as a.b(e2)
+	    	Expression e = new CallExp(loc, e1, e2);
+	    	e.copySourceRange(e1, e2);
+	    	e = e.semantic(sc, context);
+	    	return e;
+	    }
+
+		
 		e2 = resolveProperties(sc, e2, context);
 		assert (null != e1.type);
 		
@@ -239,11 +249,45 @@ public class AssignExp extends BinExp {
 		} else {
 			e2 = e2.implicitCastTo(sc, e1.type, context);
 		}
+		
+	    /* Look for array operations
+	     */
+	    if (e1.op == TOKslice
+				&& !ismemset
+				&& (e2.op == TOKadd || e2.op == TOKmin || e2.op == TOKmul
+						|| e2.op == TOKdiv || e2.op == TOKmod
+						|| e2.op == TOKxor || e2.op == TOKand || e2.op == TOKor
+						|| e2.op == TOKtilde || e2.op == TOKneg)) {
+			type = e1.type;
+			return arrayOp(sc, context);
+		}
+
 
 		type = e1.type;
 		assert (null != type);
 		
 		return this;
+	}
+	
+	@Override
+	public void buildArrayIdent(OutBuffer buf, Expressions arguments) {
+		/* Evaluate assign expressions right to left
+	     */
+	    e2.buildArrayIdent(buf, arguments);
+	    e1.buildArrayIdent(buf, arguments);
+	    buf.writestring("Assign");
+	}
+	
+	@Override
+	public Expression buildArrayLoop(Arguments fparams, SemanticContext context) {
+		/* Evaluate assign expressions right to left
+	     */
+	    Expression ex2 = e2.buildArrayLoop(fparams, context);
+	    Expression ex1 = e1.buildArrayLoop(fparams, context);
+	    Argument param = (Argument) fparams.get(0);
+	    param.storageClass = 0;
+	    Expression e = new AssignExp(Loc.ZERO, ex1, ex2);
+	    return e;
 	}
 
 }
