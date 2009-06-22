@@ -1324,14 +1324,6 @@ public class ASTRewriteFlattener extends ASTVisitor {
 	}
 	
 	@Override
-	public boolean visit(TypeDotIdentifierExpression node) {
-		visitChild(node, TypeDotIdentifierExpression.TYPE_PROPERTY);
-		this.result.append(".");
-		visitChild(node, TypeDotIdentifierExpression.NAME_PROPERTY);
-		return false;
-	}
-	
-	@Override
 	public boolean visit(TypeExpression node) {
 		visitChild(node, TypeExpression.TYPE_PROPERTY);
 		return false;

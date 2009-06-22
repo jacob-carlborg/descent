@@ -3039,31 +3039,6 @@ public class ASTMatcher {
 	 *   <code>false</code> if they do not match or the other object has a
 	 *   different node type or is <code>null</code>
 	 */
-	public boolean match(TypeDotIdentifierExpression node, Object other) {
-		if (!(other instanceof TypeDotIdentifierExpression)) {
-			return false;
-		}
-		TypeDotIdentifierExpression o = (TypeDotIdentifierExpression) other;
-		return (
-			safeSubtreeMatch(node.getType(), o.getType())
-			&& safeSubtreeMatch(node.getName(), o.getName())
-			);
-	}
-	
-	/**
-	 * Returns whether the given node and the other object match.
-	 * <p>
-	 * The default implementation provided by this class tests whether the
-	 * other object is a node of the same type with structurally isomorphic
-	 * child subtrees. Subclasses may override this method as needed.
-	 * </p>
-	 * 
-	 * @param node the node
-	 * @param other the other object, or <code>null</code>
-	 * @return <code>true</code> if the subtree matches, or 
-	 *   <code>false</code> if they do not match or the other object has a
-	 *   different node type or is <code>null</code>
-	 */
 	public boolean match(QualifiedType node, Object other) {
 		if (!(other instanceof QualifiedType)) {
 			return false;

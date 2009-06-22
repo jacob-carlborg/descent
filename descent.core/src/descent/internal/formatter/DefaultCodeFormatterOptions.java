@@ -132,7 +132,6 @@ public class DefaultCodeFormatterOptions
 	public boolean insert_space_before_opening_paren_in_casts;
 	public boolean insert_space_before_opening_paren_in_template_declarations;
 	public boolean insert_space_before_opening_paren_in_parenthesized_expressions;
-	public boolean insert_space_before_opening_paren_in_type_dot_identifier_expression;
 	public boolean insert_space_before_opening_paren_in_class_invariants;
 	public boolean insert_space_before_opening_paren_in_traits_expression;
 	public boolean insert_space_before_opening_paren_in_modified_type;
@@ -167,7 +166,6 @@ public class DefaultCodeFormatterOptions
 	public boolean insert_space_after_opening_paren_in_template_declarations;
 	public boolean insert_space_after_opening_paren_in_parenthesized_expressions;
 	public boolean insert_space_after_opening_paren_in_template_invocation;
-	public boolean insert_space_after_opening_paren_in_type_dot_identifier_expression;
 	public boolean insert_space_after_opening_paren_in_traits_expression;
 	public boolean insert_space_after_opening_paren_in_modified_type;
 	public boolean insert_space_before_closing_paren_in_function_declaration_parameters;
@@ -201,7 +199,6 @@ public class DefaultCodeFormatterOptions
 	public boolean insert_space_before_closing_paren_in_template_declarations;
 	public boolean insert_space_before_closing_paren_in_parenthesized_expressions;
 	public boolean insert_space_before_closing_paren_in_template_invocation;
-	public boolean insert_space_before_closing_paren_in_type_dot_identifier_expression;
 	public boolean insert_space_before_closing_paren_in_traits_expression;
 	public boolean insert_space_before_closing_paren_in_modified_type;
 	public boolean insert_space_between_empty_parens_in_function_declaration_parameters;
@@ -272,9 +269,7 @@ public class DefaultCodeFormatterOptions
 	public boolean insert_space_after_exclamation_point_in_template_invocation;
 	public boolean insert_space_after_closing_paren_in_casts;
 	public boolean insert_space_before_dot_in_qualified_names;
-	public boolean insert_space_before_dot_in_type_dot_identifier_expressions;
 	public boolean insert_space_after_dot_in_qualified_names;
-	public boolean insert_space_after_dot_in_type_dot_identifier_expressions;
 	public boolean insert_space_before_slice_operator;
 	public boolean insert_space_after_slice_operator;
 	public boolean insert_space_before_slice_operator_in_foreach_range_statement;
@@ -469,7 +464,6 @@ public class DefaultCodeFormatterOptions
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_CASTS, insert_space_before_opening_paren_in_casts ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_TEMPLATE_DECLARATIONS, insert_space_before_opening_paren_in_template_declarations ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_PARENTHESIZED_EXPRESSIONS, insert_space_before_opening_paren_in_parenthesized_expressions ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
-		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_TYPE_DOT_IDENTIFIER_EXPRESSION, insert_space_before_opening_paren_in_type_dot_identifier_expression ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_CLASS_INVARIANTS, insert_space_before_opening_paren_in_class_invariants ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_TRAITS_EXPRESSION, insert_space_before_opening_paren_in_traits_expression ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_MODIFIED_TYPE, insert_space_before_opening_paren_in_modified_type ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
@@ -504,7 +498,6 @@ public class DefaultCodeFormatterOptions
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_TEMPLATE_DECLARATIONS, insert_space_after_opening_paren_in_template_declarations ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_PARENTHESIZED_EXPRESSIONS, insert_space_after_opening_paren_in_parenthesized_expressions ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_TEMPLATE_INVOCATION, insert_space_after_opening_paren_in_template_invocation ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
-		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_TYPE_DOT_IDENTIFIER_EXPRESSION, insert_space_after_opening_paren_in_type_dot_identifier_expression ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_TRAITS_EXPRESSION, insert_space_after_opening_paren_in_traits_expression ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_MODIFIED_TYPE, insert_space_after_opening_paren_in_modified_type ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_FUNCTION_DECLARATION_PARAMETERS, insert_space_before_closing_paren_in_function_declaration_parameters ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
@@ -538,7 +531,6 @@ public class DefaultCodeFormatterOptions
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_TEMPLATE_DECLARATIONS, insert_space_before_closing_paren_in_template_declarations ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_PARENTHESIZED_EXPRESSIONS, insert_space_before_closing_paren_in_parenthesized_expressions ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_TEMPLATE_INVOCATION, insert_space_before_closing_paren_in_template_invocation ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
-		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_TYPE_DOT_IDENTIFIER_EXPRESSION, insert_space_before_closing_paren_in_type_dot_identifier_expression ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_TRAITS_EXPRESSION, insert_space_before_closing_paren_in_traits_expression ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_MODIFIED_TYPE, insert_space_before_closing_paren_in_modified_type ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_PARENS_IN_FUNCTION_DECLARATION_PARAMETERS, insert_space_between_empty_parens_in_function_declaration_parameters ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
@@ -609,9 +601,7 @@ public class DefaultCodeFormatterOptions
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_EXCLAMATION_POINT_IN_TEMPLATE_INVOCATION, insert_space_after_exclamation_point_in_template_invocation ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_CLOSING_PAREN_IN_CASTS, insert_space_after_closing_paren_in_casts ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_DOT_IN_QUALIFIED_NAMES, insert_space_before_dot_in_qualified_names ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
-		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_DOT_IN_TYPE_DOT_IDENTIFIER_EXPRESSIONS, insert_space_before_dot_in_type_dot_identifier_expressions ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_DOT_IN_QUALIFIED_NAMES, insert_space_after_dot_in_qualified_names ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
-		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_DOT_IN_TYPE_DOT_IDENTIFIER_EXPRESSIONS, insert_space_after_dot_in_type_dot_identifier_expressions ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SLICE_OPERATOR, insert_space_before_slice_operator ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_SLICE_OPERATOR, insert_space_after_slice_operator ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SLICE_OPERATOR_IN_FOREACH_RANGE_STATEMENT, insert_space_before_slice_operator_in_foreach_range_statement ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
@@ -1188,15 +1178,6 @@ public class DefaultCodeFormatterOptions
 			}
 		}
 		
-		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_TYPE_DOT_IDENTIFIER_EXPRESSION);
-		if(null != current) {
-			try {
-				insert_space_before_opening_paren_in_type_dot_identifier_expression = DefaultCodeFormatterConstants.TRUE.equals(current);
-			} catch(Exception e) {
-				insert_space_before_opening_paren_in_type_dot_identifier_expression = false;
-			}
-		}
-		
 		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_CLASS_INVARIANTS);
 		if(null != current) {
 			try {
@@ -1503,15 +1484,6 @@ public class DefaultCodeFormatterOptions
 			}
 		}
 		
-		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_TYPE_DOT_IDENTIFIER_EXPRESSION);
-		if(null != current) {
-			try {
-				insert_space_after_opening_paren_in_type_dot_identifier_expression = DefaultCodeFormatterConstants.TRUE.equals(current);
-			} catch(Exception e) {
-				insert_space_after_opening_paren_in_type_dot_identifier_expression = false;
-			}
-		}
-		
 		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_TRAITS_EXPRESSION);
 		if(null != current) {
 			try {
@@ -1806,15 +1778,6 @@ public class DefaultCodeFormatterOptions
 				insert_space_before_closing_paren_in_template_invocation = DefaultCodeFormatterConstants.TRUE.equals(current);
 			} catch(Exception e) {
 				insert_space_before_closing_paren_in_template_invocation = false;
-			}
-		}
-		
-		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_TYPE_DOT_IDENTIFIER_EXPRESSION);
-		if(null != current) {
-			try {
-				insert_space_before_closing_paren_in_type_dot_identifier_expression = DefaultCodeFormatterConstants.TRUE.equals(current);
-			} catch(Exception e) {
-				insert_space_before_closing_paren_in_type_dot_identifier_expression = false;
 			}
 		}
 		
@@ -2448,30 +2411,12 @@ public class DefaultCodeFormatterOptions
 			}
 		}
 		
-		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_DOT_IN_TYPE_DOT_IDENTIFIER_EXPRESSIONS);
-		if(null != current) {
-			try {
-				insert_space_before_dot_in_type_dot_identifier_expressions = DefaultCodeFormatterConstants.TRUE.equals(current);
-			} catch(Exception e) {
-				insert_space_before_dot_in_type_dot_identifier_expressions = false;
-			}
-		}
-		
 		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_DOT_IN_QUALIFIED_NAMES);
 		if(null != current) {
 			try {
 				insert_space_after_dot_in_qualified_names = DefaultCodeFormatterConstants.TRUE.equals(current);
 			} catch(Exception e) {
 				insert_space_after_dot_in_qualified_names = false;
-			}
-		}
-		
-		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_DOT_IN_TYPE_DOT_IDENTIFIER_EXPRESSIONS);
-		if(null != current) {
-			try {
-				insert_space_after_dot_in_type_dot_identifier_expressions = DefaultCodeFormatterConstants.TRUE.equals(current);
-			} catch(Exception e) {
-				insert_space_after_dot_in_type_dot_identifier_expressions = false;
 			}
 		}
 		
@@ -3660,7 +3605,6 @@ public class DefaultCodeFormatterOptions
 		insert_space_before_opening_paren_in_casts = false;
 		insert_space_before_opening_paren_in_template_declarations = false;
 		insert_space_before_opening_paren_in_parenthesized_expressions = false;
-		insert_space_before_opening_paren_in_type_dot_identifier_expression = false;
 		insert_space_before_opening_paren_in_class_invariants = false;
 		insert_space_before_opening_paren_in_traits_expression = false;
 		insert_space_before_opening_paren_in_modified_type = false;
@@ -3695,7 +3639,6 @@ public class DefaultCodeFormatterOptions
 		insert_space_after_opening_paren_in_template_declarations = false;
 		insert_space_after_opening_paren_in_parenthesized_expressions = false;
 		insert_space_after_opening_paren_in_template_invocation = false;
-		insert_space_after_opening_paren_in_type_dot_identifier_expression = false;
 		insert_space_after_opening_paren_in_traits_expression = false;
 		insert_space_after_opening_paren_in_modified_type = false;
 		insert_space_before_closing_paren_in_function_declaration_parameters = false;
@@ -3729,7 +3672,6 @@ public class DefaultCodeFormatterOptions
 		insert_space_before_closing_paren_in_template_declarations = false;
 		insert_space_before_closing_paren_in_parenthesized_expressions = false;
 		insert_space_before_closing_paren_in_template_invocation = false;
-		insert_space_before_closing_paren_in_type_dot_identifier_expression = false;
 		insert_space_before_closing_paren_in_traits_expression = false;
 		insert_space_before_closing_paren_in_modified_type = false;
 		insert_space_between_empty_parens_in_function_declaration_parameters = false;
@@ -3800,9 +3742,7 @@ public class DefaultCodeFormatterOptions
 		insert_space_after_exclamation_point_in_template_invocation = false;
 		insert_space_after_closing_paren_in_casts = true;
 		insert_space_before_dot_in_qualified_names = false;
-		insert_space_before_dot_in_type_dot_identifier_expressions = false;
 		insert_space_after_dot_in_qualified_names = false;
-		insert_space_after_dot_in_type_dot_identifier_expressions = false;
 		insert_space_before_slice_operator = true;
 		insert_space_after_slice_operator = true;
 		insert_space_before_slice_operator_in_foreach_range_statement = true;

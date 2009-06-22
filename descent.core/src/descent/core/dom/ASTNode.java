@@ -926,13 +926,6 @@ public abstract class ASTNode {
 	 
 	/**
 	 * Node type constant indicating a node of type 
-	 * <code>TypeDotIdentifierExpression</code>.
-	 * @see TypeDotIdentifierExpression
-	 */
-	public static final int TYPE_DOT_IDENTIFIER_EXPRESSION = 111;
-	 
-	/**
-	 * Node type constant indicating a node of type 
 	 * <code>TypeExpression</code>.
 	 * @see TypeExpression
 	 */
@@ -1384,8 +1377,6 @@ public abstract class ASTNode {
 			return TypedefDeclaration.class;
 		case TYPEDEF_DECLARATION_FRAGMENT:
 			return TypedefDeclarationFragment.class;
-		case TYPE_DOT_IDENTIFIER_EXPRESSION:
-			return TypeDotIdentifierExpression.class;
 		case TYPE_EXPRESSION:
 			return TypeExpression.class;
 		case TYPEID_EXPRESSION:

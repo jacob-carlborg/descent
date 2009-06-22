@@ -242,7 +242,7 @@ public class TraitsExp extends Expression {
 			e = isExpression(o);
 			Dsymbol s = isDsymbol(o);
 			if(null != t)
-			    e = new TypeDotIdExp(loc, t, id);
+			    e = context.newTypeDotIdExp(loc, t, id);
 			else if(null != e)
 			    e = new DotIdExp(loc, e, id);
 			else if (null != s)

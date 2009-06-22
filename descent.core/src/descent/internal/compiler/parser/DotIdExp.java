@@ -72,17 +72,17 @@ public class DotIdExp extends UnaExp {
 				cd = ad.isClassDeclaration();
 				if (cd != null) {
 					if (e1.op == TOKthis) {
-						e = new TypeDotIdExp(loc, cd.type, ident);
+						e = context.newTypeDotIdExp(loc, cd.type, ident);
 						return e.semantic(sc, context);
 					} else if (cd.baseClass != null && e1.op == TOKsuper) {
-						e = new TypeDotIdExp(loc, cd.baseClass.type, ident);
+						e = context.newTypeDotIdExp(loc, cd.baseClass.type, ident);
 						return e.semantic(sc, context);
 					}
 				} else {
 					sd = ad.isStructDeclaration();
 					if (sd != null) {
 						if (e1.op == TOKthis) {
-							e = new TypeDotIdExp(loc, sd.type, ident);
+							e = context.newTypeDotIdExp(loc, sd.type, ident);
 							return e.semantic(sc, context);
 						}
 					}

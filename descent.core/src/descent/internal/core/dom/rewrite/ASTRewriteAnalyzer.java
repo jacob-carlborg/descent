@@ -3022,18 +3022,6 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 	}
 	
 	@Override
-	public boolean visit(TypeDotIdentifierExpression node) {
-		if (!hasChildrenChanges(node)) {
-			return doVisitUnchangedChildren(node);
-		}
-		
-		rewriteRequiredNode(node, TypeDotIdentifierExpression.TYPE_PROPERTY);
-		rewriteRequiredNode(node, TypeDotIdentifierExpression.NAME_PROPERTY);
-		
-		return false;
-	}
-	
-	@Override
 	public boolean visit(TypeExpression node) {
 		if (!hasChildrenChanges(node)) {
 			return doVisitUnchangedChildren(node);

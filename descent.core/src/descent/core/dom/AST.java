@@ -2183,16 +2183,6 @@ public final class AST {
 	}
 
 	/**
-	 * Creates an unparented type dot identifier expression node owned by this AST.
-	 * 
-	 * @return the new unparented type dot identifier expression node
-	 */
-	public TypeDotIdentifierExpression newTypeDotIdentifierExpression() {
-		TypeDotIdentifierExpression node = new TypeDotIdentifierExpression(this);
-		return node;
-	}
-
-	/**
 	 * Creates an unparented type expression node owned by this AST.
 	 * 
 	 * @return the new unparented type expression node

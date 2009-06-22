@@ -2729,15 +2729,6 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		return false;
 	}
 
-	public boolean visit(TypeDotIdExp node) {
-		node.type.accept(this);
-		this.buffer.append(".");
-		if (node.ident != null) {
-			node.ident.accept(this);
-		}
-		return false;
-	}
-
 	public boolean visit(TypeEnum node) {
 		appendStartCompilerNode();
 		this.buffer.append("TypeEnum: ");

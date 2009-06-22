@@ -8117,8 +8117,8 @@ public class Parser extends Lexer {
 		return new CaseStatement(loc, exp, statement);
 	}
 	
-	protected TypeDotIdExp newTypeDotIdExp(Loc loc, Type t, IdentifierExp exp) {
-		return new TypeDotIdExp(loc, t, exp);
+	private final DotIdExp newTypeDotIdExp(Loc loc, Type t, IdentifierExp exp) {
+		return newDotIdExp(loc, new TypeExp(loc, t), exp);
 	}
 	
 	protected DotIdExp newDotIdExp(Loc loc, Expression e, IdentifierExp id) {

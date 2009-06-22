@@ -570,9 +570,6 @@ public class AstVisitorAdapter implements IASTVisitor {
 	public void endVisit(TypeDelegate node) {
 	}
 
-	public void endVisit(TypeDotIdExp node) {
-	}
-
 	public void endVisit(TypeEnum node) {
 	}
 
@@ -1466,10 +1463,6 @@ public class AstVisitorAdapter implements IASTVisitor {
 	}
 
 	public boolean visit(TypeDelegate node) {
-		return true;
-	}
-
-	public boolean visit(TypeDotIdExp node) {
 		return true;
 	}
 

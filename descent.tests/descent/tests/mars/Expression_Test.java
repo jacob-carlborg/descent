@@ -40,7 +40,6 @@ import descent.core.dom.StringLiteral;
 import descent.core.dom.StringsExpression;
 import descent.core.dom.TemplateType;
 import descent.core.dom.TraitsExpression;
-import descent.core.dom.TypeDotIdentifierExpression;
 import descent.core.dom.TypeExpression;
 import descent.core.dom.TypeidExpression;
 import descent.core.dom.TypeofType;
@@ -390,12 +389,13 @@ public class Expression_Test extends Parser_Test {
 	
 	public void testTypeDotId() {
 		String s = " int.length";
-		TypeDotIdentifierExpression expr = (TypeDotIdentifierExpression) parseExpression(s);
+		DotIdentifierExpression expr = (DotIdentifierExpression) parseExpression(s);
 		
-		assertEquals(ASTNode.TYPE_DOT_IDENTIFIER_EXPRESSION, expr.getNodeType());
+		assertEquals(ASTNode.DOT_IDENTIFIER_EXPRESSION, expr.getNodeType());
 		assertPosition(expr, 1, 10);
 		
-		assertEquals(ASTNode.PRIMITIVE_TYPE, expr.getType().getNodeType());
+		TypeExpression typeExp = (TypeExpression) expr.getExpression();		
+		assertEquals(ASTNode.PRIMITIVE_TYPE, typeExp.getType().getNodeType());
 		assertEquals("length", expr.getName().getFullyQualifiedName());
 	}
 	
@@ -595,13 +595,15 @@ public class Expression_Test extends Parser_Test {
 	
 	public void testTypeofDotId() {
 		String s = " typeof(3).length";
-		TypeDotIdentifierExpression expr = (TypeDotIdentifierExpression) parseExpression(s);
-		assertEquals(ASTNode.TYPE_DOT_IDENTIFIER_EXPRESSION, expr.getNodeType());
+		DotIdentifierExpression expr = (DotIdentifierExpression) parseExpression(s);
+		assertEquals(ASTNode.DOT_IDENTIFIER_EXPRESSION, expr.getNodeType());
 		
-		assertEquals(ASTNode.TYPEOF_TYPE, expr.getType().getNodeType());
+		TypeExpression typeExp = (TypeExpression) expr.getExpression();
+		
+		assertEquals(ASTNode.TYPEOF_TYPE, typeExp.getType().getNodeType());
 		assertPosition(expr, 1, s.length() - 1);
 		
-		TypeofType typeof = (TypeofType) expr.getType();
+		TypeofType typeof = (TypeofType) typeExp.getType();
 		assertEquals("3", ((NumberLiteral) typeof.getExpression()).getToken());
 		
 		assertEquals("length", expr.getName().getFullyQualifiedName());

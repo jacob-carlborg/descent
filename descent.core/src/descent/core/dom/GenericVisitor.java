@@ -710,12 +710,6 @@ public class GenericVisitor extends ASTVisitor {
 	}
 
 	@Override
-	public void endVisit(TypeDotIdentifierExpression node) {
-		
-		endVisitNode(node);
-	}
-
-	@Override
 	public void endVisit(TypeExpression node) {
 		
 		endVisitNode(node);
@@ -1467,12 +1461,6 @@ public class GenericVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(TypedefDeclarationFragment node) {
-		
-		return visitNode(node);
-	}
-
-	@Override
-	public boolean visit(TypeDotIdentifierExpression node) {
 		
 		return visitNode(node);
 	}

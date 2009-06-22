@@ -43,7 +43,6 @@ import descent.internal.codeassist.complete.CompletionOnReturnStatement;
 import descent.internal.codeassist.complete.CompletionOnSuperDotExp;
 import descent.internal.codeassist.complete.CompletionOnTemplateMixin;
 import descent.internal.codeassist.complete.CompletionOnThisDotExp;
-import descent.internal.codeassist.complete.CompletionOnTypeDotIdExp;
 import descent.internal.codeassist.complete.CompletionOnTypeIdentifier;
 import descent.internal.codeassist.complete.CompletionOnVersionCondition;
 import descent.internal.codeassist.complete.CompletionParser;
@@ -521,9 +520,6 @@ public class CompletionEngine extends Engine
 			} else if (assistNode instanceof CompletionOnCaseStatement) {
 				CompletionOnCaseStatement node = (CompletionOnCaseStatement) assistNode;
 				completeCaseStatement(node);
-			} else if (assistNode instanceof CompletionOnTypeDotIdExp) {
-				CompletionOnTypeDotIdExp node = (CompletionOnTypeDotIdExp) assistNode;
-				completeTypeDotIdExp(node);
 			} else if (assistNode instanceof CompletionOnDotIdExp) {
 				CompletionOnDotIdExp node = (CompletionOnDotIdExp) assistNode;
 				completeDotIdExp(node);
@@ -1087,25 +1083,6 @@ public class CompletionEngine extends Engine
 		}
 		
 		completeEnumMembers(enumDeclaration, excludedNames, true /* use fqn */);
-	}
-	
-	private void completeTypeDotIdExp(CompletionOnTypeDotIdExp node) throws JavaModelException {
-		Type type = node.type;
-		if (type == null) {
-			return;
-		}
-		
-		// If it's a basic type, no semantic analysis is needed
-		if (type.getNodeType() == ASTDmdNode.TYPE_BASIC) {
-			currentName = computePrefixAndSourceRange(node.ident);
-			completeTypeBasicProperties((TypeBasic) type);
-		} else {
-			// else, do semantic, then see what the type is
-			// it's typeof(exp)
-			doSemantic();
-			
-			completeType(node.resolvedType, node.ident, true /* only statics */);
-		}
 	}
 
 	private void completeDotIdExp(CompletionOnDotIdExp node) throws JavaModelException {

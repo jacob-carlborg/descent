@@ -680,4 +680,8 @@ public class SemanticContext {
 		return new TemplateInstance(loc, name, encoder);
 	}
 
+	public Expression newTypeDotIdExp(Loc loc, Type type, IdentifierExp ident) {
+		return new DotIdExp(loc, new TypeExp(loc, type), ident);
+	}
+
 }

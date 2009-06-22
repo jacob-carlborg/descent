@@ -122,7 +122,7 @@ public class IdentifierExp extends Expression {
 					if (t.ty == TY.Tpointer) {
 						t = ((TypePointer) t).next;
 					}
-					e = new TypeDotIdExp(loc, t, this);
+					e = context.newTypeDotIdExp(loc, t, this);
 				}
 			} else {
 				if (context.isD2()) {

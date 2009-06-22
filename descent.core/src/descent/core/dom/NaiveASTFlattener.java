@@ -1636,14 +1636,6 @@ class NaiveASTFlattener extends ASTVisitor {
 	}
 	
 	@Override
-	public boolean visit(TypeDotIdentifierExpression node) {
-		node.getType().accept(this);
-		this.buffer.append(".");
-		node.getName().accept(this);
-		return false;
-	}
-	
-	@Override
 	public boolean visit(TypeExpression node) {
 		node.getType().accept(this);
 		return false;

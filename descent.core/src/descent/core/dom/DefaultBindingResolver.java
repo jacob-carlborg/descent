@@ -9,7 +9,6 @@ import descent.core.JavaModelException;
 import descent.core.Signature;
 import descent.core.WorkingCopyOwner;
 import descent.core.compiler.CharOperation;
-import descent.internal.codeassist.CompletionEngine;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.AliasDeclaration;
 import descent.internal.compiler.parser.CallExp;
@@ -34,7 +33,6 @@ import descent.internal.compiler.parser.TypeBasic;
 import descent.internal.compiler.parser.TypeClass;
 import descent.internal.compiler.parser.TypeDArray;
 import descent.internal.compiler.parser.TypeDelegate;
-import descent.internal.compiler.parser.TypeDotIdExp;
 import descent.internal.compiler.parser.TypeEnum;
 import descent.internal.compiler.parser.TypeExp;
 import descent.internal.compiler.parser.TypeFunction;
@@ -462,21 +460,6 @@ class DefaultBindingResolver extends BindingResolver {
 									}
 								}
 							}
-						}
-					} else if (parent instanceof TypeDotIdentifierExpression
-							&& name.getLocationInParent().equals(
-									TypeDotIdentifierExpression.NAME_PROPERTY)) {
-						TypeDotIdentifierExpression dotid = (TypeDotIdentifierExpression) parent;
-
-						ASTDmdNode old = newAstToOldAst.get(dotid);
-						if (!(old instanceof descent.internal.compiler.parser.TypeDotIdExp)) {
-							return null;
-						}
-
-						TypeDotIdExp tdie = (TypeDotIdExp) old;
-						if (tdie.type != null) {
-							return resolveBuiltinProperty(null, tdie.type,
-									(SimpleName) name);
 						}
 					}
 				}

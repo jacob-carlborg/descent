@@ -385,13 +385,6 @@ insert_space_before_opening_paren_in_parenthesized_expressions
 	wsDElem=parenthesized_expressions
 	wsSynElem=before_opening_paren
 	wsPreview=EXPRESSION_PREVIEW
-insert_space_before_opening_paren_in_type_dot_identifier_expression
-	type=boolean
-	default=false
-	wsDElem=type_dot_identifier_expression
-	wsDElemEx=type_dot_identifier_expression_parens
-	wsSynElem=before_opening_paren
-	wsPreview=TYPE_DOT_IDENTIFIER_PREVIEW
 insert_space_before_opening_paren_in_class_invariants
 	type=boolean
 	default=false
@@ -606,13 +599,6 @@ insert_space_after_opening_paren_in_template_invocation
 	wsDElem=template_invocation
 	wsSynElem=after_opening_paren
 	wsPreview=TEMPLATE_INVOCATION_PREVIEW
-insert_space_after_opening_paren_in_type_dot_identifier_expression
-	type=boolean
-	default=false
-	wsDElem=type_dot_identifier_expression
-	wsDElemEx=type_dot_identifier_expression_parens
-	wsSynElem=after_opening_paren
-	wsPreview=TYPE_DOT_IDENTIFIER_PREVIEW
 insert_space_after_opening_paren_in_traits_expression
 	type=boolean
 	default=false
@@ -820,13 +806,6 @@ insert_space_before_closing_paren_in_template_invocation
 	wsDElem=template_invocation
 	wsSynElem=before_closing_paren
 	wsPreview=TEMPLATE_INVOCATION_PREVIEW
-insert_space_before_closing_paren_in_type_dot_identifier_expression
-	type=boolean
-	default=false
-	wsDElem=type_dot_identifier_expression
-	wsDElemEx=type_dot_identifier_expression_parens
-	wsSynElem=before_closing_paren
-	wsPreview=TYPE_DOT_IDENTIFIER_PREVIEW
 insert_space_before_closing_paren_in_traits_expression
 	type=boolean
 	default=false
@@ -1349,24 +1328,12 @@ insert_space_before_dot_in_qualified_names
 	wsDElem=qualified_names
 	wsSynElem=before_dot
 	wsPreview=DOT_PREVIEW
-insert_space_before_dot_in_type_dot_identifier_expressions
-	type=boolean
-	default=false
-	wsDElem=type_dot_identifier_expression
-	wsSynElem=before_dot
-	wsPreview=TYPE_DOT_IDENTIFIER_PREVIEW
 insert_space_after_dot_in_qualified_names
 	type=boolean
 	default=false
 	wsDElem=qualified_names
 	wsSynElem=after_dot
 	wsPreview=DOT_PREVIEW
-insert_space_after_dot_in_type_dot_identifier_expressions
-	type=boolean
-	default=false
-	wsDElem=type_dot_identifier_expression
-	wsSynElem=after_dot
-	wsPreview=TYPE_DOT_IDENTIFIER_PREVIEW
 
 
 

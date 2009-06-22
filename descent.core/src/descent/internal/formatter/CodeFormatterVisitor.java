@@ -2289,26 +2289,6 @@ public class CodeFormatterVisitor extends ASTVisitor
 		return false;
 	}
 	
-	public boolean visit(TypeDotIdentifierExpression node)
-	{
-		if(isNextToken(TOK.TOKlparen))
-		{
-			scribe.printNextToken(TOK.TOKlparen, prefs.insert_space_before_opening_paren_in_type_dot_identifier_expression);
-			if(prefs.insert_space_after_opening_paren_in_type_dot_identifier_expression)
-				scribe.space();
-			node.getType().accept(this);
-			scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_type_dot_identifier_expression);
-		}
-		else
-			node.getType().accept(this);
-		scribe.printNextToken(TOK.TOKdot, 
-				prefs.insert_space_before_dot_in_type_dot_identifier_expressions);
-		if(prefs.insert_space_after_dot_in_type_dot_identifier_expressions)
-			scribe.space();
-		node.getName().accept(this);
-		return false;
-	}
-	
 	public boolean visit(TypeExpression node)
 	{
 		node.getType().accept(this);

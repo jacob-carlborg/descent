@@ -438,8 +438,6 @@ public class ASTConverter {
 			return convert((TypeDArray) symbol);
 		case ASTDmdNode.TYPE_DELEGATE:
 			return convert((TypeDelegate) symbol);
-		case ASTDmdNode.TYPE_DOT_ID_EXP:
-			return convert((TypeDotIdExp) symbol);
 		case ASTDmdNode.TYPE_EXP:
 			return convert((TypeExp) symbol);
 		case ASTDmdNode.TYPE_FUNCTION:
@@ -1342,29 +1340,6 @@ public class ASTConverter {
 			
 			return convertModifiedType(a, b);
 		}
-	}
-	
-	public descent.core.dom.Expression convert(TypeDotIdExp a) {
-		descent.core.dom.TypeDotIdentifierExpression b = new descent.core.dom.TypeDotIdentifierExpression(ast);
-		if (a.sourceType != null) {
-			descent.core.dom.Type convertedType = convert(a.sourceType);
-			if (convertedType != null) {
-				b.setType(convertedType);
-			}
-		}
-		if (a.ident != null) {
-			SimpleName convertedName = (SimpleName) convert(a.ident);
-			if (convertedName != null) {
-				b.setName(convertedName);
-			}
-		}
-		setSourceRange(b, a.start, a.length);
-		
-		if (resolveBindings) {
-			recordNodes(b, a);
-		}
-		
-		return convertParenthesizedExpression(a, b);
 	}
 	
 	public descent.core.dom.Type convert(TypeDelegate a) {

@@ -458,8 +458,6 @@ public class CompileTimeASTConverter {
 			return convert((TypeDArray) symbol);
 		case ASTDmdNode.TYPE_DELEGATE:
 			return convert((TypeDelegate) symbol);
-		case ASTDmdNode.TYPE_DOT_ID_EXP:
-			return convert((TypeDotIdExp) symbol);
 		case ASTDmdNode.TYPE_ENUM:
 			return convert((TypeEnum) symbol);
 		case ASTDmdNode.TYPE_EXP:
@@ -1468,29 +1466,6 @@ public class CompileTimeASTConverter {
 			
 			return convertModifiedType(a, b);
 		}
-	}
-	
-	public descent.core.dom.Expression convert(TypeDotIdExp a) {
-		descent.core.dom.TypeDotIdentifierExpression b = new descent.core.dom.TypeDotIdentifierExpression(ast);
-		if (a.type != null) {
-			descent.core.dom.Type convertedType = convert(a.type);
-			if (convertedType != null) {
-				b.setType(convertedType);
-			}
-		}
-		if (a.ident != null) {
-			SimpleName convertedName = (SimpleName) convert(a.ident);
-			if (convertedName != null) {
-				b.setName(convertedName);
-			}
-		}
-		setSourceRange(b, a.start, a.length);
-		
-		if (resolveBindings) {
-			recordNodes(b, a);
-		}
-		
-		return convertParenthesizedExpression(a, b);
 	}
 	
 	public descent.core.dom.Type convert(TypeDelegate a) {
