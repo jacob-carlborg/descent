@@ -14,7 +14,7 @@ func.c  --> missing StaticCtorDeclaration::StaticCtorDeclaration
             
 Remaining from DMD 1.045
 ------------------------------
-Porting up to and including func.c.
+Porting up to but excluding interpret.c, BinExp::interpretAssignCommon.
             
 Remaining from DMD 2.013
 ------------------------------

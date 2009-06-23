@@ -68,6 +68,9 @@ public class Import extends Dsymbol {
 		aliases.add(alias);
 	}
 
+	/*****************************
+	 * Add import to sd's symbol table.
+	 */
 	@Override
 	public int addMember(Scope sc, ScopeDsymbol sd, int memnum,
 			SemanticContext context) {
@@ -81,6 +84,9 @@ public class Import extends Dsymbol {
 			result = super.addMember(sc, sd, memnum, context);
 		}
 
+	    /* Instead of adding the import to sd's symbol table,
+	     * add each of the alias=name pairs
+	     */
 		for (int i = 0; i < size(names); i++) {
 			IdentifierExp name = names.get(i);
 			IdentifierExp alias = aliases.get(i);
@@ -161,10 +167,6 @@ public class Import extends Dsymbol {
 		if (null == pkg) {
 			pkg = mod;
 		}
-
-		context.muteProblems++;
-		mod.semantic(null, context);
-		context.muteProblems--;
 	}
 
 	@Override
@@ -178,6 +180,13 @@ public class Import extends Dsymbol {
 			SemanticContext context) {
 		if (null == pkg) {
 			load(null, context);
+			
+			if (mod != null) {
+				context.muteProblems++;
+				mod.semantic(context);
+				context.muteProblems--;
+			}
+			
 			// Added for Descent
 			if (null == pkg) {
 				return null;
@@ -193,6 +202,15 @@ public class Import extends Dsymbol {
 		load(sc, context);
 
 		if (null != mod) {
+			
+			if (sc.module.aimports == null) {
+				sc.module.aimports = new Array();
+			}
+			sc.module.aimports.add(mod);
+			
+			context.muteProblems++;
+			mod.semantic(null, context);
+			context.muteProblems--;
 
 			if (!isstatic && null == aliasId && 0 == size(names)) {
 				/* Default to private importing
@@ -209,12 +227,6 @@ public class Import extends Dsymbol {
 				
 				sc.scopesym.importScope(mod, prot);
 			}
-
-			// Modules need a list of each imported module
-			if (sc.module.aimports == null) {
-				sc.module.aimports = new Array();
-			}
-			sc.module.aimports.add(mod);
 
 			if (mod.needmoduleinfo) {
 				sc.module.needmoduleinfo = true;

@@ -426,7 +426,7 @@ public class FuncDeclaration extends Declaration {
 			return interpret_aaValues(istate, arguments, context);
 		}
 
-		if (cantInterpret || semanticRun == 1) {
+		if (cantInterpret || semanticRun == 3) {
 			return null;
 		}
 
@@ -435,10 +435,12 @@ public class FuncDeclaration extends Declaration {
 			return null;
 		}
 
-		if (semanticRun == 0 && scope != null) {
+		if (semanticRun < 3 && scope != null) {
 			semantic3(scope, context);
+			if (context.global.errors > 0)	// if errors compiling this function
+			    return null;
 		}
-		if (semanticRun < 2) {
+		if (semanticRun < 4) {
 			return null;
 		}
 

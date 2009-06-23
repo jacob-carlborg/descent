@@ -54,7 +54,12 @@ public class ExpInitializer extends Initializer {
 			}
 		}
 		
-		return exp.type;
+	    Type t = exp.type;
+	    if (null == t) {
+	    	t = super.inferType(sc, context);
+	    }
+	    return t;
+
 	}
 
 	@Override
