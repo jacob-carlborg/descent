@@ -109,6 +109,10 @@ public class Problem implements IProblem {
 		return newSemanticTypeWarning(id, node.getLineNumber(), node.getErrorStart(), node.getErrorLength(), (String[]) null);
 	}
 	
+	public static Problem newSemanticTypeWarning(int id, ASTDmdNode node, String ... arguments) {
+		return newSemanticTypeWarning(id, node.getLineNumber(), node.getStart(), node.getLength(), arguments);
+	}
+	
 	public static Problem newTask(String message, int line, int start, int length) {
 		Problem p = new Problem();
 		p.arguments = new String[] { message };

@@ -61,9 +61,11 @@ public class UnitTestDeclaration extends FuncDeclaration {
 	public void semantic(Scope sc, SemanticContext context) {
 		if (context.global.params.useUnitTests) {
 			// Type tret;
-
 			type = new TypeFunction(null, Type.tvoid, 0, LINK.LINKd);
-			super.semantic(sc, context);
+			Scope sc2 = sc.push();
+			sc2.linkage = LINK.LINKd;
+			super.semantic(sc2, context);
+			sc2.pop();
 		}
 
 		// We're going to need ModuleInfo even if the unit tests are not

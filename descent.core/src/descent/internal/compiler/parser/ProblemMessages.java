@@ -499,6 +499,8 @@ final class ProblemMessages extends NLS {
 	public static String TemplateDoesNotHaveProperty;
 	public static String ExpressionDoesNotHaveProperty;
 	public static String RecursiveOpCmpExpansion;
+	public static String CtorIsReservedForConstructors;
+	public static String FunctionOverridesBaseClassFunctionButIsNotMarkedWithOverride;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

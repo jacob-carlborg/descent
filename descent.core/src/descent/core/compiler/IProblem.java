@@ -698,5 +698,7 @@ public interface IProblem {
 	int TemplateDoesNotHaveProperty = 487;
 	int ExpressionDoesNotHaveProperty = 488;
 	int RecursiveOpCmpExpansion = 489;
+	int CtorIsReservedForConstructors = 490;
+	int FunctionOverridesBaseClassFunctionButIsNotMarkedWithOverride = 491;
 
 }

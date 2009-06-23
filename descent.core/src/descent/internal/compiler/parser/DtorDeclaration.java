@@ -39,7 +39,7 @@ public class DtorDeclaration extends FuncDeclaration {
 
 	@Override
 	public boolean addPreInvariant(SemanticContext context) {
-		return (vthis != null && context.global.params.useInvariants);
+		return (isThis() != null && vthis != null && context.global.params.useInvariants);
 	}
 
 	@Override

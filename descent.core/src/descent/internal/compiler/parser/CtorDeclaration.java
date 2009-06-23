@@ -35,7 +35,7 @@ public class CtorDeclaration extends FuncDeclaration {
 
 	@Override
 	public boolean addPostInvariant(SemanticContext context) {
-		return (vthis != null && context.global.params.useInvariants);
+		return (isThis() != null && vthis != null && context.global.params.useInvariants);
 	}
 
 	@Override

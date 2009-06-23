@@ -296,7 +296,7 @@ DestructorsOnlyForClass
 	formatString=Destructors only are for class definitions
 	numArgs=0
 InvariantsOnlyForClassStructUnion
-	formatString=Invariants only are for struct/union/class definitions
+	formatString=Invariants are only for struct/union/class definitions
 	numArgs=0
 FunctionDoesNotOverrideAny
 	formatString=The function %1$s of type %2$s must override a superclass method
@@ -1465,7 +1465,13 @@ ExpressionDoesNotHaveProperty
 RecursiveOpCmpExpansion
 	formatString=Recursive opCmp expansion
 	numArgs=0
-
+CtorIsReservedForConstructors
+	formatString=_ctor is reserved for constructors
+	numArgs=0
+FunctionOverridesBaseClassFunctionButIsNotMarkedWithOverride
+	formatString=$1%s overrides base class function %$2s, but is not marked with 'override'
+	numArgs=2
+	
 
 
 

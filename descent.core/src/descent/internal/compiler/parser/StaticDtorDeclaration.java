@@ -81,7 +81,7 @@ public class StaticDtorDeclaration extends FuncDeclaration {
 			sa.add(s);
 			Expression e = new IdentifierExp(Loc.ZERO, id);
 			e = new AddAssignExp(Loc.ZERO, e, new IntegerExp(-1));
-			e = new EqualExp(Loc.ZERO, TOK.TOKnotequal, e, new IntegerExp(1));
+			e = new EqualExp(Loc.ZERO, TOK.TOKnotequal, e, new IntegerExp(0));
 			s = new IfStatement(Loc.ZERO, null, e, new ReturnStatement(
 					Loc.ZERO, null), null);
 			sa.add(s);

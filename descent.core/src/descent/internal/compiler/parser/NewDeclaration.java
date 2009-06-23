@@ -87,14 +87,14 @@ public class NewDeclaration extends FuncDeclaration {
 			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 						IProblem.AtLeastOneArgumentOfTypeExpected, this,
-						new String[] { "uint" }));
+						new String[] { "size_t" }));
 			}
 		} else {
 			Argument a = Argument.getNth(tf.parameters, 0, context);
-			if (!a.type.equals(Type.tuns32)) {
+			if (!a.type.equals(Type.tsize_t)) {
 				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.FirstArgumentMustBeOfType, a.type, new String[] { "uint" }));
+							IProblem.FirstArgumentMustBeOfType, a.type, new String[] { "size_t" }));
 				}
 			}
 		}

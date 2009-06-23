@@ -141,6 +141,10 @@ public class FuncDeclaration extends Declaration {
 		this.sourceType = type;
 		this.loc = loc;
 		this.vtblIndex = -1;
+		
+	    /* The type given for "infer the return type" is a TypeFunction with
+	     * NULL for the return type.
+	     */
 		this.inferRetType = (type != null && type.nextOf() == null);
 		this.builtin = BUILTINunknown;
 	}
@@ -240,7 +244,7 @@ public class FuncDeclaration extends Declaration {
 				}
 
 				// Look to see if any parents of f that are below this escape
-				for (Dsymbol s = f.parent; s != this; s = s.parent) {
+				for (Dsymbol s = f.parent; s!= null && s != this; s = s.parent) {
 					f = s.isFuncDeclaration();
 					if (f != null
 							&& (f.isThis() != null || f.tookAddressOf != 0)) {
@@ -1038,6 +1042,17 @@ public class FuncDeclaration extends Declaration {
 		InterfaceDeclaration id = null;
 		Dsymbol pd;
 		int nparams = 0;
+		
+	    if (semanticRun != 0 && isFuncLiteralDeclaration() != null) {
+			/*
+			 * Member functions that have return types that are forward
+			 * references can have semantic() run more than once on them. See
+			 * test\interface2.d, test20
+			 */
+			return;
+		}
+		assert (semanticRun <= 1);
+		semanticRun = 1;
 
 		if (!context.isD2()) {
 			if (type.nextOf() != null) {
@@ -1108,6 +1123,12 @@ public class FuncDeclaration extends Declaration {
 		}
 
 		Dsymbol parent = toParent();
+		
+	    if (equals(ident, Id.ctor) && null == isCtorDeclaration()) {
+	    	if (context.acceptsErrors()) {
+	    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.CtorIsReservedForConstructors, this));
+	    	}
+	    }
 
 		if (context.isD2()) {
 			if (isAuto() || isScope()) {
@@ -1244,192 +1265,131 @@ public class FuncDeclaration extends Declaration {
 			}
 
 			// Find index of existing function in vtbl[] to override
-			if (cd.baseClass != null) {
-				
-				cd.baseClass = (ClassDeclaration) cd.baseClass.unlazy(context);
-				
-				for (vi = 0; vi < cd.baseClass.vtbl.size() && !gotoL1; vi++) {
-					// Descent workarround
-					// XXX fix this
-					if (vi >= cd.vtbl.size()) {
-						break;
-					}
-					FuncDeclaration fdv = ((Dsymbol) cd.vtbl.get(vi))
-							.isFuncDeclaration();
-
-					// BUG: should give error if argument types match,
-					// but return type does not?
-
-					if (fdv != null && equals(fdv.ident, ident)) {
-						int cov = type.covariant(fdv.type, context);
-
-						if (cov == 2) {
-							if (context.acceptsErrors()) {
-								context
-										.acceptProblem(Problem
-												.newSemanticTypeErrorLoc(
-														IProblem.FunctionOfTypeOverridesButIsNotCovariant,
-														this,
-														new String[] {
-																toChars(context),
-																type
-																		.toChars(context),
-																fdv
-																		.toPrettyChars(context),
-																fdv.type
-																		.toChars(context) }));
-							}
-						}
-						if (cov == 1) {
-							if (fdv.isFinal()) {
-								if (context.acceptsErrors()) {
-									context
-											.acceptProblem(Problem
-													.newSemanticTypeErrorLoc(
-															IProblem.CannotOverrideFinalFunction,
-															this,
-															new String[] { fdv
-																	.toPrettyChars(context) }));
-								}
-							}
-							if (fdv.toParent() == parent) {
-								// If both are mixins, then error.
-								// If either is not, the one that is not
-								// overrides
-								// the other.
-								if (fdv.parent.isClassDeclaration() != null) {
-									// goto L1;
-									gotoL1 = true;
-								}
-
-								if (!gotoL1) {
-									if (context.BREAKABI) {
-										if (this.parent.isClassDeclaration() == null) {
-											if (context.acceptsErrors()) {
-												context
-														.acceptProblem(Problem
-																.newSemanticTypeErrorLoc(
-																		IProblem.MultipleOverridesOfSameFunction,
-																		this));
-											}
-										}
-									} else {
-										if (this.parent.isClassDeclaration() == null
-												&& isDtorDeclaration() == null) {
-											if (context.acceptsErrors()) {
-												context
-														.acceptProblem(Problem
-																.newSemanticTypeErrorLoc(
-																		IProblem.MultipleOverridesOfSameFunction,
-																		this));
-											}
-										}
-									}
-									if (context.acceptsErrors()) {
-										context
-												.acceptProblem(Problem
-														.newSemanticTypeErrorLoc(
-																IProblem.MultipleOverridesOfSameFunction,
-																this));
-									}
-								}
-							}
-
-							if (!gotoL1) {
-								cd.vtbl.set(vi, this);
-								vtblIndex = vi;
-
-								/*
-								 * This works by whenever this function is called,
-								 * it actually returns tintro, which gets
-								 * dynamically cast to type. But we know that tintro
-								 * is a base of type, so we could optimize it by not
-								 * doing a dynamic cast, but just subtracting the
-								 * isBaseOf() offset if the value is != null.
-								 */
-
-								if (fdv.tintro() != null) {
-									tintro = fdv.tintro();
-								} else if (!type.equals(fdv.type)) {
-									/*
-									 * Only need to have a tintro if the vptr
-									 * offsets differ
-									 */
-									int[] offset = { 0 };
-									if (fdv.type.nextOf().isBaseOf(
-											type.nextOf(), offset, context)) {
-										tintro = fdv.type;
-									}
-								}
-							}
-
-							// goto L1;
-							gotoL1 = true;
-						}
-
-						if (!gotoL1) {
-							if (cov == 3) {
-								cd.sizeok = 2; // can't finish due to forward
-								// reference
-								return;
-							}
-						}
-					}
-				}
-			}
-
-			// This is an 'introducing' function.
-			if (!gotoL1) {
-
+			vi = findVtblIndex(cd.vtbl, cd.baseClass != null ? size(cd.baseClass.vtbl) : 0, context);
+			switch(vi) {
+		    case -1:
+				/* Didn't find one, so
+				 * This is an 'introducing' function which gets a new
+				 * slot in the vtbl[].
+				 */
 				// Verify this doesn't override previous final function
 				if (cd.baseClass != null) {
 					Dsymbol s = cd.baseClass.search(loc, ident, 0, context);
 					if (s != null) {
-						FuncDeclaration f2;
-						
-						// TODO added for Descent, see if it's correct
-						FuncAliasDeclaration fad = s.isFuncAliasDeclaration();
-						if (fad != null) {
-							f2 = fad.funcalias;
-						} else {
-							f2 = s.isFuncDeclaration();
-						}
-						
-						// XXX Descent this check was added because I don't know why it
-						// gets to this point. FIXME
-						if (f2 != null) {
-							f2 = f2.overloadExactMatch(type, context);
-							if (f2 != null && f2.isFinal()
-									&& f2.prot() != PROTprivate) {
-								if (context.acceptsErrors()) {
-									context
-											.acceptProblem(Problem
-													.newSemanticTypeErrorLoc(
-															IProblem.CannotOverrideFinalFunctions,
-															this,
-															new String[] {
-																	new String(
-																			ident.ident),
-																	new String(
-																			cd.ident.ident) }));
-								}
+						FuncDeclaration f_ = s.isFuncDeclaration();
+						f_ = f_.overloadExactMatch(type, context);
+						if (f_ != null && f_.isFinal()
+								&& f_.prot() != PROTprivate) {
+							if (context.acceptsErrors()) {
+								context
+										.acceptProblem(Problem
+												.newSemanticTypeErrorLoc(
+														IProblem.CannotOverrideFinalFunction,
+														this,
+														f_.toPrettyChars(context)));
 							}
 						}
 					}
 				}
-				if (isFinal()) {
-					cd.vtblFinal.add(this);
-				} else {
-					// Append to end of vtbl[]
-					introducing = true;
-					vi = cd.vtbl.size();
-					cd.vtbl.add(this);
-					vtblIndex = vi;
+
+				if (isFinal())
+				{
+				    if (isOverride()) {
+				    	if (context.acceptsErrors()) {
+							context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+									IProblem.FunctionDoesNotOverrideAny, this,
+									new String(ident.ident),
+									new String(cd.ident.ident)));
+						}
+				    }
+				    cd.vtblFinal.add(this);
 				}
+				else
+				{
+				    // Append to end of vtbl[]
+				    introducing = true;
+				    vi = size(cd.vtbl);
+				    cd.vtbl.add(this);
+				    vtblIndex = vi;
+				}
+				break;
+				
+		    case -2:	// can't determine because of fwd refs
+				cd.sizeok = 2;	// can't finish due to forward reference
+				return;
+			
+			default: {
+				FuncDeclaration fdv = (FuncDeclaration) cd.vtbl.get(vi);
+				// This function is covariant with fdv
+				if (fdv.isFinal()) {
+					context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+							IProblem.CannotOverrideFinalFunction, this, fdv
+									.toPrettyChars(context)));
+				}
+
+				if (context.isD2()) {
+					if (!isOverride()) {
+						if (context.acceptsWarnings()) {
+							context.acceptProblem(
+								Problem.newSemanticTypeWarning(IProblem.FunctionOverridesBaseClassFunctionButIsNotMarkedWithOverride, this, this.toChars(context), fdv.toPrettyChars(context)));
+						}
+					}
+				}
+
+				if (fdv.toParent() == parent) {
+					// If both are mixins, then error.
+					// If either is not, the one that is not overrides
+					// the other.
+					if (fdv.parent.isClassDeclaration() != null)
+						break;
+
+					boolean condition = true;
+					condition &= null == this.parent.isClassDeclaration();
+
+					if (!context.BREAKABI) {
+						condition &= null == isDtorDeclaration();
+					}
+					if (context.isD2()) {
+						condition &= null == isPostBlitDeclaration();
+					}
+
+					if (condition) {
+						if (context.acceptsErrors()) {
+							context
+									.acceptProblem(Problem
+											.newSemanticTypeErrorLoc(
+													IProblem.MultipleOverridesOfSameFunction,
+													this));
+						}
+					}
+				}
+				cd.vtbl.set(vi, this);
+				vtblIndex = vi;
+
+				/*
+				 * This works by whenever this function is called, it actually
+				 * returns tintro, which gets dynamically cast to type. But we
+				 * know that tintro is a base of type, so we could optimize it
+				 * by not doing a dynamic cast, but just subtracting the
+				 * isBaseOf() offset if the value is != null.
+				 */
+
+				if (fdv.tintro != null) {
+					tintro = fdv.tintro;
+				} else if (!type.equals(fdv.type)) {
+					/*
+					 * Only need to have a tintro if the vptr offsets differ
+					 */
+					int[] offset = { 0 };
+					if (fdv.type.nextOf().isBaseOf(type.nextOf(), offset,
+							context)) {
+						tintro = fdv.type;
+					}
+				}
+				break;
 			}
-
-			// L1: ;
-
+			}
+			
 			/*
 			 * Go through all the interface bases. If this function is covariant
 			 * with any members of those interface functions, set the tintro.
@@ -1680,10 +1640,10 @@ public class FuncDeclaration extends Declaration {
 			throw new IllegalStateException("assert(0);");
 		}
 
-		if (semanticRun != 0) {
+		if (semanticRun >= 3) {
 			return;
 		}
-		semanticRun = 1;
+		semanticRun = 3;
 
 		if (type == null || type.ty != Tfunction) {
 			return;
@@ -1788,9 +1748,11 @@ public class FuncDeclaration extends Declaration {
 				vthis = v;
 			}
 		} else if (isNested()) {
-			VarDeclaration v;
-
-			v = new ThisDeclaration(loc, Type.tvoid.pointerTo(context));
+		    /* The 'this' for a nested function is the link to the
+		     * enclosing function's stack frame.
+		     * Note that nested functions and member functions are disjoint.
+		     */
+			VarDeclaration v = new ThisDeclaration(loc, Type.tvoid.pointerTo(context));
 			if (context.isD2()) {
 				v.storage_class |= STCparameter;
 			} else {
@@ -1879,9 +1841,10 @@ public class FuncDeclaration extends Declaration {
 				Argument arg = Argument.getNth(f.parameters, i, context);
 				IdentifierExp id = arg.ident;
 				if (id == null) {
-					id = new IdentifierExp(loc, ("_param_" + i + "u")
-							.toCharArray());
-					arg.ident = id;
+				    /* Generate identifier for un-named parameter,
+				     * because we need it later on.
+				     */
+				    arg.ident = id = context.generateId("_param_", i);
 				}
 				VarDeclaration v = new VarDeclaration(loc, arg.type, id, null);
 				v.copySourceRange(arg);
@@ -1952,11 +1915,11 @@ public class FuncDeclaration extends Declaration {
 						VarDeclaration v = sc2.search(loc, narg.ident, null,
 								context).isVarDeclaration();
 						Assert.isNotNull(v);
-						Expression e = new VarExp(context.isD2() ? v.loc : Loc.ZERO, v);
+						Expression e = new VarExp(v.loc, v);
 						exps.set(j, e);
 					}
 					Assert.isNotNull(arg.ident);
-					TupleDeclaration v = new TupleDeclaration(context.isD2() ? loc : Loc.ZERO, arg.ident,
+					TupleDeclaration v = new TupleDeclaration(loc, arg.ident,
 							exps);
 					v.isexp = true;
 					if (sc2.insert(v) == null) {
@@ -2451,7 +2414,7 @@ public class FuncDeclaration extends Declaration {
 		sc2.callSuper = 0;
 		sc2.pop();
 		//		}
-		semanticRun = 2;
+		semanticRun = 4;
 	}
 
 	public void setFbody(Statement fbody) {
@@ -2560,6 +2523,49 @@ public class FuncDeclaration extends Declaration {
 
 	    overloadApply(this, fpunique, result, context);
 	    return result;
+	}
+	
+	/*************************************************
+	 * Find index of function in vtbl[0..dim] that
+	 * this function overrides.
+	 * Returns:
+	 *	-1	didn't find one
+	 *	-2	can't determine because of forward references
+	 */
+	public int findVtblIndex(List vtbl, int dim, SemanticContext context) {
+		for (int vi = 0; vi < dim; vi++) {
+			FuncDeclaration fdv = ((Dsymbol) vtbl.get(vi)).isFuncDeclaration();
+			if (fdv != null && equals(fdv.ident, ident)) {
+				int cov = type.covariant(fdv.type, context);
+				switch (cov) {
+				case 0: // types are distinct
+					break;
+
+				case 1:
+					return vi;
+
+				case 2:
+					if (context.acceptsErrors()) {
+						context.acceptProblem(Problem
+										.newSemanticTypeErrorLoc(
+											IProblem.FunctionOfTypeOverridesButIsNotCovariant,
+											this,
+											toChars(context),
+											type.toChars(context),
+											fdv.toPrettyChars(context),
+											fdv.type.toChars(context)));
+					}
+					break;
+
+				case 3:
+					return -2; // forward references
+
+				default:
+					throw new IllegalStateException();
+				}
+			}
+		}
+		return -1;
 	}
 
 	@Override
