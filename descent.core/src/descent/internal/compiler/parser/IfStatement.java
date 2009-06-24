@@ -169,7 +169,7 @@ public class IfStatement extends Statement {
 		if (elsebody != null) {
 			elsebody = elsebody.semanticScope(sc, null, null, context);
 		}
-		sc.mergeCallSuper(loc, cs1);
+		sc.mergeCallSuper(loc, cs1, this);
 
 		return this;
 	}

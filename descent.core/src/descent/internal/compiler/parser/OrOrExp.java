@@ -123,7 +123,7 @@ public class OrOrExp extends BinExp {
 		}
 
 		e2 = e2.semantic(sc, context);
-		sc.mergeCallSuper(loc, cs1);
+		sc.mergeCallSuper(loc, cs1, this);
 		e2 = resolveProperties(sc, e2, context);
 		e2 = e2.checkToPointer(context);
 

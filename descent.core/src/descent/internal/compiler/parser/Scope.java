@@ -2,6 +2,8 @@ package descent.internal.compiler.parser;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.compiler.IProblem;
+
 import static descent.internal.compiler.parser.LINK.LINKd;
 import static descent.internal.compiler.parser.PROT.PROTpublic;
 
@@ -50,6 +52,7 @@ public class Scope {
 	public LabelStatement slabel; // enclosing labelled statement
 	public SwitchStatement sw; // enclosing switch statement
 	public TryFinallyStatement tf; // enclosing try finally statement
+    public TemplateInstance tinst;    // enclosing template instance
 	public Statement sbreak; // enclosing statement that supports "break"
 	public Statement scontinue; // enclosing statement that supports "continue"
 	public ForeachStatement fes; // if nested function for ForeachStatement, this is it
@@ -97,6 +100,7 @@ public class Scope {
 		this.parent = null;
 		this.sw = null;
 		this.tf = null;
+		this.tinst = null;
 		this.sbreak = null;
 		this.scontinue = null;
 		this.fes = null;
@@ -129,6 +133,7 @@ public class Scope {
 		this.sd = null;
 		this.sw = enclosing.sw;
 		this.tf = enclosing.tf;
+		this.tinst = enclosing.tinst;
 		this.sbreak = enclosing.sbreak;
 		this.scontinue = enclosing.scontinue;
 		this.fes = enclosing.fes;
@@ -241,7 +246,7 @@ public class Scope {
 		return null;
 	}
 
-	public void mergeCallSuper(Loc loc, int cs) {
+	public void mergeCallSuper(Loc loc, int cs, ASTDmdNode reference) {
 		// This does a primitive flow analysis to support the restrictions
 		// regarding when and how constructors can appear.
 		// It merges the results of two paths.
@@ -260,7 +265,9 @@ public class Scope {
 				a = (cs & (CSXthis_ctor | CSXsuper_ctor)) != 0;
 				b = (callSuper & (CSXthis_ctor | CSXsuper_ctor)) != 0;
 				if (a != b) {
-					error("one path skips constructor");
+					if (context.acceptsErrors()) {
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.OnePathSkipsConstructor, reference));
+					}
 				}
 				callSuper |= cs;
 			}
@@ -316,12 +323,14 @@ public class Scope {
 			if (sc.scopesym != null) {
 				s = sc.scopesym.search(loc, ident, 0, context);
 				if (s != null) {
-					if ((context.global.params.warnings || context.global.params.Dversion > 1)
+					if ((context.global.params.warnings)
 							&& ASTDmdNode.equals(ident, Id.length)
 							&& sc.scopesym.isArrayScopeSymbol() != null
 							&& sc.enclosing != null
 							&& sc.enclosing.search(loc, ident, null, context) != null) {
-						error("warning - array 'length' hides other 'length' name in outer scope");
+						if (context.acceptsWarnings()) {
+							context.acceptProblem(Problem.newSemanticTypeWarning(IProblem.ArrayLengthHidesOtherLengthNameInOuterScope, ident));
+						}
 					}
 
 					if (pscopesym != null) {

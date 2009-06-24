@@ -1115,6 +1115,10 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.FunctionOverridesBaseClassFunctionButIsNotMarkedWithOverride, arguments[0], arguments[1]);
 		case ForwardReferenceOfTypeDotMangleof:
 			return String.format(ProblemMessages.ForwardReferenceOfTypeDotMangleof, arguments[0]);
+		case ArrayLengthHidesOtherLengthNameInOuterScope:
+			return String.format(ProblemMessages.ArrayLengthHidesOtherLengthNameInOuterScope);
+		case OnePathSkipsConstructor:
+			return String.format(ProblemMessages.OnePathSkipsConstructor);
 		default:
 			return "";
 		}

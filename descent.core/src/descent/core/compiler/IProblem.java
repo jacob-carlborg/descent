@@ -701,5 +701,7 @@ public interface IProblem {
 	int CtorIsReservedForConstructors = 490;
 	int FunctionOverridesBaseClassFunctionButIsNotMarkedWithOverride = 491;
 	int ForwardReferenceOfTypeDotMangleof = 492;
+	int ArrayLengthHidesOtherLengthNameInOuterScope = 493;
+	int OnePathSkipsConstructor = 494;
 
 }

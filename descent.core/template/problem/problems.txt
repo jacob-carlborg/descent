@@ -1474,6 +1474,14 @@ FunctionOverridesBaseClassFunctionButIsNotMarkedWithOverride
 ForwardReferenceOfTypeDotMangleof
 	formatString=forward reference of type %1$s.mangleof
 	numArgs=1
+ArrayLengthHidesOtherLengthNameInOuterScope
+	formatString=Array 'length' hides other 'length' name in outer scope
+	numArgs=0
+OnePathSkipsConstructor
+	formatString=One path skips constructor
+	numArgs=0
+	
+	
 	
 	
 	

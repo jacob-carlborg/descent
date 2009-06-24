@@ -161,7 +161,7 @@ public class CondExp extends BinExp {
 		sc.callSuper = cs0;
 		e2 = e2.semantic(sc, context);
 		e2 = resolveProperties(sc, e2, context);
-		sc.mergeCallSuper(loc, cs1);
+		sc.mergeCallSuper(loc, cs1, this);
 
 		t1 = e1.type;
 		t2 = e2.type;

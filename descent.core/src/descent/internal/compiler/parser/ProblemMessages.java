@@ -502,6 +502,8 @@ final class ProblemMessages extends NLS {
 	public static String CtorIsReservedForConstructors;
 	public static String FunctionOverridesBaseClassFunctionButIsNotMarkedWithOverride;
 	public static String ForwardReferenceOfTypeDotMangleof;
+	public static String ArrayLengthHidesOtherLengthNameInOuterScope;
+	public static String OnePathSkipsConstructor;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);
