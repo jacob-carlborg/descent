@@ -8,6 +8,7 @@ public class ModuleDeclaration extends ASTDmdNode {
 
 	public IdentifierExp id;
 	public Identifiers packages;
+	public boolean safe;
 
 	public ModuleDeclaration(Identifiers packages, IdentifierExp id) {
 		this.packages = packages;

@@ -205,6 +205,7 @@ public interface Id {
 	static final char[] postblit = { 'p', 'o', 's', 't', 'b', 'l', 'i', 't' };
 	static final char[] __vptr = { '_', '_', 'v', 'p', 't', 'r' };
 	static final char[] __monitor = { '_', '_', 'm', 'o', 'n', 'i', 't', 'o', 'r' };
+	static final char[] system = { 's', 'y', 's', 't', 'e', 'm' };
 	
 	static final char[] std = { 's', 't', 'd' };
 	static final char[] math = { 'm', 'a', 't', 'h' };

@@ -318,6 +318,8 @@ public class Parser extends Lexer {
 	
 	@SuppressWarnings("unchecked")
 	protected Dsymbols parseModule() {
+		boolean safe = false;
+		
 		if (token.value == null) {
 			nextToken();
 		}
@@ -337,6 +339,32 @@ public class Parser extends Lexer {
 			List<Comment> moduleDocComments = getLastComments();
 			
 			nextToken();
+			
+			if (apiLevel == D2) {
+				if (token.value == TOKlparen)
+				{
+				    nextToken();
+				    if (token.value != TOKidentifier)
+				    {	
+				    	parsingErrorInsertToComplete(prevToken, "module (system) identifier", "module declaration");
+						
+				    	decldefs = parseDeclDefs(false);
+						if (token.value != TOKeof) {
+							parsingErrorDeleteToken(token);
+						}
+						return decldefs;
+				    }
+
+				    if (CharOperation.equals(token.sourceString, Id.system)) {
+				    	safe = true;
+				    } else {
+				    	parsingErrorInsertToComplete(prevToken, "module (system) identifier", "module declaration");
+				    }
+				    nextToken();
+				    check(TOKrparen);
+				}
+			}
+			
 			if (token.value != TOKidentifier) {
 				
 				// Issue a creation of an empty module declaration
@@ -377,6 +405,7 @@ public class Parser extends Lexer {
 
 				md = newModuleDeclaration(a, id);
 				md.setSourceRange(start, token.ptr + token.sourceLen - start);
+				md.safe = safe;
 				md.preComments = moduleDocComments;
 
 				if (token.value != TOKsemicolon) {
@@ -704,7 +733,12 @@ public class Parser extends Lexer {
 			case TOKpure:
 			case TOKref:
 			case TOKtls:
-				if (apiLevel < D2 && token.value == TOKref) {
+				if (apiLevel < D2 && (
+						token.value == TOKnothrow ||
+						token.value == TOKpure ||
+						token.value == TOKref ||
+						token.value == TOKtls
+						)) {
 					parsingErrorDeleteToken(token);
 					nextToken();
 					continue;
@@ -814,7 +848,7 @@ public class Parser extends Lexer {
 				}
 				ident = newIdentifierExp();
 				nextToken();
-				if (token.value == TOKcomma) {
+				if (token.value == TOKcomma && peekNext() != TOKrparen) {
 					args = parseArguments(); // pragma(identifier, args...)
 				} else {
 					check(TOKrparen); // pragma(identifier)
@@ -1224,6 +1258,10 @@ public class Parser extends Lexer {
 			parsingErrorInsertToComplete(prevToken, "Declaration", "Declaration");
 			nextToken();
 			break;
+			
+		case TOKeof:
+			parsingErrorInsertToComplete(prevToken, "Declaration", "Declaration");
+		    break;
 
 		case TOKlcurly:
 			nextToken();
@@ -1986,7 +2024,7 @@ public class Parser extends Lexer {
 		int enumTokenLineNumber = token.lineNumber;
 
 		IdentifierExp id;
-		Type t;
+		Type memtype;
 		
 		nextToken();
 		
@@ -2001,15 +2039,15 @@ public class Parser extends Lexer {
 
 		if (token.value == TOKcolon) {
 			nextToken();
-			t = parseBasicType();
+			memtype = parseBasicType();
 			if (apiLevel == D2) {
-				t = parseDeclarator(t, null, null, identStart);
+				memtype = parseDeclarator(memtype, null, null, identStart);
 			}
 		} else {
-			t = null;
+			memtype = null;
 		}
 		
-		EnumDeclaration e = newEnumDeclaration(loc(), id, t);
+		EnumDeclaration e = newEnumDeclaration(loc(), id, memtype);
 		
 		if (token.value == TOKsemicolon && id != null) {
 			e.setSourceRange(enumTokenStart, token.ptr + token.sourceLen - enumTokenStart);
@@ -2045,8 +2083,8 @@ public class Parser extends Lexer {
 						nextToken();
 					} else {
 						type = parseType(ident, null);
-						if (id != null || t != null) {
-							error(IProblem.TypeOnlyAllowedIfAnonymousEnumAndNoEnumType, t == null ? id.start : t.start, t == null ? id.length : t.length, t == null ? id.getLineNumber() : t.getLineNumber());
+						if (id != null || memtype != null) {
+							error(IProblem.TypeOnlyAllowedIfAnonymousEnumAndNoEnumType, memtype == null ? id.start : memtype.start, memtype == null ? id.length : memtype.length, memtype == null ? id.getLineNumber() : memtype.getLineNumber());
 						}
 					}
 					
@@ -2121,6 +2159,9 @@ public class Parser extends Lexer {
 		return e;
 	}
 
+	/********************************
+	 * Parse struct, union, interface, class.
+	 */
 	@SuppressWarnings("unchecked")
 	private Dsymbol parseAggregate() {
 		AggregateDeclaration a = null;
@@ -2831,7 +2872,7 @@ public class Parser extends Lexer {
 				}
 
 				Import prev = s;
-				s = newImport(loc(), a, id, aliasid, isstatic);
+				s = newImport(loc(), a, newIdentifierExp(), aliasid, isstatic);
 				s.preComments = lastComments;
 				s.first = prev == null;
 				//decldefs.add(s);
@@ -3336,6 +3377,7 @@ public class Parser extends Lexer {
 			break;
 		}
 
+	    // parse DeclaratorSuffixes
 		while (true) {
 			switch (token.value) {
 			//#if CARRAYDECL
@@ -3507,7 +3549,7 @@ public class Parser extends Lexer {
 		IdentifierExp ident;
 		int lineNumber = 0;
 		Dsymbols a;
-		TOK tok;
+		TOK tok = TOK.TOKreserved;
 		LINK link = linkage;
 		
 		List<Modifier> modifiers = new ArrayList<Modifier>();
@@ -3548,8 +3590,19 @@ public class Parser extends Lexer {
 			case TOKdeprecated:
 			case TOKnothrow:
 			case TOKpure:
+			case TOKref:
 			case TOKtls:
 			case TOKenum:
+				if (apiLevel < D2 && (
+					token.value == TOKnothrow ||
+					token.value == TOKpure ||
+					token.value == TOKref ||
+					token.value == TOKtls ||
+					token.value == TOKenum
+					)) {
+					break;
+				}
+				
 				stc = STC.fromTOK(token.value);
 				
 				Modifier currentModifier = newModifier();
@@ -3756,9 +3809,7 @@ public class Parser extends Lexer {
 
 			if (tok == TOKtypedef || tok == TOKalias) {
 				Declaration v;
-				Initializer init;
-				
-				init = null;
+				Initializer init = null;
 				
 				int assignTokenStart = token.ptr;
 				int assignTokenLine = token.lineNumber;
@@ -3839,8 +3890,6 @@ public class Parser extends Lexer {
 					break;
 				}
 			} else if (t.ty == Tfunction) {
-				Dsymbol s;
-				
 				TypeFunction typeFunction = (TypeFunction) t;
 				Expression constraint = null;
 				
@@ -3860,6 +3909,7 @@ public class Parser extends Lexer {
 					f.templated = true;
 				}
 				
+				Dsymbol s;
 				if (link == linkage) {
 					s = f;
 				} else {
@@ -3886,9 +3936,7 @@ public class Parser extends Lexer {
 				a.add(s);
 			} else {
 				VarDeclaration v;
-				Initializer init;
-
-				init = null;
+				Initializer init = null;
 				if (token.value == TOKassign) {
 					nextToken();
 					init = parseInitializer();
