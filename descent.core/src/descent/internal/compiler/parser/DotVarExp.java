@@ -3,7 +3,7 @@ package descent.internal.compiler.parser;
 import static descent.internal.compiler.parser.STC.STCfield;
 import static descent.internal.compiler.parser.TOK.TOKdsymbol;
 import static descent.internal.compiler.parser.TOK.TOKstructliteral;
-import static descent.internal.compiler.parser.TOK.TOKthis;
+import static descent.internal.compiler.parser.TOK.*;
 
 import org.eclipse.core.runtime.Assert;
 
@@ -247,6 +247,37 @@ public class DotVarExp extends UnaExp {
 		}
 		return this;
 	}
+	
+	@Override
+	public Expression optimize(int result, SemanticContext context) {
+	    e1 = e1.optimize(result, context);
+
+		if (context.isD2() && e1.op == TOKvar) {
+			VarExp ve = (VarExp) e1;
+			VarDeclaration v = ve.var.isVarDeclaration();
+			Expression e = expandVar(result, v, context);
+			if (e != null && e.op == TOKstructliteral) {
+				StructLiteralExp sle = (StructLiteralExp) e;
+				VarDeclaration vf = var.isVarDeclaration();
+				if (vf != null) {
+					e = sle.getField(type, vf.offset, context);
+					if (e != null && e != EXP_CANT_INTERPRET)
+						return e;
+				}
+			}
+		} else if (e1.op == TOKstructliteral) {
+			StructLiteralExp sle = (StructLiteralExp) e1;
+			VarDeclaration vf = var.isVarDeclaration();
+			if (vf != null) {
+				Expression e = sle.getField(type, vf.offset, context);
+				if (e != null && e != EXP_CANT_INTERPRET)
+					return e;
+			}
+		}
+
+		return this;
+	}
+
 
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,

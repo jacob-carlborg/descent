@@ -380,6 +380,13 @@ public class Lexer implements IProblemRequestor {
 		}
 		return t;
 	}
+	
+	/***********************
+	 * Look ahead at next token's value.
+	 */
+	public TOK peekNext() {
+		return peek(token).value;
+	}
 
 	public Token peekPastParen(Token tk) {
 		int parens = 1;

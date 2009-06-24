@@ -1,23 +1,21 @@
 package descent.internal.compiler.parser;
 
-import descent.core.IJavaElement;
-import descent.core.compiler.IProblem;
-import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.DYNCAST.DYNCAST_IDENTIFIER;
-
 import static descent.internal.compiler.parser.MATCH.MATCHconvert;
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
-
 import static descent.internal.compiler.parser.TOK.TOKdotexp;
 import static descent.internal.compiler.parser.TOK.TOKdottype;
 import static descent.internal.compiler.parser.TOK.TOKimport;
 import static descent.internal.compiler.parser.TOK.TOKtype;
-
 import static descent.internal.compiler.parser.TY.Tclass;
 import static descent.internal.compiler.parser.TY.Tinstance;
 import static descent.internal.compiler.parser.TY.Tpointer;
+import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Tvoid;
+import descent.core.IJavaElement;
+import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
 public class TypeClass extends Type {
@@ -263,7 +261,7 @@ public class TypeClass extends Type {
 			
 			s = s.toAlias(context);
 			v = s.isVarDeclaration();
-			if (null != v && v.isConst()) {
+		    if (null != v && v.isConst() && v.type.toBasetype(context).ty != Tsarray) {
 				ExpInitializer ei = v.getExpInitializer(context);
 	
 				if (null != ei) {
@@ -457,7 +455,7 @@ public class TypeClass extends Type {
 	}
 
 	@Override
-	public boolean isZeroInit(SemanticContext context) {
+	public boolean isZeroInit(Loc loc, SemanticContext context) {
 		return true;
 	}
 

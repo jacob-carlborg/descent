@@ -281,7 +281,7 @@ public interface IProblem {
 	int EnumMustHaveAtLeastOneMember = 70;
 	int EnumBaseTypeMustBeOfIntegralType = 71;
 	int ForwardReferenceOfSymbol = 72;
-	int ForwardReferenceOfSymbolDotSymbol = 73;
+	int ForwardReferenceOfEnumSymbolDotSymbol = 73;
 	int ForwardReferenceWhenLookingFor = 74;
 	int BaseEnumIsForwardReference = 75;
 	int CannotResolveForwardReference = 76;
@@ -700,5 +700,6 @@ public interface IProblem {
 	int RecursiveOpCmpExpansion = 489;
 	int CtorIsReservedForConstructors = 490;
 	int FunctionOverridesBaseClassFunctionButIsNotMarkedWithOverride = 491;
+	int ForwardReferenceOfTypeDotMangleof = 492;
 
 }

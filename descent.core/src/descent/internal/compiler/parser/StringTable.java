@@ -28,5 +28,9 @@ public class StringTable {
 		map.put(string, value);
 		return value;
 	}
+	
+	public StringValue lookup(String s) {
+		return map.get(s);
+	}
 
 }

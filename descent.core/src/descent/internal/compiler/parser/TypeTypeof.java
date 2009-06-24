@@ -1,10 +1,10 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.TY.Ttypeof;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
 
 public class TypeTypeof extends TypeQualified {
 
@@ -46,9 +46,14 @@ public class TypeTypeof extends TypeQualified {
 			t = exp.type;
 			if (null == t) {
 				if (context.acceptsErrors()) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionHasNoType, exp, new String[] { exp.toChars(context) }));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.ExpressionHasNoType, exp, exp.toChars(context)));
 				}
 				return tvoid;
+			}
+			if (t.ty == Ttypeof) {
+				if (context.acceptsErrors()) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForwardReferenceToSymbol, this, toChars(context)));
+				}
 			}
 		}
 

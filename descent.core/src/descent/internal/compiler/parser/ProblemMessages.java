@@ -82,7 +82,7 @@ final class ProblemMessages extends NLS {
 	public static String EnumMustHaveAtLeastOneMember;
 	public static String EnumBaseTypeMustBeOfIntegralType;
 	public static String ForwardReferenceOfSymbol;
-	public static String ForwardReferenceOfSymbolDotSymbol;
+	public static String ForwardReferenceOfEnumSymbolDotSymbol;
 	public static String ForwardReferenceWhenLookingFor;
 	public static String BaseEnumIsForwardReference;
 	public static String CannotResolveForwardReference;
@@ -501,6 +501,7 @@ final class ProblemMessages extends NLS {
 	public static String RecursiveOpCmpExpansion;
 	public static String CtorIsReservedForConstructors;
 	public static String FunctionOverridesBaseClassFunctionButIsNotMarkedWithOverride;
+	public static String ForwardReferenceOfTypeDotMangleof;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

@@ -145,7 +145,7 @@ public class TypeTypedef extends Type {
 	}
 
 	@Override
-	public boolean isZeroInit(SemanticContext context) {
+	public boolean isZeroInit(Loc loc, SemanticContext context) {
 		if (sym.init != null) {
 			if (sym.init.isVoidInitializer() != null) {
 				return true; // initialize voids to 0
@@ -163,7 +163,7 @@ public class TypeTypedef extends Type {
 			sym.basetype = Type.terror;
 		}
 		sym.inuse = 1;
-		boolean result = sym.basetype.isZeroInit(context);
+		boolean result = sym.basetype.isZeroInit(loc, context);
 		sym.inuse = 0;
 		return result;
 	}

@@ -12,7 +12,7 @@ import static descent.internal.compiler.parser.TOK.TOKimport;
 import static descent.internal.compiler.parser.TOK.TOKtype;
 
 import static descent.internal.compiler.parser.TY.Tinstance;
-import static descent.internal.compiler.parser.TY.Tstruct;
+import static descent.internal.compiler.parser.TY.*;
 
 
 public class TypeStruct extends Type {
@@ -186,7 +186,7 @@ public class TypeStruct extends Type {
 			s = s.toAlias(context);
 	
 			v = s.isVarDeclaration();
-			if (null != v && v.isConst()) {
+			if (null != v && v.isConst() && v.type.toBasetype(context).ty != Tsarray) {
 				ExpInitializer ei = v.getExpInitializer(context);
 	
 				if (null != ei) {
@@ -244,6 +244,13 @@ public class TypeStruct extends Type {
 				return de2;
 			}
 		}
+		
+	    Import timp = s.isImport();
+		if (timp != null) {
+			e = new DsymbolExp(e.loc, s);
+			e = e.semantic(sc, context);
+			return e;
+		}
 
 		d = s.isDeclaration();
 		
@@ -288,14 +295,14 @@ public class TypeStruct extends Type {
 
 			// *(&e + offset)
 			accessCheck(sc, e, d, context);
-			b = new AddrExp(e.loc, e);
-			b.type = e.type.pointerTo(context);
-			b = new AddExp(e.loc, b, new IntegerExp(e.loc, v.offset(),
-					Type.tint32));
-			b.type = v.type.pointerTo(context);
-			e = new PtrExp(e.loc, b);
-			e.type = v.type;
-			return e;
+//			b = new AddrExp(e.loc, e);
+//			b.type = e.type.pointerTo(context);
+//			b = new AddExp(e.loc, b, new IntegerExp(e.loc, v.offset(),
+//					Type.tint32));
+//			b.type = v.type.pointerTo(context);
+//			e = new PtrExp(e.loc, b);
+//			e.type = v.type;
+//			return e;
 		}
 
 		de = new DotVarExp(e.loc, e, d);
@@ -328,7 +335,7 @@ public class TypeStruct extends Type {
 	}
 
 	@Override
-	public boolean isZeroInit(SemanticContext context) {
+	public boolean isZeroInit(Loc loc, SemanticContext context) {
 		return sym.zeroInit;
 	}
 

@@ -527,7 +527,11 @@ public class TemplateInstance extends ScopeDsymbol {
 		String id;
 
 		id = ident != null ? ident.toChars() : toChars(context);
-		if (tempdecl != null && tempdecl.parent != null) {
+		if (tempdecl == null) {
+			if (context.acceptsErrors()) {
+				context.acceptProblem(Problem.newSemanticTypeError(Problem.SymbolNotDefined, this, this.toChars(context)));
+			}
+		} else if (tempdecl.parent != null) {
 			String p = tempdecl.parent.mangle(context);
 			if (p.charAt(0) == '_' && p.charAt(1) == 'D') {
 				p += 2;

@@ -208,8 +208,8 @@ public class TypeSArray extends TypeArray {
 	}
 
 	@Override
-	public boolean isZeroInit(SemanticContext context) {
-		return next.isZeroInit(context);
+	public boolean isZeroInit(Loc loc, SemanticContext context) {
+		return next.isZeroInit(loc, context);
 	}
 
 	@Override
@@ -322,7 +322,7 @@ public class TypeSArray extends TypeArray {
 			dim = semanticLength(sc, tbn, dim, context);
 
 			dim = dim.optimize(WANTvalue | WANTinterpret, context);
-			if (sc.parameterSpecialization != 0 && dim.op == TOKvar &&
+			if (sc != null && sc.parameterSpecialization != 0 && dim.op == TOKvar &&
 				    (((VarExp) dim).var.storage_class & STCtemplateparameter) != 0)
 			{
 			    /* It could be a template parameter N which has no value yet:

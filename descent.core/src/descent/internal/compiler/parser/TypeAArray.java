@@ -138,6 +138,11 @@ public class TypeAArray extends TypeArray {
 	public boolean hasPointers(SemanticContext context) {
 		return true;
 	}
+	
+	@Override
+	public boolean isZeroInit(Loc loc, SemanticContext context) {
+		return true;
+	}
 
 	@Override
 	public Type semantic(Loc loc, Scope sc, SemanticContext context) {

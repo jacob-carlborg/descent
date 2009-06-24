@@ -123,7 +123,7 @@ public class TypeDArray extends TypeArray {
 	}
 
 	@Override
-	public boolean isZeroInit(SemanticContext context) {
+	public boolean isZeroInit(Loc loc, SemanticContext context) {
 		return true;
 	}
 

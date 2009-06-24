@@ -214,8 +214,8 @@ EnumBaseTypeMustBeOfIntegralType
 ForwardReferenceOfSymbol
 	formatString=Forward reference of %1$s
 	numArgs=1
-ForwardReferenceOfSymbolDotSymbol
-	formatString=Forward reference of %1$s.%2$s
+ForwardReferenceOfEnumSymbolDotSymbol
+	formatString=Forward reference of enum %1$s.%2$s
 	numArgs=2
 ForwardReferenceWhenLookingFor
 	formatString=%1$s is forward reference when looking for %2$s
@@ -1471,11 +1471,14 @@ CtorIsReservedForConstructors
 FunctionOverridesBaseClassFunctionButIsNotMarkedWithOverride
 	formatString=$1%s overrides base class function %$2s, but is not marked with 'override'
 	numArgs=2
+ForwardReferenceOfTypeDotMangleof
+	formatString=forward reference of type %1$s.mangleof
+	numArgs=1
 	
-
-
-
-
-
-
-
+	
+	
+	
+	
+	
+	
+	

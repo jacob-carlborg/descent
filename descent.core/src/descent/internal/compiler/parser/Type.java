@@ -50,7 +50,8 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	public final static int PTRSIZE = 4;
 	public final static int REALSIZE = 8;
 	public final static int MODconst = 1; // type is const
-	public final static int MODinvariant = 2; // type is invariant
+	public final static int MODinvariant = 4; // type is invariant
+	public final static int MODshared = 2; // type is shared
 
 	public static class Modification {
 		public int startPosition;
@@ -586,12 +587,13 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 
 		t = this;
 		if (deco == null) {
-			OutBuffer buf = new OutBuffer();
-			StringValue sv;
-
 			if (next != null) {
 				next = next.merge(context);
 			}
+			
+			OutBuffer buf = new OutBuffer();
+			StringValue sv;
+			
 			toDecoBuffer(buf, context);
 			sv = context.stringTable.update(buf.toString());
 			if (sv.ptrvalue != null) {
@@ -601,6 +603,24 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 				sv.ptrvalue = this;
 				deco = sv.lstring;
 			}
+		}
+		return t;
+	}
+	
+	/*************************************
+	 * This version does a merge even if the deco is already computed.
+	 * Necessary for types that have a deco, but are not merged.
+	 */
+	public Type merge2(SemanticContext context) {
+		Type t = this;
+		if (null == t.deco)
+			return t.merge(context);
+
+		StringValue sv = context.stringTable.lookup(t.deco);
+		if (sv != null && sv.ptrvalue != null) {
+			t = (Type) sv.ptrvalue;
+		} else {
+			throw new IllegalStateException();
 		}
 		return t;
 	}
@@ -807,8 +827,17 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 			}
 			e = defaultInit(loc, context);
 		} else if (equals(ident, Id.mangleof)) {
-			Assert.isNotNull(deco);
-			e = new StringExp(loc, deco.toCharArray(), deco.length(), 'c');
+		    	String s;
+			if (null == deco)
+			{   s = toChars(context);
+				if (context.acceptsErrors()) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForwardReferenceOfTypeDotMangleof, lineNumber, start, length, s));
+				}
+			}
+			else {
+			    s = deco;
+			}
+			e = new StringExp(loc, s.toCharArray(), s.length(), 'c');
 			Scope sc = new Scope(context);
 			e = e.semantic(sc, context);
 		} else if (equals(ident, Id.stringof)) {
@@ -1085,7 +1114,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		return false;
 	}
 
-	public boolean isZeroInit(SemanticContext context) {
+	public boolean isZeroInit(Loc loc, SemanticContext context) {
 		return false;
 	}
 

@@ -79,7 +79,7 @@ public class TypePointer extends Type {
 	}
 
 	@Override
-	public boolean isZeroInit(SemanticContext context) {
+	public boolean isZeroInit(Loc loc, SemanticContext context) {
 		return true;
 	}
 

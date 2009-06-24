@@ -251,6 +251,32 @@ public class TypeInstance extends TypeQualified {
 		toCBuffer2Helper(buf, hgs, context);
 	}
 	
+	public Dsymbol toDsymbol(Scope sc, SemanticContext context)
+	{
+	    Type[] t = { null };
+		Expression[] e = { null };
+		Dsymbol[] s = { null };
+
+		if (sc.parameterSpecialization != 0) {
+			int errors = context.global.errors;
+			context.global.gag++;
+
+			resolve(loc, sc, e, t, s, context);
+
+			context.global.gag--;
+			if (errors != context.global.errors) {
+				if (context.global.gag == 0)
+					context.global.errors = errors;
+				return null;
+			}
+		} else {
+			resolve(loc, sc, e, t, s, context);
+		}
+
+		return s[0];
+	}
+
+	
 	@Override
 	public String getSignature0() {
 		StringBuilder sb = new StringBuilder();

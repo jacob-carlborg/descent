@@ -84,7 +84,7 @@ public class Scope {
 	 */
 	public int numberForLocalVariables = -1;
 	
-	private Scope() {
+	public Scope() {
 		
 	}
 

@@ -280,7 +280,7 @@ public class StructDeclaration extends AggregateDeclaration {
 					zeroInit = true;
 					break;
 				} else {
-					if (!vd.type.isZeroInit(context)) {
+					if (!vd.type.isZeroInit(loc, context)) {
 						zeroInit = false;
 						break;
 					}

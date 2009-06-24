@@ -76,7 +76,7 @@ public abstract class TypeArray extends Type {
 			}
 			arguments.add(e);
 			if (!dup) {
-				arguments.add(new IntegerExp(Loc.ZERO, size, Type.tint32));
+				arguments.add(new IntegerExp(Loc.ZERO, size, Type.tsize_t));
 			}
 			e = new CallExp(e.loc, ec, arguments);
 			e.type = next.arrayOf(context);

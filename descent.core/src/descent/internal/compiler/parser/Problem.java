@@ -275,8 +275,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.EnumBaseTypeMustBeOfIntegralType);
 		case ForwardReferenceOfSymbol:
 			return String.format(ProblemMessages.ForwardReferenceOfSymbol, arguments[0]);
-		case ForwardReferenceOfSymbolDotSymbol:
-			return String.format(ProblemMessages.ForwardReferenceOfSymbolDotSymbol, arguments[0], arguments[1]);
+		case ForwardReferenceOfEnumSymbolDotSymbol:
+			return String.format(ProblemMessages.ForwardReferenceOfEnumSymbolDotSymbol, arguments[0], arguments[1]);
 		case ForwardReferenceWhenLookingFor:
 			return String.format(ProblemMessages.ForwardReferenceWhenLookingFor, arguments[0], arguments[1]);
 		case BaseEnumIsForwardReference:
@@ -1113,6 +1113,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.CtorIsReservedForConstructors);
 		case FunctionOverridesBaseClassFunctionButIsNotMarkedWithOverride:
 			return String.format(ProblemMessages.FunctionOverridesBaseClassFunctionButIsNotMarkedWithOverride, arguments[0], arguments[1]);
+		case ForwardReferenceOfTypeDotMangleof:
+			return String.format(ProblemMessages.ForwardReferenceOfTypeDotMangleof, arguments[0]);
 		default:
 			return "";
 		}

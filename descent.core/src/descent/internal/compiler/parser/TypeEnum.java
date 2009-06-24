@@ -75,9 +75,9 @@ public class TypeEnum extends Type {
 	    if (null == sym.symtab) {
 	    	// goto Lfwd;
 	    	if (context.acceptsErrors()) {
-	    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForwardReferenceOfSymbolDotSymbol, e, ident, new String[] { toChars(context), ident.toChars() }));
+	    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForwardReferenceOfEnumSymbolDotSymbol, e, ident, new String[] { toChars(context), ident.toChars() }));
 	    	}
-	        return new IntegerExp(Loc.ZERO, 0, this);
+	        return new IntegerExp(Loc.ZERO, 0, Type.terror);
 	    }
 
 		s = sym.symtab.lookup(ident);
@@ -86,7 +86,12 @@ public class TypeEnum extends Type {
 		ident.resolvedSymbol = s;
 		
 		if (null == s) {
-			return getProperty(e.loc, ident, context);
+			if (equals(ident, Id.max) || equals(ident, Id.min)
+					|| equals(ident, Id.init) || equals(ident, Id.stringof)
+					|| null == sym.memtype) {
+				return getProperty(e.loc, ident, context);
+			}
+			return sym.memtype.dotExp(sc, e, ident, context);
 		}
 		m = s.isEnumMember();
 		em = m.value().copy();
@@ -122,6 +127,12 @@ public class TypeEnum extends Type {
 				return getProperty_Lfwd(ident, context);
 			}
 			e = defaultInit(loc, context);
+		}
+	    else if (equals(ident, Id.stringof)) {
+			String s = toChars(context);
+			e = new StringExp(loc, s.toCharArray(), s.length(), 'c');
+			Scope sc = new Scope();
+			e = e.semantic(sc, context);
 		} else {
 			if (null == sym.memtype) {
 				// goto Lfwd;
@@ -135,7 +146,7 @@ public class TypeEnum extends Type {
 	private Expression getProperty_Lfwd(char[] ident, SemanticContext context) {
 		if (context.acceptsErrors()) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.ForwardReferenceOfSymbolDotSymbol, this,
+					IProblem.ForwardReferenceOfEnumSymbolDotSymbol, this,
 					new String[] { toChars(context),
 							new String(ident) }));
 		}
@@ -187,7 +198,7 @@ public class TypeEnum extends Type {
 	}
 
 	@Override
-	public boolean isZeroInit(SemanticContext context) {
+	public boolean isZeroInit(Loc loc, SemanticContext context) {
 		if (context.isD2()) {
 			return (((Expression)sym.defaultval)).equals(new IntegerExp(0), context);
 		} else {
@@ -220,7 +231,7 @@ public class TypeEnum extends Type {
 				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 						IProblem.EnumIsForwardReference, sym));
 			}
-			return tint32;
+			return terror;
 		}
 		return sym.memtype.toBasetype(context);
 	}

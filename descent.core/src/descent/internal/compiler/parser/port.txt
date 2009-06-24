@@ -14,7 +14,8 @@ func.c  --> missing StaticCtorDeclaration::StaticCtorDeclaration
             
 Remaining from DMD 1.045
 ------------------------------
-Porting up and including interpret.c
+ * Ported up and including optimize.c
+ * See if Module::imports and Module::selfImports need to be ported 
             
 Remaining from DMD 2.013
 ------------------------------
