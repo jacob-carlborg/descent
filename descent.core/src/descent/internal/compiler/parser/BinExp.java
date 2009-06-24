@@ -877,11 +877,11 @@ public abstract class BinExp extends Expression {
 			}
 		}
 		/* Assignment to struct member of the form:
-		 *   (symoffexp) = e2
+		 *   v.var = e2
 		 */
-		else if (e1.op == TOKstar && ((PtrExp) e1).e1.op == TOKsymoff) {
-			SymOffExp soe = (SymOffExp) ((PtrExp) e1).e1;
-			VarDeclaration v = soe.var.isVarDeclaration();
+		else if (e1.op == TOKdotvar && ((DotVarExp) e1).e1.op == TOKvar) {
+			VarExp ve = (VarExp) ((DotVarExp) e1).e1;
+			VarDeclaration v = ve.var.isVarDeclaration();
 
 			if (v.isDataseg(context))
 				return EXP_CANT_INTERPRET;
@@ -892,6 +892,17 @@ public abstract class BinExp extends Expression {
 				}
 				return e;
 			}
+			
+			if (v.value == null && v.init.isVoidInitializer() != null) {   
+				/* Since a void initializer initializes to undefined
+			     * values, it is valid here to use the default initializer.
+			     * No attempt is made to determine if someone actually relies
+			     * on the void value - to do that we'd need a VoidExp.
+			     * That's probably a good enhancement idea.
+			     */
+			    v.value = v.type.defaultInit(context);
+			}
+			
 			Expression vie = v.value;
 			if (vie.op == TOKvar) {
 				Declaration d = ((VarExp) vie).var;
@@ -901,10 +912,14 @@ public abstract class BinExp extends Expression {
 				return EXP_CANT_INTERPRET;
 			}
 			StructLiteralExp se = (StructLiteralExp) vie;
-			int fieldi = se.getFieldIndex(type, soe.offset.intValue(), context);
+			VarDeclaration vf = ((DotVarExp)e1).var.isVarDeclaration();
+			if (null == vf)
+			    return EXP_CANT_INTERPRET;
+			
+			int fieldi = se.getFieldIndex(type, vf.offset, context);
 			if (fieldi == -1)
 				return EXP_CANT_INTERPRET;
-			Expression ev = se.getField(type, soe.offset.intValue(), context);
+			Expression ev = se.getField(type, vf.offset, context);
 			if (null != fp)
 				e2 = fp.call(type, ev, e2, context);
 			else
@@ -928,16 +943,81 @@ public abstract class BinExp extends Expression {
 			Expressions expsx = new Expressions();
 			expsx.setDim(se.elements.size());
 			for (int j = 0; j < se.elements.size(); j++) {
-				if (j == fieldi)
+				if (j == fieldi) {
 					expsx.set(j, e2);
-				else
+				} else {
 					expsx.set(j, se.elements.get(j));
+				}
 			}
 			v.value(new StructLiteralExp(se.loc, se.sd, expsx));
 			v.value().type = se.type;
 
 			e = Constfold.Cast(type, type, post > 0 ? ev : e2, context);
 		}
+	    /*
+		 * Assignment to struct member of the form: *(symoffexp) = e2
+		 */
+		else if (e1.op == TOKstar && ((PtrExp) e1).e1.op == TOKsymoff) {
+			SymOffExp soe = (SymOffExp) ((PtrExp) e1).e1;
+			VarDeclaration v = soe.var.isVarDeclaration();
+
+			if (v.isDataseg(context))
+				return EXP_CANT_INTERPRET;
+			if (fp != null && null == v.value) {
+				if (context.acceptsErrors()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.VariableIsUsedBeforeInitialization, v, v
+									.toChars(context)));
+				}
+				return e;
+			}
+			Expression vie = v.value;
+			if (vie.op == TOKvar) {
+				Declaration d = ((VarExp) vie).var;
+				vie = getVarExp(e1.loc, istate, d, context);
+			}
+			if (vie.op != TOKstructliteral)
+				return EXP_CANT_INTERPRET;
+			StructLiteralExp se = (StructLiteralExp) vie;
+			int fieldi = se.getFieldIndex(type, soe.offset.intValue(), context);
+			if (fieldi == -1)
+				return EXP_CANT_INTERPRET;
+			Expression ev = se.getField(type, soe.offset.intValue(), context);
+			if (fp != null)
+				e2 = fp.call(type, ev, e2, context);
+			else
+				e2 = Constfold.Cast(type, type, e2, context);
+			if (e2 == EXP_CANT_INTERPRET)
+				return e2;
+
+			if (!v.isParameter()) {
+				for (int i = 0; true; i++) {
+					if (i == size(istate.vars)) {
+						istate.vars.add(v);
+						break;
+					}
+					if (v == (VarDeclaration) istate.vars.get(i))
+						break;
+				}
+			}
+
+		/*
+		 * Create new struct literal reflecting updated fieldi
+		 */
+		Expressions expsx = new Expressions();
+		expsx.setDim(size(se.elements));
+		for (int j = 0; j < size(expsx); j++)
+		{
+		    if (j == fieldi)
+			expsx.set(j, e2);
+		    else
+			expsx.set(j, se.elements.get(j));
+		}
+		v.value = new StructLiteralExp(se.loc, se.sd, expsx);
+		v.value.type = se.type;
+
+		e = Constfold.Cast(type, type, post != 0 ? ev : e2, context);
+	    }
 		/* Assignment to array element of the form:
 		 *   a[i] = e2
 		 */

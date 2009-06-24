@@ -1,14 +1,14 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.STC.STCfield;
+import static descent.internal.compiler.parser.TOK.TOKdsymbol;
+import static descent.internal.compiler.parser.TOK.TOKstructliteral;
+import static descent.internal.compiler.parser.TOK.TOKthis;
+
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
-import static descent.internal.compiler.parser.STC.STCfield;
-
-import static descent.internal.compiler.parser.TOK.TOKdsymbol;
-import static descent.internal.compiler.parser.TOK.TOKthis;
 
 
 public class DotVarExp extends UnaExp {
@@ -36,6 +36,27 @@ public class DotVarExp extends UnaExp {
 	@Override
 	public int getNodeType() {
 		return DOT_VAR_EXP;
+	}
+	
+	@Override
+	public Expression interpret(InterState istate, SemanticContext context) {
+		Expression e = EXP_CANT_INTERPRET;
+
+		Expression ex = e1.interpret(istate, context);
+		if (ex != EXP_CANT_INTERPRET) {
+			if (ex.op == TOKstructliteral) {
+				StructLiteralExp se = (StructLiteralExp) ex;
+				VarDeclaration v = var.isVarDeclaration();
+				if (v != null) {
+					e = se.getField(type, v.offset, context);
+					if (null == e)
+						e = EXP_CANT_INTERPRET;
+					return e;
+				}
+			}
+		}
+
+		return e;
 	}
 
 	@Override
