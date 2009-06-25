@@ -33,11 +33,6 @@ public class BreakStatement extends Statement {
 	}
 
 	@Override
-	public boolean fallOffEnd(SemanticContext context) {
-		return false;
-	}
-
-	@Override
 	public int getNodeType() {
 		return BREAK_STATEMENT;
 	}

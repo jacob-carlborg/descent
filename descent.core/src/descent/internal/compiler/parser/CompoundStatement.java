@@ -75,29 +75,6 @@ public class CompoundStatement extends Statement {
 	}
 
 	@Override
-	public boolean fallOffEnd(SemanticContext context) {
-		boolean falloff = true;
-
-		for (int i = 0; i < statements.size(); i++) {
-			Statement s = statements.get(i);
-
-			if (null == s) {
-				continue;
-			}
-
-			if (!falloff && context.global.params.warnings && !s.comeFrom()) {
-				if (context.acceptsWarnings()) {
-					context
-						.acceptProblem(Problem.newSemanticTypeWarning(
-								IProblem.StatementIsNotReachable, s));
-				}
-			}
-			falloff = s.fallOffEnd(context);
-		}
-		return falloff;
-	}
-
-	@Override
 	public Statements flatten(Scope sc, SemanticContext context) {
 		return statements;
 	}
@@ -170,7 +147,7 @@ public class CompoundStatement extends Statement {
 						Statement[] sexception = { null };
 						Statement[] sfinally = { null };
 
-						s.scopeCode(sc, sentry, sexception, sfinally);
+						s.scopeCode(sc, sentry, sexception, sfinally, context);
 						if (sentry[0] != null) {
 							sentry[0] = sentry[0].semantic(sc, context);
 							statements.set(i, sentry[0]);
@@ -194,8 +171,8 @@ public class CompoundStatement extends Statement {
 								body = context.newCompoundStatement(loc, a2);
 								body.copySourceRange(a2);
 								body = new ScopeStatement(loc, body);
-
-								char[] id = ("__o" + ++context.CompoundStatement_num).toCharArray();
+								
+								IdentifierExp id = context.uniqueId("__o");
 
 								Statement handler = new ThrowStatement(loc,
 										new IdentifierExp(loc, id));

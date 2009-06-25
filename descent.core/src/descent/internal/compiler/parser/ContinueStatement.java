@@ -30,11 +30,6 @@ public class ContinueStatement extends Statement {
 	}
 
 	@Override
-	public boolean fallOffEnd(SemanticContext context) {
-		return false;
-	}
-
-	@Override
 	public int getNodeType() {
 		return CONTINUE_STATEMENT;
 	}

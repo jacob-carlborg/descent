@@ -52,11 +52,6 @@ public class WithStatement extends Statement {
 	}
 
 	@Override
-	public boolean fallOffEnd(SemanticContext context) {
-		return body != null ? body.fallOffEnd(context) : true;
-	}
-
-	@Override
 	public int getNodeType() {
 		return WITH_STATEMENT;
 	}

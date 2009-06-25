@@ -53,14 +53,6 @@ public class WhileStatement extends Statement {
 	}
 
 	@Override
-	public boolean fallOffEnd(SemanticContext context) {
-		if (body != null) {
-			body.fallOffEnd(context);
-		}
-		return true;
-	}
-
-	@Override
 	public int getNodeType() {
 		return WHILE_STATEMENT;
 	}

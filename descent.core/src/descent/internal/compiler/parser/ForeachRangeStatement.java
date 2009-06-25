@@ -121,11 +121,4 @@ public class ForeachRangeStatement extends Statement {
 		return s;
 	}
 
-	@Override
-	public boolean fallOffEnd(SemanticContext context) {
-		if (null != body)
-			body.fallOffEnd(context);
-		return true;
-	}
-
 }

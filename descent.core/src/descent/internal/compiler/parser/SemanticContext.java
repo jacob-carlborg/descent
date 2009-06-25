@@ -136,8 +136,11 @@ public class SemanticContext {
 
 	private static int uniqueIdCount = 0;
 	public IdentifierExp uniqueId(String prefix) {
-		uniqueIdCount++;
-		return new IdentifierExp((prefix + uniqueIdCount).toCharArray());
+		return uniqueId(prefix, uniqueIdCount++);
+	}
+	
+	public IdentifierExp uniqueId(String prefix, int i) {
+		return new IdentifierExp((prefix + i).toCharArray());
 	}
 
 	private void Module_init() {

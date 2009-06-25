@@ -58,15 +58,6 @@ public class IfStatement extends Statement {
 	}
 
 	@Override
-	public boolean fallOffEnd(SemanticContext context) {
-		if (null == ifbody || ifbody.fallOffEnd(context) || null == elsebody
-				|| elsebody.fallOffEnd(context)) {
-			return true;
-		}
-		return false;
-	}
-
-	@Override
 	public int getNodeType() {
 		return IF_STATEMENT;
 	}
@@ -200,9 +191,10 @@ public class IfStatement extends Statement {
 			if (arg.type != null) {
 				arg.type.toCBuffer(buf, arg.ident, hgs, context);
 			} else {
+				buf.writestring("auto ");
 				buf.writestring(arg.ident.toChars());
 			}
-			buf.writebyte(';');
+			buf.writestring(" = ");
 		}
 		condition.toCBuffer(buf, hgs, context);
 		buf.writebyte(')');

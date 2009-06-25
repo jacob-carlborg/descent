@@ -110,14 +110,6 @@ public class ForeachStatement extends Statement {
 	}
 
 	@Override
-	public boolean fallOffEnd(SemanticContext context) {
-		if (body != null) {
-			body.fallOffEnd(context);
-		}
-		return true;
-	}
-
-	@Override
 	public int getNodeType() {
 		return FOREACH_STATEMENT;
 	}
@@ -247,6 +239,7 @@ public class ForeachStatement extends Statement {
 
 		aggr = aggr.semantic(sc, context);
 		aggr = resolveProperties(sc, aggr, context);
+	    aggr = aggr.optimize(WANTvalue, context);
 		
 		if (context.isD2()) {
 			aggr = aggr.optimize(WANTvalue, context);
@@ -313,11 +306,17 @@ public class ForeachStatement extends Statement {
 						}
 					}
 					TY keyty = arg.type.ty;
-					if ((keyty != Tint32 && keyty != Tuns32)
-							|| (context.global.params.isX86_64
-									&& keyty != Tint64 && keyty != Tuns64)) {
-						if (context.acceptsErrors()) {
-							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForeachKeyTypeMustBeIntOrUint, arg, new String[] { arg.type.toChars(context) }));
+					if (keyty != Tint32 && keyty != Tuns32) {
+						if (context.global.params.isX86_64) {
+							if (keyty != Tint64 && keyty != Tuns64) {
+								if (context.acceptsErrors()) {
+									context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForeachKeyTypeMustBeIntOrUintLongOrUlong, arg, new String[] { arg.type.toChars(context) }));
+								}
+							}
+						} else {
+							if (context.acceptsErrors()) {
+								context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForeachKeyTypeMustBeIntOrUint, arg, new String[] { arg.type.toChars(context) }));
+							}
 						}
 					}
 					Initializer ie = new ExpInitializer(loc, new IntegerExp(
@@ -520,10 +519,17 @@ public class ForeachStatement extends Statement {
 			}
 
 			if (key != null
-					&& ((key.type.ty != Tint32 && key.type.ty != Tuns32) || (context.global.params.isX86_64
-							&& key.type.ty != Tint64 && key.type.ty != Tuns64))) {
-				if (context.acceptsErrors()) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForeachKeyTypeMustBeIntOrUint, key, new String[] { key.type.toChars(context) }));
+					&& ((key.type.ty != Tint32 && key.type.ty != Tuns32))) {
+				if (context.global.params.isX86_64) {
+					if (key.type.ty != Tint64 && key.type.ty != Tuns64) {
+						if (context.acceptsErrors()) {
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForeachKeyTypeMustBeIntOrUintLongOrUlong, key, new String[] { key.type.toChars(context) }));
+						}
+					}
+				} else {
+					if (context.acceptsErrors()) {
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForeachKeyTypeMustBeIntOrUint, key, new String[] { key.type.toChars(context) }));
+					}
 				}
 			}
 
@@ -620,7 +626,7 @@ public class ForeachStatement extends Statement {
 				// a reference.
 				VarDeclaration v;
 				Initializer ie;
-				id = new IdentifierExp(loc, ("__applyArg" + i).toCharArray());
+				id = context.uniqueId("__applyArg", i);
 
 				ie = new ExpInitializer(loc, id);
 				v = new VarDeclaration(loc, arg.type, arg.ident, ie);
@@ -705,8 +711,8 @@ public class ForeachStatement extends Statement {
 			} else {
 				keysize = taa.key.size(loc, context);
 			}
-			keysize = (keysize + 3) & ~3;
-			exps.add(new IntegerExp(loc, keysize, Type.tint32));
+			keysize = (keysize + Type.PTRSIZE - 1) & ~(Type.PTRSIZE - 1);
+			exps.add(new IntegerExp(loc, keysize, Type.tsize_t));
 			exps.add(flde);
 			e = new CallExp(loc, ec, exps);
 			e.type = Type.tindex; // don't run semantic() on e

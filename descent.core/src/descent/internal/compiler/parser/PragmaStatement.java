@@ -40,14 +40,6 @@ public class PragmaStatement extends Statement {
 	}
 
 	@Override
-	public boolean fallOffEnd(SemanticContext context) {
-		if (body != null) {
-			return body.fallOffEnd(context);
-		}
-		return true;
-	}
-
-	@Override
 	public int getNodeType() {
 		return PRAGMA_STATEMENT;
 	}
@@ -75,27 +67,34 @@ public class PragmaStatement extends Statement {
 				}
 			}
 		} else if (equals(ident, Id.lib)) {
-			if (args == null || args.size() != 1) {
-				if (context.acceptsErrors()) {
-					context
-							.acceptProblem(Problem
-									.newSemanticTypeErrorLoc(
-											IProblem.LibPragmaMustRecieveASingleArgumentOfTypeString,
-											this));
-				}
-			} else {
-				Expression e = args.get(0);
-				e = e.semantic(sc, context);
-				e = e.optimize(WANTvalue | WANTinterpret, context);
-				args.set(0, e);
-				if (e.op != TOK.TOKstring) {
-					if (context.acceptsErrors()) {
-						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.StringExpectedForPragmaLib, e));
-					}
-
-				}
+			/* Should this be allowed?
+			 */
+			if (context.acceptsErrors()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.PragmaLibNotAllowedAsStatement, this));
 			}
+			
+//			if (args == null || args.size() != 1) {
+//				if (context.acceptsErrors()) {
+//					context
+//							.acceptProblem(Problem
+//									.newSemanticTypeErrorLoc(
+//											IProblem.LibPragmaMustRecieveASingleArgumentOfTypeString,
+//											this));
+//				}
+//			} else {
+//				Expression e = args.get(0);
+//				e = e.semantic(sc, context);
+//				e = e.optimize(WANTvalue | WANTinterpret, context);
+//				args.set(0, e);
+//				if (e.op != TOK.TOKstring) {
+//					if (context.acceptsErrors()) {
+//						context.acceptProblem(Problem.newSemanticTypeError(
+//								IProblem.StringExpectedForPragmaLib, e));
+//					}
+//
+//				}
+//			}
 		} else if (context.isD2() && equals(ident, Id.startaddress)) {
 			if (null == args || args.size() != 1) {
 				if (context.acceptsErrors()) {

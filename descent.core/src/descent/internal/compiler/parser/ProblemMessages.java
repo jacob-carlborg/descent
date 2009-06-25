@@ -293,6 +293,7 @@ final class ProblemMessages extends NLS {
 	public static String CannotPerformModuloComplexArithmetic;
 	public static String OperatorNotAllowedOnBoolExpression;
 	public static String ForeachKeyTypeMustBeIntOrUint;
+	public static String ForeachKeyTypeMustBeIntOrUintLongOrUlong;
 	public static String ForeachKeyCannotBeOutOrRef;
 	public static String NoReverseIterationOnAssociativeArrays;
 	public static String OnlyOneOrTwoArgumentsForAssociativeArrayForeach;
@@ -504,6 +505,7 @@ final class ProblemMessages extends NLS {
 	public static String ForwardReferenceOfTypeDotMangleof;
 	public static String ArrayLengthHidesOtherLengthNameInOuterScope;
 	public static String OnePathSkipsConstructor;
+	public static String PragmaLibNotAllowedAsStatement;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

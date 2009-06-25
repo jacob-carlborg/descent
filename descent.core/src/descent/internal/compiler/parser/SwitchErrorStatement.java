@@ -21,11 +21,6 @@ public class SwitchErrorStatement extends Statement {
 	}
 
 	@Override
-	public boolean fallOffEnd(SemanticContext context) {
-		return false;
-	}
-
-	@Override
 	public int getNodeType() {
 		return SWITCH_ERROR_STATEMENT;
 	}

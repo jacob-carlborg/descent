@@ -62,11 +62,6 @@ public class ReturnStatement extends Statement {
 	}
 
 	@Override
-	public boolean fallOffEnd(SemanticContext context) {
-		return false;
-	}
-
-	@Override
 	public int getNodeType() {
 		return RETURN_STATEMENT;
 	}
@@ -242,38 +237,28 @@ public class ReturnStatement extends Statement {
 				s = new ReturnStatement(loc, new IntegerExp(loc, sc.fes.cases
 						.size() + 1));
 			} else if (fd.type.nextOf().toBasetype(context) == Type.tvoid) {
-				Statement s1;
-				Statement s2;
-
 				s = new ReturnStatement(loc, null);
 				sc.fes.cases.add(s);
 
 				// Construct: { exp; return cases.dim + 1; }
-				s1 = new ExpStatement(loc, exp);
-				s2 = new ReturnStatement(loc, new IntegerExp(loc, sc.fes.cases
+				Statement s1 = new ExpStatement(loc, exp);
+				Statement s2 = new ReturnStatement(loc, new IntegerExp(loc, sc.fes.cases
 						.size() + 1));
 				s = new CompoundStatement(loc, s1, s2);
 			} else {
-				VarExp v;
-				Statement s1;
-				Statement s2;
-
 				// Construct: return vresult;
 				if (fd.vresult == null) {
-					VarDeclaration v2;
-
-					v2 = new VarDeclaration(loc, tret, Id.result, null);
-					v2.noauto = true;
-					v2.semantic(scx, context);
-					if (scx.insert(v2) == null) {
+					VarDeclaration v = new VarDeclaration(loc, tret, Id.result, null);
+					v.noauto = true;
+					v.semantic(scx, context);
+					if (scx.insert(v) == null) {
 						melnorme.miscutil.Assert.isTrue(false);
 					}
-					v2.parent = fd;
-					fd.vresult = v2;
+					v.parent = fd;
+					fd.vresult = v;
 				}
 
-				v = new VarExp(loc, fd.vresult);
-				s = new ReturnStatement(loc, v);
+				s = new ReturnStatement(loc, new VarExp(loc, fd.vresult));
 				
 				if (sc.fes.cases == null) {
 					sc.fes.cases = new Objects();
@@ -281,11 +266,10 @@ public class ReturnStatement extends Statement {
 				sc.fes.cases.add(s);
 
 				// Construct: { vresult = exp; return cases.dim + 1; }
-				v = new VarExp(loc, fd.vresult);
-				exp = new AssignExp(loc, v, exp);
+				exp = new AssignExp(loc, new VarExp(loc, fd.vresult), exp);
 				exp = exp.semantic(sc, context);
-				s1 = new ExpStatement(loc, exp);
-				s2 = new ReturnStatement(loc, new IntegerExp(loc, sc.fes.cases
+				Statement s1 = new ExpStatement(loc, exp);
+				Statement s2 = new ReturnStatement(loc, new IntegerExp(loc, sc.fes.cases
 						.size() + 1));
 				s = new CompoundStatement(loc, s1, s2);
 			}
@@ -329,9 +313,10 @@ public class ReturnStatement extends Statement {
 
 			gs.label = fd.returnLabel;
 			if (exp != null) {
-				Statement s;
-
-				s = new ExpStatement(loc, exp);
+				/* Replace: return exp;
+				 * with:    exp; goto returnLabel;
+				 */
+				Statement s = new ExpStatement(loc, exp);
 				return new CompoundStatement(loc, s, gs);
 			}
 			

@@ -697,6 +697,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.OperatorNotAllowedOnBoolExpression, arguments[0]);
 		case ForeachKeyTypeMustBeIntOrUint:
 			return String.format(ProblemMessages.ForeachKeyTypeMustBeIntOrUint, arguments[0]);
+		case ForeachKeyTypeMustBeIntOrUintLongOrUlong:
+			return String.format(ProblemMessages.ForeachKeyTypeMustBeIntOrUintLongOrUlong, arguments[0]);
 		case ForeachKeyCannotBeOutOrRef:
 			return String.format(ProblemMessages.ForeachKeyCannotBeOutOrRef);
 		case NoReverseIterationOnAssociativeArrays:
@@ -1119,6 +1121,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.ArrayLengthHidesOtherLengthNameInOuterScope);
 		case OnePathSkipsConstructor:
 			return String.format(ProblemMessages.OnePathSkipsConstructor);
+		case PragmaLibNotAllowedAsStatement:
+			return String.format(ProblemMessages.PragmaLibNotAllowedAsStatement);
 		default:
 			return "";
 		}

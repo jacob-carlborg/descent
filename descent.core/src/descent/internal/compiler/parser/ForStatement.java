@@ -50,10 +50,10 @@ public class ForStatement extends Statement {
 			result &= ~BEfallthru; // the body must do the exiting
 		if (body != null) {
 			int r = body.blockExit(context);
-			if ((r & BEbreak) != 0) {
+			if ((r & BEbreak | BEgoto) != 0) {
 				result |= BEfallthru;
 			}
-			result |= r & ~(BEbreak | BEcontinue);
+			result |= r & ~(BEfallthru | BEbreak | BEcontinue);
 		}
 		if (increment != null && increment.canThrow(context)) {
 			result |= BEthrow;
@@ -68,14 +68,6 @@ public class ForStatement extends Statement {
 			return result;
 		}
 		return false;
-	}
-
-	@Override
-	public boolean fallOffEnd(SemanticContext context) {
-		if (body != null) {
-			body.fallOffEnd(context);
-		}
-		return true;
 	}
 
 	@Override
@@ -173,11 +165,11 @@ public class ForStatement extends Statement {
 
 	@Override
 	public void scopeCode(Scope sc, Statement[] sentry, Statement[] sexception,
-			Statement[] sfinally) {
+			Statement[] sfinally, SemanticContext context) {
 		if (init != null) {
-			init.scopeCode(sc, sentry, sexception, sfinally);
+			init.scopeCode(sc, sentry, sexception, sfinally, context);
 		} else {
-			super.scopeCode(sc, sentry, sexception, sfinally);
+			super.scopeCode(sc, sentry, sexception, sfinally, context);
 		}
 	}
 
@@ -189,28 +181,18 @@ public class ForStatement extends Statement {
 		if (init != null) {
 			init = init.semantic(sc, context);
 		}
-		if (condition == null) {
-			// Use a default value
-			condition = new IntegerExp(loc, 1, Type.tboolean);
-		}
 		sc.noctor++;
 		
-		boolean check;
-		if (context.isD2()) {
-			check = context != null;
-		} else {
-			check = true;
-		}
-		
-		if (check) {
+	    if (condition != null) {
 			condition = condition.semantic(sc, context);
 			condition = resolveProperties(sc, condition, context);
-		    condition = condition.optimize(WANTvalue, context);
+			condition = condition.optimize(WANTvalue, context);
 			condition = condition.checkToBoolean(context);
 		}
-		
+
 		if (increment != null) {
 			increment = increment.semantic(sc, context);
+			increment = resolveProperties(sc, increment, context);
 		}
 
 		sc.sbreak = this;
@@ -249,12 +231,7 @@ public class ForStatement extends Statement {
 		buf.writestring("for (");
 		if (init != null) {
 			hgs.FLinit.init++;
-			hgs.FLinit.decl = 0;
 			init.toCBuffer(buf, hgs, context);
-			if (hgs.FLinit.decl > 0) {
-				buf.writebyte(';');
-			}
-			hgs.FLinit.decl = 0;
 			hgs.FLinit.init--;
 		} else {
 			buf.writebyte(';');

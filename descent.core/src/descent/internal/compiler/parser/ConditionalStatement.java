@@ -28,6 +28,14 @@ public class ConditionalStatement extends Statement {
 		}
 		visitor.endVisit(this);
 	}
+	
+	@Override
+	public int blockExit(SemanticContext context) {
+	    int result = ifbody.blockExit(context);
+		if (elsebody != null)
+			result |= elsebody.blockExit(context);
+		return result;
+	}
 
 	@Override
 	public Statements flatten(Scope sc, SemanticContext context) {

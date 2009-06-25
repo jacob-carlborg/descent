@@ -14,9 +14,8 @@ func.c  --> missing StaticCtorDeclaration::StaticCtorDeclaration
             
 Remaining from DMD 1.045
 ------------------------------
- * Ported up and including scope.h
+ * Ported up and including statement.h
  * See if Module::imports and Module::selfImports need to be ported
- * Port parser.c and parser.h
             
 Remaining from DMD 2.013
 ------------------------------

@@ -59,14 +59,6 @@ public class DoStatement extends Statement {
 	}
 
 	@Override
-	public boolean fallOffEnd(SemanticContext context) {
-		if (body != null) {
-			body.fallOffEnd(context);
-		}
-		return true;
-	}
-
-	@Override
 	public int getNodeType() {
 		return DO_STATEMENT;
 	}

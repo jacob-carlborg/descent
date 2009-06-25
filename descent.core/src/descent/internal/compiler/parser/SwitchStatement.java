@@ -60,14 +60,6 @@ public class SwitchStatement extends Statement {
 	}
 
 	@Override
-	public boolean fallOffEnd(SemanticContext context) {
-		if (body != null) {
-			body.fallOffEnd(context);
-		}
-		return true; // need to do this better
-	}
-
-	@Override
 	public int getNodeType() {
 		return SWITCH_STATEMENT;
 	}

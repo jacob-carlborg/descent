@@ -32,7 +32,7 @@ public class DeclarationStatement extends ExpStatement {
 
 	@Override
 	public void scopeCode(Scope sc, Statement[] sentry, Statement[] sexception,
-			Statement[] sfinally) {
+			Statement[] sfinally, SemanticContext context) {
 		sentry[0] = null;
 		sexception[0] = null;
 		sfinally[0] = null;

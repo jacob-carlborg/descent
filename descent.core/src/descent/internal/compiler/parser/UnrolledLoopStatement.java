@@ -48,17 +48,6 @@ public class UnrolledLoopStatement extends Statement {
 	}
 
 	@Override
-	public boolean fallOffEnd(SemanticContext context) {
-		for (int i = 0; i < statements.size(); i++) {
-			Statement s = statements.get(i);
-			if (s != null) {
-				s.fallOffEnd(context);
-			} 
-		}
-		return true;
-	}
-
-	@Override
 	public int getNodeType() {
 		return UNROLLED_LOOP_STATEMENT;
 	}

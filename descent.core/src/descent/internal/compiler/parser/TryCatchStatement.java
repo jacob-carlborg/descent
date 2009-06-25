@@ -45,24 +45,6 @@ public class TryCatchStatement extends Statement {
 	}
 
 	@Override
-	public boolean fallOffEnd(SemanticContext context) {
-		boolean result = false;
-
-		if (body != null) {
-			result = body.fallOffEnd(context);
-		}
-		for (int i = 0; i < catches.size(); i++) {
-			Catch c;
-
-			c = catches.get(i);
-			if (c.handler != null) {
-				result |= c.handler.fallOffEnd(context);
-			}
-		}
-		return result;
-	}
-
-	@Override
 	public int getNodeType() {
 		return TRY_CATCH_STATEMENT;
 	}

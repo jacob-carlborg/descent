@@ -30,11 +30,6 @@ public class VolatileStatement extends Statement {
 	}
 
 	@Override
-	public boolean fallOffEnd(SemanticContext context) {
-		return statement != null ? statement.fallOffEnd(context) : true;
-	}
-
-	@Override
 	public Statements flatten(Scope sc, SemanticContext context) {
 		Statements a;
 
@@ -58,7 +53,9 @@ public class VolatileStatement extends Statement {
 
 	@Override
 	public Statement semantic(Scope sc, SemanticContext context) {
-		statement = statement != null ? statement.semantic(sc, context) : null;
+		if (statement != null) {
+			statement = statement.semantic(sc, context);
+		}
 		return this;
 	}
 

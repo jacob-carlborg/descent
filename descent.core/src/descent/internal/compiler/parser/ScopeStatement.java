@@ -33,11 +33,6 @@ public class ScopeStatement extends Statement {
 	}
 
 	@Override
-	public boolean fallOffEnd(SemanticContext context) {
-		return statement != null ? statement.fallOffEnd(context) : true;
-	}
-
-	@Override
 	public int getNodeType() {
 		return SCOPE_STATEMENT;
 	}
@@ -90,7 +85,7 @@ public class ScopeStatement extends Statement {
 				Statement[] sexception = { null };
 				Statement[] sfinally = { null };
 
-				statement.scopeCode(sc, sentry, sexception, sfinally);
+				statement.scopeCode(sc, sentry, sexception, sfinally, context);
 				if (sfinally[0] != null) {
 					statement = new CompoundStatement(loc, statement,
 							sfinally[0]);

@@ -40,7 +40,7 @@ public class OnScopeStatement extends Statement {
 
 	@Override
 	public void scopeCode(Scope sc, Statement[] sentry, Statement[] sexception,
-			Statement[] sfinally) {
+			Statement[] sfinally, SemanticContext context) {
 		sentry[0] = null;
 		sexception[0] = null;
 		sfinally[0] = null;
@@ -59,7 +59,7 @@ public class OnScopeStatement extends Statement {
 			 *	sexception:    x = 1;
 			 *	sfinally: if (!x) statement;
 			 */
-			char[] id = ("__osf" + (++num)).toCharArray();
+			IdentifierExp id = context.uniqueId("__osf", ++num);
 
 			ExpInitializer ie = new ExpInitializer(loc, new IntegerExp(0));
 			VarDeclaration v = new VarDeclaration(loc, Type.tint32, id, ie);

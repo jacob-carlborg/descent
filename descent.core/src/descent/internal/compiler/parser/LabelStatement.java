@@ -40,11 +40,6 @@ public class LabelStatement extends Statement {
 	}
 
 	@Override
-	public boolean fallOffEnd(SemanticContext context) {
-		return statement != null ? statement.fallOffEnd(context) : true;
-	}
-
-	@Override
 	public Statements flatten(Scope sc, SemanticContext context) {
 		Statements a = null;
 

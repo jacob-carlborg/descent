@@ -847,6 +847,9 @@ OperatorNotAllowedOnBoolExpression
 ForeachKeyTypeMustBeIntOrUint
 	formatString=foreach: key type must be int or uint, not %1$s
 	numArgs=1
+ForeachKeyTypeMustBeIntOrUintLongOrUlong
+	formatString=foreach: key type must be int or uint, long or ulong, not %1$s
+	numArgs=1
 ForeachKeyCannotBeOutOrRef
 	formatString=foreach: key cannot be out or ref
 	numArgs=0
@@ -1480,6 +1483,11 @@ ArrayLengthHidesOtherLengthNameInOuterScope
 OnePathSkipsConstructor
 	formatString=One path skips constructor
 	numArgs=0
+PragmaLibNotAllowedAsStatement
+	formatString=pragma(lib) not allowed as statement
+	numArgs=0
+	
+	
 	
 	
 	

@@ -19,10 +19,6 @@ public abstract class Statement extends ASTDmdNode {
 		return false;
 	}
 
-	public boolean fallOffEnd(SemanticContext context) {
-		return true;
-	}
-
 	public Statements flatten(Scope sc, SemanticContext context) {
 		return null;
 	}
@@ -80,7 +76,7 @@ public abstract class Statement extends ASTDmdNode {
 	}
 
 	public void scopeCode(Scope sc, Statement[] sentry, Statement[] sexception,
-			Statement[] sfinally) {
+			Statement[] sfinally, SemanticContext context) {
 		sentry[0] = null;
 		sexception[0] = null;
 		sfinally[0] = null;

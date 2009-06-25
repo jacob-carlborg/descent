@@ -54,11 +54,6 @@ public class CaseStatement extends Statement {
 	}
 
 	@Override
-	public boolean fallOffEnd(SemanticContext context) {
-		return statement.fallOffEnd(context);
-	}
-
-	@Override
 	public int getNodeType() {
 		return CASE_STATEMENT;
 	}

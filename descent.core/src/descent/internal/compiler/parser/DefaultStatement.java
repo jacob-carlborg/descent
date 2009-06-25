@@ -37,11 +37,6 @@ public class DefaultStatement extends Statement {
 	}
 
 	@Override
-	public boolean fallOffEnd(SemanticContext context) {
-		return statement.fallOffEnd(context);
-	}
-
-	@Override
 	public int getNodeType() {
 		return DEFAULT_STATEMENT;
 	}

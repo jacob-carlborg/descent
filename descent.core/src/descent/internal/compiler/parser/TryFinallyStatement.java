@@ -34,19 +34,9 @@ public class TryFinallyStatement extends Statement {
 	
 	@Override
 	public int blockExit(SemanticContext context) {
-		int result = body.blockExit(context);
-	    return result;
-	}
-
-	@Override
-	public boolean fallOffEnd(SemanticContext context) {
-		boolean result;
-		if (context.isD2()) {
-			result = body.fallOffEnd(context);
-		} else {
-			result = body != null ? body.fallOffEnd(context) : true;
-		}
-		return result;
+		if (body != null)
+			return body.blockExit(context);
+	    return BEfallthru;
 	}
 
 	@Override

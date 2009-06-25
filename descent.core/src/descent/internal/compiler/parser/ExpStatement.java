@@ -1,10 +1,13 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.BE.BEfallthru;
+import static descent.internal.compiler.parser.BE.BEhalt;
+import static descent.internal.compiler.parser.BE.BEthrow;
+import static descent.internal.compiler.parser.TOK.TOKassert;
+import static descent.internal.compiler.parser.TOK.TOKdeclaration;
+import static descent.internal.compiler.parser.TOK.TOKhalt;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.TOK.TOKassert;
-import static descent.internal.compiler.parser.TOK.TOKhalt;
-import static descent.internal.compiler.parser.BE.*;
 
 
 public class ExpStatement extends Statement {
@@ -50,22 +53,6 @@ public class ExpStatement extends Statement {
 	}
 
 	@Override
-	public boolean fallOffEnd(SemanticContext context) {
-		if (exp != null) {
-			if (exp.op == TOKassert) {
-				AssertExp a = (AssertExp) exp;
-
-				if (a.e1.isBool(false)) {
-					return false;
-				}
-			} else if (exp.op == TOKhalt) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	@Override
 	public int getNodeType() {
 		return EXP_STATEMENT;
 	}
@@ -97,6 +84,11 @@ public class ExpStatement extends Statement {
 			exp.copySourceRange(this);			
 			exp.checkSideEffect(0, context);
 			exp = exp.optimize(0, context);
+			if (exp.op == TOKdeclaration && null == isDeclarationStatement())
+			{   
+				Statement s = new DeclarationStatement(loc, exp);
+			    return s;
+			}
 		}
 		
 		return this;

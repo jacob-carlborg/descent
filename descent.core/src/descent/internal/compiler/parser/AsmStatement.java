@@ -1,13 +1,17 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.BE.BEfallthru;
+import static descent.internal.compiler.parser.BE.BEgoto;
+import static descent.internal.compiler.parser.BE.BEhalt;
+import static descent.internal.compiler.parser.BE.BEreturn;
+import static descent.internal.compiler.parser.BE.BEthrow;
+
 import java.util.List;
 
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class AsmStatement extends Statement {
 	
-	private final static char[] EAX = { 'E', 'A', 'X' };
-
 	public List<Token> toklist;
 
 	public AsmStatement(Loc loc, List<Token> toklist) {
@@ -24,6 +28,16 @@ public class AsmStatement extends Statement {
 	public void accept0(IASTVisitor visitor) {
 		visitor.visit(this);
 		visitor.endVisit(this);
+	}
+	
+	@Override
+	public int blockExit(SemanticContext context) {
+	    return BEfallthru | BEthrow | BEreturn | BEgoto | BEhalt;
+	}
+	
+	@Override
+	public boolean comeFrom() {
+		return true;
 	}
 	
 	@Override
