@@ -28,6 +28,9 @@ public class SemanticContext {
 	public boolean BREAKABI = true;
 	public boolean IN_GCC = false;
 	public boolean _DH = true;
+	public boolean STRUCTTHISREF() {
+		return apiLevel == Parser.D2;
+	}
 
 	// If DMD is being run on Win32
 	public boolean _WIN32 = true;

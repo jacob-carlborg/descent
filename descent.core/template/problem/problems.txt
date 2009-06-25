@@ -586,6 +586,9 @@ CannotHaveArrayOfType
 SymbolDoesNotMatchAnyTemplateDeclaration
 	formatString=%1$s does not match any template declaration
 	numArgs=1
+SymbolDoesNotMatchAnyFunctionTemplateDeclaration
+	formatString=%1$s does not match any function template declaration
+	numArgs=1
 IndexOverflowForStaticArray
 	formatString=Index %1$s overflow for static array
 	numArgs=1

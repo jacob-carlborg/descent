@@ -109,7 +109,12 @@ public class StructDeclaration extends AggregateDeclaration {
 		}
 
 		parent = sc.parent;
-		handle = type.pointerTo(context);
+		
+		if (context.STRUCTTHISREF()) {
+			handle = type;
+		} else {
+			handle = type.pointerTo(context);
+		}
 		structalign = sc.structalign;
 		protection = sc.protection;
 		if ((sc.stc & STC.STCdeprecated) != 0) {

@@ -158,27 +158,11 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 
 	public void alignmember(int salign, int size, int[] poffset) {
 		if (salign > 1) {
-			//int sa;
-
-			switch (size) {
-			case 1:
-				break;
-			case 2:
-				//case_2:
-				poffset[0] = (poffset[0] + 1) & ~1; // align to word
-				break;
-			case 3:
-			case 4:
-				if (salign == 2) {
-					// goto case_2;
-					poffset[0] = (poffset[0] + 1) & ~1; // align to word
-				}
-				poffset[0] = (poffset[0] + 3) & ~3; // align to dword
-				break;
-			default:
-				poffset[0] = (poffset[0] + salign - 1) & ~(salign - 1);
-				break;
-			}
+			assert(size != 3);
+			int sa = size;
+			if (sa == 0 || salign < sa)
+			    sa = salign;
+			poffset[0] = (poffset[0] + sa - 1) & ~(sa - 1);
 		}
 	}
 

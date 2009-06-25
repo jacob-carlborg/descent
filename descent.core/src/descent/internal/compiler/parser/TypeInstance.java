@@ -75,7 +75,7 @@ public class TypeInstance extends TypeQualified {
 							// goto Lnomatch;
 							return MATCHnomatch;
 						}
-						Dsymbol sa = tempinst.tempdecl;
+						ASTDmdNode sa = tempinst.tempdecl;
 						if (null == sa) {
 							// goto Lnomatch;
 							return MATCHnomatch;
@@ -85,7 +85,7 @@ public class TypeInstance extends TypeQualified {
 							return MATCHnomatch;
 						}
 						if (dedtypes.get(i) != null) { // Must match already deduced symbol
-							Dsymbol s = (Dsymbol) dedtypes.get(i);
+							ASTDmdNode s = dedtypes.get(i);
 	
 							if (s != sa) {
 								// goto Lnomatch;
@@ -107,6 +107,11 @@ public class TypeInstance extends TypeQualified {
 			}
 
 			for (int i = 0; i < tempinst.tiargs.size(); i++) {
+			    if (i >= size(tp.tempinst.tiargs)) {
+					// goto Lnomatch;
+			    	return MATCHnomatch;
+			    }
+				
 				int j;
 				ASTDmdNode o1 = tempinst.tiargs.get(i);
 				ASTDmdNode o2 = tp.tempinst.tiargs.get(i);
@@ -116,6 +121,12 @@ public class TypeInstance extends TypeQualified {
 
 				Expression e1 = isExpression(o1);
 				Expression e2 = isExpression(o2);
+				
+			    Dsymbol s1 = isDsymbol(o1);
+			    Dsymbol s2 = isDsymbol(o2);
+
+			    Tuple v1 = isTuple(o1);
+			    Tuple v2 = isTuple(o2);
 
 				if (t1 != null && t2 != null) {
 					if (t1.deduceType(sc, t2, parameters, dedtypes, context) == MATCHnomatch) {

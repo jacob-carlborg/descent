@@ -80,6 +80,22 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		Tuple va = isTuple(o);
 
 		Dsymbol s;
+		
+	    // See if tp.ident already exists with a matching definition
+	    Dsymbol[] scopesym = { null };
+	    s = sc.search(loc, tp.ident, scopesym, context);
+	    if (s != null && scopesym[0] == sc.scopesym)
+	    {
+		TupleDeclaration td = s.isTupleDeclaration();
+		if (va != null && td != null)
+		{   Tuple tup = new Tuple();
+		    tup.objects = td.objects;
+		    if (match(va, tup, this, sc, context))
+		    {
+			return;
+		    }
+		}
+	    }
 
 		if (targ != null) {
 			s = new AliasDeclaration(Loc.ZERO, tp.ident, targ);
@@ -210,7 +226,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			if (condition) {
 				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.SymbolDoesNotMatchAnyTemplateDeclaration, this,
+							IProblem.SymbolDoesNotMatchAnyFunctionTemplateDeclaration, this,
 							new String[] { toChars(context) }));
 				}
 			}
@@ -237,17 +253,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		}
 		return fd;
 	}
-
-	private static class GotoL1 extends Exception {
-		private static final long serialVersionUID = 1L;
-	}
-	private static final GotoL1 GOTO_L1 = new GotoL1();
-
-	private static class GotoL2 extends Exception {
-		private static final long serialVersionUID = 1L;
-	}
-	private static final GotoL2 GOTO_L2 = new GotoL2();
-
+	
 	public MATCH deduceFunctionTemplateMatch(Loc loc, 
 			Objects targsi,
 			Expression ethis,
@@ -262,7 +268,6 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		MATCH match = MATCHexact;
 		FuncDeclaration fd = onemember.toAlias(context).isFuncDeclaration();
 		TypeFunction fdtype;
-		TemplateTupleParameter tp;
 		Objects dedtypes = new Objects(); // for T:T*, the dedargs is the T*,
 		// dedtypes is the T
 
@@ -277,7 +282,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		paramsym.parent = scope.parent;
 		Scope paramscope = scope.push(paramsym);
 		
-		tp = isVariadic();
+		TemplateTupleParameter tp = isVariadic();
 
 		nargsi = 0;
 		if (null != targsi) { // Set initial template arguments
@@ -330,16 +335,26 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		 * Foo(1,2,3); }
 		 */
 		tp = isVariadic();
-		try {
+		
+		boolean repeat = true;
+		boolean gotoL1 = false;
+		
+	loop:
+		while(repeat) {
+			repeat = false;
+			
 			if (null != tp) {
 				if (nfparams == 0) // if no function parameters
 				{
 					Tuple t = new Tuple();
 					// printf("t = %p\n", t);
 					dedargs.set(parameters.size() - 1, t);
-					throw GOTO_L2;
+				    declareParameter(paramscope, tp, t, context);
+				    // goto L2
+				    break loop;
 				} else if (nfargs < nfparams - 1) {
-					throw GOTO_L1;
+					gotoL1 = true;
+					break loop;
 				} else {
 				    /* 
 				     * Figure out which of the function parameters matches
@@ -377,15 +392,19 @@ public class TemplateDeclaration extends ScopeDsymbol {
 							Expression farg = (Expression) fargs.get(fptupindex + i);
 							t.objects.set(i, farg.type);
 						}
-						throw GOTO_L2;
+						declareParameter(paramscope, tp, t, context);
+						// goto L2
+						break loop;
 					}
 				    fptupindex--;
 				}
 			}
-			throw GOTO_L1;
+			gotoL1 = true;
+			break loop;
 		}
+		
 		// L1:
-		catch (GotoL1 $) {
+		if (gotoL1) {
 			if (nfparams == nfargs)
 				;
 			else if (nfargs > nfparams) {
@@ -396,9 +415,8 @@ public class TemplateDeclaration extends ScopeDsymbol {
 				// no match
 				match = MATCHconvert; // match ... with a conversion
 			}
-		} catch (GotoL2 $) {
-			// Fallthrough
 		}
+		
 		// L2:
 		if (context.isD2()) {
 			// Match 'ethis' to any TemplateThisParameter's
@@ -454,10 +472,11 @@ public class TemplateDeclaration extends ScopeDsymbol {
 				}
 			} else {
 				farg = (Expression) fargs.get(i);
+				
+			    Type argtype = farg.type;
 
-				m = farg.type.deduceType(scope, fparam.type, parameters,
+				m = argtype.deduceType(scope, fparam.type, parameters,
 						dedtypes, context);
-				// printf("\tdeduceType m = %d\n", m);
 
 				/*
 				 * If no match, see if there's a conversion to a delegate
@@ -470,7 +489,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 
 					if (tf.varargs == 0
 							&& Argument.dim(tf.parameters, context) == 0) {
-						m = farg.type.deduceType(scope, tf.nextOf(),
+						m = farg.type.deduceType(paramscope, tf.nextOf(),
 								parameters, dedtypes, context);
 						if (MATCHnomatch == m
 								&& tf.nextOf().toBasetype(context).ty == Tvoid)
@@ -531,7 +550,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 				    }
 				    else
 				    {
-					m = arg.type.deduceType(scope, ta.next, parameters, dedtypes, context);
+					m = arg.type.deduceType(paramscope, ta.next, parameters, dedtypes, context);
 					//m = arg.implicitConvTo(ta.next);
 				    }
 				    if (m == MATCHnomatch) {
@@ -766,6 +785,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		ScopeDsymbol paramsym = new ScopeDsymbol();
 		paramsym.parent = scope.parent;
 		Scope paramscope = scope.push(paramsym);
+		paramscope.stc = 0;
 
 		// Attempt type deduction
 		m = MATCHexact;
@@ -803,8 +823,9 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		}
 
 		if (0 == flag) {
-			// Any parameter left without a type gets the type of its
-			// corresponding arg
+			/* Any parameter left without a type gets the type of
+			 * its corresponding arg
+			 */
 			for (int i = 0; i < dedtypes_dim; i++) {
 				if (null == dedtypes.get(i)) {
 					if (!(i < size(ti.tiargs))) {
@@ -854,9 +875,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		}
 
 		if (sc.func != null) {
-			if (context.isD2()) {
-				
-			} else {
+			if (!context.isD2()) {
 				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.CannotDeclareTemplateAtFunctionScope, this,
@@ -889,6 +908,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		paramsym.parent = sc.parent;
 		Scope paramscope = sc.push(paramsym);
 		paramscope.parameterSpecialization = 1;
+	    paramscope.stc = 0;
 
 		for (int i = 0; i < parameters.size(); i++) {
 			TemplateParameter tp = parameters.get(i);

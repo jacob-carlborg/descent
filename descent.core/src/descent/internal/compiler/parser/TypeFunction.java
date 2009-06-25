@@ -76,7 +76,13 @@ public class TypeFunction extends Type implements Cloneable {
 			int nfargs = Argument.dim(this.parameters, context);
 			int nfparams = Argument.dim(tp.parameters, context);
 
-			try {
+			boolean repeat = true;
+			boolean gotoL1 = false;
+			
+		loop:
+			while(repeat) {
+				repeat = false;
+				
 				/*
 				 * See if tuple match
 				 */
@@ -85,17 +91,17 @@ public class TypeFunction extends Type implements Cloneable {
 					 * See if 'A' of the template parameter matches 'A' of the
 					 * type of the last function parameter.
 					 */
-					Argument fparam = tp.parameters
-							.get(nfparams - 1);
+					Argument fparam = Argument.getNth(tp.parameters, nfparams - 1, context);
 					if (fparam.type.ty != Tident) {
-						// goto L2;
-						L1 = false;
-						throw GOTO_L1;
+						// goto L1;
+						gotoL1 = true;
+						break loop;
 					}
 					TypeIdentifier tid = (TypeIdentifier) fparam.type;
 					if (!tid.idents.isEmpty()) {
-						L1 = false;
-						throw GOTO_L1;
+						// goto l1
+						gotoL1 = true;
+						break loop;
 					}
 
 					/*
@@ -104,9 +110,9 @@ public class TypeFunction extends Type implements Cloneable {
 					int tupi = 0;
 					for (; true; tupi++) {
 						if (tupi == parameters.size()) {
-							// goto L2;
-							L1 = false;
-							throw GOTO_L1;
+							// goto L1;
+							gotoL1 = true;
+							break loop;
 						}
 						TemplateParameter t = parameters
 								.get(tupi);
@@ -155,23 +161,24 @@ public class TypeFunction extends Type implements Cloneable {
 					// deduction
 					L1 = false;
 				}
-				throw GOTO_L1; // fallthrough
-			} catch (GotoL1 $) {
-
+				break loop;
+			}
+			
+			if (gotoL1) {
 				// L1:
 				if (L1 && (nfargs != nfparams)) {
 					return MATCHnomatch;
 				}
-
-				// L2:
-				for (int i = 0; i < nfparams; i++) {
-					Argument a = Argument.getNth(this.parameters, i, context);
-					Argument ap = Argument.getNth(tp.parameters, i, context);
-					if (a.storageClass != ap.storageClass
-							|| null == a.type.deduceType(sc, ap.type,
-									parameters, dedtypes, context)) {
-						return MATCHnomatch;
-					}
+			}
+			
+			// L2:
+			for (int i = 0; i < nfparams; i++) {
+				Argument a = Argument.getNth(this.parameters, i, context);
+				Argument ap = Argument.getNth(tp.parameters, i, context);
+				if (a.storageClass != ap.storageClass
+						|| null == a.type.deduceType(sc, ap.type,
+								parameters, dedtypes, context)) {
+					return MATCHnomatch;
 				}
 			}
 		}
