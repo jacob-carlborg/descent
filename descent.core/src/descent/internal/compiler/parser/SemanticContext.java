@@ -690,4 +690,8 @@ public class SemanticContext {
 		return new DotIdExp(loc, new TypeExp(loc, type), ident);
 	}
 
+	public CompoundDeclarationStatement newCompoundDeclarationStatement(Loc loc, Statements a) {
+		return new CompoundDeclarationStatement(loc, a);
+	}
+
 }

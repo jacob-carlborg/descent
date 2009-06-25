@@ -4139,6 +4139,7 @@ public class Parser extends Lexer {
 		int comma;
 		Token t;
 		int braces = 0;
+	    int brackets = 0;
 		
 		int start = token.ptr;
 
@@ -4231,6 +4232,39 @@ public class Parser extends Lexer {
 			return is;
 
 		case TOKlbracket:
+		    /* Scan ahead to see if it is an array initializer or
+		     * an expression.
+		     * If it ends with a ';', it is an array initializer.
+		     */
+		    brackets = 1;
+			for (t = peek(token); true; t = peek(t)) {
+				switch (t.value) {
+				case TOKlbracket:
+					brackets++;
+					continue;
+
+				case TOKrbracket:
+					if (--brackets == 0) {
+						t = peek(t);
+						if (t.value != TOKsemicolon && t.value != TOKcomma
+								&& t.value != TOKrcurly) {
+							// goto Lexpression;
+						    e = parseAssignExp();
+						    ie = new ExpInitializer(loc, e);
+						    return ie;
+						}
+					}
+					continue;
+
+				case TOKeof:
+					break;
+
+				default:
+					continue;
+				}
+				break;
+			}
+			
 			ia = new ArrayInitializer(loc());
 			nextToken();
 			comma = 0;
@@ -4332,8 +4366,9 @@ public class Parser extends Lexer {
 		
 		switch (token.value) {
 		case TOKidentifier:
-			// Need to look ahead to see if it is a declaration, label, or
-			// expression
+		    /* A leading identifier can be a declaration, label, or expression.
+		     * The easiest case to check first is label:
+		     */
 			t = peek(token);
 			if (t.value == TOKcolon) { // It's a label
 				IdentifierExp ident = newIdentifierExp();
@@ -4481,6 +4516,8 @@ public class Parser extends Lexer {
 		case TOKextern:
 		case TOKfinal:
 		case TOKinvariant:
+		case TOKimmutable:
+		case TOKshared:
 			
 		// case TOKtypeof:
 			// Ldeclaration:
@@ -5040,7 +5077,7 @@ public class Parser extends Lexer {
 			}
 			ident = newIdentifierExp();
 			nextToken();
-			if (token.value == TOKcomma) {
+			if (token.value == TOKcomma && peekNext() != TOKrparen) {
 				args = parseArguments(); // pragma(identifier, args...);
 			} else {
 				check(TOKrparen); // pragma(identifier);
@@ -5797,7 +5834,7 @@ public class Parser extends Lexer {
 		switch (t.value)
 		{
 		    case TOKmul:
-		    case TOKand:
+//		    case TOKand:
 			t = peek(t);
 			continue;
 
@@ -5908,58 +5945,67 @@ public class Parser extends Lexer {
 		{
 	//#if CARRAYDECL
 		    case TOKlbracket:
-			parens = 0;
-			t = peek(t);
-			if (t.value == TOKrbracket)
-			{
-			    t = peek(t);
-			}
-			else {
-				Token[] pointer2_t = { t };
-				if (isDeclaration(t, 0, TOKrbracket, pointer2_t))
-				{   // It's an associative array declaration
-					t = pointer2_t[0];
-				    t = peek(t);
-				}
-				else
-				{
-					t = pointer2_t[0];
-					
-				    // [ expression ]
-				    if (!isExpression(pointer2_t)) {
-						return false;
+		    	parens = 0;
+				t = peek(t);
+				if (t.value == TOKrbracket) {
+					t = peek(t);
+				} else {
+					Token[] pointer2_t = { t };
+					if (isDeclaration(t, 0, TOKrbracket, pointer2_t)) { // It's
+																		// an
+																		// associative
+																		// array
+																		// declaration
+						t = pointer2_t[0];
+						t = peek(t);
+					} else {
+						t = pointer2_t[0];
+
+						// [ expression ]
+						if (!isExpression(pointer2_t)) {
+							return false;
+						}
+
+						t = pointer2_t[0];
+
+						if (t.value != TOKrbracket) {
+							return false;
+						}
+						t = peek(t);
 					}
-				    
-				    t = pointer2_t[0];
-				    
-				    
-				    if (t.value != TOKrbracket) {
-						return false;
-					}
-				    t = peek(t);
 				}
-			}
-			continue;
-	//#endif
+				continue;
+	// #endif
 
 		    case TOKlparen:
-			parens = 0;
-			
-			
-			Token[] pointer2_t = { t };
-			if (!isParameters(pointer2_t)) {
-				return false;
-			}
-			
-			if (apiLevel == D2) {
-				if (t.value == TOKconst || t.value == TOKinvariant) {
-				    t = peek(t);
+				parens = 0;
+
+				Token[] pointer2_t = { t };
+				if (!isParameters(pointer2_t)) {
+					return false;
 				}
-			}
-			
-			t = pointer2_t[0];
-			
-			continue;
+
+				if (apiLevel == D2) {
+					while (true) {
+						switch (t.value) {
+						case TOKconst:
+						case TOKinvariant:
+						case TOKimmutable:
+						case TOKshared:
+						case TOKpure:
+						case TOKnothrow:
+							t = peek(t);
+							continue;
+						default:
+							break;
+						}
+						break;
+					}
+				}
+
+				t = pointer2_t[0];
+
+				continue;
 
 		    // Valid tokens that follow a declaration
 		    case TOKrparen:
@@ -6680,6 +6726,9 @@ public class Parser extends Lexer {
 				if (token.value == TOKcolon || token.value == TOKequal) {
 					tok = token.value;
 					nextToken();
+					
+					
+					
 					if (tok == TOKequal
 							&& (token.value == TOKtypedef
 									|| token.value == TOKstruct
@@ -6690,6 +6739,8 @@ public class Parser extends Lexer {
 									|| token.value == TOKinterface
 									|| (apiLevel == D2 && token.value == TOKconst && peek(token).value == TOKrparen)
 									|| (apiLevel == D2 && token.value == TOKinvariant && peek(token).value == TOKrparen)
+									|| (apiLevel == D2 && token.value == TOKimmutable && peek(token).value == TOKrparen)
+									|| (apiLevel == D2 && token.value == TOKshared && peek(token).value == TOKrparen)
 									|| token.value == TOKfunction
 									|| token.value == TOKdelegate || token.value == TOKreturn)) {
 						tok2 = token.value;
@@ -6811,7 +6862,7 @@ public class Parser extends Lexer {
 
 			nextToken();
 			if (token.value != TOKrbracket) {
-				while (true) {
+				while (token.value != TOK.TOKeof) {
 					Expression e2 = parseAssignExp();
 					if (e2 instanceof ErrorExp) {
 						break;
@@ -7118,10 +7169,13 @@ public class Parser extends Lexer {
 
 				tk = peek(tk); // skip over right parenthesis
 				switch (tk.value) {
+				case TOKnot:
+					tk = peek(tk);
+					if (tk.value == TOKis)	// !is
+					    break;
 				case TOKdot:
 				case TOKplusplus:
 				case TOKminusminus:
-				case TOKnot:
 				case TOKdelete:
 				case TOKnew:
 				case TOKlparen:
@@ -7833,7 +7887,7 @@ public class Parser extends Lexer {
 	}
 	
 	private CompoundStatement newManyVarsBlock(Statements statements) {
-		CompoundStatement statement = newCompoundStatement(loc(), statements);
+		CompoundDeclarationStatement statement = newCompoundDeclarationStatement(loc(), statements);
 		statement.manyVars = true;
 		return statement;
 	}
@@ -8391,6 +8445,10 @@ public class Parser extends Lexer {
 	
 	protected CompoundStatement newCompoundStatement(Loc loc, Statements statements) {
 		return new CompoundStatement(loc, statements);
+	}
+	
+	protected CompoundDeclarationStatement newCompoundDeclarationStatement(Loc loc, Statements statements) {
+		return new CompoundDeclarationStatement(loc, statements);
 	}
 	
 	protected ConditionalStatement newConditionalStatement(Loc loc, Condition condition, Statement ifbody, Statement elsebody) {

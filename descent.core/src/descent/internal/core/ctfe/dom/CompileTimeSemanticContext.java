@@ -26,6 +26,7 @@ import descent.internal.compiler.parser.Catch;
 import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.CompileDeclaration;
 import descent.internal.compiler.parser.CompileStatement;
+import descent.internal.compiler.parser.CompoundDeclarationStatement;
 import descent.internal.compiler.parser.CompoundStatement;
 import descent.internal.compiler.parser.Condition;
 import descent.internal.compiler.parser.ConditionalDeclaration;
@@ -549,6 +550,11 @@ public class CompileTimeSemanticContext extends SemanticContext {
 	@Override
 	public TemplateInstance newTemplateInstance(Loc loc, IdentifierExp name) {
 		return new CompileTimeTemplateInstance(loc, name, encoder);
+	}
+	
+	@Override
+	public CompoundDeclarationStatement newCompoundDeclarationStatement(Loc loc, Statements a) {
+		return new CompileTimeCompoundDeclarationStatement(loc, a);
 	}
 
 }
