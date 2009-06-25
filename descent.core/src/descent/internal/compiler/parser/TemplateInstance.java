@@ -22,6 +22,7 @@ public class TemplateInstance extends ScopeDsymbol {
 	public Objects tiargs, sourceTiargs;
 	public TemplateDeclaration tempdecl; // referenced by foo.bar.abc
 	public TemplateInstance inst; // refer to existing instance
+    public TemplateInstance tinst;		// enclosing template instance
 	public AliasDeclaration aliasdecl; // != null if instance is an alias for its
 	public int semanticdone; // has semantic() been done?
 	public WithScopeSymbol withsym;
@@ -51,6 +52,10 @@ public class TemplateInstance extends ScopeDsymbol {
 		this.encoder = encoder;
 	}
 
+	/*****************
+	 * This constructor is only called when we figured out which function
+	 * template to instantiate.
+	 */
 	public TemplateInstance(Loc loc, TemplateDeclaration td, Objects tiargs, ASTNodeEncoder encoder) {
 		super(null);
 		this.loc = loc;
@@ -181,8 +186,14 @@ public class TemplateInstance extends ScopeDsymbol {
 
 		if (null == td_best) {
 			if (context.acceptsErrors()) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.SymbolDoesNotMatchAnyTemplateDeclaration, this, new String[] { toChars(context) }));
+				if (tempdecl != null && null == tempdecl.overnext) {
+				    // Only one template, so we can give better error message
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.SymbolDoesNotMatchTemplateDeclaration, this, toChars(context), tempdecl.toChars(context)));
+				} else {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.SymbolDoesNotMatchAnyTemplateDeclaration, this, new String[] { toChars(context) }));
+				}
 			}
 			return null;
 		}
@@ -375,7 +386,7 @@ public class TemplateInstance extends ScopeDsymbol {
 				// Lsa: 
 				buf.writeByte('S');
 				Declaration d = sa.isDeclaration();
-				if (d != null && null == d.type.deco) {
+				if (d != null && (null == d.type || null == d.type.deco)) {
 					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.ForwardReferenceOfSymbol, this, new String[] { d.toChars(context) }));
@@ -408,7 +419,7 @@ public class TemplateInstance extends ScopeDsymbol {
 		return aliasdecl;
 	}
 
-	public int isNested(Objects args, SemanticContext context) {
+	public int hasNestedArgs(Objects args, SemanticContext context) {
 		int nested = 0;
 
 		/* A nested instance happens when an argument references a local
@@ -505,7 +516,7 @@ public class TemplateInstance extends ScopeDsymbol {
 				}
 
 			} else if (null != va) {
-				nested |= isNested(va.objects, context);
+				nested |= hasNestedArgs(va.objects, context);
 			}
 		}
 		return nested;
@@ -567,6 +578,9 @@ public class TemplateInstance extends ScopeDsymbol {
 		{
 			return;
 		}
+		
+	    // get the enclosing template instance from the scope tinst
+	    tinst = sc.tinst;
 
 		if (semanticdone != 0) {
 			if (context.acceptsErrors()) {
@@ -594,7 +608,9 @@ public class TemplateInstance extends ScopeDsymbol {
 				return;
 			}
 		} else {
-			// Run semantic on each argument, place results in tiargs[]
+			/* Run semantic on each argument, place results in tiargs[]
+			 * (if we havetempdecl, then tiargs is already evaluated)
+			 */
 			semanticTiargs(sc, context);
 
 			tempdecl = findTemplateDeclaration(sc, context);
@@ -611,7 +627,7 @@ public class TemplateInstance extends ScopeDsymbol {
 			}
 		}
 
-		isNested(tiargs, context);
+		hasNestedArgs(tiargs, context);
 
 		/* See if there is an existing TemplateInstantiation that already
 		 * implements the typeargs. If so, just refer to that one instead.
@@ -662,12 +678,14 @@ public class TemplateInstance extends ScopeDsymbol {
 
 		{
 			List a = new ArrayList();
-			int i;
-
-			if (null != sc.scopesym && null != sc.scopesym.members
-					&& null == sc.scopesym.isTemplateMixin()) {
-				a = sc.scopesym.members;
-			} else {
+			Scope scx = sc;
+			
+			if (scx != null && scx.scopesym != null &&
+				    scx.scopesym.members != null && null == scx.scopesym.isTemplateMixin()
+				    && 0 == scx.module.selfImports(context)
+				    ) {
+			    a = scx.scopesym.members;
+		    } else {
 				Module m = sc.module.importedFrom;
 				
 				a = m.members;
@@ -675,7 +693,7 @@ public class TemplateInstance extends ScopeDsymbol {
 					dosemantic3 = 1;
 				}
 			}
-			for (i = 0; true; i++) {
+			for (int i = 0; true; i++) {
 				if (i == a.size()) {
 					a.add(this);
 					break;
@@ -709,8 +727,10 @@ public class TemplateInstance extends ScopeDsymbol {
 		scope = scope.push(argsym);
 			
 		// Declare each template parameter as an alias for the argument type
-		declareParameters(scope, context);
-		
+	    Scope paramscope = scope.push();
+	    paramscope.stc = 0;
+	    declareParameters(paramscope, context);
+	    paramscope.pop();		
 		
 		// Descent: temporary adjust error position so errors doesn't
 		// appear inside templates, but always on the invocation site
@@ -732,6 +752,18 @@ public class TemplateInstance extends ScopeDsymbol {
 			Scope sc2;
 			sc2 = scope.push(this);
 			sc2.parent = /*isnested ? sc.parent :*/this;
+		    sc2.tinst = this;
+		    
+		    if (++context.TemplateInstace_nest > 500)
+		    {
+				context.global.gag = 0;			// ensure error message gets printed
+				if (context.acceptsErrors()) {
+					context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.RecursiveTemplateExpansion, this));
+				}
+				context.fatalWasSignaled = true;
+				return;
+		    }
+		    --context.TemplateInstace_nest;
 	
 			for (int i = 0; i < members.size(); i++) {
 				Dsymbol s = members.get(i);
@@ -821,6 +853,7 @@ public class TemplateInstance extends ScopeDsymbol {
 			assert (null != sc);
 			sc = sc.push(argsym);
 			sc = sc.push(this);
+			sc.tinst = this;
 			for (i = 0; i < members.size(); i++) {
 				Dsymbol s = members.get(i);
 				s.semantic2(sc, context);
@@ -843,6 +876,7 @@ public class TemplateInstance extends ScopeDsymbol {
 			sc = tempdecl.scope;
 			sc = sc.push(argsym);
 			sc = sc.push(this);
+			sc.tinst = this;
 			for (i = 0; i < members.size(); i++) {
 				Dsymbol s = members.get(i);
 				s.semantic3(sc, context);
@@ -863,7 +897,6 @@ public class TemplateInstance extends ScopeDsymbol {
 	@Override
 	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		TemplateInstance ti;
-		// int i;
 
 		if (s != null) {
 			ti = (TemplateInstance) s;
@@ -933,6 +966,10 @@ public class TemplateInstance extends ScopeDsymbol {
 		return s;
 	}
 
+	/**********************************
+	 * Input:
+	 *	flags	1: replace const variables with their initializers
+	 */
 	public static void semanticTiargs(Loc loc, Scope sc, Objects tiargs,
 			SemanticContext context) {
 		// Run semantic on each argument, place results in tiargs[]

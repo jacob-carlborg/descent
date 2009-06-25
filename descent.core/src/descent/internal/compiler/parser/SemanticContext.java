@@ -76,6 +76,8 @@ public class SemanticContext {
 	public Expression TemplateValueParameter_edummy = null;
 	public TypeInfoDeclaration[] Type_internalTI = new TypeInfoDeclaration[TY.values().length];
 	public StringTable ArrayOp_arrayfuncs = new StringTable();
+	public int TemplateInstace_nest;
+	public int TemplateMixin_nest;
 	
 	public int apiLevel;
 	

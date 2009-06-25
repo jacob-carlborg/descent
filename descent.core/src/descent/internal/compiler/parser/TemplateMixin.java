@@ -303,10 +303,23 @@ public class TemplateMixin extends TemplateInstance {
 			Scope sc2;
 			sc2 = scope.push(this);
 			sc2.offset = sc.offset;
+			
+		    if (++context.TemplateMixin_nest > 500)
+		    {
+		    	context.global.gag = 0;			// ensure error message gets printed
+		    	if (context.acceptsErrors()) {
+		    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.RecursiveTemplateExpansion, this));
+		    	}
+		    	context.fatalWasSignaled = true;
+		    }
+			
 			for (int i = 0; i < members.size(); i++) {
 				Dsymbol s = members.get(i);
 				s.semantic(sc2, context);
 			}
+			
+		    context.TemplateMixin_nest--;
+			
 			sc.offset = sc2.offset;
 	
 			/* The problem is when to parse the initializer for a variable.

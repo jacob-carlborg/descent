@@ -586,6 +586,9 @@ CannotHaveArrayOfType
 SymbolDoesNotMatchAnyTemplateDeclaration
 	formatString=%1$s does not match any template declaration
 	numArgs=1
+SymbolDoesNotMatchTemplateDeclaration
+	formatString=%1$s does not match template declaration %2$s
+	numArgs=2
 SymbolDoesNotMatchAnyFunctionTemplateDeclaration
 	formatString=%1$s does not match any function template declaration
 	numArgs=1

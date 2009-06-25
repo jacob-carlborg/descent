@@ -26,6 +26,7 @@ public class Module extends Package {
 	public boolean needmoduleinfo;
 	public Module importedFrom;
 
+	public int selfimports;
 	public boolean insearch;
 
 	public char[] searchCacheIdent;
@@ -480,6 +481,47 @@ public class Module extends Package {
 		
 		// Delegate to SemanticContext in order to start resolving the Descent way
 		return context.load(loc, packages, ident);
+	}
+	
+	/************************************
+	 * Recursively look at every module this module imports,
+	 * return TRUE if it imports m.
+	 * Can be used to detect circular imports.
+	 */
+	public int imports(Module m) {
+		int aimports_dim = size(aimports);
+		for (int i = 0; i < aimports_dim; i++) {
+			Module mi = (Module) aimports.get(i);
+			if (mi == m)
+				return 1;
+			if (!mi.insearch) {
+				mi.insearch = true;
+				int r = mi.imports(m);
+				if (r != 0)
+					return r;
+			}
+		}
+		return 0;
+	}
+
+	/***************************************************************************
+	 * Return !=0 if module imports itself.
+	 */
+	public int selfImports(SemanticContext context) {
+		if (0 == selfimports) {
+			for (int i = 0; i < size(context.Module_amodules); i++) {
+				Module mi = (Module) context.Module_amodules.get(i);
+				mi.insearch = false;
+			}
+
+			selfimports = imports(this) + 1;
+
+			for (int i = 0; i < size(context.Module_amodules); i++) {
+				Module mi = (Module) context.Module_amodules.get(i);
+				mi.insearch = false;
+			}
+		}
+		return selfimports - 1;
 	}
 	
 	@Override

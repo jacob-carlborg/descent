@@ -127,7 +127,45 @@ public class TypeInstance extends TypeQualified {
 
 			    Tuple v1 = isTuple(o1);
 			    Tuple v2 = isTuple(o2);
+			    
+			    TemplateTupleParameter ttp;
+			    if (t2 != null &&
+			    		t2.ty == Tident &&
+			    		i == size(tp.tempinst.tiargs) - 1 &&
+			    		i == size(tempinst.tempdecl.parameters) - 1 &&
+			    		(ttp = tempinst.tempdecl.isVariadic()) != null) {
+		    		/* Given:
+		    		 *  struct A(B...) {}
+		    		 *  alias A!(int, float) X;
+		    		 *  static if (!is(X Y == A!(Z), Z))
+		    		 * deduce that Z is a tuple(int, float)
+		    		 */
+			    	j = templateIdentifierLookup(t2, parameters);
+					if (j == -1) {
+						return MATCHnomatch;
+					}
+					
+					/* Create tuple from remaining args
+					 */
+					Tuple vt = new Tuple();
+					int vtdim = size(tempinst.tiargs) - i;
+					vt.objects.setDim(vtdim);
+					for (int k = 0; k < vtdim; k++)
+					    vt.objects.set(k, tempinst.tiargs.get(i + k));
 
+					Tuple v = (Tuple) dedtypes.get(j);
+					if (v != null)
+					{
+					    if (!match(v, vt, tempinst.tempdecl, sc, context)) {
+					    	return MATCHnomatch;
+					    }
+					}
+					else {
+					    dedtypes.set(j, vt);
+					}
+					break; //return MATCHexact;
+	    	    }
+			    
 				if (t1 != null && t2 != null) {
 					if (t1.deduceType(sc, t2, parameters, dedtypes, context) == MATCHnomatch) {
 						return MATCHnomatch;

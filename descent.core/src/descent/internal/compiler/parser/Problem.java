@@ -523,6 +523,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.CannotHaveArrayOfType, arguments[0]);
 		case SymbolDoesNotMatchAnyTemplateDeclaration:
 			return String.format(ProblemMessages.SymbolDoesNotMatchAnyTemplateDeclaration, arguments[0]);
+		case SymbolDoesNotMatchTemplateDeclaration:
+			return String.format(ProblemMessages.SymbolDoesNotMatchTemplateDeclaration, arguments[0], arguments[1]);
 		case SymbolDoesNotMatchAnyFunctionTemplateDeclaration:
 			return String.format(ProblemMessages.SymbolDoesNotMatchAnyFunctionTemplateDeclaration, arguments[0]);
 		case IndexOverflowForStaticArray:
