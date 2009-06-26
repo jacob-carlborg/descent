@@ -27,6 +27,7 @@ import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.ASTNodeEncoder;
 import descent.internal.compiler.parser.AggregateDeclaration;
 import descent.internal.compiler.parser.AliasDeclaration;
+import descent.internal.compiler.parser.AliasThis;
 import descent.internal.compiler.parser.AlignDeclaration;
 import descent.internal.compiler.parser.AnonDeclaration;
 import descent.internal.compiler.parser.Arguments;
@@ -731,6 +732,32 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 	
 	@Override
+	public boolean visit(AliasThis node) {
+		if (insideFunction()) {
+			return true;
+		}
+		
+		FieldInfo info = new FieldInfo();
+		info.declarationStart = startOfDeclaration(node);
+		info.modifiers = getFlags(node, node.modifiers);
+		info.modifiers |= Flags.AccAlias;
+		if (node.ident != null) {
+			info.name = node.ident.ident;
+			info.nameSourceStart = startOf(node.ident);
+			info.nameSourceEnd = endOf(node.ident);
+		} else {
+			info.name = CharOperation.NO_CHAR;
+		}
+		
+		// null type is "alias this"
+		info.type = null;
+		
+		requestor.enterField(info);
+		
+		return false;
+	}
+	
+	@Override
 	public boolean visit(TypedefDeclaration node) {
 		if (insideFunction()) {
 			return true;
@@ -1280,6 +1307,19 @@ public class SourceElementParser extends AstVisitorAdapter {
 		
 		int initializerStart = endOf(node.ident);
 		int declarationSourceEnd = endOf(last);
+		int declarationEnd = endOfDeclaration(node.ident);
+		
+		requestor.exitField(initializerStart, declarationEnd, declarationSourceEnd);
+	}
+	
+	@Override
+	public void endVisit(AliasThis node) {
+		if (insideFunction()) {
+			return;
+		}
+		
+		int initializerStart = endOf(node.ident);
+		int declarationSourceEnd = endOf(node);
 		int declarationEnd = endOfDeclaration(node.ident);
 		
 		requestor.exitField(initializerStart, declarationEnd, declarationSourceEnd);

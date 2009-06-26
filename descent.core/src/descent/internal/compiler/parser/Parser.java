@@ -2872,7 +2872,7 @@ public class Parser extends Lexer {
 				}
 
 				Import prev = s;
-				s = newImport(loc(), a, newIdentifierExp(), aliasid, isstatic);
+				s = newImport(loc(), a, id, aliasid, isstatic);
 				s.preComments = lastComments;
 				s.first = prev == null;
 				//decldefs.add(s);
@@ -3567,6 +3567,8 @@ public class Parser extends Lexer {
 				nextToken();
 				check(TOKthis);
 				check(TOKsemicolon);
+				s.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
+				s.preComments = lastComments;
 				a = new Dsymbols();
 				a.add(s);
 				return a;

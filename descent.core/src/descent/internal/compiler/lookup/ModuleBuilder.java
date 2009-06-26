@@ -27,6 +27,7 @@ import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.ASTNodeEncoder;
 import descent.internal.compiler.parser.AggregateDeclaration;
 import descent.internal.compiler.parser.AliasDeclaration;
+import descent.internal.compiler.parser.AliasThis;
 import descent.internal.compiler.parser.AlignDeclaration;
 import descent.internal.compiler.parser.AnonDeclaration;
 import descent.internal.compiler.parser.Argument;
@@ -546,10 +547,17 @@ public class ModuleBuilder {
 			member.setJavaElement(field);
 			members.add(wrap(member, field));
 		} else if (field.isAlias()) {
-			AliasDeclaration member = newAliasDeclaration(getLoc(module, field), getIdent(field), getType(field));
-			copySourceRange(member, field);
-			member.setJavaElement(field);
-			members.add(wrap(member, field));
+			if (field.getTypeSignature() == null) {
+				AliasThis member = newAliasThis(getLoc(module, field), getIdent(field));
+				copySourceRange(member, field);
+				member.setJavaElement(field);
+				members.add(wrap(member, field));
+			} else {
+				AliasDeclaration member = newAliasDeclaration(getLoc(module, field), getIdent(field), getType(field));
+				copySourceRange(member, field);
+				member.setJavaElement(field);
+				members.add(wrap(member, field));
+			}
 		} else if (field.isTypedef()) {
 			TypedefDeclaration member = newTypedefDeclaration(getLoc(module, field), getIdent(field), getType(field), getInitializer(field));
 			copySourceRange(member, field);
@@ -1203,6 +1211,10 @@ public class ModuleBuilder {
 
 	protected AliasDeclaration newAliasDeclaration(Loc loc, IdentifierExp ident, Type type) {
 		return new AliasDeclaration(loc, ident, type);
+	}
+	
+	protected AliasThis newAliasThis(Loc loc, IdentifierExp ident) {
+		return new AliasThis(loc, ident);
 	}
 
 	protected VarDeclaration newVarDeclaration(Loc loc, Type type, IdentifierExp ident, Initializer initializer) {

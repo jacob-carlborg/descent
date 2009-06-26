@@ -1,12 +1,14 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.IField;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class AliasThis extends Dsymbol {
 
 	public IdentifierExp ident;
+	private IField javaElement;
 
 	public AliasThis(Loc loc, IdentifierExp ident) {
 		super(null); // it's anonymous (no identifier)
@@ -56,6 +58,7 @@ public class AliasThis extends Dsymbol {
 			}
 			assert (size(ad.members) != 0);
 			Dsymbol s = ad.search(loc, ident, 0, context);
+			ident.resolvedSymbol = s;
 			ad.aliasthis = s;
 		} else {
 			if (context.acceptsErrors()) {
@@ -74,6 +77,15 @@ public class AliasThis extends Dsymbol {
 		buf.writestring("alias ");
 	    buf.writestring(ident.toChars());
 	    buf.writestring(" this;\n");
+	}
+	
+	public void setJavaElement(IField field) {
+		this.javaElement = field;
+	}
+	
+	@Override
+	public IField getJavaElement() {
+		return javaElement;
 	}
 
 }

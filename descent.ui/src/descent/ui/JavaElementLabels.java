@@ -755,19 +755,24 @@ public class JavaElementLabels {
 				buf.append(field.getElementName());
 			}
 			
-			if (getFlag(flags, F_APP_TYPE_SIGNATURE) && field.exists() && !Flags.isEnum(field.getFlags())) {
-				if (getFlag(flags, USE_RESOLVED) && field.isResolved()) {
-					if (!annonymous) {
-						buf.append(DECL_STRING);
+			if (field.isAlias() && field.getTypeSignature() == null) {
+				buf.append(DECL_STRING);
+				buf.append("this");
+			} else {
+				if (getFlag(flags, F_APP_TYPE_SIGNATURE) && field.exists() && !Flags.isEnum(field.getFlags())) {
+					if (getFlag(flags, USE_RESOLVED) && field.isResolved()) {
+						if (!annonymous) {
+							buf.append(DECL_STRING);
+						}
+						
+						getTypeSignatureLabel(new BindingKey(field.getKey()).toSignature(), flags, buf);
+					} else {
+						if (!annonymous) {
+							buf.append(DECL_STRING);
+						}
+						
+						getTypeSignatureLabel(field.getTypeSignature(), flags, buf);
 					}
-					
-					getTypeSignatureLabel(new BindingKey(field.getKey()).toSignature(), flags, buf);
-				} else {
-					if (!annonymous) {
-						buf.append(DECL_STRING);
-					}
-					
-					getTypeSignatureLabel(field.getTypeSignature(), flags, buf);
 				}
 			}
 
