@@ -10,9 +10,10 @@ public class ModuleDeclaration extends ASTDmdNode {
 	public Identifiers packages;
 	public boolean safe;
 
-	public ModuleDeclaration(Identifiers packages, IdentifierExp id) {
+	public ModuleDeclaration(Identifiers packages, IdentifierExp id, boolean safe) {
 		this.packages = packages;
 		this.id = id;
+		this.safe = safe;
 	}
 
 	@Override

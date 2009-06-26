@@ -744,7 +744,7 @@ public WorkingCopyOwner getOwner() {
  * @see ICompilationUnit#getPackageDeclaration(String)
  */
 public IPackageDeclaration getPackageDeclaration(String pkg) {
-	return new PackageDeclaration(this, pkg);
+	return new PackageDeclaration(this, pkg, false);
 }
 /**
  * @see ICompilationUnit#getPackageDeclarations()

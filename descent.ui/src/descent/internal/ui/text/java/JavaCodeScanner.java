@@ -160,6 +160,7 @@ public final class JavaCodeScanner extends AbstractJavaScanner {
 		"nothrow", //$NON-NLS-1$
 		"pure", //$NON-NLS-1$
 		"shared", //$NON-NLS-1$
+		"__gshared", //$NON-NLS-1$
 	};
 
 	private static final String RETURN= "return"; //$NON-NLS-1$

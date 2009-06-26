@@ -186,7 +186,7 @@ public void acceptLineSeparatorPositions(int[] positions) {
 /**
  * @see ISourceElementRequestor
  */
-public void acceptPackage(int declarationStart, int declarationEnd, char[] name) {
+public void acceptPackage(int declarationStart, int declarationEnd, char[] name, boolean safe) {
 
 		JavaElementInfo parentInfo = (JavaElementInfo) this.infoStack.peek();
 		JavaElement parentHandle= (JavaElement) this.handleStack.peek();
@@ -194,7 +194,7 @@ public void acceptPackage(int declarationStart, int declarationEnd, char[] name)
 		
 		if (parentHandle.getElementType() == IJavaElement.COMPILATION_UNIT || 
 				parentHandle.getElementType() == IJavaElement.CLASS_FILE) {
-			handle = new PackageDeclaration((CompilationUnit) parentHandle, new String(name));
+			handle = new PackageDeclaration((CompilationUnit) parentHandle, new String(name), safe);
 		}
 		else {
 			Assert.isTrue(false); // Should not happen

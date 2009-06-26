@@ -806,7 +806,7 @@ public class TypeBasic extends Type {
 	
 	@Override
 	protected void appendSignature0(StringBuilder sb) {
-		sb.append(deco);
+		sb.append(ty.mangleChar);
 	}
 
 }

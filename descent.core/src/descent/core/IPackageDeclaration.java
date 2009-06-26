@@ -25,4 +25,6 @@ public interface IPackageDeclaration extends IJavaElement, ISourceReference, IDo
  * @return the name of the package the statement
  */
 String getElementName();
+
+boolean isSafe();
 }

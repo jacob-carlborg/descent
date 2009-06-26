@@ -178,7 +178,7 @@ public enum TOK implements ITerminalSymbols {
 	TOKconstruct(PREC_assign),
 	TOKblit(PREC_assign),
 	
-	TOKtls,
+	TOKtls, TOKgshared("__gshared", TokenName__gshared),
 	TOKline,
 	TOKfile,
 

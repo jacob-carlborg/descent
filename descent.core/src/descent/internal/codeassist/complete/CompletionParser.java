@@ -190,16 +190,16 @@ public class CompletionParser extends Parser {
 	}
 	
 	@Override
-	protected ModuleDeclaration newModuleDeclaration(Identifiers packages, IdentifierExp module) {
+	protected ModuleDeclaration newModuleDeclaration(Identifiers packages, IdentifierExp module, boolean safe) {
 		int start = CompletionUtils.getFqnStart(packages, module, cursorLocation);
 		int end = CompletionUtils.getFqnEnd(packages, module, cursorLocation);
 		
 		if (start <= cursorLocation && cursorLocation <= end) {
-			assistNode = new CompletionOnModuleDeclaration(packages, module, cursorLocation);
+			assistNode = new CompletionOnModuleDeclaration(packages, module, safe, cursorLocation);
 			wantKeywords = false;
 			return (ModuleDeclaration) assistNode;
 		} else {
-			return super.newModuleDeclaration(packages, module);
+			return super.newModuleDeclaration(packages, module, safe);
 		}
 	}
 	

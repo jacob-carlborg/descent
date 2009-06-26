@@ -459,7 +459,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 	
 	@Override
 	public boolean visit(ModuleDeclaration node) {
-		requestor.acceptPackage(startOfDeclaration(node), endOfDeclaration(node), node.getFQN());
+		requestor.acceptPackage(startOfDeclaration(node), endOfDeclaration(node), node.getFQN(), node.safe);
 		pushLevelInAttribDeclarationStack();
 		return false;
 	}

@@ -5,7 +5,6 @@ import descent.core.ToolFactory;
 import descent.core.compiler.IScanner;
 import descent.core.compiler.ITerminalSymbols;
 import descent.core.dom.AST;
-import descent.internal.compiler.parser.Lexer;
 import descent.internal.compiler.parser.TOK;
 
 public class ScannerTests extends TestCase implements ITerminalSymbols {

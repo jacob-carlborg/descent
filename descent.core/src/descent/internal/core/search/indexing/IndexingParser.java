@@ -32,7 +32,7 @@ public class IndexingParser extends SourceElementParser {
 	public boolean visit(Module node) {
 		// Report package if missing declaration 
 		if (node.md == null) {
-			requestor.acceptPackage(0, 0, module.moduleName.toCharArray());
+			requestor.acceptPackage(0, 0, module.moduleName.toCharArray(), false);
 		}
 		
 		return super.visit(node);

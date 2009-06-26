@@ -198,7 +198,7 @@ public class ModuleBuilder {
 				String elementName = packageDeclarations[0].getElementName();
 				Identifiers packages = new Identifiers();
 				IdentifierExp name = splitName(elementName, packages);	
-				module.md = new ModuleDeclaration(packages, name);
+				module.md = new ModuleDeclaration(packages, name, packageDeclarations[0].isSafe());
 			}
 		} catch (JavaModelException e) {
 			Util.log(e);

@@ -26,10 +26,12 @@ import descent.core.dom.AST;
 /* package */ class PackageDeclaration extends SourceRefElement implements IPackageDeclaration {
 	
 	String name;
+	boolean safe;
 	
-protected PackageDeclaration(CompilationUnit parent, String name) {
+protected PackageDeclaration(CompilationUnit parent, String name, boolean safe) {
 	super(parent);
 	this.name = name;
+	this.safe = safe;
 }
 public boolean equals(Object o) {
 	if (!(o instanceof PackageDeclaration)) return false;
@@ -102,6 +104,9 @@ public ISourceRange[] getJavadocRanges() throws JavaModelException {
 		}
 	}
 	return sourceRanges.toArray(new ISourceRange[sourceRanges.size()]);
+}
+public boolean isSafe() {
+	return safe;
 }
 /**
  * @private Debugging purposes

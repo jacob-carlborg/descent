@@ -25,8 +25,8 @@ public class CompletionOnModuleDeclaration extends ModuleDeclaration {
 	
 	public int completePosition;
 
-	public CompletionOnModuleDeclaration(Identifiers packages, IdentifierExp id, int completePosition) {
-		super(packages, id);
+	public CompletionOnModuleDeclaration(Identifiers packages, IdentifierExp id, boolean safe, int completePosition) {
+		super(packages, id, safe);
 		this.completePosition = completePosition;
 	}
 	

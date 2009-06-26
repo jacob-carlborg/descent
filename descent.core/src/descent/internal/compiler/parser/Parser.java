@@ -368,7 +368,7 @@ public class Parser extends Lexer {
 			if (token.value != TOKidentifier) {
 				
 				// Issue a creation of an empty module declaration
-				newModuleDeclaration(null, null);
+				newModuleDeclaration(null, null, safe);
 				
 				parsingErrorDeleteToken(prevToken);
 				
@@ -390,7 +390,7 @@ public class Parser extends Lexer {
 					if (token.value != TOKidentifier) {
 						
 						// Issue a creation of an empty module declaration
-						newModuleDeclaration(a, null);
+						newModuleDeclaration(a, null, safe);
 						
 						parsingErrorInsertTokenAfter(prevToken, ";");
 						
@@ -403,7 +403,7 @@ public class Parser extends Lexer {
 					id = newIdentifierExp();
 				}
 
-				md = newModuleDeclaration(a, id);
+				md = newModuleDeclaration(a, id, safe);
 				md.setSourceRange(start, token.ptr + token.sourceLen - start);
 				md.safe = safe;
 				md.preComments = moduleDocComments;
@@ -1019,7 +1019,7 @@ public class Parser extends Lexer {
 		modifiers.add(modifier);
 
 		// Descent: better error reporting 
-		boolean thinksItsD2 = apiLevel < D2 && token.value == TOKlparen && (prevToken.value == TOKinvariant || prevToken.value == TOKconst);
+		boolean thinksItsD2 = apiLevel < D2 && token.value == TOKlparen && (prevToken.value == TOKinvariant || prevToken.value == TOKimmutable || prevToken.value == TOKconst);
 		if (thinksItsD2) {
 			error(prevToken.value == TOKinvariant ? IProblem.InvariantAsAttributeIsOnlySupportedInD2 : IProblem.ConstAsAttributeIsOnlySupportedInD2, prevToken);
 			nextToken();
@@ -3135,7 +3135,9 @@ public class Parser extends Lexer {
 		    break;
 		}
 
-		case TOKinvariant: {
+		case TOKinvariant:
+		case TOKimmutable:
+		{
 			// TODO check if we have to put a D2 check here
 		    // invariant(type)
 			int start = token.ptr;
@@ -3492,6 +3494,7 @@ public class Parser extends Lexer {
 						    continue;
 
 						case TOKinvariant:
+						case TOKimmutable:
 						    ta = ta.makeInvariant(token.ptr, token.sourceLen);
 						    nextToken();
 						    continue;
@@ -3613,6 +3616,7 @@ public class Parser extends Lexer {
 			switch (token.value) {
 			case TOKconst:
 			case TOKinvariant:
+			case TOKimmutable:
 				if (apiLevel == D2 && peek(token).value == TOKlparen) {
 					break;
 				}
@@ -3807,8 +3811,6 @@ public class Parser extends Lexer {
 			}
 			ts = parseBasicType2(ts);
 		}
-		
-		
 		
 		tfirst = null;
 		
@@ -5563,7 +5565,7 @@ public class Parser extends Lexer {
 		int haveId = 0;
 		
 		if (apiLevel == D2) {
-		    if ((t.value == TOKconst || t.value == TOKinvariant)
+		    if ((t.value == TOKconst || t.value == TOKinvariant || t.value == TOKimmutable || t.value == TOKshared)
 					&& peek(t).value != TOKlparen) {
 		    /* const type
 			 * invariant type
@@ -5677,7 +5679,10 @@ public class Parser extends Lexer {
 		}
 			
 		case TOKconst:
-		case TOKinvariant: {
+		case TOKinvariant:
+		case TOKimmutable:
+		case TOKshared:
+		{
 			if (apiLevel < D2) {
 				return false;
 			}
@@ -6174,6 +6179,8 @@ public class Parser extends Lexer {
 			case TOKlazy:
 			case TOKconst:
 			case TOKinvariant:
+			case TOKimmutable:
+			case TOKshared:
 			case TOKfinal:
 			case TOKstatic:
 				continue;
@@ -7173,7 +7180,7 @@ public class Parser extends Lexer {
 				e = parseUnaryExp();
 				e = new CastExp(loc(), e, t);
 			} else {
-			    if ((token.value == TOKconst || token.value == TOKinvariant)
+			    if ((token.value == TOKconst || token.value == TOKinvariant || token.value == TOKimmutable)
 						&& peek(token).value == TOKrparen) {
 			    	int modifierStart = token.ptr;
 					TOK tok = token.value;
@@ -8208,8 +8215,8 @@ public class Parser extends Lexer {
 	 * packages and module can be null at the same time, meaning "module " is written
 	 * in the source code.
 	 */
-	protected ModuleDeclaration newModuleDeclaration(Identifiers packages, IdentifierExp module) {
-		return new ModuleDeclaration(packages, module);
+	protected ModuleDeclaration newModuleDeclaration(Identifiers packages, IdentifierExp module, boolean safe) {
+		return new ModuleDeclaration(packages, module, safe);
 	}
 	
 	protected Import newImport(Loc loc, Identifiers packages, IdentifierExp module, IdentifierExp aliasid, boolean isstatic) {

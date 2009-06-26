@@ -109,7 +109,7 @@ public interface ISourceElementRequestor {
 
 	void acceptMethodReference(char[] methodName, int argCount, int sourcePosition);
 	
-	void acceptPackage(int declarationStart, int declarationEnd, char[] name);
+	void acceptPackage(int declarationStart, int declarationEnd, char[] name, boolean safe);
 
 	void acceptProblem(IProblem problem);
 

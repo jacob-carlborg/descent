@@ -76,7 +76,7 @@ public void acceptMethodReference(char[] methodName, int argCount, int sourcePos
 /**
  * @see ISourceElementRequestor#acceptPackage(int, int, char[])
  */
-public void acceptPackage(int declarationStart, int declarationEnd, char[] name) {
+public void acceptPackage(int declarationStart, int declarationEnd, char[] name, boolean safe) {
 	this.packageName = name;
 }
 /**

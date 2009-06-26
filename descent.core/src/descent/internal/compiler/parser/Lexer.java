@@ -3837,6 +3837,35 @@ public class Lexer implements IProblemRequestor {
 						}
 					}
 					break;
+				case 'g':
+					if (apiLevel == D2) {
+						p++;
+						if (input(p) == 's') {
+							p++;
+							if (input(p) == 'h') {
+								p++;
+								if (input(p) == 'a') {
+									p++;
+									if (input(p) == 'r') {
+										p++;
+										if (input(p) == 'e') {
+											p++;
+											if (input(p) == 'd'
+													&& !Chars
+															.isidchar(input(p + 1))) {
+												t.value = TOK.TOKgshared;
+												t.sourceLen = 9;
+												p++;
+												return;
+											}
+										}
+									}
+								}
+							}
+						}
+						break;
+					}
+					break;
 				case 'o':
 					if (apiLevel == D2) {
 						p++;
@@ -3877,6 +3906,7 @@ public class Lexer implements IProblemRequestor {
 						}
 						break;
 					}
+					break;
 				case 't':
 					if (apiLevel == D2) {
 						p++;
@@ -3923,6 +3953,7 @@ public class Lexer implements IProblemRequestor {
 						}
 						break;
 					}
+					break;
 				}
 			}
 			break;
