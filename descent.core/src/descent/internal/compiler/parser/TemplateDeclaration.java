@@ -1097,6 +1097,14 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			tp.toCBuffer(buf, hgs, context);
 		}
 		buf.writeByte(')');
+		
+		if (context.isD2()) {
+			if (constraint != null) {
+				buf.writestring(" if (");
+				constraint.toCBuffer(buf, hgs, context);
+				buf.writeByte(')');
+			}
+		}
 
 		if (hgs.hdrgen) {
 			hgs.tpltMember = true;

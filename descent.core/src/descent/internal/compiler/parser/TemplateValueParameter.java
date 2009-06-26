@@ -73,8 +73,7 @@ public class TemplateValueParameter extends TemplateParameter {
 			if (context.isD2()) {
 				if (e.op == TOKdefault) {
 					DefaultInitExp de = (DefaultInitExp) e;
-					// TODO Semantic didn't find this in the front end
-//					e = de.resolve(loc, sc, context);
+					e = de.resolve(loc, sc, context);
 				}
 			}
 		}
