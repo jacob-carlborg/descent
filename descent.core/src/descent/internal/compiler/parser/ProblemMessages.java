@@ -508,6 +508,8 @@ final class ProblemMessages extends NLS {
 	public static String ArrayLengthHidesOtherLengthNameInOuterScope;
 	public static String OnePathSkipsConstructor;
 	public static String PragmaLibNotAllowedAsStatement;
+	public static String ThereCanBeOnlyOneAliasThis;
+	public static String AliasThisCanOnlyAppearInStructOrClassDeclaration;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

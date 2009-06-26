@@ -1127,6 +1127,10 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.OnePathSkipsConstructor);
 		case PragmaLibNotAllowedAsStatement:
 			return String.format(ProblemMessages.PragmaLibNotAllowedAsStatement);
+		case ThereCanBeOnlyOneAliasThis:
+			return String.format(ProblemMessages.ThereCanBeOnlyOneAliasThis);
+		case AliasThisCanOnlyAppearInStructOrClassDeclaration:
+			return String.format(ProblemMessages.AliasThisCanOnlyAppearInStructOrClassDeclaration, arguments[0]);
 		default:
 			return "";
 		}

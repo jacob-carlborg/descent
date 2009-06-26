@@ -189,6 +189,19 @@ public class CodeFormatterVisitor extends ASTVisitor
 		return false;
 	}
 	
+	public boolean visit(AliasThisDeclaration node)
+	{
+		formatModifiers(true, node.modifiers());
+		scribe.printNextToken(TOK.TOKalias);
+		scribe.space();
+		node.getName().accept(this);
+		scribe.space();
+		scribe.printNextToken(TOK.TOKthis);
+		formatSemicolon();
+		scribe.printTrailingComment();
+		return false;
+	}
+	
 	public boolean visit(AliasDeclarationFragment node)
 	{
 		if(!nameAlreadyPrinted)

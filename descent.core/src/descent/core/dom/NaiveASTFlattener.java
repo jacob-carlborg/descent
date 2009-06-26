@@ -141,6 +141,21 @@ class NaiveASTFlattener extends ASTVisitor {
 	}
 	
 	@Override
+	public boolean visit(AliasThisDeclaration node) {
+		visitPreDDocss(node.preDDocs());
+		printIndent();
+		visitModifiers(node.modifiers());
+		this.buffer.append("alias ");
+		node.getName().accept(this);
+		this.buffer.append(" this;");
+		if (node.getPostDDoc() != null) {
+			this.buffer.append(" ");
+			node.getPostDDoc().accept(this);
+		}
+		return false;
+	}
+	
+	@Override
 	public boolean visit(AliasDeclarationFragment node) {
 		node.getName().accept(this);
 		return false;

@@ -159,6 +159,8 @@ public class ASTConverter {
 			return convert((UnaExp) symbol, PrefixExpression.Operator.ADDRESS);
 		case ASTDmdNode.ALIAS_DECLARATION:
 			return convert((AliasDeclaration) symbol);
+		case ASTDmdNode.ALIAS_THIS:
+			return convert((AliasThis) symbol);
 		case ASTDmdNode.ALIGN_DECLARATION:
 			return convert((AlignDeclaration) symbol);
 		case ASTDmdNode.AND_AND_EXP:
@@ -2589,6 +2591,19 @@ public class ASTConverter {
 			recordNodes(b, a);
 		}
 		
+		return b;
+	}
+	
+	public descent.core.dom.AliasThisDeclaration convert(AliasThis a) {
+		descent.core.dom.AliasThisDeclaration b = new descent.core.dom.AliasThisDeclaration(ast);
+		if (a.ident != null) {
+			SimpleName convertedIdent = (SimpleName) convert(a.ident);
+			if (convertedIdent != null) {
+				b.setName(convertedIdent);
+			}
+			setSourceRange(b, a.ident.start, a.ident.length);
+		}
+		fillDeclaration(b, a);
 		return b;
 	}
 	

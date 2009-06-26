@@ -3558,12 +3558,24 @@ public class Parser extends Lexer {
 
 		expect(typedefAliasExpectations);
 		switch (token.value) {
-		case TOKtypedef:
 		case TOKalias:
 			tok = token.value;
 			nextToken();
+		    if (token.value == TOKidentifier && peek(token).value == TOKthis) {
+		    	// XXX comments for AliasThis
+				AliasThis s = newAliasThis(this.loc, newIdentifierExp());
+				nextToken();
+				check(TOKthis);
+				check(TOKsemicolon);
+				a = new Dsymbols();
+				a.add(s);
+				return a;
+			}
 			break;
-
+		case TOKtypedef:
+			tok = token.value;
+			nextToken();
+			break;
 		default:
 			tok = TOKreserved;
 			break;
@@ -8621,6 +8633,10 @@ public class Parser extends Lexer {
 	
 	protected TemplateDeclaration newTemplateDeclaration(Loc loc, IdentifierExp ident, TemplateParameters tpl, Expression constraint, Dsymbols decldefs) {
 		return new TemplateDeclaration(loc, ident, tpl, constraint, decldefs);
+	}
+	
+	protected AliasThis newAliasThis(Loc loc, IdentifierExp id) {
+		return new AliasThis(loc, id);
 	}
 	
 	protected Import addImportAlias(Import s, IdentifierExp name, IdentifierExp alias) {

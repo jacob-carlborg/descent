@@ -40,6 +40,8 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 
 	public List<VarDeclaration> fields;
 	
+	public Dsymbol aliasthis;
+	
 	// Back end
     Symbol stag;		// tag symbol for debug data
     Symbol sinit;

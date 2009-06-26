@@ -19,6 +19,9 @@ public class AstVisitorAdapter implements IASTVisitor {
 
 	public void endVisit(AliasDeclaration node) {
 	}
+	
+	public void endVisit(AliasThis node) {
+	}
 
 	public void endVisit(AlignDeclaration node) {
 	}
@@ -731,6 +734,10 @@ public class AstVisitorAdapter implements IASTVisitor {
 	}
 
 	public boolean visit(AliasDeclaration node) {
+		return true;
+	}
+	
+	public boolean visit(AliasThis node) {
 		return true;
 	}
 

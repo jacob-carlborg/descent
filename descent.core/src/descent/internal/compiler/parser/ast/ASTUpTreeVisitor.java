@@ -84,6 +84,10 @@ public class ASTUpTreeVisitor extends TreeVisitor implements IASTVisitor {
 		Assert.isTrue(AliasDeclaration.class.getSuperclass().equals(Declaration.class));
 		return visit((Declaration) node);
 	}
+	public boolean visit(AliasThis node) {
+		Assert.isTrue(AliasThis.class.getSuperclass().equals(Dsymbol.class));
+		return visit((Dsymbol) node);
+	}
 	public boolean visit(AlignDeclaration node) {
 		Assert.isTrue(AlignDeclaration.class.getSuperclass().equals(AttribDeclaration.class));
 		return visit((AttribDeclaration) node);
@@ -1013,6 +1017,10 @@ public class ASTUpTreeVisitor extends TreeVisitor implements IASTVisitor {
 	public void endVisit(AliasDeclaration node) {
 		Assert.isTrue(AliasDeclaration.class.getSuperclass().equals(Declaration.class));
 		endVisit((Declaration) node);
+	}
+	public void endVisit(AliasThis node) {
+		Assert.isTrue(AliasThis.class.getSuperclass().equals(Dsymbol.class));
+		endVisit((Dsymbol) node);
 	}
 	public void endVisit(AlignDeclaration node) {
 		Assert.isTrue(AlignDeclaration.class.getSuperclass().equals(AttribDeclaration.class));

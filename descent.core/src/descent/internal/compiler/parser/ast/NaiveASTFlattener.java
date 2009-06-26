@@ -197,6 +197,20 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		
 		return false;
 	}
+	
+	public boolean visit(AliasThis node) {
+		visitPreDDocss(node.preComments);
+		printIndent();
+		visitModifiers(node.modifiers);
+		this.buffer.append("alias ");
+		this.buffer.append(node.ident);		
+		this.buffer.append(" this;");
+		if (node.postComment != null) {
+			this.buffer.append(" ");
+			node.postComment.accept(this);
+		}
+		return false;
+	}
 
 	public boolean visit(AlignDeclaration node) {
 		visitPreDDocss(node.preComments);

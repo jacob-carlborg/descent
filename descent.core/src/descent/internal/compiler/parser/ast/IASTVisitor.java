@@ -27,6 +27,7 @@ public interface IASTVisitor extends ITreeVisitor<ASTNode> {
 	boolean visit(AddrExp node);
 	boolean visit(AggregateDeclaration node);
 	boolean visit(AliasDeclaration node);
+	boolean visit(AliasThis node);
 	boolean visit(AlignDeclaration node);
 	boolean visit(AndAndExp node);
 	boolean visit(AndAssignExp node);
@@ -262,6 +263,7 @@ public interface IASTVisitor extends ITreeVisitor<ASTNode> {
 	void endVisit(AddrExp node);
 	void endVisit(AggregateDeclaration node);
 	void endVisit(AliasDeclaration node);
+	void endVisit(AliasThis node);
 	void endVisit(AlignDeclaration node);
 	void endVisit(AndAndExp node);
 	void endVisit(AndAssignExp node);

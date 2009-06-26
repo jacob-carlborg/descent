@@ -24,6 +24,8 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class InterfaceDeclaration extends ClassDeclaration {
 	
+	public boolean cpp; // true if this is a C++ interface
+	
 	public InterfaceDeclaration(Loc loc, IdentifierExp id,
 			BaseClasses baseclasses) {
 		super(loc, id, baseclasses);

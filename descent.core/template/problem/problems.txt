@@ -1492,8 +1492,12 @@ OnePathSkipsConstructor
 PragmaLibNotAllowedAsStatement
 	formatString=pragma(lib) not allowed as statement
 	numArgs=0
-	
-	
+ThereCanBeOnlyOneAliasThis
+	formatString=There can be only one alias this
+	numArgs=0
+AliasThisCanOnlyAppearInStructOrClassDeclaration
+	formatString=alias this can only appear in struct or class declaration, not %1$s
+	numArgs=1
 	
 	
 	

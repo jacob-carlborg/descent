@@ -707,5 +707,7 @@ public interface IProblem {
 	int ArrayLengthHidesOtherLengthNameInOuterScope = 496;
 	int OnePathSkipsConstructor = 497;
 	int PragmaLibNotAllowedAsStatement = 498;
+	int ThereCanBeOnlyOneAliasThis = 499;
+	int AliasThisCanOnlyAppearInStructOrClassDeclaration = 500;
 
 }
