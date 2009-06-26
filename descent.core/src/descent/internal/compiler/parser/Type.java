@@ -499,6 +499,9 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	public String deco;
 	public Type cto; // MODconst ? mutable version of this type : const version
 	public Type ito; // MODinvariant ? mutable version of this type : invariant version
+	public Type sto;		// MODshared ? mutable version of this type : shared mutable version
+	public Type scto;		// MODshared|MODconst ? mutable version of this type : shared const version
+	
 	public Type pto; // merged pointer to this type
 	public Type rto; // reference to this type
 	public Type arrayof; // array of this type
@@ -1196,13 +1199,13 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	public Type makeConst(int startPosition, int length) {
 		Type t = copy();
 		t.mod = MODconst;
-//	    t.deco = null;
-//	    t.arrayof = null;
-//	    t.pto = null;
-//	    t.rto = null;
-//	    t.cto = null;
-//	    t.ito = null;
-//	    t.vtinfo = null;
+	    t.deco = null;
+	    t.arrayof = null;
+	    t.pto = null;
+	    t.rto = null;
+	    t.cto = null;
+	    t.ito = null;
+	    t.vtinfo = null;
 		if (t.modifications == null) {
 			t.modifications = new ArrayList<Modification>();
 		}
@@ -1214,18 +1217,52 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	public Type makeInvariant(int startPosition, int length) {
 		Type t = copy();
 		t.mod = MODinvariant;
-//	    t.deco = null;
-//	    t.arrayof = null;
-//	    t.pto = null;
-//	    t.rto = null;
-//	    t.cto = null;
-//	    t.ito = null;
-//	    t.vtinfo = null;
+	    t.deco = null;
+	    t.arrayof = null;
+	    t.pto = null;
+	    t.rto = null;
+	    t.cto = null;
+	    t.ito = null;
+	    t.vtinfo = null;
 		if (t.modifications == null) {
 			t.modifications = new ArrayList<Modification>();
 		}
 		t.modifications.add(new Modification(TOK.TOKinvariant,
 				startPosition, length));
+		return t;
+	}
+	
+	public Type makeShared() {
+		if (sto != null)
+			return sto;
+		Type t = copy();
+		t.mod = MODshared;
+		t.deco = null;
+		t.arrayof = null;
+		t.pto = null;
+		t.rto = null;
+		t.cto = null;
+		t.ito = null;
+		t.sto = null;
+		t.scto = null;
+		t.vtinfo = null;
+		return t;
+	}
+	
+	public Type makeSharedConst() {
+		if (scto != null)
+			return scto;
+		Type t = copy();
+		t.mod = MODshared | MODconst;
+		t.deco = null;
+		t.arrayof = null;
+		t.pto = null;
+		t.rto = null;
+		t.cto = null;
+		t.ito = null;
+		t.sto = null;
+		t.scto = null;
+		t.vtinfo = null;
 		return t;
 	}
 

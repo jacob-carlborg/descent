@@ -1507,6 +1507,12 @@ PureFunctionCannotCallImpureFunction
 PureFunctionCannotAccessMutableStaticData
 	formatString=Pure function '%1$s' cannot access mutable static data '%2$s'
 	numArgs=2
+ConstraintIsNotConstantOrDoesNotEvaluateToABool
+	formatString=Constraint %1$s is not constant or does not evaluate to a bool
+	numArgs=1
+	
+	
+	
 	
 	
 	

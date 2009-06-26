@@ -30,3 +30,7 @@ mtype.h
 optimize.c --> CastExp::optimize
 template.c --> TemplateInstance::semantic
 template.h
+
+Remaining from DMD 2.030
+------------------------------
+in TemplateDeclaration::deduceFunctionTemplate

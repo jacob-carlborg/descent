@@ -712,5 +712,6 @@ public interface IProblem {
 	int FunctionIsOverloaded = 501;
 	int PureFunctionCannotCallImpureFunction = 502;
 	int PureFunctionCannotAccessMutableStaticData = 503;
+	int ConstraintIsNotConstantOrDoesNotEvaluateToABool = 504;
 
 }

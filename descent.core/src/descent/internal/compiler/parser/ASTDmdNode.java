@@ -1,43 +1,36 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.eclipse.core.runtime.Assert;
-
-import descent.core.compiler.CharOperation;
-import descent.core.compiler.IProblem;
-import descent.internal.compiler.parser.ast.ASTNode;
-import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.DYNCAST.DYNCAST_DSYMBOL;
 import static descent.internal.compiler.parser.DYNCAST.DYNCAST_EXPRESSION;
 import static descent.internal.compiler.parser.DYNCAST.DYNCAST_TUPLE;
 import static descent.internal.compiler.parser.DYNCAST.DYNCAST_TYPE;
 import static descent.internal.compiler.parser.LINK.LINKd;
-
+import static descent.internal.compiler.parser.MATCH.MATCHconst;
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
-
 import static descent.internal.compiler.parser.PROT.PROTpackage;
 import static descent.internal.compiler.parser.PROT.PROTprivate;
 import static descent.internal.compiler.parser.PROT.PROTprotected;
-
-import static descent.internal.compiler.parser.STC.*;
+import static descent.internal.compiler.parser.STC.STClazy;
+import static descent.internal.compiler.parser.STC.STCmanifest;
 import static descent.internal.compiler.parser.STC.STCout;
 import static descent.internal.compiler.parser.STC.STCref;
-
-import static descent.internal.compiler.parser.TOK.*;
+import static descent.internal.compiler.parser.TOK.TOKarray;
 import static descent.internal.compiler.parser.TOK.TOKassocarrayliteral;
+import static descent.internal.compiler.parser.TOK.TOKblit;
+import static descent.internal.compiler.parser.TOK.TOKconstruct;
+import static descent.internal.compiler.parser.TOK.TOKdefault;
 import static descent.internal.compiler.parser.TOK.TOKdelegate;
 import static descent.internal.compiler.parser.TOK.TOKdotexp;
 import static descent.internal.compiler.parser.TOK.TOKfloat64;
 import static descent.internal.compiler.parser.TOK.TOKforeach_reverse;
 import static descent.internal.compiler.parser.TOK.TOKfunction;
+import static descent.internal.compiler.parser.TOK.TOKstring;
 import static descent.internal.compiler.parser.TOK.TOKsuper;
+import static descent.internal.compiler.parser.TOK.TOKsymoff;
 import static descent.internal.compiler.parser.TOK.TOKtuple;
 import static descent.internal.compiler.parser.TOK.TOKtype;
 import static descent.internal.compiler.parser.TOK.TOKvar;
-
 import static descent.internal.compiler.parser.TY.Tbit;
 import static descent.internal.compiler.parser.TY.Tclass;
 import static descent.internal.compiler.parser.TY.Tdelegate;
@@ -48,6 +41,16 @@ import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Tstruct;
 import static descent.internal.compiler.parser.TY.Ttuple;
 import static descent.internal.compiler.parser.TY.Tvoid;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.core.runtime.Assert;
+
+import descent.core.compiler.CharOperation;
+import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.ASTNode;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // class Object in DMD compiler
 
@@ -1508,6 +1511,37 @@ public abstract class ASTDmdNode extends ASTNode {
 	public static interface OverloadApply_fp {
 		int call(Object param, FuncDeclaration f, SemanticContext context);
 	}
+	
+	public final static OverloadApply_fp fp1 = new OverloadApply_fp() {
+
+		public int call(Object param, FuncDeclaration f, SemanticContext context) {
+			Param1 p = (Param1) param;
+			Type t = p.t;
+
+			if (t.equals(f.type)) {
+				p.f = f;
+				return 1;
+			}
+
+			if (context.isD2()) {
+				/*
+				 * Allow covariant matches, if it's just a const conversion of
+				 * the return type
+				 */
+				if (t.ty == Tfunction) {
+					TypeFunction tf = (TypeFunction) f.type;
+					if (tf.covariant(t, context) == 1
+							&& tf.nextOf().implicitConvTo(t.nextOf(), context)
+									.ordinal() >= MATCHconst.ordinal()) {
+						p.f = f;
+						return 1;
+					}
+				}
+			}
+		    return 0;
+		}
+
+	};
 
 	public final static OverloadApply_fp fp2 = new OverloadApply_fp() {
 
@@ -1895,6 +1929,18 @@ public abstract class ASTDmdNode extends ASTNode {
 			if (null == s2 || !s1.equals(s2) || s1.parent != s2.parent) {
 				// goto Lnomatch;
 				return false;
+			}
+			if (context.isD2()) {
+				VarDeclaration _v1 = s1.isVarDeclaration();
+				VarDeclaration _v2 = s2.isVarDeclaration();
+				if (_v1 != null && _v2 != null && (_v1.storage_class & _v2.storage_class & STCmanifest) != 0)
+				{   ExpInitializer ei1 = _v1.init.isExpInitializer();
+				    ExpInitializer ei2 = _v2.init.isExpInitializer();
+				    if (ei1 != null && ei2 != null && !ei1.exp.equals(ei2.exp)) {
+				    	// goto Lnomatch;
+				    	return false;
+				    }
+				}
 			}
 		} else if (v1 != null) {
 			if (null == v2) {

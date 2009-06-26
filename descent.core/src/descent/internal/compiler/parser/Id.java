@@ -207,6 +207,12 @@ public interface Id {
 	static final char[] __monitor = { '_', '_', 'm', 'o', 'n', 'i', 't', 'o', 'r' };
 	static final char[] system = { 's', 'y', 's', 't', 'e', 'm' };
 	
+	static final char[] Fempty = { 'e', 'm', 'p', 't', 'y' };
+	static final char[] Fhead = { 'f', 'r', 'o', 'n', 't' };
+	static final char[] Ftoe = { 'b', 'a', 'c', 'k' };
+	static final char[] Fnext = { 'p', 'o', 'p', 'F', 'r', 'o', 'n', 't' };
+	static final char[] Fretreat = { 'p', 'o', 'p', 'B', 'a', 'c', 'k' };
+	
 	static final char[] std = { 's', 't', 'd' };
 	static final char[] math = { 'm', 'a', 't', 'h' };
 	static final char[] sin = { 's', 'i', 'n' };

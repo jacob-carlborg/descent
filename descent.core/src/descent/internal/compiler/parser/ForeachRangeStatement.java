@@ -1,8 +1,12 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.TOK.TOKforeach;
+import static descent.internal.compiler.parser.TOK.TOKgt;
+import static descent.internal.compiler.parser.TOK.TOKlt;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
+import static descent.internal.compiler.parser.Constfold.*;
 
 // DMD 2.003
 public class ForeachRangeStatement extends Statement {
@@ -12,6 +16,7 @@ public class ForeachRangeStatement extends Statement {
 	public Expression lwr;
 	public Expression upr;
 	public Statement body;
+	public VarDeclaration key;
 
 	public ForeachRangeStatement(Loc loc, TOK op, Argument arg, Expression lwr,
 			Expression upr, Statement body) {
@@ -39,6 +44,81 @@ public class ForeachRangeStatement extends Statement {
 			TreeVisitor.acceptChildren(visitor, body);
 		}
 		visitor.endVisit(this);
+	}
+	
+	@Override
+	public Expression interpret(InterState istate, SemanticContext context) {
+		if (istate.start == this)
+			istate.start = null;
+		if (istate.start != null)
+			return null;
+
+		Expression e = null;
+		Expression elwr = lwr.interpret(istate, context);
+		if (elwr == EXP_CANT_INTERPRET)
+			return EXP_CANT_INTERPRET;
+
+		Expression eupr = upr.interpret(istate, context);
+		if (eupr == EXP_CANT_INTERPRET)
+			return EXP_CANT_INTERPRET;
+
+		Expression keysave = key.value;
+
+		if (op == TOKforeach) {
+			key.value = elwr;
+
+			while (true) {
+				e = Cmp.call(TOKlt, key.value.type, key.value, upr, context);
+				if (e == EXP_CANT_INTERPRET)
+					break;
+				if (e.isBool(true) == false) {
+					e = null;
+					break;
+				}
+
+				e = body != null ? body.interpret(istate, context) : null;
+				if (e == EXP_CANT_INTERPRET)
+					break;
+				if (e == EXP_BREAK_INTERPRET) {
+					e = null;
+					break;
+				}
+				e = Add.call(key.value.type, key.value, new IntegerExp(loc, 1,
+						key.value.type), context);
+				if (e == EXP_CANT_INTERPRET)
+					break;
+				key.value = e;
+			}
+		} else // TOKforeach_reverse
+		{
+			key.value = eupr;
+
+			while (true) {
+				e = Cmp.call(TOKgt, key.value.type, key.value, lwr, context);
+				if (e == EXP_CANT_INTERPRET)
+					break;
+				if (e.isBool(true) == false) {
+					e = null;
+					break;
+				}
+
+				e = Min.call(key.value.type, key.value, new IntegerExp(loc, 1,
+						key.value.type), context);
+				if (e == EXP_CANT_INTERPRET)
+					break;
+				key.value = e;
+
+				e = body != null ? body.interpret(istate, context) : null;
+				if (e == EXP_CANT_INTERPRET)
+					break;
+				if (e == EXP_BREAK_INTERPRET) {
+					e = null;
+					break;
+				}
+			}
+		}
+		key.value = keysave;
+		return e;
 	}
 
 	@Override

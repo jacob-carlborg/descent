@@ -45,7 +45,7 @@ public class Parser extends Lexer {
 		TOKfloat80, TOKimaginary32, TOKimaginary64, TOKimaginary80, 
 		TOKcomplex32, TOKcomplex64, TOKcomplex80, TOKvoid, TOKalias,
 		TOKtypedef, TOKtypeof, TOKthis, TOKinvariant, TOKunittest,
-		TOKnew, TOKdelete, TOKstatic, TOKconst, TOKfinal, TOKauto,
+		TOKnew, TOKdelete, TOKstatic, TOKconst, TOKfinal, TOKauto, TOKpure, TOKshared,
 		TOKscope, TOKoverride, TOKabstract, TOKsynchronized, TOKdeprecated,
 		TOKextern, TOKprivate, TOKpackage, TOKprotected, TOKpublic,
 		TOKexport, TOKalign, TOKpragma, TOKdebug, TOKversion
@@ -92,7 +92,7 @@ public class Parser extends Lexer {
 	protected final static char[][] modifierExpectations = toCharArray(new TOK[] { 
 		TOKconst, TOKinvariant, TOKstatic, TOKfinal, TOKauto, TOKscope,
 		TOKoverride, TOKabstract, TOKsynchronized, TOKdeprecated,
-		TOKextern
+		TOKextern, TOKpure,
 	});
 	protected final static char[][] statementExpectations = toCharArray(new TOK[] { 
 		TOKtypeof, TOKassert, TOKthis, TOKsuper, TOKnull, TOKtrue,
@@ -102,7 +102,7 @@ public class Parser extends Lexer {
 		TOKuns32, TOKint64, TOKuns64, TOKfloat32, TOKfloat64,
 		TOKfloat80, TOKimaginary32, TOKimaginary64, TOKimaginary80, 
 		TOKcomplex32, TOKcomplex64, TOKcomplex80, TOKvoid,
-		TOKtypeof, TOKconst, TOKinvariant, TOKalias, TOKtypedef, TOKauto,
+		TOKtypeof, TOKconst, TOKinvariant, TOKalias, TOKtypedef, TOKauto, TOKpure,
 		TOKextern, TOKstruct, TOKunion, TOKclass, TOKinterface,
 		TOKenum, TOKmixin, TOKwhile, TOKdo, TOKfor, TOKforeach,
 		TOKforeach_reverse, TOKif, TOKscope, TOKdebug, TOKversion,
@@ -2959,7 +2959,22 @@ public class Parser extends Lexer {
 	private Type parseType(IdentifierExp[] pident, TemplateParameters[] tpl) {   
 		Type t;
 
-		if (token.value == TOKconst && peek(token).value != TOKlparen) {
+	    /* Take care of the storage class prefixes that
+	     * serve as type attributes:
+	     *  const shared, shared const, const, invariant, shared
+	     */
+	    if (token.value == TOKconst && peekNext() == TOKshared
+				&& peekNext2() != TOKlparen || token.value == TOKshared
+				&& peekNext() == TOKconst && peekNext2() != TOKlparen) {
+			nextToken();
+			nextToken();
+			/*
+			 * shared const type
+			 */
+			t = parseType(pident, tpl);
+			t = t.makeSharedConst();
+			return t;
+		} else if (token.value == TOKconst && peek(token).value != TOKlparen) {
 			int start = token.ptr;
 			nextToken();
 			/* const type
@@ -2967,7 +2982,7 @@ public class Parser extends Lexer {
 			t = parseType(pident, tpl);
 			t = t.makeConst(start, prevToken.ptr + prevToken.sourceLen - start);
 			return t;
-		} else if (token.value == TOKinvariant
+		} else if ((token.value == TOKinvariant || token.value == TOKimmutable)
 				&& peek(token).value != TOKlparen) {
 			int start = token.ptr;
 			nextToken();
@@ -2975,6 +2990,14 @@ public class Parser extends Lexer {
 			 */
 			t = parseType(pident, tpl);
 			t = t.makeInvariant(start, prevToken.ptr + prevToken.sourceLen - start);
+			return t;
+		} else if (token.value == TOKshared && peekNext() != TOKlparen)
+		    {
+			nextToken();
+			/* shared type
+			 */
+			t = parseType(pident, tpl);
+			t = t.makeShared();
 			return t;
 		} else {
 			t = parseBasicType();

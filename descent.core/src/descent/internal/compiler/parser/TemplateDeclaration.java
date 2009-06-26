@@ -5,9 +5,13 @@ import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 import static descent.internal.compiler.parser.STC.STCconst;
 import static descent.internal.compiler.parser.STC.STCmanifest;
+import static descent.internal.compiler.parser.Scope.SCOPEstaticif;
+import static descent.internal.compiler.parser.TOK.TOKstring;
+import static descent.internal.compiler.parser.TY.Tarray;
 import static descent.internal.compiler.parser.TY.Tdelegate;
 import static descent.internal.compiler.parser.TY.Tfunction;
 import static descent.internal.compiler.parser.TY.Tident;
+import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Tvoid;
 
 import java.util.ArrayList;
@@ -420,27 +424,27 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		// L2:
 		if (context.isD2()) {
 			// Match 'ethis' to any TemplateThisParameter's
-		    if (ethis != null)
-		    {
-			for (int j = 0; j < size(parameters); j++)
-			{   TemplateParameter tp2 = (TemplateParameter) parameters.get(j);
-			    TemplateThisParameter ttp = tp2.isTemplateThisParameter();
-			    if (ttp != null)
-			    {	MATCH m;
+			if (ethis != null) {
+				for (int j = 0; j < size(parameters); j++) {
+					TemplateParameter tp2 = (TemplateParameter) parameters
+							.get(j);
+					TemplateThisParameter ttp = tp2.isTemplateThisParameter();
+					if (ttp != null) {
+						MATCH m;
 
-				Type t = new TypeIdentifier(Loc.ZERO, ttp.ident);
-				m = ethis.type.deduceType(scope, t, parameters, dedtypes, context);
-				if (m == MATCHnomatch) {
-				    // goto Lnomatch;
-					return deduceFunctionTemplateMatch_Lnomatch(paramscope);
+						Type t = new TypeIdentifier(Loc.ZERO, ttp.ident);
+						m = ethis.type.deduceType(scope, t, parameters,
+								dedtypes, context);
+						if (m == MATCHnomatch) {
+							// goto Lnomatch;
+							return deduceFunctionTemplateMatch_Lnomatch(paramscope);
+						}
+						if (m.ordinal() < match.ordinal())
+							match = m; // pick worst match
+					}
 				}
-				if (m.ordinal() < match.ordinal())
-				    match = m;		// pick worst match
-			    }
 			}
-		    }
 		}
-		
 		
 		// Loop through the function parameters
 		for (i = 0; i < nfparams; i++) {
@@ -474,6 +478,26 @@ public class TemplateDeclaration extends ScopeDsymbol {
 				farg = (Expression) fargs.get(i);
 				
 			    Type argtype = farg.type;
+			    
+			    if (context.isD2()) {
+					/*
+					 * Allow string literals which are type [] to match with
+					 * [dim]
+					 */
+					if (farg.op == TOKstring) {
+						StringExp se = (StringExp) farg;
+						if (!se.committed
+								&& argtype.ty == Tarray
+								&& fparam.type.toBasetype(context).ty == Tsarray) {
+							argtype = new TypeSArray(
+									argtype.nextOf(),
+									new IntegerExp(se.loc, se.len, Type.tindex),
+									context.encoder);
+							argtype = argtype.semantic(se.loc, null, context);
+							argtype = argtype.invariantOf(context);
+						}
+					}
+				}
 
 				m = argtype.deduceType(scope, fparam.type, parameters,
 						dedtypes, context);
@@ -623,6 +647,31 @@ public class TemplateDeclaration extends ScopeDsymbol {
 				}
 				declareParameter(paramscope, tp, oded, context);
 				dedargs.set(i, oded);
+			}
+		}
+		
+		if (context.isD2()) {
+			if (constraint != null) { /*
+									 * Check to see if constraint is satisfied.
+									 */
+				Expression e = constraint.syntaxCopy(context);
+				paramscope.flags |= SCOPEstaticif;
+				e = e.semantic(paramscope, context);
+				e = e.optimize(WANTvalue | WANTinterpret, context);
+				if (e.isBool(true))
+					;
+				else if (e.isBool(false)) {
+					// goto Lnomatch;
+					return deduceFunctionTemplateMatch_Lnomatch(paramscope);
+				} else {
+					if (context.acceptsErrors()) {
+						context
+								.acceptProblem(Problem
+										.newSemanticTypeError(
+												IProblem.ConstraintIsNotConstantOrDoesNotEvaluateToABool,
+												e, e.toChars(context)));
+					}
+				}
 			}
 		}
 
@@ -794,7 +843,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			TemplateParameter tp = parameters.get(i);
 			Declaration[] sparam = { null };
 
-			if (context.isD2()) {
+			if (context.isD1()) {
 				m2 = tp.matchArg(paramscope, ti.tiargs, i, parameters, dedtypes, sparam, (flag & 2) != 0 ? 1 : 0, context);
 			} else {
 				m2 = tp.matchArg(paramscope, ti.tiargs, i, parameters, dedtypes, sparam, (flag & 2) != 0 ? 1 : 0, context);
@@ -833,6 +882,38 @@ public class TemplateDeclaration extends ScopeDsymbol {
 								"assert(i < size(ti.tiargs));");
 					}
 					dedtypes.set(i, ti.tiargs.get(i));
+				}
+			}
+		}
+		
+		if (context.isD2()) {
+			if (m != null && constraint != null && 0 == (flag & 1)) { /*
+																	 * Check to
+																	 * see if
+																	 * constraint
+																	 * is
+																	 * satisfied
+																	 * .
+																	 */
+				Expression e = constraint.syntaxCopy(context);
+				paramscope.flags |= SCOPEstaticif;
+				e = e.semantic(paramscope, context);
+				e = e.optimize(WANTvalue | WANTinterpret, context);
+				if (e.isBool(true))
+					;
+				else if (e.isBool(false)) {
+					// goto Lnomatch;
+					m = MATCHnomatch;
+					paramscope.pop();
+					return m;
+				} else {
+					if (context.acceptsErrors()) {
+						context
+								.acceptProblem(Problem
+										.newSemanticTypeError(
+												IProblem.ConstraintIsNotConstantOrDoesNotEvaluateToABool,
+												e, e.toChars(context)));
+					}
 				}
 			}
 		}
@@ -875,7 +956,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		}
 
 		if (sc.func != null) {
-			if (!context.isD2()) {
+			if (context.isD1()) {
 				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.CannotDeclareTemplateAtFunctionScope, this,

@@ -244,7 +244,7 @@ public class FuncDeclaration extends Declaration {
 				}
 
 				// Look to see if any parents of f that are below this escape
-				for (Dsymbol s = f.parent; s!= null && s != this; s = s.parent) {
+				for (Dsymbol s = f.parent; s != null && s != this; s = s.parent) {
 					f = s.isFuncDeclaration();
 					if (f != null
 							&& (f.isThis() != null || f.tookAddressOf != 0)) {
@@ -788,42 +788,11 @@ public class FuncDeclaration extends Declaration {
 	}
 
 	public FuncDeclaration overloadExactMatch(Type t, SemanticContext context) {
-		FuncDeclaration f;
-		Declaration d;
-		Declaration next;
-
-		for (d = this; d != null; d = next) {
-			FuncAliasDeclaration fa = d.isFuncAliasDeclaration();
-
-			if (fa != null) {
-				FuncDeclaration f2 = fa.funcalias
-						.overloadExactMatch(t, context);
-				if (f2 != null) {
-					return f2;
-				}
-				next = fa.overnext;
-			} else {
-				AliasDeclaration a = d.isAliasDeclaration();
-
-				if (a != null) {
-					Dsymbol s = a.toAlias(context);
-					next = s.isDeclaration();
-					if (next == a) {
-						break;
-					}
-				} else {
-					f = d.isFuncDeclaration();
-					if (f == null) {
-						break; // BUG: should print error message?
-					}
-					if (t.equals(d.type)) {
-						return f;
-					}
-					next = f.overnext;
-				}
-			}
-		}
-		return null;
+		Param1 p = new Param1();
+	    p.t = t;
+	    p.f = null;
+	    overloadApply(this, fp1, p, context);
+	    return p.f;
 	}
 
 	@Override

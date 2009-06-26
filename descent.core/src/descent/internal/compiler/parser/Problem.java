@@ -1137,6 +1137,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.PureFunctionCannotCallImpureFunction, arguments[0], arguments[1]);
 		case PureFunctionCannotAccessMutableStaticData:
 			return String.format(ProblemMessages.PureFunctionCannotAccessMutableStaticData, arguments[0], arguments[1]);
+		case ConstraintIsNotConstantOrDoesNotEvaluateToABool:
+			return String.format(ProblemMessages.ConstraintIsNotConstantOrDoesNotEvaluateToABool, arguments[0]);
 		default:
 			return "";
 		}

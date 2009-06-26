@@ -1,5 +1,9 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.BE.BEbreak;
+import static descent.internal.compiler.parser.BE.BEcontinue;
+import static descent.internal.compiler.parser.BE.BEfallthru;
+import static descent.internal.compiler.parser.BE.BEthrow;
 import static descent.internal.compiler.parser.Constfold.ArrayLength;
 import static descent.internal.compiler.parser.Constfold.Index;
 import static descent.internal.compiler.parser.MATCH.MATCHconst;
@@ -22,17 +26,18 @@ import static descent.internal.compiler.parser.TOK.TOKvar;
 import static descent.internal.compiler.parser.TY.Taarray;
 import static descent.internal.compiler.parser.TY.Tarray;
 import static descent.internal.compiler.parser.TY.Tchar;
+import static descent.internal.compiler.parser.TY.Tclass;
 import static descent.internal.compiler.parser.TY.Tdchar;
 import static descent.internal.compiler.parser.TY.Tdelegate;
 import static descent.internal.compiler.parser.TY.Tfunction;
 import static descent.internal.compiler.parser.TY.Tint32;
 import static descent.internal.compiler.parser.TY.Tint64;
 import static descent.internal.compiler.parser.TY.Tsarray;
+import static descent.internal.compiler.parser.TY.Tstruct;
 import static descent.internal.compiler.parser.TY.Ttuple;
 import static descent.internal.compiler.parser.TY.Tuns32;
 import static descent.internal.compiler.parser.TY.Tuns64;
 import static descent.internal.compiler.parser.TY.Twchar;
-import static descent.internal.compiler.parser.BE.*;
 
 import java.util.List;
 
@@ -564,6 +569,74 @@ public class ForeachStatement extends Statement {
 		case Tdelegate:
 			// Lapply: 
 		{
+			if (context.isD2() && (tab.ty == Tclass || tab.ty == Tstruct)) {
+				/*
+				 * Look for range iteration, i.e. the properties .empty, .next,
+				 * .retreat, .head and .rear foreach (e; range) { ... }
+				 * translates to: for (auto __r = range; !__r.empty; __r.next) {
+				 * auto e = __r.head; ... }
+				 */
+				if (dim != 1) { // only one argument allowed with ranges
+					// goto Lapply;
+				}
+				AggregateDeclaration ad = (tab.ty == Tclass) ? (AggregateDeclaration) ((TypeClass) tab).sym
+						: (AggregateDeclaration) ((TypeStruct) tab).sym;
+				char[] idhead;
+				char[] idnext;
+				if (op == TOKforeach) {
+					idhead = Id.Fhead;
+					idnext = Id.Fnext;
+				} else {
+					idhead = Id.Ftoe;
+					idnext = Id.Fretreat;
+				}
+				Dsymbol shead = search_function(ad, idhead, context);
+				if (null == shead) {
+					// goto Lapply;
+				}
+
+				/*
+				 * Generate a temporary __r and initialize it with the
+				 * aggregate.
+				 */
+				IdentifierExp id = context.generateId("__r");
+				VarDeclaration r = new VarDeclaration(loc, null, id,
+						new ExpInitializer(loc, aggr));
+				r.semantic(sc, context);
+				Statement init = new DeclarationStatement(loc, r);
+
+				// !__r.empty
+				Expression e = new VarExp(loc, r);
+				e = new DotIdExp(loc, e, Id.Fempty);
+				Expression condition2 = new NotExp(loc, e);
+
+				// __r.next
+				e = new VarExp(loc, r);
+				Expression increment = new DotIdExp(loc, e, idnext);
+
+				/*
+				 * Declaration statement for e: auto e = __r.idhead;
+				 */
+				e = new VarExp(loc, r);
+				Expression einit = new DotIdExp(loc, e, idhead);
+				einit = einit.semantic(sc, context);
+				Argument arg = (Argument) arguments.get(0);
+				VarDeclaration ve = new VarDeclaration(loc, arg.type,
+						arg.ident, new ExpInitializer(loc, einit));
+				ve.storage_class |= STCforeach;
+				ve.storage_class |= arg.storageClass
+						& (STCin | STCout | STCref | STCconst | STCinvariant);
+
+				DeclarationExp de = new DeclarationExp(loc, ve);
+
+				Statement body = new CompoundStatement(loc,
+						new DeclarationStatement(loc, de), this.body);
+
+				s = new ForStatement(loc, init, condition2, increment, body);
+				s = s.semantic(sc, context);
+				break;
+			}
+			
 			Statement[] pointer_s = { null };
 			semantic_Lapply(sc, context, dim, pointer_s, tab, taa, tn, tnv, i);
 			s = pointer_s[0];

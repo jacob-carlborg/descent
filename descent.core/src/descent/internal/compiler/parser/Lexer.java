@@ -387,6 +387,11 @@ public class Lexer implements IProblemRequestor {
 	public TOK peekNext() {
 		return peek(token).value;
 	}
+	
+	public TOK peekNext2() {
+		Token t = peek(token);
+		return peek(t).value;
+	}
 
 	public Token peekPastParen(Token tk) {
 		int parens = 1;

@@ -513,6 +513,7 @@ final class ProblemMessages extends NLS {
 	public static String FunctionIsOverloaded;
 	public static String PureFunctionCannotCallImpureFunction;
 	public static String PureFunctionCannotAccessMutableStaticData;
+	public static String ConstraintIsNotConstantOrDoesNotEvaluateToABool;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

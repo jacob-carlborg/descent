@@ -29,6 +29,7 @@ public class StructDeclaration extends AggregateDeclaration {
 	public boolean zeroInit; // !=0 if initialize with 0 fill
 	public int hasIdentityAssign;	// !=0 if has identity opAssign
 	public FuncDeclaration cpctor;	// generated copy-constructor, if any
+	public CtorDeclaration ctor;
 
 	public FuncDeclarations postblits;	// Array of postblit functions
 	public FuncDeclaration postblit;	// aggregate postblit
@@ -295,6 +296,9 @@ public class StructDeclaration extends AggregateDeclaration {
 
 		/* Look for special member functions.
 		 */
+		if (context.isD2()) {
+		    ctor = (CtorDeclaration)search(Loc.ZERO, Id.ctor, 0, context);
+		}
 		inv = (InvariantDeclaration) search(loc, Id.classInvariant, 0, context);
 		aggNew((NewDeclaration) search(loc, Id.classNew, 0, context));
 		aggDelete((DeleteDeclaration) search(loc, Id.classDelete, 0, context));
