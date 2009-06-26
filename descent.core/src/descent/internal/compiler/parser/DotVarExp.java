@@ -58,6 +58,11 @@ public class DotVarExp extends UnaExp {
 
 		return e;
 	}
+	
+	@Override
+	public boolean isLvalue(SemanticContext context) {
+		return true;
+	}
 
 	@Override
 	public Expression modifiableLvalue(Scope sc, Expression e,

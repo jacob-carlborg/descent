@@ -30,6 +30,11 @@ public class ThisExp extends Expression {
 	public boolean isBool(boolean result) {
 		return result ? true : false;
 	}
+	
+	@Override
+	public boolean isLvalue(SemanticContext context) {
+		return true;
+	}
 
 	@Override
 	public void scanForNestedRef(Scope sc, SemanticContext context) {

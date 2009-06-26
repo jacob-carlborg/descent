@@ -32,6 +32,11 @@ public class DsymbolExp extends Expression {
 	public int getNodeType() {
 		return DSYMBOL_EXP;
 	}
+	
+	@Override
+	public boolean isLvalue(SemanticContext context) {
+		return true;
+	}
 
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {

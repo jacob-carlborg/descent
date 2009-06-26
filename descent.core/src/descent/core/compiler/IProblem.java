@@ -709,5 +709,8 @@ public interface IProblem {
 	int PragmaLibNotAllowedAsStatement = 498;
 	int ThereCanBeOnlyOneAliasThis = 499;
 	int AliasThisCanOnlyAppearInStructOrClassDeclaration = 500;
+	int FunctionIsOverloaded = 501;
+	int PureFunctionCannotCallImpureFunction = 502;
+	int PureFunctionCannotAccessMutableStaticData = 503;
 
 }

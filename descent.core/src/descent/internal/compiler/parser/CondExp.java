@@ -26,6 +26,11 @@ public class CondExp extends BinExp {
 		}
 		visitor.endVisit(this);
 	}
+	
+	@Override
+	public boolean canThrow(SemanticContext context) {
+	    return econd.canThrow(context) || e1.canThrow(context) || e2.canThrow(context);
+	}
 
 	@Override
 	public Expression castTo(Scope sc, Type t, SemanticContext context) {

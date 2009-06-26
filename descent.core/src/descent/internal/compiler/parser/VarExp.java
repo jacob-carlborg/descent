@@ -80,9 +80,15 @@ public class VarExp extends SymbolExp {
 	}
 
 	@Override
-	public Expression interpret(InterState istate, SemanticContext context)
-	{
-	    return getVarExp(loc, istate, var, context);
+	public Expression interpret(InterState istate, SemanticContext context) {
+		return getVarExp(loc, istate, var, context);
+	}
+	
+	@Override
+	public boolean isLvalue(SemanticContext context) {
+	    if ((var.storage_class & STClazy) != 0)
+			return false;
+		return true;
 	}
 
 	@Override
@@ -186,18 +192,24 @@ public class VarExp extends SymbolExp {
 
 		VarDeclaration v = var.isVarDeclaration();
 		if (v != null) {
-			if (context.isD2()) {
-				
-			} else {
-				if (v.isConst() && type.toBasetype(context).ty != TY.Tsarray
-						&& v.init() != null) {
-					ExpInitializer ei = v.init().isExpInitializer();
-					if (ei != null) {
-						return ei.exp.implicitCastTo(sc, type, context);
-					}
+			if (v.isConst() && type.toBasetype(context).ty != TY.Tsarray
+					&& v.init() != null) {
+				ExpInitializer ei = v.init().isExpInitializer();
+				if (ei != null) {
+					return ei.exp.implicitCastTo(sc, type, context);
 				}
 			}
 			v.checkNestedReference(sc, loc, context);
+			if (context.isD2()) {
+				if (sc.func != null && sc.func.isPure() && 0 == sc.intypeof)
+				{
+				    if (v.isDataseg(context) && !v.isInvariant()) {
+				    	if (context.acceptsErrors()) {
+				    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.PureFunctionCannotAccessMutableStaticData, sc.func, sc.func.toChars(context), v.toChars(context)));
+				    	}
+				    }
+				}
+			}
 		}
 		return this;
 	}

@@ -83,6 +83,11 @@ public class SliceExp extends UnaExp {
 		//Lcant:
 		//return EXP_CANT_INTERPRET;
 	}
+	
+	@Override
+	public boolean isLvalue(SemanticContext context) {
+		return true;
+	}
 
 	@Override
 	public Expression modifiableLvalue(Scope sc, Expression e,

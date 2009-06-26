@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.TY.Tvoid;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
@@ -29,6 +30,13 @@ public class ArrayExp extends UnaExp {
 	@Override
 	public int getNodeType() {
 		return ARRAY_EXP;
+	}
+	
+	@Override
+	public boolean isLvalue(SemanticContext context) {
+	    if (type != null && type.toBasetype(context).ty == Tvoid)
+			return false;
+		return true;
 	}
 
 	@Override

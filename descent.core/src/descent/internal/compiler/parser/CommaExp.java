@@ -56,6 +56,11 @@ public class CommaExp extends BinExp {
 	public boolean isBool(boolean result) {
 		return e2.isBool(result);
 	}
+	
+	@Override
+	public boolean isLvalue(SemanticContext context) {
+		return e2.isLvalue(context);
+	}
 
 	@Override
 	public Expression modifiableLvalue(Scope sc, Expression e,

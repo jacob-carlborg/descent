@@ -15,6 +15,11 @@ public class OverExp extends Expression {
 	public int getNodeType() {
 		return OVER_EXP;
 	}
+	
+	@Override
+	public boolean isLvalue(SemanticContext context) {
+		return true;
+	}
 
 	@Override
 	protected void accept0(IASTVisitor visitor) {

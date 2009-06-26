@@ -909,7 +909,9 @@ public abstract class ASTDmdNode extends ASTNode {
 								e = new IndexExp(loc, e, new IntegerExp(loc, u + 1
 										- nparams));
 								AssignExp ae = new AssignExp(loc, e, a);
-								ae.op = TOK.TOKconstruct;
+								if (context.isD2()) {
+									ae.op = TOK.TOKconstruct;
+								}
 								if (c != null) {
 									c = new CommaExp(loc, c, ae);
 								} else {
@@ -978,6 +980,39 @@ public abstract class ASTDmdNode extends ASTNode {
 					if ((p.storageClass & STClazy) != 0) {
 						arg = arg.toDelegate(sc, p.type, context);
 					}
+					
+				    /*
+					 * Look for arguments that cannot 'escape' from the called
+					 * function.
+					 */
+					if (!tf.parameterEscapes(p, context)) {
+						/*
+						 * Function literals can only appear once, so if this
+						 * appearance was scoped, there cannot be any others.
+						 */
+						if (arg.op == TOKfunction) {
+							FuncExp fe = (FuncExp) arg;
+							fe.fd.tookAddressOf = 0;
+						}
+
+						/*
+						 * For passing a delegate to a scoped parameter, this
+						 * doesn't count as taking the address of it. We only
+						 * worry about 'escaping' references to the function.
+						 */
+						else if (arg.op == TOKdelegate) {
+							DelegateExp de = (DelegateExp) arg;
+							if (de.e1.op == TOKvar) {
+								VarExp ve = (VarExp) de.e1;
+								FuncDeclaration f = ve.var.isFuncDeclaration();
+								if (f != null) {
+									f.tookAddressOf--;
+									// printf("tookAddressOf = %d\n",
+									// f.tookAddressOf);
+								}
+							}
+						}
+					}
 				} else {
 					if (!((p.storageClass & STClazy) != 0 && p.type.ty == Tvoid)) {
 						arg = arg.implicitCastTo(sc, p.type, context);
@@ -1043,6 +1078,22 @@ public abstract class ASTDmdNode extends ASTNode {
 						arg = arg.castTo(sc, ta, context);
 					}
 				}
+				
+			    if (tb.ty == Tstruct) {
+					arg = callCpCtor(loc, sc, arg, context);
+				}
+
+				// Give error for overloaded function addresses
+				if (arg.op == TOKsymoff) {
+					SymOffExp se = (SymOffExp) arg;
+					if (se.hasOverloads
+							&& null == se.var.isFuncDeclaration().isUnique(
+									context)) {
+						if (context.acceptsErrors()) {
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionIsOverloaded, arg, arg.toChars(context)));
+						}
+					}
+				}
 
 				arg.rvalue(context);
 			}
@@ -1063,9 +1114,25 @@ public abstract class ASTDmdNode extends ASTNode {
 		}
 	}
 
-	private Expression callCpCtor(Loc loc, Scope sc, Expression arg, SemanticContext context) {
-		// TODO Auto-generated method stub
-		return arg;
+	private Expression callCpCtor(Loc loc, Scope sc, Expression e, SemanticContext context) {
+		Type tb = e.type.toBasetype(context);
+		assert (tb.ty == Tstruct);
+		StructDeclaration sd = ((TypeStruct) tb).sym;
+		if (sd.cpctor != null) {
+			/*
+			 * Create a variable tmp, and replace the argument e with: (tmp =
+			 * e),tmp and let AssignExp() handle the construction. This is not
+			 * the most efficent, ideally tmp would be constructed directly onto
+			 * the stack.
+			 */
+			IdentifierExp idtmp = context.uniqueId("__tmp");
+			VarDeclaration tmp = new VarDeclaration(loc, tb, idtmp,
+					new ExpInitializer(Loc.ZERO, e));
+			Expression ae = new DeclarationExp(loc, tmp);
+			e = new CommaExp(loc, ae, new VarExp(loc, tmp));
+			e = e.semantic(sc, context);
+		}
+		return e;
 	}
 
 	public abstract int getNodeType();

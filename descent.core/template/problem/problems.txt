@@ -1498,7 +1498,15 @@ ThereCanBeOnlyOneAliasThis
 AliasThisCanOnlyAppearInStructOrClassDeclaration
 	formatString=alias this can only appear in struct or class declaration, not %1$s
 	numArgs=1
-	
+FunctionIsOverloaded
+	formatString=Function %1$s is overloaded
+	numArgs=1
+PureFunctionCannotCallImpureFunction
+	formatString=Pure function '%1$s' cannot call impure function '%2$s'
+	numArgs=2
+PureFunctionCannotAccessMutableStaticData
+	formatString=Pure function '%1$s' cannot access mutable static data '%2$s'
+	numArgs=2
 	
 	
 	

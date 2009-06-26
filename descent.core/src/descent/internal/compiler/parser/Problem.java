@@ -1131,6 +1131,12 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.ThereCanBeOnlyOneAliasThis);
 		case AliasThisCanOnlyAppearInStructOrClassDeclaration:
 			return String.format(ProblemMessages.AliasThisCanOnlyAppearInStructOrClassDeclaration, arguments[0]);
+		case FunctionIsOverloaded:
+			return String.format(ProblemMessages.FunctionIsOverloaded, arguments[0]);
+		case PureFunctionCannotCallImpureFunction:
+			return String.format(ProblemMessages.PureFunctionCannotCallImpureFunction, arguments[0], arguments[1]);
+		case PureFunctionCannotAccessMutableStaticData:
+			return String.format(ProblemMessages.PureFunctionCannotAccessMutableStaticData, arguments[0], arguments[1]);
 		default:
 			return "";
 		}

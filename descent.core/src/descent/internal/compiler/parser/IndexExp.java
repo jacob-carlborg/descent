@@ -63,6 +63,11 @@ public class IndexExp extends BinExp {
 		}
 		return Index.call(type, e1, e2, context);
 	}
+	
+	@Override
+	public boolean isLvalue(SemanticContext context) {
+		return true;
+	}
 
 	@Override
 	public Expression modifiableLvalue(Scope sc, Expression e,

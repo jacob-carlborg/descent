@@ -79,9 +79,67 @@ public class CallExp extends UnaExp {
 		}
 		visitor.endVisit(this);
 	}
+	
+	@Override
+	public boolean canThrow(SemanticContext context) {
+	    if (e1.canThrow(context))
+			return true;
+
+		/*
+		 * If any of the arguments can throw, then this expression can throw
+		 */
+		for (int i = 0; i < size(arguments); i++) {
+			Expression e = (Expression) arguments.get(i);
+
+			if (e.canThrow(context))
+				return true;
+		}
+
+		/*
+		 * If calling a function or delegate that is typed as nothrow, then this
+		 * expression cannot throw. Note that pure functions can throw.
+		 */
+		Type t = e1.type.toBasetype(context);
+		if (t.ty == Tfunction && ((TypeFunction) t).isnothrow)
+			return false;
+		if (t.ty == Tdelegate
+				&& ((TypeFunction) ((TypeDelegate) t).next).isnothrow)
+			return false;
+
+		return true;
+	}
 
 	@Override
 	public int checkSideEffect(int flag, SemanticContext context) {
+		if (context.isD2()) {
+			if (flag != 2)
+				return 1;
+
+			if (e1.checkSideEffect(2, context) != 0)
+				return 1;
+
+			/*
+			 * If any of the arguments have side effects, this expression does
+			 */
+			for (int i = 0; i < size(arguments); i++) {
+				Expression e = (Expression) arguments.get(i);
+
+				if (e.checkSideEffect(2, context) != 0)
+					return 1;
+			}
+
+			/*
+			 * If calling a function or delegate that is typed as pure, then
+			 * this expression has no side effects.
+			 */
+			Type t = e1.type.toBasetype(context);
+			if (t.ty == Tfunction && ((TypeFunction) t).ispure)
+				return 0;
+			if (t.ty == Tdelegate
+					&& ((TypeFunction) ((TypeDelegate) t).next).ispure)
+				return 0;
+
+		}
 		return 1;
 	}
 
@@ -160,6 +218,16 @@ public class CallExp extends UnaExp {
 			}
 		}
 		return e;
+	}
+	
+	@Override
+	public boolean isLvalue(SemanticContext context) {
+	    if (type.toBasetype(context).ty == Tstruct)
+			return true;
+		Type tb = e1.type.toBasetype(context);
+		if (tb.ty == Tfunction && ((TypeFunction) tb).isref)
+			return true; // function returns a reference
+		return false;
 	}
 
 	@Override
@@ -271,19 +339,14 @@ public class CallExp extends UnaExp {
 						TypeAArray taa = (TypeAArray) dotid.e1.type
 								.toBasetype(context);
 						key = key.implicitCastTo(sc, taa.index, context);
-						if (context.isD2()) {
-							
-						} else {
-							key = key.implicitCastTo(sc, taa.key, context);
-						}
-
+						key = key.implicitCastTo(sc, taa.key, context);
 						return new RemoveExp(loc, dotid.e1, key);
 					}
 				} else if (e1ty == Tarray || e1ty == Tsarray || e1ty == Taarray) {
 					if (arguments == null) {
 						arguments = new Expressions();
 					}
-					arguments.add(0, dotid.e1);
+					arguments.shift(dotid.e1);
 					if (context.isD2()) {
 						e1 = new DotIdExp(dotid.loc, new IdentifierExp(dotid.loc, Id.empty), dotid.ident);
 					} else {
@@ -546,6 +609,9 @@ public class CallExp extends UnaExp {
 				}
 
 				checkDeprecated(sc, f, context);
+				if (context.isD2()) {
+					checkPurity(sc, f, context);
+				}
 				accessCheck(sc, ue.e1, f, context);
 				if (!f.needThis()) {
 					VarExp ve = new VarExp(loc, f);
@@ -652,6 +718,10 @@ public class CallExp extends UnaExp {
 						
 						checkDeprecated(sc, f, context);
 						
+						if (context.isD2()) {
+							checkPurity(sc, f, context);
+						}
+						
 						e1 = new DotVarExp(e1.loc, e1, f);
 						e1 = e1.semantic(sc, context);
 						t1 = e1.type;
@@ -695,6 +765,10 @@ public class CallExp extends UnaExp {
 					}
 					
 					checkDeprecated(sc, f, context);
+					
+					if (context.isD2()) {
+						checkPurity(sc, f, context);
+					}
 					
 					e1 = new DotVarExp(e1.loc, e1, f);
 					e1 = e1.semantic(sc, context);
@@ -803,6 +877,10 @@ public class CallExp extends UnaExp {
 				}
 				
 				checkDeprecated(sc, f, context);
+				
+				if (context.isD2()) {
+					checkPurity(sc, f, context);
+				}
 
 				if (f.needThis() && hasThis(sc) != null) {
 					// Supply an implicit 'this', as in

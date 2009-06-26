@@ -743,6 +743,11 @@ public class FuncDeclaration extends Declaration {
 	public boolean isOverloadable() {
 		return true;
 	}
+	
+	public boolean isPure() {
+		// SEMANTIC pure
+		return false;
+	}
 
 	public boolean isVirtual(SemanticContext context) {
 		return this.isMember() != null
@@ -2631,6 +2636,6 @@ public class FuncDeclaration extends Declaration {
 			flags |= Flags.AccPure;
 		}
 		return flags;
-	}
+	}	
 
 }

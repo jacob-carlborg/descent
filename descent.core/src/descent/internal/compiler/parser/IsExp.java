@@ -121,6 +121,7 @@ public class IsExp extends Expression {
 				tded = targ;
 				break;
 			case TOKinvariant:
+			case TOKimmutable:
 				if (!context.isD2()) assert (false);
 				
 				if (!targ.isInvariant()) {

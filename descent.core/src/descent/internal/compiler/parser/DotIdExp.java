@@ -6,7 +6,10 @@ import static descent.internal.compiler.parser.TOK.TOKimport;
 import static descent.internal.compiler.parser.TOK.TOKsuper;
 import static descent.internal.compiler.parser.TOK.TOKthis;
 import static descent.internal.compiler.parser.TOK.TOKtuple;
+import static descent.internal.compiler.parser.TY.Taarray;
+import static descent.internal.compiler.parser.TY.Tarray;
 import static descent.internal.compiler.parser.TY.Tpointer;
+import static descent.internal.compiler.parser.TY.Tsarray;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
@@ -145,6 +148,8 @@ public class DotIdExp extends UnaExp {
 	    	}
 			return e1;
 		}
+		
+		Type t1b = context.isD2() ? e1.type.toBasetype(context) : null;
 
 		if (eright.op == TOKimport) // also used for template alias's
 		{
@@ -244,27 +249,30 @@ public class DotIdExp extends UnaExp {
 					}
 					return e;
 				}
+				
+				if (context.isD2()) {
+					OverloadSet o = s.isOverloadSet();
+					if (o != null) {
+						return new OverExp(o);
+					}
+				}
 
 				Type t = s.getType(context);
 				if (t != null) {
 					return new TypeExp(loc, t);
 				}
 				
-				if (context.isD2()) {
-					
-				} else {
-				    TupleDeclaration tup = s.isTupleDeclaration();
-					if (tup != null) {
-						if (eleft != null) {
-							if (context.acceptsErrors()) {
-								context.acceptProblem(Problem.newSemanticTypeError(
-										IProblem.CannotHaveEDotTuple, this));
-							}
+			    TupleDeclaration tup = s.isTupleDeclaration();
+				if (tup != null) {
+					if (eleft != null) {
+						if (context.acceptsErrors()) {
+							context.acceptProblem(Problem.newSemanticTypeError(
+									IProblem.CannotHaveEDotTuple, this));
 						}
-						e = new TupleExp(loc, tup, context);
-						e = e.semantic(sc, context);
-						return e;
 					}
+					e = new TupleExp(loc, tup, context);
+					e = e.semantic(sc, context);
+					return e;
 				}
 
 				ScopeDsymbol sds = s.isScopeDsymbol();
@@ -314,6 +322,26 @@ public class DotIdExp extends UnaExp {
 				e = new PtrExp(loc, e1);
 				e.type = ((TypePointer) e1.type).next;
 				return e.type.dotExp(sc, e, ident, context);
+			}     else if (context.isD2() && t1b.ty == Tarray ||
+		             t1b.ty == Tsarray ||
+		    	     t1b.ty == Taarray)
+		        {	/* If ident is not a valid property, rewrite:
+		    	 *   e1.ident
+		             * as:
+		             *   .ident(e1)
+		             */
+		    	int errors = context.global.errors;
+		    	context.global.gag++;
+		    	e = e1.type.dotExp(sc, e1, ident, context);
+		    	context.global.gag--;
+		    	if (errors != context.global.errors)	// if failed to find the property
+		    	{
+		    		context.global.errors = errors;
+		    	    e = new DotIdExp(loc, new IdentifierExp(loc, Id.empty), ident);
+		    	    e = new CallExp(loc, e, e1);
+		    	}
+		    	e = e.semantic(sc, context);
+		    	return e;
 			} else {
 				// Ident may be null if completing (Foo).|
 				if (ident == null) {

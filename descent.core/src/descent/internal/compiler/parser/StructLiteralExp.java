@@ -118,7 +118,6 @@ public class StructLiteralExp extends Expression {
 						te = te.invariantOf(context);
 					}
 					MATCH m2 = e.implicitConvTo(te, context);
-					//printf("\t%s => %s, match = %d\n", e.toChars(), te.toChars(), m2);
 					if (m2.ordinal() < m.ordinal()) {
 						m = m2;
 					}
@@ -178,6 +177,11 @@ public class StructLiteralExp extends Expression {
 			return se;
 		}
 		return this;
+	}
+	
+	@Override
+	public boolean isLvalue(SemanticContext context) {
+		return true;
 	}
 
 	@Override

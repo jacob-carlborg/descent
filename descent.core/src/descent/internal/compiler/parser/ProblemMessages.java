@@ -510,6 +510,9 @@ final class ProblemMessages extends NLS {
 	public static String PragmaLibNotAllowedAsStatement;
 	public static String ThereCanBeOnlyOneAliasThis;
 	public static String AliasThisCanOnlyAppearInStructOrClassDeclaration;
+	public static String FunctionIsOverloaded;
+	public static String PureFunctionCannotCallImpureFunction;
+	public static String PureFunctionCannotAccessMutableStaticData;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

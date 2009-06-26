@@ -1,5 +1,19 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.MATCH.MATCHconvert;
+import static descent.internal.compiler.parser.MATCH.MATCHexact;
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+import static descent.internal.compiler.parser.STC.STClazy;
+import static descent.internal.compiler.parser.STC.STCout;
+import static descent.internal.compiler.parser.STC.STCref;
+import static descent.internal.compiler.parser.STC.STCscope;
+import static descent.internal.compiler.parser.Scope.SCOPEctor;
+import static descent.internal.compiler.parser.TY.Tfunction;
+import static descent.internal.compiler.parser.TY.Tident;
+import static descent.internal.compiler.parser.TY.Tsarray;
+import static descent.internal.compiler.parser.TY.Ttuple;
+import static descent.internal.compiler.parser.TY.Tvoid;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,20 +22,6 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
-import static descent.internal.compiler.parser.STC.STClazy;
-import static descent.internal.compiler.parser.STC.STCout;
-import static descent.internal.compiler.parser.STC.STCref;
-
-import static descent.internal.compiler.parser.MATCH.*;
-
-import static descent.internal.compiler.parser.Scope.SCOPEctor;
-
-import static descent.internal.compiler.parser.TY.Tfunction;
-import static descent.internal.compiler.parser.TY.Tsarray;
-import static descent.internal.compiler.parser.TY.Ttuple;
-import static descent.internal.compiler.parser.TY.Tvoid;
-import static descent.internal.compiler.parser.TY.Tident;
 
 
 public class TypeFunction extends Type implements Cloneable {
@@ -33,6 +33,7 @@ public class TypeFunction extends Type implements Cloneable {
 	public char linkageChar;
 	public boolean ispure;
 	public boolean isnothrow;
+	public boolean isref;
 	
 	public List<Modifier> postModifiers;
 
@@ -193,6 +194,40 @@ public class TypeFunction extends Type implements Cloneable {
 	@Override
 	public TypeInfoDeclaration getTypeInfoDeclaration(SemanticContext context) {
 		return new TypeInfoFunctionDeclaration(this, context);
+	}
+	
+	/***************************
+	 * Examine function signature for parameter p and see if
+	 * p can 'escape' the scope of the function.
+	 */
+	public boolean parameterEscapes(Argument p, SemanticContext context) {
+		/*
+		 * Scope parameters do not escape. Allow 'lazy' to imply 'scope' - lazy
+		 * parameters can be passed along as lazy parameters to the next
+		 * function, but that isn't escaping.
+		 */
+		if ((p.storageClass & (STCscope | STClazy)) != 0)
+			return false;
+
+		if (ispure) {
+			/*
+			 * With pure functions, we need only be concerned if p escapes via
+			 * any return statement.
+			 */
+			Type tret = nextOf().toBasetype(context);
+			if (!isref && !tret.hasPointers(context)) {
+				/*
+				 * The result has no references, so p could not be escaping that
+				 * way.
+				 */
+				return false;
+			}
+		}
+
+		/*
+		 * Assume it escapes in the absence of better information.
+		 */
+		return true;
 	}
 
 	@Override

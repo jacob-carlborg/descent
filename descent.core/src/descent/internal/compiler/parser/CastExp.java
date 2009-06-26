@@ -4,8 +4,10 @@ import static descent.internal.compiler.parser.Constfold.Cast;
 import static descent.internal.compiler.parser.TOK.TOKarrayliteral;
 import static descent.internal.compiler.parser.TOK.TOKcall;
 import static descent.internal.compiler.parser.TOK.TOKconst;
+import static descent.internal.compiler.parser.TOK.TOKimmutable;
 import static descent.internal.compiler.parser.TOK.TOKinvariant;
 import static descent.internal.compiler.parser.TOK.TOKnull;
+import static descent.internal.compiler.parser.TOK.TOKshared;
 import static descent.internal.compiler.parser.TOK.TOKstring;
 import static descent.internal.compiler.parser.TOK.TOKsymoff;
 import static descent.internal.compiler.parser.TOK.TOKvar;
@@ -15,16 +17,19 @@ import static descent.internal.compiler.parser.TY.Tpointer;
 import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Tstruct;
 import static descent.internal.compiler.parser.TY.Tvoid;
+import static descent.internal.compiler.parser.Type.MODconst;
+import static descent.internal.compiler.parser.Type.MODinvariant;
+import static descent.internal.compiler.parser.Type.MODshared;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
 
 public class CastExp extends UnaExp {
 
 	public Type to, sourceTo;
 	public TOK tok;
 	public int modifierStart;
+	public int mod;
 
 	public CastExp(Loc loc, Expression e1, TOK tok, int modifierStart) {
 		super(loc, TOK.TOKcast, e1);
@@ -237,7 +242,35 @@ public class CastExp extends UnaExp {
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
 		buf.writestring("cast(");
-		to.toCBuffer(buf, null, hgs, context);
+		if (context.isD1()) {
+			to.toCBuffer(buf, null, hgs, context);
+		} else {
+		    if (to != null)
+		    	to.toCBuffer(buf, null, hgs, context);
+		        else
+		        {
+		    	switch (mod)
+		    	{   case 0:
+		    		break;
+		    	    case MODconst:
+		    		buf.writestring(TOKconst.charArrayValue);
+		    		break;
+		    	    case MODinvariant:
+		    		buf.writestring(TOKimmutable.charArrayValue);
+		    		break;
+		    	    case MODshared:
+		    		buf.writestring(TOKshared.charArrayValue);
+		    		break;
+		    	    case MODshared | MODconst:
+		    		buf.writestring(TOKshared.charArrayValue);
+		    		buf.writeByte(' ');
+		    		buf.writestring(TOKconst.charArrayValue);
+		    		break;
+		    	    default:
+		    			throw new IllegalStateException();
+		    	}
+		        }
+		}
 		buf.writeByte(')');
 		expToCBuffer(buf, hgs, e1, op.precedence, context);
 	}

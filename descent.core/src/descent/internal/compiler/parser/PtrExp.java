@@ -88,6 +88,23 @@ public class PtrExp extends UnaExp {
 	}
 	
 	@Override
+	public boolean isLvalue(SemanticContext context) {
+		return true;
+	}
+	
+	@Override
+	public Expression modifiableLvalue(Scope sc, Expression e,
+			SemanticContext context) {
+	    if (e1.op == TOKsymoff) {
+			SymOffExp se = (SymOffExp) e1;
+			se.var.checkModify(loc, sc, type, context);
+			// return toLvalue(sc, e);
+		}
+
+	    return super.modifiableLvalue(sc, e, context);
+	}
+	
+	@Override
 	public Expression optimize(int result, SemanticContext context)
 	{
 		//printf("PtrExp.optimize(result = x%x) %s\n", result, toChars());

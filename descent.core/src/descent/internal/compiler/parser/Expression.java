@@ -213,6 +213,17 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 			}
 		}
 	}
+	
+	public void checkPurity(Scope sc, FuncDeclaration f, SemanticContext context) {
+		if (sc.func != null && sc.func.isPure() && 0 == sc.intypeof
+				&& !f.isPure()) {
+			if (context.acceptsErrors()) {
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.PureFunctionCannotCallImpureFunction, this,
+						sc.func.toChars(context), f.toChars(context)));
+			}
+		}
+	}
 
 	public void checkScalar(SemanticContext context) {
 		if (!type.isscalar(context)) {
@@ -462,6 +473,10 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	}
 
 	public boolean isConst() {
+		return false;
+	}
+	
+	public boolean isLvalue(SemanticContext context) {
 		return false;
 	}
 
