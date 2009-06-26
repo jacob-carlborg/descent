@@ -345,7 +345,7 @@ public class Parser extends Lexer {
 				{
 				    nextToken();
 				    if (token.value != TOKidentifier)
-				    {	
+				    {
 				    	parsingErrorInsertToComplete(prevToken, "module (system) identifier", "module declaration");
 						
 				    	decldefs = parseDeclDefs(false);

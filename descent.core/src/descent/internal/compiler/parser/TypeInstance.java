@@ -125,8 +125,8 @@ public class TypeInstance extends TypeQualified {
 			    Dsymbol s1 = isDsymbol(o1);
 			    Dsymbol s2 = isDsymbol(o2);
 
-			    Tuple v1 = isTuple(o1);
-			    Tuple v2 = isTuple(o2);
+//			    Tuple v1 = isTuple(o1);
+//			    Tuple v2 = isTuple(o2);
 			    
 			    TemplateTupleParameter ttp;
 			    if (t2 != null &&
@@ -140,7 +140,7 @@ public class TypeInstance extends TypeQualified {
 		    		 *  static if (!is(X Y == A!(Z), Z))
 		    		 * deduce that Z is a tuple(int, float)
 		    		 */
-			    	j = templateIdentifierLookup(t2, parameters);
+			    	j = templateParameterLookup(t2, parameters);
 					if (j == -1) {
 						return MATCHnomatch;
 					}
@@ -189,6 +189,30 @@ public class TypeInstance extends TypeQualified {
 					
 				// L1:
 					return deduceType_L1(sc, tparam, parameters, dedtypes, context, j, e1);
+				} else if (s1 != null && t2 != null && t2.ty == Tident) {
+					j = templateParameterLookup(t2, parameters);
+					if (j == -1) {
+						return MATCHnomatch;
+					}
+					TemplateParameter tp2 = (TemplateParameter) parameters
+							.get(j);
+					// BUG: use tp.matchArg() instead of the following
+					TemplateAliasParameter ta = tp2.isTemplateAliasParameter();
+					if (null == ta) {
+						return MATCHnomatch;
+					}
+					Dsymbol s = (Dsymbol) dedtypes.get(j);
+					if (s != null) {
+						if (!s1.equals(s)) {
+							return MATCHnomatch;
+						}
+					} else {
+						dedtypes.set(j, s1);
+					}
+				} else if (s1 != null && s2 != null) {
+					if (!s1.equals(s2)) {
+						return MATCHnomatch;
+					}
 				}
 				// BUG: Need to handle alias and tuple parameters
 				else {

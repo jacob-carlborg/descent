@@ -133,6 +133,9 @@ public class ASTConverter {
 		if (name != null) {
 			result.setName(name);
 		}
+		if (md.safe) {
+			result.setSafe(true);
+		}
 		processDdocs(result, md);
 		return result;
 	}

@@ -1480,6 +1480,11 @@ public class CodeFormatterVisitor extends ASTVisitor
 	public boolean visit(ModuleDeclaration node)
 	{
 		scribe.printNextToken(TOK.TOKmodule);
+		if (node.isSafe()) {
+			scribe.printNextToken(TOK.TOKlparen);
+			scribe.printNextToken(TOK.TOKidentifier);
+			scribe.printNextToken(TOK.TOKrparen);
+		}
 		scribe.space();
 		node.getName().accept(this);
 		scribe.printNextToken(TOK.TOKsemicolon, this.prefs.insert_space_before_semicolon);

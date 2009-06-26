@@ -9,7 +9,7 @@ import java.util.List;
  * 
  * <pre>
  * ModuleDeclaration:
- *    <b>module</b> Name <b>;</b>
+ *    <b>module</b> [ <b>(system)</b> ] Name <b>;</b>
  * </pre>
  */
 public class ModuleDeclaration extends ASTNode {
@@ -25,6 +25,12 @@ public class ModuleDeclaration extends ASTNode {
 	 */
 	public static final ChildPropertyDescriptor NAME_PROPERTY =
 		new ChildPropertyDescriptor(ModuleDeclaration.class, "name", Name.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
+	
+	/**
+	 * The "system" structural property of this node type.
+	 */
+	public static final SimplePropertyDescriptor SAFE_PROPERTY =
+		new SimplePropertyDescriptor(ModuleDeclaration.class, "safe", boolean.class, MANDATORY); //$NON-NLS-1$
 
 	/**
 	 * The "postDDoc" structural property of this node type.
@@ -44,6 +50,7 @@ public class ModuleDeclaration extends ASTNode {
 		createPropertyList(ModuleDeclaration.class, properyList);
 		addProperty(PRE_D_DOCS_PROPERTY, properyList);
 		addProperty(NAME_PROPERTY, properyList);
+		addProperty(SAFE_PROPERTY, properyList);
 		addProperty(POST_D_DOC_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
@@ -74,6 +81,8 @@ public class ModuleDeclaration extends ASTNode {
 	 * The name.
 	 */
 	private Name name;
+	
+	private boolean safe;
 
 	/**
 	 * The postDDoc.
@@ -99,6 +108,20 @@ public class ModuleDeclaration extends ASTNode {
 	 */
 	final List internalStructuralPropertiesForType(int apiLevel) {
 		return propertyDescriptors(apiLevel);
+	}
+	
+	@Override
+	final boolean internalGetSetBooleanProperty(SimplePropertyDescriptor property, boolean get, boolean value) {
+		if (property == SAFE_PROPERTY) {
+			if (get) {
+				return isSafe();
+			} else {
+				setSafe(value);
+				return false;
+			}
+		}
+//		 allow default implementation to flag the error
+		return super.internalGetSetBooleanProperty(property, get, value);
 	}
 
 	/* (omit javadoc for this method)
@@ -226,6 +249,22 @@ public class ModuleDeclaration extends ASTNode {
 		preReplaceChild(oldChild, name, NAME_PROPERTY);
 		this.name = name;
 		postReplaceChild(oldChild, name, NAME_PROPERTY);
+	}
+	
+	/**
+	 * Returns whether this module declaration is safe.
+	 */ 
+	public boolean isSafe() {
+		return this.safe;
+	}
+
+	/**
+	 * Sets whether this module declaration is safe.
+	 */ 
+	public void setSafe(boolean safe) {
+		preValueChange(SAFE_PROPERTY);
+		this.safe = safe;
+		postValueChange(SAFE_PROPERTY);
 	}
 
 	/**

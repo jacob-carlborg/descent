@@ -502,6 +502,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	public Type pto; // merged pointer to this type
 	public Type rto; // reference to this type
 	public Type arrayof; // array of this type
+	public TypeInfoDeclaration vtinfo;
 	
 	/*
 	 * Descent: when a TypeIdentifier referres to an alias, for example:
@@ -1344,25 +1345,27 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		Expression e;
 		Type t;
 
-		t = merge(context); // do this since not all Type's are merge'd
+		t = merge2(context); // do this since not all Type's are merge'd
 		
 		TypeInfoDeclaration vtinfo = context.getTypeInfo(t);
 		if (vtinfo == null) {
 			if (context.isD2()) {
 				if (t.isConst()) {
-				    vtinfo = new TypeInfoConstDeclaration(t, context);
+				    t.vtinfo = new TypeInfoConstDeclaration(t, context);
 				} else if (t.isInvariant()) {
-				    vtinfo = new TypeInfoInvariantDeclaration(t, context);
+					t.vtinfo = new TypeInfoInvariantDeclaration(t, context);
 				} else {
-				    vtinfo = t.getTypeInfoDeclaration(context);
+					t.vtinfo = t.getTypeInfoDeclaration(context);
 				}
 			} else {
-				vtinfo = t.getTypeInfoDeclaration(context);
+				t.vtinfo = t.getTypeInfoDeclaration(context);
 			}
 
-			if (vtinfo == null) {
+			if (t.vtinfo == null) {
 				throw new IllegalStateException("assert(t.vtinfo);");
 			}
+			
+			vtinfo = t.vtinfo;
 
 			/* If this has a custom implementation in std/typeinfo, then
 			 * do not generate a COMDAT for it.
