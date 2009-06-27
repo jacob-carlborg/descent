@@ -71,6 +71,7 @@ public class Modifier extends ASTNode {
 		NOTHROW_KEYWORD("nothrow", NOTHROW),
 		THREAD_KEYWORD("__thread", THREAD),
 		SHARED_KEYWORD("shared", SHARED),
+		GSHARED_KEYWORD("__gshared", GSHARED),
 		IMMUTABLE_KEYWORD("immutable", IMMUTABLE),
 		;
 		
@@ -288,6 +289,11 @@ public class Modifier extends ASTNode {
 	 * "shared" modifier constant (bit mask).
 	 */
 	public static final int SHARED = Flags.AccShared;
+	
+	/**
+	 * "__gshared" modifier constant (bit mask).
+	 */
+	public static final int GSHARED = Flags.AccGshared;
 	
 	/**
 	 * The "modifierKeyword" structural property of this node type.

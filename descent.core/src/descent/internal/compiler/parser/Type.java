@@ -895,6 +895,10 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	public boolean isMutable() {
 		return mod == 0;
 	}
+	
+	public boolean isShared() {
+		return (mod & MODshared) != 0;
+	}
 
 	public Expression dotExp(Scope sc, Expression e, IdentifierExp ident,
 			SemanticContext context) {

@@ -10,6 +10,8 @@ import static descent.internal.compiler.parser.LINK.LINKwindows;
 import static descent.internal.compiler.parser.STC.STCconst;
 import static descent.internal.compiler.parser.STC.STCextern;
 import static descent.internal.compiler.parser.STC.STCfinal;
+import static descent.internal.compiler.parser.STC.STCgshared;
+import static descent.internal.compiler.parser.STC.STCimmutable;
 import static descent.internal.compiler.parser.STC.STCin;
 import static descent.internal.compiler.parser.STC.STCinvariant;
 import static descent.internal.compiler.parser.STC.STClazy;
@@ -19,10 +21,13 @@ import static descent.internal.compiler.parser.STC.STCref;
 import static descent.internal.compiler.parser.STC.STCscope;
 import static descent.internal.compiler.parser.STC.STCshared;
 import static descent.internal.compiler.parser.STC.STCstatic;
+import static descent.internal.compiler.parser.STC.STCtls;
 import static descent.internal.compiler.parser.TOK.*;
 import static descent.internal.compiler.parser.TY.Taarray;
 import static descent.internal.compiler.parser.TY.Tfunction;
+import static descent.internal.compiler.parser.TY.Tident;
 import static descent.internal.compiler.parser.TY.Tsarray;
+import static descent.internal.compiler.parser.Type.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,7 +50,7 @@ public class Parser extends Lexer {
 		TOKfloat80, TOKimaginary32, TOKimaginary64, TOKimaginary80, 
 		TOKcomplex32, TOKcomplex64, TOKcomplex80, TOKvoid, TOKalias,
 		TOKtypedef, TOKtypeof, TOKthis, TOKinvariant, TOKunittest,
-		TOKnew, TOKdelete, TOKstatic, TOKconst, TOKfinal, TOKauto, TOKpure, TOKshared,
+		TOKnew, TOKdelete, TOKstatic, TOKconst, TOKfinal, TOKauto, TOKpure, TOKshared, TOKtls, TOKgshared,
 		TOKscope, TOKoverride, TOKabstract, TOKsynchronized, TOKdeprecated,
 		TOKextern, TOKprivate, TOKpackage, TOKprotected, TOKpublic,
 		TOKexport, TOKalign, TOKpragma, TOKdebug, TOKversion
@@ -53,7 +58,7 @@ public class Parser extends Lexer {
 	});
 	protected final static char[][] declDefs_Lstc2Expectations = toCharArray(new TOK[] {
 		TOKconst, TOKinvariant, TOKfinal, TOKauto, TOKscope,
-		TOKoverride, TOKabstract, TOKsynchronized, TOKdeprecated
+		TOKoverride, TOKabstract, TOKsynchronized, TOKdeprecated, TOKpure, TOKshared, TOKtls, TOKgshared,
 	});
 	protected final static char[][] afterStaticExpectations = { 
 		TOKthis.charArrayValue, TOKassert.charArrayValue, TOKimport.charArrayValue
@@ -92,7 +97,7 @@ public class Parser extends Lexer {
 	protected final static char[][] modifierExpectations = toCharArray(new TOK[] { 
 		TOKconst, TOKinvariant, TOKstatic, TOKfinal, TOKauto, TOKscope,
 		TOKoverride, TOKabstract, TOKsynchronized, TOKdeprecated,
-		TOKextern, TOKpure,
+		TOKextern, TOKpure, TOKtls, TOKshared, TOKgshared,
 	});
 	protected final static char[][] statementExpectations = toCharArray(new TOK[] { 
 		TOKtypeof, TOKassert, TOKthis, TOKsuper, TOKnull, TOKtrue,
@@ -340,7 +345,7 @@ public class Parser extends Lexer {
 			
 			nextToken();
 			
-			if (apiLevel == D2) {
+			if (apiLevel >= D2) {
 				if (token.value == TOKlparen)
 				{
 				    nextToken();
@@ -466,7 +471,7 @@ public class Parser extends Lexer {
 			int start = token.ptr;
 			switch (token.value) {
 			case TOKenum:
-				if (apiLevel == D2) {
+				if (apiLevel >= D2) {
 					/* Determine if this is a manifest constant declaration,
 					 * or a conventional enum.
 					 */
@@ -565,7 +570,7 @@ public class Parser extends Lexer {
 				break;
 				
 			case TOKassign:
-				if (apiLevel == D2) {
+				if (apiLevel >= D2) {
 					s = parsePostBlit();
 					break;
 				} else {
@@ -578,7 +583,7 @@ public class Parser extends Lexer {
 				break;
 
 			case TOKinvariant:
-				if (apiLevel == D2) {
+				if (apiLevel >= D2) {
 				    Token t;
 					t = peek(token);
 					if (t.value == TOKlparen) {
@@ -593,7 +598,7 @@ public class Parser extends Lexer {
 							continue;
 						}
 					} else {
-						stc = STCinvariant;
+						stc = STCimmutable;
 						
 						Modifier modifier = newModifier();
 						
@@ -660,7 +665,7 @@ public class Parser extends Lexer {
 				break;
 
 			case TOKconst:
-				if (apiLevel == D2 && peek(token).value == TOKlparen) {
+				if (apiLevel >= D2 && peek(token).value == TOKlparen) {
 					// goto Ldeclaration
 					a = parseDeclarations(lastComments);
 					decldefs.addAll(a);
@@ -677,7 +682,7 @@ public class Parser extends Lexer {
 					break;
 				}
 			case TOKimmutable:
-				if (apiLevel == D2) {
+				if (apiLevel >= D2) {
 					if (peek(token).value == TOKlparen) {
 						// goto Ldeclaration
 						a = parseDeclarations(lastComments);
@@ -700,7 +705,7 @@ public class Parser extends Lexer {
 					continue;
 				}
 			case TOKshared:
-				if (apiLevel == D2) {
+				if (apiLevel >= D2) {
 					if (peek(token).value == TOKlparen) {
 						// goto Ldeclaration
 						a = parseDeclarations(lastComments);
@@ -732,11 +737,13 @@ public class Parser extends Lexer {
 			case TOKnothrow:
 			case TOKpure:
 			case TOKref:
+			case TOKgshared:
 			case TOKtls:
 				if (apiLevel < D2 && (
 						token.value == TOKnothrow ||
 						token.value == TOKpure ||
 						token.value == TOKref ||
+						token.value == TOKgshared ||
 						token.value == TOKtls
 						)) {
 					parsingErrorDeleteToken(token);
@@ -788,7 +795,7 @@ public class Parser extends Lexer {
 				// goto Lprot;
 				nextToken();
 				
-				if (apiLevel == D2) {
+				if (apiLevel >= D2) {
 					switch (token.value) {
 					case TOKprivate:
 					case TOKpackage:
@@ -1026,6 +1033,7 @@ public class Parser extends Lexer {
 		}
 		
 		Dsymbol s = null;
+		int storage_class = stc;
 		
 		boolean repeat = true;
 		while(repeat) {
@@ -1037,7 +1045,7 @@ public class Parser extends Lexer {
 			    case TOKinvariant:
 			    case TOKimmutable:
 			    case TOKshared:
-			    	if (apiLevel == D2) {
+			    	if (apiLevel >= D2) {
 						// If followed by a (, it is not a storage class
 						if (peek(token).value == TOKlparen) {
 							repeat = false;
@@ -1050,7 +1058,15 @@ public class Parser extends Lexer {
 						} else {
 						    stc |= STCinvariant;
 						}
+						
 						modifier = newModifier();
+						
+						if ((storage_class & stc) != 0) {
+							error(IProblem.RedundantStorageClass, token.lineNumber, modifier);
+						}
+						composeStorageClass(storage_class | stc);
+						storage_class |= stc;
+						
 				    	modifiers.add(modifier);
 				    	nextToken();
 				    	break;
@@ -1072,6 +1088,7 @@ public class Parser extends Lexer {
 			    case TOKpure:
 			    case TOKref:
 			    case TOKtls:
+			    case TOKgshared:
 			    	stc |= STC.fromTOK(token.value);
 			    	
 			    	modifier = newModifier();
@@ -1084,7 +1101,7 @@ public class Parser extends Lexer {
 			}
 		}
 		
-		if (apiLevel == D2) {
+		if (apiLevel >= D2) {
 			Dsymbols a;
 			
 			/* Look for auto initializers:
@@ -1187,6 +1204,22 @@ public class Parser extends Lexer {
 		return s;
 	}
 	
+	/*********************************************
+	 * Give error on conflicting storage classes.
+	 */
+	private void composeStorageClass(int stc) {
+	    int u = stc;
+		u &= STCconst | STCimmutable | STCmanifest;
+		if ((u & (u - 1)) != 0) {
+			error(IProblem.ConflictingStorageClass, token);
+		}
+		u = stc;
+		u &= STCgshared | STCshared | STCtls;
+		if ((u & (u - 1)) != 0) {
+			error(IProblem.ConflictingStorageClass, token);
+		}
+	}
+
 	private Dsymbols parseAutoDeclarations(int storageClass, Token firstToken, int start, List<Modifier> modifiers) {
 		Dsymbols a = new Dsymbols();
 		
@@ -1465,7 +1498,7 @@ public class Parser extends Lexer {
 				 *    version (unittest)
 				 * even though unittest is a keyword
 				 */
-				if (apiLevel == D2 &&
+				if (apiLevel >= D2 &&
 						token.value == TOKunittest) {
 					id = token.value.charArrayValue;
 					idTokenStart = token.ptr;
@@ -1544,29 +1577,63 @@ public class Parser extends Lexer {
 		return new IftypeCondition(loc(), targ, ident[0], tok, tspec);
 	}
 	
-	private FuncDeclaration parseCtor() {
+	private Dsymbol parseCtor() {
 		int start = token.ptr;
 		
 	    nextToken();
 	    
-	    if (apiLevel == D2 && token.value == TOKlparen && peek(token).value == TOKthis) {
-    		// this(this) { ... }
-        	nextToken();
-        	nextToken();
-        	check(TOKrparen);
-        	PostBlitDeclaration f = newPostBlitDeclaration(loc);
-        	f.thisStart = start;
-        	parseContracts(f);
-        	return f;
-	    } else {
-		    int[] varargs = new int[1];	    
-		    Arguments arguments = parseParameters(varargs);
-		    CtorDeclaration f = newCtorDeclaration(loc(), arguments, varargs[0]);
-		    f.thisStart = start;
-		    parseContracts(f);
-		    f.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
-		    return f;
+	    if (apiLevel >= D2) {
+	    	if (token.value == TOKlparen && peek(token).value == TOKthis) {
+	    		// this(this) { ... }
+	        	nextToken();
+	        	nextToken();
+	        	check(TOKrparen);
+	        	PostBlitDeclaration f = newPostBlitDeclaration(loc);
+	        	f.thisStart = start;
+	        	parseContracts(f);
+	        	return f;
+	    	}
+	    	
+	        /* Look ahead to see if:
+	         *   this(...)(...)
+	         * which is a constructor template
+	         */
+	        TemplateParameters tpl = null;
+			if (token.value == TOKlparen
+					&& peekPastParen(token).value == TOKlparen) {
+				tpl = parseTemplateParameterList();
+
+				int[] varargs = { 0 };
+				Arguments arguments = parseParameters(varargs);
+
+				Expression constraint = null;
+				if (tpl != null)
+					constraint = parseConstraint();
+
+				CtorDeclaration f = new CtorDeclaration(loc, arguments, varargs[0]);
+				parseContracts(f);
+				f.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
+
+				// Wrap a template around it
+				Dsymbols decldefs = new Dsymbols();
+				decldefs.add(f);
+				TemplateDeclaration tempdecl = new TemplateDeclaration(loc, f.ident, tpl, constraint, decldefs);
+				tempdecl.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
+				tempdecl.wrapper = true;
+				return tempdecl;
+			}
 	    }
+	    
+	    /*
+		 * Just a regular constructor
+		 */
+	    int[] varargs = { 0 };	    
+	    Arguments arguments = parseParameters(varargs);
+	    CtorDeclaration f = newCtorDeclaration(loc(), arguments, varargs[0]);
+	    f.thisStart = start;
+	    parseContracts(f);
+	    f.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
+	    return f;
 	}	
 
 	private DtorDeclaration parseDtor() {
@@ -1938,7 +2005,7 @@ public class Parser extends Lexer {
 				if ((storageClass & (STCconst | STCout)) == (STCconst | STCout)) {
 					error(IProblem.OutCannotBeConst, token);
 				}
-				if ((storageClass & (STCinvariant | STCout)) == (STCinvariant | STCout)) {
+				if ((storageClass & (STCimmutable | STCout)) == (STCimmutable | STCout)) {
 					error(IProblem.OutCannotBeInvariant, token);
 				}
 				if ((storageClass & STCscope) != 0
@@ -2002,19 +2069,12 @@ public class Parser extends Lexer {
 
 	private int parseParametersD2_L2(int storageClass, int stc) {
 		if ((storageClass & stc) != 0
-				|| ((storageClass & STCin) != 0 && (stc & (STCfinal
-						| STCconst | STCscope)) != 0)
-				|| ((stc & STCin) != 0 && (storageClass & (STCfinal
-						| STCconst | STCscope)) != 0)) {			
+				|| ((storageClass & STCin) != 0 && (stc & (STCconst | STCscope)) != 0)
+				|| ((stc & STCin) != 0 && (storageClass & (STCconst | STCscope)) != 0)) {			
 			error(IProblem.RedundantStorageClass, token);
 		}
 		storageClass |= stc;
-		{
-			int u = storageClass & (STCconst | STCinvariant);
-			if ((u & (u - 1)) != 0) {
-				error(IProblem.ConflictingStorageClass, token);
-			}
-		}
+		composeStorageClass(storageClass);
 		return storageClass;
 	}
 	
@@ -2040,7 +2100,7 @@ public class Parser extends Lexer {
 		if (token.value == TOKcolon) {
 			nextToken();
 			memtype = parseBasicType();
-			if (apiLevel == D2) {
+			if (apiLevel >= D2) {
 				memtype = parseDeclarator(memtype, null, null, identStart);
 			}
 		} else {
@@ -2063,7 +2123,7 @@ public class Parser extends Lexer {
 				
 				List<Comment> lastComments = null;
 				EnumMember em = null;
-				if (apiLevel == D2) {
+				if (apiLevel >= D2) {
 				    /* Can take the following forms:
 				     *	1. ident
 				     *	2. ident = value
@@ -2170,7 +2230,6 @@ public class Parser extends Lexer {
 		Expression constraint = null;
 		BaseClasses baseClasses = null;
 		int anon = 0;
-		boolean[] malformed = { false };
 		
 		Token firstToken = new Token(token);
 		
@@ -2183,7 +2242,7 @@ public class Parser extends Lexer {
 			nextToken();
 			if (token.value == TOKlparen) {				
 				// Gather template parameter list
-				tpl = parseTemplateParameterList(malformed);
+				tpl = parseTemplateParameterList();
 				if (apiLevel >= D2) {
 					constraint = parseConstraint();
 				}
@@ -2289,10 +2348,6 @@ public class Parser extends Lexer {
 			}		
 		}
 		
-		if (malformed[0]) {
-			setMalformed(a);
-		}
-		
 		if (tpl != null)
 		{	
 			Dsymbols decldefs;
@@ -2368,7 +2423,6 @@ public class Parser extends Lexer {
 		TemplateParameters tpl;
 		Dsymbols decldefs;
 		Expression constraint = null;
-		boolean[] malformed = { false };
 
 		int start = token.ptr;
 		nextToken();
@@ -2379,7 +2433,7 @@ public class Parser extends Lexer {
 		}
 		id = newIdentifierExp();
 		nextToken();
-		tpl = parseTemplateParameterList(malformed);
+		tpl = parseTemplateParameterList();
 		if (tpl == null) {
 			// goto Lerr;
 			return null;
@@ -2408,33 +2462,27 @@ public class Parser extends Lexer {
 
 		TemplateDeclaration tempdecl = newTemplateDeclaration(loc(), id, tpl, constraint,  decldefs);
 		tempdecl.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
-		
-		if (malformed[0]) {
-			setMalformed(tempdecl);
-		}
-		
 		return tempdecl;
 
 		// Lerr:
 		// return NULL;
 	}
 	
-	private TemplateParameters parseTemplateParameterList(boolean[] malformed) {
-		return parseTemplateParameterList(0, malformed);
+	private TemplateParameters parseTemplateParameterList() {
+		return parseTemplateParameterList(0);
 	}
 	
 	@SuppressWarnings("unchecked")
-	private TemplateParameters parseTemplateParameterList(int flag, boolean[] malformed) {
+	private TemplateParameters parseTemplateParameterList(int flag) {
 		// Change from DMD: empty template parameter list is returned in case
 		// of a syntax error
 		
 		TemplateParameters tpl = new TemplateParameters();
 
-		if ((apiLevel < D2 && token.value != TOKlparen) || (apiLevel == D2 && 0 == flag && token.value != TOKlparen)) {
+		if ((apiLevel < D2 && token.value != TOKlparen) || (apiLevel >= D2 && 0 == flag && token.value != TOKlparen)) {
 			parsingErrorInsertToComplete(prevToken, "Parenthesized TemplateParameterList", "TemplateDeclaration");
 			
 			// goto Lerr;
-			malformed[0] = true;
 			return tpl;
 		}
 		
@@ -2443,7 +2491,7 @@ public class Parser extends Lexer {
 		expect(aliasExpectations);
 
 		// Get array of TemplateParameters
-		if ((apiLevel < D2 && token.value != TOKrparen) || (apiLevel == D2 && (flag != 0 || token.value != TOKrparen))) {
+		if ((apiLevel < D2 && token.value != TOKrparen) || (apiLevel >= D2 && (flag != 0 || token.value != TOKrparen))) {
 			
 			boolean isvariadic = false;
 			TemplateParameter tp = null;
@@ -2469,7 +2517,7 @@ public class Parser extends Lexer {
 					nextToken();
 					
 					Type spectype = null;
-					if (apiLevel == D2) {						
+					if (apiLevel >= D2) {						
 						if (isDeclaration(token, 2, TOKreserved, null))
 						{
 							IdentifierExp[] p_tp_ident = { tp_ident };
@@ -2481,7 +2529,6 @@ public class Parser extends Lexer {
 							if (token.value != TOKidentifier) {
 								parsingErrorInsertTokenAfter(prevToken, "Identifier");
 								// goto Lerr;
-								malformed[0] = true;
 								return tpl;
 							}
 							tp_ident = newIdentifierExp();
@@ -2491,7 +2538,6 @@ public class Parser extends Lexer {
 						if (token.value != TOKidentifier) {
 							parsingErrorInsertTokenAfter(prevToken, "Identifier");
 							// goto Lerr;
-							malformed[0] = true;
 							return tpl;
 						}
 						tp_ident = newIdentifierExp();
@@ -2540,7 +2586,6 @@ public class Parser extends Lexer {
 					if (token.value != TOKidentifier) {
 						parsingErrorInsertTokenAfter(prevToken, "Identifier");
 						// goto Lerr;
-						malformed[0] = true;
 						return tpl;
 					}
 					tp_ident = newIdentifierExp();
@@ -2581,12 +2626,11 @@ public class Parser extends Lexer {
 					nextToken();
 
 					tp = new TemplateTupleParameter(loc(), tp_ident);
-				} else if (apiLevel == D2 && token.value == TOKthis) { // ThisParameter
+				} else if (apiLevel >= D2 && token.value == TOKthis) { // ThisParameter
 					nextToken();
 					if (token.value != TOKidentifier) {
 						parsingErrorInsertToComplete(token, "Identifier", "TemplateParameter");
 						// goto Lerr;
-						malformed[0] = true;
 						return tpl;
 					}
 					tp_ident = newIdentifierExp();
@@ -2623,7 +2667,6 @@ public class Parser extends Lexer {
 								t.lineNumber, t.ptr, t.sourceLen);
 						// TODO update to DMD 1.028 behaviour? What's the point?
 						// goto Lerr;
-						malformed[0] = true;
 						return tpl;
 					}
 					if (token.value == TOKcolon) // : CondExpression
@@ -2634,7 +2677,7 @@ public class Parser extends Lexer {
 					if (token.value == TOKassign) // = CondExpression
 					{
 						nextToken();
-						if (apiLevel == D2) {
+						if (apiLevel >= D2) {
 							tp_defaultvalue = parseDefaultInitExp();
 						} else {
 							tp_defaultvalue = parseCondExp();
@@ -2678,10 +2721,10 @@ public class Parser extends Lexer {
 		int typeStart = token.ptr;
 		tqual = null;
 		if (token.value == TOKdot) {
-			id = new IdentifierExp(loc(), Id.empty); // Id::empty
+			id = new IdentifierExp(loc(), Id.empty); // Id.empty
 		} else {
 			if (token.value == TOKtypeof) {
-				if (apiLevel == D2) {
+				if (apiLevel >= D2) {
 					tqual = parseTypeof();
 				} else {
 					Expression exp;
@@ -2713,7 +2756,16 @@ public class Parser extends Lexer {
 			tiargs = null;
 			if (token.value == TOKnot) {
 				nextToken();
-				tiargs = parseTemplateArgumentList();
+				
+				if (apiLevel >= D2) {
+				    if (token.value == TOKlparen) {
+						tiargs = parseTemplateArgumentList();
+				    } else {
+						tiargs = parseTemplateArgument();
+				    }
+				} else {
+					tiargs = parseTemplateArgumentList();	
+				}
 			}
 			
 			if (token.value != TOKdot) {
@@ -2795,10 +2847,71 @@ public class Parser extends Lexer {
 						ta = parseType();
 					}
 					tiargs.add(ta);
-				} else { // Expression
-					Expression ea;
+				} else { 
+					// Expression
+					Expression ea = parseAssignExp();
 
-					ea = parseAssignExp();
+					if (apiLevel >= D2) {
+						if (ea.op == TOKfunction) {
+							FuncLiteralDeclaration fd = ((FuncExp) ea).fd;
+							if (fd.type.ty == Tfunction) {
+								TypeFunction tf = (TypeFunction) fd.type;
+								/*
+								 * If there are parameters that consist of only
+								 * an identifier, rather than assuming the
+								 * identifier is a type, as we would for regular
+								 * function declarations, assume the identifier
+								 * is the parameter name, and we're building a
+								 * template with a deduced type.
+								 */
+								TemplateParameters tpl = null;
+								for (int i = 0; i < ASTDmdNode
+										.size(tf.parameters); i++) {
+									Argument param = (Argument) tf.parameters
+											.get(i);
+									if (param.ident == null
+											&& param.type != null
+											&& param.type.ty == Tident
+											&& ASTDmdNode
+													.size(((TypeIdentifier) param.type).idents) == 0) {
+										/*
+										 * Switch parameter type to parameter
+										 * identifier, parameterize with
+										 * template type parameter _T
+										 */
+										TypeIdentifier pt = (TypeIdentifier) param.type;
+										param.ident = pt.ident;
+										IdentifierExp id = uniqueId("__T");
+										param.type = new TypeIdentifier(pt.loc,
+												id);
+										TemplateParameter tp = new TemplateTypeParameter(
+												fd.loc, id, null, null);
+										if (null == tpl)
+											tpl = new TemplateParameters();
+										tpl.add(tp);
+									}
+								}
+
+								if (tpl != null) { // Wrap a template around
+													// function fd
+									Dsymbols decldefs = new Dsymbols();
+									decldefs.add(fd);
+									TemplateDeclaration tempdecl = new TemplateDeclaration(
+											fd.loc, fd.ident, tpl, null,
+											decldefs);
+									tempdecl.literal = true; // it's a template
+															// 'literal'
+									tiargs.add(tempdecl);
+									// goto L1;
+									if (token.value != TOKcomma) {
+										break;
+									}
+									nextToken();
+									continue;
+								}
+							}
+						}
+					}
 					tiargs.add(ea);
 				}
 				if (token.value != TOKcomma) {
@@ -2810,6 +2923,88 @@ public class Parser extends Lexer {
 		check(TOKrparen);
 		return tiargs;
 	}
+	
+	/*****************************
+	 * Parse single template argument, to support the syntax:
+	 *	foo!arg
+	 * Input:
+	 *	current token is the arg
+	 */
+	private Objects parseTemplateArgument()
+	{
+	    Objects tiargs = new Objects();
+	    Type ta;
+	    switch (token.value)
+	    {
+		case TOKidentifier:
+		    ta = new TypeIdentifier(loc, newIdentifierExp());
+		    // goto LabelX;
+		    tiargs.add(ta);
+		    nextToken();
+		    break;
+
+		case TOKwchar:
+		case TOKdchar:
+		case TOKbit:
+		case TOKbool:
+		case TOKchar:
+		case TOKint8:
+		case TOKuns8:
+		case TOKint16:
+		case TOKuns16:
+		case TOKint32:
+		case TOKuns32:
+		case TOKint64:
+		case TOKuns64:
+		case TOKfloat32:
+		case TOKfloat64:
+		case TOKfloat80:
+		case TOKimaginary32:
+		case TOKimaginary64:
+		case TOKimaginary80:
+		case TOKcomplex32:
+		case TOKcomplex64:
+		case TOKcomplex80:
+		case TOKvoid:
+			ta = newTypeBasicForCurrentToken();
+		    tiargs.add(ta);
+		    nextToken();
+		    break;
+
+		case TOKint32v:
+		case TOKuns32v:
+		case TOKint64v:
+		case TOKuns64v:
+		case TOKfloat32v:
+		case TOKfloat64v:
+		case TOKfloat80v:
+		case TOKimaginary32v:
+		case TOKimaginary64v:
+		case TOKimaginary80v:
+		case TOKnull:
+		case TOKtrue:
+		case TOKfalse:
+		case TOKcharv:
+		case TOKwcharv:
+		case TOKdcharv:
+		case TOKstring:
+		case TOKfile:
+		case TOKline:
+		{   // Template argument is an expression
+		    Expression ea = parsePrimaryExp();
+		    tiargs.add(ea);
+		    break;
+		}
+		default:
+			parsingErrorInsertToComplete(token, "TemplateArgument", "TemplateInstantiation");
+		    break;
+	    }
+	    if (token.value == TOKnot) {
+	    	parsingErrorDeleteToken(token);
+	    }
+	    return tiargs;
+	}
+
 	
 	private Import parseImport(Dsymbols decldefs, boolean isstatic, int start, List<Comment> lastComments) {
 		Import s = null;
@@ -3016,13 +3211,29 @@ public class Parser extends Lexer {
 		
 		switch (token.value) {
 		// CASE_BASIC_TYPES_X(t):
-		case TOKvoid: case TOKint8: case TOKuns8: case TOKint16:
-		case TOKuns16: case TOKint32: case TOKuns32: case TOKint64:
-		case TOKuns64: case TOKfloat32: case TOKfloat64: case TOKfloat80:
-		case TOKimaginary32: case TOKimaginary64: case TOKimaginary80:
-		case TOKcomplex32: case TOKcomplex64: case TOKcomplex80:
-		case TOKbit: case TOKbool: 
-		case TOKchar: case TOKwchar: case TOKdchar: 
+		case TOKvoid:
+		case TOKint8:
+		case TOKuns8:
+		case TOKint16:
+		case TOKuns16:
+		case TOKint32:
+		case TOKuns32:
+		case TOKint64:
+		case TOKuns64:
+		case TOKfloat32:
+		case TOKfloat64:
+		case TOKfloat80:
+		case TOKimaginary32:
+		case TOKimaginary64:
+		case TOKimaginary80:
+		case TOKcomplex32:
+		case TOKcomplex64:
+		case TOKcomplex80:
+		case TOKbit:
+		case TOKbool:
+		case TOKchar:
+		case TOKwchar:
+		case TOKdchar: 
 			t = newTypeBasicForCurrentToken(); 
 			t.setSourceRange(token.ptr, token.sourceLen); 
 			nextToken(); 
@@ -3032,9 +3243,22 @@ public class Parser extends Lexer {
 			id = newIdentifierExp();
 			nextToken();
 			if (token.value == TOKnot) {
-				nextToken();
-				tempinst = newTemplateInstance(loc(), id, encoder);
-				tempinst.tiargs(parseTemplateArgumentList());
+				if (apiLevel < D2) {
+					nextToken();
+					tempinst = newTemplateInstance(loc(), id, encoder);
+					tempinst.tiargs(parseTemplateArgumentList());
+				} else {
+				    // ident!(template_arguments)
+					tempinst = newTemplateInstance(loc, id, encoder);
+					nextToken();
+					if (token.value == TOKlparen) {
+					    // ident!(template_arguments)
+					    tempinst.tiargs = parseTemplateArgumentList();
+					} else {
+					    // ident!template_argument
+					    tempinst.tiargs = parseTemplateArgument();
+					}
+				}
 				tempinst.setSourceRange(id.start, prevToken.ptr + prevToken.sourceLen - id.start);
 				tid = new TypeInstance(loc(), tempinst);
 				tid.setSourceRange(id.start, prevToken.ptr + prevToken.sourceLen - id.start);
@@ -3092,7 +3316,7 @@ public class Parser extends Lexer {
 		case TOKtypeof: {
 			int start = token.ptr;
 			
-			if (apiLevel == D2) {
+			if (apiLevel >= D2) {
 				tid = parseTypeof();
 			} else {
 				Expression exp;
@@ -3124,22 +3348,32 @@ public class Parser extends Lexer {
 		}
 			
 		case TOKconst: {
-			// TODO check if we have to put a D2 check here
-		    // const(type)
+			if (apiLevel < D2) {
+				parsingErrorInsertTokenAfter(prevToken, "Type");
+				break;
+			}
+			
 			int start = token.ptr;
 		    nextToken();
 		    check(TOKlparen);
 		    t = parseType();
 		    check(TOKrparen);
-		    t = t.makeConst(start, prevToken.ptr + prevToken.sourceLen - start);
+		    if (t.isShared()) {
+				t = t.makeSharedConst();
+		    } else {
+				t = t.makeConst(start, prevToken.ptr + prevToken.sourceLen - start);
+		    }
 		    break;
 		}
 
 		case TOKinvariant:
 		case TOKimmutable:
 		{
-			// TODO check if we have to put a D2 check here
-		    // invariant(type)
+			if (apiLevel < D2) {
+				parsingErrorInsertTokenAfter(prevToken, "Type");
+				break;
+			}
+			
 			int start = token.ptr;
 		    nextToken();
 		    check(TOKlparen);
@@ -3148,6 +3382,26 @@ public class Parser extends Lexer {
 		    t = t.makeInvariant(start, prevToken.ptr + prevToken.sourceLen - start);
 		    break;
 		}
+		
+		case TOKshared: {
+			if (apiLevel < D2) {
+				parsingErrorInsertTokenAfter(prevToken, "Type");
+				break;
+			}
+			
+		    // shared(type)
+		    nextToken();
+			check(TOKlparen);
+			t = parseType();
+			check(TOKrparen);
+			if (t.isConst()) {
+				t = t.makeSharedConst();
+			} else {
+				t = t.makeShared();
+			}
+		    break;
+		}
+
 
 		default:
 			parsingErrorInsertTokenAfter(prevToken, "Type");
@@ -3167,10 +3421,23 @@ public class Parser extends Lexer {
 			id[0] = newIdentifierExp();
 			nextToken();
 			if (token.value == TOKnot) {
-				nextToken();
-				tempinst[0] = newTemplateInstance(loc(), id[0], encoder);
-				tempinst[0].tiargs(parseTemplateArgumentList());
-				tempinst[0].setSourceRange(tempinstStart, prevToken.ptr + prevToken.sourceLen - tempinstStart);
+				if (apiLevel < D2) {
+					nextToken();
+					tempinst[0] = newTemplateInstance(loc(), id[0], encoder);
+					tempinst[0].tiargs(parseTemplateArgumentList());
+					tempinst[0].setSourceRange(tempinstStart, prevToken.ptr + prevToken.sourceLen - tempinstStart);
+					
+				} else {
+				    tempinst[0] = newTemplateInstance(loc, id[0], encoder);
+					nextToken();
+					if (token.value == TOKlparen) {
+						// ident!(template_arguments)
+						tempinst[0].tiargs = parseTemplateArgumentList();
+					} else {
+						// ident!template_argument
+						tempinst[0].tiargs = parseTemplateArgument();
+					}
+				}
 				tid[0].addIdent(new TemplateInstanceWrapper(loc(), tempinst[0]));
 			} else {
 				tid[0].addIdent(id[0]);
@@ -3294,9 +3561,10 @@ public class Parser extends Lexer {
 				}
 
 			case TOKdelegate:
-			case TOKfunction: { // Handle delegate declaration:
-				// t delegate(parameter list)
-				// t function(parameter list)
+			case TOKfunction: { 
+				// Handle delegate declaration:
+				// t delegate(parameter list) nothrow pure
+				// t function(parameter list) nothrow pure
 				Arguments arguments;
 				int varargs = 0;
 				boolean ispure = false;
@@ -3311,7 +3579,7 @@ public class Parser extends Lexer {
 
 				int saveStart = t.start;
 				
-				if (apiLevel == D2) {
+				if (apiLevel >= D2) {
 					while (true) {
 						if (token.value == TOKpure) {
 							ispure = true;
@@ -3346,12 +3614,21 @@ public class Parser extends Lexer {
 			}
 
 			default:
-				ts = t;
+				if (apiLevel < D2) {
+					ts = t;
+				} else {
+					return t;
+				}
 				break;
 			}
 			break;
 		}
-		return ts;
+		
+		if (apiLevel < 2) {
+			return ts;
+		} else {
+			return null;
+		}
 	}
 	
 	private Type parseDeclarator(Type targ, IdentifierExp[] ident) {
@@ -3461,10 +3738,8 @@ public class Parser extends Lexer {
 					 * i.e. a function template declaration
 					 */
 					if (peekPastParen(token).value == TOKlparen) { // It's a function template declaration
-
 						// Gather template parameter list
-						boolean[] malformed = { false };
-						tpl[0] = parseTemplateParameterList(malformed);
+						tpl[0] = parseTemplateParameterList();
 					}
 				}
 
@@ -3481,7 +3756,7 @@ public class Parser extends Lexer {
 					}
 				}
 				
-				if (apiLevel == D2) {
+				if (apiLevel >= D2) {
 					/* Parse const/invariant/nothrow postfix
 					 */
 					while (true)
@@ -3496,6 +3771,15 @@ public class Parser extends Lexer {
 						case TOKinvariant:
 						case TOKimmutable:
 						    ta = ta.makeInvariant(token.ptr, token.sourceLen);
+						    nextToken();
+						    continue;
+						    
+						case TOKshared:
+						    if (ta.isConst()) {
+								ta = ta.makeSharedConst();
+							} else {
+								ta = ta.makeShared();
+							}
 						    nextToken();
 						    continue;
 
@@ -3617,7 +3901,8 @@ public class Parser extends Lexer {
 			case TOKconst:
 			case TOKinvariant:
 			case TOKimmutable:
-				if (apiLevel == D2 && peek(token).value == TOKlparen) {
+			case TOKshared:
+				if (apiLevel >= D2 && peek(token).value == TOKlparen) {
 					break;
 				}
 				// fall
@@ -3633,12 +3918,14 @@ public class Parser extends Lexer {
 			case TOKpure:
 			case TOKref:
 			case TOKtls:
+			case TOKgshared:
 			case TOKenum:
 				if (apiLevel < D2 && (
 					token.value == TOKnothrow ||
 					token.value == TOKpure ||
 					token.value == TOKref ||
 					token.value == TOKtls ||
+					token.value == TOKgshared ||
 					token.value == TOKenum
 					)) {
 					break;
@@ -3651,12 +3938,8 @@ public class Parser extends Lexer {
 					error(IProblem.RedundantStorageClass, token.lineNumber, currentModifier);
 				}
 				storage_class = storage_class | stc;
-				if (apiLevel == D2) {
-					int u = storage_class;
-					u &= STCconst | STCinvariant | STCmanifest;
-					if ((u & (u - 1)) != 0) {
-						error(IProblem.ConflictingStorageClass, token.lineNumber, currentModifier);
-					}
+				if (apiLevel >= D2) {
+					composeStorageClass(storage_class);
 				}
 				modifiers.add(currentModifier);
 				
@@ -3706,7 +3989,7 @@ public class Parser extends Lexer {
 		 * Look for auto initializers: storage_class identifier = initializer;
 		 */
 		
-		if (apiLevel == D2) {
+		if (apiLevel >= D2) {
 			if (storage_class != 0 && token.value == TOKidentifier
 					&& peek(token).value == TOKassign) {
 				return parseAutoDeclarations(stc, new Token(token), start, modifiers);
@@ -3783,7 +4066,7 @@ public class Parser extends Lexer {
 		int nextVarStart = token.ptr;
 		int nextTypdefOrAliasStart = start;
 		
-		if (apiLevel == D2) {
+		if (apiLevel >= D2) {
 			/*
 			 * Look for return type inference for template functions.
 			 */
@@ -4064,7 +4347,7 @@ public class Parser extends Lexer {
 	    LINK linksave = linkage;
 
 	    // The following is irrelevant, as it is overridden by sc.linkage in
-	    // TypeFunction::semantic
+	    // TypeFunction.semantic
 	    linkage = LINKd;		// nested functions have D linkage
 		
 		boolean repeat = true;
@@ -4273,7 +4556,7 @@ public class Parser extends Lexer {
 		case TOKlbracket:
 		    /* Scan ahead to see if it is an array initializer or
 		     * an expression.
-		     * If it ends with a ';', it is an array initializer.
+		     * If it ends with a ';', ',' or '}' it is an array initializer.
 		     */
 		    brackets = 1;
 			for (t = peek(token); true; t = peek(t)) {
@@ -4398,7 +4681,7 @@ public class Parser extends Lexer {
 
 		if (token.value != TOKlcurly) {
 			expect(statementExpectations);
-			if (apiLevel == D2) {
+			if (apiLevel >= D2) {
 				expect(traitsExpectations);
 			}
 		}
@@ -4557,6 +4840,10 @@ public class Parser extends Lexer {
 		case TOKinvariant:
 		case TOKimmutable:
 		case TOKshared:
+		case TOKnothrow:
+		case TOKpure:
+		case TOKtls:
+		case TOKgshared:
 			
 		// case TOKtypeof:
 			// Ldeclaration:
@@ -4584,7 +4871,7 @@ public class Parser extends Lexer {
 		case TOKenum: {
 			Dsymbol d;
 
-			if (apiLevel == D2) {
+			if (apiLevel >= D2) {
 				/* Determine if this is a manifest constant declaration,
 				 * or a conventional enum.
 				 */
@@ -4649,7 +4936,7 @@ public class Parser extends Lexer {
 			Statements statements;
 			
 			expect(statementExpectations);
-			if (apiLevel == D2) {
+			if (apiLevel >= D2) {
 				expect(traitsExpectations);
 			}
 
@@ -4786,7 +5073,7 @@ public class Parser extends Lexer {
 				
 				int argumentStart = token.ptr;
 
-				if (apiLevel == D2) {
+				if (apiLevel >= D2) {
 					storageClass = 0;
 				} else {
 					storageClass = STCin;	
@@ -4890,7 +5177,7 @@ public class Parser extends Lexer {
 				if (token.value == TOKidentifier) {
 					Token t2 = peek(token);
 					if (t2.value == TOKassign) {
-						arg = new Argument(apiLevel == D2 ? 0 : STCin, null, newIdentifierExp(), null);
+						arg = new Argument(apiLevel >= D2 ? 0 : STCin, null, newIdentifierExp(), null);
 						arg.modifiers = modifiers;
 						arg.setSourceRange(autoTokenStart, token.ptr + token.sourceLen - autoTokenStart);
 						
@@ -4941,7 +5228,7 @@ public class Parser extends Lexer {
 					}
 					ai = pointer2_ai[0];
 
-					arg = new Argument(apiLevel == D2 ? 0 : STCin, at, ai, null);
+					arg = new Argument(apiLevel >= D2 ? 0 : STCin, at, ai, null);
 					arg.setSourceRange(argTokenStart, prevToken.ptr + prevToken.sourceLen - argTokenStart);
 					
 					check(TOKassign);					
@@ -4951,7 +5238,7 @@ public class Parser extends Lexer {
 				else if (token.value == TOKidentifier) {
 					Token t2 = peek(token);
 					if (t2.value == TOKcomma || t2.value == TOKsemicolon) {
-						arg = new Argument(apiLevel == D2 ? 0 : STCin, null, newIdentifierExp(), null);
+						arg = new Argument(apiLevel >= D2 ? 0 : STCin, null, newIdentifierExp(), null);
 						arg.setSourceRange(argTokenStart, token.ptr + token.sourceLen - argTokenStart);
 						
 						nextToken();
@@ -5564,11 +5851,15 @@ public class Parser extends Lexer {
 	private boolean isDeclaration(Token t, int needId, TOK endtok, Token[] pt) {
 		int haveId = 0;
 		
-		if (apiLevel == D2) {
-		    if ((t.value == TOKconst || t.value == TOKinvariant || t.value == TOKimmutable || t.value == TOKshared)
+		if (apiLevel >= D2) {
+		    if ((t.value == TOKconst || 
+		    	t.value == TOKinvariant || 
+		    	t.value == TOKimmutable || 
+		    	t.value == TOKshared)
 					&& peek(t).value != TOKlparen) {
 		    /* const type
 			 * invariant type
+			 * shared type
 			 */
 				t = peek(t);
 			}
@@ -5609,37 +5900,34 @@ public class Parser extends Lexer {
 		// int parens = 0; // <-- not used
 
 		switch (t.value) {
-		case TOKwchar: case TOKdchar: case TOKbit: case TOKbool:
-		case TOKchar: case TOKint8: case TOKuns8: case TOKint16:
-		case TOKuns16: case TOKint32: case TOKuns32: case TOKint64:
-		case TOKuns64: case TOKfloat32: case TOKfloat64: case TOKfloat80:
-		case TOKimaginary32: case TOKimaginary64: case TOKimaginary80:
-		case TOKcomplex32: case TOKcomplex64: case TOKcomplex80:
+		case TOKwchar:
+		case TOKdchar:
+		case TOKbit:
+		case TOKbool:
+		case TOKchar:
+		case TOKint8:
+		case TOKuns8:
+		case TOKint16:
+		case TOKuns16:
+		case TOKint32:
+		case TOKuns32:
+		case TOKint64:
+		case TOKuns64:
+		case TOKfloat32:
+		case TOKfloat64:
+		case TOKfloat80:
+		case TOKimaginary32:
+		case TOKimaginary64:
+		case TOKimaginary80:
+		case TOKcomplex32:
+		case TOKcomplex64:
+		case TOKcomplex80:
 		case TOKvoid:
 			t = peek(t);
 			break;
 
 		case TOKidentifier: {
-			t = peek(t);
-			if (t.value == TOKnot) {
-				// goto L4
-				Token[] pointer2_t2 = { t };
-				boolean semiResult = isBasicType_L4(pointer2_t2);
-				t = pointer2_t2[0];
-				if (semiResult) {
-					pt[0] = t;
-				}
-				return semiResult;
-			}
-			
-			// goto L3
-			Token[] pointer2_t2 = { t };
-			boolean semiResult = isBasicType_L3(pointer2_t2);
-			t = pointer2_t2[0];
-			if (semiResult) {
-				pt[0] = t;
-			}
-			return semiResult;
+			return isBasicType_L5(t, pt);
 		}
 
 		case TOKdot: {
@@ -5845,13 +6133,79 @@ public class Parser extends Lexer {
 				}
 				/* L4: */
 				firstTime = false;
-				pt[0] = peek(pt[0]);
-				if (pt[0].value != TOKlparen) {
-					return false;
-				}
-
-				if (!skipParens(pt[0], pt)) {
-					return false;
+				if (apiLevel < D2) {
+					pt[0] = peek(pt[0]);
+					if (pt[0].value != TOKlparen) {
+						return false;
+					}
+	
+					if (!skipParens(pt[0], pt)) {
+						return false;
+					}
+				} else {
+				    /* Seen a !
+				     * Look for:
+				     * !( args ), !identifier, etc.
+				     */
+				    pt[0] = peek(pt[0]);
+				    switch (pt[0].value)
+				    {	case TOKidentifier:
+					    	// goto L5;
+				    		return isBasicType_L5(pt[0], pt);
+					case TOKlparen:
+					    if (!skipParens(pt[0], pt)) {
+					    	// goto Lfalse;
+					    	return false;
+					    }
+					    break;
+					case TOKwchar:
+					case TOKdchar:
+					case TOKbit:
+					case TOKbool:
+					case TOKchar:
+					case TOKint8:
+					case TOKuns8:
+					case TOKint16:
+					case TOKuns16:
+					case TOKint32:
+					case TOKuns32:
+					case TOKint64:
+					case TOKuns64:
+					case TOKfloat32:
+					case TOKfloat64:
+					case TOKfloat80:
+					case TOKimaginary32:
+					case TOKimaginary64:
+					case TOKimaginary80:
+					case TOKcomplex32:
+					case TOKcomplex64:
+					case TOKcomplex80:
+					case TOKvoid:
+					case TOKint32v:
+					case TOKuns32v:
+					case TOKint64v:
+					case TOKuns64v:
+					case TOKfloat32v:
+					case TOKfloat64v:
+					case TOKfloat80v:
+					case TOKimaginary32v:
+					case TOKimaginary64v:
+					case TOKimaginary80v:
+					case TOKnull:
+					case TOKtrue:
+					case TOKfalse:
+					case TOKcharv:
+					case TOKwcharv:
+					case TOKdcharv:
+					case TOKstring:
+					case TOKfile:
+					case TOKline:
+					    // goto L2;
+						return isBasicType_L2(pt);
+					default:
+					    // goto Lfalse;
+						return false;
+				    }
 				}
 			} else {
 				break;
@@ -5859,6 +6213,29 @@ public class Parser extends Lexer {
 		}
 		
 		return true;
+	}
+	
+	private boolean isBasicType_L5(Token t, Token[] pt) {
+		t = peek(t);
+		if (t.value == TOKnot) {
+			// goto L4
+			Token[] pointer2_t2 = { t };
+			boolean semiResult = isBasicType_L4(pointer2_t2);
+			t = pointer2_t2[0];
+			if (semiResult) {
+				pt[0] = t;
+			}
+			return semiResult;
+		}
+		
+		// goto L3
+		Token[] pointer2_t2 = { t };
+		boolean semiResult = isBasicType_L3(pointer2_t2);
+		t = pointer2_t2[0];
+		if (semiResult) {
+			pt[0] = t;
+		}
+		return semiResult;
 	}
 	
 	private boolean isDeclarator(Token[] pt, int[] haveId, TOK endtok) {
@@ -6027,7 +6404,7 @@ public class Parser extends Lexer {
 					return false;
 				}
 
-				if (apiLevel == D2) {
+				if (apiLevel >= D2) {
 					while (true) {
 						switch (t.value) {
 						case TOKconst:
@@ -6182,7 +6559,6 @@ public class Parser extends Lexer {
 			case TOKimmutable:
 			case TOKshared:
 			case TOKfinal:
-			case TOKstatic:
 				continue;
 				
 			default:
@@ -6276,13 +6652,13 @@ public class Parser extends Lexer {
 			break;
 			
 		    case TOKlcurly:
-		    	if (apiLevel == D2) {
+		    	if (apiLevel >= D2) {
 		    		curlynest++;
 		    	}
 		    	continue;
 
 		    case TOKrcurly:
-		    	if (apiLevel == D2) {
+		    	if (apiLevel >= D2) {
 					if (--curlynest >= 0) {
 						continue;
 					}
@@ -6297,7 +6673,7 @@ public class Parser extends Lexer {
 			break;
 			
 		    case TOKsemicolon:
-		    	if (apiLevel == D2) {
+		    	if (apiLevel >= D2) {
 					if (curlynest != 0) {
 						continue;
 					}
@@ -6471,7 +6847,7 @@ public class Parser extends Lexer {
 	    TOK save;
 
 	    expect(primaryExpExpectations);	    
-	    if (apiLevel == D2) {
+	    if (apiLevel >= D2) {
 	    	expect(traitsExpectations);
 	    }
 	    
@@ -6480,13 +6856,29 @@ public class Parser extends Lexer {
 		case TOKidentifier:
 		    id = newIdentifierExp();
 		    nextToken();
-		    if (token.value == TOKnot && peek(token).value == TOKlparen)
+		    
+		    boolean condition = apiLevel < D2 ?
+		    	token.value == TOKnot && peek(token).value == TOKlparen
+		    :
+			    token.value == TOKnot && peekNext() != TOKis;
+		    
+		    if (condition)
 		    {	// identifier!(template-argument-list)
 		    	TemplateInstance tempinst;
 		    	
 		    	tempinst = newTemplateInstance(loc(), id, encoder);		    	
 		    	nextToken();
-		    	tempinst.tiargs(parseTemplateArgumentList());
+		    	if (apiLevel < D2) {
+		    		tempinst.tiargs(parseTemplateArgumentList());
+		    	} else {
+		    		if (token.value == TOKlparen) {
+		    		    // ident!(template_arguments)
+		    		    tempinst.tiargs = parseTemplateArgumentList();
+		    		} else {
+		    		    // ident!template_argument
+		    		    tempinst.tiargs = parseTemplateArgument();
+		    		}
+		    	}
 		    	tempinst.setSourceRange(id.start, prevToken.ptr + prevToken.sourceLen - id.start);
 				e = new ScopeExp(loc(), tempinst);
 				e.setSourceRange(tempinst.start, tempinst.length);
@@ -6652,7 +7044,7 @@ public class Parser extends Lexer {
 
 		case TOKtypeof:
 		{   
-			if (apiLevel == D2) {
+			if (apiLevel >= D2) {
 				t = parseTypeof();
 			} else {
 				Expression exp;
@@ -6781,10 +7173,10 @@ public class Parser extends Lexer {
 									|| token.value == TOKsuper
 									|| token.value == TOKenum
 									|| token.value == TOKinterface
-									|| (apiLevel == D2 && token.value == TOKconst && peek(token).value == TOKrparen)
-									|| (apiLevel == D2 && token.value == TOKinvariant && peek(token).value == TOKrparen)
-									|| (apiLevel == D2 && token.value == TOKimmutable && peek(token).value == TOKrparen)
-									|| (apiLevel == D2 && token.value == TOKshared && peek(token).value == TOKrparen)
+									|| (apiLevel >= D2 && token.value == TOKconst && peek(token).value == TOKrparen)
+									|| (apiLevel >= D2 && token.value == TOKinvariant && peek(token).value == TOKrparen)
+									|| (apiLevel >= D2 && token.value == TOKimmutable && peek(token).value == TOKrparen)
+									|| (apiLevel >= D2 && token.value == TOKshared && peek(token).value == TOKrparen)
 									|| token.value == TOKfunction
 									|| token.value == TOKdelegate || token.value == TOKreturn)) {
 						tok2 = token.value;
@@ -6799,9 +7191,9 @@ public class Parser extends Lexer {
 					}
 				}
 				
-				if (apiLevel == D2 && ident != null && tspec != null) {
+				if (apiLevel >= D2 && ident != null && tspec != null) {
 					if (token.value == TOKcomma)
-						tpl = parseTemplateParameterList(1, null);
+						tpl = parseTemplateParameterList(1);
 					else {
 						tpl = new TemplateParameters();
 						check(TOKrparen);
@@ -6821,7 +7213,7 @@ public class Parser extends Lexer {
 				nextToken();
 				break;
 			}
-			if (apiLevel == D2) {
+			if (apiLevel >= D2) {
 				e = new IsExp(loc(), targ, ident, tok, tspec, tok2, tpl);
 			} else {
 				e = new IsExp(loc(), targ, ident, tok, tspec, tok2);
@@ -6973,7 +7365,12 @@ public class Parser extends Lexer {
 		    nextToken();
 		    break;
 	    }
-	    return parsePostExp(e);
+	    
+	    if (apiLevel < D2) {
+	    	return parsePostExp(e);
+	    } else {
+	    	return e;
+	    }
 	}
 
 	@SuppressWarnings("unchecked")
@@ -6988,14 +7385,29 @@ public class Parser extends Lexer {
 					IdentifierExp id = newIdentifierExp();
 
 					nextToken();
-					if (token.value == TOKnot && peek(token).value == TOKlparen) { 
+					
+					boolean condition = apiLevel < D2 ?
+							token.value == TOKnot && peek(token).value == TOKlparen
+						:
+						    token.value == TOKnot && peekNext() != TOKis;
+					if (condition) { 
 						// identifier!(template-argument-list)
 						TemplateInstance tempinst;
 						
 						tempinst = newTemplateInstance(loc(), id, encoder);						
 						nextToken();
-						
-						tempinst.tiargs(parseTemplateArgumentList());
+
+						if (apiLevel < D2) {
+							tempinst.tiargs(parseTemplateArgumentList());
+						} else {
+							if (token.value == TOKlparen) {
+							    // ident!(template_arguments)
+							    tempinst.tiargs = parseTemplateArgumentList();
+							} else {
+							    // ident!template_argument
+							    tempinst.tiargs = parseTemplateArgument();
+							}
+						}
 						tempinst.setSourceRange(id.start, prevToken.ptr + prevToken.sourceLen - id.start);
 						e = new DotTemplateInstanceExp(loc(), e, tempinst);
 					} else {
@@ -7179,20 +7591,59 @@ public class Parser extends Lexer {
 	
 				e = parseUnaryExp();
 				e = new CastExp(loc(), e, t);
-			} else {
-			    if ((token.value == TOKconst || token.value == TOKinvariant || token.value == TOKimmutable)
-						&& peek(token).value == TOKrparen) {
-			    	int modifierStart = token.ptr;
-					TOK tok = token.value;
+			} else {				
+				int modifierStart = token.ptr;
+				TOK tok = token.value;
+				
+			    /*
+				 * Look for cast(), cast(const), cast(immutable), cast(shared),
+				 * cast(shared const)
+				 */
+				int m;
+				if (token.value == TOKrparen) {
+					m = 0;
+					// goto Lmod1;
+					nextToken();
+					e = parseUnaryExp();
+					e = new CastExp(loc, e, m, tok, modifierStart);
+				} else if (token.value == TOKconst && peekNext() == TOKrparen) {
+					m = MODconst;
+					// goto Lmod2;
 					nextToken();
 					nextToken();
 					e = parseUnaryExp();
-					e = new CastExp(loc(), e, tok, modifierStart);
+					e = new CastExp(loc, e, m, tok, modifierStart);
+				} else if ((token.value == TOKimmutable || token.value == TOKinvariant)
+						&& peekNext() == TOKrparen) {
+					m = MODinvariant;
+					// goto Lmod2;
+					nextToken();
+					nextToken();
+					e = parseUnaryExp();
+					e = new CastExp(loc, e, m, tok, modifierStart);
+				} else if (token.value == TOKshared && peekNext() == TOKrparen) {
+					m = MODshared;
+					// goto Lmod2;
+					nextToken();
+					nextToken();
+					e = parseUnaryExp();
+					e = new CastExp(loc, e, m, tok, modifierStart);
+				} else if (token.value == TOKconst && peekNext() == TOKshared
+						&& peekNext2() == TOKrparen || token.value == TOKshared
+						&& peekNext() == TOKconst && peekNext2() == TOKrparen) {
+					m = MODshared | MODconst;
+					nextToken();
+					// Lmod2:
+					nextToken();
+					// Lmod1:
+					nextToken();
+					e = parseUnaryExp();
+					e = new CastExp(loc, e, m, tok, modifierStart);
 				} else {
-					t = parseType(); // ( type )
+					Type t2 = parseType(); // ( type )
 					check(TOKrparen);
 					e = parseUnaryExp();
-					e = new CastExp(loc(), e, t);
+					e = new CastExp(loc, e, t2);
 				}
 			}
 			break;
@@ -7314,10 +7765,16 @@ public class Parser extends Lexer {
 			}
 			// #endif
 			e = parsePrimaryExp();
+			if (apiLevel >= D2) {
+			    e = parsePostExp(e);
+			}
 			break;
 		}
 		default:
 			e = parsePrimaryExp();
+			if (apiLevel >= D2) {
+			    e = parsePostExp(e);
+			}
 			break;
 		}
 		
@@ -7357,7 +7814,7 @@ public class Parser extends Lexer {
 			arguments = parseParameters(pointer2_varargs);
 			varargs = pointer2_varargs[0];
 			
-			if (apiLevel == D2) {
+			if (apiLevel >= D2) {
 				while (true) {
 					if (token.value == TOKpure)
 						ispure = true;
@@ -7762,7 +8219,7 @@ public class Parser extends Lexer {
 	}
 	
 	/***************************************************************************
-	 * Collect argument list. Assume current token is '('.
+	 * Collect argument list. Assume current token is ',', '(' or '['.
 	 */
 	
 	@SuppressWarnings("unchecked")
@@ -8777,5 +9234,13 @@ public class Parser extends Lexer {
 	protected void inComment() {
 	}
 
+	private int uniqueIdCount = 0;
+	private IdentifierExp uniqueId(String prefix) {
+		return uniqueId(prefix, uniqueIdCount++);
+	}
+	
+	private IdentifierExp uniqueId(String prefix, int i) {
+		return new IdentifierExp((prefix + i).toCharArray());
+	}
 	
 }

@@ -12,10 +12,14 @@ clone.c
 func.c  --> missing StaticCtorDeclaration::StaticCtorDeclaration 
             and StaticDtorDeclaration::StaticDtorDeclaration
             
-Remaining from DMD 2.030
+Remaining from DMD 2.030 vs. 1.045
 ------------------------------
  * Ported up to but excluding SymOffExp::implicitConvTo
+ * Ported lexer.c, lexer.h, parser.c and parser.h
  * StringExp::length()
+ * Add template parameters to descent.core.dom.ConstructorDeclaration
+ * CastToModifier needs to be refactored to accept a list of modifiers, because of cast(const shared)
+ * Parser::parseBaseClasses what's the difference?
             
 Remaining from DMD 2.013
 ------------------------------

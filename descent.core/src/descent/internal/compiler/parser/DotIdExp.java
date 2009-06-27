@@ -322,9 +322,10 @@ public class DotIdExp extends UnaExp {
 				e = new PtrExp(loc, e1);
 				e.type = ((TypePointer) e1.type).next;
 				return e.type.dotExp(sc, e, ident, context);
-			}     else if (context.isD2() && t1b.ty == Tarray ||
+			}     
+			else if (context.isD2() && (t1b.ty == Tarray ||
 		             t1b.ty == Tsarray ||
-		    	     t1b.ty == Taarray)
+		    	     t1b.ty == Taarray))
 		        {	/* If ident is not a valid property, rewrite:
 		    	 *   e1.ident
 		             * as:

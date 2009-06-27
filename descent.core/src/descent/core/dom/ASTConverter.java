@@ -3351,6 +3351,8 @@ public class ASTConverter {
 		case TOKpure: b.setModifierKeyword(descent.core.dom.Modifier.ModifierKeyword.PURE_KEYWORD); break;
 		case TOKnothrow: b.setModifierKeyword(descent.core.dom.Modifier.ModifierKeyword.NOTHROW_KEYWORD); break;
 		case TOKtls: b.setModifierKeyword(descent.core.dom.Modifier.ModifierKeyword.THREAD_KEYWORD); break;
+		case TOKshared: b.setModifierKeyword(descent.core.dom.Modifier.ModifierKeyword.SHARED_KEYWORD); break;		
+		case TOKgshared: b.setModifierKeyword(descent.core.dom.Modifier.ModifierKeyword.GSHARED_KEYWORD); break;
 		default:
 			throw new IllegalStateException("Invalid modifier: " + a.tok);
 		}

@@ -1510,7 +1510,12 @@ PureFunctionCannotAccessMutableStaticData
 ConstraintIsNotConstantOrDoesNotEvaluateToABool
 	formatString=Constraint %1$s is not constant or does not evaluate to a bool
 	numArgs=1
-	
+EscapeStringLiteralDeprecated
+	formatString=Escape String literal is deprecated, use double quoted string literal instead
+	numArgs=0
+DelimiterCannotBeWhitespace
+	formatString=Delimiter cannot be whitespace
+	numArgs=0
 	
 	
 	

@@ -46,6 +46,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 	// TemplateDeclaration
 	public TemplateDeclaration overroot; // first in overnext list
 	public Expression constraint;
+	public boolean literal;
 
 	public List<TemplateInstance> instances = new ArrayList<TemplateInstance>();
 	

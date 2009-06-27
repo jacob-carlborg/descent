@@ -1139,6 +1139,10 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.PureFunctionCannotAccessMutableStaticData, arguments[0], arguments[1]);
 		case ConstraintIsNotConstantOrDoesNotEvaluateToABool:
 			return String.format(ProblemMessages.ConstraintIsNotConstantOrDoesNotEvaluateToABool, arguments[0]);
+		case EscapeStringLiteralDeprecated:
+			return String.format(ProblemMessages.EscapeStringLiteralDeprecated);
+		case DelimiterCannotBeWhitespace:
+			return String.format(ProblemMessages.DelimiterCannotBeWhitespace);
 		default:
 			return "";
 		}

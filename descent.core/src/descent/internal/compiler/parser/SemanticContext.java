@@ -408,11 +408,11 @@ public class SemanticContext {
 		typeInfoDeclarations.put(t, vtinfo);
 	}
 	
-	public boolean isD1() {
+	public final boolean isD1() {
 		return apiLevel == Parser.D1;
 	}
 	
-	public boolean isD2() {
+	public final boolean isD2() {
 		return apiLevel == Parser.D2;
 	}
 	

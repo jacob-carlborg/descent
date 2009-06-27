@@ -73,6 +73,7 @@ public class Modifier extends ASTDmdNode {
 		case TOKpure: return Flags.AccPure;
 		case TOKimmutable: return Flags.AccImmutable;
 		case TOKshared: return Flags.AccShared;
+		case TOKgshared: return Flags.AccGshared;
 		case TOKin: return 0;
 		case TOKout: return 0;
 		case TOKinout: return 0;

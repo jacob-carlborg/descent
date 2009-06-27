@@ -514,6 +514,8 @@ final class ProblemMessages extends NLS {
 	public static String PureFunctionCannotCallImpureFunction;
 	public static String PureFunctionCannotAccessMutableStaticData;
 	public static String ConstraintIsNotConstantOrDoesNotEvaluateToABool;
+	public static String EscapeStringLiteralDeprecated;
+	public static String DelimiterCannotBeWhitespace;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

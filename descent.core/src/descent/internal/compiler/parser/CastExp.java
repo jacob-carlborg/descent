@@ -37,6 +37,14 @@ public class CastExp extends UnaExp {
 		this.to = null;
 		this.tok = tok;
 	}
+	
+	public CastExp(Loc loc, Expression e1, int mod, TOK tok, int modifierStart) {
+		super(loc, TOK.TOKcast, e1);
+		this.modifierStart = modifierStart;
+		this.to = null;
+		this.tok = tok;
+		this.mod = mod;
+	}
 
 	public CastExp(Loc loc, Expression e1, Type t) {
 		super(loc, TOK.TOKcast, e1);

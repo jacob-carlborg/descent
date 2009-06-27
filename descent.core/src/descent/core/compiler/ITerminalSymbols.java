@@ -220,6 +220,7 @@ public interface ITerminalSymbols {
 	int TokenNameshared = 188;
 	int TokenNameimmutable = 189;
 	int TokenName__gshared = 190;
+	int TokenName__thread = 191;
 
 }
 

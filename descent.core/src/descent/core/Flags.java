@@ -266,6 +266,12 @@ public final class Flags {
 	public static final int AccPure = 0x20000000;
 	
 	/**
+	 * Gshared property flag.
+	 * @since 2.0
+	 */
+	public static final int AccGshared = 0x20000000;
+	
+	/**
 	 * Invariant property flag.
 	 * @since 2.0
 	 */

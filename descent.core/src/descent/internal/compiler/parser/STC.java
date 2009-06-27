@@ -57,6 +57,7 @@ public class STC {
 		case TOKenum: return STCmanifest;
 		case TOKtls: return STCtls;
 		case TOKshared: return STCshared;
+		case TOKgshared: return STCgshared;
 		case TOKimmutable: return STCimmutable;
 		}
 		throw new IllegalStateException();

@@ -617,7 +617,11 @@ public class Lexer implements IProblemRequestor {
 				
 				t.len = stringbuffer.offset();
 				t.sourceLen = p - t.ptr;
-				t.setString(input, t.ptr, t.sourceLen);				
+				t.setString(input, t.ptr, t.sourceLen);
+				
+				if (apiLevel >= D2) {
+					error(IProblem.EscapeStringLiteralDeprecated, linnum, t.ptr, t.sourceLen);
+				}
 				return;
 			}
 
@@ -4501,6 +4505,7 @@ public class Lexer implements IProblemRequestor {
 
 	private TOK delimitedStringConstant(Token t) {
 		int c;
+		int start = p;
 //		Loc start = loc;
 		int delimleft = 0;
 		int delimright = 0;
@@ -4598,13 +4603,17 @@ public class Lexer implements IProblemRequestor {
 						delimright = c;
 					} else {
 						hereid = t2.sourceString;
-						//printf("hereid = '%s'\n", hereid.toChars());
 						blankrol = 1;
 					}
 					nest = 0;
 				} else {
 					delimright = c;
 					nest = 0;
+					if (apiLevel >= D2) {
+						if (Character.isWhitespace(c)) {
+							error(IProblem.DelimiterCannotBeWhitespace, linnum, p, p - start);
+						}
+					}
 				}
 			} else {
 				if (blankrol != 0) {
@@ -4629,8 +4638,11 @@ public class Lexer implements IProblemRequestor {
 				}
 
 				// isalpha inlined
-				if (startline != 0
-						&& (('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z'))) {
+				boolean condition = apiLevel < D2 ?
+						startline != 0 && (('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z'))
+					:
+						startline != 0 && (('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z')) && hereid != null;
+				if (condition) {
 					Token t2 = new Token();
 					int psave = p;
 					p--;

@@ -713,5 +713,7 @@ public interface IProblem {
 	int PureFunctionCannotCallImpureFunction = 502;
 	int PureFunctionCannotAccessMutableStaticData = 503;
 	int ConstraintIsNotConstantOrDoesNotEvaluateToABool = 504;
+	int EscapeStringLiteralDeprecated = 505;
+	int DelimiterCannotBeWhitespace = 506;
 
 }
