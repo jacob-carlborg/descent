@@ -37,7 +37,7 @@ public class SignatureParameterTypes_Test extends AbstractSignatureTest {
 	}
 	
 	public void testInvariant() {
-		pt(F + Signature.C_INVARIANT + i + Z + v, Signature.C_INVARIANT + i);
+		pt(F + Signature.C_IMMUTABLE + i + Z + v, Signature.C_IMMUTABLE + i);
 	}
 	
 	public void testTypeof() {

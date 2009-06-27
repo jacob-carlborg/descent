@@ -115,8 +115,10 @@ public class AssocArrayLiteralExp extends Expression {
 		if (tb.ty == Taarray && typeb.ty == Taarray) {
 			for (int i = 0; i < keys.size(); i++) {
 				Expression e = keys.get(i);
-				MATCH m = e.implicitConvTo(((TypeAArray) tb).key,
-						context);
+				MATCH m =
+					context.isD1() ?
+							e.implicitConvTo(((TypeAArray) tb).key, context) :
+							e.implicitConvTo(((TypeAArray) tb).index, context);
 				if (m.ordinal() < result.ordinal()) {
 					result = m; // remember worst match
 				}

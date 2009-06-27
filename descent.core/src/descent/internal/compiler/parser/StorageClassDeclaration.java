@@ -1,40 +1,52 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
-
-import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.compiler.parser.ast.IASTVisitor;
-
 import static descent.internal.compiler.parser.STC.STCabstract;
+import static descent.internal.compiler.parser.STC.STCalias;
 import static descent.internal.compiler.parser.STC.STCauto;
 import static descent.internal.compiler.parser.STC.STCconst;
 import static descent.internal.compiler.parser.STC.STCdeprecated;
 import static descent.internal.compiler.parser.STC.STCextern;
 import static descent.internal.compiler.parser.STC.STCfinal;
-import static descent.internal.compiler.parser.STC.STCinvariant;
+import static descent.internal.compiler.parser.STC.STCgshared;
+import static descent.internal.compiler.parser.STC.STCimmutable;
+import static descent.internal.compiler.parser.STC.STCin;
+import static descent.internal.compiler.parser.STC.STClazy;
 import static descent.internal.compiler.parser.STC.STCmanifest;
 import static descent.internal.compiler.parser.STC.STCnothrow;
+import static descent.internal.compiler.parser.STC.STCout;
 import static descent.internal.compiler.parser.STC.STCoverride;
 import static descent.internal.compiler.parser.STC.STCpure;
+import static descent.internal.compiler.parser.STC.STCref;
 import static descent.internal.compiler.parser.STC.STCscope;
+import static descent.internal.compiler.parser.STC.STCshared;
 import static descent.internal.compiler.parser.STC.STCstatic;
 import static descent.internal.compiler.parser.STC.STCsynchronized;
 import static descent.internal.compiler.parser.STC.STCtls;
-
 import static descent.internal.compiler.parser.TOK.TOKabstract;
+import static descent.internal.compiler.parser.TOK.TOKalias;
 import static descent.internal.compiler.parser.TOK.TOKauto;
 import static descent.internal.compiler.parser.TOK.TOKconst;
 import static descent.internal.compiler.parser.TOK.TOKdeprecated;
 import static descent.internal.compiler.parser.TOK.TOKextern;
 import static descent.internal.compiler.parser.TOK.TOKfinal;
-import static descent.internal.compiler.parser.TOK.TOKinvariant;
+import static descent.internal.compiler.parser.TOK.TOKgshared;
+import static descent.internal.compiler.parser.TOK.TOKimmutable;
+import static descent.internal.compiler.parser.TOK.TOKin;
+import static descent.internal.compiler.parser.TOK.TOKlazy;
 import static descent.internal.compiler.parser.TOK.TOKnothrow;
+import static descent.internal.compiler.parser.TOK.TOKout;
 import static descent.internal.compiler.parser.TOK.TOKoverride;
 import static descent.internal.compiler.parser.TOK.TOKpure;
+import static descent.internal.compiler.parser.TOK.TOKref;
 import static descent.internal.compiler.parser.TOK.TOKscope;
 import static descent.internal.compiler.parser.TOK.TOKstatic;
 import static descent.internal.compiler.parser.TOK.TOKsynchronized;
 import static descent.internal.compiler.parser.TOK.TOKtls;
+
+import java.util.ArrayList;
+
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class StorageClassDeclaration extends AttribDeclaration {
 
@@ -66,7 +78,7 @@ public class StorageClassDeclaration extends AttribDeclaration {
 			new SCstring(STCstatic, TOKstatic),
 			new SCstring(STCextern, TOKextern),
 			new SCstring(STCconst, TOKconst), 
-			new SCstring(STCinvariant, TOKinvariant), 
+			new SCstring(STCimmutable, TOKimmutable), 
 			new SCstring(STCfinal, TOKfinal),
 			new SCstring(STCabstract, TOKabstract),
 			new SCstring(STCsynchronized, TOKsynchronized),
@@ -74,7 +86,13 @@ public class StorageClassDeclaration extends AttribDeclaration {
 			new SCstring(STCoverride, TOKoverride),
 			new SCstring(STCnothrow, TOKnothrow),
 			new SCstring(STCpure, TOKpure),
+			new SCstring(STCref, TOKref),
 			new SCstring(STCtls, TOKtls),
+			new SCstring(STCgshared, TOKgshared),
+			new SCstring(STClazy, TOKlazy),
+			new SCstring(STCalias, TOKalias),
+			new SCstring(STCout, TOKout),
+			new SCstring(STCin, TOKin),
 			};
 
 	public boolean single;
@@ -118,11 +136,14 @@ public class StorageClassDeclaration extends AttribDeclaration {
 				if ((stc & (STCauto | STCscope | STCstatic | STCextern | STCmanifest)) != 0) {
 					sc.stc &= ~(STCauto | STCscope | STCstatic | STCextern | STCmanifest);
 				}
-				if ((stc & (STCauto | STCscope | STCstatic | STCtls | STCmanifest)) != 0) {
-					sc.stc &= ~(STCauto | STCscope | STCstatic | STCtls | STCmanifest);
+				if ((stc & (STCauto | STCscope | STCstatic | STCtls | STCmanifest | STCgshared)) != 0) {
+					sc.stc &= ~(STCauto | STCscope | STCstatic | STCtls | STCmanifest | STCgshared);
 				}
-				if ((stc & (STCconst | STCinvariant | STCmanifest)) != 0) {
-					sc.stc &= ~(STCconst | STCinvariant | STCmanifest);
+				if ((stc & (STCconst | STCimmutable | STCmanifest)) != 0) {
+					sc.stc &= ~(STCconst | STCimmutable | STCmanifest);
+				}
+				if ((stc & (STCgshared | STCshared | STCtls)) != 0) {
+					sc.stc &= ~(STCgshared | STCshared | STCtls);
 				}
 			} else {
 				if ((stc & (STC.STCauto | STC.STCscope | STC.STCstatic | STC.STCextern)) != 0) {

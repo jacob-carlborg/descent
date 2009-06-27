@@ -1512,7 +1512,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 			StringBuilder sb = new StringBuilder();
 			
 			if ((mod & MODinvariant) != 0) {
-				sb.append(Signature.C_INVARIANT);
+				sb.append(Signature.C_IMMUTABLE);
 			} else if ((mod & MODconst) != 0) {
 				sb.append(Signature.C_CONST);
 			}
@@ -1534,7 +1534,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	
 	protected final void appendSignature(StringBuilder sb) {
 		if ((mod & MODinvariant) != 0) {
-			sb.append(Signature.C_INVARIANT);
+			sb.append(Signature.C_IMMUTABLE);
 		} else if ((mod & MODconst) != 0) {
 			sb.append(Signature.C_CONST);
 		}

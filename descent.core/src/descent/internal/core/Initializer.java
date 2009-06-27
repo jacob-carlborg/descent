@@ -106,7 +106,7 @@ public IJavaElement getPrimaryElement(boolean checkOwner) {
 public boolean isStaticConstructor() throws JavaModelException {
 	long flags = getFlags();
 	return !Flags.isStaticDestructor(flags)
-		&& !Flags.isInvariant(flags)
+		&& !Flags.isImmutable(flags)
 		&& !Flags.isUnitTest(flags)
 		&& !Flags.isStaticAssert(flags)
 		&& !Flags.isDebugAssignment(flags)
@@ -122,7 +122,7 @@ public boolean isStaticDestructor() throws JavaModelException {
 	return Flags.isStaticDestructor(getFlags());
 }
 public boolean isInvariant() throws JavaModelException {
-	return Flags.isInvariant(getFlags());
+	return Flags.isImmutable(getFlags());
 }
 public boolean isUnitTest() throws JavaModelException {
 	return Flags.isUnitTest(getFlags());

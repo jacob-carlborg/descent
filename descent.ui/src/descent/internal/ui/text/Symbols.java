@@ -66,4 +66,5 @@ public interface Symbols {
 	int TokenCONST = 3013;
 	int TokenSCOPE = 3014;
 	int TokenINVARIANT = 3015;
+	int TokenIMMUTABLE = 3016;
 }

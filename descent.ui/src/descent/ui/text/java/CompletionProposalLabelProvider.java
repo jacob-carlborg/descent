@@ -853,7 +853,7 @@ public class CompletionProposalLabelProvider {
 			if (Flags.isStatic(flags)) {
 				adornments |= JavaElementImageDescriptor.STATIC;
 			}
-			if (Flags.isInvariant(flags)) {
+			if (Flags.isImmutable(flags)) {
 				adornments |= JavaElementImageDescriptor.INVARIANT;
 			} else if (Flags.isConst(flags)) {
 				adornments |= JavaElementImageDescriptor.CONST;
@@ -864,7 +864,7 @@ public class CompletionProposalLabelProvider {
 			if (Flags.isSynchronized(flags)) {
 				adornments |= JavaElementImageDescriptor.SYNCHRONIZED;
 			}
-			if (Flags.isInvariant(flags)) {
+			if (Flags.isImmutable(flags)) {
 				adornments |= JavaElementImageDescriptor.INVARIANT;
 			} else if (Flags.isConst(flags)) {
 				adornments |= JavaElementImageDescriptor.CONST;
@@ -881,7 +881,7 @@ public class CompletionProposalLabelProvider {
 			if (Flags.isAbstract(flags) && !Flags.isInterface(flags)) {
 				adornments |= JavaElementImageDescriptor.ABSTRACT;
 			}
-			if (Flags.isInvariant(flags)) {
+			if (Flags.isImmutable(flags)) {
 				adornments |= JavaElementImageDescriptor.INVARIANT;
 			} else if (Flags.isConst(flags)) {
 				adornments |= JavaElementImageDescriptor.CONST;
@@ -889,7 +889,7 @@ public class CompletionProposalLabelProvider {
 		}
 		
 		if (kind == CompletionProposal.LOCAL_VARIABLE_REF) {
-			if (Flags.isInvariant(flags)) {
+			if (Flags.isImmutable(flags)) {
 				adornments |= JavaElementImageDescriptor.INVARIANT;
 			} else if (Flags.isConst(flags)) {
 				adornments |= JavaElementImageDescriptor.CONST;

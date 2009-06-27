@@ -65,7 +65,7 @@ public class SignatureToType_Test extends AbstractSignatureTest implements ISign
 	}
 	
 	public void testInvariant() {
-		TypeBasic actual = (TypeBasic) InternalSignature.toType(Signature.C_INVARIANT + i, new ASTNodeEncoder(AST.D1));
+		TypeBasic actual = (TypeBasic) InternalSignature.toType(Signature.C_IMMUTABLE + i, new ASTNodeEncoder(AST.D1));
 		assertEquals(descent.internal.compiler.parser.TY.Tint32, actual.ty);
 		assertEquals(Type.MODinvariant, actual.mod);
 	}

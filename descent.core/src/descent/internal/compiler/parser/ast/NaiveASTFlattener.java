@@ -517,7 +517,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 			if (node.tok == TOK.TOKconst) {
 				this.buffer.append("const");
 			} else {
-				this.buffer.append("invariant");
+				this.buffer.append("immutable");
 			}
 		}
 		this.buffer.append(") ");
@@ -1671,7 +1671,9 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		case TOKextern: this.buffer.append("extern"); break;
 		case TOKconst: this.buffer.append("const"); break;
 		case TOKscope: this.buffer.append("scope"); break;
-		case TOKinvariant: this.buffer.append("invariant"); break;
+		case TOKinvariant:
+		case TOKimmutable:
+			this.buffer.append("immutable"); break;
 		case TOKin: this.buffer.append("in"); break;
 		case TOKout: this.buffer.append("out"); break;
 		case TOKinout: this.buffer.append("inout"); break;

@@ -570,9 +570,9 @@ class DefaultBindingResolver extends BindingResolver {
 					if (CharOperation.equals(prop, Id.idup)) {
 						String otherSignature = signature;
 						if (signature.length() == 0
-								|| signature.charAt(0) != Signature.C_INVARIANT) {
+								|| signature.charAt(0) != Signature.C_IMMUTABLE) {
 							otherSignature = String
-									.valueOf(Signature.C_INVARIANT)
+									.valueOf(Signature.C_IMMUTABLE)
 									+ signature;
 						}
 						binding = new BuiltinPropertyBinding(this, type

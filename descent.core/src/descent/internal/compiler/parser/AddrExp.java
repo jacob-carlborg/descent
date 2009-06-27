@@ -2,14 +2,17 @@ package descent.internal.compiler.parser;
 
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+import static descent.internal.compiler.parser.STC.STCmanifest;
 import static descent.internal.compiler.parser.TOK.TOKarray;
+import static descent.internal.compiler.parser.TOK.TOKcomma;
 import static descent.internal.compiler.parser.TOK.TOKdotvar;
 import static descent.internal.compiler.parser.TOK.TOKindex;
 import static descent.internal.compiler.parser.TOK.TOKint64;
+import static descent.internal.compiler.parser.TOK.TOKoverloadset;
 import static descent.internal.compiler.parser.TOK.TOKstar;
-import static descent.internal.compiler.parser.TOK.*;
-import static descent.internal.compiler.parser.STC.*;
+import static descent.internal.compiler.parser.TOK.TOKvar;
 import static descent.internal.compiler.parser.TY.Tbit;
+import static descent.internal.compiler.parser.TY.Tdelegate;
 import static descent.internal.compiler.parser.TY.Tfunction;
 import static descent.internal.compiler.parser.TY.Tpointer;
 import static descent.internal.compiler.parser.TY.Tsarray;
@@ -75,24 +78,66 @@ public class AddrExp extends UnaExp {
 
 	@Override
 	public MATCH implicitConvTo(Type t, SemanticContext context) {
-		MATCH result;
-
-		result = type.implicitConvTo(t, context);
-
+		MATCH result = type.implicitConvTo(t, context);
 		if (result == MATCHnomatch) {
-			// Look for pointers to functions where the functions are
-			// overloaded.
-			VarExp ve;
-			FuncDeclaration f;
+			if (context.isD1()) {
+				// Look for pointers to functions where the functions are
+				// overloaded.
+				VarExp ve;
+				FuncDeclaration f;
+	
+				t = t.toBasetype(context);
+				if (type.ty == Tpointer && type.next.ty == Tfunction
+						&& t.ty == Tpointer && t.next.ty == Tfunction
+						&& e1.op == TOKvar) {
+					ve = (VarExp) e1;
+					f = ve.var.isFuncDeclaration();
+					if (f != null && f.overloadExactMatch(t.next, context) != null) {
+						result = MATCHexact;
+					}
+				}
+			} else {
+				// Look for pointers to functions where the functions are
+				// overloaded.
+				t = t.toBasetype(context);
 
-			t = t.toBasetype(context);
-			if (type.ty == Tpointer && type.next.ty == Tfunction
-					&& t.ty == Tpointer && t.next.ty == Tfunction
-					&& e1.op == TOKvar) {
-				ve = (VarExp) e1;
-				f = ve.var.isFuncDeclaration();
-				if (f != null && f.overloadExactMatch(t.next, context) != null) {
-					result = MATCHexact;
+				if (e1.op == TOKoverloadset
+						&& (t.ty == Tpointer || t.ty == Tdelegate)
+						&& t.nextOf().ty == Tfunction) {
+					OverExp eo = (OverExp) e1;
+					FuncDeclaration f = null;
+					for (int i = 0; i < size(eo.vars.a); i++) {
+						Dsymbol s = (Dsymbol) eo.vars.a.get(i);
+						FuncDeclaration f2 = s.isFuncDeclaration();
+						assert (f2 != null);
+						if (f2.overloadExactMatch(t.nextOf(), context) != null) {
+							if (f != null)
+								/*
+								 * Error if match in more than one overload set,
+								 * even if one is a 'better' match than the
+								 * other.
+								 */
+								ScopeDsymbol.multiplyDefined(loc, f, f2,
+										context);
+							else
+								f = f2;
+							result = MATCHexact;
+						}
+					}
+				}
+
+				if (type.ty == Tpointer && type.nextOf().ty == Tfunction
+						&& t.ty == Tpointer && t.nextOf().ty == Tfunction
+						&& e1.op == TOKvar) {
+					/*
+					 * I don't think this can ever happen - it should have been
+					 * converted to a SymOffExp.
+					 */
+					throw new IllegalStateException();
+//					VarExp ve = (VarExp) e1;
+//					FuncDeclaration f = ve.var.isFuncDeclaration();
+//					if (f != null && f.overloadExactMatch(t.nextOf(), context) != null)
+//						result = MATCHexact;
 				}
 			}
 		}

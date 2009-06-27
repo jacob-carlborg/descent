@@ -2166,35 +2166,35 @@ public abstract class ASTDmdNode extends ASTNode {
 		case BUILTINsin:
 			if (arg0.op == TOKfloat64) {
 				e = new RealExp(Loc.ZERO, arg0.toReal(context).sin(),
-						Type.tfloat80);
+						context.isD2() ? arg0.type : Type.tfloat80);
 			}
 			break;
 
 		case BUILTINcos:
 			if (arg0.op == TOKfloat64) {
 				e = new RealExp(Loc.ZERO, arg0.toReal(context).cos(),
-						Type.tfloat80);
+						context.isD2() ? arg0.type : Type.tfloat80);
 			}
 			break;
 
 		case BUILTINtan:
 			if (arg0.op == TOKfloat64) {
 				e = new RealExp(Loc.ZERO, arg0.toReal(context).tan(),
-						Type.tfloat80);
+						context.isD2() ? arg0.type : Type.tfloat80);
 			}
 			break;
 
 		case BUILTINsqrt:
 			if (arg0.op == TOKfloat64) {
 				e = new RealExp(Loc.ZERO, arg0.toReal(context).sqrt(),
-						Type.tfloat80);
+						context.isD2() ? arg0.type : Type.tfloat80);
 			}
 			break;
 
 		case BUILTINfabs:
 			if (arg0.op == TOKfloat64) {
 				e = new RealExp(Loc.ZERO, arg0.toReal(context).abs(),
-						Type.tfloat80);
+						context.isD2() ? arg0.type : Type.tfloat80);
 			}
 			break;
 		}

@@ -1445,6 +1445,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		case EXTERN_KEYWORD: scribe.printNextToken(TOK.TOKextern); break;
 		case FINAL_KEYWORD: scribe.printNextToken(TOK.TOKfinal); break;
 		case INVARIANT_KEYWORD: scribe.printNextToken(TOK.TOKinvariant); break;
+		case IMMUTABLE_KEYWORD: scribe.printNextToken(TOK.TOKimmutable); break;
 		case OVERRIDE_KEYWORD: scribe.printNextToken(TOK.TOKoverride); break;
 		case PACKAGE_KEYWORD: scribe.printNextToken(TOK.TOKpackage); break;
 		case PRIVATE_KEYWORD: scribe.printNextToken(TOK.TOKprivate); break;
@@ -1458,6 +1459,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		case LAZY_KEYWORD: scribe.printNextToken(TOK.TOKlazy); break;
 		case OUT_KEYWORD: scribe.printNextToken(TOK.TOKout); break;
 		case REF_KEYWORD: scribe.printNextToken(TOK.TOKref); break;
+		case SHARED_KEYWORD: scribe.printNextToken(TOK.TOKshared); break;
 		default: throw new IllegalStateException(); 
 		}
 		return false;

@@ -1,19 +1,10 @@
 package descent.internal.compiler.parser;
 
-import java.util.List;
-
-import org.eclipse.core.runtime.Assert;
-
-import descent.core.compiler.CharOperation;
-import descent.core.compiler.IProblem;
-import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.DYNCAST.DYNCAST_EXPRESSION;
-
+import static descent.internal.compiler.parser.MATCH.MATCHconst;
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
-
 import static descent.internal.compiler.parser.TOK.TOKstring;
-
 import static descent.internal.compiler.parser.TY.Tarray;
 import static descent.internal.compiler.parser.TY.Tchar;
 import static descent.internal.compiler.parser.TY.Tdchar;
@@ -22,6 +13,14 @@ import static descent.internal.compiler.parser.TY.Tpointer;
 import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Tvoid;
 import static descent.internal.compiler.parser.TY.Twchar;
+
+import java.util.List;
+
+import org.eclipse.core.runtime.Assert;
+
+import descent.core.compiler.CharOperation;
+import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
 public class StringExp extends Expression {
@@ -177,6 +176,21 @@ public class StringExp extends Expression {
 	public int getNodeType() {
 		return STRING_EXP;
 	}
+	
+	@Override
+	public Expression implicitCastTo(Scope sc, Type t, SemanticContext context) {
+		if (context.isD1()) {
+			return super.implicitCastTo(sc, t, context);
+		} else {
+			boolean committed = this.committed;
+			Expression e = super.implicitCastTo(sc, t, context);
+			if (e.op == TOKstring) {
+				// Retain polysemous nature if it started out that way
+				((StringExp) e).committed = committed;
+			}
+			return e;
+		}
+	}
 
 	@Override
 	public MATCH implicitConvTo(Type t, SemanticContext context) {
@@ -193,25 +207,68 @@ public class StringExp extends Expression {
 			}
 			if (type.ty == Tsarray || type.ty == Tarray || type.ty == Tpointer) {
 				if (type.next.ty == Tchar) {
-					switch (t.ty) {
-					case Tsarray:
-						if (type.ty == Tsarray
-								&& !((TypeSArray) type).dim.toInteger(context)
-										.equals(
-												((TypeSArray) t).dim
-														.toInteger(context))) {
-							return MATCHnomatch;
+					
+					if (context.isD1()) {
+						switch (t.ty) {
+						case Tsarray:
+							if (type.ty == Tsarray
+									&& !((TypeSArray) type).dim.toInteger(context)
+											.equals(
+													((TypeSArray) t).dim
+															.toInteger(context))) {
+								return MATCHnomatch;
+							}
+						case Tarray:
+						case Tpointer:
+							if (t.next.ty == Tchar) {
+								return MATCHexact;
+							} else if (t.next.ty == Twchar) {
+								return MATCHexact;
+							} else if (t.next.ty == Tdchar) {
+								return MATCHexact;
+							}
+							break;
 						}
-					case Tarray:
-					case Tpointer:
-						if (t.next.ty == Tchar) {
-							return MATCHexact;
-						} else if (t.next.ty == Twchar) {
-							return MATCHexact;
-						} else if (t.next.ty == Tdchar) {
-							return MATCHexact;
+					} else {
+						Type tn;
+						MATCH m;
+						switch (t.ty) {
+						case Tsarray:
+							if (type.ty == Tsarray) {
+								if (((TypeSArray) type).dim.toInteger(context) != ((TypeSArray) t).dim
+										.toInteger(context))
+									return MATCHnomatch;
+								TY tynto = t.nextOf().ty;
+								if (tynto == Tchar || tynto == Twchar
+										|| tynto == Tdchar)
+									return MATCHexact;
+							} else if (type.ty == Tarray) {
+								if (length() > ((TypeSArray) t).dim.toInteger(
+										context).intValue())
+									return MATCHnomatch;
+								TY tynto = t.nextOf().ty;
+								if (tynto == Tchar || tynto == Twchar
+										|| tynto == Tdchar)
+									return MATCHexact;
+							}
+						case Tarray:
+
+						case Tpointer:
+							tn = t.nextOf();
+							m = MATCHexact;
+							if (type.nextOf().mod != tn.mod) {
+								if (!tn.isConst())
+									return MATCHnomatch;
+								m = MATCHconst;
+							}
+							switch (tn.ty) {
+							case Tchar:
+							case Twchar:
+							case Tdchar:
+								return m;
+							}
+							break;
 						}
-						break;
 					}
 				}
 			}
@@ -233,7 +290,7 @@ public class StringExp extends Expression {
 	public Expression castTo(Scope sc, Type t, SemanticContext context) {
 		/* This follows copy-on-write; any changes to 'this'
 		 * will result in a copy.
-		 * The this->string member is considered immutable.
+		 * The this.string member is considered immutable.
 		 */
 		StringExp se;
 		Type tb;
@@ -586,6 +643,14 @@ public class StringExp extends Expression {
 			}
 		}
 		return len1 - len2;
+	}
+	
+	/**********************************
+	 * Return length of string.
+	 */
+	public int length() {
+		// SEMANTIC StringExp::len
+		return len;
 	}
 
 	@Override

@@ -520,6 +520,8 @@ public final class JavaHeuristicScanner implements Symbols {
 					return TokenPROTECTED;
 				if ("invariant".equals(s)) //$NON-NLS-1$
 					return TokenINVARIANT;
+				if ("immutable".equals(s)) //$NON-NLS-1$
+					return TokenIMMUTABLE;
 				break;
 			case 10:
 				if ("deprecated".equals(s)) //$NON-NLS-1$

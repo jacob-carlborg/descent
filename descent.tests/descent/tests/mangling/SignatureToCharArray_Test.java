@@ -49,7 +49,7 @@ public class SignatureToCharArray_Test extends AbstractSignatureTest {
 	}
 	
 	public void testInvariant() {
-		tca("invariant(int)", Signature.C_INVARIANT + i);
+		tca("invariant(int)", Signature.C_IMMUTABLE + i);
 	}
 	
 	public void testClass() {

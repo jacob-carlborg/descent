@@ -402,7 +402,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 			type = Type.terror;
 		}
 
-		if (!context.isD2()) {
+		if (context.isD1()) {
 			// Added for Descent
 			if (t == null && context.global.errors > 0) {
 				return MATCHnomatch;

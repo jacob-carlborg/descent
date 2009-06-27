@@ -159,7 +159,7 @@ public class CallExp extends UnaExp {
 				if (context.isD2()) {
 					doInlineDup = false;
 
-					BUILTIN b = fd.isBuiltin();
+					BUILTIN b = fd.isBuiltin(context);
 					if (b != BUILTIN.BUILTINunknown) {
 						Expressions args = new Expressions();
 						args.setDim(size(arguments));
@@ -246,7 +246,7 @@ public class CallExp extends UnaExp {
 		if (condition) {
 			FuncDeclaration fd = ((VarExp) e1).var.isFuncDeclaration();
 			if (fd != null) {
-			    BUILTIN b = fd.isBuiltin();
+			    BUILTIN b = fd.isBuiltin(context);
 			    if (context.isD2() && b != BUILTIN.BUILTINunknown) {
 					e = eval_builtin(b, arguments, context);
 					if (null == e)	{		// failed

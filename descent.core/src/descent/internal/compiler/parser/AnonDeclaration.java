@@ -1,5 +1,10 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.STC.STCauto;
+import static descent.internal.compiler.parser.STC.STCgshared;
+import static descent.internal.compiler.parser.STC.STCscope;
+import static descent.internal.compiler.parser.STC.STCstatic;
+import static descent.internal.compiler.parser.STC.STCtls;
 import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
@@ -7,11 +12,6 @@ import org.eclipse.core.runtime.Assert;
 import descent.core.IType;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
-import static descent.internal.compiler.parser.STC.STCauto;
-import static descent.internal.compiler.parser.STC.STCscope;
-import static descent.internal.compiler.parser.STC.STCstatic;
-import static descent.internal.compiler.parser.STC.STCtls;
 
 public class AnonDeclaration extends AttribDeclaration {
 
@@ -88,7 +88,7 @@ public class AnonDeclaration extends AttribDeclaration {
 
 			sc = sc.push();
 			
-			sc.stc &= ~(STCauto | STCscope | STCstatic | STCtls);	
+			sc.stc &= ~(STCauto | STCscope | STCstatic | STCtls | STCgshared);	
 			sc.inunion = isunion;
 			sc.offset = 0;
 			sc.flags = 0;

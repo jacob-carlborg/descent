@@ -69,7 +69,6 @@ public class FuncDeclaration extends Declaration {
 			'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n' };
 	private final static char[] null_this = { 'n', 'u', 'l', 'l', ' ', 't',
 			'h', 'i', 's' };
-	private static String FeZe = "FeZe"; // real function(real)
 
 	public List fthrows; // Array of Type's of exceptions (not used)
 	public Statement fensure;
@@ -2451,14 +2450,15 @@ public class FuncDeclaration extends Declaration {
 		bodyToCBuffer(buf, hgs, context);
 	}
 
-	public BUILTIN isBuiltin() {
+	public BUILTIN isBuiltin(SemanticContext context) {
 		if (builtin == BUILTINunknown) {
 			builtin = BUILTINnot;
 			if (parent != null && parent.isModule() != null) {
+			    // If it's in the std.math package
 				if (equals(parent.ident, Id.math) && parent.parent != null
 						&& equals(parent.parent.ident, Id.std)
 						&& null == parent.parent.parent) {
-					if (FeZe.equals(type.deco)) {
+					if ("FeZe".equals(type.deco)) {
 						if (equals(ident, Id.sin)) {
 							builtin = BUILTINsin;
 						} else if (equals(ident, Id.cos)) {
@@ -2470,6 +2470,16 @@ public class FuncDeclaration extends Declaration {
 						} else if (equals(ident, Id.fabs)) {
 							builtin = BUILTINfabs;
 						}
+					}
+				} // if float or double versions
+				else if ("FNaNbdZd".equals(type.deco)
+						|| "FNaNbfZf".equals(type.deco)) {
+					if (context.isD2()) {
+						if (equals(ident, Id._sqrt)) {
+							builtin = BUILTINsqrt;
+						}	
+					} else {
+						builtin = BUILTINsqrt;
 					}
 				}
 			}

@@ -1287,7 +1287,7 @@ public abstract static class Node {
 	
 	private final PreviewSnippet CONST_PREVIEW =
 		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
-				"invariant(int) five = 5;"
+				"immutable(int) five = 5;"
 			);
 	
 	private final PreviewSnippet ASTERISK_PREVIEW =

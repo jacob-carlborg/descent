@@ -374,7 +374,7 @@ public class JavaElementImageProvider {
 				if (Flags.isStatic(modifiers) /*|| isInterfaceOrAnnotationFieldOrType(member) || isEnumConstant(member, modifiers)*/)
 					flags |= JavaElementImageDescriptor.STATIC;
 				
-				if (Flags.isInvariant(modifiers)) {
+				if (Flags.isImmutable(modifiers)) {
 					flags |= JavaElementImageDescriptor.INVARIANT;
 				} else if (Flags.isConst(modifiers)) {
 					flags |= JavaElementImageDescriptor.CONST;

@@ -12,6 +12,11 @@ clone.c
 func.c  --> missing StaticCtorDeclaration::StaticCtorDeclaration 
             and StaticDtorDeclaration::StaticDtorDeclaration
             
+Remaining from DMD 2.030
+------------------------------
+ * Ported up to but excluding SymOffExp::implicitConvTo
+ * StringExp::length()
+            
 Remaining from DMD 2.013
 ------------------------------
 Make an option to ignore unrecongnized pragmas.

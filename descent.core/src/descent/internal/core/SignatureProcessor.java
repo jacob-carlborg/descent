@@ -432,7 +432,7 @@ public class SignatureProcessor {
 				i = process0(signature, i + 1, wantSignature, requestor);
 				requestor.acceptConst(substring(signature, start, i, wantSignature));
 				return i;
-			case Signature.C_INVARIANT:
+			case Signature.C_IMMUTABLE:
 				i = process0(signature, i + 1, wantSignature, requestor);
 				requestor.acceptInvariant(substring(signature, start, i, wantSignature));
 				return i;

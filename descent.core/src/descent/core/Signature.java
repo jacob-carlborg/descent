@@ -708,7 +708,7 @@ public final class Signature {
 	 * Character constant indicating an invariant type in a signature.
 	 * Value is <code>'y'</code>.
 	 */
-	public static final char C_INVARIANT 									= 'y';
+	public static final char C_IMMUTABLE 									= 'y';
 	
 	/**
 	 * Character constant indicating a dot in a signature.
@@ -1711,7 +1711,7 @@ public static String toString(String signature, final boolean fqn) throws Illega
 				Stack<StringBuilder> st = stack.peek();
 				
 				StringBuilder sb = st.peek();
-				sb.insert(0, "invariant(");
+				sb.insert(0, "immutable(");
 				sb.append(')');
 			}
 			@Override

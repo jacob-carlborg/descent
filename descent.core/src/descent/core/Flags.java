@@ -281,7 +281,7 @@ public final class Flags {
 	 * Immutable property flag.
 	 * @since 2.0
 	 */
-	public static final int AccImmutable = 0x02000000;
+	public static final int AccImmutable = AccInvariant;
 	
 	/**
 	 * UnitTest property flag.
@@ -695,8 +695,8 @@ public final class Flags {
 	 * @param flags the flags
 	 * @return <code>true</code> if the <code>invariant</code> modifier is included
 	 */
-	public static boolean isInvariant(long flags) {
-		return (flags & AccInvariant) != 0;
+	public static boolean isImmutable(long flags) {
+		return (flags & AccImmutable) != 0;
 	}
 	
 	/**
@@ -905,8 +905,8 @@ public final class Flags {
 			sb.append("new() "); //$NON-NLS-1$
 		if (isDelete(flags))
 			sb.append("delete() "); //$NON-NLS-1$
-		if (isInvariant(flags))
-			sb.append("invariant "); //$NON-NLS-1$
+		if (isImmutable(flags))
+			sb.append("immutable "); //$NON-NLS-1$
 		if (isUnitTest(flags))
 			sb.append("unittest "); //$NON-NLS-1$
 		if (isStaticAssert(flags))
