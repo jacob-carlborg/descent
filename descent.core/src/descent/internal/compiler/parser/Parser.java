@@ -165,7 +165,6 @@ public class Parser extends Lexer {
 	 * contain inner declarations.
 	 */
 	public boolean diet;
-	private boolean inDiet;
 
 	Module module;
 	private ModuleDeclaration md;

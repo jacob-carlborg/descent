@@ -164,6 +164,7 @@ public class Lexer implements IProblemRequestor {
 	private boolean tokenizePragmas;
 	private boolean recordLineSeparator;
 	protected final int apiLevel;
+	protected boolean inDiet;
 
 	// ----------------optimized identifier managment------------------
 	static final char[] charArray_a = new char[] { 'a' },
@@ -611,7 +612,9 @@ public class Lexer implements IProblemRequestor {
 				    }
 				} while (input(p) == '\\');
 				//stringbuffer.writeByte(0);
-				stringbuffer.data.getChars(0, stringbuffer.offset(), t.ustring = new char[stringbuffer.offset()], 0);
+				if (!inDiet) {
+					stringbuffer.data.getChars(0, stringbuffer.offset(), t.ustring = new char[stringbuffer.offset()], 0);
+				}
 				t.postfix = 0;
 				t.value = TOKstring;
 				
@@ -3979,6 +3982,9 @@ public class Lexer implements IProblemRequestor {
 
 		t.value = TOK.TOKidentifier;
 		t.sourceLen = p - t.ptr;
+		
+		if (inDiet)
+			return;
 
 		switch (t.sourceLen) {
 		case 2:
@@ -4386,7 +4392,9 @@ public class Lexer implements IProblemRequestor {
 				if (c == tc) {
 					t.len = stringbuffer.offset();
 					//stringbuffer.writeByte(0);
-					stringbuffer.data.getChars(0, stringbuffer.offset(), t.ustring = new char[stringbuffer.offset()], 0);
+					if (!inDiet) {
+						stringbuffer.data.getChars(0, stringbuffer.offset(), t.ustring = new char[stringbuffer.offset()], 0);
+					}
 					stringPostfix(t);
 					return TOKstring;
 				}
@@ -4453,7 +4461,9 @@ public class Lexer implements IProblemRequestor {
 				
 				t.len = stringbuffer.offset();
 				//stringbuffer.writeByte(0);
-				stringbuffer.data.getChars(0, stringbuffer.offset(), t.ustring = new char[stringbuffer.offset()], 0);
+				if (!inDiet) {
+					stringbuffer.data.getChars(0, stringbuffer.offset(), t.ustring = new char[stringbuffer.offset()], 0);
+				}
 				
 				stringPostfix(t);
 				return TOKstring;
@@ -4674,7 +4684,9 @@ public class Lexer implements IProblemRequestor {
 //	    stringbuffer.writeByte(0);
 	    
 	    t.len = stringbuffer.data.length();
-	    stringbuffer.data.getChars(0, stringbuffer.offset(), t.ustring = new char[stringbuffer.offset()], 0);
+	    if (!inDiet) {
+	    	stringbuffer.data.getChars(0, stringbuffer.offset(), t.ustring = new char[stringbuffer.offset()], 0);
+	    }
 	    
 	    t.sourceLen = p - t.ptr;
 	    t.sourceString = CharOperation.subarray(input, t.ptr, p);
@@ -4786,7 +4798,9 @@ public class Lexer implements IProblemRequestor {
 			case '"':
 				t.len = stringbuffer.offset();
 				//stringbuffer.writeByte(0);
-				stringbuffer.data.getChars(0, stringbuffer.offset(), t.ustring = new char[stringbuffer.offset()], 0);
+				if (!inDiet) {
+					stringbuffer.data.getChars(0, stringbuffer.offset(), t.ustring = new char[stringbuffer.offset()], 0);
+				}
 				
 				stringPostfix(t);
 				return TOKstring;
