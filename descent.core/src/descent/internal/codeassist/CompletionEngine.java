@@ -244,7 +244,7 @@ public class CompletionEngine extends Engine
 	public InternalSignature internalSignature;
 	
 	Module module;
-	SemanticContext semanticContext;
+	SemanticContext context;
 	ASTNodeEncoder encoder;
 	
 	char[] fileName = null;
@@ -631,8 +631,9 @@ public class CompletionEngine extends Engine
 			Expression exp = (Expression) parser.expectedTypeNode;
 			Type type = exp.type;
 			if (type == null) {
-				if (exp.resolvedExpression != null) {
-					type = exp.resolvedExpression.type;
+				Expression resolved;
+				if ((resolved = context.getResolvedExp(exp)) != null) {
+					type = resolved.type;
 				}
 			}
 			if (type != null) {
@@ -752,7 +753,7 @@ public class CompletionEngine extends Engine
 		}
 		
 		semanticRun = true;
-		semanticContext = CompilationUnitResolver.resolve(module, this.javaProject, null, encoder);
+		context = CompilationUnitResolver.resolve(module, this.javaProject, null, encoder);
 	}
 
 	private void completeModuleDeclaration(CompletionOnModuleDeclaration node) {
@@ -795,7 +796,7 @@ public class CompletionEngine extends Engine
 				this.currentName = computePrefixAndSourceRange(node.selectiveName);
 			}
 			
-			node.mod = node.mod.unlazy(this.currentName, semanticContext);
+			node.mod = node.mod.unlazy(this.currentName, context);
 			
 			this.wantArguments = false;
 			suggestMembers(node.mod.members, false, new HashtableOfCharArrayAndObject(), INCLUDE_TYPES | INCLUDE_VARIABLES | INCLUDE_FUNCTIONS);
@@ -1157,8 +1158,9 @@ public class CompletionEngine extends Engine
 			}
 			
 			// Show constructors and opCalls
-			if (node.ident.resolvedSymbol != null) {
-				suggestConstructorsAndOpCall(node.ident.resolvedSymbol, node.ident.resolvedExpression);
+			Dsymbol resolved;
+			if ((resolved = context.getResolvedSymbol(node.ident)) != null) {
+				suggestConstructorsAndOpCall(resolved, context.getResolvedExp(node.ident));
 			}
 		} else if (node.ident != null) {
 			isCompletingTypeIdentifier = false;
@@ -1179,29 +1181,29 @@ public class CompletionEngine extends Engine
 				suggestConstructors((ClassDeclaration) sym);
 			// Then opCalls, only if not in new
 			} else {
-				ClassDeclaration cd = ((ClassDeclaration) sym).unlazy(this.currentName, semanticContext);
+				ClassDeclaration cd = ((ClassDeclaration) sym).unlazy(this.currentName, context);
 				suggestMembers(cd.members, onlyStatics, 0, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
 			}
 		} else if (sym instanceof StructDeclaration) {
-			StructDeclaration struct = ((StructDeclaration) sym).unlazy(CharOperation.NO_CHAR, semanticContext);
+			StructDeclaration struct = ((StructDeclaration) sym).unlazy(CharOperation.NO_CHAR, context);
 			suggestMembers(struct.members, onlyStatics, 0, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
 		}
 	}
 	
 	private void suggestConstructors(ClassDeclaration sym) {
-		ClassDeclaration cd = sym.unlazy(this.currentName, semanticContext);
+		ClassDeclaration cd = sym.unlazy(this.currentName, context);
 		
-		Declaration func = cd.ctor(semanticContext);
+		Declaration func = cd.ctor(context);
 		
 		HashtableOfCharArrayAndObject hash = new HashtableOfCharArrayAndObject();
 		
 		if (func == null && !((ClassDeclaration) sym).isAbstract()) {
 			// Suggest default constructor
 			cd.ctor(new CtorDeclaration(Loc.ZERO, new Arguments(), 0));
-			cd.ctor(semanticContext).type = new TypeFunction(new Arguments(), cd.type, 0, LINK.LINKd);
-			cd.ctor(semanticContext).parent = cd;
+			cd.ctor(context).type = new TypeFunction(new Arguments(), cd.type, 0, LINK.LINKd);
+			cd.ctor(context).parent = cd;
 			
-			suggestMember(cd.ctor(semanticContext), false, 0, hash, INCLUDE_CONSTRUCTORS);
+			suggestMember(cd.ctor(context), false, 0, hash, INCLUDE_CONSTRUCTORS);
 		} else {
 			while(func != null) {
 				suggestMember(func, false, 0, hash, INCLUDE_CONSTRUCTORS);
@@ -1325,7 +1327,7 @@ public class CompletionEngine extends Engine
 		
 		if (node.dot == -1) {
 			currentName = computePrefixAndSourceRange(node);
-			isBetweenMethodName = node.resolvedSymbol != null;
+			isBetweenMethodName = context.getResolvedSymbol(node) != null;
 			
 			if (rootScope == null) {
 				rootScope = node.scope;
@@ -1346,8 +1348,9 @@ public class CompletionEngine extends Engine
 			}
 			
 			// Show constructors and opCalls
-			if (node.resolvedSymbol != null) {
-				suggestConstructorsAndOpCall(node.resolvedSymbol, node.resolvedExpression);
+			Dsymbol resolved;
+			if ((resolved = context.getResolvedSymbol(node)) != null) {
+				suggestConstructorsAndOpCall(resolved, context.getResolvedExp(node));
 			}
 		} else {
 			completeIdentDot(node);
@@ -1510,12 +1513,12 @@ public class CompletionEngine extends Engine
 					for(BaseClass bc : node.vtblInterfaces) {
 						TypeClass tc = (TypeClass) bc.type;
 					loop:
-						for(Dsymbol member : tc.sym.unlazy(semanticContext).members) {
+						for(Dsymbol member : tc.sym.unlazy(context).members) {
 							if (member instanceof FuncDeclaration) {
 								FuncDeclaration fd = (FuncDeclaration) member;
 								for(FuncDeclaration old : funcs) {
 									if (ASTDmdNode.equals(fd.ident, old.ident)) {
-										int cov = fd.type.covariant(old.type, semanticContext);
+										int cov = fd.type.covariant(old.type, context);
 										if(cov == 1) {
 											continue loop;
 										}
@@ -1562,7 +1565,7 @@ public class CompletionEngine extends Engine
 		startPosition = actualCompletionPosition;
 		endPosition = actualCompletionPosition;
 		
-		Dsymbol sym = ident.resolvedSymbol;
+		Dsymbol sym = context.getResolvedSymbol(ident);
 		if (sym instanceof VarDeclaration) {
 			VarDeclaration var = (VarDeclaration) sym;
 			Type type = var.type();
@@ -1606,7 +1609,7 @@ public class CompletionEngine extends Engine
 			}
 		} else {
 			if (sym instanceof ScopeDsymbol) {
-				ScopeDsymbol scopeDsymbol = ((ScopeDsymbol) sym).unlazy(semanticContext);
+				ScopeDsymbol scopeDsymbol = ((ScopeDsymbol) sym).unlazy(context);
 				if (scopeDsymbol.members != null) {
 					boolean onlyStatics = false;
 					
@@ -1656,13 +1659,13 @@ public class CompletionEngine extends Engine
 	}
 	
 	private void completeScopeDsymbol(ScopeDsymbol sd, boolean onlyStatics, int includes) {
-		sd = sd.unlazy(semanticContext);
+		sd = sd.unlazy(context);
 		if (sd instanceof ClassDeclaration) {
 			completeTypeClass((TypeClass) sd.type(), onlyStatics);
 		} else if (sd.members != null && !sd.members.isEmpty()) {
 			// If the members are from a Module, don't restrict to "static" symbols
 			if (sd instanceof Module) {
-				sd = ((Module) sd).unlazy(semanticContext);
+				sd = ((Module) sd).unlazy(context);
 			}
 			
 			suggestMembers(sd.members, sd instanceof Module ? false : onlyStatics, 0, new HashtableOfCharArrayAndObject(), includes);
@@ -1670,7 +1673,7 @@ public class CompletionEngine extends Engine
 	}
 
 	private Dsymbol getScopeSymbol(Scope scope) {
-		scope.scopesym = scope.scopesym == null ? null : scope.scopesym.unlazy(semanticContext);
+		scope.scopesym = scope.scopesym == null ? null : scope.scopesym.unlazy(context);
 		if (scope.scopesym == null || scope.scopesym.members == null
 				|| scope.scopesym.members.isEmpty()) {
 			return null;
@@ -1684,11 +1687,13 @@ public class CompletionEngine extends Engine
 			return;
 		}
 		
-		isBetweenMethodName = ident != null && ident.resolvedSymbol != null;
+		isBetweenMethodName = ident != null && context.getResolvedSymbol(ident) != null;
 		
 		while(e1 instanceof CommaExp) {
 			e1 = ((CommaExp) e1).e2;
 		}
+		
+		Dsymbol resolved;
 		
 		if (e1 instanceof VarExp) {
 			VarExp var = (VarExp) e1;
@@ -1701,7 +1706,7 @@ public class CompletionEngine extends Engine
 			completeType(type, ident, false /* not only statics */);
 			
 			// Suggest offsetof if this is a struct's field (static access)
-			if ((decl.storage_class & STCfield) != 0 && decl.parent != null && decl.parent.getType(semanticContext) instanceof TypeStruct) {
+			if ((decl.storage_class & STCfield) != 0 && decl.parent != null && decl.parent.getType(context) instanceof TypeStruct) {
 				suggestOffsetof(decl, type);
 			}
 		} else if (e1 instanceof DotExp) {
@@ -1735,17 +1740,17 @@ public class CompletionEngine extends Engine
 			ScopeExp se = (ScopeExp) e1;
 			if (se.sds instanceof Module) {
 				currentName = computePrefixAndSourceRange(ident);
-				suggestMembers((((Module) se.sds)).unlazy(semanticContext).members, 
+				suggestMembers((((Module) se.sds)).unlazy(context).members, 
 						false /* not only statics */, 
 						new HashtableOfCharArrayAndObject(), INCLUDE_ALL);
 			} else if (se.sds instanceof ClassDeclaration) {
 				currentName = computePrefixAndSourceRange(ident);
-				suggestMembers((((ClassDeclaration) se.sds)).unlazy(semanticContext).members, 
+				suggestMembers((((ClassDeclaration) se.sds)).unlazy(context).members, 
 						false /* not only statics */, 
 						new HashtableOfCharArrayAndObject(), INCLUDE_ALL);
 			} else if (se.sds instanceof StructDeclaration) {
 				currentName = computePrefixAndSourceRange(ident);
-				suggestMembers((((StructDeclaration) se.sds)).unlazy(semanticContext).members, 
+				suggestMembers((((StructDeclaration) se.sds)).unlazy(context).members, 
 						false /* not only statics */, 
 						new HashtableOfCharArrayAndObject(), INCLUDE_ALL);
 			} else if (se.sds instanceof Package) {
@@ -1787,15 +1792,15 @@ public class CompletionEngine extends Engine
 			TupleExp tuple = (TupleExp) e1;
 			Type type = tuple.type;
 			completeType(type, ident, false);
-		} else if (ident.resolvedSymbol != null) {
+		} else if ((resolved = context.getResolvedSymbol(ident)) != null) {
 			// TODO check this
-			trySuggestCall(ident.resolvedSymbol.type(), ident.ident, CharOperation.NO_CHAR, true /* only statics */);
+			trySuggestCall(resolved.type(), ident.ident, CharOperation.NO_CHAR, true /* only statics */);
 			
 			currentName = ident.ident;
 			startPosition = ident.start;
 			endPosition = ident.start + ident.length;
 			
-			suggestDsymbol(ident.resolvedSymbol, INCLUDE_ALL);
+			suggestDsymbol(resolved, INCLUDE_ALL);
 			return;
 		}
 	}
@@ -1901,7 +1906,7 @@ public class CompletionEngine extends Engine
 	}
 	
 	private void suggestExtensionMethods(TypeArray array, Module module, boolean original) {
-		module.unlazy(semanticContext);
+		module.unlazy(context);
 		
 		suggestExtensionMethods(array, module.members);
 		
@@ -2159,11 +2164,11 @@ public class CompletionEngine extends Engine
 				staticAndDynamicArrayProperties,
 				new Type[] { type, type, typeInt, typeInt, type },
 				R_INTERESTING_BUILTIN_PROPERTY);
-		if (semanticContext.isD2()) {
+		if (context.isD2()) {
 			suggestProperties(
 					type.getSignature().toCharArray(),
 					staticAndDynamicArrayProperties2,
-					new Type[] { type.invariantOf(semanticContext) },
+					new Type[] { type.invariantOf(context) },
 					R_INTERESTING_BUILTIN_PROPERTY);
 		}
 	}
@@ -2213,7 +2218,7 @@ public class CompletionEngine extends Engine
 				type.getSignature().toCharArray(),
 				typeDelegateProperties,
 				new Type[] { 
-					semanticContext.Type_tvoidptr, 
+					context.Type_tvoidptr, 
 					new TypePointer(type.next),
 					},
 				R_INTERESTING_BUILTIN_PROPERTY);
@@ -2246,14 +2251,14 @@ public class CompletionEngine extends Engine
 	public final static Type tupleType = new TypeIdentifier(Loc.ZERO, "Tuple".toCharArray());
 	private void suggestTupleof(Type type) {
 		TypeExp exp = new TypeExp(Loc.ZERO, type);
-		Expression e = type.dotExp(Scope.createGlobal(module, semanticContext), exp, new IdentifierExp(Id.tupleof), semanticContext);
+		Expression e = type.dotExp(Scope.createGlobal(module, context), exp, new IdentifierExp(Id.tupleof), context);
 		if (e != null && e.type != null) {
 			suggestProperty(type.getSignature().toCharArray(), RelevanceConstants.R_INTERESTING_BUILTIN_PROPERTY, Id.tupleof, e.type);
 		}
 	}
 
 	private void completeTypeClassRecursively(TypeClass type, boolean onlyStatics, HashtableOfCharArrayAndObject funcSignatures) {
-		ClassDeclaration decl = type.sym == null ? null : type.sym.unlazy(this.currentName, semanticContext);
+		ClassDeclaration decl = type.sym == null ? null : type.sym.unlazy(this.currentName, context);
 		if (decl == null) {
 			return;
 		}
@@ -2265,9 +2270,9 @@ public class CompletionEngine extends Engine
 		BaseClasses baseClasses = decl.baseclasses;
 		if (baseClasses.isEmpty()) {
 			// Suggest Object if no base classes are present and this is not object
-			if (semanticContext.ClassDeclaration_object != null && 
-				type != semanticContext.ClassDeclaration_object.type) {
-				completeTypeClassRecursively((TypeClass) semanticContext.ClassDeclaration_object.type, onlyStatics, funcSignatures);
+			if (context.ClassDeclaration_object != null && 
+				type != context.ClassDeclaration_object.type) {
+				completeTypeClassRecursively((TypeClass) context.ClassDeclaration_object.type, onlyStatics, funcSignatures);
 			}
 		} else {
 			for(BaseClass baseClass : baseClasses) {
@@ -2281,9 +2286,9 @@ public class CompletionEngine extends Engine
 	
 	private void suggestClassInfo() {
 		suggestProperties(
-				semanticContext.ClassDeclaration_classinfo.getSignature().toCharArray(),
+				context.ClassDeclaration_classinfo.getSignature().toCharArray(),
 				classInfoProperty,
-				new Type[] { semanticContext.ClassDeclaration_classinfo.type },
+				new Type[] { context.ClassDeclaration_classinfo.type },
 				R_BUILTIN_PROPERTY);
 	}
 	
@@ -2298,7 +2303,7 @@ public class CompletionEngine extends Engine
 	}
 	
 	private void completeTypeStruct(TypeStruct type, boolean onlyStatics) {
-		StructDeclaration decl = type.sym == null ? null : type.sym.unlazy(this.currentName, semanticContext);
+		StructDeclaration decl = type.sym == null ? null : type.sym.unlazy(this.currentName, context);
 		if (decl == null) {
 			return;
 		}
@@ -2402,7 +2407,7 @@ public class CompletionEngine extends Engine
 			// Suggest member of anynoymous symbols
 			if (member instanceof StructDeclaration ||
 				member instanceof EnumDeclaration) {
-				suggestMembers(((ScopeDsymbol) member).unlazy(semanticContext).members, onlyStatics, flags, funcSignatures, includes);
+				suggestMembers(((ScopeDsymbol) member).unlazy(context).members, onlyStatics, flags, funcSignatures, includes);
 			}
 			return;
 		}
@@ -2445,7 +2450,7 @@ public class CompletionEngine extends Engine
 				char[] fqn = mod.getFullyQualifiedName().toCharArray();
 				if (!suggestedModules.containsKey(fqn)) {
 					suggestedModules.put(fqn, this);
-					mod = mod.unlazy(this.currentName, semanticContext);
+					mod = mod.unlazy(this.currentName, context);
 					suggestMembers(mod.members, false, funcSignatures, includes & (~INCLUDE_IMPORTS));
 				}
 			}
@@ -2514,7 +2519,7 @@ public class CompletionEngine extends Engine
 		// If it's an alias to a symbol, suggest it and return
 		AliasDeclaration alias = member.isAliasDeclaration();
 		if (alias != null) {
-			Dsymbol sym = alias.toAlias(semanticContext);
+			Dsymbol sym = alias.toAlias(context);
 			if (sym != null && sym != alias) {
 				suggestMember(sym, ident, onlyStatics, flags, funcSignatures, includes, true);
 				
@@ -2526,7 +2531,7 @@ public class CompletionEngine extends Engine
 				while(sym instanceof FuncDeclaration) {
 					FuncDeclaration func = (FuncDeclaration) sym;
 					
-					semanticContext.allowOvernextBySignature = true;				
+					context.allowOvernextBySignature = true;				
 					Declaration funcDecl = func.overnext;
 					if (funcDecl != null && funcDecl != sym) {
 						suggestMember(funcDecl, ident, onlyStatics, flags, funcSignatures, includes);
@@ -2643,11 +2648,11 @@ public class CompletionEngine extends Engine
 					}
 					Type type = alias.type();
 					if (type == null) {
-						Dsymbol sym = alias.toAlias(semanticContext);
+						Dsymbol sym = alias.toAlias(context);
 						if (sym != null) {
 							type = sym.type();
 							if (type instanceof TypeTypedef) {
-								type = ((TypeTypedef) type).toBasetype(semanticContext);
+								type = ((TypeTypedef) type).toBasetype(context);
 							}
 							if (type == null) {
 								return;
@@ -2659,7 +2664,7 @@ public class CompletionEngine extends Engine
 					
 					if (parser.inNewExp) {
 						if (type instanceof TypeClass) {
-							ClassDeclaration cd = ((TypeClass) type).sym.unlazy(this.currentName, semanticContext);
+							ClassDeclaration cd = ((TypeClass) type).sym.unlazy(this.currentName, context);
 							if (cd.isClassDeclaration() != null && cd.isInterfaceDeclaration() == null) {
 								// If it's abstract, skip
 								if ((cd.getFlags() & Flags.AccAbstract) != 0) {
@@ -2760,7 +2765,7 @@ public class CompletionEngine extends Engine
 					// If we are expecting an enum, suggest it's members! :-)
 					if (expectedType != null && expectedType instanceof TypeEnum 
 							&& member instanceof EnumDeclaration &&
-							expectedType.same(member.getType(semanticContext))) {
+							expectedType.same(member.getType(context))) {
 						completeEnumMembers((EnumDeclaration) member, null, true);
 					}
 				}
@@ -2979,7 +2984,7 @@ public class CompletionEngine extends Engine
 		}
 		
 		if (type instanceof TypeTypedef) {
-			type = ((TypeTypedef) type).toBasetype(semanticContext);
+			type = ((TypeTypedef) type).toBasetype(context);
 			if (type == null) {
 				return;
 			}
@@ -3000,22 +3005,22 @@ public class CompletionEngine extends Engine
 		// opCall
 		case ASTDmdNode.TYPE_STRUCT: {
 			currentName = ident;
-			StructDeclaration sym = (((TypeStruct) type).sym).unlazy(Id.call, semanticContext);			
+			StructDeclaration sym = (((TypeStruct) type).sym).unlazy(Id.call, context);			
 			suggestMembers(sym.members, onlyStatics, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
 			break;
 		}
 		case ASTDmdNode.TYPE_CLASS: {
 			currentName = ident;
-			ClassDeclaration sym = (((TypeClass) type).sym).unlazy(this.currentName, semanticContext);			
+			ClassDeclaration sym = (((TypeClass) type).sym).unlazy(this.currentName, context);			
 			suggestMembers(sym.members, onlyStatics, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
 			
 			// Then try with superclass and superinterface members
 			BaseClasses baseClasses = sym.baseclasses;
 			if (baseClasses.isEmpty()) {
 				// Suggest Object if no base classes are present and this is not object
-				if (semanticContext.ClassDeclaration_object != null && 
-					type != semanticContext.ClassDeclaration_object.type) {
-					trySuggestCall((TypeClass) semanticContext.ClassDeclaration_object.type, ident, signature, onlyStatics);
+				if (context.ClassDeclaration_object != null && 
+					type != context.ClassDeclaration_object.type) {
+					trySuggestCall((TypeClass) context.ClassDeclaration_object.type, ident, signature, onlyStatics);
 				}
 			} else {
 				for(BaseClass baseClass : baseClasses) {
@@ -3828,11 +3833,11 @@ public class CompletionEngine extends Engine
 				expectedTypeSignature = expectedType.getSignature().toCharArray();				
 				return relevance;
 			} else if (expectedType instanceof TypeFunction) {
-				if (type.covariant(expectedType, semanticContext) == 1) {
+				if (type.covariant(expectedType, context) == 1) {
 					return R_EXPECTED_TYPE;
 				}
 			} else if (expectedType instanceof TypeDelegate) {
-				if (type.covariant(expectedType.next, semanticContext) == 1) {
+				if (type.covariant(expectedType.next, context) == 1) {
 					return R_EXPECTED_TYPE;
 				}
 			}
@@ -3840,7 +3845,7 @@ public class CompletionEngine extends Engine
 			return computeRelevanceForExpectedType(type.next);
 		}
 		
-		MATCH match = type.implicitConvTo(expectedType, semanticContext);
+		MATCH match = type.implicitConvTo(expectedType, context);
 		if (match == MATCH.MATCHexact) {
 			return R_EXACT_EXPECTED_TYPE;
 		}
@@ -3848,7 +3853,7 @@ public class CompletionEngine extends Engine
 			return R_EXPECTED_TYPE;
 		}
 		
-		if (expectedType.isBaseOf(type, null, semanticContext)) {
+		if (expectedType.isBaseOf(type, null, context)) {
 			return R_EXPECTED_TYPE;
 		}
 		

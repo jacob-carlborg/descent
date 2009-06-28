@@ -22,18 +22,6 @@ public class IdentifierExp extends Expression {
 	}
 
 	public char[] ident;
-	
-	/*
-	 * Once semantic pass is done, the evaluated expression is kept in
-	 * this variable. Only for compile-time function evaluation. 
-	 */
-	public Expression evaluatedExpression;
-	
-	/*
-	 * Once semantic pass is done, if this identifier was the name of
-	 * a TemplateInstance, this holds it.
-	 */
-	public TemplateInstance templateInstance;
 
 	public IdentifierExp(Loc loc) {
 		super(loc, TOK.TOKidentifier);
@@ -105,7 +93,7 @@ public class IdentifierExp extends Expression {
 		s = sc.search(loc, this, scopesym, context);
 		
 		// Descent: for binding resolution
-		resolvedSymbol = s;
+		context.setResolvedSymbol(this, s);
 		
 		if (s != null) {
 			Expression e;
@@ -178,7 +166,9 @@ public class IdentifierExp extends Expression {
 			}
 			
 			// Descent: for binding resolution
-			return resolvedExpression = e.semantic(sc, context);
+			e = e.semantic(sc, context);
+			context.setResolvedExp(this, e);
+			return e;
 		}
 		if (context.acceptsErrors()) {
 			context.acceptProblem(Problem.newSemanticTypeError(
@@ -274,27 +264,22 @@ public class IdentifierExp extends Expression {
 	}
 	
 	@Override
-	public void setResolvedSymbol(Dsymbol symbol) {
-		resolvedSymbol = symbol;
+	public void setResolvedSymbol(Dsymbol symbol, SemanticContext context) {
+		context.setResolvedSymbol(this, symbol);
 	}
 	
 	@Override
-	public void setEvaluatedExpression(Expression exp) {
-		this.evaluatedExpression = exp;
+	public void setEvaluatedExpression(Expression exp, SemanticContext context) {
+		context.setEvaluated(this, exp);
 	}
 	
 	@Override
-	public void setResolvedExpression(Expression exp) {
+	public void setResolvedExpression(Expression exp, SemanticContext context) {
 		if (exp instanceof CallExp) {
-			this.resolvedExpression = ((CallExp) exp).e1;
+			context.setResolvedExp(this, ((CallExp) exp).e1);
 		} else {
-			this.resolvedExpression = exp;
+			context.setResolvedExp(this, exp);
 		}
-	}
-	
-	@Override
-	public Dsymbol getResolvedSymbol() {
-		return resolvedSymbol;
 	}
 	
 	protected void appendSignature(StringBuilder sb) {

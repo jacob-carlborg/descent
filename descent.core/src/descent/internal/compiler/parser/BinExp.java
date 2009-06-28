@@ -207,7 +207,7 @@ public abstract class BinExp extends Expression {
 		e1 = e1.semantic(sc, context);
 		
 		// Descent: for binding resolution
-		sourceE1.resolvedExpression = e1;
+		sourceE1.setResolvedExpression(e1, context);
 		
 		if (e1.type == null &&
 				!(op == TOKassign && e1.op == TOKdottd)) {	// a.template = e2
@@ -219,7 +219,7 @@ public abstract class BinExp extends Expression {
 		e2 = e2.semantic(sc, context);
 		
 		// Descent: for binding resolution
-		sourceE2.resolvedExpression = e2;
+		sourceE2.setResolvedExpression(e2, context);
 		
 		if (e2.type == null) {
 			if (context.acceptsErrors()) {

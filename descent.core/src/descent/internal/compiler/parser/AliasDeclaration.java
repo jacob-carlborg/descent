@@ -47,8 +47,6 @@ public class AliasDeclaration extends Declaration {
 		this.inSemantic = 0;
 
 		Assert.isNotNull(s);
-		
-		if (id != null) id.resolvedSymbol = this;
 	}
 
 	public AliasDeclaration(Loc loc, IdentifierExp id, Type type) {
@@ -61,8 +59,6 @@ public class AliasDeclaration extends Declaration {
 		this.haliassym = null;
 		this.overnext = null;
 		this.inSemantic = 0;
-		
-		if (id != null) id.resolvedSymbol = this;
 	}
 
 	@Override
@@ -114,6 +110,11 @@ public class AliasDeclaration extends Declaration {
 	
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
+		// For Descent resolution
+		if (ident != null) {
+			context.setResolvedSymbol(ident, this);
+		}
+		
 		if (aliassym != null) {
 			if (aliassym.isTemplateInstance() != null) {
 				aliassym.semantic(sc, context);

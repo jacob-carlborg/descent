@@ -96,17 +96,6 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	public Type type, sourceType;
 	public List<Parenthesis> parenthesis;
 
-	/*
-	 * Once the semantic pass is done, the resolved expression is kept in
-	 * this variable. This is useful for linking source with resolution. 
-	 */
-	public Expression resolvedExpression;
-
-	/*
-	 * Same as resolved expression, but holds an IDsymbol.
-	 */
-	public Dsymbol resolvedSymbol;
-
 	public Expression(Loc loc, TOK op) {
 		this.loc = loc;
 		this.op = op;
@@ -689,20 +678,16 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		return super.equals(o);
 	}
 
-	public void setResolvedSymbol(Dsymbol symbol) {
+	public void setResolvedSymbol(Dsymbol symbol, SemanticContext context) {
 
 	}
 
-	public void setEvaluatedExpression(Expression exp) {
+	public void setEvaluatedExpression(Expression exp, SemanticContext context) {
 
 	}
 
-	public void setResolvedExpression(Expression exp) {
+	public void setResolvedExpression(Expression exp, SemanticContext context) {
 
-	}
-
-	public Dsymbol getResolvedSymbol() {
-		return null;
 	}
 
 }

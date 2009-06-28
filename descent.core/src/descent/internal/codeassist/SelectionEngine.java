@@ -346,9 +346,10 @@ public class SelectionEngine extends AstVisitorAdapter {
 		
 		doSemantic();
 		
-		Dsymbol sym = node.resolvedSymbol;
-		if (sym == null && node.templateInstance != null) {
-			sym = node.templateInstance.tempdecl;
+		Dsymbol sym = context.getResolvedSymbol(node);
+		TemplateInstance tinst;
+		if (sym == null && (tinst = context.getTemplateInstance(node)) != null) {
+			sym = tinst.tempdecl;
 		}
 		
 		if (sym != null) {
@@ -381,15 +382,13 @@ public class SelectionEngine extends AstVisitorAdapter {
 				}
 			}
 			return false;
-		} else if (node.templateInstance != null) {
-			
 		}
 
 		return addResolvedExpression(node);
 	}
 
 	private boolean addResolvedExpression(Expression node) {
-		Expression resolved = node.resolvedExpression;
+		Expression resolved = context.getResolvedExp(node);
 		if (resolved == null) {
 			return false;
 		}
@@ -488,11 +487,12 @@ public class SelectionEngine extends AstVisitorAdapter {
 	public boolean visit(ThisExp node) {
 		if (isInRange(node)) {
 			doSemantic();
-			if (node.resolvedSymbol != null) {
-				if (node.resolvedSymbol.getJavaElement() != null) {
-					addJavaElement(node.resolvedSymbol.getJavaElement());
+			Dsymbol resolved;
+			if ((resolved = context.getResolvedSymbol(node)) != null) {
+				if (resolved.getJavaElement() != null) {
+					addJavaElement(resolved.getJavaElement());
 				} else {
-					add(node.resolvedSymbol);
+					add(resolved);
 				}
 			}
 		}
@@ -503,11 +503,12 @@ public class SelectionEngine extends AstVisitorAdapter {
 	public boolean visit(SuperExp node) {
 		if (isInRange(node)) {
 			doSemantic();
-			if (node.resolvedSymbol != null) {
-				if (node.resolvedSymbol.getJavaElement() != null) {
-					addJavaElement(node.resolvedSymbol.getJavaElement());
+			Dsymbol resolved;
+			if ((resolved = context.getResolvedSymbol(node)) != null) {
+				if (resolved.getJavaElement() != null) {
+					addJavaElement(resolved.getJavaElement());
 				} else {
-					add(node.resolvedSymbol);
+					add(resolved);
 				}
 			}
 		}

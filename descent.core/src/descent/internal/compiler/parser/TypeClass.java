@@ -261,7 +261,7 @@ public class TypeClass extends Type {
 			}
 			
 			// Descent: for binding resolution
-			ident.resolvedSymbol = s;
+			ident.setResolvedSymbol(s, context);
 	
 			if (null == s.isFuncDeclaration()) {	// because of overloading
 				s.checkDeprecated(sc, context, ident);

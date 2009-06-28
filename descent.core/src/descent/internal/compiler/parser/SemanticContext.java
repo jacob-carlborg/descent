@@ -97,7 +97,30 @@ public class SemanticContext {
 	
 	public final ASTNodeEncoder encoder;
 	public boolean alwaysResolveFunctionSemanticRest;
-	protected List<ASTDmdNode> templateEvaluationStack;
+	public List<ASTDmdNode> templateEvaluationStack;
+	
+	/*
+	 * Once semantic pass is done, the evaluated expression of IdentifierExps are kept in
+	 * this variable. Only for compile-time function evaluation. 
+	 */
+	private Map<IdentifierExp, Expression> IdentifierExp_evaluatedExpressions = new HashMap<IdentifierExp, Expression>();
+	
+	/*
+	 * Once semantic pass is done, if this identifier was the name of
+	 * a TemplateInstance, this holds it.
+	 */
+	private Map<IdentifierExp, TemplateInstance> IdentifierExp_templateInstances = new HashMap<IdentifierExp, TemplateInstance>();
+	
+	/*
+	 * Once the semantic pass is done, the resolved expression is kept in
+	 * this variable. This is useful for linking source with resolution. 
+	 */
+	private Map<Expression, Expression> Expression_resolvedExpressions = new HashMap<Expression, Expression>();
+	
+	/*
+	 * Same as resolved expression, but holds an Dsymbol.
+	 */
+	private Map<Expression, Dsymbol> Expression_resolvedSymbols = new HashMap<Expression, Dsymbol>();
 	
 	/*
 	 * This is for autocompletion, for suggesting overloads of
@@ -150,6 +173,38 @@ public class SemanticContext {
 
 	private void Module_init() {
 		this.Module_modules = new DsymbolTable();
+	}
+	
+	public void setEvaluated(IdentifierExp exp, Expression evaluated) {
+		IdentifierExp_evaluatedExpressions.put(exp, evaluated);
+	}
+	
+	public Expression getEvaluated(IdentifierExp exp) {
+		return IdentifierExp_evaluatedExpressions.get(exp);
+	}
+	
+	public void setTemplateInstance(IdentifierExp exp, TemplateInstance tinst) {
+		IdentifierExp_templateInstances.put(exp, tinst);
+	}
+	
+	public TemplateInstance getTemplateInstance(IdentifierExp exp) {
+		return IdentifierExp_templateInstances.get(exp);
+	}
+	
+	public void setResolvedExp(Expression exp, Expression resolved) {
+		Expression_resolvedExpressions.put(exp, resolved);
+	}
+	
+	public Expression getResolvedExp(Expression exp) {
+		return Expression_resolvedExpressions.get(exp);
+	}
+	
+	public void setResolvedSymbol(Expression exp, Dsymbol resolved) {
+		Expression_resolvedSymbols.put(exp, resolved);
+	}
+	
+	public Dsymbol getResolvedSymbol(Expression exp) {
+		return Expression_resolvedSymbols.get(exp);
 	}
 	
 	/*

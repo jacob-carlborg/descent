@@ -135,13 +135,8 @@ public class ThisExp extends Expression {
 	}
 	
 	@Override
-	public void setResolvedSymbol(Dsymbol symbol) {
-		this.resolvedSymbol = symbol;
-	}
-	
-	@Override
-	public Dsymbol getResolvedSymbol() {
-		return this.resolvedSymbol;
+	public void setResolvedSymbol(Dsymbol symbol, SemanticContext context) {
+		context.setResolvedSymbol(this, symbol);
 	}
 
 }

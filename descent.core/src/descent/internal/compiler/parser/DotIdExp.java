@@ -48,9 +48,9 @@ public class DotIdExp extends UnaExp {
 		Expression e = semantic0(sc, context);
 		
 		// Descent: for binding resolution
-		resolvedExpression = e;
+		context.setResolvedExp(this, e);
 		if (ident != null) {
-			ident.resolvedExpression = resolvedExpression;
+			ident.setResolvedExpression(e, context);
 		}
 		
 		return e;
@@ -168,7 +168,7 @@ public class DotIdExp extends UnaExp {
 			    (ie.sds.isModule() != null && ie.sds != sc.module) ? 1 : 0, context);
 			
 			// Descent: for binding resolution
-			ident.resolvedSymbol = s;
+			context.setResolvedSymbol(ident, s);
 			
 			if (s != null) {
 				s = s.toAlias(context);
@@ -363,23 +363,18 @@ public class DotIdExp extends UnaExp {
 	}
 	
 	@Override
-	public void setResolvedSymbol(Dsymbol symbol) {
-		ident.resolvedSymbol = symbol;
+	public void setResolvedSymbol(Dsymbol symbol, SemanticContext context) {
+		ident.setResolvedSymbol(symbol, context);
 	}
 	
 	@Override
-	public void setEvaluatedExpression(Expression exp) {
-		ident.evaluatedExpression = exp;
+	public void setEvaluatedExpression(Expression exp, SemanticContext context) {
+		ident.setEvaluatedExpression(exp, context);
 	}
 	
 	@Override
-	public void setResolvedExpression(Expression exp) {
-		ident.setResolvedExpression(exp);
-	}
-	
-	@Override
-	public Dsymbol getResolvedSymbol() {
-		return ident.resolvedSymbol;
+	public void setResolvedExpression(Expression exp, SemanticContext context) {
+		ident.setResolvedExpression(exp, context);
 	}
 
 }

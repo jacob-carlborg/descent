@@ -72,7 +72,7 @@ public class TypeIdentifier extends TypeQualified {
 		s = sc.search(loc, ident, scopesym, context);
 		
 		// Descent: for binding resolution
-		ident.resolvedSymbol = s;
+		ident.setResolvedSymbol(s, context);
 		
 		resolveHelper(loc, sc, s, scopesym[0], pe, pt, ps, context);
 		
@@ -177,7 +177,7 @@ public class TypeIdentifier extends TypeQualified {
 		Dsymbol s = sc.search(loc, ident, scopesym, context);
 		
 		// Descent: for binding resolution
-		ident.resolvedSymbol = s;
+		context.setResolvedSymbol(ident, s);
 		
 		if (s != null) {
 			if (idents != null) {
@@ -188,7 +188,7 @@ public class TypeIdentifier extends TypeQualified {
 					{
 						break;
 					} else {
-						id.resolvedSymbol = s;
+						context.setResolvedSymbol(id, s);
 					}
 				}
 			}

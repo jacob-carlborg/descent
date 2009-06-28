@@ -45,9 +45,6 @@ public class TemplateInstance extends ScopeDsymbol {
 		super(null);
 		this.loc = loc;
 		this.name = id;
-		if (this.name != null) {
-			this.name.templateInstance = this;
-		}
 		this.semantictiargsdone = false;
 		this.encoder = encoder;
 	}
@@ -563,6 +560,11 @@ public class TemplateInstance extends ScopeDsymbol {
 
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
+		// This is for the evaluation and selection engines
+		if (this.name != null) {
+			context.setTemplateInstance(this.name, this);
+		}
+		
 		// Comment in Descent, we want template instances resolved when possible
 		if (context.global.errors > 0) {
 			if (0 == context.global.gag) {
@@ -618,7 +620,7 @@ public class TemplateInstance extends ScopeDsymbol {
 				tempdecl = findBestMatch(sc, context);
 			}
 			
-			name.resolvedSymbol = tempdecl;
+			name.setResolvedSymbol(tempdecl, context);
 			
 			// Comment in Descent, we want template instances resolved when possible
 			if (null == tempdecl /* || context.global.errors > 0 */) {

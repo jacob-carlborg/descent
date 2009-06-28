@@ -47,7 +47,7 @@ public abstract class TypeQualified extends Type {
 						sm = s.search(loc, id, 0, context);
 						
 						// Descent: for binding resolution
-						id.resolvedSymbol = sm;
+						context.setResolvedSymbol(id, sm);
 						
 						if (sm == null) {
 							if (context.acceptsErrors()) {
@@ -80,7 +80,7 @@ public abstract class TypeQualified extends Type {
 						sm = s.search(loc, id, 0, context);
 						
 						// Descent: for binding resolution
-						id.resolvedSymbol = sm;
+						context.setResolvedSymbol(id, sm);
 					}
 					
 					if (sm == null) {

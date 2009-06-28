@@ -58,7 +58,7 @@ public class AliasThis extends Dsymbol {
 			}
 			assert (size(ad.members) != 0);
 			Dsymbol s = ad.search(loc, ident, 0, context);
-			ident.resolvedSymbol = s;
+			context.setResolvedSymbol(ident, s);
 			ad.aliasthis = s;
 		} else {
 			if (context.acceptsErrors()) {

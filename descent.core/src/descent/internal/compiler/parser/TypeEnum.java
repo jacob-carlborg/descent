@@ -83,7 +83,7 @@ public class TypeEnum extends Type {
 		s = sym.symtab.lookup(ident);
 		
 		// Descent: for binding resolution
-		ident.resolvedSymbol = s;
+		ident.setResolvedSymbol(s, context);
 		
 		if (null == s) {
 			if (equals(ident, Id.max) || equals(ident, Id.min)

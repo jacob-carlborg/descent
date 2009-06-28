@@ -91,7 +91,7 @@ public abstract class UnaExp extends Expression {
 		e1 = e1.semantic(sc, context);
 		
 		// Descent: for binding resolution
-		sourceE1.resolvedExpression = e1;
+		sourceE1.setResolvedExpression(e1, context);
 		
 		return this;
 	}

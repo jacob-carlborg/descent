@@ -273,7 +273,7 @@ public class CallExp extends UnaExp {
 		
 		// Descent: for code evaluation
 		if (e != this) {
-			this.sourceE1.setEvaluatedExpression(e);
+			this.sourceE1.setEvaluatedExpression(e, context);
 		}
 		
 		e.copySourceRange(this);
@@ -477,7 +477,7 @@ public class CallExp extends UnaExp {
 					if (opCall != null) {
 						
 						// Descent: for binding resolution
-						sourceE1.setResolvedSymbol(opCall);
+						sourceE1.setResolvedSymbol(opCall, context);
 						
 						// goto L1;	
 						return semantic_L1(sc, context);
@@ -524,7 +524,7 @@ public class CallExp extends UnaExp {
 					
 					// Descent: for binding resolution
 					if (this.sourceE1 != null) {
-						this.sourceE1.setResolvedSymbol(f);
+						this.sourceE1.setResolvedSymbol(f, context);
 					}
 
 					ad = f.toParent().isAggregateDeclaration();
@@ -713,7 +713,7 @@ public class CallExp extends UnaExp {
 						
 						// Descent: for binding resolution
 						if (this.sourceE1 != null) {
-							this.sourceE1.setResolvedSymbol(f);
+							this.sourceE1.setResolvedSymbol(f, context);
 						}
 						
 						checkDeprecated(sc, f, context);
@@ -761,7 +761,7 @@ public class CallExp extends UnaExp {
 					
 					// Descent: for binding resolution
 					if (this.sourceE1 != null) {
-						this.sourceE1.setResolvedSymbol(f);
+						this.sourceE1.setResolvedSymbol(f, context);
 					}
 					
 					checkDeprecated(sc, f, context);
@@ -873,7 +873,7 @@ public class CallExp extends UnaExp {
 				
 				// Descent: for binding resolution
 				if (this.sourceE1 != null) {
-					this.sourceE1.setResolvedSymbol(f);
+					this.sourceE1.setResolvedSymbol(f, context);
 				}
 				
 				checkDeprecated(sc, f, context);
@@ -979,13 +979,13 @@ public class CallExp extends UnaExp {
 	}
 	
 	@Override
-	public void setResolvedExpression(Expression exp) {
-		this.sourceE1.setResolvedExpression(exp);
+	public void setResolvedExpression(Expression exp, SemanticContext context) {
+		this.sourceE1.setResolvedExpression(exp, context);
 	}
 	
 	@Override
-	public void setEvaluatedExpression(Expression exp) {
-		this.sourceE1.setEvaluatedExpression(exp);
+	public void setEvaluatedExpression(Expression exp, SemanticContext context) {
+		this.sourceE1.setEvaluatedExpression(exp, context);
 	}
 
 }

@@ -155,15 +155,19 @@ public class EvaluationEngine extends AstVisitorAdapter {
 	
 	@Override
 	public boolean visit(IdentifierExp node) {
+		Expression evaluatedExp;
+		Expression resolvedExp;
+		TemplateInstance tinst;
 		if (result == null && isInRange(node)) {
-			if (node.resolvedSymbol != null && node.resolvedSymbol instanceof AliasDeclaration) {
-				evalAlias((AliasDeclaration) node.resolvedSymbol);
-			} else if (node.evaluatedExpression != null) {
-				evalExp(node.evaluatedExpression);
-			} else if (node.resolvedExpression != null) {
-				evalExp(node.resolvedExpression);
-			} else if (node.templateInstance != null && node.templateInstance.members != null) {
-				evalMembers(node.templateInstance.members);
+			Dsymbol resolved;
+			if ((resolved = context.getResolvedSymbol(node)) != null && resolved instanceof AliasDeclaration) {
+				evalAlias((AliasDeclaration) resolved);
+			} else if ((evaluatedExp = context.getEvaluated(node)) != null) {
+				evalExp(evaluatedExp);
+			} else if ((resolvedExp = context.getResolvedExp(node)) != null) {
+				evalExp(resolvedExp);
+			} else if ((tinst = context.getTemplateInstance(node)) != null && tinst.members != null) {
+				evalMembers(tinst.members);
 			}
 		}
 		

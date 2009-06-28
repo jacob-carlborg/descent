@@ -170,7 +170,7 @@ public class TypeStruct extends Type {
 		}
 		
 		// Descent: for binding resolution
-		ident.resolvedSymbol = s;
+		ident.setResolvedSymbol(s, context);
 
 		boolean continueInL1 = true;
 	// L1:

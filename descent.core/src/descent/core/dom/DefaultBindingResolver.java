@@ -438,18 +438,20 @@ class DefaultBindingResolver extends BindingResolver {
 							if (oldExp != null) {
 								Type type = oldExp.type;
 								if (type == null) {
-									if (oldExp.resolvedExpression != null) {
-										if (oldExp.resolvedSymbol != null && oldExp.resolvedSymbol.type() != null
-												&& oldExp.resolvedSymbol.type() instanceof TypeDelegate) {
-											type = oldExp.resolvedSymbol.type();
+									Expression resolvedExp;
+									Dsymbol resolvedSymbol;
+									if ((resolvedExp = context.getResolvedExp(oldExp)) != null) {
+										if ((resolvedSymbol = context.getResolvedSymbol(oldExp)) != null && resolvedSymbol.type() != null
+												&& resolvedSymbol.type() instanceof TypeDelegate) {
+											type = resolvedSymbol.type();
 										} else {
-											type = oldExp.resolvedExpression.type;
+											type = resolvedExp.type;
 										}
 									}
 									if (type == null) {
-										if (oldExp.resolvedSymbol != null) {
-											// TODO use resolvedSymbol
-										}
+//										if (oldExp.resolvedSymbol != null) {
+//											// TODO use resolvedSymbol
+//										}
 									}
 								}
 								if (type != null) {
@@ -661,43 +663,44 @@ class DefaultBindingResolver extends BindingResolver {
 		FuncDeclaration func;
 
 		CallExp exp = (CallExp) old;
-		if (exp.sourceE1.getResolvedSymbol() == null
-				|| !(exp.sourceE1.getResolvedSymbol() instanceof FuncDeclaration)) {
-			if (exp.sourceE1.resolvedExpression == null
-					|| !(exp.sourceE1.resolvedExpression instanceof VarExp)) {
+		Expression resolvedExp;
+		Dsymbol resolvedSymbol;
+		if ((resolvedSymbol = context.getResolvedSymbol(exp.sourceE1)) == null
+				|| !(resolvedSymbol instanceof FuncDeclaration)) {
+			if ((resolvedExp = context.getResolvedExp(exp.sourceE1)) == null
+					|| !(resolvedExp instanceof VarExp)) {
 				return null;
 			}
 
-			VarExp varExp = (VarExp) exp.sourceE1.resolvedExpression;
+			VarExp varExp = (VarExp) resolvedExp;
 			if (!(varExp.var instanceof FuncDeclaration)) {
 				return null;
 			}
 			func = (FuncDeclaration) varExp.var;
 		} else {
-			func = (FuncDeclaration) exp.sourceE1.getResolvedSymbol();
+			func = (FuncDeclaration) resolvedSymbol;
 		}
 
 		return resolveFuncDeclaration(func);
 	}
 
 	private IBinding resolveIdentifierExp(ASTNode node, IdentifierExp id) {
-		if (id.resolvedSymbol != null) {
-			Dsymbol sym = id.resolvedSymbol;
-
-			if (sym instanceof AliasDeclaration) {
-				AliasDeclaration alias = (AliasDeclaration) sym;
+		Dsymbol resolvedSymbol;
+		if ((resolvedSymbol = context.getResolvedSymbol(id)) != null) {
+			if (resolvedSymbol instanceof AliasDeclaration) {
+				AliasDeclaration alias = (AliasDeclaration) resolvedSymbol;
 				if (alias.isImportAlias) {
-					sym = alias.aliassym;
+					resolvedSymbol = alias.aliassym;
 				}
 			}
 
-			IBinding binding = resolveDsymbol(sym);
+			IBinding binding = resolveDsymbol(resolvedSymbol);
 			if (binding != null) {
 				return binding;
 			}
 		}
 
-		Expression resolved = id.resolvedExpression;
+		Expression resolved = context.getResolvedExp(id);
 		if (resolved == null) {
 			return null;
 		}

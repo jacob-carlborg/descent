@@ -3253,10 +3253,10 @@ public class Parser extends Lexer {
 					nextToken();
 					if (token.value == TOKlparen) {
 					    // ident!(template_arguments)
-					    tempinst.tiargs = parseTemplateArgumentList();
+					    tempinst.tiargs(parseTemplateArgumentList());
 					} else {
 					    // ident!template_argument
-					    tempinst.tiargs = parseTemplateArgument();
+					    tempinst.tiargs(parseTemplateArgument());
 					}
 				}
 				tempinst.setSourceRange(id.start, prevToken.ptr + prevToken.sourceLen - id.start);
@@ -3432,10 +3432,10 @@ public class Parser extends Lexer {
 					nextToken();
 					if (token.value == TOKlparen) {
 						// ident!(template_arguments)
-						tempinst[0].tiargs = parseTemplateArgumentList();
+						tempinst[0].tiargs(parseTemplateArgumentList());
 					} else {
 						// ident!template_argument
-						tempinst[0].tiargs = parseTemplateArgument();
+						tempinst[0].tiargs(parseTemplateArgument());
 					}
 				}
 				tid[0].addIdent(new TemplateInstanceWrapper(loc(), tempinst[0]));
@@ -6873,10 +6873,10 @@ public class Parser extends Lexer {
 		    	} else {
 		    		if (token.value == TOKlparen) {
 		    		    // ident!(template_arguments)
-		    		    tempinst.tiargs = parseTemplateArgumentList();
+		    		    tempinst.tiargs(parseTemplateArgumentList());
 		    		} else {
 		    		    // ident!template_argument
-		    		    tempinst.tiargs = parseTemplateArgument();
+		    		    tempinst.tiargs(parseTemplateArgument());
 		    		}
 		    	}
 		    	tempinst.setSourceRange(id.start, prevToken.ptr + prevToken.sourceLen - id.start);
@@ -7402,10 +7402,10 @@ public class Parser extends Lexer {
 						} else {
 							if (token.value == TOKlparen) {
 							    // ident!(template_arguments)
-							    tempinst.tiargs = parseTemplateArgumentList();
+							    tempinst.tiargs(parseTemplateArgumentList());
 							} else {
 							    // ident!template_argument
-							    tempinst.tiargs = parseTemplateArgument();
+							    tempinst.tiargs(parseTemplateArgument());
 							}
 						}
 						tempinst.setSourceRange(id.start, prevToken.ptr + prevToken.sourceLen - id.start);
