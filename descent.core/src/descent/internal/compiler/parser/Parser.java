@@ -1018,8 +1018,11 @@ public class Parser extends Lexer {
 	}
 	
 	private Dsymbol parseDeclDefs_Lstc2(boolean[] isSingle, Modifier modifier, int stc, Dsymbols decldefs) {
-		Token firstToken = new Token(prevToken);
 		int start = prevToken.ptr;
+		int firstTokenStart = start;
+		int firstTokenLinnum = prevToken.lineNumber;
+		int firstTokenSourceLen = prevToken.sourceLen;
+		char[] firstTokenString = prevToken.getRawTokenSource();
 		
 		List<Modifier> modifiers = new ArrayList<Modifier>();
 		modifiers.add(modifier);
@@ -1109,7 +1112,7 @@ public class Parser extends Lexer {
 			if (token.value == TOKidentifier &&
 			    peek(token).value == TOKassign)
 			{
-			    a = parseAutoDeclarations(stc, firstToken, start, modifiers);
+			    a = parseAutoDeclarations(stc, firstTokenStart, start, modifiers);
 			    decldefs.addAll(a);
 			    return null;
 			}
@@ -1179,7 +1182,7 @@ public class Parser extends Lexer {
 					} else {
 						parsingErrorInsertTokenAfter(prevToken, TOKsemicolon
 								.toString());
-						v.setSourceRange(firstToken.ptr, prevToken.ptr + prevToken.sourceLen - firstToken.ptr);
+						v.setSourceRange(firstTokenStart, prevToken.ptr + prevToken.sourceLen - firstTokenStart);
 					}
 					break;
 				}
@@ -1190,7 +1193,7 @@ public class Parser extends Lexer {
 				Dsymbols a = parseBlock(isSingle, true /* thinks it's D2 */);
 				
 				if (isSingle[0] && a.size() == 0) {
-					parsingErrorDeleteToken(firstToken);
+					parsingErrorDeleteToken(firstTokenLinnum, firstTokenStart, firstTokenSourceLen, firstTokenString);
 					return null;
 				}
 				
@@ -1219,7 +1222,7 @@ public class Parser extends Lexer {
 		}
 	}
 
-	private Dsymbols parseAutoDeclarations(int storageClass, Token firstToken, int start, List<Modifier> modifiers) {
+	private Dsymbols parseAutoDeclarations(int storageClass, int firstTokenStart, int start, List<Modifier> modifiers) {
 		Dsymbols a = new Dsymbols();
 		
 		VarDeclaration previous = null;
@@ -1267,7 +1270,7 @@ public class Parser extends Lexer {
 			} else {
 				parsingErrorInsertTokenAfter(prevToken, TOKsemicolon
 						.toString());
-				v.setSourceRange(firstToken.ptr, prevToken.ptr + prevToken.sourceLen - firstToken.ptr);
+				v.setSourceRange(firstTokenStart, prevToken.ptr + prevToken.sourceLen - firstTokenStart);
 			}
 			break;
 		}
@@ -2230,7 +2233,11 @@ public class Parser extends Lexer {
 		BaseClasses baseClasses = null;
 		int anon = 0;
 		
-		Token firstToken = new Token(token);
+		int firstTokenStart = token.ptr;
+		int firstTokenLength = token.sourceLen;
+		int firstTokenLineNumber = token.lineNumber;
+		char[] firstTokenString = token.getRawTokenSource();
+		TOK firstTokenValue = token.value;
 		
 		nextToken();
 		if (token.value != TOKidentifier) {
@@ -2249,11 +2256,11 @@ public class Parser extends Lexer {
 		}
 
 		// Don't need to expect(...), it was called previously
-		switch (firstToken.value) {
+		switch (firstTokenValue) {
 		case TOKclass:
 		case TOKinterface:
 			if (id == null) {
-				parsingErrorInsertTokenAfter(firstToken, "Identifier");
+				parsingErrorInsertTokenAfter(firstTokenLineNumber, firstTokenStart, firstTokenLength, firstTokenString, "Identifier");
 			}
 
 			// Collect base class(es)
@@ -2266,7 +2273,7 @@ public class Parser extends Lexer {
 				}
 			}
 			
-			if (firstToken.value == TOKclass) {
+			if (firstTokenValue == TOKclass) {
 				a = newClassDeclaration(loc(), id, baseClasses);
 			} else {
 				a = newInterfaceDeclaration(loc(), id, baseClasses);
@@ -2311,25 +2318,25 @@ public class Parser extends Lexer {
 		} else {
 			if (id == null) {
 				// A single "class" makes no declaration
-				if (firstToken.value == TOKstruct || firstToken.value == TOKunion) {
+				if (firstTokenValue == TOKstruct || firstTokenValue == TOKunion) {
 					// Signal the creation of the struct or union, anyway
-					if (firstToken.value == TOKstruct) {
+					if (firstTokenValue == TOKstruct) {
 						newStructDeclaration(loc, null);
 					} else {
 						newUnionDeclaration(loc, null);
 					}
 					
-					String word = toWord(firstToken.value.toString());
-					parsingErrorInsertToComplete(firstToken,  word + "Body", word + "Declaration");
+					String word = toWord(firstTokenValue.toString());
+					parsingErrorInsertToComplete(firstTokenLineNumber, firstTokenStart, firstTokenLength,  word + "Body", word + "Declaration");
 				}
 				a = null;
 			} else {
 				// We've got at least "class Identifier", make a declaration out of it
-				String word = toWord(firstToken.value.toString());
+				String word = toWord(firstTokenValue.toString());
 				parsingErrorInsertToComplete(prevToken,  word + "Body", word + "Declaration");
 				
 				if (a == null) {
-					switch(firstToken.value) {
+					switch(firstTokenValue) {
 					case TOKclass:
 						a = newClassDeclaration(loc(), id, baseClasses);
 						break;
@@ -3991,7 +3998,7 @@ public class Parser extends Lexer {
 		if (apiLevel >= D2) {
 			if (storage_class != 0 && token.value == TOKidentifier
 					&& peek(token).value == TOKassign) {
-				return parseAutoDeclarations(stc, new Token(token), start, modifiers);
+				return parseAutoDeclarations(stc, token.ptr, start, modifiers);
 			}
 		} else {
 			while (storage_class != 0 && token.value == TOKidentifier
@@ -8490,12 +8497,24 @@ public class Parser extends Lexer {
 		error(IProblem.ParsingErrorInsertTokenAfter, targetToken.lineNumber, targetToken.ptr, targetToken.sourceLen, new String[] { new String(targetToken.toString()), expected });
 	}
 	
+	private void parsingErrorInsertTokenAfter(int lineNumber, int start, int length, char[] tokenName, String expected) {
+		error(IProblem.ParsingErrorInsertTokenAfter, lineNumber, start, length, new String[] { new String(tokenName), expected });
+	}
+	
 	private void parsingErrorDeleteToken(Token targetToken) {
 		error(IProblem.ParsingErrorDeleteToken, targetToken.lineNumber, targetToken.ptr, targetToken.sourceLen, new String[] { targetToken.toString() });
 	}
 	
+	private void parsingErrorDeleteToken(int lineNumber, int start, int length, char[] tokenName) {
+		error(IProblem.ParsingErrorDeleteToken, lineNumber, start, length, new String[] { new String(tokenName) });
+	}
+	
 	private void parsingErrorInsertToComplete(Token targetToken, String insert, String toComplete) {
 		error(IProblem.ParsingErrorInsertToComplete, targetToken.lineNumber, targetToken.ptr, targetToken.sourceLen, new String[] { insert, toComplete });
+	}
+	
+	private void parsingErrorInsertToComplete(int lineNumber, int start, int length, String insert, String toComplete) {
+		error(IProblem.ParsingErrorInsertToComplete, lineNumber, start, length, new String[] { insert, toComplete });
 	}
 	
 	private String toWord(String s) {
@@ -9134,10 +9153,12 @@ public class Parser extends Lexer {
 		return s;
 	}
 	
+	private Token dietSaveToken = new Token(); 
+	
 	Statement dietParseStatement(FuncDeclaration f) {
 		if (diet) {
 			int saveP = p;
-			Token saveToken = new Token(token);
+			Token.assign(dietSaveToken, token);
 			
 			inDiet = true;
 			boolean success = dietParse(f);					
@@ -9148,7 +9169,7 @@ public class Parser extends Lexer {
 			}
 			
 			p = saveP;
-			token = saveToken;
+			Token.assign(token, dietSaveToken);
 		}
 		
 		return parseStatement(PSsemi);

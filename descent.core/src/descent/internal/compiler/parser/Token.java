@@ -32,15 +32,15 @@ public class Token {
 	public Comment leadingComment;
 	public int special;
 	
-	//private static int instances = 0;
+//	private static int instances = 0;
 	
 	public Token() {
-		//System.out.println("Token: " + ++instances);
+//		System.out.println("Token: " + ++instances);
 	}
 	
 	public Token(Token other) {
 		assign(this, other);
-		//System.out.println("Token: " + ++instances);
+//		System.out.println("Token: " + ++instances);
 	}
 	
 	public void reset() {
