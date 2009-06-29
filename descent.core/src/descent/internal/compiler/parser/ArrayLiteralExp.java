@@ -79,8 +79,16 @@ public class ArrayLiteralExp extends Expression {
 			return e;
 		}
 		if (tb.ty == Tpointer && typeb.ty == Tsarray) {
-			e = (ArrayLiteralExp) copy();
-			e.type = typeb.nextOf().pointerTo(context);
+			if (context.isD1()) {
+				e = (ArrayLiteralExp) copy();
+				e.type = typeb.nextOf().pointerTo(context);
+			} else {
+				Type tp = typeb.nextOf().pointerTo(context);
+				if (!tp.equals(e.type)) {
+					e = (ArrayLiteralExp) copy();
+					e.type = tp;
+				}
+			}
 		}
 		// L1:
 		return e.Expression_castTo(sc, t, context);

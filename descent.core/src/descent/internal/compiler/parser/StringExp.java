@@ -328,6 +328,17 @@ public class StringExp extends Expression {
 			se.type = t;
 			return se;
 		}
+		
+		if (!context.isD1()) {
+		    if (committed && tb.ty == Tsarray && typeb.ty == Tarray) {
+				se = (StringExp) copy();
+				se.sz = tb.nextOf().size(context);
+				se.len = (len * sz) / se.sz;
+				se.committed = true;
+				se.type = t;
+				return se;
+			}
+		}
 
 		if (tb.ty != Tsarray && tb.ty != Tarray && tb.ty != Tpointer) {
 			if (0 == copied) {

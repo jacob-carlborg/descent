@@ -31,28 +31,45 @@ public class DelegateExp extends UnaExp {
 	@Override
 	public Expression castTo(Scope sc, Type t, SemanticContext context) {
 		Type tb;
+		Type typeb = null;
 		Expression e = this;
 
 		tb = t.toBasetype(context);
-		type = type.toBasetype(context);
+		
+		if (context.isD1()) {
+			type = type.toBasetype(context);
+		} else {
+			typeb = type.toBasetype(context);
+		}
 		if (!same(tb, type, context)) {
 			// Look for delegates to functions where the functions are
 			// overloaded.
 			FuncDeclaration f;
+			
+			boolean condition = context.isD1() ?
+					type.ty == Tdelegate && type.next.ty == Tfunction && tb.ty == Tdelegate && tb.next.ty == Tfunction
+				:
+					typeb.ty == Tdelegate && typeb.nextOf().ty == Tfunction && tb.ty == Tdelegate && tb.nextOf().ty == Tfunction;
 
-			if (type.ty == Tdelegate && type.next.ty == Tfunction
-					&& tb.ty == Tdelegate && tb.next.ty == Tfunction) {
+			if (condition) {
 				if (func != null) {
-					f = func.overloadExactMatch(tb.next, context);
+					f = func.overloadExactMatch(context.isD1() ? tb.next : tb.nextOf(), context);
 					if (f != null) {
 						int[] offset = { 0 };
-						if (f.tintro() != null
-								&& f.tintro().next.isBaseOf(f.type.next, offset,
-										context) && offset[0] != 0) {
+						
+						condition = context.isD1() ?
+								f.tintro() != null && f.tintro().next.isBaseOf(f.type.next, offset, context) && offset[0] != 0
+							:
+								f.tintro() != null && f.tintro().nextOf().isBaseOf(f.type.nextOf(), offset, context) && offset[0] != 0;
+						
+						if (condition) {
 							if (context.acceptsErrors()) {
 								context.acceptProblem(Problem.newSemanticTypeError(
 										IProblem.CannotFormDelegateDueToCovariantReturnType, this));
 							}
+						}
+						if (!context.isD1()) {
+							f.tookAddressOf++;
 						}
 						e = new DelegateExp(loc, e1, f);
 						e.type = t;
@@ -69,17 +86,30 @@ public class DelegateExp extends UnaExp {
 			e = super.castTo(sc, t, context);
 		} else {
 			int[] offset = { 0 };
+			
+			if (!context.isD1()) {
+				func.tookAddressOf++;
+			}
+			
+			boolean condition = context.isD1() ?
+					func.tintro() != null && func.tintro().next.isBaseOf(func.type.next, offset, context) && offset[0] != 0
+				:
+					func.tintro() != null && func.tintro().nextOf().isBaseOf(func.type.nextOf(), offset, context) && offset[0] != 0;
 
-			if (func.tintro() != null
-					&& func.tintro().next.isBaseOf(func.type.next, offset,
-							context) && offset[0] != 0) {
+			if (condition) {
 				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.CannotFormDelegateDueToCovariantReturnType, this));
 				}
 			}
+			
+			e = copy();
+			e.type = t;
 		}
-		e.type = t;
+		
+		if (context.isD1()) {
+			e.type = t;
+		}
 		return e;
 	}
 

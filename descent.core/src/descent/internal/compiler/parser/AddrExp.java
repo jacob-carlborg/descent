@@ -46,22 +46,75 @@ public class AddrExp extends UnaExp {
 		if (same(tb, type, context)) {
 			// Look for pointers to functions where the functions are
 			// overloaded.
-			VarExp ve;
-			FuncDeclaration f;
-
-			if (type.ty == Tpointer && type.next.ty == Tfunction
-					&& tb.ty == Tpointer && tb.next.ty == Tfunction
-					&& e1.op == TOKvar) {
-				ve = (VarExp) e1;
-				f = ve.var.isFuncDeclaration();
-				if (f != null) {
-					f = f.overloadExactMatch(tb.next, context);
+			if (context.isD1()) {
+				VarExp ve;
+				FuncDeclaration f;
+	
+				if (type.ty == Tpointer && type.next.ty == Tfunction
+						&& tb.ty == Tpointer && tb.next.ty == Tfunction
+						&& e1.op == TOKvar) {
+					ve = (VarExp) e1;
+					f = ve.var.isFuncDeclaration();
 					if (f != null) {
-						e = new VarExp(loc, f);
-						e.type = f.type;
-						e = new AddrExp(loc, e);
-						e.type = t;
-						return e;
+						f = f.overloadExactMatch(tb.next, context);
+						if (f != null) {
+							e = new VarExp(loc, f);
+							e.type = f.type;
+							e = new AddrExp(loc, e);
+							e.type = t;
+							return e;
+						}
+					}
+				}
+			} else {
+				if (e1.op == TOKoverloadset
+						&& (t.ty == Tpointer || t.ty == Tdelegate)
+						&& t.nextOf().ty == Tfunction) {
+					OverExp eo = (OverExp) e1;
+					FuncDeclaration f = null;
+					for (int i = 0; i < size(eo.vars.a); i++) {
+						Dsymbol s = (Dsymbol) eo.vars.a.get(i);
+						FuncDeclaration f2 = s.isFuncDeclaration();
+						assert (f2 != null);
+						if (f2.overloadExactMatch(t.nextOf(), context) != null) {
+							if (f != null)
+								/*
+								 * Error if match in more than one overload set,
+								 * even if one is a 'better' match than the
+								 * other.
+								 */
+								ScopeDsymbol.multiplyDefined(loc, f, f2,
+										context);
+							else
+								f = f2;
+						}
+					}
+					if (f != null) {
+						f.tookAddressOf++;
+						SymOffExp se = new SymOffExp(loc, f, integer_t.ZERO,
+								false, context);
+						se.semantic(sc, context);
+						// Let SymOffExp::castTo() do the heavy lifting
+						return se.castTo(sc, t, context);
+					}
+				}
+
+				if (type.ty == Tpointer && type.nextOf().ty == Tfunction
+						&& tb.ty == Tpointer && tb.nextOf().ty == Tfunction
+						&& e1.op == TOKvar) {
+					VarExp ve = (VarExp) e1;
+					FuncDeclaration f = ve.var.isFuncDeclaration();
+					if (f != null) {
+						throw new IllegalStateException(); // should be
+															// SymOffExp instead
+//						f = f.overloadExactMatch(tb.nextOf(), context);
+//						if (f != null) {
+//							e = new VarExp(loc, f);
+//							e.type = f.type;
+//							e = new AddrExp(loc, e);
+//							e.type = t;
+//							return e;
+//						}
 					}
 				}
 			}

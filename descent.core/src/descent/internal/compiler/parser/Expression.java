@@ -14,10 +14,12 @@ import static descent.internal.compiler.parser.TOK.TOKor;
 import static descent.internal.compiler.parser.TOK.TOKxor;
 import static descent.internal.compiler.parser.TY.Tbit;
 import static descent.internal.compiler.parser.TY.Tbool;
+import static descent.internal.compiler.parser.TY.Tclass;
 import static descent.internal.compiler.parser.TY.Tint32;
 import static descent.internal.compiler.parser.TY.Tpointer;
 import static descent.internal.compiler.parser.TY.Treference;
 import static descent.internal.compiler.parser.TY.Tsarray;
+import static descent.internal.compiler.parser.TY.Tstruct;
 import static descent.internal.compiler.parser.TY.Tvoid;
 
 import java.util.ArrayList;
@@ -147,6 +149,36 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 					e = new AddrExp(loc, e);
 				}
 			} else {
+				if (!context.isD1()) {
+					if (typeb.ty == Tstruct) {
+						TypeStruct ts = (TypeStruct) typeb;
+						if (!(tb.ty == Tstruct && ts.sym == ((TypeStruct) tb).sym)
+								&& ts.sym.aliasthis != null) {
+							/*
+							 * Forward the cast to our alias this member,
+							 * rewrite to: cast(to)e1.aliasthis
+							 */
+							Expression e1 = new DotIdExp(loc, this,
+									ts.sym.aliasthis.ident);
+							e = new CastExp(loc, e1, tb);
+							e = e.semantic(sc, context);
+							return e;
+						}
+					} else if (typeb.ty == Tclass) {
+						TypeClass ts = (TypeClass) typeb;
+						if (tb.ty != Tclass && ts.sym.aliasthis != null) {
+							/*
+							 * Forward the cast to our alias this member,
+							 * rewrite to: cast(to)e1.aliasthis
+							 */
+							Expression e1 = new DotIdExp(loc, this,
+									ts.sym.aliasthis.ident);
+							e = new CastExp(loc, e1, tb);
+							e = e.semantic(sc, context);
+							return e;
+						}
+					}
+				}
 				e = new CastExp(loc, e, tb);
 			}
 		} else {

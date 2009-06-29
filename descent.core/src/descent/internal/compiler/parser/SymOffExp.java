@@ -2,6 +2,7 @@ package descent.internal.compiler.parser;
 
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+import static descent.internal.compiler.parser.TY.Tdelegate;
 import static descent.internal.compiler.parser.TY.Tfunction;
 import static descent.internal.compiler.parser.TY.Tpointer;
 
@@ -48,32 +49,77 @@ public class SymOffExp extends SymbolExp {
 
 	@Override
 	public Expression castTo(Scope sc, Type t, SemanticContext context) {
-		Type tb;
-
-		Expression e = this;
-
-		tb = t.toBasetype(context);
-		type = type.toBasetype(context);
-		if (!same(tb, type, context)) {
-			// Look for pointers to functions where the functions are
-			// overloaded.
-			FuncDeclaration f;
-
-			if (type.ty == Tpointer && type.next.ty == Tfunction
-					&& tb.ty == Tpointer && tb.next.ty == Tfunction) {
-				f = var.isFuncDeclaration();
-				if (f != null) {
-					f = f.overloadExactMatch(tb.next, context);
+		Expression e;
+		
+		if (context.isD1()) {
+			Type tb;
+	
+			e = this;
+	
+			tb = t.toBasetype(context);
+			type = type.toBasetype(context);
+			if (!same(tb, type, context)) {
+				// Look for pointers to functions where the functions are
+				// overloaded.
+				FuncDeclaration f;
+	
+				if (type.ty == Tpointer && type.next.ty == Tfunction
+						&& tb.ty == Tpointer && tb.next.ty == Tfunction) {
+					f = var.isFuncDeclaration();
 					if (f != null) {
-						e = new SymOffExp(loc, f, 0, context);
-						e.type = t;
-						return e;
+						f = f.overloadExactMatch(tb.next, context);
+						if (f != null) {
+							e = new SymOffExp(loc, f, 0, context);
+							e.type = t;
+							return e;
+						}
 					}
 				}
+				e = super.castTo(sc, t, context);
 			}
-			e = super.castTo(sc, t, context);
+			e.type = t;
+		} else {
+		    if (same(type, t, context) && !hasOverloads)
+				return this;
+			Type tb = t.toBasetype(context);
+			Type typeb = type.toBasetype(context);
+			if (tb != typeb) {
+				// Look for pointers to functions where the functions are
+				// overloaded.
+				FuncDeclaration f;
+
+				if (hasOverloads && typeb.ty == Tpointer
+						&& typeb.nextOf().ty == Tfunction
+						&& (tb.ty == Tpointer || tb.ty == Tdelegate)
+						&& tb.nextOf().ty == Tfunction) {
+					f = var.isFuncDeclaration();
+					if (f != null) {
+						f = f.overloadExactMatch(tb.nextOf(), context);
+						if (f != null) {
+							if (tb.ty == Tdelegate && f.needThis()
+									&& hasThis(sc) != null) {
+								e = new DelegateExp(loc, new ThisExp(loc), f);
+								e = e.semantic(sc, context);
+							} else if (tb.ty == Tdelegate && f.isNested()) {
+								e = new DelegateExp(loc, new IntegerExp(0), f);
+								e = e.semantic(sc, context);
+							} else {
+								e = new SymOffExp(loc, f, integer_t.ZERO,
+										context);
+								e.type = t;
+							}
+							f.tookAddressOf++;
+							return e;
+						}
+					}
+				}
+				e = super.castTo(sc, t, context);
+			} else {
+				e = copy();
+				e.type = t;
+				((SymOffExp) e).hasOverloads = false;
+			}
 		}
-		e.type = t;
 		return e;
 	}
 
@@ -106,11 +152,31 @@ public class SymOffExp extends SymbolExp {
 			FuncDeclaration f;
 
 			t = t.toBasetype(context);
-			if (type.ty == Tpointer && type.next.ty == Tfunction
-					&& t.ty == Tpointer && t.next.ty == Tfunction) {
-				f = var.isFuncDeclaration();
-				if (f != null && f.overloadExactMatch(t.next, context) != null) {
-					result = MATCHexact;
+			
+			if (context.isD1()) {
+				if (type.ty == Tpointer && type.next.ty == Tfunction
+						&& t.ty == Tpointer && t.next.ty == Tfunction) {
+					f = var.isFuncDeclaration();
+					if (f != null && f.overloadExactMatch(t.next, context) != null) {
+						result = MATCHexact;
+					}
+				}
+			} else {
+				if (type.ty == Tpointer && type.nextOf().ty == Tfunction
+						&& (t.ty == Tpointer || t.ty == Tdelegate)
+						&& t.nextOf().ty == Tfunction) {
+					f = var.isFuncDeclaration();
+					if (f != null) {
+						f = f.overloadExactMatch(t.nextOf(), context);
+						if (f != null) {
+							if ((t.ty == Tdelegate && (f.needThis() || f
+									.isNested()))
+									|| (t.ty == Tpointer && !(f.needThis() || f
+											.isNested()))) {
+								result = MATCHexact;
+							}
+						}
+					}
 				}
 			}
 		}
