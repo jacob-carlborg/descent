@@ -594,7 +594,9 @@ public class Lexer implements IProblemRequestor {
 			case '\\': // escaped string literal
 			{
 				int c;
-				stringbuffer.reset();
+				if (!inDiet) {
+					stringbuffer.reset();
+				}
 				do {
 					p++;
 				    switch (input(p))
@@ -603,11 +605,15 @@ public class Lexer implements IProblemRequestor {
 					case 'U':
 					case '&':
 					    c = escapeSequence();
-					    stringbuffer.writeUTF8(c);
+					    if (!inDiet) {
+						    stringbuffer.writeUTF8(c);
+					    }
 					    break;
 					default:
 					    c = escapeSequence();
-					    stringbuffer.writeByte(c);
+						if (!inDiet) {
+						    stringbuffer.writeByte(c);
+						}
 					    break;
 				    }
 				} while (input(p) == '\\');
@@ -4360,7 +4366,10 @@ public class Lexer implements IProblemRequestor {
 		int c;
 
 		p++;
-		stringbuffer.reset();
+		
+		if (!inDiet) {
+			stringbuffer.reset();
+		}
 		while (true) {
 			c = input(p++);
 			switch (c) {
@@ -4408,12 +4417,16 @@ public class Lexer implements IProblemRequestor {
 					if (u == PS || u == LS) {
 						newline(NOT_IN_COMMENT);
 					}
-					stringbuffer.writeUTF8(u);
+					if (!inDiet) {
+						stringbuffer.writeUTF8(u);
+					}
 					continue;
 				}
 				break;
 			}
-			stringbuffer.writeByte(c);
+			if (!inDiet) {
+				stringbuffer.writeByte(c);
+			}
 		}
 	}
 
@@ -4423,7 +4436,9 @@ public class Lexer implements IProblemRequestor {
 		int v = 0;
 
 		p++;
-		stringbuffer.reset();
+		if (!inDiet) {
+			stringbuffer.reset();
+		}
 		while (true) {
 			c = input(p++);
 			switch (c) {
@@ -4456,7 +4471,9 @@ public class Lexer implements IProblemRequestor {
 					error(IProblem.OddNumberOfCharactersInHexString,
 							token.lineNumber, token.ptr, p - token.ptr,
 							new String[] { String.valueOf(n) });
-					stringbuffer.writeByte(v);
+					if (!inDiet) {
+						stringbuffer.writeByte(v);
+					}
 				}
 				
 				t.len = stringbuffer.offset();
@@ -4491,7 +4508,9 @@ public class Lexer implements IProblemRequestor {
 				}
 				if ((n & 1) != 0) {
 					v = (v << 4) | c;
-					stringbuffer.writeByte(v);
+					if (!inDiet) {
+						stringbuffer.writeByte(v);
+					}
 				} else {
 					v = c;
 				}
@@ -4526,7 +4545,9 @@ public class Lexer implements IProblemRequestor {
 		int startline = 0;
 
 		p++;
-		stringbuffer.reset();
+		if (!inDiet) {
+			stringbuffer.reset();
+		}
 		while (true) {
 			c = input(p++);
 			switch (c) {
@@ -4539,7 +4560,9 @@ public class Lexer implements IProblemRequestor {
 					continue;
 				}
 				if (hereid != null) {
-					stringbuffer.writeUTF8(c);
+					if (!inDiet) {
+						stringbuffer.writeUTF8(c);
+					}
 					continue;
 				}
 				break;
@@ -4556,7 +4579,9 @@ public class Lexer implements IProblemRequestor {
 					continue;
 				}
 				if (hereid != null) {
-					stringbuffer.writeUTF8(c);
+					if (!inDiet) {
+						stringbuffer.writeUTF8(c);
+					}
 					continue;
 				}
 				break;
@@ -4580,7 +4605,9 @@ public class Lexer implements IProblemRequestor {
 							continue;
 						}
 						if (hereid != null) {
-							stringbuffer.writeUTF8(c);
+							if (!inDiet) {
+								stringbuffer.writeUTF8(c);
+							}
 							continue;
 						}
 						break;
@@ -4666,7 +4693,9 @@ public class Lexer implements IProblemRequestor {
 					}
 					p = psave;
 				}
-				stringbuffer.writeUTF8(c);
+				if (!inDiet) {
+					stringbuffer.writeUTF8(c);
+				}
 				startline = 0;
 			}
 		}
@@ -4764,7 +4793,9 @@ public class Lexer implements IProblemRequestor {
 		//Loc start = loc;
 
 		p++;
-		stringbuffer.reset();
+		if (!inDiet) {
+			stringbuffer.reset();
+		}
 		while (true) {
 			c = input(p++);
 			switch (c) {
@@ -4774,7 +4805,9 @@ public class Lexer implements IProblemRequestor {
 				case 'U':
 				case '&':
 					c = escapeSequence();
-					stringbuffer.writeUTF8(c);
+					if (!inDiet) {
+						stringbuffer.writeUTF8(c);
+					}
 					continue;
 
 				default:
@@ -4827,12 +4860,16 @@ public class Lexer implements IProblemRequestor {
 						newline(NOT_IN_COMMENT);
 					}
 					p++;
-					stringbuffer.writeUTF8(c);
+					if (!inDiet) {
+						stringbuffer.writeUTF8(c);
+					}
 					continue;
 				}
 				break;
 			}
-			stringbuffer.writeByte(c);
+			if (!inDiet) {
+				stringbuffer.writeByte(c);
+			}
 		}
 	}
 
@@ -4989,7 +5026,9 @@ public class Lexer implements IProblemRequestor {
 		int start;
 		TOK result;
 
-		stringbuffer.reset();
+		if (!inDiet) {
+			stringbuffer.reset();
+		}
 
 		state = STATE_initial;
 		base = 0;
@@ -5211,7 +5250,9 @@ public class Lexer implements IProblemRequestor {
 				throw new IllegalStateException("Can't happen");
 			}
 			if (writeToStringBuffer) {
-				stringbuffer.data.append(c);
+				if (!inDiet) {
+					stringbuffer.data.append(c);
+				}
 			}
 			p++;
 		}
@@ -5221,53 +5262,55 @@ public class Lexer implements IProblemRequestor {
 		}
 
 		// uinteger_t n; // unsigned >=64 bit integer type
-		integer_t n; // unsigned >=64 bit integer type
+		integer_t n = null; // unsigned >=64 bit integer type
 		boolean integerOverflow = false;
 
 		boolean isAnInt = false;
 		int r = 10;
 
-		if (stringbuffer.data.length() == 1
-				&& (state == STATE_decimal || state == STATE_0)) {
-			n = new integer_t(intResult);
-			isAnInt = true;
-		} else {
-			// Convert string to integer
-			// Ary sais: changed to use BigInteger 
-			int p = 0;
-			if (stringbuffer.data.charAt(0) == '0'
-					&& stringbuffer.data.length() > 1) {
-				if (stringbuffer.data.charAt(1) == 'x'
-						|| stringbuffer.data.charAt(1) == 'X') {
-					p = 2;
-					r = 16;
-				} else if (stringbuffer.data.charAt(1) == 'b'
-						|| stringbuffer.data.charAt(1) == 'B') {
-					p = 2;
-					r = 2;
-				} else {
-					char c2 = stringbuffer.data.charAt(1);
-					// Chars.isdigit inlined
-					if ('0' <= c2 && c2 <= '9') {
-						p = 1;
-						r = 8;
-					}
-				}
-			}
-
-			if (r == 10 && stringbuffer.data.length() <= 9) {
+		if (!inDiet) {
+			if (stringbuffer.data.length() == 1
+					&& (state == STATE_decimal || state == STATE_0)) {
 				n = new integer_t(intResult);
 				isAnInt = true;
 			} else {
-				try {
-					n = new integer_t(new BigInteger(stringbuffer.data
-							.substring(p), r));
-				} catch (NumberFormatException ex) {
-					n = integer_t.ZERO;
+				// Convert string to integer
+				// Ary sais: changed to use BigInteger 
+				int p = 0;
+				if (stringbuffer.data.charAt(0) == '0'
+						&& stringbuffer.data.length() > 1) {
+					if (stringbuffer.data.charAt(1) == 'x'
+							|| stringbuffer.data.charAt(1) == 'X') {
+						p = 2;
+						r = 16;
+					} else if (stringbuffer.data.charAt(1) == 'b'
+							|| stringbuffer.data.charAt(1) == 'B') {
+						p = 2;
+						r = 2;
+					} else {
+						char c2 = stringbuffer.data.charAt(1);
+						// Chars.isdigit inlined
+						if ('0' <= c2 && c2 <= '9') {
+							p = 1;
+							r = 8;
+						}
+					}
 				}
-			}
-			if (n.compareTo(X_FFFFFFFFFFFFFFFF) > 0) {
-				integerOverflow = true;
+	
+				if (r == 10 && stringbuffer.data.length() <= 9) {
+					n = new integer_t(intResult);
+					isAnInt = true;
+				} else {
+					try {
+						n = new integer_t(new BigInteger(stringbuffer.data
+								.substring(p), r));
+					} catch (NumberFormatException ex) {
+						n = integer_t.ZERO;
+					}
+				}
+				if (n.compareTo(X_FFFFFFFFFFFFFFFF) > 0) {
+					integerOverflow = true;
+				}
 			}
 		}
 
@@ -5305,6 +5348,12 @@ public class Lexer implements IProblemRequestor {
 
 		if (integerOverflow) {
 			error(IProblem.IntegerOverflow, t.lineNumber, t.ptr, p - start);
+		}
+		
+		if (inDiet) {
+			// Return any token because we are in diet mode, but
+			// make sure we consume it properly
+			return TOKint32v;
 		}
 
 		switch (flags) {
@@ -5398,7 +5447,10 @@ public class Lexer implements IProblemRequestor {
 		int hex; // is this a hexadecimal-floating-constant?
 		TOK result;
 
-		stringbuffer.reset();
+		if (!inDiet) {
+			stringbuffer.reset();
+		}
+		
 		dblstate = 0;
 		hex = 0;
 		done: 
@@ -5473,22 +5525,31 @@ public class Lexer implements IProblemRequestor {
 				}
 				break;
 			}
-			stringbuffer.writeByte(c);
+			
+			if (!inDiet) {
+				stringbuffer.writeByte(c);
+			}
 		}
 		p--;
 		
-		t.floatValue = strold(stringbuffer.data);
+		if (!inDiet) {
+			t.floatValue = strold(stringbuffer.data);
+		}
 		
 		switch (input(p)) {
 		case 'F':
 		case 'f':
-			t.floatValue = strof(stringbuffer.data);
+			if (!inDiet) {
+				t.floatValue = strof(stringbuffer.data);
+			}
 			result = TOKfloat32v;
 			p++;
 			break;
 
 		default:
-			t.floatValue = strod(stringbuffer.data);
+			if (!inDiet) {
+				t.floatValue = strod(stringbuffer.data);
+			}
 			result = TOKfloat64v;
 			break;
 
@@ -5910,9 +5971,11 @@ public class Lexer implements IProblemRequestor {
 	}
 
 	public void reportProblem(IProblem problem) {
-		problems.add(problem);
-		if (reporter != null) {
-			reporter.reportProblem(problem);
+		if (!inDiet) {
+			problems.add(problem);
+			if (reporter != null) {
+				reporter.reportProblem(problem);
+			}
 		}
 	}
 
