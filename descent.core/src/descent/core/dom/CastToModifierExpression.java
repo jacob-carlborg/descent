@@ -9,16 +9,16 @@ import java.util.List;
  * <pre>
  * CastToModifierExpression:
  *    CastExpression:
- *    <b>cast</b> <b>(</b> Modifier <b>)</b> Expression
+ *    <b>cast</b> <b>(</b> [ Modifier ] <b>)</b> Expression
  * </pre>
  */
 public class CastToModifierExpression extends Expression {
 
 	/**
-	 * The "modifier" structural property of this node type.
+	 * The "modifiers" structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor MODIFIER_PROPERTY =
-		new ChildPropertyDescriptor(CastToModifierExpression.class, "modifier", Modifier.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
+	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
+		new ChildListPropertyDescriptor(CastToModifierExpression.class, "modifier", Modifier.class, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "expression" structural property of this node type.
@@ -36,7 +36,7 @@ public class CastToModifierExpression extends Expression {
 	static {
 		List properyList = new ArrayList(2);
 		createPropertyList(CastToModifierExpression.class, properyList);
-		addProperty(MODIFIER_PROPERTY, properyList);
+		addProperty(MODIFIERS_PROPERTY, properyList);
 		addProperty(EXPRESSION_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
@@ -57,9 +57,10 @@ public class CastToModifierExpression extends Expression {
 	}
 
 	/**
-	 * The modifier.
+	 * The modifiers.
 	 */
-	private Modifier modifier;
+	private ASTNode.NodeList modifiers =
+		new ASTNode.NodeList(MODIFIERS_PROPERTY);
 
 	/**
 	 * The expression.
@@ -91,14 +92,6 @@ public class CastToModifierExpression extends Expression {
 	 * Method declared on ASTNode.
 	 */
 	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
-		if (property == MODIFIER_PROPERTY) {
-			if (get) {
-				return getModifier();
-			} else {
-				setModifier((Modifier) child);
-				return null;
-			}
-		}
 		if (property == EXPRESSION_PROPERTY) {
 			if (get) {
 				return getExpression();
@@ -109,6 +102,17 @@ public class CastToModifierExpression extends Expression {
 		}
 		// allow default implementation to flag the error
 		return super.internalGetSetChildProperty(property, get, child);
+	}
+	
+	/* (omit javadoc for this method)
+	 * Method declared on ASTNode.
+	 */
+	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
+		if (property == MODIFIERS_PROPERTY) {
+			return modifiers();
+		}
+		// allow default implementation to flag the error
+		return super.internalGetChildListProperty(property);
 	}
 
 	/* (omit javadoc for this method)
@@ -124,7 +128,7 @@ public class CastToModifierExpression extends Expression {
 	ASTNode clone0(AST target) {
 		CastToModifierExpression result = new CastToModifierExpression(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setModifier((Modifier) getModifier().clone(target));
+		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
 		result.setExpression((Expression) getExpression().clone(target));
 		return result;
 	}
@@ -144,50 +148,21 @@ public class CastToModifierExpression extends Expression {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChild(visitor, getModifier());
+			acceptChildren(visitor, this.modifiers);
 			acceptChild(visitor, getExpression());
 		}
 		visitor.endVisit(this);
 	}
-
+	
 	/**
-	 * Returns the modifier of this cast to modifier expression.
+	 * Returns the live ordered list of modifiers for this
+	 * cast expression.
 	 * 
-	 * @return the modifier
+	 * @return the live list of modifiers
+	 *    (element type: <code>Modifier</code>)
 	 */ 
-	public Modifier getModifier() {
-		if (this.modifier == null) {
-			// lazy init must be thread-safe for readers
-			synchronized (this) {
-				if (this.modifier == null) {
-					preLazyInit();
-					this.modifier = new Modifier(this.ast);
-					postLazyInit(this.modifier, MODIFIER_PROPERTY);
-				}
-			}
-		}
-		return this.modifier;
-	}
-
-	/**
-	 * Sets the modifier of this cast to modifier expression.
-	 * 
-	 * @param modifier the modifier
-	 * @exception IllegalArgumentException if:
-	 * <ul>
-	 * <li>the node belongs to a different AST</li>
-	 * <li>the node already has a parent</li>
-	 * <li>a cycle in would be created</li>
-	 * </ul>
-	 */ 
-	public void setModifier(Modifier modifier) {
-		if (modifier == null) {
-			throw new IllegalArgumentException();
-		}
-		ASTNode oldChild = this.modifier;
-		preReplaceChild(oldChild, modifier, MODIFIER_PROPERTY);
-		this.modifier = modifier;
-		postReplaceChild(oldChild, modifier, MODIFIER_PROPERTY);
+	public List<Modifier> modifiers() {
+		return this.modifiers;
 	}
 
 	/**
@@ -243,7 +218,7 @@ public class CastToModifierExpression extends Expression {
 	int treeSize() {
 		return
 			memSize()
-			+ (this.modifier == null ? 0 : getModifier().treeSize())
+			+ (this.modifiers.listSize())
 			+ (this.expression == null ? 0 : getExpression().treeSize())
 	;
 	}

@@ -3084,17 +3084,8 @@ public class CompileTimeASTConverter {
 		} else {
 			descent.core.dom.CastToModifierExpression b = new descent.core.dom.CastToModifierExpression(ast);
 			
-			descent.core.dom.Modifier modifier = new descent.core.dom.Modifier(ast);
-			if (a.tok == TOK.TOKconst) {
-				// const.length() == 5
-				modifier.setModifierKeyword(ModifierKeyword.CONST_KEYWORD);
-				setSourceRange(modifier, a.modifierStart, 5);
-			} else {
-				// invariant.length() == 9
-				modifier.setModifierKeyword(ModifierKeyword.INVARIANT_KEYWORD);
-				setSourceRange(modifier, a.modifierStart, 9);
-			}
-			b.setModifier(modifier);
+			addModifier(b.modifiers(), a.tok, a.modifierStart);
+			addModifier(b.modifiers(), a.tok2, a.modifier2Start);
 			
 			b.setExpression(convertedExp);
 			setSourceRange(b, a.start, a.length);
@@ -3105,6 +3096,33 @@ public class CompileTimeASTConverter {
 			
 			return convertParenthesizedExpression(a, b);
 		}
+	}
+	
+	private void addModifier(List<descent.core.dom.Modifier> modifiers,
+			TOK tok, int modifierStart) {
+		if (tok == null)
+			return;
+		
+		descent.core.dom.Modifier modifier = new descent.core.dom.Modifier(ast);
+		switch(tok) {
+		case TOKconst:
+			modifier.setModifierKeyword(ModifierKeyword.CONST_KEYWORD);
+			setSourceRange(modifier, modifierStart, 5);
+			break;
+		case TOKinvariant:
+			modifier.setModifierKeyword(ModifierKeyword.INVARIANT_KEYWORD);
+			setSourceRange(modifier, modifierStart, 9);
+			break;
+		case TOKimmutable:
+			modifier.setModifierKeyword(ModifierKeyword.IMMUTABLE_KEYWORD);
+			setSourceRange(modifier, modifierStart, 9);
+			break;
+		case TOKshared:
+			modifier.setModifierKeyword(ModifierKeyword.SHARED_KEYWORD);
+			setSourceRange(modifier, modifierStart, 6);
+			break;
+		}
+		modifiers.add(modifier);
 	}
 	
 	public descent.core.dom.CatchClause convert(Catch a) {

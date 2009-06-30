@@ -2999,20 +2999,17 @@ public class Lexer implements IProblemRequestor {
 							return;
 						}
 					}
-				} else if (apiLevel == D2 && input(p) == 'a') {
+				} else if (apiLevel >= D2 && input(p) == 'a') {
 					p++;
-					if (input(p) == 'a') {
+					if (input(p) == 'r') {
 						p++;
-						if (input(p) == 'r') {
+						if (input(p) == 'e') {
 							p++;
-							if (input(p) == 'e') {
+							if (input(p) == 'd' && !Chars.isidchar(input(p + 1))) {
+								t.value = TOK.TOKshared;
+								t.sourceLen = 6;
 								p++;
-								if (input(p) == 'd' && !Chars.isidchar(input(p + 1))) {
-									t.value = TOK.TOKshared;
-									t.sourceLen = 6;
-									p++;
-									return;
-								}
+								return;
 							}
 						}
 					}

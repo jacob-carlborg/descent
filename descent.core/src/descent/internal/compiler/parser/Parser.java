@@ -7634,17 +7634,21 @@ public class Parser extends Lexer {
 					nextToken();
 					e = parseUnaryExp();
 					e = new CastExp(loc, e, m, tok, modifierStart);
-				} else if (token.value == TOKconst && peekNext() == TOKshared
-						&& peekNext2() == TOKrparen || token.value == TOKshared
-						&& peekNext() == TOKconst && peekNext2() == TOKrparen) {
+				} else if ((token.value == TOKconst && peekNext() == TOKshared
+						&& peekNext2() == TOKrparen) || (token.value == TOKshared
+						&& peekNext() == TOKconst && peekNext2() == TOKrparen)) {
 					m = MODshared | MODconst;
 					nextToken();
+					
+					int modifier2Start = token.ptr;
+					TOK tok2 = token.value;
+					
 					// Lmod2:
 					nextToken();
 					// Lmod1:
 					nextToken();
 					e = parseUnaryExp();
-					e = new CastExp(loc, e, m, tok, modifierStart);
+					e = new CastExp(loc, e, m, tok, modifierStart, tok2, modifier2Start);
 				} else {
 					Type t2 = parseType(); // ( type )
 					check(TOKrparen);

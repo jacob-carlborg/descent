@@ -406,7 +406,7 @@ class NaiveASTFlattener extends ASTVisitor {
 	@Override
 	public boolean visit(CastToModifierExpression node) {
 		this.buffer.append("cast(");
-		node.getModifier().accept(this);
+		visitList(node.modifiers(), " ");
 		this.buffer.append(") ");
 		node.getExpression().accept(this);
 		return false;

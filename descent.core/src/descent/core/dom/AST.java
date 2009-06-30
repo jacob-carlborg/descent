@@ -2402,7 +2402,7 @@ public final class AST {
 	 */
 	public CastToModifierExpression newCastToModifierExpression(Modifier modifier) {
 		CastToModifierExpression node = new CastToModifierExpression(this);
-		node.setModifier(modifier);
+		node.modifiers().add(modifier);
 		return node;
 	}
 	

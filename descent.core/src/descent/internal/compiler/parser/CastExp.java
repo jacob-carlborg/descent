@@ -27,8 +27,8 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 public class CastExp extends UnaExp {
 
 	public Type to, sourceTo;
-	public TOK tok;
-	public int modifierStart;
+	public TOK tok, tok2;
+	public int modifierStart, modifier2Start;
 	public int mod;
 
 	public CastExp(Loc loc, Expression e1, TOK tok, int modifierStart) {
@@ -44,6 +44,16 @@ public class CastExp extends UnaExp {
 		this.to = null;
 		this.tok = tok;
 		this.mod = mod;
+	}
+	
+	public CastExp(Loc loc, Expression e1, int mod, TOK tok, int modifierStart, TOK tok2, int modifier2Start) {
+		super(loc, TOK.TOKcast, e1);
+		this.modifierStart = modifierStart;
+		this.to = null;
+		this.tok = tok;
+		this.mod = mod;
+		this.tok2 = tok2;
+		this.modifier2Start = modifier2Start;
 	}
 
 	public CastExp(Loc loc, Expression e1, Type t) {

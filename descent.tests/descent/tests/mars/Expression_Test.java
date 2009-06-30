@@ -427,8 +427,9 @@ public class Expression_Test extends Parser_Test {
 		assertEquals(ASTNode.CAST_TO_MODIFIER_EXPRESSION, expr.getNodeType());
 		assertPosition(expr, 1, s.length() - 1);
 		
-		assertEquals("invariant", expr.getModifier().toString());
-		assertPosition(expr.getModifier(), 6, 9);
+		assertEquals(1, expr.modifiers().size());
+		assertEquals("invariant", expr.modifiers().get(0).toString());
+		assertPosition(expr.modifiers().get(0), 6, 9);
 		assertEquals("1", ((NumberLiteral) expr.getExpression()).getToken());
 	}
 	
@@ -439,8 +440,24 @@ public class Expression_Test extends Parser_Test {
 		assertEquals(ASTNode.CAST_TO_MODIFIER_EXPRESSION, expr.getNodeType());
 		assertPosition(expr, 1, s.length() - 1);
 		
-		assertEquals("const", expr.getModifier().toString());
-		assertPosition(expr.getModifier(), 6, 5);
+		assertEquals(1, expr.modifiers().size());
+		assertEquals("const", expr.modifiers().get(0).toString());
+		assertPosition(expr.modifiers().get(0), 6, 5);
+		assertEquals("1", ((NumberLiteral) expr.getExpression()).getToken());
+	}
+	
+	public void testCastToModifier3() {
+		String s = " cast(const shared) 1";
+		CastToModifierExpression expr = (CastToModifierExpression) parseExpression(s, AST.D2);
+		
+		assertEquals(ASTNode.CAST_TO_MODIFIER_EXPRESSION, expr.getNodeType());
+		assertPosition(expr, 1, s.length() - 1);
+		
+		assertEquals(2, expr.modifiers().size());
+		assertEquals("const", expr.modifiers().get(0).toString());
+		assertPosition(expr.modifiers().get(0), 6, 5);
+		assertEquals("shared", expr.modifiers().get(1).toString());
+		assertPosition(expr.modifiers().get(1), 12, 6);
 		assertEquals("1", ((NumberLiteral) expr.getExpression()).getToken());
 	}
 	

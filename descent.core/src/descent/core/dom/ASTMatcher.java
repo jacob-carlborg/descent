@@ -3615,7 +3615,7 @@ public class ASTMatcher {
 		}
 		CastToModifierExpression o = (CastToModifierExpression) other;
 		return (
-			safeSubtreeMatch(node.getModifier(), o.getModifier())
+			safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& safeSubtreeMatch(node.getExpression(), o.getExpression())
 			);
 	}

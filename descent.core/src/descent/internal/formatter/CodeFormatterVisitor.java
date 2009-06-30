@@ -547,7 +547,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		scribe.printNextToken(TOK.TOKlparen, prefs.insert_space_before_opening_paren_in_casts);
 		if(prefs.insert_space_after_opening_paren_in_casts)
 			scribe.space();
-		node.getModifier().accept(this);
+		formatModifiers(false, node.modifiers());
 		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_casts);
 		if(prefs.insert_space_after_closing_paren_in_casts)
 			scribe.space();
@@ -3060,6 +3060,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 				case TOKenum:
 				case TOKpure:
 				case TOKnothrow:
+				case TOKshared:
+				case TOKtls:
+				case TOKgshared:
 					scribe.printNextToken(modifierTokenList(), printed);
 					printed = true;
 					break;
@@ -3584,7 +3587,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 	{
 		if(null == MODIFIERS)
 		{
-			MODIFIERS = new TOK[24];
+			MODIFIERS = new TOK[27];
 			
 			MODIFIERS[0] = TOK.TOKprivate;
 			MODIFIERS[1] = TOK.TOKprotected;
@@ -3610,6 +3613,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 			MODIFIERS[21] = TOK.TOKenum;
 			MODIFIERS[22] = TOK.TOKpure;
 			MODIFIERS[23] = TOK.TOKnothrow;
+			MODIFIERS[24] = TOK.TOKshared;
+			MODIFIERS[25] = TOK.TOKtls;
+			MODIFIERS[26] = TOK.TOKgshared;
 			Arrays.sort(MODIFIERS);
 		}
 		return MODIFIERS;
