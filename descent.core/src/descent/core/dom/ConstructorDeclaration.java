@@ -10,8 +10,10 @@ import java.util.List;
  * 
  * <pre>
  * ConstructorDeclaration:
- *    Kind
+ *    Kind 
+ *       [ <b>(</b> TemplateParameter { <b>,</b> TemplateParameter } <b>)</b> ]
  *       <b>(</b> [ Argument { <b>,</b> Argument } ] [ <b>...</b> ] <b>)</b>
+ *       ( <b>if</b> <b>(</b> Expression <b>)</b> )
  *       [ <b>in</b> Block ]
  *       [ <b>out</b> [ <b>(</b> SimpleName <b>)</b> ] Block ]
  *       [ <b>body</b> ] Block
@@ -57,6 +59,12 @@ public class ConstructorDeclaration extends AbstractFunctionDeclaration {
 	 */
 	public static final SimplePropertyDescriptor KIND_PROPERTY =
 		new SimplePropertyDescriptor(ConstructorDeclaration.class, "kind", Kind.class, MANDATORY); //$NON-NLS-1$
+	
+	/**
+	 * The "templateParameters" structural property of this node type.
+	 */
+	public static final ChildListPropertyDescriptor TEMPLATE_PARAMETERS_PROPERTY =
+		internalTemplateParametersPropertyFactory(ConstructorDeclaration.class);
 
 	/**
 	 * The "arguments" structural property of this node type.
@@ -69,6 +77,12 @@ public class ConstructorDeclaration extends AbstractFunctionDeclaration {
 	 */
 	public static final SimplePropertyDescriptor VARIADIC_PROPERTY =
 	internalVariadicPropertyFactory(ConstructorDeclaration.class); //$NON-NLS-1$
+	
+	/**
+	 * The "constraint" structural property of this node type.
+	 */
+	public static final ChildPropertyDescriptor CONSTRAINT_PROPERTY =
+	internalConstraintPropertyFactory(ConstructorDeclaration.class);
 
 	/**
 	 * The "precondition" structural property of this node type.
@@ -113,8 +127,10 @@ public class ConstructorDeclaration extends AbstractFunctionDeclaration {
 		addProperty(PRE_D_DOCS_PROPERTY, properyList);
 		addProperty(MODIFIERS_PROPERTY, properyList);
 		addProperty(KIND_PROPERTY, properyList);
+		addProperty(TEMPLATE_PARAMETERS_PROPERTY, properyList);
 		addProperty(ARGUMENTS_PROPERTY, properyList);
 		addProperty(VARIADIC_PROPERTY, properyList);
+		addProperty(CONSTRAINT_PROPERTY, properyList);
 		addProperty(PRECONDITION_PROPERTY, properyList);
 		addProperty(POSTCONDITION_PROPERTY, properyList);
 		addProperty(POSTCONDITION_VARIABLE_NAME_PROPERTY, properyList);
@@ -142,7 +158,6 @@ public class ConstructorDeclaration extends AbstractFunctionDeclaration {
 	 * The kind.
 	 */
 	private Kind kind = Kind.STATIC_CONSTRUCTOR;
-
 
 	/**
 	 * Creates a new unparented constructor declaration node owned by the given 
@@ -200,6 +215,14 @@ public class ConstructorDeclaration extends AbstractFunctionDeclaration {
 	 * Method declared on ASTNode.
 	 */
 	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
+		if (property == CONSTRAINT_PROPERTY) {
+			if (get) {
+				return getConstraint();
+			} else {
+				setConstraint((Expression) child);
+				return null;
+			}
+		}
 		if (property == PRECONDITION_PROPERTY) {
 			if (get) {
 				return getPrecondition();
@@ -254,6 +277,9 @@ public class ConstructorDeclaration extends AbstractFunctionDeclaration {
 		if (property == MODIFIERS_PROPERTY) {
 			return modifiers();
 		}
+		if (property == TEMPLATE_PARAMETERS_PROPERTY) {
+			return templateParameters();
+		}
 		if (property == ARGUMENTS_PROPERTY) {
 			return arguments();
 		}
@@ -272,6 +298,11 @@ public class ConstructorDeclaration extends AbstractFunctionDeclaration {
 		}
 		
 		@Override
+		final ChildListPropertyDescriptor internalTemplateParametersProperty() {
+			return TEMPLATE_PARAMETERS_PROPERTY;
+		}
+		
+		@Override
 		final ChildListPropertyDescriptor internalArgumentsProperty() {
 			return ARGUMENTS_PROPERTY;
 		}
@@ -279,6 +310,11 @@ public class ConstructorDeclaration extends AbstractFunctionDeclaration {
 		@Override
 		final SimplePropertyDescriptor internalVariadicProperty() {
 			return VARIADIC_PROPERTY;
+		}
+		
+		@Override
+		final ChildPropertyDescriptor internalConstraintPropertyFactory() {
+			return CONSTRAINT_PROPERTY;
 		}
 		
 		@Override
@@ -322,7 +358,9 @@ public class ConstructorDeclaration extends AbstractFunctionDeclaration {
 		result.preDDocs.addAll(ASTNode.copySubtrees(target, preDDocs()));
 		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
 		result.setKind(getKind());
+		result.templateParameters.addAll(ASTNode.copySubtrees(target, templateParameters()));
 		result.arguments.addAll(ASTNode.copySubtrees(target, arguments()));
+		result.setConstraint((Expression) ASTNode.copySubtree(target, getConstraint()));
 		result.setVariadic(isVariadic());
 	result.setPrecondition((Block) ASTNode.copySubtree(target, getPrecondition()));
 	result.setPostcondition((Block) ASTNode.copySubtree(target, getPostcondition()));
@@ -349,7 +387,9 @@ public class ConstructorDeclaration extends AbstractFunctionDeclaration {
 			// visit children in normal left to right reading order
 			acceptChildren(visitor, this.preDDocs);
 			acceptChildren(visitor, this.modifiers);
+			acceptChildren(visitor, this.templateParameters);
 			acceptChildren(visitor, this.arguments);
+			acceptChild(visitor, getConstraint());
 			acceptChild(visitor, getPrecondition());
 			acceptChild(visitor, getPostcondition());
 			acceptChild(visitor, getPostconditionVariableName());
@@ -398,7 +438,9 @@ public class ConstructorDeclaration extends AbstractFunctionDeclaration {
 			memSize()
 			+ (this.preDDocs.listSize())
 			+ (this.modifiers.listSize())
+			+ (this.templateParameters.listSize())
 			+ (this.arguments.listSize())
+			+ (this.constraint == null ? 0 : getConstraint().treeSize())
 			+ (this.precondition == null ? 0 : getPrecondition().treeSize())
 			+ (this.postcondition == null ? 0 : getPostcondition().treeSize())
 			+ (this.postconditionVariableName == null ? 0 : getPostconditionVariableName().treeSize())

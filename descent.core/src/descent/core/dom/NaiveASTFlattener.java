@@ -492,12 +492,16 @@ class NaiveASTFlattener extends ASTVisitor {
 			this.buffer.append("static ~this");
 			break;
 		}
-		this.buffer.append("(");
-		visitList(node.arguments(), ", ");
-		if (node.isVariadic()) {
-			this.buffer.append("...");
+		
+		visitList(node.templateParameters(), ", ", "(", ")");
+		visitList(node.arguments(), ", ", "(", node.isVariadic() ? "...)" : ")");
+		
+		if (node.getConstraint() != null) {
+			this.buffer.append(" if (");
+			node.getConstraint().accept(this);
+			this.buffer.append(")");
 		}
-		this.buffer.append(")");
+		
 		if (node.getPrecondition() != null) {
 			this.buffer.append(LINE_END);
 			printIndent();
@@ -845,16 +849,17 @@ class NaiveASTFlattener extends ASTVisitor {
 		this.buffer.append(" ");
 		node.getName().accept(this);
 		visitList(node.templateParameters(), ", ", "(", ")");
-		this.buffer.append("(");
-		visitList(node.arguments(), ", ");
-		if (node.isVariadic()) {
-			this.buffer.append("...");
-		}
-		this.buffer.append(")");
+		visitList(node.arguments(), ", ", "(", node.isVariadic() ? "...)" : ")");
 		
 		if (!node.postModifiers().isEmpty()) {
 			this.buffer.append(" ");
 			visitModifiers(node.postModifiers());
+		}
+		
+		if (node.getConstraint() != null) {
+			this.buffer.append(" if (");
+			node.getConstraint().accept(this);
+			this.buffer.append(")");
 		}
 		
 		if (node.getPrecondition() != null) {

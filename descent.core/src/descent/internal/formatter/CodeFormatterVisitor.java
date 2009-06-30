@@ -1082,32 +1082,10 @@ public class CodeFormatterVisitor extends ASTVisitor
 	
 	public boolean visit(FunctionDeclaration node)
 	{
-		boolean templated = false;
 		formatModifiers(true, node.modifiers());
 		node.getReturnType().accept(this);
 		scribe.space();
 		node.getName().accept(this);
-		List<TemplateParameter> tp = node.templateParameters();
-		if(null != tp && !tp.isEmpty())
-		{
-			formatTemplateParams(node.templateParameters(),
-					prefs.insert_space_before_opening_paren_in_function_template_args,
-					prefs.insert_space_after_opening_paren_in_function_template_args,
-					prefs.insert_space_before_closing_paren_in_function_template_args,
-					prefs.insert_space_before_comma_in_function_template_parameters,
-					prefs.insert_space_after_comma_in_function_template_parameters);
-			templated = true;
-		}
-		else if(hasEmptyTemplateParamList(node))
-		{
-			scribe.printNextToken(TOK.TOKlparen, prefs.insert_space_before_opening_paren_in_function_template_args);
-			if(prefs.insert_space_between_empty_parens_in_function_template_args)
-				scribe.space();
-			scribe.printNextToken(TOK.TOKrparen);
-			templated = true;
-		}
-		if(templated && prefs.insert_space_between_template_and_arg_parens_in_function_declaration)
-			scribe.space();
 		formatFunction(node, prefs.brace_position_for_function_declaration);
 		return false;
 	}
@@ -1161,7 +1139,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 			scribe.space();
 		}
 		
-		formatFunction(node, prefs.brace_position_for_function_literal);
+		formatFunctionBody(node, prefs.brace_position_for_function_literal);
 		
 		if (isNextToken(TOK.TOKsemicolon)) {
 			scribe.printNextToken(TOK.TOKsemicolon, prefs.insert_space_before_semicolon);
@@ -2846,8 +2824,35 @@ public class CodeFormatterVisitor extends ASTVisitor
 	 * visited as FunctionDeclarations and ConstructorDeclarations.
 	 * @param bracePosition the position to sue for the brace
 	 */
-	private void formatFunction(IFunctionDeclaration node, BracePosition bracePosition)
+	private void formatFunction(ITemplateFunctionDeclaration node, BracePosition bracePosition)
 	{
+		boolean templated = false;
+		List<TemplateParameter> tp = node.templateParameters();
+		if(null != tp && !tp.isEmpty())
+		{
+			formatTemplateParams(node.templateParameters(),
+					prefs.insert_space_before_opening_paren_in_function_template_args,
+					prefs.insert_space_after_opening_paren_in_function_template_args,
+					prefs.insert_space_before_closing_paren_in_function_template_args,
+					prefs.insert_space_before_comma_in_function_template_parameters,
+					prefs.insert_space_after_comma_in_function_template_parameters);
+			templated = true;
+		}
+		else if(hasEmptyTemplateParamList(node))
+		{
+			scribe.printNextToken(TOK.TOKlparen, prefs.insert_space_before_opening_paren_in_function_template_args);
+			if(prefs.insert_space_between_empty_parens_in_function_template_args)
+				scribe.space();
+			scribe.printNextToken(TOK.TOKrparen);
+			templated = true;
+		}
+		if(templated && prefs.insert_space_between_template_and_arg_parens_in_function_declaration)
+			scribe.space();
+		
+		formatFunctionBody(node, bracePosition);
+	}
+	
+	private void formatFunctionBody(IFunctionDeclaration node, BracePosition bracePosition) {
 		if(isNextToken(TOK.TOKlparen))
 		{
 			scribe.printNextToken(TOK.TOKlparen, this.prefs.insert_space_before_opening_paren_in_function_declaration_parameters);
@@ -2903,8 +2908,10 @@ public class CodeFormatterVisitor extends ASTVisitor
 				scribe.space();
 				formatModifiers(true, func.postModifiers());
 			}
-			
-			formatConstraint(func.getConstraint());
+		}
+		
+		if (node instanceof ITemplateFunctionDeclaration) {
+			formatConstraint(((ITemplateFunctionDeclaration)node).getConstraint());
 		}
 		
 		Block in   = (Block) node.getPrecondition();
@@ -3357,7 +3364,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 	 * 
 	 * @param node the function declaration to check
 	 */
-	private boolean hasEmptyTemplateParamList(FunctionDeclaration node)
+	private boolean hasEmptyTemplateParamList(ITemplateFunctionDeclaration node)
 	{
 		lexer.reset(scribe.lexer.p, scribe.scannerEndPosition - 1);
 		TOK tok1;

@@ -1619,6 +1619,8 @@ public class Parser extends Lexer {
 				// Wrap a template around it
 				Dsymbols decldefs = new Dsymbols();
 				decldefs.add(f);
+				f.templated = true;
+				
 				TemplateDeclaration tempdecl = new TemplateDeclaration(loc, f.ident, tpl, constraint, decldefs);
 				tempdecl.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 				tempdecl.wrapper = true;

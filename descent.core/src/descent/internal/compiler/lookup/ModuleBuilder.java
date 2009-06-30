@@ -411,7 +411,7 @@ public class ModuleBuilder {
 			CtorDeclaration member = newCtorDeclaration(getLoc(module, method), getArguments(method), getVarargs(method));
 			copySourceRange(member, method);
 			member.setJavaElement(method);
-			members.add(wrap(member, method));
+			members.add(wrapWithTemplate(module, member, method));
 		} else if (method.isDestructor()) {
 			DtorDeclaration member = newDtorDeclaration(getLoc(module, method));
 			copySourceRange(member, method);

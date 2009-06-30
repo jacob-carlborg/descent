@@ -490,7 +490,8 @@ public class SourceElementParser extends AstVisitorAdapter {
 	public boolean visit(TemplateDeclaration node) {
 		if (node.wrapper) {
 			Dsymbol wrappedSymbol = node.members.get(0); // SEMANTIC
-			if (wrappedSymbol.getNodeType() == ASTDmdNode.FUNC_DECLARATION) {
+			if ((wrappedSymbol.getNodeType() == ASTDmdNode.FUNC_DECLARATION) ||
+				(wrappedSymbol.getNodeType() == ASTDmdNode.CTOR_DECLARATION)) {
 				visit((FuncDeclaration) wrappedSymbol, node);
 				pushLevelInAttribDeclarationStack();
 				return true;
@@ -523,8 +524,12 @@ public class SourceElementParser extends AstVisitorAdapter {
 	}
 	
 	private void visit(FuncDeclaration node, TemplateDeclaration templateDeclaration) {
-		TypeFunction ty = (TypeFunction) node.type;
-		visit(node, templateDeclaration, 0, ty.parameters, node.ident.ident);
+		if (node instanceof CtorDeclaration) {
+			visit(node, templateDeclaration, Flags.AccConstructor, ((CtorDeclaration)node).arguments, node.ident.ident);
+		} else {
+			TypeFunction ty = (TypeFunction) node.type;
+			visit(node, templateDeclaration, 0, ty.parameters, node.ident.ident);
+		}
 	}
 
 	@Override
@@ -603,8 +608,10 @@ public class SourceElementParser extends AstVisitorAdapter {
 	
 	@Override
 	public boolean visit(CtorDeclaration node) {
-		visit(node, null, Flags.AccConstructor, node.arguments, Id.ctor);
-		pushLevelInAttribDeclarationStack();
+		if (!node.templated) {
+			visit(node, null, Flags.AccConstructor, node.arguments, Id.ctor);
+			pushLevelInAttribDeclarationStack();
+		}
 		return true;
 	}
 	
@@ -1183,6 +1190,8 @@ public class SourceElementParser extends AstVisitorAdapter {
 			Dsymbol wrappedSymbol = node.members.get(0); // SEMANTIC
 			if (wrappedSymbol.getNodeType() == ASTDmdNode.FUNC_DECLARATION) {
 				requestor.exitMethod(end, -1, -1);
+			} else if (wrappedSymbol.getNodeType() == ASTDmdNode.CTOR_DECLARATION) {
+				requestor.exitConstructor(end);
 			} else {
 				requestor.exitType(end);
 			}
@@ -1214,6 +1223,10 @@ public class SourceElementParser extends AstVisitorAdapter {
 	
 	@Override
 	public void endVisit(CtorDeclaration node) {
+		if (node.templated) {
+			return;
+		}
+		
 		nodeStack.pop();
 		
 		requestor.exitConstructor(endOfDeclaration(node));

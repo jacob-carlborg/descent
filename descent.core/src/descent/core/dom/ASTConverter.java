@@ -1200,6 +1200,14 @@ public class ASTConverter {
 				convertTemplateParameters(b.templateParameters(), a.parameters);
 				processDdocs(b, a);
 				return b;
+			} else if (wrappedSymbol.getNodeType() == ASTDmdNode.CTOR_DECLARATION) {
+				ConstructorDeclaration b = (ConstructorDeclaration) convert(wrappedSymbol);
+				if (a.constraint != null) {
+					b.setConstraint(convert(a.constraint));
+				}
+				convertTemplateParameters(b.templateParameters(), a.parameters);
+				processDdocs(b, a);
+				return b;
 			} else {
 				AggregateDeclaration b = (AggregateDeclaration) convert(wrappedSymbol);
 				convertTemplateParameters(b.templateParameters(), a.parameters);

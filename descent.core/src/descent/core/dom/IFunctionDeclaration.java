@@ -4,10 +4,10 @@ import java.util.List;
 
 public interface IFunctionDeclaration
 {
-	public List<Argument> arguments();
-	public boolean isVariadic();
-	public Block getPrecondition();
-	public Block getPostcondition();
-	public SimpleName getPostconditionVariableName();
-	public Block getBody();
+	List<Argument> arguments();
+	boolean isVariadic();
+	Block getPrecondition();
+	Block getPostcondition();
+	SimpleName getPostconditionVariableName();
+	Block getBody();
 }

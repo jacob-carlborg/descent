@@ -6,7 +6,7 @@ import java.util.List;
  * Abstract subclass for function declarations.
  */
 public abstract class AbstractFunctionDeclaration extends Declaration
-	implements IFunctionDeclaration {
+	implements ITemplateFunctionDeclaration {
 	
 	/**
 	 * The arguments
@@ -15,6 +15,19 @@ public abstract class AbstractFunctionDeclaration extends Declaration
 	 */
 	final ASTNode.NodeList arguments =
 		new ASTNode.NodeList(getArgumentsProperty());
+
+	/**
+	 * The template parameters
+	 * (element type: <code>TemplateParameter</code>).
+	 * Defaults to an empty list.
+	 */
+	final ASTNode.NodeList templateParameters =
+		new ASTNode.NodeList(getTemplateParametersProperty());
+	
+	/**
+	 * The constraint.
+	 */
+	Expression constraint;
 	
 	/**
 	 * Is the function variadic?
@@ -40,6 +53,22 @@ public abstract class AbstractFunctionDeclaration extends Declaration
 	 * The optional body.
 	 */
 	Block body;
+	
+	/**
+	 * Returns structural property descriptor for the "templateParameters" property
+	 * of this node.
+	 * 
+	 * @return the property descriptor
+	 */
+	abstract ChildListPropertyDescriptor internalTemplateParametersProperty();
+	
+	/**
+	 * Returns structural property descriptor for the "constraint" property
+	 * of this node.
+	 * 
+	 * @return the property descriptor
+	 */
+	abstract ChildPropertyDescriptor internalConstraintPropertyFactory();
 	
 	/**
 	 * Returns structural property descriptor for the "arguments" property
@@ -88,6 +117,26 @@ public abstract class AbstractFunctionDeclaration extends Declaration
 	 * @return the property descriptor
 	 */
 	abstract ChildPropertyDescriptor internalBodyProperty();
+	
+	/**
+	 * Returns structural property descriptor for the "templateParameters" property
+	 * of this node.
+	 * 
+	 * @return the property descriptor
+	 */
+	public final ChildListPropertyDescriptor getTemplateParametersProperty() {
+		return internalTemplateParametersProperty();
+	}
+	
+	/**
+	 * Returns structural property descriptor for the "constraint" property
+	 * of this node.
+	 * 
+	 * @return the property descriptor
+	 */
+	public final ChildPropertyDescriptor getConstraintProperty() {
+		return internalBodyProperty();
+	}
 	
 	/**
 	 * Returns structural property descriptor for the "arguments" property
@@ -151,12 +200,32 @@ public abstract class AbstractFunctionDeclaration extends Declaration
 	
 	/**
 	 * Creates and returns a structural property descriptor for the
+	 * "templateParameters" property declared on the given concrete node type.
+	 * 
+	 * @return the property descriptor
+	 */
+	static final ChildListPropertyDescriptor internalTemplateParametersPropertyFactory(Class nodeClass) {
+		return new ChildListPropertyDescriptor(nodeClass, "templateParameters", TemplateParameter.class, NO_CYCLE_RISK); //$NON-NLS-1$
+	}
+	
+	/**
+	 * Creates and returns a structural property descriptor for the
+	 * "constraint" property declared on the given concrete node type.
+	 * 
+	 * @return the property descriptor
+	 */
+	static final ChildPropertyDescriptor internalConstraintPropertyFactory(Class nodeClass) {
+		return new ChildPropertyDescriptor(nodeClass, "constraint", Block.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
+	}
+	
+	/**
+	 * Creates and returns a structural property descriptor for the
 	 * "arguments" property declared on the given concrete node type.
 	 * 
 	 * @return the property descriptor
 	 */
 	static final ChildListPropertyDescriptor internalArgumentsPropertyFactory(Class nodeClass) {
-		return new ChildListPropertyDescriptor(nodeClass, "arguments", Argument.class, CYCLE_RISK); //$NON-NLS-1$
+		return new ChildListPropertyDescriptor(nodeClass, "arguments", Argument.class, NO_CYCLE_RISK); //$NON-NLS-1$
 	}
 	
 	/**
@@ -221,6 +290,44 @@ public abstract class AbstractFunctionDeclaration extends Declaration
 	 */
 	AbstractFunctionDeclaration(AST ast) {
 		super(ast);
+	}
+	
+	/**
+	 * Returns the live ordered list of template parameters for this
+	 * function declaration.
+	 * 
+	 * @return the live list of function declaration
+	 *    (element type: <code>TemplateParameter</code>)
+	 */ 
+	public List<TemplateParameter> templateParameters() {
+		return this.templateParameters;
+	}
+	
+	/**
+	 * Returns the constraint of this template declaration.
+	 * 
+	 * @return the constraint
+	 */ 
+	public Expression getConstraint() {
+		return this.constraint;
+	}
+
+	/**
+	 * Sets the constraint of this template declaration.
+	 * 
+	 * @param constraint the constraint
+	 * @exception IllegalArgumentException if:
+	 * <ul>
+	 * <li>the node belongs to a different AST</li>
+	 * <li>the node already has a parent</li>
+	 * <li>a cycle in would be created</li>
+	 * </ul>
+	 */ 
+	public void setConstraint(Expression constraint) {
+		ASTNode oldChild = this.constraint;
+		preReplaceChild(oldChild, constraint, getConstraintProperty());
+		this.constraint = constraint;
+		postReplaceChild(oldChild, constraint, getConstraintProperty());
 	}
 	
 	/**

@@ -55,7 +55,7 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 	 * The "templateParameters" structural property of this node type.
 	 */
 	public static final ChildListPropertyDescriptor TEMPLATE_PARAMETERS_PROPERTY =
-		new ChildListPropertyDescriptor(FunctionDeclaration.class, "templateParameters", TemplateParameter.class, NO_CYCLE_RISK); //$NON-NLS-1$
+	internalTemplateParametersPropertyFactory(FunctionDeclaration.class);
 
 	/**
 	 * The "arguments" structural property of this node type.
@@ -73,7 +73,7 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 	 * The "constraint" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor CONSTRAINT_PROPERTY =
-		new ChildPropertyDescriptor(FunctionDeclaration.class, "constraint", Expression.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
+		internalConstraintPropertyFactory(FunctionDeclaration.class);
 
 	/**
 	 * The "precondition" structural property of this node type.
@@ -156,19 +156,6 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 	 * The name.
 	 */
 	private SimpleName name;
-	
-	/**
-	 * The constraint.
-	 */
-	private Expression constraint;
-
-	/**
-	 * The template parameters
-	 * (element type: <code>TemplateParameter</code>).
-	 * Defaults to an empty list.
-	 */
-	private ASTNode.NodeList templateParameters =
-		new ASTNode.NodeList(TEMPLATE_PARAMETERS_PROPERTY);
 	
 	/**
 	 * The post modifiers
@@ -320,6 +307,11 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 	}
 	
 	@Override
+	final ChildListPropertyDescriptor internalTemplateParametersProperty() {
+		return TEMPLATE_PARAMETERS_PROPERTY;
+	}
+	
+	@Override
 	final ChildListPropertyDescriptor internalArgumentsProperty() {
 		return ARGUMENTS_PROPERTY;
 	}
@@ -327,6 +319,11 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 	@Override
 	final SimplePropertyDescriptor internalVariadicProperty() {
 		return VARIADIC_PROPERTY;
+	}
+	
+	@Override
+	final ChildPropertyDescriptor internalConstraintPropertyFactory() {
+		return CONSTRAINT_PROPERTY;
 	}
 	
 	@Override
@@ -494,44 +491,6 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 		preReplaceChild(oldChild, name, NAME_PROPERTY);
 		this.name = name;
 		postReplaceChild(oldChild, name, NAME_PROPERTY);
-	}
-	
-	/**
-	 * Returns the constraint of this template declaration.
-	 * 
-	 * @return the constraint
-	 */ 
-	public Expression getConstraint() {
-		return this.constraint;
-	}
-
-	/**
-	 * Sets the constraint of this template declaration.
-	 * 
-	 * @param constraint the constraint
-	 * @exception IllegalArgumentException if:
-	 * <ul>
-	 * <li>the node belongs to a different AST</li>
-	 * <li>the node already has a parent</li>
-	 * <li>a cycle in would be created</li>
-	 * </ul>
-	 */ 
-	public void setConstraint(Expression constraint) {
-		ASTNode oldChild = this.constraint;
-		preReplaceChild(oldChild, constraint, CONSTRAINT_PROPERTY);
-		this.constraint = constraint;
-		postReplaceChild(oldChild, constraint, CONSTRAINT_PROPERTY);
-	}
-
-	/**
-	 * Returns the live ordered list of template parameters for this
-	 * function declaration.
-	 * 
-	 * @return the live list of function declaration
-	 *    (element type: <code>TemplateParameter</code>)
-	 */ 
-	public List<TemplateParameter> templateParameters() {
-		return this.templateParameters;
 	}
 	
 	/**
