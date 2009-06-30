@@ -25,15 +25,19 @@ import static descent.internal.compiler.parser.TOK.TOKdotexp;
 import static descent.internal.compiler.parser.TOK.TOKfloat64;
 import static descent.internal.compiler.parser.TOK.TOKforeach_reverse;
 import static descent.internal.compiler.parser.TOK.TOKfunction;
+import static descent.internal.compiler.parser.TOK.TOKnull;
+import static descent.internal.compiler.parser.TOK.TOKslice;
 import static descent.internal.compiler.parser.TOK.TOKstring;
 import static descent.internal.compiler.parser.TOK.TOKsuper;
 import static descent.internal.compiler.parser.TOK.TOKsymoff;
 import static descent.internal.compiler.parser.TOK.TOKtuple;
 import static descent.internal.compiler.parser.TOK.TOKtype;
 import static descent.internal.compiler.parser.TOK.TOKvar;
+import static descent.internal.compiler.parser.TY.Tarray;
 import static descent.internal.compiler.parser.TY.Tbit;
 import static descent.internal.compiler.parser.TY.Tclass;
 import static descent.internal.compiler.parser.TY.Tdelegate;
+import static descent.internal.compiler.parser.TY.Terror;
 import static descent.internal.compiler.parser.TY.Tfunction;
 import static descent.internal.compiler.parser.TY.Tident;
 import static descent.internal.compiler.parser.TY.Tpointer;
@@ -2299,6 +2303,340 @@ public abstract class ASTDmdNode extends ASTNode {
 						problemId, this));
 			}
 		}
+	}
+	
+	/**************************************
+	 * Combine types.
+	 * Output:
+	 *	*pt	merged type, if *pt is not NULL
+	 *	*pe1	rewritten e1
+	 *	*pe2	rewritten e2
+	 * Returns:
+	 *	!=0	success
+	 *	0	failed
+	 */
+	public static boolean typeMerge(Scope sc, Expression e, Type[] pt,
+			Expression[] pe1, Expression[] pe2, SemanticContext context) {
+		Expression e1 = pe1[0].integralPromotions(sc, context);
+		Expression e2 = pe2[0].integralPromotions(sc, context);
+
+		Type t1 = e1.type;
+		Type t2 = e2.type;
+		assert (t1 != null);
+		Type t = t1;
+
+		assert (t2 != null);
+
+		Type t1b = t1.toBasetype(context);
+		Type t2b = t2.toBasetype(context);
+
+		TY ty = (TY) Type.impcnvResult[t1b.ty.ordinal()][t2b.ty.ordinal()];
+		if (ty != Terror) {
+			TY ty1;
+			TY ty2;
+
+			ty1 = (TY) Type.impcnvType1[t1b.ty.ordinal()][t2b.ty.ordinal()];
+			ty2 = (TY) Type.impcnvType2[t1b.ty.ordinal()][t2b.ty.ordinal()];
+
+			if (t1b.ty == ty1) // if no promotions
+			{
+				if (t1 == t2) {
+					t = t1;
+					// goto Lret;
+					return typeMerge_Lret(pt, pe1, pe2, t2b, e1, e2);
+				}
+
+				if (t1b == t2b) {
+					t = t1b;
+					// goto Lret;
+					return typeMerge_Lret(pt, pe1, pe2, t2b, e1, e2);
+				}
+			}
+
+			t = Type.basic[ty.ordinal()];
+
+			t1 = Type.basic[ty1.ordinal()];
+			t2 = Type.basic[ty2.ordinal()];
+			e1 = e1.castTo(sc, t1, context);
+			e2 = e2.castTo(sc, t2, context);
+			// goto Lret;
+			return typeMerge_Lret(pt, pe1, pe2, t2b, e1, e2);
+		}
+
+		t1 = t1b;
+		t2 = t2b;
+
+		boolean repeat = true;
+		Lagain: while (repeat) {
+			repeat = false;
+
+			if (same(t1, t2, context)) {
+			} else if (t1.ty == Tpointer && t2.ty == Tpointer) {
+				// Bring pointers to compatible type
+				Type t1n = t1.nextOf();
+				Type t2n = t2.nextOf();
+
+				if (same(t1n, t2n, context))
+					;
+				else if (t1n.ty == Tvoid) // pointers to void are always
+											// compatible
+					t = t2;
+				else if (t2n.ty == Tvoid)
+					;
+				else if (t1n.mod != t2n.mod) {
+					t1 = t1n.mutableOf(context).constOf(context).pointerTo(
+							context);
+					t2 = t2n.mutableOf(context).constOf(context).pointerTo(
+							context);
+					t = t1;
+					// goto Lagain;
+					repeat = true;
+					continue Lagain;
+				} else if (t1n.ty == Tclass && t2n.ty == Tclass) {
+					ClassDeclaration cd1 = t1n.isClassHandle();
+					ClassDeclaration cd2 = t2n.isClassHandle();
+					int[] offset = { 0 };
+
+					if (cd1.isBaseOf(cd2, offset, context)) {
+						if (offset[0] != 0)
+							e2 = e2.castTo(sc, t, context);
+					} else if (cd2.isBaseOf(cd1, offset, context)) {
+						t = t2;
+						if (offset[0] != 0)
+							e1 = e1.castTo(sc, t, context);
+					} else {
+						// goto Lincompatible;
+						return false;
+					}
+				} else {
+					// goto Lincompatible;
+					return false;
+				}
+			} else if ((t1.ty == Tsarray || t1.ty == Tarray)
+					&& e2.op == TOKnull && t2.ty == Tpointer
+					&& t2.nextOf().ty == Tvoid) {
+				/*
+				 * (T[n] op void) (T[] op void)
+				 */
+				// goto Lx1;
+				return typeMerge_Lx1(pt, pe1, pe2, t2b, e1, e2, t1b, sc,
+						context);
+			} else if ((t2.ty == Tsarray || t2.ty == Tarray)
+					&& e1.op == TOKnull && t1.ty == Tpointer
+					&& t1.nextOf().ty == Tvoid) {
+				/*
+				 * (void op T[n]) (void op T[])
+				 */
+				// goto Lx2;
+				return typeMerge_Lx2(pt, pe1, pe2, t1b, e1, e2, t2b, sc,
+						context);
+			} else if ((t1.ty == Tsarray || t1.ty == Tarray)
+					&& t1.implicitConvTo(t2, context) != MATCHnomatch) {
+				// goto Lt2;
+				return typeMerge_Lt2(pt, pe1, pe2, t1b, e1, e2, sc, t2b,
+						context);
+			} else if ((t2.ty == Tsarray || t2.ty == Tarray)
+					&& t2.implicitConvTo(t1, context) != MATCHnomatch) {
+				// goto Lt1;
+				return typeMerge_Lt1(pt, pe1, pe2, t2b, e1, e2, sc, t1b,
+						context);
+			}
+			/*
+			 * If one is mutable and the other invariant, then retry with both
+			 * of them as const
+			 */
+			else if ((t1.ty == Tsarray || t1.ty == Tarray || t1.ty == Tpointer)
+					&& (t2.ty == Tsarray || t2.ty == Tarray || t2.ty == Tpointer)
+					&& t1.nextOf().mod != t2.nextOf().mod) {
+
+				if (t1.ty == Tpointer)
+					t1 = t1.nextOf().mutableOf(context).constOf(context)
+							.pointerTo(context);
+				else
+					t1 = t1.nextOf().mutableOf(context).constOf(context)
+							.arrayOf(context);
+
+				if (t2.ty == Tpointer)
+					t2 = t2.nextOf().mutableOf(context).constOf(context)
+							.pointerTo(context);
+				else
+					t2 = t2.nextOf().mutableOf(context).constOf(context)
+							.arrayOf(context);
+				t = t1;
+				// goto Lagain;
+				repeat = true;
+				continue Lagain;
+			} else if (t1.ty == Tclass || t2.ty == Tclass) {
+				while (true) {
+					int i1 = e2.implicitConvTo(t1, context).ordinal();
+					int i2 = e1.implicitConvTo(t2, context).ordinal();
+
+					if (i1 != 0 && i2 != 0) {
+						// We have the case of class vs. void*, so pick class
+						if (t1.ty == Tpointer)
+							i1 = 0;
+						else if (t2.ty == Tpointer)
+							i2 = 0;
+					}
+
+					if (i2 != 0) {
+						// goto Lt2;
+						return typeMerge_Lt2(pt, pe1, pe2, t1b, e1, e2, sc,
+								t2b, context);
+					} else if (i1 != 0) {
+						// goto Lt1;
+						return typeMerge_Lt1(pt, pe1, pe2, t2b, e1, e2, sc,
+								t1b, context);
+					} else if (t1.ty == Tclass && t2.ty == Tclass) {
+						TypeClass tc1 = (TypeClass) t1;
+						TypeClass tc2 = (TypeClass) t2;
+
+						/*
+						 * Pick 'tightest' type
+						 */
+						ClassDeclaration cd1 = tc1.sym.baseClass;
+						ClassDeclaration cd2 = tc2.sym.baseClass;
+
+						if (cd1 != null && cd2 != null) {
+							t1 = cd1.type;
+							t2 = cd2.type;
+						} else if (cd1 != null)
+							t1 = cd1.type;
+						else if (cd2 != null)
+							t2 = cd2.type;
+						else {
+							// goto Lincompatible;
+							return false;
+						}
+					} else {
+						// goto Lincompatible;
+						return false;
+					}
+				}
+			} else if (t1.ty == Tstruct && t2.ty == Tstruct) {
+				if (((TypeStruct) t1).sym != ((TypeStruct) t2).sym) {
+					// goto Lincompatible;
+					return false;
+				}
+			} else if ((e1.op == TOKstring || e1.op == TOKnull)
+					&& e1.implicitConvTo(t2, context) != MATCHnomatch) {
+				// goto Lt2;
+				return typeMerge_Lt2(pt, pe1, pe2, t1b, e1, e2, sc, t2b,
+						context);
+			}
+
+			else if ((e2.op == TOKstring || e2.op == TOKnull)
+					&& e2.implicitConvTo(t1, context) != MATCHnomatch) {
+				// goto Lt1;
+				return typeMerge_Lt1(pt, pe1, pe2, t2b, e1, e2, sc, t1b,
+						context);
+			} else if (t1.ty == Tsarray
+					&& t2.ty == Tsarray
+					&& e2.implicitConvTo(t1.nextOf().arrayOf(context), context) != MATCHnomatch) {
+				// Lx1:
+				return typeMerge_Lx1(pt, pe1, pe2, t2b, e1, e2, t1b, sc,
+						context);
+			} else if (t1.ty == Tsarray
+					&& t2.ty == Tsarray
+					&& e1.implicitConvTo(t2.nextOf().arrayOf(context), context) != MATCHnomatch) {
+				// Lx2:
+				return typeMerge_Lx2(pt, pe1, pe2, t1b, e1, e2, t2b, sc,
+						context);
+			} else if (t1.isintegral() && t2.isintegral()) {
+				throw new IllegalStateException();
+			} else if (e1.op == TOKslice && t1.ty == Tarray
+					&& e2.implicitConvTo(t1.nextOf(), context) != MATCHnomatch) {
+				// T[] op T
+				e2 = e2.castTo(sc, t1.nextOf(), context);
+				t = t1.nextOf().arrayOf(context);
+			} else if (e2.op == TOKslice && t2.ty == Tarray
+					&& e1.implicitConvTo(t2.nextOf(), context) != MATCHnomatch) {
+				// T op T[]
+				e1 = e1.castTo(sc, t2.nextOf(), context);
+				t = t2.nextOf().arrayOf(context);
+
+				e1 = e1.optimize(WANTvalue, context);
+				if (e != null && e.isCommutative() && e1.isConst()) {
+					/*
+					 * Swap operands to minimize number of functions generated
+					 */
+					Expression tmp = e1;
+					e1 = e2;
+					e2 = tmp;
+				}
+			} else {
+				// Lincompatible:
+				return false;
+			}
+		}
+
+		return typeMerge_Lret(pt, pe1, pe2, t2b, e1, e2);
+	}
+	
+	private static boolean typeMerge_Lt1(Type[] pt, Expression[] pe1, Expression[] pe2, Type t, Expression e1, Expression e2, Scope sc, Type t1, SemanticContext context) {
+		e2 = e2.castTo(sc, t1, context);
+		t = t1;
+		return typeMerge_Lret(pt, pe1, pe2, t, e1, e2);
+	}
+	
+	private static boolean typeMerge_Lt2(Type[] pt, Expression[] pe1, Expression[] pe2, Type t, Expression e1, Expression e2, Scope sc, Type t2, SemanticContext context) {
+		e1 = e1.castTo(sc, t2, context);
+		t = t2;
+		return typeMerge_Lret(pt, pe1, pe2, t, e1, e2);
+	}
+	
+	private static boolean typeMerge_Lx1(Type[] pt, Expression[] pe1, Expression[] pe2, Type t, Expression e1, Expression e2, Type t1, Scope sc, SemanticContext context) {
+		t = t1.nextOf().arrayOf(context);
+		e1 = e1.castTo(sc, t, context);
+		e2 = e2.castTo(sc, t, context);
+		
+		return typeMerge_Lret(pt, pe1, pe2, t, e1, e2);
+	}
+	
+	private static boolean typeMerge_Lx2(Type[] pt, Expression[] pe1, Expression[] pe2, Type t, Expression e1, Expression e2, Type t2, Scope sc, SemanticContext context) {
+		t = t2.nextOf().arrayOf(context);
+		e1 = e1.castTo(sc, t, context);
+		e2 = e2.castTo(sc, t, context);
+		
+		return typeMerge_Lret(pt, pe1, pe2, t, e1, e2);
+	}
+	
+	private static boolean typeMerge_Lret(Type[] pt, Expression[] pe1, Expression[] pe2, Type t, Expression e1, Expression e2) {
+		if (pt[0] != null) {
+			pt[0] = t;
+		}
+		pe1[0] = e1;
+		pe2[0] = e2;
+		return true;
+	}
+	
+	/***********************************
+	 * See if both types are arrays that can be compared
+	 * for equality. Return !=0 if so.
+	 * If they are arrays, but incompatible, issue error.
+	 * This is to enable comparing things like an immutable
+	 * array with a mutable one.
+	 */
+	public boolean arrayTypeCompatible(Loc loc, Type t1, Type t2,
+			SemanticContext context) {
+		t1 = t1.toBasetype(context);
+		t2 = t2.toBasetype(context);
+
+		if ((t1.ty == Tarray || t1.ty == Tsarray || t1.ty == Tpointer)
+				&& (t2.ty == Tarray || t2.ty == Tsarray || t2.ty == Tpointer)) {
+			if (t1.nextOf().implicitConvTo(t2.nextOf(), context).ordinal() < MATCHconst
+					.ordinal()
+					&& t2.nextOf().implicitConvTo(t1.nextOf(), context)
+							.ordinal() < MATCHconst.ordinal()
+					&& (t1.nextOf().ty != Tvoid && t2.nextOf().ty != Tvoid)) {
+				if (context.acceptsErrors()) {
+					// SEMANTIC missing ok location
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.ArrayEqualityComparisonTypeMismatch, t1, t1.toChars(context), t2.toChars(context)));
+				}
+			}
+			return true;
+		}
+		return false;
 	}
 	
 	public int getStart() {

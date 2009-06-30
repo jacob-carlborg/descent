@@ -715,5 +715,6 @@ public interface IProblem {
 	int ConstraintIsNotConstantOrDoesNotEvaluateToABool = 504;
 	int EscapeStringLiteralDeprecated = 505;
 	int DelimiterCannotBeWhitespace = 506;
+	int ArrayEqualityComparisonTypeMismatch = 507;
 
 }

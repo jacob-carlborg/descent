@@ -516,6 +516,7 @@ final class ProblemMessages extends NLS {
 	public static String ConstraintIsNotConstantOrDoesNotEvaluateToABool;
 	public static String EscapeStringLiteralDeprecated;
 	public static String DelimiterCannotBeWhitespace;
+	public static String ArrayEqualityComparisonTypeMismatch;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

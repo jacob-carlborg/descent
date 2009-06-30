@@ -1143,6 +1143,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.EscapeStringLiteralDeprecated);
 		case DelimiterCannotBeWhitespace:
 			return String.format(ProblemMessages.DelimiterCannotBeWhitespace);
+		case ArrayEqualityComparisonTypeMismatch:
+			return String.format(ProblemMessages.ArrayEqualityComparisonTypeMismatch, arguments[0], arguments[1]);
 		default:
 			return "";
 		}

@@ -1516,8 +1516,9 @@ EscapeStringLiteralDeprecated
 DelimiterCannotBeWhitespace
 	formatString=Delimiter cannot be whitespace
 	numArgs=0
-	
-	
+ArrayEqualityComparisonTypeMismatch
+	formatString=Array equality comparison type mismatch, %1$s vs %2$s
+	numArgs=2
 	
 	
 	
