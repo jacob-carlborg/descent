@@ -1,6 +1,8 @@
 package descent.internal.ui.infoviews;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
@@ -41,6 +43,7 @@ import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
 import descent.core.ISourceRange;
 import descent.core.ISourceReference;
+import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.core.ToolFactory;
 import descent.core.dom.AST;
@@ -389,11 +392,13 @@ public class CompileTimeView extends AbstractInfoView implements IMenuListener {
 		if (result.startsWith("!descent.core.dom.CompilationUnit")) {
 			return "Module " + unit.getFullyQualifiedName() + " has syntax or semantic errors due to mixins";
 		}
-		return format(result);
+		return format(result, unit.getJavaProject().getApiLevel());
 	}
 	
-	private String format(String text) {
-		CodeFormatter formatter = ToolFactory.createCodeFormatter(null);
+	private String format(String text, int apiLevel) {
+		Map options = new HashMap();
+		options.put(JavaCore.COMPILER_SOURCE, String.valueOf(apiLevel));
+		CodeFormatter formatter = ToolFactory.createCodeFormatter(options);
 		try {
 			// The most common example is something inside a function 
 			TextEdit edit = formatter.format(CodeFormatter.K_COMPILATION_UNIT,

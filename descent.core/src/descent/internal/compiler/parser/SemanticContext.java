@@ -162,7 +162,7 @@ public class SemanticContext {
 		afterParse(module);
 	}
 
-	private static int uniqueIdCount = 0;
+	private int uniqueIdCount = 0;
 	public IdentifierExp uniqueId(String prefix) {
 		return uniqueId(prefix, uniqueIdCount++);
 	}

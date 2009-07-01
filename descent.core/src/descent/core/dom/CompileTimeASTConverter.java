@@ -67,6 +67,7 @@ import descent.internal.compiler.parser.WhileStatement;
 import descent.internal.compiler.parser.WithStatement;
 import descent.internal.compiler.parser.Expression.Parenthesis;
 import descent.internal.compiler.parser.Type.Modification;
+import descent.internal.compiler.parser.ast.AstVisitorAdapter;
 
 /**
  * Internal class for converting internal compiler ASTs into public ASTs.
@@ -236,7 +237,8 @@ public class CompileTimeASTConverter {
 			return convert((DebugSymbol) symbol);
 		case ASTDmdNode.DECLARATION_EXP:
 			// TODO
-			return convert((DeclarationExp) symbol);
+			// return convert((DeclarationExp) symbol);
+			return null;
 		case ASTDmdNode.DECLARATION_STATEMENT:
 			return convert((DeclarationStatement) symbol);
 		case ASTDmdNode.DEFAULT_STATEMENT:
@@ -491,6 +493,8 @@ public class CompileTimeASTConverter {
 			return convert((BinExp) symbol, Assignment.Operator.RIGHT_SHIFT_UNSIGNED_ASSIGN);
 		case ASTDmdNode.USHR_EXP:
 			return convert((BinExp) symbol, InfixExpression.Operator.RIGHT_SHIFT_UNSIGNED);
+		case ASTDmdNode.VAR_DECLARATION:
+			return convertDeclaration((VarDeclaration) symbol);
 		case ASTDmdNode.VAR_EXP:
 			return convert((VarExp) symbol);
 		case ASTDmdNode.VERSION_SYMBOL:
@@ -3915,6 +3919,7 @@ public class CompileTimeASTConverter {
 
 	public void convertExpressions(List<descent.core.dom.Expression> destination, List<Expression> source) {
 		if (source == null || source.isEmpty()) return;
+		
 		for(Expression exp : source) {
 			descent.core.dom.Expression convertedExp = convert(exp);
 			if (convertedExp != null) {
@@ -3955,6 +3960,12 @@ public class CompileTimeASTConverter {
 				break;
 			}
 		}
+		
+		List<descent.core.dom.Statement> compilerDeclarations = findCompilerDeclarations(stm);
+		for(descent.core.dom.Statement compilerDecl : compilerDeclarations) {
+			destination.add(compilerDecl);
+		}
+		
 		descent.core.dom.Statement convertStm = convert(stm);
 		if (convertStm != null) {
 			destination.add(convertStm);
@@ -3962,6 +3973,28 @@ public class CompileTimeASTConverter {
 		return stm;
 	}
 	
+	private List<descent.core.dom.Statement> findCompilerDeclarations(Statement stm) {
+		final List<descent.core.dom.Statement> statements = new ArrayList<descent.core.dom.Statement>();
+		stm.accept(new AstVisitorAdapter() {
+			@Override
+			public boolean visit(CallExp node) {
+				node.sourceArguments = node.arguments;
+				return true;
+			}
+			@Override
+			public boolean visit(DeclarationExp node) {
+				descent.core.dom.DeclarationStatement stm2 = new descent.core.dom.DeclarationStatement(ast);
+				ASTNode decl = convert(node.declaration);
+				if (decl instanceof Declaration) {
+					stm2.setDeclaration((Declaration) decl);
+					statements.add(stm2);
+				}
+				return true;
+			}
+		});
+		return statements;
+	}
+
 	public void convertBaseClasses(List<descent.core.dom.BaseClass> destination, List<BaseClass> source) {
 		if (source == null || source.isEmpty()) return;
 		for(BaseClass base : source) destination.add(convert(base));
@@ -4023,6 +4056,8 @@ public class CompileTimeASTConverter {
 			descent.core.dom.Expression convertedExp = convert(a.e1);
 			if (convertedExp != null) {
 				b.setLeftOperand(convertedExp);
+			} else if (a.e2 != null) {
+				return convert(a.e2);
 			}
 		}
 		b.setOperator(op);
@@ -4030,6 +4065,8 @@ public class CompileTimeASTConverter {
 			descent.core.dom.Expression convertedExp = convert(a.e2);
 			if (convertedExp != null) {
 				b.setRightOperand(convertedExp);
+			} else if (a.e1 != null) {
+				return convert(a.e1);
 			}
 		}
 		setSourceRange(b, a.start, a.length);

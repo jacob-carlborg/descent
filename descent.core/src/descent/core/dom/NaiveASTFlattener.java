@@ -494,7 +494,12 @@ class NaiveASTFlattener extends ASTVisitor {
 		}
 		
 		visitList(node.templateParameters(), ", ", "(", ")");
-		visitList(node.arguments(), ", ", "(", node.isVariadic() ? "...)" : ")");
+		this.buffer.append("(");
+		visitList(node.arguments(), ", ");
+		if (node.isVariadic()) {
+			this.buffer.append("...");
+		}
+		this.buffer.append(")");
 		
 		if (node.getConstraint() != null) {
 			this.buffer.append(" if (");
@@ -849,7 +854,12 @@ class NaiveASTFlattener extends ASTVisitor {
 		this.buffer.append(" ");
 		node.getName().accept(this);
 		visitList(node.templateParameters(), ", ", "(", ")");
-		visitList(node.arguments(), ", ", "(", node.isVariadic() ? "...)" : ")");
+		this.buffer.append("(");
+		visitList(node.arguments(), ", ");
+		if (node.isVariadic()) {
+			this.buffer.append("...");
+		}
+		this.buffer.append(")");
 		
 		if (!node.postModifiers().isEmpty()) {
 			this.buffer.append(" ");
