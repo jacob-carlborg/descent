@@ -11,7 +11,7 @@ import static descent.internal.compiler.parser.TY.Tbit;
 import static descent.internal.compiler.parser.TY.Tbool;
 import static descent.internal.compiler.parser.TY.Tchar;
 import static descent.internal.compiler.parser.TY.Tclass;
-import static descent.internal.compiler.parser.TY.Tcomplex32;
+import static descent.internal.compiler.parser.TY.*;
 import static descent.internal.compiler.parser.TY.Tcomplex64;
 import static descent.internal.compiler.parser.TY.Tcomplex80;
 import static descent.internal.compiler.parser.TY.Tdchar;
@@ -602,7 +602,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 			sv = context.stringTable.update(buf.toString());
 			if (sv.ptrvalue != null) {
 				t = (Type) sv.ptrvalue;
-				assert t.deco != null;
+				Assert.isTrue(t.deco != null);
 			} else {
 				sv.ptrvalue = this;
 				deco = sv.lstring;
@@ -784,6 +784,251 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 			}
 		}
 		return t;
+	}
+	
+	public Type sharedOf(SemanticContext context) {
+		if (mod == MODshared) {
+			return this;
+		}
+		if (sto != null) {
+			Assert.isTrue (sto.isShared());
+			return sto;
+		}
+		Type t = makeShared();
+		t = t.merge(context);
+		t.fixTo(this);
+		return t;
+	}
+	
+	/**********************************
+	 * For our new type 'this', which is type-constructed from t,
+	 * fill in the cto, ito, sto, scto shortcuts.
+	 */
+	public void fixTo(Type t)
+	{
+	    ito = t.ito;
+
+	    Assert.isTrue(mod != t.mod);
+	    switch ((mod << 3) | t.mod)
+	    {
+		case (0 << 3) | MODconst:
+		    cto = t;
+		    break;
+
+		case (0 << 3) | MODinvariant:
+		    ito = t;
+		    break;
+
+		case (0 << 3) | MODshared:
+		    sto = t;
+		    break;
+
+		case (0 << 3) | MODshared | MODconst:
+		    scto = t;
+		    break;
+
+		case (MODconst << 3) | 0:
+		    cto = null;
+		    // goto L2;
+		 	t.cto = this;
+		    break;
+
+		case (MODconst << 3) | MODinvariant:
+		    ito = t;
+		    // goto L2;
+		 	t.cto = this;
+		    break;
+
+		case (MODconst << 3) | MODshared:
+		    sto = t;
+		    // goto L2;
+		 	t.cto = this;
+		    break;
+
+		case (MODconst << 3) | MODshared | MODconst:
+		    scto = t;
+			// L2:
+		    t.cto = this;
+		    break;
+
+		case (MODinvariant << 3) | 0:
+		    ito = null;
+		    // goto L3;
+			t.ito = this;
+		    if (t.cto != null) t.cto.ito = this;
+		    if (t.sto != null) t.sto.ito = this;
+		    if (t.scto != null) t.scto.ito = this;
+		    break;
+
+		case (MODinvariant << 3) | MODconst:
+		    cto = t;
+		    // goto L3;
+			t.ito = this;
+		    if (t.cto != null) t.cto.ito = this;
+		    if (t.sto != null) t.sto.ito = this;
+		    if (t.scto != null) t.scto.ito = this;
+		    break;
+
+		case (MODinvariant << 3) | MODshared:
+		    sto = t;
+		    // goto L3;
+			t.ito = this;
+		    if (t.cto != null) t.cto.ito = this;
+		    if (t.sto != null) t.sto.ito = this;
+		    if (t.scto != null) t.scto.ito = this;
+		    break;
+
+		case (MODinvariant << 3) | MODshared | MODconst:
+		    scto = t;
+			// L3:
+		    t.ito = this;
+		    if (t.cto != null) t.cto.ito = this;
+		    if (t.sto != null) t.sto.ito = this;
+		    if (t.scto != null) t.scto.ito = this;
+		    break;
+
+		case (MODshared << 3) | 0:
+		    sto = null;
+		    // goto L4;
+			t.sto = this;
+		    break;
+
+		case (MODshared << 3) | MODconst:
+		    cto = t;
+		    // goto L4;
+			t.sto = this;
+		    break;
+
+		case (MODshared << 3) | MODinvariant:
+		    ito = t;
+		    // goto L4;
+			t.sto = this;
+		    break;
+
+		case (MODshared << 3) | MODshared | MODconst:
+		    scto = t;
+			// L4:
+		    t.sto = this;
+		    break;
+
+		case ((MODshared | MODconst) << 3) | 0:
+		    scto = null;
+		    break;
+
+		case ((MODshared | MODconst) << 3) | MODconst:
+		    cto = t;
+		    break;
+
+		case ((MODshared | MODconst) << 3) | MODinvariant:
+		    ito = t;
+		    break;
+
+		case ((MODshared | MODconst) << 3) | MODshared:
+		    sto = t;
+			// L5:
+		    t.scto = this;
+		    break;
+
+		default:
+		    throw new IllegalStateException();
+	    }
+
+	    check();
+	    t.check();
+	}
+	
+	/***************************
+	 * Look for bugs in constructing types.
+	 */
+	public void check() {
+		switch (mod) {
+		case 0:
+			if (cto != null)
+				Assert.isTrue (cto.mod == MODconst);
+			if (ito != null)
+				Assert.isTrue (ito.mod == MODinvariant);
+			if (sto != null)
+				Assert.isTrue (sto.mod == MODshared);
+			if (scto != null)
+				Assert.isTrue (scto.mod == (MODshared | MODconst));
+			break;
+
+		case MODconst:
+			if (cto != null)
+				Assert.isTrue (cto.mod == 0);
+			if (ito != null)
+				Assert.isTrue (ito.mod == MODinvariant);
+			if (sto != null)
+				Assert.isTrue (sto.mod == MODshared);
+			if (scto != null)
+				Assert.isTrue (scto.mod == (MODshared | MODconst));
+			break;
+
+		case MODinvariant:
+			if (cto != null)
+				Assert.isTrue (cto.mod == MODconst);
+			if (ito != null)
+				Assert.isTrue (ito.mod == 0);
+			if (sto != null)
+				Assert.isTrue (sto.mod == MODshared);
+			if (scto != null)
+				Assert.isTrue (scto.mod == (MODshared | MODconst));
+			break;
+
+		case MODshared:
+			if (cto != null)
+				Assert.isTrue (cto.mod == MODconst);
+			if (ito != null)
+				Assert.isTrue (ito.mod == MODinvariant);
+			if (sto != null)
+				Assert.isTrue (sto.mod == 0);
+			if (scto != null)
+				Assert.isTrue (scto.mod == (MODshared | MODconst));
+			break;
+
+		case MODshared | MODconst:
+			if (cto != null)
+				Assert.isTrue (cto.mod == MODconst);
+			if (ito != null)
+				Assert.isTrue (ito.mod == MODinvariant);
+			if (sto != null)
+				Assert.isTrue (sto.mod == MODshared);
+			if (scto != null)
+				Assert.isTrue (scto.mod == 0);
+			break;
+
+		default:
+			throw new IllegalStateException();
+		}
+
+		Type tn = nextOf();
+		if (tn != null && ty != Tfunction && ty != Tdelegate) { // Verify
+																// transitivity
+			switch (mod) {
+			case 0:
+				break;
+
+			case MODconst:
+				Assert.isTrue ((tn.mod & MODinvariant) != 0 || (tn.mod & MODconst) != 0);
+				break;
+
+			case MODinvariant:
+				Assert.isTrue (tn.mod == MODinvariant);
+				break;
+
+			case MODshared:
+				Assert.isTrue ((tn.mod & MODinvariant) != 0 || (tn.mod & MODshared) != 0);
+				break;
+
+			case MODshared | MODconst:
+				Assert.isTrue ((tn.mod & MODinvariant) != 0 || (tn.mod & (MODshared | MODconst)) != 0);
+				break;
+
+			default:
+				throw new IllegalStateException();
+			}
+			tn.check();
+		}
 	}
 
 	public final Expression defaultInit(SemanticContext context) {

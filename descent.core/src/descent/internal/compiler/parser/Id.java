@@ -57,6 +57,7 @@ public interface Id {
 	static final char[] TypeInfo_Tuple = { 'T', 'y', 'p', 'e', 'I', 'n', 'f', 'o', '_', 'T', 'u', 'p', 'l', 'e' };
 	static final char[] TypeInfo_Const = { 'T', 'y', 'p', 'e', 'I', 'n', 'f', 'o', '_', 'C', 'o', 'n', 's', 't' };
 	static final char[] TypeInfo_Invariant = { 'T', 'y', 'p', 'e', 'I', 'n', 'f', 'o', '_', 'I', 'n', 'v', 'a', 'r', 'i', 'a', 'n', 't' };
+	static final char[] TypeInfo_Shared = { 'T', 'y', 'p', 'e', 'I', 'n', 'f', 'o', '_', 'S', 'h', 'a', 'r', 'e', 'd' };
 	static final char[] _arguments = { '_', 'a', 'r', 'g', 'u', 'm', 'e', 'n', 't', 's' };
 	static final char[] _argptr = { '_', 'a', 'r', 'g', 'p', 't', 'r' };
 	static final char[] _match = { '_', 'm', 'a', 't', 'c', 'h' };

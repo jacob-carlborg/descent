@@ -1,16 +1,20 @@
 package descent.internal.compiler.parser;
 
 import static descent.internal.compiler.parser.PROT.PROTnone;
+import static descent.internal.compiler.parser.STC.STC_TYPECTOR;
 import static descent.internal.compiler.parser.STC.STCabstract;
 import static descent.internal.compiler.parser.STC.STCauto;
 import static descent.internal.compiler.parser.STC.STCconst;
 import static descent.internal.compiler.parser.STC.STCdeprecated;
 import static descent.internal.compiler.parser.STC.STCfinal;
-import static descent.internal.compiler.parser.STC.STCinvariant;
+import static descent.internal.compiler.parser.STC.STCgshared;
+import static descent.internal.compiler.parser.STC.STCimmutable;
 import static descent.internal.compiler.parser.STC.STCscope;
+import static descent.internal.compiler.parser.STC.STCshared;
 import static descent.internal.compiler.parser.STC.STCstatic;
 import static descent.internal.compiler.parser.STC.STCtls;
 import static descent.internal.compiler.parser.TY.Tclass;
+import static descent.internal.compiler.parser.TY.Tstruct;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -388,7 +392,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 	    	isdeprecated = true;
 	    }
 	    
-	    if (sc.linkage == LINK.LINKcpp) {
+	    if (!context.isD1() && sc.linkage == LINK.LINKcpp) {
 	    	if (context.acceptsErrors()) {
 	    		context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.CannotCreateCppClasses, this));
 	    	}
@@ -627,7 +631,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 			vthis = baseClass.vthis;
 			
 			if (context.isD2()) {
-				storage_class |= baseClass.storage_class & (STCconst | STCinvariant);
+				storage_class |= baseClass.storage_class & STC_TYPECTOR;
 			}
 		} else {
 			// No base class, so this is the root of the class hierarchy
@@ -691,28 +695,56 @@ public class ClassDeclaration extends AggregateDeclaration {
 			} else if ((storage_class & STC.STCstatic) == 0) {
 				Dsymbol s = toParent2();
 				if (s != null) {
-					ClassDeclaration cd = s.isClassDeclaration();
-					FuncDeclaration fd = s.isFuncDeclaration();
+					if (context.isD1()) {
+						ClassDeclaration cd = s.isClassDeclaration();
+						FuncDeclaration fd = s.isFuncDeclaration();
+	
+						if (cd != null || fd != null) {
+							isnested = true;
+							Type t = null;
+							if (cd != null) {
+								t = cd.type;
+							} else if (fd != null) {
+								AggregateDeclaration ad = fd.isMember2();
+								if (ad != null) {
+									t = ad.handle;
+								} else {
+									t = new TypePointer(Type.tvoid);
+									t = t.semantic(loc, sc, context);
+								}
+							} else {
+								Assert.isTrue(false);
+							}
+							Assert.isTrue(vthis == null);
+							vthis = new ThisDeclaration(loc, t);
+							members.add(vthis);
+						}
+					} else {
+						AggregateDeclaration ad = s.isClassDeclaration();
+						FuncDeclaration fd = s.isFuncDeclaration();
 
-					if (cd != null || fd != null) {
-						isnested = true;
-						Type t = null;
-						if (cd != null) {
-							t = cd.type;
-						} else if (fd != null) {
-							AggregateDeclaration ad = fd.isMember2();
+						if (ad != null || fd != null) {
+							isnested = true;
+							Type t;
 							if (ad != null) {
 								t = ad.handle;
+							} else if (fd != null) {
+								AggregateDeclaration ad2 = fd.isMember2();
+								if (ad2 != null) {
+									t = ad2.handle;
+								} else {
+									t = context.Type_tvoidptr;
+								}
 							} else {
-								t = new TypePointer(Type.tvoid);
-								t = t.semantic(loc, sc, context);
+								throw new IllegalStateException();
 							}
-						} else {
-							Assert.isTrue(false);
+							if (t.ty == Tstruct) {// ref to struct
+								t = context.Type_tvoidptr;
+							}
+							assert (null == vthis);
+							vthis = new ThisDeclaration(loc, t);
+							members.add(vthis);
 						}
-						Assert.isTrue(vthis == null);
-						vthis = new ThisDeclaration(loc, t);
-						members.add(vthis);
 					}
 				}
 			}
@@ -726,10 +758,12 @@ public class ClassDeclaration extends AggregateDeclaration {
 		}
 		
 		if (context.isD2()) {
-			if ((storage_class & STCinvariant) != 0) {
+			if ((storage_class & STCimmutable) != 0) {
 				type = type.invariantOf(context);
 			} else if ((storage_class & STCconst) != 0) {
 				type = type.constOf(context);
+			} else if ((storage_class & STCshared) != 0) {
+				type = type.sharedOf(context);
 			}
 		}
 
@@ -738,8 +772,8 @@ public class ClassDeclaration extends AggregateDeclaration {
 		
 		if (context.isD2()) {
 		    sc.stc &= ~(STCfinal | STCauto | STCscope | STCstatic |
-		   		 STCabstract | STCdeprecated | STCconst | STCinvariant | STCtls);
-		    sc.stc |= storage_class & (STCconst | STCinvariant);
+		   		 STCabstract | STCdeprecated | STC_TYPECTOR | STCtls | STCgshared);
+		    sc.stc |= storage_class & STC_TYPECTOR;
 		} else {
 			sc.stc &= ~(STCfinal | STCauto | STCscope | STCstatic | STCabstract | STCdeprecated);
 		}
@@ -952,7 +986,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		buf.writenl();
 	}
 
-	public int vtblOffset() {
+	public int vtblOffset(SemanticContext context) {
 		return 1;
 	}
 

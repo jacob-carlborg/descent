@@ -89,7 +89,7 @@ public class BaseClass extends ASTDmdNode {
 		}
 
 		// first entry is ClassInfo reference
-		for (j = base.vtblOffset(); j < base.vtbl.size(); j++) {
+		for (j = base.vtblOffset(context); j < base.vtbl.size(); j++) {
 			FuncDeclaration ifd = ((Dsymbol) base.vtbl.get(j))
 					.isFuncDeclaration();
 			FuncDeclaration fd;

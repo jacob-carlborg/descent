@@ -14,11 +14,9 @@ func.c  --> missing StaticCtorDeclaration::StaticCtorDeclaration
             
 Remaining from DMD 2.030 vs. 1.045
 ------------------------------
- * Ported up to and including cast.c
+ * Ported up to and including class.c
  * Ported lexer.c, lexer.h, parser.c and parser.h
  * StringExp::length()
- * Add template parameters to descent.core.dom.ConstructorDeclaration
- * CastToModifier needs to be refactored to accept a list of modifiers, because of cast(const shared)
  * Parser::parseBaseClasses what's the difference?
             
 Remaining from DMD 2.013

@@ -60,6 +60,7 @@ public class SemanticContext {
 	public ClassDeclaration Type_typeinfotypelist;
 	public ClassDeclaration Type_typeinfoconst;
 	public ClassDeclaration Type_typeinfoinvariant;
+	public ClassDeclaration Type_typeinfoshared;
 
 	public Type Type_tvoidptr;
 	
@@ -449,6 +450,8 @@ public class SemanticContext {
 				Type_typeinfoconst = (ClassDeclaration) s;
 			} else if (ASTDmdNode.equals(s.ident, Id.TypeInfo_Invariant)) {
 				Type_typeinfoinvariant = (ClassDeclaration) s;
+			} else if (ASTDmdNode.equals(s.ident, Id.TypeInfo_Shared)) {
+				Type_typeinfoshared = (ClassDeclaration) s;
 			}
 		}
 	}

@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.LINK.LINKcpp;
 import static descent.internal.compiler.parser.LINK.LINKwindows;
 import static descent.internal.compiler.parser.STC.STCabstract;
 import static descent.internal.compiler.parser.STC.STCauto;
@@ -189,6 +190,12 @@ public class InterfaceDeclaration extends ClassDeclaration {
 				i++;
 			}
 		}
+		
+		if (!context.isD1()) {
+		    if (0 == size(baseclasses) && sc.linkage == LINKcpp) {
+		    	cpp = true;
+		    }
+		}
 
 		// Check for errors, handle forward references
 		for (i = 0; i < baseclasses.size();) {
@@ -246,7 +253,7 @@ public class InterfaceDeclaration extends ClassDeclaration {
 
 		interfaceSemantic(sc, context);
 
-		if (vtblOffset() != 0) {
+		if (vtblOffset(context) != 0) {
 			vtbl.add(this); // leave room at vtbl[0] for classinfo
 		}
 
@@ -263,7 +270,7 @@ public class InterfaceDeclaration extends ClassDeclaration {
 			}
 
 			// Copy vtbl[] from base class
-			if (b.base.vtblOffset() != 0) {
+			if (b.base.vtblOffset(context) != 0) {
 				
 				// Descent: to get "override" errors ok
 				b.base = (ClassDeclaration) b.base.unlazy(context);
@@ -283,7 +290,7 @@ public class InterfaceDeclaration extends ClassDeclaration {
 		
 		if (context.isD2()) {
 		    protection = sc.protection;
-		    storage_class |= sc.stc & (STCconst | STCinvariant);
+		    storage_class |= sc.stc & STC_TYPECTOR;
 		}
 
 		for (Dsymbol s : members) {
@@ -294,8 +301,8 @@ public class InterfaceDeclaration extends ClassDeclaration {
 		
 		if (context.isD2()) {
 		    sc.stc &= ~(STCfinal | STCauto | STCscope | STCstatic |
-	                 STCabstract | STCdeprecated | STCconst | STCinvariant | STCtls);
-		    sc.stc |= storage_class & (STCconst | STCinvariant);
+	                 STCabstract | STCdeprecated | STC_TYPECTOR | STCtls | STCgshared);
+		    sc.stc |= storage_class & STC_TYPECTOR;
 		}
 		
 		sc.parent = this;
@@ -337,9 +344,15 @@ public class InterfaceDeclaration extends ClassDeclaration {
 	}
 
 	@Override
-	public int vtblOffset() {
-		if (isCOMinterface() || isCPPinterface()) {
-			return 0;
+	public int vtblOffset(SemanticContext context) {
+		if (context.isD1()) {
+			if (isCOMinterface()) {
+				return 0;
+			}
+		} else {
+			if (isCOMinterface() || isCPPinterface()) {
+				return 0;
+			}
 		}
 		return 1;
 	}
