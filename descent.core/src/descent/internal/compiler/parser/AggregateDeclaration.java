@@ -2,6 +2,7 @@ package descent.internal.compiler.parser;
 
 import static descent.internal.compiler.parser.PROT.PROTpackage;
 import static descent.internal.compiler.parser.PROT.PROTpublic;
+import static descent.internal.compiler.parser.STC.STCref;
 import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Tstruct;
 
@@ -191,6 +192,9 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 		for (int i = 0; i < size(fields); i++) {
 			Dsymbol s = (Dsymbol) fields.get(i);
 			VarDeclaration v = s.isVarDeclaration();
+			if ((v.storage_class & STCref) != 0)
+			    continue;
+
 			Type tv = v.type.toBasetype(context);
 			int dim = 1;
 			while (tv.ty == Tsarray) {

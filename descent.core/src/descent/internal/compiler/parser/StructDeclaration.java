@@ -315,6 +315,8 @@ public class StructDeclaration extends AggregateDeclaration {
 		for (int i = 0; i < size(fields); i++) {
 			Dsymbol s = (Dsymbol) fields.get(i);
 			VarDeclaration v = s.isVarDeclaration();
+			if ((v.storage_class & STCref) != 0)
+			    continue;
 			Type tv = v.type.toBasetype(context);
 			int dim = 1;
 			while (tv.ty == Tsarray) {
@@ -415,7 +417,9 @@ public class StructDeclaration extends AggregateDeclaration {
 
 			// Build *this = p;
 			Expression e = new ThisExp(Loc.ZERO);
-			e = new PtrExp(Loc.ZERO, e);
+			if (!context.STRUCTTHISREF()) {
+				e = new PtrExp(Loc.ZERO, e);
+			}
 			AssignExp ea = new AssignExp(Loc.ZERO, e, new IdentifierExp(Id.p));
 			ea.op = TOKblit;
 			Statement s = new ExpStatement(Loc.ZERO, ea);
@@ -462,9 +466,10 @@ public class StructDeclaration extends AggregateDeclaration {
 				STCundefined, ftype);
 
 		Expression e = null;
-		if (postblit != null) { /*
-								 * Swap: tmp = *this; *this = s; tmp.dtor();
-								 */
+		if (postblit != null) {
+			/*
+			 * Swap: tmp =this;this = s; tmp.dtor();
+			 */
 			IdentifierExp idtmp = context.uniqueId("__tmp");
 			VarDeclaration tmp = null;
 			AssignExp ec = null;
@@ -474,12 +479,17 @@ public class StructDeclaration extends AggregateDeclaration {
 				tmp.noauto = true;
 				e = new DeclarationExp(Loc.ZERO, tmp);
 				ec = new AssignExp(Loc.ZERO, new VarExp(Loc.ZERO, tmp),
-						new PtrExp(Loc.ZERO, new ThisExp(Loc.ZERO)));
+						context.STRUCTTHISREF() ?
+							new ThisExp(Loc.ZERO) :
+							new PtrExp(Loc.ZERO, new ThisExp(Loc.ZERO)));
 				ec.op = TOKblit;
 				e = Expression.combine(e, ec);
 			}
-			ec = new AssignExp(Loc.ZERO, new PtrExp(Loc.ZERO, new ThisExp(
-					Loc.ZERO)), new IdentifierExp(Id.p));
+			ec = new AssignExp(Loc.ZERO, 
+					context.STRUCTTHISREF() ?
+						new ThisExp(Loc.ZERO) :
+						new PtrExp(Loc.ZERO, new ThisExp(Loc.ZERO)), 
+					new IdentifierExp(Id.p));
 			ec.op = TOKblit;
 			e = Expression.combine(e, ec);
 			if (dtor != null) {
@@ -551,6 +561,8 @@ public class StructDeclaration extends AggregateDeclaration {
 		for (int i = 0; i < size(fields); i++) {
 			Dsymbol s = (Dsymbol) fields.get(i);
 			VarDeclaration v = s.isVarDeclaration();
+			if ((v.storage_class & STCref) != 0)
+			    continue;
 			Type tv = v.type.toBasetype(context);
 			while (tv.ty == Tsarray) {
 				// TypeSArray ta = (TypeSArray) tv;
