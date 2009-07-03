@@ -65,14 +65,32 @@ public class IftypeCondition extends Condition {
 				inc = 2;
 				return false;
 			}
-			int errors = context.global.errors;
-			context.global.gag++; // suppress printing of error messages
-			targ = targ.semantic(loc, sc, context);
-			context.global.gag--;
-			if (errors != context.global.errors) // if any errors happened
+			
+			boolean condition;
+			int errors = 0;
+			if (context.isD1()) {
+				errors = context.global.errors;
+				context.global.gag++; // suppress printing of error messages
+				targ = targ.semantic(loc, sc, context);
+				context.global.gag--;
+				
+				condition = errors != context.global.errors;
+			} else {
+				Type t = targ.trySemantic(loc, sc, context);
+				if (t != null)
+				    targ = t;
+				else
+				    inc = 2;			// condition is false
+				
+				condition = null == t;
+			}
+			
+			if (condition) // if any errors happened
 			{
-				inc = 2; // then condition is false
-				context.global.errors = errors;
+				if (context.isD1()) {
+					inc = 2; // then condition is false
+					context.global.errors = errors;
+				}
 			} else if (id != null && tspec != null) {
 				/* Evaluate to TRUE if targ matches tspec.
 				 * If TRUE, declare id as an alias for the specialized type.

@@ -585,6 +585,19 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		}
 		return merge(context);
 	}
+	
+	public Type trySemantic(Loc loc, Scope sc, SemanticContext context) {
+		int errors = context.global.errors;
+		context.global.gag++; // suppress printing of error messages
+		Type t = semantic(loc, sc, context);
+		context.global.gag--;
+		if (errors != context.global.errors) // if any errors happened
+		{
+			context.global.errors = errors;
+			t = null;
+		}
+		return t;
+	}
 
 	public Type merge(SemanticContext context) {
 		Type t;

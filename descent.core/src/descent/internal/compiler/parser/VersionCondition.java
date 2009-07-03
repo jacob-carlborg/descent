@@ -14,20 +14,38 @@ public class VersionCondition extends DVCondition {
 			{ 'W', 'i', 'n', '3', '2' },
 			{ 'W', 'i', 'n', '6', '4' }, 
 			{ 'l', 'i', 'n', 'u', 'x' },
-			{ 'P', 'o', 's', 'i', 'x' },
-			{ 'O', 'S', 'X' },
 			{ 'F', 'r', 'e', 'e', 'B', 'S', 'D' },
 			{ 'S', 'o', 'l', 'a', 'r', 'i', 's' },
 			{ 'L', 'i', 't', 't', 'l', 'e', 'E', 'n', 'd', 'i', 'a', 'n' },
 			{ 'B', 'i', 'g', 'E', 'n', 'd', 'i', 'a', 'n' }, 
 			{ 'a', 'l', 'l' },
 			{ 'n', 'o', 'n', 'e' }, };
+	
+	public static final char[][] resevered2 = {
+		{ 'D', 'i', 'g', 'i', 't', 'a', 'l', 'M', 'a', 'r', 's' },
+		{ 'X', '8', '6' }, 
+		{ 'X', '8', '6', '_', '6', '4' },
+		{ 'W', 'i', 'n', 'd', 'o', 'w', 's' }, 
+		{ 'W', 'i', 'n', '3', '2' },
+		{ 'W', 'i', 'n', '6', '4' }, 
+		{ 'l', 'i', 'n', 'u', 'x' },
+		{ 'P', 'o', 's', 'i', 'x' },
+		{ 'D', '_', 'N', 'E', 'T' },
+		{ 'O', 'S', 'X' },
+		{ 'F', 'r', 'e', 'e', 'B', 'S', 'D' },
+		{ 'S', 'o', 'l', 'a', 'r', 'i', 's' },
+		{ 'L', 'i', 't', 't', 'l', 'e', 'E', 'n', 'd', 'i', 'a', 'n' },
+		{ 'B', 'i', 'g', 'E', 'n', 'd', 'i', 'a', 'n' }, 
+		{ 'a', 'l', 'l' },
+		{ 'n', 'o', 'n', 'e' }, };
 
 	public static void checkPredefined(Loc loc, IdentifierExp ident,
 			SemanticContext context) {
-		for (int i = 0; i < resevered.length; i++) {
+		final char[][] thoseReserved = context.isD1() ? resevered : resevered2;
+		
+		for (int i = 0; i < thoseReserved.length; i++) {
 			if (ident.ident != null
-					&& equals(ident, resevered[i])) {
+					&& equals(ident, thoseReserved[i])) {
 				// goto Lerror;
 				if (context.acceptsErrors()) {
 					context
