@@ -50,7 +50,6 @@ public class EnumDeclaration extends ScopeDsymbol {
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, modifiers);
 			TreeVisitor.acceptChildren(visitor, ident);
 			TreeVisitor.acceptChildren(visitor, memtype);
 			TreeVisitor.acceptChildren(visitor, members);

@@ -37,19 +37,6 @@ public class ScopeDsymbol extends Dsymbol {
 		visitor.visit(this);
 		visitor.endVisit(this);
 	}
-	
-	protected void acceptSynthetic(IASTVisitor visitor) {
-		if (symtab != null) {
-			for(char[] key : symtab.keys()) {
-				if (key == null) continue;
-				
-				Dsymbol s = symtab.lookup(key);
-				if (s.synthetic && (members == null || !members.contains(s))) {
-					s.accept(visitor);
-				}
-			}
-		}
-	}
 
 	public void addMember(Dsymbol symbol) {
 		members.add(symbol);

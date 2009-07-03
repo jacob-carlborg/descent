@@ -121,7 +121,7 @@ class DefaultBindingResolver extends BindingResolver {
 		this.workingCopyOwner = workingCopyOwner;
 		this.newAstToOldAst = new HashMap();
 		this.internalSignature = new InternalSignature(javaProject);
-		this.apiLevel = context == null ? javaProject.getApiLevel() : context.apiLevel;
+		this.apiLevel = context == null ? (javaProject == null ? AST.D2 : javaProject.getApiLevel()) : context.apiLevel;
 		
 //		try {
 //			this.environment = new SearchableEnvironment(

@@ -5834,23 +5834,6 @@ public class Lexer implements IProblemRequestor {
 		}
 	}
 
-	protected void setMalformed(ASTDmdNode node) {
-		node.astFlags |= descent.core.dom.ASTNode.MALFORMED;
-		;
-	}
-
-	protected void setRecovered(ASTDmdNode node) {
-		node.astFlags |= descent.core.dom.ASTNode.MALFORMED;
-	}
-
-	protected void setMalformed(descent.core.dom.ASTNode node) {
-		node.setFlags(node.getFlags() | descent.core.dom.ASTNode.MALFORMED);
-	}
-
-	protected void setRecovered(descent.core.dom.ASTNode node) {
-		node.setFlags(node.getFlags() | descent.core.dom.ASTNode.RECOVERED);
-	}
-
 	/**
 	 * Search the source position corresponding to the beginning of a given line number
 	 *

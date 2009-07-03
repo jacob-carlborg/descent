@@ -50,7 +50,7 @@ public class CompileDeclaration extends AttribDeclaration {
 		return memnum;
 	}
 	
-	public void compileIt(Scope sc, SemanticContext context) {
+	public void compileIt(Scope sc, final SemanticContext context) {
 		exp = exp.semantic(sc, context);
 		exp = resolveProperties(sc, exp, context);
 		exp = exp.optimize(WANTvalue | WANTinterpret, context);
@@ -75,11 +75,10 @@ public class CompileDeclaration extends AttribDeclaration {
 						public void preVisit(ASTNode node) {
 							if (node instanceof ASTDmdNode) {
 								ASTDmdNode s = (ASTDmdNode) node;
-								s.synthetic = true;
 								s.setStart(getStart() + 1);
 								s.setLength(getLength());
-								s.setLineNumber(getLineNumber());					
-								s.creator = CompileDeclaration.this;
+								s.setLineNumber(getLineNumber());
+								context.setCreator(s, CompileDeclaration.this);
 							}
 						}
 					});

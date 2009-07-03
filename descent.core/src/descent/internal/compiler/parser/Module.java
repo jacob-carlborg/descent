@@ -135,7 +135,6 @@ public class Module extends Package {
 		if (ident == null || ident.ident != Id.object) {
 			Import im = new Import(Loc.ZERO, null,
 					new IdentifierExp(Id.object), null, false);
-			im.synthetic = true;
 			if (members == null) {
 				members = new Dsymbols();
 			}

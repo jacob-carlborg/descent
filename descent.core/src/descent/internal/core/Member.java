@@ -323,9 +323,10 @@ public ISourceRange[] getJavadocRanges() throws JavaModelException {
 		}
 	}
 	
-	if (declaration.preComments != null) {
-		for(int i = declaration.preComments.size() - 1; i >= 0; i--) {
-			Comment ddoc = declaration.preComments.get(i);
+	List<Comment> preComments;
+	if ((preComments = parser.getPreComments(declaration)) != null) {
+		for(int i = preComments.size() - 1; i >= 0; i--) {
+			Comment ddoc = preComments.get(i);
 			if (!ddoc.isDDocComment()) {
 				// Work even if there are non-ddoc comments in between
 				// break;
@@ -335,9 +336,10 @@ public ISourceRange[] getJavadocRanges() throws JavaModelException {
 		}
 	}
 	
-	if (declaration.postComment != null && declaration.postComment.isDDocComment()) {
-		sourceRanges.add(new SourceRange(start + declaration.postComment.start,
-				declaration.postComment.length));
+	Comment postComment = parser.getPostComment(declaration);
+	if (postComment != null && postComment.isDDocComment()) {
+		sourceRanges.add(new SourceRange(start + postComment.start,
+				postComment.length));
 	}
 
 	return sourceRanges.toArray(new ISourceRange[sourceRanges.size()]);

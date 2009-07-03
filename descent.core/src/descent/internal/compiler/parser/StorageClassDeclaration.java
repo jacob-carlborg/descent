@@ -42,9 +42,6 @@ import static descent.internal.compiler.parser.TOK.TOKscope;
 import static descent.internal.compiler.parser.TOK.TOKstatic;
 import static descent.internal.compiler.parser.TOK.TOKsynchronized;
 import static descent.internal.compiler.parser.TOK.TOKtls;
-
-import java.util.ArrayList;
-
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -155,16 +152,7 @@ public class StorageClassDeclaration extends AttribDeclaration {
 
 			for (Dsymbol s : decl) {
 				// Send extra modifiers to out children, so that they can report better problems
-				s.extraModifiers = modifiers;
-				if (s.extraModifiers == null) {
-					s.extraModifiers = new ArrayList<Modifier>();
-				}
-				if (extraModifiers != null) {
-					s.extraModifiers.addAll(extraModifiers);
-				}
-				s.extraModifiers.add(modifier);
-				s.semantic(sc, context);
-				s.extraModifiers = null;
+				semanticWithExtraModifiers(s, modifier, sc, context);
 			}
 
 			sc.stc = stc_save;

@@ -1,5 +1,8 @@
 package descent.internal.compiler.parser;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class AttribDeclaration extends Dsymbol {
 
 	public Dsymbols decl;
@@ -133,6 +136,22 @@ public abstract class AttribDeclaration extends Dsymbol {
 			buf.writeByte(';');
 		}
 		buf.writenl();
+	}
+	
+	protected final void semanticWithExtraModifiers(Dsymbol s, Modifier modifier, Scope sc, SemanticContext context) {
+		// Send extra modifiers to out children, so that they can report better problems
+		context.parser.setExtraModifiers(s, context.parser.getModifiers(this));
+		
+		List<Modifier> sExtraModifiers;
+		if ((sExtraModifiers = context.parser.getExtraModifiers(s)) == null) {
+			context.parser.setExtraModifiers(s, sExtraModifiers = new ArrayList<Modifier>());
+		}
+		if (context.parser.getExtraModifiers(this) != null) {
+			sExtraModifiers.addAll(context.parser.getExtraModifiers(this));
+		}
+		sExtraModifiers.add(modifier);
+		s.semantic(sc, context);
+		context.parser.setExtraModifiers(s, null);
 	}
 
 }

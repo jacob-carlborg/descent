@@ -12,7 +12,7 @@ public abstract class ASTNode
 	public static final ASTDmdNode[] NO_ELEMENTS = new ASTDmdNode[0]; 
 	
 	/** AST node parent, null if the node is the tree root. */
-	public ASTNode parentBruno = null;
+//	public ASTNode parentBruno = null;
 	
 	/** A character index into the original source string, 
 	 * or <code>-1</code> if no source position information is available
@@ -25,14 +25,14 @@ public abstract class ASTNode
 	public int length = 0;
 
 	/** {@inheritDoc} */
-	public ASTNode getParentBruno() {
-		return parentBruno;
-	}
+//	public ASTNode getParentBruno() {
+//		return parentBruno;
+//	}
 	
 	/** Set the parent of this node. Can be null. */
-	public void setParentBruno(ASTNode parent) {
-		this.parentBruno = parent;
-	}
+//	public void setParentBruno(ASTNode parent) {
+//		this.parentBruno = parent;
+//	}
 	
 	/** Gets the source range start position, aka offset. */
 	public final int getStartPos() {

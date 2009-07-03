@@ -189,7 +189,7 @@ protected boolean buildStructure(OpenableElementInfo info, final IProgressMonito
 	try {
 		if (computeProblems) {
 			
-			context = CompilationUnitResolver.resolve(module, this.getJavaProject(), this.owner, parser.encoder);
+			context = CompilationUnitResolver.resolve(parser.parser, module, this.getJavaProject(), this.owner, parser.encoder);
 			
 			if (problems == null) {
 				// report problems to the problem requestor

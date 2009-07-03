@@ -8,7 +8,7 @@ public interface IElement {
 	IElement[] NO_ELEMENTS = new IElement[0];
 	
 	/** Returns the parent of this node, or <code>null</code> if none. */
-	IElement getParentBruno();
+//	IElement getParentBruno();
 
 	/**
 	 * Returns whether this element has one or more immediate children. This is

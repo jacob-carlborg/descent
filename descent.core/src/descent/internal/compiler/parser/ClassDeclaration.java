@@ -99,7 +99,6 @@ public class ClassDeclaration extends AggregateDeclaration {
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, modifiers);
 			TreeVisitor.acceptChildren(visitor, ident);
 			TreeVisitor.acceptChildren(visitor, sourceBaseclasses);
 			TreeVisitor.acceptChildren(visitor, members);
@@ -1066,7 +1065,6 @@ public class ClassDeclaration extends AggregateDeclaration {
 		if (ctor == null && baseClass != null && baseClass.ctor != null) {
 			// toChars());
 			CtorDeclaration ctor = new CtorDeclaration(loc, null, 0);
-			ctor.synthetic = true;
 			ctor.fbody = context.newCompoundStatement(loc, new Statements());
 			this.ctor = ctor;
 			

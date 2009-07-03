@@ -170,7 +170,6 @@ public class FuncDeclaration extends Declaration {
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, modifiers);
 			TreeVisitor.acceptChildren(visitor, sourceType);
 			TreeVisitor.acceptChildren(visitor, ident);
 			TreeVisitor.acceptChildren(visitor, sourceFrequire);
@@ -2126,24 +2125,12 @@ public class FuncDeclaration extends Declaration {
 					context.global.gag--;
 					if (errors != context.global.errors) {
 
-						// I may be a synthetic node. In that case, mark
-						// the error in the class' name
-						if (this.synthetic) {
-							if (context.acceptsErrors()) {
-								context
-										.acceptProblem(Problem
-												.newSemanticTypeErrorLoc(
-														IProblem.NoMatchForImplicitSuperCallInConstructor,
-														parent));
-							}
-						} else {
-							if (context.acceptsErrors()) {
-								context
-										.acceptProblem(Problem
-												.newSemanticTypeErrorLoc(
-														IProblem.NoMatchForImplicitSuperCallInConstructor,
-														this));
-							}
+						if (context.acceptsErrors()) {
+							context
+									.acceptProblem(Problem
+											.newSemanticTypeErrorLoc(
+													IProblem.NoMatchForImplicitSuperCallInConstructor,
+													this));
 						}
 					}
 

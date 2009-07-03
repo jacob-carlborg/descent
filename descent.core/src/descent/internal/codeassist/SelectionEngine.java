@@ -83,6 +83,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 	int offset;
 	int length;
 	ICompilationUnit unit;
+	SelectionParser parser;
 	Module module;
 	SemanticContext context;
 	ASTNodeEncoder encoder;
@@ -108,7 +109,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 		try {
 			char[] contents = sourceUnit.getContents();
 
-			SelectionParser parser = new SelectionParser(
+			parser = new SelectionParser(
 					javaProject.getApiLevel(),
 					contents, 
 					sourceUnit.getFileName());
@@ -193,7 +194,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 	private void doSemantic() {
 		if (context == null) {
 			try {
-				context = CompilationUnitResolver.resolve(module, javaProject,
+				context = CompilationUnitResolver.resolve(parser, module, javaProject,
 						owner, encoder);
 			} catch (JavaModelException e) {
 				Util.log(e);
@@ -288,8 +289,9 @@ public class SelectionEngine extends AstVisitorAdapter {
 		}
 		
 		// See if the "auto" modifier is selected
-		if (node.modifiers != null) {
-			for(Modifier modifier : node.modifiers) {
+		List<Modifier> modifiers;
+		if ((modifiers = parser.getModifiers(node)) != null) {
+			for(Modifier modifier : modifiers) {
 				if (modifier.tok == TOK.TOKauto && isInRange(modifier)) {
 					doSemantic();
 					
@@ -354,8 +356,9 @@ public class SelectionEngine extends AstVisitorAdapter {
 		
 		if (sym != null) {
 			// See if this symbols was created at compile-time
-			while (sym.creator != null) {
-				sym = sym.creator;
+			Dsymbol creator;
+			while ((creator = context.getCreator(sym)) != null) {
+				sym = creator;
 			}
 			
 			if (sym instanceof AliasDeclaration) {

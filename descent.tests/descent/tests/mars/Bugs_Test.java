@@ -9,6 +9,7 @@ import descent.core.dom.Declaration;
 import descent.core.dom.DotIdentifierExpression;
 import descent.core.dom.ExpressionStatement;
 import descent.core.dom.FunctionDeclaration;
+import descent.core.dom.CompilationUnitResolver.ParseResult;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.IntegerExp;
 import descent.internal.compiler.parser.Module;
@@ -304,9 +305,10 @@ public class Bugs_Test extends Parser_Test {
 			"class Bang {\r\n" + 
 			"}";
 		
-		Module module = getParseResult(s, AST.D1).module;
+		ParseResult parseResult = getParseResult(s, AST.D1);
+		Module module = parseResult.module;
 		ASTDmdNode node = (ASTDmdNode) module.members.get(1); // SEMANTIC
-		assertEquals(0, node.preComments.size());
+		assertEquals(0, parseResult.parser.getPreComments(node).size());
 	}
 	
 	public void testBugFoundByBrunoMedeiros2() {
@@ -320,9 +322,10 @@ public class Bugs_Test extends Parser_Test {
 			"class Bang {\r\n" + 
 			"}";
 		
-		Module module = getParseResult(s, AST.D1).module;
+		ParseResult parseResult = getParseResult(s, AST.D1);
+		Module module = parseResult.module;
 		ASTDmdNode node = (ASTDmdNode) module.members.get(1); // SEMANTIC
-		assertEquals(1, node.preComments.size());
+		assertEquals(1, parseResult.parser.getPreComments(node).size());
 	}
 	
 	public void testTicket25() {
@@ -385,10 +388,11 @@ public class Bugs_Test extends Parser_Test {
 			"	\r\n" + 
 			"}";
 		
-		Module m = getParseResult(s, AST.D1).module;
+		ParseResult parseResult = getParseResult(s, AST.D1);
+		Module m = parseResult.module;
 		
 		ASTDmdNode node = (ASTDmdNode) m.members.get(1);
-		assertEquals(0, node.preComments.size());
+		assertEquals(0, parseResult.parser.getPreComments(node).size());
 	}
 	
 	public void testTicket108() {

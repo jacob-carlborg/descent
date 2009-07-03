@@ -100,6 +100,12 @@ public class SemanticContext {
 	public boolean alwaysResolveFunctionSemanticRest;
 	public List<ASTDmdNode> templateEvaluationStack;
 	
+	/**
+	 * The original parser used to parse the analyzed module.
+	 * This is needed to get access to comments and modifiers. 
+	 */
+	public Parser parser;
+	
 	/*
 	 * Once semantic pass is done, the evaluated expression of IdentifierExps are kept in
 	 * this variable. Only for compile-time function evaluation. 
@@ -124,6 +130,13 @@ public class SemanticContext {
 	private Map<Expression, Dsymbol> Expression_resolvedSymbols = new HashMap<Expression, Dsymbol>();
 	
 	/*
+	 * Symbols created from mixins holds a reference
+	 * to the CompileStatement or CompileDeclaration that created
+	 * them, so we can then go to this creator when doing code-selection.
+	 */
+	private Map<ASTDmdNode, Dsymbol> ASTDmdNode_creators = new HashMap<ASTDmdNode, Dsymbol>();
+	
+	/*
 	 * This is for autocompletion, for suggesting overloads of
 	 * aliased symbols.
 	 */
@@ -131,6 +144,7 @@ public class SemanticContext {
 
 	public SemanticContext(
 			IProblemRequestor problemRequestor, 
+			Parser parser,
 			Module module,
 			IJavaProject project,
 			WorkingCopyOwner owner,
@@ -138,6 +152,7 @@ public class SemanticContext {
 			CompilerConfiguration config,
 			ASTNodeEncoder encoder) throws JavaModelException {
 		this.problemRequestor = problemRequestor;
+		this.parser = parser;
 		this.Module_rootModule = module;
 		this.global = global;
 		this.project = project;
@@ -206,6 +221,14 @@ public class SemanticContext {
 	
 	public Dsymbol getResolvedSymbol(Expression exp) {
 		return Expression_resolvedSymbols.get(exp);
+	}
+	
+	public void setCreator(ASTDmdNode node, Dsymbol creator) {
+		ASTDmdNode_creators.put(node, creator);
+	}
+	
+	public Dsymbol getCreator(ASTDmdNode node) {
+		return ASTDmdNode_creators.get(node);
 	}
 	
 	/*
