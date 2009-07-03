@@ -324,7 +324,7 @@ public ISourceRange[] getJavadocRanges() throws JavaModelException {
 	}
 	
 	List<Comment> preComments;
-	if ((preComments = parser.getPreComments(declaration)) != null) {
+	if ((preComments = module.getPreComments(declaration)) != null) {
 		for(int i = preComments.size() - 1; i >= 0; i--) {
 			Comment ddoc = preComments.get(i);
 			if (!ddoc.isDDocComment()) {
@@ -336,7 +336,7 @@ public ISourceRange[] getJavadocRanges() throws JavaModelException {
 		}
 	}
 	
-	Comment postComment = parser.getPostComment(declaration);
+	Comment postComment = module.getPostComment(declaration);
 	if (postComment != null && postComment.isDDocComment()) {
 		sourceRanges.add(new SourceRange(start + postComment.start,
 				postComment.length));

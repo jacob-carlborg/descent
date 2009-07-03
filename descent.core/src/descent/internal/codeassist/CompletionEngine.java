@@ -753,7 +753,7 @@ public class CompletionEngine extends Engine
 		}
 		
 		semanticRun = true;
-		context = CompilationUnitResolver.resolve(parser, module, this.javaProject, null, encoder);
+		context = CompilationUnitResolver.resolve(module, this.javaProject, null, encoder);
 	}
 
 	private void completeModuleDeclaration(CompletionOnModuleDeclaration node) {

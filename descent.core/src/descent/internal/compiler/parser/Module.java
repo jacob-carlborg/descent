@@ -1,7 +1,9 @@
 package descent.internal.compiler.parser;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.ICompilationUnit;
@@ -51,6 +53,13 @@ public class Module extends Package {
 	public String moduleName; // foo.bar 
 	private String signature; // Descent signature
 	protected ICompilationUnit javaElement;
+	
+	// Comments associated to nodes (anot just ddoc)
+	private Map<ASTDmdNode, List<Comment>> preComments;
+	private Map<ASTDmdNode, Comment> postComments;
+	
+	// Modifiers associated to nodes
+	private Map<ASTDmdNode, List<Modifier>> modifiers;
 
 	public Module(String filename, IdentifierExp ident) {
 		super(ident);
@@ -558,6 +567,46 @@ public class Module extends Package {
 	@Override
 	public Module unlazy(char[] prefix, SemanticContext context) {
 		return this;
+	}
+	
+	public final void setPreComments(ASTDmdNode node, List<Comment> comms) {
+		if (comms != null && !comms.isEmpty()) {
+			if (preComments == null)
+				preComments = new HashMap<ASTDmdNode, List<Comment>>();
+			preComments.put(node, comms);
+		}
+	}
+	
+	public final List<Comment> getPreComments(ASTDmdNode node) {
+		if (preComments == null)
+			return null;
+		return preComments.get(node);
+	}
+	
+	public final void setPostComment(ASTDmdNode node, Comment comm) {
+		if (postComments == null)
+			postComments = new HashMap<ASTDmdNode, Comment>();
+		postComments.put(node, comm);
+	}
+	
+	public final Comment getPostComment(ASTDmdNode node) {
+		if (postComments == null)
+			return null;
+		return postComments.get(node);
+	}
+	
+	public final void setModifiers(ASTDmdNode node, List<Modifier> mods) {
+		if (mods != null && !mods.isEmpty()) {
+			if (modifiers == null)
+				modifiers = new HashMap<ASTDmdNode, List<Modifier>>();
+			this.modifiers.put(node, mods);
+		}
+	}
+	
+	public final List<Modifier> getModifiers(ASTDmdNode node) {
+		if (modifiers == null)
+			return null;
+		return modifiers.get(node);
 	}
 
 }

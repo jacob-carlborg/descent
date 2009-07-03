@@ -2236,7 +2236,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		boolean reported = false;
 		
 		List<Modifier> modifiers;
-		if ((modifiers = context.parser.getModifiers(this)) != null) {
+		if ((modifiers = context.Module_rootModule.getModifiers(this)) != null) {
 			for (Modifier modifier : modifiers) {
 				if (modifier.tok == tok) {
 					if (context.acceptsErrors()) {
@@ -2249,7 +2249,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		}
 		
 		List<Modifier> extraModifiers;
-		if ((extraModifiers = context.parser.getExtraModifiers(this)) != null) {
+		if ((extraModifiers = context.getExtraModifiers(this)) != null) {
 			for (Modifier modifier : extraModifiers) {
 				if (modifier.tok == tok) {
 					if (context.acceptsErrors()) {

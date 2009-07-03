@@ -70,13 +70,14 @@ import descent.internal.compiler.parser.Type.Modification;
 
 /**
  * Internal class for converting internal compiler ASTs into public ASTs.
+ * Not thread safe.
  */
 public class ASTConverter {
 	
 	protected AST ast;
 	protected IProgressMonitor monitor;
 	protected boolean resolveBindings;
-	protected Parser parser;
+	protected Module module;
 	
 	private Comment[] moduleComments;
 	
@@ -96,10 +97,11 @@ public class ASTConverter {
 	public void init(IJavaProject project, SemanticContext context, WorkingCopyOwner owner) {
 		BindingTables tables = new BindingTables();
 		ast.setBindingResolver(new DefaultBindingResolver(project, context, owner, tables));
-		parser = context.parser;
 	}
 	
 	public CompilationUnit convert(Module module, ICompilationUnit cu) {
+		this.module = module;
+		
 		CompilationUnit unit = new CompilationUnit(ast);
 		unit.setJavaElement(cu);
 		
@@ -559,7 +561,7 @@ public class ASTConverter {
 		if (a.single && a.decl != null && a.decl.size() >= 1) {
 			Declaration decl = convertDeclaration((Dsymbol) a.decl.get(0)); // SEMANTIC
 			
-			List<Modifier> amodifiers = parser.getModifiers(a);
+			List<Modifier> amodifiers = module.getModifiers(a);
 			
 			if (a.decl.size() == 1) {
 				int insertAt;
@@ -642,7 +644,7 @@ public class ASTConverter {
 				toAdd.add(decl);
 				return;
 			} else {
-				List<Modifier> amodifiers = parser.getModifiers(a);
+				List<Modifier> amodifiers = module.getModifiers(a);
 				descent.core.dom.Declaration declaration = tryConvertMany(a.decl, modifier, amodifiers);
 				if (declaration != null) {
 					toAdd.add(declaration);
@@ -705,7 +707,7 @@ public class ASTConverter {
 		descent.core.dom.VariableDeclaration varToReturn = new VariableDeclaration(ast);
 		
 		int start = first.start;
-		List<Modifier> firstmodifiers = parser.getModifiers(first);
+		List<Modifier> firstmodifiers = module.getModifiers(first);
 		if (firstmodifiers != null && firstmodifiers.size() > 0) {
 			convertModifiers(varToReturn.modifiers(), firstmodifiers);
 			start = firstmodifiers.get(0).start;
@@ -732,7 +734,7 @@ public class ASTConverter {
 		
 		descent.core.dom.AliasDeclaration varToReturn = new descent.core.dom.AliasDeclaration(ast);
 		
-		List<Modifier> firstmodifiers = parser.getModifiers(first);
+		List<Modifier> firstmodifiers = module.getModifiers(first);
 		if (firstmodifiers != null) {
 			convertModifiers(varToReturn.modifiers(), firstmodifiers);
 		}
@@ -758,7 +760,7 @@ public class ASTConverter {
 		
 		descent.core.dom.TypedefDeclaration varToReturn = new descent.core.dom.TypedefDeclaration(ast);
 		
-		List<Modifier> firstmodifiers = parser.getModifiers(first);
+		List<Modifier> firstmodifiers = module.getModifiers(first);
 		if (firstmodifiers != null) {
 			convertModifiers(varToReturn.modifiers(), firstmodifiers);
 		}
@@ -2020,7 +2022,7 @@ public class ASTConverter {
 	}
 	
 	public void fillDeclaration(descent.core.dom.Declaration b, ASTDmdNode a) {
-		List<Modifier> amodifiers = parser.getModifiers(a);
+		List<Modifier> amodifiers = module.getModifiers(a);
 		convertModifiers(b.modifiers(), amodifiers);
 		processDdocs(b, a);
 	}
@@ -2649,7 +2651,7 @@ public class ASTConverter {
 	public descent.core.dom.Argument convert(Argument a) {
 		descent.core.dom.Argument b = new descent.core.dom.Argument(ast);
 		
-		List<Modifier> amodifiers = parser.getModifiers(a);
+		List<Modifier> amodifiers = module.getModifiers(a);
 		if (amodifiers != null) {
 			convertModifiers(b.modifiers(), amodifiers);
 		}
@@ -3479,7 +3481,7 @@ public class ASTConverter {
 						}
 					}
 					
-					List<Modifier> amodifiers = parser.getModifiers(a);
+					List<Modifier> amodifiers = module.getModifiers(a);
 					convertModifiers(b.modifiers(), amodifiers);
 					start = a.start;
 					end = processPostDdoc(b, a);						
@@ -3515,7 +3517,7 @@ public class ASTConverter {
 						}
 					}
 					
-					List<Modifier> amodifiers = parser.getModifiers(a);
+					List<Modifier> amodifiers = module.getModifiers(a);
 					convertModifiers(b.modifiers(), amodifiers);
 					start = a.start;
 					end = processPostDdoc(b, a);						
@@ -3551,7 +3553,7 @@ public class ASTConverter {
 						}
 					}
 					
-					List<Modifier> amodifiers = parser.getModifiers(a);
+					List<Modifier> amodifiers = module.getModifiers(a);
 					convertModifiers(b.modifiers(), amodifiers);
 					start = a.start;
 					end = processPostDdoc(b, a);						
@@ -3848,12 +3850,12 @@ public class ASTConverter {
 	private void processDdocs(descent.core.dom.ModuleDeclaration b, ASTDmdNode a) {
 		DDocComment first = null;
 		
-		List<descent.internal.compiler.parser.Comment> apreComments = parser.getPreComments(a);
+		List<descent.internal.compiler.parser.Comment> apreComments = module.getPreComments(a);
 		if (apreComments != null) {
 			 first = convertDdoc(b.preDDocs(), apreComments);
 		}
 		
-		descent.internal.compiler.parser.Comment apostComment = parser.getPostComment(a);
+		descent.internal.compiler.parser.Comment apostComment = module.getPostComment(a);
 		if (apostComment != null) {
 			b.postDDoc = convertDdoc(apostComment);
 		}		
@@ -3863,12 +3865,12 @@ public class ASTConverter {
 	private void processDdocs(Declaration b, ASTDmdNode a) {
 		DDocComment first = null;
 		
-		List<descent.internal.compiler.parser.Comment> apreComments = parser.getPreComments(a);
+		List<descent.internal.compiler.parser.Comment> apreComments = module.getPreComments(a);
 		if (apreComments != null) {
 			 first = convertDdoc(b.preDDocs(), apreComments);
 		}
 		
-		descent.internal.compiler.parser.Comment apostComment = parser.getPostComment(a);
+		descent.internal.compiler.parser.Comment apostComment = module.getPostComment(a);
 		if (apostComment != null) {
 			b.postDDoc = convertDdoc(apostComment);
 		}		
@@ -3878,12 +3880,12 @@ public class ASTConverter {
 	private void processDdocs(descent.core.dom.EnumMember b, ASTDmdNode a) {
 		DDocComment first = null;
 		
-		List<descent.internal.compiler.parser.Comment> apreComments = parser.getPreComments(a);
+		List<descent.internal.compiler.parser.Comment> apreComments = module.getPreComments(a);
 		if (apreComments != null) {
 			 first = convertDdoc(b.preDDocs(), apreComments);
 		}
 		
-		descent.internal.compiler.parser.Comment apostComment = parser.getPostComment(a);
+		descent.internal.compiler.parser.Comment apostComment = module.getPostComment(a);
 		if (apostComment != null) {
 			b.postDDoc = convertDdoc(apostComment);
 		}		
@@ -3897,7 +3899,7 @@ public class ASTConverter {
 			start = first.getStartPosition();
 		}
 		
-		descent.internal.compiler.parser.Comment apostComment = parser.getPostComment(a);
+		descent.internal.compiler.parser.Comment apostComment = module.getPostComment(a);
 		if (apostComment != null && apostComment.isDDocComment()) {
 			end = apostComment.start + apostComment.length;
 		}
@@ -3907,7 +3909,7 @@ public class ASTConverter {
 	private int processPreDdocs(descent.core.dom.Declaration b, ASTDmdNode a) {
 		DDocComment first = null;
 		
-		List<descent.internal.compiler.parser.Comment> apreComments = parser.getPreComments(a);
+		List<descent.internal.compiler.parser.Comment> apreComments = module.getPreComments(a);
 		if (apreComments != null) {
 			first = convertDdoc(b.preDDocs(), apreComments);
 		}
@@ -3921,7 +3923,7 @@ public class ASTConverter {
 	}
 	
 	private int processPostDdoc(descent.core.dom.Declaration b, ASTDmdNode a) {
-		descent.internal.compiler.parser.Comment apostComment = parser.getPostComment(a);
+		descent.internal.compiler.parser.Comment apostComment = module.getPostComment(a);
 		if (apostComment != null) {
 			b.postDDoc = convertDdoc(apostComment);
 		}

@@ -36,12 +36,12 @@ public class SemanticContext {
 	public boolean _WIN32 = true;
 
 	public IProblemRequestor problemRequestor;
-	public Global global;
-	public IJavaProject project;
-	public IModuleFinder moduleFinder;
+	public final Global global;
+	public final IJavaProject project;
+	public final IModuleFinder moduleFinder;
 
 	// TODO file imports should be selectable in a dialog or something
-	public Map<String, File> fileImports = new HashMap<String, File>();
+	public final Map<String, File> fileImports = new HashMap<String, File>();
 	
 	public ClassDeclaration ClassDeclaration_object;
 	public ClassDeclaration ClassDeclaration_classinfo;
@@ -64,7 +64,7 @@ public class SemanticContext {
 
 	public Type Type_tvoidptr;
 	
-	public Module Module_rootModule;
+	public final Module Module_rootModule;
 	public DsymbolTable Module_modules;
 	public Array Module_amodules;
 	public Dsymbols Module_deferred;
@@ -100,12 +100,6 @@ public class SemanticContext {
 	public boolean alwaysResolveFunctionSemanticRest;
 	public List<ASTDmdNode> templateEvaluationStack;
 	
-	/**
-	 * The original parser used to parse the analyzed module.
-	 * This is needed to get access to comments and modifiers. 
-	 */
-	public Parser parser;
-	
 	/*
 	 * Once semantic pass is done, the evaluated expression of IdentifierExps are kept in
 	 * this variable. Only for compile-time function evaluation. 
@@ -136,6 +130,9 @@ public class SemanticContext {
 	 */
 	private Map<ASTDmdNode, Dsymbol> ASTDmdNode_creators = new HashMap<ASTDmdNode, Dsymbol>();
 	
+	// Modifiers assigned from out parent, to better report problems
+	private final Map<ASTDmdNode, List<Modifier>> extraModifiers = new HashMap<ASTDmdNode, List<Modifier>>();
+	
 	/*
 	 * This is for autocompletion, for suggesting overloads of
 	 * aliased symbols.
@@ -144,7 +141,6 @@ public class SemanticContext {
 
 	public SemanticContext(
 			IProblemRequestor problemRequestor, 
-			Parser parser,
 			Module module,
 			IJavaProject project,
 			WorkingCopyOwner owner,
@@ -152,7 +148,6 @@ public class SemanticContext {
 			CompilerConfiguration config,
 			ASTNodeEncoder encoder) throws JavaModelException {
 		this.problemRequestor = problemRequestor;
-		this.parser = parser;
 		this.Module_rootModule = module;
 		this.global = global;
 		this.project = project;
@@ -229,6 +224,16 @@ public class SemanticContext {
 	
 	public Dsymbol getCreator(ASTDmdNode node) {
 		return ASTDmdNode_creators.get(node);
+	}
+	
+	public final void setExtraModifiers(ASTDmdNode node, List<Modifier> modifiers) {
+		if (modifiers != null && !modifiers.isEmpty()) {
+			this.extraModifiers.put(node, modifiers);
+		}
+	}
+	
+	public final List<Modifier> getExtraModifiers(ASTDmdNode node) {
+		return extraModifiers.get(node);
 	}
 	
 	/*

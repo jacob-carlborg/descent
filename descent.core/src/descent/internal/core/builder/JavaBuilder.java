@@ -160,7 +160,7 @@ public class JavaBuilder extends IncrementalProjectBuilder {
 			module.moduleName = unit.getFullyQualifiedName();
 			
 			if (showSemanticErrors) {
-				CompilationUnitResolver.resolve(parser, module, javaProject, unit.getOwner(), parser.encoder, false /* don't analyze templates */);
+				CompilationUnitResolver.resolve(module, javaProject, unit.getOwner(), parser.encoder, false /* don't analyze templates */);
 			}
 			
 			associateTaskTags(file, parser);

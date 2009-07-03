@@ -296,7 +296,7 @@ public ISourceRange[] getJavadocRanges() throws JavaModelException {
 		// Build source ranges, but subtract 9 = "enumFoo{".length();
 		List<ISourceRange> sourceRanges = new ArrayList<ISourceRange>(1);
 		
-		List<Comment> preComments = parser.getPreComments(member);
+		List<Comment> preComments = module.getPreComments(member);
 		if (preComments != null) {
 			for(int i = preComments.size() - 1; i >= 0; i--) {
 				Comment ddoc = preComments.get(i);
@@ -307,7 +307,7 @@ public ISourceRange[] getJavadocRanges() throws JavaModelException {
 			}
 		}
 		
-		Comment postComment = parser.getPostComment(member);
+		Comment postComment = module.getPostComment(member);
 		if (postComment != null && postComment.isDDocComment()) {
 			sourceRanges.add(new SourceRange(start + postComment.start - 9,
 					postComment.length));

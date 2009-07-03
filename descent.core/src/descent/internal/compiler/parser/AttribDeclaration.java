@@ -139,19 +139,22 @@ public abstract class AttribDeclaration extends Dsymbol {
 	}
 	
 	protected final void semanticWithExtraModifiers(Dsymbol s, Modifier modifier, Scope sc, SemanticContext context) {
-		// Send extra modifiers to out children, so that they can report better problems
-		context.parser.setExtraModifiers(s, context.parser.getModifiers(this));
+		// Send extra modifiers to our children, so that they can report better problems
+		List<Modifier> thisModifiers = context.Module_rootModule.getModifiers(this);
+		List<Modifier> thisExtraModifiers = context.getExtraModifiers(this);
+		List<Modifier> sExtraModifiers = thisModifiers;
 		
-		List<Modifier> sExtraModifiers;
-		if ((sExtraModifiers = context.parser.getExtraModifiers(s)) == null) {
-			context.parser.setExtraModifiers(s, sExtraModifiers = new ArrayList<Modifier>());
+		if (sExtraModifiers == null) {
+			sExtraModifiers = new ArrayList<Modifier>();
 		}
-		if (context.parser.getExtraModifiers(this) != null) {
-			sExtraModifiers.addAll(context.parser.getExtraModifiers(this));
+		if (thisExtraModifiers != null) {
+			sExtraModifiers.addAll(thisExtraModifiers);
 		}
 		sExtraModifiers.add(modifier);
+		
+		context.setExtraModifiers(s, sExtraModifiers);
 		s.semantic(sc, context);
-		context.parser.setExtraModifiers(s, null);
+		context.setExtraModifiers(s, null);
 	}
 
 }

@@ -115,10 +115,9 @@ public class CompileTimeSemanticContext extends SemanticContext {
 	private int fDisabledStepping;
 
 	public CompileTimeSemanticContext(IProblemRequestor problemRequestor,
-			Parser parser,
 			Module module, IJavaProject project, WorkingCopyOwner owner,
 			Global global, CompilerConfiguration config, ASTNodeEncoder encoder, IDebugger debugger) throws JavaModelException {
-		super(problemRequestor, parser, module, project, owner, global, config, encoder);
+		super(problemRequestor, module, project, owner, global, config, encoder);
 		this.debugger = debugger;
 	}
 	

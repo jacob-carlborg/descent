@@ -46,13 +46,11 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 	private final static boolean STATS = false;
 	
 	public static class ParseResult {
-		public Parser parser;
 		public Module module;
 		public PublicScanner scanner;
 		public SemanticContext context;
 		public ASTNodeEncoder encoder;
-		public ParseResult(Parser parser, Module module, PublicScanner scanner, ASTNodeEncoder encoder) {
-			this.parser = parser;
+		public ParseResult(Module module, PublicScanner scanner, ASTNodeEncoder encoder) {
 			this.module = module;
 			this.scanner = scanner;
 			this.encoder = encoder;
@@ -186,7 +184,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		Module module = parser.parseModuleObj();
 		module.setSourceRange(0, source.length);
 		
-		return new ParseResult(parser, module, scanner, parser.encoder);
+		return new ParseResult(module, scanner, parser.encoder);
 	}
 	
 	public static ParseResult prepareForResolve(int apiLevel,
@@ -204,7 +202,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		
 		ParseResult result = parse(apiLevel, sourceUnit, options, recordLineSeparator, statementsRecovery, false, debugger != null);
 		result.module.moduleName = sourceUnit.getFullyQualifiedName();
-		result.context = getContext(result.parser, result.module, javaProject, owner, config, result.encoder, debugger);
+		result.context = getContext(result.module, javaProject, owner, config, result.encoder, debugger);
 		return result;
 	}
 	
@@ -264,33 +262,30 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		
 		ParseResult result = parse(apiLevel, sourceUnit, options, recordLineSeparator, statementsRecovery, false, debugger != null);
 		result.module.moduleName = sourceUnit.getFullyQualifiedName();
-		result.context = resolve(result.parser, result.module, javaProject, owner, result.encoder, analyzeTemplates, debugger);
+		result.context = resolve(result.module, javaProject, owner, result.encoder, analyzeTemplates, debugger);
 		return result;
 	}
 	
 	public static SemanticContext resolve(
-			final Parser parser,
 			final Module module, 
 			final IJavaProject project,
 			final WorkingCopyOwner owner,
 			final ASTNodeEncoder encoder) 
 		throws JavaModelException {
-		return resolve(parser, module, project, owner, encoder, true);
+		return resolve(module, project, owner, encoder, true);
 	}
 	
 	public static SemanticContext resolve(
-			final Parser parser,
 			final Module module, 
 			final IJavaProject project,
 			final WorkingCopyOwner owner,
 			final ASTNodeEncoder encoder,
 			final boolean analayzeTemplates) 
 		throws JavaModelException {
-		return resolve(parser, module, project, owner, encoder, analayzeTemplates, null);
+		return resolve(module, project, owner, encoder, analayzeTemplates, null);
 	}
 	
 	public static SemanticContext resolve(
-			final Parser parser,
 			final Module module, 
 			final IJavaProject project,
 			final WorkingCopyOwner owner,
@@ -304,11 +299,10 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			config.analyzeTemplates = false;
 		}
 		
-		return resolve(parser, module, project, owner, config, encoder, debugger);
+		return resolve(module, project, owner, config, encoder, debugger);
 	}
 	
 	private static SemanticContext resolve(
-			final Parser parser,
 			final Module module, 
 			final IJavaProject project,
 			final WorkingCopyOwner owner,
@@ -316,7 +310,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			final ASTNodeEncoder encoder,
 			final IDebugger debugger) throws JavaModelException {
 		
-		SemanticContext context = getContext(parser, module, project, owner, config, encoder, debugger);
+		SemanticContext context = getContext(module, project, owner, config, encoder, debugger);
 		
 		if (!RESOLVE) 
 			return context;
@@ -349,7 +343,6 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 	}
 	
 	private static SemanticContext getContext(
-			final Parser parser,
 			final Module module, 
 			final IJavaProject project,
 			final WorkingCopyOwner owner,
@@ -508,11 +501,11 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		
 		if (debugger == null) {
 			context = new SemanticContext(
-					problemRequestor, parser, module, project, owner,
+					problemRequestor, module, project, owner,
 					global, config, encoder);
 		} else {
 			context = new CompileTimeSemanticContext(
-					problemRequestor, parser, module, project, owner,
+					problemRequestor, module, project, owner,
 					global, config, encoder, debugger);
 		}
 		

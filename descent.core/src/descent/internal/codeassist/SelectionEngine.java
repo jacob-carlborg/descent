@@ -3,6 +3,7 @@ package descent.internal.codeassist;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 import descent.core.Flags;
 import descent.core.IJavaElement;
@@ -11,6 +12,7 @@ import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
 import descent.core.compiler.CharOperation;
 import descent.core.dom.CompilationUnitResolver;
+import descent.core.dom.FunctionDeclaration;
 import descent.internal.compiler.env.AccessRestriction;
 import descent.internal.compiler.env.ICompilationUnit;
 import descent.internal.compiler.impl.CompilerOptions;
@@ -33,6 +35,7 @@ import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.InterfaceDeclaration;
+import descent.internal.compiler.parser.InvariantDeclaration;
 import descent.internal.compiler.parser.Modifier;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.NewExp;
@@ -54,6 +57,7 @@ import descent.internal.compiler.parser.TypeStruct;
 import descent.internal.compiler.parser.TypeTypedef;
 import descent.internal.compiler.parser.TypedefDeclaration;
 import descent.internal.compiler.parser.UnionDeclaration;
+import descent.internal.compiler.parser.UnitTestDeclaration;
 import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.compiler.parser.VarExp;
 import descent.internal.compiler.parser.ast.AstVisitorAdapter;
@@ -83,12 +87,12 @@ public class SelectionEngine extends AstVisitorAdapter {
 	int offset;
 	int length;
 	ICompilationUnit unit;
-	SelectionParser parser;
 	Module module;
 	SemanticContext context;
 	ASTNodeEncoder encoder;
 	List<IJavaElement> selectedElements;
 	InternalSignature internalSignature;
+	Stack<FuncDeclaration> insideFuncs = new Stack<FuncDeclaration>();
 
 	public SelectionEngine(Map settings, IJavaProject javaProject,
 			WorkingCopyOwner owner) {
@@ -109,7 +113,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 		try {
 			char[] contents = sourceUnit.getContents();
 
-			parser = new SelectionParser(
+			SelectionParser parser = new SelectionParser(
 					javaProject.getApiLevel(),
 					contents, 
 					sourceUnit.getFileName());
@@ -194,7 +198,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 	private void doSemantic() {
 		if (context == null) {
 			try {
-				context = CompilationUnitResolver.resolve(parser, module, javaProject,
+				context = CompilationUnitResolver.resolve(module, javaProject,
 						owner, encoder);
 			} catch (JavaModelException e) {
 				Util.log(e);
@@ -246,6 +250,30 @@ public class SelectionEngine extends AstVisitorAdapter {
 	}
 
 	// >>> Speedups
+	
+	@Override
+	public boolean visit(UnitTestDeclaration node) {
+		insideFuncs.push(node);
+		return super.visit(node);
+	}
+	
+	@Override
+	public void endVisit(UnitTestDeclaration node) {
+		insideFuncs.pop();
+		super.endVisit(node);
+	}
+	
+	@Override
+	public boolean visit(InvariantDeclaration node) {
+		insideFuncs.push(node);
+		return super.visit(node);
+	}
+	
+	@Override
+	public void endVisit(InvariantDeclaration node) {
+		insideFuncs.pop();
+		super.endVisit(node);
+	}
 
 	@Override
 	public boolean visit(ClassDeclaration node) {
@@ -290,7 +318,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 		
 		// See if the "auto" modifier is selected
 		List<Modifier> modifiers;
-		if ((modifiers = parser.getModifiers(node)) != null) {
+		if ((modifiers = module.getModifiers(node)) != null) {
 			for(Modifier modifier : modifiers) {
 				if (modifier.tok == TOK.TOKauto && isInRange(modifier)) {
 					doSemantic();
@@ -574,7 +602,8 @@ public class SelectionEngine extends AstVisitorAdapter {
 	}
 
 	private boolean isLocal(descent.internal.compiler.parser.Declaration node) {
-		return node.effectiveParent() instanceof FuncDeclaration;
+		return (node.effectiveParent() instanceof FuncDeclaration)
+			|| !insideFuncs.isEmpty();
 	}
 
 	private void add(VarDeclaration node) {
@@ -643,7 +672,14 @@ public class SelectionEngine extends AstVisitorAdapter {
 	}
 
 	private void addLocal(Declaration node, long modifiers) {
-		FuncDeclaration parent = (FuncDeclaration) node.effectiveParent();
+		FuncDeclaration parent;
+		
+		if (node.effectiveParent() != null) {
+			parent = (FuncDeclaration) node.effectiveParent();	
+		} else {
+			parent = insideFuncs.peek();
+		}
+		
 		boolean found = addBinarySearch(parent);
 		if (!found) {
 			return;

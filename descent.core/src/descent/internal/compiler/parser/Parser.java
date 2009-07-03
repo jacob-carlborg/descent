@@ -33,10 +33,8 @@ import static descent.internal.compiler.parser.Type.MODshared;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.StringTokenizer;
 
 import descent.core.compiler.CharOperation;
@@ -180,16 +178,6 @@ public class Parser extends Lexer {
 	private boolean appendLeadingComments = true;
 	
 	private LINK linkage = LINKd;
-	
-	// Comments associated to nodes (anot just ddoc)
-	private final Map<ASTDmdNode, List<Comment>> preComments = new HashMap<ASTDmdNode, List<Comment>>();
-	private final Map<ASTDmdNode, Comment> postComments = new HashMap<ASTDmdNode, Comment>();
-	
-	// Modifiers associated to nodes
-	private final Map<ASTDmdNode, List<Modifier>> modifiers = new HashMap<ASTDmdNode, List<Modifier>>();
-	
-	// Modifiers assigned from out parent, to better report problems
-	private final Map<ASTDmdNode, List<Modifier>> extraModifiers = new HashMap<ASTDmdNode, List<Modifier>>();
 
 	public Parser(int apiLevel, String source) {
 		this(apiLevel, source.toCharArray(), 0, source.length(), null);
@@ -424,7 +412,7 @@ public class Parser extends Lexer {
 				md = newModuleDeclaration(a, id, safe);
 				md.setSourceRange(start, token.ptr + token.sourceLen - start);
 				md.safe = safe;
-				preComments.put(md, moduleDocComments);
+				setPreComments(md, moduleDocComments);
 
 				if (token.value != TOKsemicolon) {
 					parsingErrorInsertTokenAfter(prevToken, ";");
@@ -976,7 +964,7 @@ public class Parser extends Lexer {
 					((TemplateDeclaration) s).members.get(0).setSourceRange(s.start, s.length);
 				}
 				
-				preComments.put(s, lastComments);
+				setPreComments(s, lastComments);
 				if (attachLeadingComments) {
 					attachLeadingComments(s);
 				}
@@ -1148,7 +1136,7 @@ public class Parser extends Lexer {
 			s = new StorageClassDeclaration(stc, a, modifier, isSingle[0], isColon);
 			modifiers.remove(modifier);
 			
-			this.modifiers.put(s, modifiers);
+			setModifiers(s, modifiers);
 		} else {
 			VarDeclaration previous = null;
 	
@@ -1213,7 +1201,7 @@ public class Parser extends Lexer {
 				
 				s = new StorageClassDeclaration(stc, a, modifier, isSingle[0], isColon);
 				modifiers.remove(modifier);
-				this.modifiers.put(s, modifiers);
+				setModifiers(s, modifiers);
 			}
 		}
 		
@@ -1295,12 +1283,13 @@ public class Parser extends Lexer {
 		if (modifiers == null || modifiers.size() == 0)
 			return;
 		
-		List<Modifier> mods = this.modifiers.get(node);
+		List<Modifier> mods = getModifiers(node);
 		if (mods == null) {
-			mods = new ArrayList<Modifier>();
-			this.modifiers.put(node, mods);
+			mods = new ArrayList<Modifier>(modifiers);
+			setModifiers(node, mods);
+		} else {
+			mods.addAll(modifiers);
 		}
-		mods.addAll(modifiers);
 	}
 
 	private Dsymbols parseBlock() {
@@ -1877,7 +1866,7 @@ public class Parser extends Lexer {
 					varargs = 2;
 					
 					a = newArgument(storageClass, at, ai, ae);
-					this.modifiers.put(a, modifiers);
+					setModifiers(a, modifiers);
 					a.setSourceRange(firstTokenStart, prevToken.ptr + prevToken.sourceLen - firstTokenStart);
 					arguments.add(a);
 					nextToken();
@@ -1886,7 +1875,7 @@ public class Parser extends Lexer {
 				
 				if (at != null || ai != null || ae != null) {
 					a = newArgument(storageClass, at, ai, ae);
-					this.modifiers.put(a, modifiers);
+					setModifiers(a, modifiers);
 					a.setSourceRange(firstTokenStart, prevToken.ptr + prevToken.sourceLen - firstTokenStart);
 					arguments.add(a);
 				}
@@ -2068,7 +2057,7 @@ public class Parser extends Lexer {
 					varargs = 2;
 					
 					a = newArgument(storageClass, at, ai, ae);
-					this.modifiers.put(a, modifiers);
+					setModifiers(a, modifiers);
 					a.setSourceRange(firstTokenStart, prevToken.ptr + prevToken.sourceLen - firstTokenStart);
 					arguments.add(a);
 					nextToken();
@@ -2077,7 +2066,7 @@ public class Parser extends Lexer {
 				
 				if (at != null || ai != null || ae != null) {
 					a = newArgument(storageClass, at, ai, ae);
-					this.modifiers.put(a, modifiers);
+					setModifiers(a, modifiers);
 					a.setSourceRange(firstTokenStart, prevToken.ptr + prevToken.sourceLen - firstTokenStart);
 					arguments.add(a);
 				}
@@ -2219,7 +2208,7 @@ public class Parser extends Lexer {
 				if (em != null) {
 					e.addMember(em);
 					
-					this.preComments.put(em, lastComments);
+					this.setPreComments(em, lastComments);
 					
 					if (token.value == TOKrcurly) {
 						;
@@ -3102,7 +3091,7 @@ public class Parser extends Lexer {
 
 				Import prev = s;
 				s = newImport(loc(), a, id, aliasid, isstatic);
-				this.preComments.put(s, lastComments);
+				this.setPreComments(s, lastComments);
 				s.first = prev == null;
 				//decldefs.add(s);
 				if (prev == null) {
@@ -3912,7 +3901,7 @@ public class Parser extends Lexer {
 				check(TOKthis);
 				check(TOKsemicolon);
 				s.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
-				this.preComments.put(s, lastComments);
+				this.setPreComments(s, lastComments);
 				a = new Dsymbols();
 				a.add(s);
 				return a;
@@ -4060,7 +4049,7 @@ public class Parser extends Lexer {
 					}
 					
 					nextToken();
-					this.preComments.put(v, lastComments);
+					this.setPreComments(v, lastComments);
 					attachLeadingComments(v);
 				} else if (token.value == TOKcomma) {
 					v.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
@@ -4093,7 +4082,7 @@ public class Parser extends Lexer {
 			s.storage_class = storage_class;
 			addModifiers(s, modifiers);
 			a.add(s);
-			this.preComments.put(s, lastComments);
+			this.setPreComments(s, lastComments);
 			return a;
 		}
 		
@@ -4221,7 +4210,7 @@ public class Parser extends Lexer {
 					}
 					
 					nextToken();
-					this.preComments.put(v, lastComments);
+					this.setPreComments(v, lastComments);
 					attachLeadingComments(v);
 					break;
 
@@ -4286,8 +4275,8 @@ public class Parser extends Lexer {
 					tempdecl.wrapper = true;
 					s = tempdecl;
 				}
-				this.modifiers.put(s, modifiers);
-				this.preComments.put(s, lastComments);
+				setModifiers(s, modifiers);
+				this.setPreComments(s, lastComments);
 				attachLeadingComments(s);
 				a.add(s);
 			} else {
@@ -4303,7 +4292,7 @@ public class Parser extends Lexer {
 				first = false;
 				
 				v.storage_class = storage_class;
-				this.modifiers.put(v, modifiers);
+				setModifiers(v, modifiers);
 				a.add(v);
 				
 				if (previousVar != null) {
@@ -4321,7 +4310,7 @@ public class Parser extends Lexer {
 					}
 					
 					nextToken();
-					this.preComments.put(v, lastComments);
+					this.setPreComments(v, lastComments);
 					attachLeadingComments(v);
 					break;
 
@@ -4897,7 +4886,7 @@ public class Parser extends Lexer {
 			Dsymbol d = parseAggregate();
 			if (d != null) {
 				d.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
-				this.preComments.put(d, lastComments);
+				this.setPreComments(d, lastComments);
 				s = newDeclarationStatement(loc(), d);
 			}
 			break;
@@ -4935,7 +4924,7 @@ public class Parser extends Lexer {
 				d = parseEnum();
 				if (d != null) {
 					d.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
-					this.preComments.put(d, lastComments);
+					this.setPreComments(d, lastComments);
 					s = newDeclarationStatement(loc(), d);
 				}
 			}
@@ -5126,7 +5115,7 @@ public class Parser extends Lexer {
 						nextToken();
 						// goto Larg;
 						a = new Argument(storageClass, at, ai, null);
-						this.modifiers.put(a, modifiers);
+						setModifiers(a, modifiers);
 						a.setSourceRange(argumentStart, prevToken.ptr + prevToken.sourceLen - argumentStart);
 						arguments.add(a);
 						if (token.value == TOKcomma) {
@@ -5213,7 +5202,7 @@ public class Parser extends Lexer {
 					Token t2 = peek(token);
 					if (t2.value == TOKassign) {
 						arg = new Argument(apiLevel >= D2 ? 0 : STCin, null, newIdentifierExp(), null);
-						this.modifiers.put(arg, modifiers);
+						setModifiers(arg, modifiers);
 						arg.setSourceRange(autoTokenStart, token.ptr + token.sourceLen - autoTokenStart);
 						
 						nextToken();
@@ -5855,7 +5844,7 @@ public class Parser extends Lexer {
 			Statements as = new Statements(a.size());
 			for (int i = 0; i < a.size(); i++) {
 				Dsymbol d = (Dsymbol) a.get(i);
-				this.preComments.put(d, lastComments);
+				this.setPreComments(d, lastComments);
 				s[0] = newDeclarationStatement(loc(), d);
 				as.add(s[0]);
 			}
@@ -5863,7 +5852,7 @@ public class Parser extends Lexer {
 			s[0] = newManyVarsBlock(as);
 		} else if (a.size() == 1) {
 			Dsymbol d = (Dsymbol) a.get(0);
-			this.preComments.put(d, lastComments);
+			this.setPreComments(d, lastComments);
 			s[0] = newDeclarationStatement(loc(), d);
 		} else {
 			parsingErrorDeleteToken(token);
@@ -8522,7 +8511,7 @@ public class Parser extends Lexer {
 	
 	private void attachLeadingComments(ASTDmdNode declaration) {
 		if (prevToken.leadingComment != null) {
-			this.postComments.put(declaration, prevToken.leadingComment);
+			this.setPostComment(declaration, prevToken.leadingComment);
 		}
 	}
 	
@@ -9283,30 +9272,22 @@ public class Parser extends Lexer {
 	protected void inComment() {
 	}
 	
-	public final List<Comment> getPreComments(ASTDmdNode node) {
-		return preComments.get(node);
+	private final void setPreComments(ASTDmdNode node, List<Comment> comms) {
+		this.module.setPreComments(node, comms);
 	}
 	
-	public final Comment getPostComment(ASTDmdNode node) {
-		return postComments.get(node);
+	private final void setPostComment(ASTDmdNode node, Comment comment) {
+		module.setPostComment(node, comment);
 	}
 	
-	public final void setModifiers(ASTDmdNode node, List<Modifier> modifiers) {
-		this.modifiers.put(node, modifiers);
+	public final void setModifiers(ASTDmdNode node, List<Modifier> mods) {
+		module.setModifiers(node, mods);
 	}
 	
-	public final List<Modifier> getModifiers(ASTDmdNode node) {
-		return modifiers.get(node);
+	private final List<Modifier> getModifiers(ASTDmdNode node) {
+		return module.getModifiers(node);
 	}
 	
-	public final void setExtraModifiers(ASTDmdNode node, List<Modifier> modifiers) {
-		this.extraModifiers.put(node, modifiers);
-	}
-	
-	public final List<Modifier> getExtraModifiers(ASTDmdNode node) {
-		return extraModifiers.get(node);
-	}
-
 	private int uniqueIdCount = 0;
 	private IdentifierExp uniqueId(String prefix) {
 		return uniqueId(prefix, uniqueIdCount++);

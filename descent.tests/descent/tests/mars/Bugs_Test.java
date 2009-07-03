@@ -308,7 +308,7 @@ public class Bugs_Test extends Parser_Test {
 		ParseResult parseResult = getParseResult(s, AST.D1);
 		Module module = parseResult.module;
 		ASTDmdNode node = (ASTDmdNode) module.members.get(1); // SEMANTIC
-		assertEquals(0, parseResult.parser.getPreComments(node).size());
+		assertEquals(0, module.getPreComments(node).size());
 	}
 	
 	public void testBugFoundByBrunoMedeiros2() {
@@ -325,7 +325,7 @@ public class Bugs_Test extends Parser_Test {
 		ParseResult parseResult = getParseResult(s, AST.D1);
 		Module module = parseResult.module;
 		ASTDmdNode node = (ASTDmdNode) module.members.get(1); // SEMANTIC
-		assertEquals(1, parseResult.parser.getPreComments(node).size());
+		assertEquals(1, module.getPreComments(node).size());
 	}
 	
 	public void testTicket25() {
@@ -392,7 +392,7 @@ public class Bugs_Test extends Parser_Test {
 		Module m = parseResult.module;
 		
 		ASTDmdNode node = (ASTDmdNode) m.members.get(1);
-		assertEquals(0, parseResult.parser.getPreComments(node).size());
+		assertEquals(0, m.getPreComments(node).size());
 	}
 	
 	public void testTicket108() {
