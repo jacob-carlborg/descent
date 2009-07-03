@@ -1,8 +1,8 @@
 package descent.internal.compiler.parser;
 
-import descent.core.compiler.CharOperation;
-import descent.core.compiler.IProblem;
 import static descent.internal.compiler.parser.ASTDmdNode.EXP_CANT_INTERPRET;
+import static descent.internal.compiler.parser.ASTDmdNode.expType;
+import static descent.internal.compiler.parser.MATCH.MATCHconst;
 import static descent.internal.compiler.parser.TOK.TOKadd;
 import static descent.internal.compiler.parser.TOK.TOKaddress;
 import static descent.internal.compiler.parser.TOK.TOKarrayliteral;
@@ -16,7 +16,6 @@ import static descent.internal.compiler.parser.TOK.TOKnull;
 import static descent.internal.compiler.parser.TOK.TOKstring;
 import static descent.internal.compiler.parser.TOK.TOKstructliteral;
 import static descent.internal.compiler.parser.TOK.TOKsymoff;
-
 import static descent.internal.compiler.parser.TY.Tarray;
 import static descent.internal.compiler.parser.TY.Tbool;
 import static descent.internal.compiler.parser.TY.Tchar;
@@ -25,6 +24,8 @@ import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Tstruct;
 import static descent.internal.compiler.parser.TY.Tvoid;
 import static descent.internal.compiler.parser.TY.Twchar;
+import descent.core.compiler.CharOperation;
+import descent.core.compiler.IProblem;
 
 /**
  * A class to hold constant-folding functions used by the interpreter. The
@@ -819,7 +820,7 @@ public class Constfold {
 				// Concatenate the strings
 				StringExp es1 = (StringExp) e1;
 				StringExp es;
-				int len = es1.len + 1;
+//				int len = es1.len + 1;
 				int sz = es1.sz;
 
 				/*
@@ -856,8 +857,13 @@ public class Constfold {
 				t = es2.type;
 				es.type = type;
 				e = es;
-			} else if (e1.op == TOKarrayliteral && e2.op == TOKarrayliteral
-					&& e1.type.equals(e2.type)) {
+			} else if (
+				(context.isD1() && (
+					e1.op == TOKarrayliteral && e2.op == TOKarrayliteral
+					&& e1.type.equals(e2.type))) ||
+				(!context.isD1() && e1.op == TOKarrayliteral && e2.op == TOKarrayliteral &&
+						t1.nextOf().equals(t2.nextOf())
+						)) {
 				// Concatenate the arrays
 				ArrayLiteralExp es1 = (ArrayLiteralExp) e1;
 				ArrayLiteralExp es2 = (ArrayLiteralExp) e2;
@@ -870,9 +876,15 @@ public class Constfold {
 				e = ale;
 
 				if (type.toBasetype(context).ty == Tsarray) {
-					e.type = new TypeSArray(e1.type.toBasetype(context).next,
-							new IntegerExp(Loc.ZERO, es1.elements.size(),
-									Type.tindex), context.encoder);
+					if (context.isD1()) {
+						e.type = new TypeSArray(e1.type.toBasetype(context).next,
+								new IntegerExp(Loc.ZERO, es1.elements.size(),
+										Type.tindex), context.encoder);
+					} else {
+						e.type = new TypeSArray(t1.nextOf(),
+								new IntegerExp(loc, es1.elements.size(),
+										Type.tindex), context.encoder);
+					}
 					e.type = e.type.semantic(loc, null, context);
 				} else {
 					e.type = type;
@@ -1161,7 +1173,43 @@ public class Constfold {
 			real_t r1;
 			real_t r2;
 
-			if (e1.type.isreal() || e1.type.isimaginary()) {
+		    if (!context.isD1() && e1.op == TOKstring && e2.op == TOKstring)
+		    {	StringExp es1 = (StringExp)e1;
+			StringExp es2 = (StringExp)e2;
+			int sz = es1.sz;
+			assert(sz == es2.sz);
+
+			int len = es1.len;
+			if (es2.len < len)
+			    len = es2.len;
+			
+			int cmp = new String(es1.string).compareTo(new String(es2.string));
+			if (cmp == 0)
+			    cmp = es1.len - es2.len;
+
+			switch (op)
+			{
+			    case TOKlt:	n = cmp <  0 ? 1 : 0;	break;
+			    case TOKle:	n = cmp <= 0 ? 1 : 0;	break;
+			    case TOKgt:	n = cmp >  0 ? 1 : 0;	break;
+			    case TOKge:	n = cmp >= 0 ? 1 : 0;	break;
+
+			    case TOKleg:   n = 1;		break;
+			    case TOKlg:	   n = cmp != 0 ? 1 : 0;	break;
+			    case TOKunord: n = 0;		break;
+			    case TOKue:	   n = cmp == 0 ? 1 : 0;	break;
+			    case TOKug:	   n = cmp >  0 ? 1 : 0;	break;
+			    case TOKuge:   n = cmp >= 0 ? 1 : 0;	break;
+			    case TOKul:	   n = cmp <  0 ? 1 : 0;	break;
+			    case TOKule:   n = cmp <= 0 ? 1 : 0;	break;
+
+			    default:
+			    	throw new IllegalStateException();
+			}
+		    }
+		    else if (!context.isD1() && !e1.isConst() || !e2.isConst())
+			return EXP_CANT_INTERPRET;
+		    else if (e1.type.isreal() || e1.type.isimaginary()) {
 				if (e1.type.isreal()) {
 					r1 = e1.toReal(context);
 					r2 = e2.toReal(context);
@@ -1454,13 +1502,39 @@ public class Constfold {
 			SemanticContext context) {
 		Expression e = EXP_CANT_INTERPRET;
 		Loc loc = e1.loc;
+		
+		Type typeb = null;
+		if (context.isD1()) {
+			if (type.equals(e1.type) && to.equals(type)) {
+				return e1;
+			}
 
-		if (type.equals(e1.type) && to.equals(type)) {
-			return e1;
-		}
+			if (!e1.isConst()) {
+				return EXP_CANT_INTERPRET;
+			}
+		} else {
+			if (e1.type.equals(type) && type.equals(to))
+				return e1;
+			if (e1.type.implicitConvTo(to, context).ordinal() >= MATCHconst
+					.ordinal()
+					|| to.implicitConvTo(e1.type, context).ordinal() >= MATCHconst
+							.ordinal())
+				return expType(to, e1, context);
 
-		if (!e1.isConst()) {
-			return EXP_CANT_INTERPRET;
+			Type tb = to.toBasetype(context);
+			typeb = type.toBasetype(context);
+
+			if (e1.op == TOKstring) {
+				if (tb.ty == Tarray
+						&& typeb.ty == Tarray
+						&& tb.nextOf().size(context) == typeb.nextOf().size(
+								context)) {
+					return expType(to, e1, context);
+				}
+			}
+
+			if (!e1.isConst())
+				return EXP_CANT_INTERPRET;
 		}
 
 		Type tb = to.toBasetype(context);
@@ -1472,7 +1546,7 @@ public class Constfold {
 				integer_t result;
 				real_t r = e1.toReal(context);
 
-				switch (type.toBasetype(context).ty) {
+				switch (context.isD1() ? type.toBasetype(context).ty : typeb.ty) {
 				case Tint8:
 					result = NumberUtils.castToInt8(r);
 					break;
