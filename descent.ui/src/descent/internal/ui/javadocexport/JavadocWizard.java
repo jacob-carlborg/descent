@@ -58,6 +58,7 @@ import descent.core.dom.Declaration;
 import descent.core.dom.EnumDeclaration;
 import descent.core.dom.FunctionDeclaration;
 import descent.core.dom.IBinding;
+import descent.core.dom.ITypeBinding;
 import descent.core.dom.TemplateDeclaration;
 import descent.core.dom.TypedefDeclaration;
 import descent.core.dom.TypedefDeclarationFragment;
@@ -380,14 +381,9 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 			String[] ids = element.getElementName().split("\\.");
 			
 			out.write("<li><a href=\"");
-			for (int i = 0; i < ids.length; i++) {
-				if (i != 0) {
-					out.write(File.separatorChar);
-				}
-				out.write(ids[i]);
-			}
-			out.write("/package-frame.html");
+			writePackageFrameHref(ids, out);
 			out.write("\" target=\"packageFrame\">");
+			
 			for (int i = 0; i < ids.length; i++) {
 				if (i != 0) {
 					out.write('.');
@@ -397,6 +393,21 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 			out.write("</li>\r\n");
 			return;
 		}
+	}
+	
+	private static void writePackageFrameHref(IJavaElement element, Writer out) throws IOException {
+		String[] ids = element.getElementName().split("\\.");
+		writePackageFrameHref(ids, out);
+	}
+	
+	private static void writePackageFrameHref(String[] ids, Writer out) throws IOException {
+		for (int i = 0; i < ids.length; i++) {
+			if (i != 0) {
+				out.write(File.separatorChar);
+			}
+			out.write(ids[i]);
+		}
+		out.write("/package-frame.html");
 	}
 	
 	private void generateAllSymbolsFrame() throws IOException, JavaModelException {
@@ -502,7 +513,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 
 	private void writeBindedNode(Writer out, ASTNode node, IBinding binding) throws IOException {
 		out.write("<li><a href=\"");
-		out.write(getLink(node));
+		writeHref(node, out);
 		out.write("\" target=\"classFrame\">");
 		out.write(getName(node));
 		out.write("</a>: ");		
@@ -516,7 +527,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 			out.write("<ul class=\"symbols\">\r\n");
 			for(ASTNode node : nodes) {
 				out.write("<li><a href=\"");
-				out.write(getLink(node));
+				writeHref(node, out);
 				out.write("\" target=\"classFrame\">");
 				out.write(getName(node));
 				out.write("</a></li>\r\n");
@@ -533,7 +544,82 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 	}
 	
 	private void writeBinding(IBinding binding, Writer out) throws IOException {
+		switch(binding.getKind()) {
+		case IBinding.TYPE:
+			writeBinding((ITypeBinding) binding, out);
+			break;
+		}
+	}
+	
+	private void writeBinding(ITypeBinding binding, Writer out) throws IOException {
+		if (binding.isPrimitive()) {
+			out.write(binding.getName());
+		} else if (binding.isPointer()) {
+			writeBinding(binding.getComponentType(), out);
+			
+			if (binding.getComponentType().getKind() == IBinding.TYPE &&
+					((ITypeBinding) binding.getComponentType()).isFunction()) {
+				
+			} else {
+				out.write('*');
+			}
+		} else if (binding.isAssociativeArray()) {
+			writeBinding(binding.getValueType(), out);
+			out.write('[');
+			writeBinding(binding.getKeyType(), out);
+			out.write(']');
+		} else if (binding.isDelegate()) {
+			writeBinding(binding.getReturnType(), out);
+			out.write(" delegate(");
+			for (int i = 0; i < binding.getParametersTypes().length; i++) {
+				if (i != 0)
+					out.write(", ");
+				writeBinding(binding.getParametersTypes()[i], out);
+			}
+			out.write(')');
+		} else if (binding.isDynamicArray()) {
+			writeBinding(binding.getComponentType(), out);
+			out.write('[');
+			out.write(']');
+		} else if (binding.isFunction()) {
+			writeBinding(binding.getReturnType(), out);
+			out.write(" function(");
+			for (int i = 0; i < binding.getParametersTypes().length; i++) {
+				if (i != 0)
+					out.write(", ");
+				writeBinding(binding.getParametersTypes()[i], out);
+			}
+			out.write(')');
+		} else if (binding.isSlice()) {
+			writeBinding(binding.getComponentType(), out);
+			out.write('[');
+			out.write(String.valueOf(binding.getLowerBound()));
+			out.write(" .. ");
+			out.write(String.valueOf(binding.getUpperBound()));
+			out.write(']');
+		} else if (binding.isStaticArray()) {
+			writeBinding(binding.getComponentType(), out);
+			out.write('[');
+			out.write(String.valueOf(binding.getDimension()));
+			out.write(']');
+		} else if (binding.isClass() || binding.isStruct() || binding.isInterface() || binding.isUnion() || binding.isEnum()) {
+			writeLink(binding, out);
+		} else if (binding.isTemplate()) {
+			// TODO
+			writeLink(binding, out);
+		}
+	}
+
+	private void writeLink(ITypeBinding binding, Writer out) throws IOException {
+		out.write("<a href=\"");
+		writeHref(binding, out);
+		out.write("\" target=\"classFrame\">");
 		out.write(binding.getName());
+		out.write("</a>");
+	}
+
+	private void writeHref(ITypeBinding binding, Writer out) throws IOException {
+		writeHref(binding.getJavaElement(), binding.getName(), out);
 	}
 
 	private static String getName(ASTNode decl) {
@@ -557,23 +643,18 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		}
 	}
 	
-	private static String getLink(ASTNode decl) {
+	private static void writeHref(ASTNode decl, Writer out) throws IOException {
 		CompilationUnit unit = (CompilationUnit) decl.getRoot();
-		ICompilationUnit cunit = (ICompilationUnit) unit.getJavaElement();
-		IPackageFragment pack = (IPackageFragment) cunit.getParent();
+		IJavaElement element = unit.getJavaElement();
+		writeHref(element, getName(decl), out);
+	}
+	
+	private static void writeHref(IJavaElement element, String name, Writer out) throws IOException {
+		IPackageFragment pack = (IPackageFragment) element.getAncestor(IJavaElement.PACKAGE_FRAGMENT);
 		
-		String[] ids = pack.getElementName().split("\\.");
-		
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < ids.length; i++) {
-			if (i != 0)
-				sb.append(File.separatorChar);
-			sb.append(ids[i]);
-		}
-		sb.append(File.separatorChar);
-		sb.append(getName(decl));
-		sb.append(".html");
-		return sb.toString();
+		writePackageFrameHref(pack, out);
+		out.write('#');
+		out.write(name);
 	}
 	
 	private void collect(IJavaElement[] elements, Set<VariableDeclarationFragment> variables, Set<AliasDeclarationFragment> aliases, Set<TypedefDeclarationFragment> typedefs, Set<EnumDeclaration> enums, Set<AggregateDeclaration> classes, Set<AggregateDeclaration> interfaces, Set<AggregateDeclaration> structs, Set<AggregateDeclaration> unions, Set<TemplateDeclaration> templates, Set<FunctionDeclaration> functions) throws JavaModelException {
@@ -654,7 +735,9 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 				".symbols li { white-space: nowrap; }\r\n" +
 				".symbolType { font-weight:bold; }\r\n" +
 				".allSymbolsTitle { font-weight:bold; }\r\n" +
-				".packagesTitle { margin-top:4px; font-weight:bold; }\r\n");
+				".packagesTitle { margin-top:4px; font-weight:bold; }\r\n" +
+				"a { text-decoration:none; }\r\n" +
+				"a:hover { text-decoration:underline}\r\n");
 		out.close();
 	}
 	
