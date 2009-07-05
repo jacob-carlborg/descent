@@ -1,12 +1,10 @@
 package descent.internal.ui.javadocexport;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -15,24 +13,16 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
-
-import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.debug.core.DebugEvent;
+import org.eclipse.debug.core.DebugPlugin;
+import org.eclipse.debug.core.IDebugEventSetListener;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
@@ -40,34 +30,35 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
-
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
-import org.eclipse.debug.core.DebugEvent;
-import org.eclipse.debug.core.DebugPlugin;
-import org.eclipse.debug.core.IDebugEventSetListener;
-import org.eclipse.debug.core.ILaunch;
-import org.eclipse.debug.core.ILaunchConfigurationType;
-import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-import org.eclipse.debug.core.ILaunchManager;
-import org.eclipse.debug.core.Launch;
-import org.eclipse.debug.core.model.IProcess;
-
-import org.eclipse.debug.ui.IDebugUIConstants;
-import org.osgi.framework.Bundle;
-
+import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
-
+import descent.core.IParent;
+import descent.core.JavaModelException;
+import descent.core.dom.AST;
+import descent.core.dom.ASTNode;
+import descent.core.dom.AggregateDeclaration;
+import descent.core.dom.AliasDeclaration;
+import descent.core.dom.AliasDeclarationFragment;
+import descent.core.dom.CompilationUnit;
+import descent.core.dom.Declaration;
+import descent.core.dom.EnumDeclaration;
+import descent.core.dom.FunctionDeclaration;
+import descent.core.dom.TemplateDeclaration;
+import descent.core.dom.TypedefDeclaration;
+import descent.core.dom.TypedefDeclarationFragment;
+import descent.core.dom.VariableDeclaration;
+import descent.core.dom.VariableDeclarationFragment;
 import descent.internal.corext.util.Messages;
-
-import descent.launching.IJavaLaunchConfigurationConstants;
-
-import descent.ui.JavaUI;
-
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.JavaPluginImages;
 import descent.internal.ui.actions.OpenBrowserUtil;
@@ -76,6 +67,7 @@ import descent.internal.ui.javaeditor.EditorUtility;
 import descent.internal.ui.refactoring.RefactoringSaveHelper;
 import descent.internal.ui.util.ExceptionHandler;
 import descent.internal.ui.util.PixelConverter;
+import descent.ui.JavaUI;
 
 public class JavadocWizard extends Wizard implements IExportWizard {
 
@@ -268,13 +260,16 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 			// 1. Generate frameset in index.html
 			generateIndex();
 			
-			// 2. Generate packages list
-			generatePackagesList();
-			
-			// 3. Generate stylesheet
+			// 2. Generate stylesheet
 			generateStylesheet();
 			
-		} catch (IOException e) {
+			// 3. Generate packages list
+			generatePackagesList();
+			
+			// 4. Generate all symbols frame
+			generateAllSymbolsFrame();
+			
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return true;
@@ -282,7 +277,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 	}
 
 	private void generateIndex() throws IOException {
-		BufferedWriter out = new BufferedWriter(new FileWriter(new File(fDestination.toOSString(), "index.html")));
+		Writer out = writerFor("index.html");
 		out.write("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Frameset//EN\" \"http://www.w3.org/TR/html4/frameset.dtd\">\r\n" + 
 				"<!--NewPage-->\r\n" + 
 				"<HTML>\r\n" + 
@@ -327,7 +322,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 	}
 	
 	private void generatePackagesList() throws IOException {
-		BufferedWriter out = new BufferedWriter(new FileWriter(new File(fDestination.toOSString(), "overview-frame.html")));
+		Writer out = writerFor("overview-frame.html");
 		out.write(
 			"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\r\n" + 
 			"<HTML>\r\n" + 
@@ -361,7 +356,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 			"<TABLE BORDER=\"0\" WIDTH=\"100%\" SUMMARY=\"\">\r\n" + 
 			"<TR>\r\n" + 
 			"\r\n" + 
-			"<TD NOWRAP><FONT CLASS=\"FrameItemFont\"><A HREF=\"allclasses-frame.html\" target=\"packageFrame\">All Classes</A></FONT>\r\n" + 
+			"<TD NOWRAP><FONT CLASS=\"FrameItemFont\"><A HREF=\"allsymbols-frame.html\" target=\"packageFrame\">All Symbols</A></FONT>\r\n" + 
 			"<P>\r\n" + 
 			"<FONT size=\"+1\" CLASS=\"FrameHeadingFont\">\r\n" + 
 			"Packages</FONT>\r\n" + 
@@ -393,13 +388,13 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		out.close();
 	}
 
-	private void generatePackagesList(IJavaElement[] elements, BufferedWriter out) throws IOException {
+	private void generatePackagesList(IJavaElement[] elements, Writer out) throws IOException {
 		for(IJavaElement element : elements) {
 			generatePackagesList(element, out);
 		}
 	}
 
-	private void generatePackagesList(IJavaElement element, BufferedWriter out) throws IOException {
+	private void generatePackagesList(IJavaElement element, Writer out) throws IOException {
 		if (element.getElementType() == IJavaElement.PACKAGE_FRAGMENT) {
 			String[] ids = element.getElementName().split("\\.");
 			
@@ -424,8 +419,141 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		}
 	}
 	
+	private void generateAllSymbolsFrame() throws IOException, JavaModelException {
+		Writer out = writerFor("allsymbols-frame.html");
+		out.write(
+			"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\r\n" + 
+			"<HTML>\r\n" + 
+			"<HEAD>\r\n" + 
+			"<meta name=\"collection\" content=\"exclude\">\r\n" + 
+			"\r\n" + 
+			"<TITLE>\r\n" + 
+			"All Symbols (");
+		out.write(fStore.getTitle());
+		out.write("</TITLE>\r\n" + 
+			"\r\n" + 
+			"\r\n" + 
+			"\r\n" + 
+			"<LINK REL =\"stylesheet\" TYPE=\"text/css\" HREF=\"stylesheet.css\" TITLE=\"Style\">\r\n" + 
+			"\r\n" + 
+			"\r\n" + 
+			"</HEAD>\r\n" + 
+			"\r\n" + 
+			"<BODY BGCOLOR=\"white\">\r\n" + 
+			"<FONT size=\"+1\" CLASS=\"FrameHeadingFont\">\r\n" + 
+			"<B>All Symbols</B></FONT>\r\n" + 
+			"<BR>\r\n" + 
+			"\r\n" + 
+			"<TABLE BORDER=\"0\" WIDTH=\"100%\" SUMMARY=\"\">\r\n" + 
+			"<TR>\r\n" + 
+			"<TD NOWRAP><FONT CLASS=\"FrameItemFont\">");
+		
+		generateAllSymbolsFrame(fStore.getSourceElements(), out);
+		
+		out.write(
+			"<BR>\r\n" + 
+			"</FONT></TD>\r\n" + 
+			"</TR>\r\n" + 
+			"</TABLE>\r\n" + 
+			"\r\n" + 
+			"</BODY>\r\n" + 
+			"</HTML>\r\n" + 
+			""
+		);
+		out.close();
+	}
+	
+	private void generateAllSymbolsFrame(IJavaElement[] elements, Writer out) throws IOException, JavaModelException {
+		List<ASTNode> declarations = new ArrayList<ASTNode>();
+		collect(elements, declarations);
+		
+		Collections.sort(declarations, new Comparator<ASTNode>() {
+			public int compare(ASTNode o1, ASTNode o2) {
+				return getName(o1).compareTo(getName(o2));
+			}
+		});
+		
+		for(ASTNode node : declarations) {
+			out.write("<BR>\r\n"); 
+			out.write("<A HREF=\"javax/swing/AbstractButton.html\" title=\"class in javax.swing\" target=\"classFrame\">");
+			out.write(getName(node));
+			out.write("</A>\r\n");	
+		}
+	}
+	
+	private String getName(ASTNode decl) {
+		switch(decl.getNodeType()) {
+		case ASTNode.FUNCTION_DECLARATION:
+			return ((FunctionDeclaration) decl).getName().getIdentifier();
+		case ASTNode.AGGREGATE_DECLARATION:
+			return ((AggregateDeclaration) decl).getName().getIdentifier();
+		case ASTNode.ALIAS_DECLARATION_FRAGMENT:
+			return ((AliasDeclarationFragment) decl).getName().getIdentifier();
+		case ASTNode.ENUM_DECLARATION:
+			return ((EnumDeclaration) decl).getName().getIdentifier();
+		case ASTNode.TEMPLATE_DECLARATION:
+			return ((TemplateDeclaration) decl).getName().getIdentifier();
+		case ASTNode.TYPEDEF_DECLARATION_FRAGMENT:
+			return ((TypedefDeclarationFragment) decl).getName().getIdentifier();
+		case ASTNode.VARIABLE_DECLARATION_FRAGMENT:
+			return ((VariableDeclarationFragment) decl).getName().getIdentifier();
+		default:
+			throw new IllegalStateException();
+		}
+	}
+	
+	private void collect(IJavaElement[] elements, List<ASTNode> declarations) throws JavaModelException {
+		for(IJavaElement element : elements) {
+			collect(element, declarations);
+		}
+	}
+	
+	private void collect(IJavaElement element, List<ASTNode> declarations) throws JavaModelException{
+		if (element.getElementType() == IJavaElement.COMPILATION_UNIT ||
+			element.getElementType() == IJavaElement.CLASS_FILE) {
+			collect((ICompilationUnit) element, declarations);
+		} else if (element instanceof IParent) {
+			collect(((IParent) element).getChildren(), declarations);
+		}
+	}
+	
+	private void collect(ICompilationUnit unit, List<ASTNode> declarations) throws JavaModelException {
+		CompilationUnit ast = unit.getResolvedAtCompileTime(AST.D1);
+		for(Declaration decl : ast.declarations()) {
+			switch(decl.getNodeType()) {
+			case ASTNode.ALIAS_DECLARATION:
+				AliasDeclaration alias = (AliasDeclaration) decl;
+				for(AliasDeclarationFragment fragment : alias.fragments()) {
+					declarations.add(fragment);
+				}
+				break;
+			case ASTNode.TYPEDEF_DECLARATION:
+				TypedefDeclaration typedef = (TypedefDeclaration) decl;
+				for(TypedefDeclarationFragment fragment : typedef.fragments()) {
+					declarations.add(fragment);
+				}
+				break;
+			case ASTNode.VARIABLE_DECLARATION:
+				VariableDeclaration var = (VariableDeclaration) decl;
+				for(VariableDeclarationFragment fragment : var.fragments()) {
+					declarations.add(fragment);
+				}
+				break;
+			case ASTNode.ENUM_DECLARATION:
+			case ASTNode.TEMPLATE_DECLARATION:
+			case ASTNode.FUNCTION_DECLARATION:
+			case ASTNode.AGGREGATE_DECLARATION:
+				declarations.add(decl);
+				break;
+			case ASTNode.MODIFIER_DECLARATION:
+				// TODO
+				break;
+			}
+		}
+	}
+	
 	private void generateStylesheet() throws IOException {
-		BufferedWriter out = new BufferedWriter(new FileWriter(new File(fDestination.toOSString(), "stylesheet.css")));
+		Writer out = writerFor("stylesheet.css");
 		out.write(
 				"/* Define colors, fonts and other style attributes here to override the defaults */\r\n" + 
 				"\r\n" + 
@@ -455,6 +583,10 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 				".NavBarCell3    { font-family: Arial, Helvetica, sans-serif; background-color:#FFFFFF;}\r\n" + 
 				"");
 		out.close();
+	}
+	
+	private Writer writerFor(String file) throws IOException {
+		return new BufferedWriter(new FileWriter(new File(fDestination.toOSString(), file)));
 	}
 
 //	private String checkForSpaces(String curr) {

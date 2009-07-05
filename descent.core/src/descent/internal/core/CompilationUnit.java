@@ -1214,7 +1214,7 @@ public String getFullyQualifiedName() {
 
 public descent.core.dom.CompilationUnit getResolvedAtCompileTime(int astLevel) throws JavaModelException {
 	ParseResult result = CompilationUnitResolver.resolve(astLevel, this, getJavaProject(), null, owner, false, true, false, null);
-	CompileTimeASTConverter converter = new CompileTimeASTConverter(false, null);
+	CompileTimeASTConverter converter = new CompileTimeASTConverter(true, null);
 	converter.setAST(AST.newAST(astLevel));
 	converter.init(getJavaProject(), result.context, null);
 	return (descent.core.dom.CompilationUnit) converter.convert(result.module, this);

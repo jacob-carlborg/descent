@@ -138,7 +138,7 @@ public class JavadocOptionsManager {
 		fXmlfile= xmlJavadocFile;
 		fWizardStatus= new StatusInfo();
 
-		IDialogSettings javadocSection= dialogSettings.getSection(SECTION_JAVADOC); 
+		IDialogSettings javadocSection= dialogSettings.getSection(SECTION_JAVADOC);
 		
 //		String commandHistory= null; 
 //		if (javadocSection != null) {

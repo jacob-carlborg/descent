@@ -9273,18 +9273,23 @@ public class Parser extends Lexer {
 	}
 	
 	private final void setPreComments(ASTDmdNode node, List<Comment> comms) {
-		this.module.setPreComments(node, comms);
+		if (this.module != null)
+			this.module.setPreComments(node, comms);
 	}
 	
 	private final void setPostComment(ASTDmdNode node, Comment comment) {
-		module.setPostComment(node, comment);
+		if (this.module != null)
+			module.setPostComment(node, comment);
 	}
 	
 	public final void setModifiers(ASTDmdNode node, List<Modifier> mods) {
-		module.setModifiers(node, mods);
+		if (this.module != null)
+			module.setModifiers(node, mods);
 	}
 	
 	private final List<Modifier> getModifiers(ASTDmdNode node) {
+		if (module == null)
+			return null;
 		return module.getModifiers(node);
 	}
 	
