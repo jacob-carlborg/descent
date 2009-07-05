@@ -107,7 +107,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 
 	private IFile fXmlJavadocFile;
 	
-	private static final String ID_JAVADOC_PROCESS_TYPE= "descent.ui.javadocProcess"; //$NON-NLS-1$
+//	private static final String ID_JAVADOC_PROCESS_TYPE= "descent.ui.javadocProcess"; //$NON-NLS-1$
 
 	public static void openJavadocWizard(JavadocWizard wizard, Shell shell, IStructuredSelection selection ) {
 		wizard.init(PlatformUI.getWorkbench(), selection);
@@ -290,14 +290,12 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 	private void generateIndex() throws IOException {
 		Writer out = writerFor("index.html");
 		out.write("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Frameset//EN\" \"http://www.w3.org/TR/html4/frameset.dtd\">\r\n" + 
-				"<!--NewPage-->\r\n" + 
-				"<HTML>\r\n" + 
-				"<HEAD>\r\n" + 
-				"<meta name=\"collection\" content=\"exclude\">\r\n" + 
-				"<TITLE>\r\n");
+				"<html>\r\n" + 
+				"<head>\r\n" + 
+				"<title>");
 		out.write(fStore.getTitle());
-		out.write("</TITLE>\r\n" + 
-				"<SCRIPT type=\"text/javascript\">\r\n" + 
+		out.write("</title>\r\n" + 
+				"<script type=\"text/javascript\">\r\n" + 
 				"   targetPage = \"\" + window.location.search;\r\n" + 
 				"   if (targetPage != \"\" && targetPage != \"undefined\")\r\n" + 
 				"      targetPage = targetPage.substring(1);\r\n" + 
@@ -307,28 +305,28 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 				"      if (targetPage != \"\" && targetPage != \"undefined\")\r\n" + 
 				"	  top.classFrame.location = top.targetPage;\r\n" + 
 				"     }\r\n" + 
-				"</SCRIPT>\r\n" + 
-				"<NOSCRIPT>\r\n" + 
-				"</NOSCRIPT>\r\n" + 
-				"</HEAD>\r\n" + 
-				"<FRAMESET cols=\"20%,80%\" title=\"\" onLoad=\"top.loadFrames()\">\r\n" + 
-				"<FRAMESET rows=\"30%,70%\" title=\"\" onLoad=\"top.loadFrames()\">\r\n" + 
-				"<FRAME src=\"overview-frame.html\" name=\"packageListFrame\" title=\"All Packages\">\r\n" + 
+				"</script>\r\n" + 
+				"<noscript>\r\n" + 
+				"</noscript>\r\n" + 
+				"</head>\r\n" + 
+				"<frameset cols=\"20%,80%\" title=\"\" onLoad=\"top.loadFrames()\">\r\n" + 
+				"<frameset rows=\"30%,70%\" title=\"\" onLoad=\"top.loadFrames()\">\r\n" + 
+				"<frame src=\"overview-frame.html\" name=\"packageListFrame\" title=\"All Packages\">\r\n" + 
 				"\r\n" + 
-				"<FRAME src=\"allsymbols-frame.html\" name=\"packageFrame\" title=\"All symbols\">\r\n" + 
-				"</FRAMESET>\r\n" + 
-				"<FRAME src=\"overview-summary.html\" name=\"classFrame\" title=\"Module descriptions\" scrolling=\"yes\">\r\n" + 
-				"<NOFRAMES>\r\n" + 
-				"<H2>\r\n" + 
-				"Frame Alert</H2>\r\n" + 
+				"<frame src=\"allsymbols-frame.html\" name=\"packageFrame\" title=\"All symbols\">\r\n" + 
+				"</frameset>\r\n" + 
+				"<frame src=\"overview-summary.html\" name=\"classFrame\" title=\"Module descriptions\" scrolling=\"yes\">\r\n" + 
+				"<noframes>\r\n" + 
+				"<h2>\r\n" + 
+				"Frame Alert</h2>\r\n" + 
 				"\r\n" + 
-				"<P>\r\n" + 
+				"<p>\r\n" + 
 				"This document is designed to be viewed using the frames feature. If you see this message, you are using a non-frame-capable web client.\r\n" + 
-				"<BR>\r\n" + 
-				"Link to<A HREF=\"overview-summary.html\">Non-frame version.</A>\r\n" + 
-				"</NOFRAMES>\r\n" + 
-				"</FRAMESET>\r\n" + 
-				"</HTML>");
+				"<br/>\r\n" + 
+				"Link to<a href=\"overview-summary.html\">Non-frame version.</a>\r\n" + 
+				"</noframes>\r\n" + 
+				"</frameset>\r\n" + 
+				"</html>");
 		out.close();
 	}
 	
@@ -336,42 +334,22 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		Writer out = writerFor("overview-frame.html");
 		out.write(
 			"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\r\n" + 
-			"<HTML>\r\n" + 
-			"<HEAD>\r\n" + 
-			"<meta name=\"collection\" content=\"exclude\">\r\n" + 
-			"\r\n" + 
-			"<TITLE>\r\n" + 
+			"<html>\r\n" + 
+			"<head>\r\n" + 
+			"<title>\r\n" + 
 			"Overview (");
 		out.write(fStore.getTitle());
-		out.write("\r\n" + 
-			"</TITLE>\r\n" + 
-			"\r\n" + 
-			"<META NAME=\"keywords\" CONTENT=\"Overview, Java<sup><font size=-2>TM</font></sup> 2 Platform Standard Edition 5.0<br>API Specification\">\r\n" + 
-			"\r\n" + 
-			"<LINK REL =\"stylesheet\" TYPE=\"text/css\" HREF=\"stylesheet.css\" TITLE=\"Style\">\r\n" + 
-			"\r\n" + 
-			"\r\n" + 
-			"</HEAD>\r\n" + 
-			"\r\n" + 
-			"<BODY BGCOLOR=\"white\">\r\n" + 
-			"\r\n" + 
-			"<TABLE BORDER=\"0\" WIDTH=\"100%\" SUMMARY=\"\">\r\n" + 
-			"<TR>\r\n" + 
-			"<TH ALIGN=\"left\" NOWRAP><FONT size=\"+1\" CLASS=\"FrameTitleFont\">\r\n" + 
-			"<B>");
+		out.write(
+			"</title>\r\n" + 
+			"<link rel=\"stylesheet\" type=\"text/css\" href=\"stylesheet.css\" title=\"Style\">\r\n" + 
+			"</head>\r\n" + 
+			"<body>\r\n" + 
+			"<div class=\"title\">");
 		out.write(fStore.getTitle());
-		out.write("</B></FONT></TH>\r\n" + 
-			"</TR>\r\n" + 
-			"</TABLE>\r\n" + 
-			"\r\n" + 
-			"<TABLE BORDER=\"0\" WIDTH=\"100%\" SUMMARY=\"\">\r\n" + 
-			"<TR>\r\n" + 
-			"\r\n" + 
-			"<TD NOWRAP><FONT CLASS=\"FrameItemFont\"><A HREF=\"allsymbols-frame.html\" target=\"packageFrame\">All Symbols</A></FONT>\r\n" + 
-			"<P>\r\n" + 
-			"<FONT size=\"+1\" CLASS=\"FrameHeadingFont\">\r\n" + 
-			"Packages</FONT>\r\n" + 
- 			"\r\n");
+		out.write("</div>\r\n" + 
+			"<div class=\"allSymbolsTitle\"><a href=\"allsymbols-frame.html\" target=\"packageFrame\">All Symbols</A></div>\r\n" +
+			"<div class=\"packagesTitle\">Packages</div>\r\n" +
+			"<ul class=\"packages\">");
 		
 		IJavaElement[] elements = fStore.getSourceElements();
 		
@@ -384,18 +362,10 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		
 		generatePackagesList(elements, out);
 		
-		out.write( 
-			"<BR>\r\n" + 
-			"</TD>\r\n" + 
-			"</TR>\r\n" + 
-			"</TABLE>\r\n" + 
-			"\r\n" + 
-			"<P>\r\n" + 
-			"&nbsp;\r\n" + 
-			"<script language=\"JavaScript\" src=\"/js/omi/jsc/s_code_remote.js\"></script></BODY>\r\n" + 
-			"</HTML>\r\n" + 
-			""
-		);
+		out.write(
+				"</ul>\r\n" +
+				"</body>\r\n" +
+				"</html>");
 		out.close();
 	}
 
@@ -409,8 +379,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		if (element.getElementType() == IJavaElement.PACKAGE_FRAGMENT) {
 			String[] ids = element.getElementName().split("\\.");
 			
-			out.write("<BR>\r\n"); 
-			out.write("<FONT CLASS=\"FrameItemFont\"><A HREF=\"");
+			out.write("<li><a href=\"");
 			for (int i = 0; i < ids.length; i++) {
 				if (i != 0) {
 					out.write(File.separatorChar);
@@ -425,7 +394,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 				}
 				out.write(ids[i]);
 			}
-			out.write("</A></FONT>\r\n");
+			out.write("</li>\r\n");
 			return;
 		}
 	}
@@ -434,38 +403,21 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		Writer out = writerFor("allsymbols-frame.html");
 		out.write(
 			"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\r\n" + 
-			"<HTML>\r\n" + 
-			"<HEAD>\r\n" + 
-			"<meta name=\"collection\" content=\"exclude\">\r\n" + 
-			"\r\n" + 
-			"<TITLE>\r\n" + 
+			"<html>\r\n" + 
+			"<head>\r\n" + 
+			"<title>\r\n" + 
 			"All Symbols (");
 		out.write(fStore.getTitle());
-		out.write(")</TITLE>\r\n" + 
-			"\r\n" + 
-			"\r\n" + 
-			"\r\n" + 
-			"<LINK REL =\"stylesheet\" TYPE=\"text/css\" HREF=\"stylesheet.css\" TITLE=\"Style\">\r\n" + 
-			"\r\n" + 
-			"\r\n" + 
-			"</HEAD>\r\n" + 
-			"\r\n" + 
-			"<BODY BGCOLOR=\"white\">\r\n" + 
-			"\r\n" + 
-			"<TABLE BORDER=\"0\" WIDTH=\"100%\" SUMMARY=\"\">\r\n" + 
-			"<TR>\r\n" + 
-			"<TD NOWRAP>");
+		out.write(")</title>\r\n" + 
+			"<link rel=\"stylesheet\" type=\"text/css\" href=\"stylesheet.css\" title=\"Style\">\r\n" + 
+			"</head>\r\n" + 
+			"<body>\r\n");
 		
 		generateAllSymbolsFrame(fStore.getSourceElements(), out);
 		
 		out.write(
-			"<BR>\r\n" + 
-			"</TD>\r\n" + 
-			"</TR>\r\n" + 
-			"</TABLE>\r\n" + 
-			"\r\n" + 
-			"</BODY>\r\n" + 
-			"</HTML>\r\n" + 
+			"</body>\r\n" + 
+			"</html>\r\n" + 
 			""
 		);
 		out.close();
@@ -488,41 +440,45 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		// Variables
 		if (!variables.isEmpty()) {
 			writeHeader("Variables", out);
+			out.write("<ul class=\"symbols\">\r\n");
 			for(VariableDeclarationFragment node : variables) {
 				IBinding binding = node.getName().resolveTypeBinding();
 				writeBindedNode(out, node, binding);
 			}
-			out.write("<BR><BR>");
+			out.write("</ul>\r\n");
 		}
 		
 		// Aliases
 		if (!aliases.isEmpty()) {
 			writeHeader("Aliases", out);
+			out.write("<ul class=\"symbols\">\r\n");
 			for(AliasDeclarationFragment node : aliases) {
 				IBinding binding = node.getName().resolveTypeBinding();
 				writeBindedNode(out, node, binding);
 			}
-			out.write("<BR><BR>");
+			out.write("</ul>\r\n");
 		}
 		
 		// Typedefs
 		if (!typedefs.isEmpty()) {
 			writeHeader("Typedefs", out);
+			out.write("<ul class=\"symbols\">\r\n");
 			for(TypedefDeclarationFragment node : typedefs) {
 				IBinding binding = (IBinding) node.getName().resolveTypeBinding();
 				writeBindedNode(out, node, binding);
 			}
-			out.write("<BR><BR>");
+			out.write("</ul>\r\n");
 		}
 		
 		// Enums
 		if (!enums.isEmpty()) {
 			writeHeader("Enums", out);
+			out.write("<ul class=\"symbols\">\r\n");
 			for(EnumDeclaration node : enums) {
 				IBinding binding = (IBinding) node.getBaseType().resolveBinding();
 				writeBindedNode(out, node, binding);
 			}
-			out.write("<BR><BR>");
+			out.write("</ul>\r\n");
 		}
 		
 		// Functions
@@ -545,42 +501,38 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 	}
 
 	private void writeBindedNode(Writer out, ASTNode node, IBinding binding) throws IOException {
-		out.write("<BR>\r\n"); 
-		out.write("<FONT CLASS=\"FrameItemFont\">");
-		out.write("<A HREF=\"");
+		out.write("<li><a href=\"");
 		out.write(getLink(node));
-		out.write("\" target=\"classFrame\"></FONT>");
+		out.write("\" target=\"classFrame\">");
 		out.write(getName(node));
-		out.write("</A>: ");
-		
-		writeHtml(binding, out);
+		out.write("</a>: ");		
+		writeBinding(binding, out);
+		out.write("</li>\r\n");
 	}
 	
 	private void writeHtmlList(String header, Collection<? extends ASTNode> nodes, Writer out) throws IOException {
 		if (!nodes.isEmpty()) {
 			writeHeader(header, out);
+			out.write("<ul class=\"symbols\">\r\n");
 			for(ASTNode node : nodes) {
-				out.write("<BR>\r\n"); 
-				out.write("<FONT CLASS=\"FrameItemFont\">");
-				out.write("<A HREF=\"");
+				out.write("<li><a href=\"");
 				out.write(getLink(node));
-				out.write("\" target=\"classFrame\"></FONT>");
+				out.write("\" target=\"classFrame\">");
 				out.write(getName(node));
-				out.write("</A>");
+				out.write("</a></li>\r\n");
 			}
-			out.write("<BR><BR>");
+			out.write("</ul>\r\n");
 		}
 	}
 	
 	private void writeHeader(String header, Writer out) throws IOException {
 		out.write(
-				"<FONT size=\"+1\" CLASS=\"FrameHeadingFont\">\r\n" + 
-				"<B>");
+				"<div class=\"symbolType\">");
 		out.write(header);
-		out.write("</B></FONT>");
+		out.write("</div>\r\n");
 	}
 	
-	private void writeHtml(IBinding binding, Writer out) throws IOException {
+	private void writeBinding(IBinding binding, Writer out) throws IOException {
 		out.write(binding.getName());
 	}
 
@@ -605,7 +557,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		}
 	}
 	
-	private String getLink(ASTNode decl) {
+	private static String getLink(ASTNode decl) {
 		CompilationUnit unit = (CompilationUnit) decl.getRoot();
 		ICompilationUnit cunit = (ICompilationUnit) unit.getJavaElement();
 		IPackageFragment pack = (IPackageFragment) cunit.getParent();
@@ -697,33 +649,12 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 	private void generateStylesheet() throws IOException {
 		Writer out = writerFor("stylesheet.css");
 		out.write(
-				"/* Define colors, fonts and other style attributes here to override the defaults */\r\n" + 
-				"\r\n" + 
-				"/* Page background color */\r\n" + 
-				"body { background-color: #FFFFFF }\r\n" + 
-				"\r\n" + 
-				"/* Headings */\r\n" + 
-				"h1 { font-size: 145% }\r\n" + 
-				"\r\n" + 
-				"/* Table colors */\r\n" + 
-				".TableHeadingColor     { background: #CCCCFF } /* Dark mauve */\r\n" + 
-				".TableSubHeadingColor  { background: #EEEEFF } /* Light mauve */\r\n" + 
-				".TableRowColor         { background: #FFFFFF } /* White */\r\n" + 
-				"\r\n" + 
-				"/* Font used in left-hand frame lists */\r\n" + 
-				".FrameTitleFont   { font-size: 100%; font-family: Helvetica, Arial, sans-serif }\r\n" + 
-				".FrameHeadingFont { font-size:  90%; font-family: Helvetica, Arial, sans-serif }\r\n" + 
-				".FrameItemFont    { font-size:  90%; font-family: Helvetica, Arial, sans-serif }\r\n" + 
-				"\r\n" + 
-				"/* Navigation bar fonts and colors */\r\n" + 
-				".NavBarCell1    { background-color:#EEEEFF;} /* Light mauve */\r\n" + 
-				".NavBarCell1Rev { background-color:#00008B;} /* Dark Blue */\r\n" + 
-				".NavBarFont1    { font-family: Arial, Helvetica, sans-serif; color:#000000;}\r\n" + 
-				".NavBarFont1Rev { font-family: Arial, Helvetica, sans-serif; color:#FFFFFF;}\r\n" + 
-				"\r\n" + 
-				".NavBarCell2    { font-family: Arial, Helvetica, sans-serif; background-color:#FFFFFF;}\r\n" + 
-				".NavBarCell3    { font-family: Arial, Helvetica, sans-serif; background-color:#FFFFFF;}\r\n" + 
-				"");
+				"body { background-color: #FFFFFF }\r\n" +
+				"ul { margin:4px 0px 10px 10px; }\r\n" +
+				".symbols li { white-space: nowrap; }\r\n" +
+				".symbolType { font-weight:bold; }\r\n" +
+				".allSymbolsTitle { font-weight:bold; }\r\n" +
+				".packagesTitle { margin-top:4px; font-weight:bold; }\r\n");
 		out.close();
 	}
 	
