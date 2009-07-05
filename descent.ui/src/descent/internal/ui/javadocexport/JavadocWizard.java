@@ -1,18 +1,25 @@
 package descent.internal.ui.javadocexport;
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 
 import org.eclipse.core.resources.IFile;
@@ -50,6 +57,7 @@ import org.eclipse.debug.core.Launch;
 import org.eclipse.debug.core.model.IProcess;
 
 import org.eclipse.debug.ui.IDebugUIConstants;
+import org.osgi.framework.Bundle;
 
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
@@ -192,6 +200,11 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 
 		if (!executeJavadocGeneration())
 			return false;
+		
+		if (fOpenInBrowser) {
+			refresh(fDestination); //If destination of javadoc is in workspace then refresh workspace
+			spawnInBrowser(getShell().getDisplay());
+		}
 
 		return true;
 	}
@@ -251,96 +264,215 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 	}
 
 	private boolean executeJavadocGeneration() {
-//		Process process= null;
-//		try {
-//			ArrayList vmArgs= new ArrayList();
-//			ArrayList progArgs= new ArrayList();
-//			
-//			IStatus status= fStore.getArgumentArray(vmArgs, progArgs);
-//			if (!status.isOK()) {
-//				ErrorDialog.openError(getShell(), JavadocExportMessages.JavadocWizard_error_title, JavadocExportMessages.JavadocWizard_warning_starting_message, status);
-//			}
-//			
-//			File file= File.createTempFile("javadoc-arguments", ".tmp");  //$NON-NLS-1$//$NON-NLS-2$
-//			vmArgs.add('@' + file.getAbsolutePath());
-//
-//			FileWriter writer= new FileWriter(file);
-//			try {
-//				for (int i= 0; i < progArgs.size(); i++) {
-//					String curr= (String) progArgs.get(i);
-//					curr= checkForSpaces(curr);
-//					
-//					writer.write(curr);
-//					writer.write(' ');
-//				}
-//			} finally {
-//				writer.close();
-//			}
-//			
-//			String[] args= (String[]) vmArgs.toArray(new String[vmArgs.size()]);
-//			process= Runtime.getRuntime().exec(args);
-//			if (process != null) {
-//				// construct a formatted command line for the process properties
-//				StringBuffer buf= new StringBuffer();
-//				for (int i= 0; i < args.length; i++) {
-//					buf.append(args[i]);
-//					buf.append(' ');
-//				}
-//
-//				IDebugEventSetListener listener= new JavadocDebugEventListener(getShell().getDisplay(), file);
-//				DebugPlugin.getDefault().addDebugEventListener(listener);
-//
-//				ILaunchConfigurationWorkingCopy wc= null;
-//				try {
-//					ILaunchConfigurationType lcType= DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurationType(IJavaLaunchConfigurationConstants.ID_JAVA_APPLICATION);
-//					String name= JavadocExportMessages.JavadocWizard_launchconfig_name; 
-//					wc= lcType.newInstance(null, name);
-//					wc.setAttribute(IDebugUIConstants.ATTR_PRIVATE, true);
-//
-//					ILaunch newLaunch= new Launch(wc, ILaunchManager.RUN_MODE, null);
-//					IProcess iprocess= DebugPlugin.newProcess(newLaunch, process, JavadocExportMessages.JavadocWizard_javadocprocess_label); 
-//					iprocess.setAttribute(IProcess.ATTR_CMDLINE, buf.toString());
-//					iprocess.setAttribute(IProcess.ATTR_PROCESS_TYPE, ID_JAVADOC_PROCESS_TYPE);
-//
-//					DebugPlugin.getDefault().getLaunchManager().addLaunch(newLaunch);
-//
-//				} catch (CoreException e) {
-//					String title= JavadocExportMessages.JavadocWizard_error_title; 
-//					String message= JavadocExportMessages.JavadocWizard_launch_error_message; 
-//					ExceptionHandler.handle(e, getShell(), title, message);
-//				}
-//
-//				return true;
-//
-//			}
-//		} catch (IOException e) {
-//			String title= JavadocExportMessages.JavadocWizard_error_title; 
-//			String message= JavadocExportMessages.JavadocWizard_exec_error_message; 
-//
-//			IStatus status= new Status(IStatus.ERROR, JavaUI.ID_PLUGIN, IStatus.ERROR, e.getMessage(), e);
-//			ExceptionHandler.handle(new CoreException(status), getShell(), title, message);
-//			return false;
-//		}
+		try {
+			// 1. Generate frameset in index.html
+			generateIndex();
+			
+			// 2. Generate packages list
+			generatePackagesList();
+			
+			// 3. Generate stylesheet
+			generateStylesheet();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		return true;
 
 	}
 
-	private String checkForSpaces(String curr) {
-		if (curr.indexOf(' ') == -1) {
-			return curr;
-		}	
-		StringBuffer buf= new StringBuffer();
-		buf.append('\'');
-		for (int i= 0; i < curr.length(); i++) {
-			char ch= curr.charAt(i);
-			if (ch == '\\' || ch == '\'') {
-				buf.append('\\');				
-			}
-			buf.append(ch);
-		}
-		buf.append('\'');
-		return buf.toString();
+	private void generateIndex() throws IOException {
+		BufferedWriter out = new BufferedWriter(new FileWriter(new File(fDestination.toOSString(), "index.html")));
+		out.write("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Frameset//EN\" \"http://www.w3.org/TR/html4/frameset.dtd\">\r\n" + 
+				"<!--NewPage-->\r\n" + 
+				"<HTML>\r\n" + 
+				"<HEAD>\r\n" + 
+				"<meta name=\"collection\" content=\"exclude\">\r\n" + 
+				"<TITLE>\r\n");
+		out.write(fStore.getTitle());
+		out.write("</TITLE>\r\n" + 
+				"<SCRIPT type=\"text/javascript\">\r\n" + 
+				"   targetPage = \"\" + window.location.search;\r\n" + 
+				"   if (targetPage != \"\" && targetPage != \"undefined\")\r\n" + 
+				"      targetPage = targetPage.substring(1);\r\n" + 
+				"   if (targetPage.indexOf(\":\") != -1)\r\n" + 
+				"      targetPage = \"undefined\";\r\n" + 
+				"   function loadFrames() {\r\n" + 
+				"      if (targetPage != \"\" && targetPage != \"undefined\")\r\n" + 
+				"	  top.classFrame.location = top.targetPage;\r\n" + 
+				"     }\r\n" + 
+				"</SCRIPT>\r\n" + 
+				"<NOSCRIPT>\r\n" + 
+				"</NOSCRIPT>\r\n" + 
+				"</HEAD>\r\n" + 
+				"<FRAMESET cols=\"20%,80%\" title=\"\" onLoad=\"top.loadFrames()\">\r\n" + 
+				"<FRAMESET rows=\"30%,70%\" title=\"\" onLoad=\"top.loadFrames()\">\r\n" + 
+				"<FRAME src=\"overview-frame.html\" name=\"packageListFrame\" title=\"All Packages\">\r\n" + 
+				"\r\n" + 
+				"<FRAME src=\"allsymbols-frame.html\" name=\"packageFrame\" title=\"All symbols\">\r\n" + 
+				"</FRAMESET>\r\n" + 
+				"<FRAME src=\"overview-summary.html\" name=\"classFrame\" title=\"Module descriptions\" scrolling=\"yes\">\r\n" + 
+				"<NOFRAMES>\r\n" + 
+				"<H2>\r\n" + 
+				"Frame Alert</H2>\r\n" + 
+				"\r\n" + 
+				"<P>\r\n" + 
+				"This document is designed to be viewed using the frames feature. If you see this message, you are using a non-frame-capable web client.\r\n" + 
+				"<BR>\r\n" + 
+				"Link to<A HREF=\"overview-summary.html\">Non-frame version.</A>\r\n" + 
+				"</NOFRAMES>\r\n" + 
+				"</FRAMESET>\r\n" + 
+				"</HTML>");
+		out.close();
 	}
+	
+	private void generatePackagesList() throws IOException {
+		BufferedWriter out = new BufferedWriter(new FileWriter(new File(fDestination.toOSString(), "overview-frame.html")));
+		out.write(
+			"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\r\n" + 
+			"<HTML>\r\n" + 
+			"<HEAD>\r\n" + 
+			"<meta name=\"collection\" content=\"exclude\">\r\n" + 
+			"\r\n" + 
+			"<TITLE>\r\n" + 
+			"Overview (");
+		out.write(fStore.getTitle());
+		out.write("\r\n" + 
+			"</TITLE>\r\n" + 
+			"\r\n" + 
+			"<META NAME=\"keywords\" CONTENT=\"Overview, Java<sup><font size=-2>TM</font></sup> 2 Platform Standard Edition 5.0<br>API Specification\">\r\n" + 
+			"\r\n" + 
+			"<LINK REL =\"stylesheet\" TYPE=\"text/css\" HREF=\"stylesheet.css\" TITLE=\"Style\">\r\n" + 
+			"\r\n" + 
+			"\r\n" + 
+			"</HEAD>\r\n" + 
+			"\r\n" + 
+			"<BODY BGCOLOR=\"white\">\r\n" + 
+			"\r\n" + 
+			"<TABLE BORDER=\"0\" WIDTH=\"100%\" SUMMARY=\"\">\r\n" + 
+			"<TR>\r\n" + 
+			"<TH ALIGN=\"left\" NOWRAP><FONT size=\"+1\" CLASS=\"FrameTitleFont\">\r\n" + 
+			"<B>");
+		out.write(fStore.getTitle());
+		out.write("</B></FONT></TH>\r\n" + 
+			"</TR>\r\n" + 
+			"</TABLE>\r\n" + 
+			"\r\n" + 
+			"<TABLE BORDER=\"0\" WIDTH=\"100%\" SUMMARY=\"\">\r\n" + 
+			"<TR>\r\n" + 
+			"\r\n" + 
+			"<TD NOWRAP><FONT CLASS=\"FrameItemFont\"><A HREF=\"allclasses-frame.html\" target=\"packageFrame\">All Classes</A></FONT>\r\n" + 
+			"<P>\r\n" + 
+			"<FONT size=\"+1\" CLASS=\"FrameHeadingFont\">\r\n" + 
+			"Packages</FONT>\r\n" + 
+ 			"\r\n");
+		
+		IJavaElement[] elements = fStore.getSourceElements();
+		
+		// Sort packages by name
+		Arrays.sort(elements, new Comparator<IJavaElement>() {
+			public int compare(IJavaElement o1, IJavaElement o2) {
+				return o1.getElementName().compareTo(o2.getElementName());
+			}
+		});
+		
+		generatePackagesList(elements, out);
+		
+		out.write( 
+			"<BR>\r\n" + 
+			"</TD>\r\n" + 
+			"</TR>\r\n" + 
+			"</TABLE>\r\n" + 
+			"\r\n" + 
+			"<P>\r\n" + 
+			"&nbsp;\r\n" + 
+			"<script language=\"JavaScript\" src=\"/js/omi/jsc/s_code_remote.js\"></script></BODY>\r\n" + 
+			"</HTML>\r\n" + 
+			""
+		);
+		out.close();
+	}
+
+	private void generatePackagesList(IJavaElement[] elements, BufferedWriter out) throws IOException {
+		for(IJavaElement element : elements) {
+			generatePackagesList(element, out);
+		}
+	}
+
+	private void generatePackagesList(IJavaElement element, BufferedWriter out) throws IOException {
+		if (element.getElementType() == IJavaElement.PACKAGE_FRAGMENT) {
+			String[] ids = element.getElementName().split("\\.");
+			
+			out.write("<BR>\r\n"); 
+			out.write("<FONT CLASS=\"FrameItemFont\"><A HREF=\"");
+			for (int i = 0; i < ids.length; i++) {
+				if (i != 0) {
+					out.write(File.separatorChar);
+				}
+				out.write(ids[i]);
+			}
+			out.write("/package-frame.html");
+			out.write("\" target=\"packageFrame\">");
+			for (int i = 0; i < ids.length; i++) {
+				if (i != 0) {
+					out.write('.');
+				}
+				out.write(ids[i]);
+			}
+			out.write("</A></FONT>\r\n");
+			return;
+		}
+	}
+	
+	private void generateStylesheet() throws IOException {
+		BufferedWriter out = new BufferedWriter(new FileWriter(new File(fDestination.toOSString(), "stylesheet.css")));
+		out.write(
+				"/* Define colors, fonts and other style attributes here to override the defaults */\r\n" + 
+				"\r\n" + 
+				"/* Page background color */\r\n" + 
+				"body { background-color: #FFFFFF }\r\n" + 
+				"\r\n" + 
+				"/* Headings */\r\n" + 
+				"h1 { font-size: 145% }\r\n" + 
+				"\r\n" + 
+				"/* Table colors */\r\n" + 
+				".TableHeadingColor     { background: #CCCCFF } /* Dark mauve */\r\n" + 
+				".TableSubHeadingColor  { background: #EEEEFF } /* Light mauve */\r\n" + 
+				".TableRowColor         { background: #FFFFFF } /* White */\r\n" + 
+				"\r\n" + 
+				"/* Font used in left-hand frame lists */\r\n" + 
+				".FrameTitleFont   { font-size: 100%; font-family: Helvetica, Arial, sans-serif }\r\n" + 
+				".FrameHeadingFont { font-size:  90%; font-family: Helvetica, Arial, sans-serif }\r\n" + 
+				".FrameItemFont    { font-size:  90%; font-family: Helvetica, Arial, sans-serif }\r\n" + 
+				"\r\n" + 
+				"/* Navigation bar fonts and colors */\r\n" + 
+				".NavBarCell1    { background-color:#EEEEFF;} /* Light mauve */\r\n" + 
+				".NavBarCell1Rev { background-color:#00008B;} /* Dark Blue */\r\n" + 
+				".NavBarFont1    { font-family: Arial, Helvetica, sans-serif; color:#000000;}\r\n" + 
+				".NavBarFont1Rev { font-family: Arial, Helvetica, sans-serif; color:#FFFFFF;}\r\n" + 
+				"\r\n" + 
+				".NavBarCell2    { font-family: Arial, Helvetica, sans-serif; background-color:#FFFFFF;}\r\n" + 
+				".NavBarCell3    { font-family: Arial, Helvetica, sans-serif; background-color:#FFFFFF;}\r\n" + 
+				"");
+		out.close();
+	}
+
+//	private String checkForSpaces(String curr) {
+//		if (curr.indexOf(' ') == -1) {
+//			return curr;
+//		}	
+//		StringBuffer buf= new StringBuffer();
+//		buf.append('\'');
+//		for (int i= 0; i < curr.length(); i++) {
+//			char ch= curr.charAt(i);
+//			if (ch == '\\' || ch == '\'') {
+//				buf.append('\\');				
+//			}
+//			buf.append(ch);
+//		}
+//		buf.append('\'');
+//		return buf.toString();
+//	}
 
 	/*
 	 * @see IWizard#addPages()
