@@ -3268,7 +3268,6 @@
                menubarPath="navigate/open.ext2"
                tooltip="%OpenTypeAction.tooltip">
          </action>
-         <!--
          <action
                definitionId="descent.ui.generate.javadoc"
                label="%GenerateJavadocAction.label"
@@ -3278,7 +3277,6 @@
                menubarPath="project/additions"
                id="exportJavadoc">
          </action>
-         -->
       </actionSet>
    </extension>
    
@@ -3708,6 +3706,31 @@
       <debugModelPresentation
             class="descent.internal.debug.ui.ctfe.DescentCtfeDebugModelPresentation"
             id="descent.debug.ctfe.model"/>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.exportWizards">
+      <category
+	     name="%importExportWizards.category"
+	     id="descent.ui.Java">
+	  </category>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.exportWizards">
+      <wizard
+            name="%JavadocWizard.name"
+            icon="$nl$/icons/full/etool16/javadoc.gif"
+            class="descent.internal.ui.javadocexport.JavadocWizard"
+            category="descent.ui.Java"
+            id="descent.internal.ui.javadocexport.JavadocWizard">
+         <description>
+            %JavadocWizard.description
+         </description>
+         <selection
+               class="org.eclipse.core.resources.IProject">
+         </selection>
+      </wizard>
    </extension>
  
 </plugin>

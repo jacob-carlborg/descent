@@ -797,11 +797,9 @@ public final class JavaUI {
 	 * 
 	 * @since 2.1
 	 */
-	/* TODO JDT UI attached javadoc
 	public static void setProjectJavadocLocation(IJavaProject project, URL url) {
 		JavaDocLocations.setProjectJavadocLocation(project, url);
 	}
-	*/
 
 	/**
 	 * Returns the Javadoc location for a Java project or <code>null</code> if no
@@ -813,11 +811,9 @@ public final class JavaUI {
 	 * 
 	 * @since 2.1
 	 */
-	/* TODO JDT UI attached javadoc
 	public static URL getProjectJavadocLocation(IJavaProject project) {
 		return JavaDocLocations.getProjectJavadocLocation(project);
 	}	
-	*/
 
 	/**
 	 * Returns the Javadoc base URL for an element. The base location contains the
@@ -830,12 +826,10 @@ public final class JavaUI {
 	 * @throws JavaModelException thrown when the element can not be accessed
 	 * 
 	 * @since 2.0
-	 */		
-	/* TODO JDT UI attached javadoc
+	 */
 	public static URL getJavadocBaseLocation(IJavaElement element) throws JavaModelException {	
 		return JavaDocLocations.getJavadocBaseLocation(element);
 	}
-	*/
 	
 	/**
 	 * Returns the Javadoc URL for an element. Example of a returned URL is
@@ -852,12 +846,10 @@ public final class JavaUI {
 	 * @throws JavaModelException thrown when the element can not be accessed
 	 * 
 	 * @since 2.0
-	 */		
-	/* TODO JDT UI attached javadoc
+	 */
 	public static URL getJavadocLocation(IJavaElement element, boolean includeAnchor) throws JavaModelException {
 		return JavaDocLocations.getJavadocLocation(element, includeAnchor);
 	}
-	*/
 	
 	/**
 	 * Returns the transfer instance used to copy/paste Java elements to

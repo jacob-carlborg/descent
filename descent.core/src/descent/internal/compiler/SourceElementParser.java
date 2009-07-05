@@ -62,7 +62,6 @@ import descent.internal.compiler.parser.Modifier;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.ModuleDeclaration;
 import descent.internal.compiler.parser.NewDeclaration;
-import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.PostBlitDeclaration;
 import descent.internal.compiler.parser.PragmaDeclaration;
 import descent.internal.compiler.parser.ProtDeclaration;
