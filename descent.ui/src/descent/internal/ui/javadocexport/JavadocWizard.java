@@ -9,9 +9,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -55,8 +58,6 @@ import descent.core.dom.Declaration;
 import descent.core.dom.EnumDeclaration;
 import descent.core.dom.FunctionDeclaration;
 import descent.core.dom.IBinding;
-import descent.core.dom.ITypeBinding;
-import descent.core.dom.ModuleDeclaration;
 import descent.core.dom.TemplateDeclaration;
 import descent.core.dom.TypedefDeclaration;
 import descent.core.dom.TypedefDeclarationFragment;
@@ -74,6 +75,12 @@ import descent.internal.ui.util.PixelConverter;
 import descent.ui.JavaUI;
 
 public class JavadocWizard extends Wizard implements IExportWizard {
+	
+	private static Comparator<ASTNode> nameComparator = new Comparator<ASTNode>() {
+		public int compare(ASTNode o1, ASTNode o2) {
+			return getName(o1).compareTo(getName(o2));
+		}
+	};
 
 	private JavadocTreeWizardPage fJTWPage;
 	private JavadocSpecificsWizardPage fJSWPage;
@@ -465,241 +472,119 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 	}
 	
 	private void generateAllSymbolsFrame(IJavaElement[] elements, Writer out) throws IOException, JavaModelException {
-		List<ASTNode> declarations = new ArrayList<ASTNode>();
-		collect(elements, declarations);
+		Set<VariableDeclarationFragment> variables = new TreeSet<VariableDeclarationFragment>(nameComparator);
+		Set<AliasDeclarationFragment> aliases = new TreeSet<AliasDeclarationFragment>(nameComparator);
+		Set<TypedefDeclarationFragment> typedefs = new TreeSet<TypedefDeclarationFragment>(nameComparator);
+		Set<EnumDeclaration> enums = new TreeSet<EnumDeclaration>(nameComparator);
+		Set<FunctionDeclaration> functions = new TreeSet<FunctionDeclaration>(nameComparator);
+		Set<AggregateDeclaration> classes = new TreeSet<AggregateDeclaration>(nameComparator);
+		Set<AggregateDeclaration> interfaces = new TreeSet<AggregateDeclaration>(nameComparator);
+		Set<AggregateDeclaration> structs = new TreeSet<AggregateDeclaration>(nameComparator);
+		Set<AggregateDeclaration> unions = new TreeSet<AggregateDeclaration>(nameComparator);
+		Set<TemplateDeclaration> templates = new TreeSet<TemplateDeclaration>(nameComparator);
 		
-		Collections.sort(declarations, new Comparator<ASTNode>() {
-			public int compare(ASTNode o1, ASTNode o2) {
-				return getName(o1).compareTo(getName(o2));
-			}
-		});
+		collect(elements, variables, aliases, typedefs, enums, classes, interfaces, structs, unions, templates, functions);
 		
 		// Variables
-		out.write(
-			"<FONT size=\"+1\" CLASS=\"FrameHeadingFont\">\r\n" + 
-			"<B>Variables</B></FONT>");
-		for(ASTNode node : declarations) {
-			if (node.getNodeType() != ASTNode.VARIABLE_DECLARATION_FRAGMENT)
-				continue;
-			
-			VariableDeclarationFragment fragment = (VariableDeclarationFragment) node;
-			IBinding binding = (IBinding) fragment.getName().resolveTypeBinding();
-			
-			out.write("<BR>\r\n"); 
-			out.write("<FONT CLASS=\"FrameItemFont\">");
-			out.write("<A HREF=\"");
-			out.write(getLink(node));
-			out.write("\" target=\"classFrame\"></FONT>");
-			out.write(getName(node));
-			out.write("</A>: ");
-			
-			toHtml(binding, out);
+		if (!variables.isEmpty()) {
+			writeHeader("Variables", out);
+			for(VariableDeclarationFragment node : variables) {
+				IBinding binding = node.getName().resolveTypeBinding();
+				writeBindedNode(out, node, binding);
+			}
+			out.write("<BR><BR>");
 		}
-		out.write("<BR><BR>");
 		
 		// Aliases
-		out.write(
-			"<FONT size=\"+1\" CLASS=\"FrameHeadingFont\">\r\n" + 
-			"<B>Aliases</B></FONT>");
-		for(ASTNode node : declarations) {
-			if (node.getNodeType() != ASTNode.ALIAS_DECLARATION_FRAGMENT)
-				continue;
-			
-			AliasDeclarationFragment fragment = (AliasDeclarationFragment) node;
-			IBinding binding = (IBinding) fragment.getName().resolveTypeBinding();
-			
-			out.write("<BR>\r\n"); 
-			out.write("<FONT CLASS=\"FrameItemFont\">");
-			out.write("<A HREF=\"");
-			out.write(getLink(node));
-			out.write("\" target=\"classFrame\"></FONT>");
-			out.write(getName(node));
-			out.write("</A>: ");
-			
-			toHtml(binding, out);
+		if (!aliases.isEmpty()) {
+			writeHeader("Aliases", out);
+			for(AliasDeclarationFragment node : aliases) {
+				IBinding binding = node.getName().resolveTypeBinding();
+				writeBindedNode(out, node, binding);
+			}
+			out.write("<BR><BR>");
 		}
-		out.write("<BR><BR>");
 		
 		// Typedefs
-		out.write(
-			"<FONT size=\"+1\" CLASS=\"FrameHeadingFont\">\r\n" + 
-			"<B>Typedefs</B></FONT>");
-		for(ASTNode node : declarations) {
-			if (node.getNodeType() != ASTNode.TYPEDEF_DECLARATION_FRAGMENT)
-				continue;
-			
-			TypedefDeclarationFragment fragment = (TypedefDeclarationFragment) node;
-			IBinding binding = (IBinding) fragment.getName().resolveTypeBinding();
-			
-			out.write("<BR>\r\n"); 
-			out.write("<FONT CLASS=\"FrameItemFont\">");
-			out.write("<A HREF=\"");
-			out.write(getLink(node));
-			out.write("\" target=\"classFrame\"></FONT>");
-			out.write(getName(node));
-			out.write("</A>: ");
-			
-			toHtml(binding, out);
+		if (!typedefs.isEmpty()) {
+			writeHeader("Typedefs", out);
+			for(TypedefDeclarationFragment node : typedefs) {
+				IBinding binding = (IBinding) node.getName().resolveTypeBinding();
+				writeBindedNode(out, node, binding);
+			}
+			out.write("<BR><BR>");
 		}
-		out.write("<BR><BR>");
 		
 		// Enums
-		out.write(
-			"<FONT size=\"+1\" CLASS=\"FrameHeadingFont\">\r\n" + 
-			"<B>Enums</B></FONT>");
-		for(ASTNode node : declarations) {
-			if (node.getNodeType() != ASTNode.ENUM_DECLARATION)
-				continue;
-			
-			EnumDeclaration e = (EnumDeclaration) node;
-			IBinding binding = (IBinding) e.getBaseType().resolveBinding();
-			
-			out.write("<BR>\r\n"); 
-			out.write("<FONT CLASS=\"FrameItemFont\">");
-			out.write("<A HREF=\"");
-			out.write(getLink(node));
-			out.write("\" target=\"classFrame\"></FONT>");
-			out.write(getName(node));
-			out.write("</A>: ");
-			
-			toHtml(binding, out);
+		if (!enums.isEmpty()) {
+			writeHeader("Enums", out);
+			for(EnumDeclaration node : enums) {
+				IBinding binding = (IBinding) node.getBaseType().resolveBinding();
+				writeBindedNode(out, node, binding);
+			}
+			out.write("<BR><BR>");
 		}
-		out.write("<BR><BR>");
 		
 		// Functions
-		out.write(
-			"<FONT size=\"+1\" CLASS=\"FrameHeadingFont\">\r\n" + 
-			"<B>Functions</B></FONT>");
-		for(ASTNode node : declarations) {
-			if (node.getNodeType() != ASTNode.FUNCTION_DECLARATION)
-				continue;
-			
-			out.write("<BR>\r\n"); 
-			out.write("<FONT CLASS=\"FrameItemFont\">");
-			out.write("<A HREF=\"");
-			out.write(getLink(node));
-			out.write("\" target=\"classFrame\"></FONT>");
-			out.write(getName(node));
-			out.write("</A>");
-		}
-		out.write("<BR><BR>");
+		writeHtmlList("Functions", functions, out);
 		
 		// Structs
-		out.write(
-			"<FONT size=\"+1\" CLASS=\"FrameHeadingFont\">\r\n" + 
-			"<B>Structs</B></FONT>");
-		for(ASTNode node : declarations) {
-			if (node.getNodeType() != ASTNode.AGGREGATE_DECLARATION)
-				continue;
-			
-			AggregateDeclaration a = (AggregateDeclaration) node;
-			if (a.getKind() != AggregateDeclaration.Kind.STRUCT) {
-				continue;
-			}
-			
-			out.write("<BR>\r\n"); 
-			out.write("<FONT CLASS=\"FrameItemFont\">");
-			out.write("<A HREF=\"");
-			out.write(getLink(node));
-			out.write("\" target=\"classFrame\"></FONT>");
-			out.write(getName(node));
-			out.write("</A>");
-		}
-		out.write("<BR><BR>");
+		writeHtmlList("Structs", structs, out);
 		
 		// Unions
-		out.write(
-			"<FONT size=\"+1\" CLASS=\"FrameHeadingFont\">\r\n" + 
-			"<B>Unions</B></FONT>");
-		for(ASTNode node : declarations) {
-			if (node.getNodeType() != ASTNode.AGGREGATE_DECLARATION)
-				continue;
-			
-			AggregateDeclaration a = (AggregateDeclaration) node;
-			if (a.getKind() != AggregateDeclaration.Kind.UNION) {
-				continue;
-			}
-			
-			out.write("<BR>\r\n"); 
-			out.write("<FONT CLASS=\"FrameItemFont\">");
-			out.write("<A HREF=\"");
-			out.write(getLink(node));
-			out.write("\" target=\"classFrame\"></FONT>");
-			out.write(getName(node));
-			out.write("</A>");
-		}
-		out.write("<BR><BR>");
+		writeHtmlList("Unions", unions, out);
 		
 		// Classes
-		out.write(
-			"<FONT size=\"+1\" CLASS=\"FrameHeadingFont\">\r\n" + 
-			"<B>Classes</B></FONT>");
-		for(ASTNode node : declarations) {
-			if (node.getNodeType() != ASTNode.AGGREGATE_DECLARATION)
-				continue;
-			
-			AggregateDeclaration a = (AggregateDeclaration) node;
-			if (a.getKind() != AggregateDeclaration.Kind.CLASS) {
-				continue;
-			}
-			
-			out.write("<BR>\r\n"); 
-			out.write("<FONT CLASS=\"FrameItemFont\">");
-			out.write("<A HREF=\"");
-			out.write(getLink(node));
-			out.write("\" target=\"classFrame\"></FONT>");
-			out.write(getName(node));
-			out.write("</A>");
-		}
-		out.write("<BR><BR>");
+		writeHtmlList("Classes", classes, out);
 		
 		// Interfaces
-		out.write(
-			"<FONT size=\"+1\" CLASS=\"FrameHeadingFont\">\r\n" + 
-			"<B>Interfaces</B></FONT>");
-		for(ASTNode node : declarations) {
-			if (node.getNodeType() != ASTNode.AGGREGATE_DECLARATION)
-				continue;
-			
-			AggregateDeclaration a = (AggregateDeclaration) node;
-			if (a.getKind() != AggregateDeclaration.Kind.INTERFACE) {
-				continue;
-			}
-			
-			out.write("<BR>\r\n"); 
-			out.write("<FONT CLASS=\"FrameItemFont\">");
-			out.write("<A HREF=\"");
-			out.write(getLink(node));
-			out.write("\" target=\"classFrame\"></FONT>");
-			out.write(getName(node));
-			out.write("</A>");
-		}
-		out.write("<BR><BR>");
+		writeHtmlList("Interfaces", interfaces, out);
 		
 		// Templates
-		out.write(
-			"<FONT size=\"+1\" CLASS=\"FrameHeadingFont\">\r\n" + 
-			"<B>Templates</B></FONT>");
-		for(ASTNode node : declarations) {
-			if (node.getNodeType() != ASTNode.TEMPLATE_DECLARATION)
-				continue;
-			
-			out.write("<BR>\r\n"); 
-			out.write("<FONT CLASS=\"FrameItemFont\">");
-			out.write("<A HREF=\"");
-			out.write(getLink(node));
-			out.write("\" target=\"classFrame\"></FONT>");
-			out.write(getName(node));
-			out.write("</A>");
-		}
-		out.write("<BR><BR>");
+		writeHtmlList("Templates", templates, out);
+	}
+
+	private void writeBindedNode(Writer out, ASTNode node, IBinding binding) throws IOException {
+		out.write("<BR>\r\n"); 
+		out.write("<FONT CLASS=\"FrameItemFont\">");
+		out.write("<A HREF=\"");
+		out.write(getLink(node));
+		out.write("\" target=\"classFrame\"></FONT>");
+		out.write(getName(node));
+		out.write("</A>: ");
+		
+		writeHtml(binding, out);
 	}
 	
-	private void toHtml(IBinding binding, Writer out) throws IOException {
+	private void writeHtmlList(String header, Collection<? extends ASTNode> nodes, Writer out) throws IOException {
+		if (!nodes.isEmpty()) {
+			writeHeader(header, out);
+			for(ASTNode node : nodes) {
+				out.write("<BR>\r\n"); 
+				out.write("<FONT CLASS=\"FrameItemFont\">");
+				out.write("<A HREF=\"");
+				out.write(getLink(node));
+				out.write("\" target=\"classFrame\"></FONT>");
+				out.write(getName(node));
+				out.write("</A>");
+			}
+			out.write("<BR><BR>");
+		}
+	}
+	
+	private void writeHeader(String header, Writer out) throws IOException {
+		out.write(
+				"<FONT size=\"+1\" CLASS=\"FrameHeadingFont\">\r\n" + 
+				"<B>");
+		out.write(header);
+		out.write("</B></FONT>");
+	}
+	
+	private void writeHtml(IBinding binding, Writer out) throws IOException {
 		out.write(binding.getName());
 	}
 
-	private String getName(ASTNode decl) {
+	private static String getName(ASTNode decl) {
 		switch(decl.getNodeType()) {
 		case ASTNode.FUNCTION_DECLARATION:
 			return ((FunctionDeclaration) decl).getName().getIdentifier();
@@ -739,48 +624,68 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		return sb.toString();
 	}
 	
-	private void collect(IJavaElement[] elements, List<ASTNode> declarations) throws JavaModelException {
+	private void collect(IJavaElement[] elements, Set<VariableDeclarationFragment> variables, Set<AliasDeclarationFragment> aliases, Set<TypedefDeclarationFragment> typedefs, Set<EnumDeclaration> enums, Set<AggregateDeclaration> classes, Set<AggregateDeclaration> interfaces, Set<AggregateDeclaration> structs, Set<AggregateDeclaration> unions, Set<TemplateDeclaration> templates, Set<FunctionDeclaration> functions) throws JavaModelException {
 		for(IJavaElement element : elements) {
-			collect(element, declarations);
+			collect(element, variables, aliases, typedefs, enums, classes, interfaces, structs, unions, templates, functions);
 		}
 	}
 	
-	private void collect(IJavaElement element, List<ASTNode> declarations) throws JavaModelException{
+	private void collect(IJavaElement element, Set<VariableDeclarationFragment> variables, Set<AliasDeclarationFragment> aliases, Set<TypedefDeclarationFragment> typedefs, Set<EnumDeclaration> enums, Set<AggregateDeclaration> classes, Set<AggregateDeclaration> interfaces, Set<AggregateDeclaration> structs, Set<AggregateDeclaration> unions, Set<TemplateDeclaration> templates, Set<FunctionDeclaration> functions) throws JavaModelException{
 		if (element.getElementType() == IJavaElement.COMPILATION_UNIT ||
 			element.getElementType() == IJavaElement.CLASS_FILE) {
-			collect((ICompilationUnit) element, declarations);
+			collect((ICompilationUnit) element, variables, aliases, typedefs, enums, classes, interfaces, structs, unions, templates, functions);
 		} else if (element instanceof IParent) {
-			collect(((IParent) element).getChildren(), declarations);
+			collect(((IParent) element).getChildren(), variables, aliases, typedefs, enums, classes, interfaces, structs, unions, templates, functions);
 		}
 	}
 	
-	private void collect(ICompilationUnit unit, List<ASTNode> declarations) throws JavaModelException {
+	private void collect(ICompilationUnit unit, Set<VariableDeclarationFragment> variables, Set<AliasDeclarationFragment> aliases, Set<TypedefDeclarationFragment> typedefs, Set<EnumDeclaration> enums, Set<AggregateDeclaration> classes, Set<AggregateDeclaration> interfaces, Set<AggregateDeclaration> structs, Set<AggregateDeclaration> unions, Set<TemplateDeclaration> templates, Set<FunctionDeclaration> functions) throws JavaModelException {
 		CompilationUnit ast = unit.getResolvedAtCompileTime(AST.D1);
 		for(Declaration decl : ast.declarations()) {
 			switch(decl.getNodeType()) {
 			case ASTNode.ALIAS_DECLARATION:
 				AliasDeclaration alias = (AliasDeclaration) decl;
 				for(AliasDeclarationFragment fragment : alias.fragments()) {
-					declarations.add(fragment);
+					aliases.add(fragment);
 				}
 				break;
 			case ASTNode.TYPEDEF_DECLARATION:
 				TypedefDeclaration typedef = (TypedefDeclaration) decl;
 				for(TypedefDeclarationFragment fragment : typedef.fragments()) {
-					declarations.add(fragment);
+					typedefs.add(fragment);
 				}
 				break;
 			case ASTNode.VARIABLE_DECLARATION:
 				VariableDeclaration var = (VariableDeclaration) decl;
 				for(VariableDeclarationFragment fragment : var.fragments()) {
-					declarations.add(fragment);
+					variables.add(fragment);
 				}
 				break;
 			case ASTNode.ENUM_DECLARATION:
+				enums.add((EnumDeclaration) decl);
+				break;
 			case ASTNode.TEMPLATE_DECLARATION:
+				templates.add((TemplateDeclaration) decl);
+				break;
 			case ASTNode.FUNCTION_DECLARATION:
+				functions.add((FunctionDeclaration) decl);
+				break;
 			case ASTNode.AGGREGATE_DECLARATION:
-				declarations.add(decl);
+				AggregateDeclaration a = (AggregateDeclaration) decl;
+				switch(a.getKind()) {
+				case CLASS:
+					classes.add(a);
+					break;
+				case STRUCT:
+					structs.add(a);
+					break;
+				case UNION:
+					unions.add(a);
+					break;
+				case INTERFACE:
+					interfaces.add(a);
+					break;
+				}
 				break;
 			case ASTNode.MODIFIER_DECLARATION:
 				// TODO
