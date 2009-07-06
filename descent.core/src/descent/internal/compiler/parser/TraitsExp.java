@@ -35,7 +35,6 @@ public class TraitsExp extends Expression {
 
 	@Override
 	public Expression semantic(final Scope sc, final SemanticContext context) {
-
 		if (!equals(ident, Id.compiles) && !equals(ident, Id.isSame)) {
 			TemplateInstance.semanticTiargs(loc, sc, args, 1, context);
 		}
@@ -380,7 +379,7 @@ public class TraitsExp extends Expression {
 			 * compile without error
 			 */
 			if (0 == dim) {
-				// goto Lfalse;
+				return new IntegerExp(loc, 0, Type.tbool);
 			}
 
 			for (int i = 0; i < dim; i++) {
@@ -411,16 +410,21 @@ public class TraitsExp extends Expression {
 				if (errors != context.global.errors) {
 					if (context.global.gag == 0)
 						context.global.errors = errors;
-					// goto Lfalse;
+					return new IntegerExp(loc, 0, Type.tbool);
 				}
 			}
-			// goto Ltrue;
+			return new IntegerExp(loc, 1, Type.tbool);
 		} else if (equals(ident, Id.isSame)) {
 			/*
 			 * Determine if two symbols are the same
 			 */
 			if (dim != 2) {
-				// goto Ldimerror;
+				if (context.acceptsErrors()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.WrongNumberOfArguments, this,
+							new String[] { String.valueOf(dim) }));
+				}
+				return new IntegerExp(loc, 0, Type.tbool);
 			}
 			TemplateInstance.semanticTiargs(loc, sc, args, 0, context);
 			ASTDmdNode o1 = (ASTDmdNode) args.get(0);
@@ -432,21 +436,21 @@ public class TraitsExp extends Expression {
 				Expression ea1 = isExpression(o1);
 				Expression ea2 = isExpression(o2);
 				if (ea1 != null && ea2 != null && ea1.equals(ea2)) {
-					// goto Ltrue;
+					return new IntegerExp(loc, 1, Type.tbool);
 				}
 			}
 
 			if (null == s1 || null == s2) {
-				// goto Lfalse;
+				return new IntegerExp(loc, 0, Type.tbool);
 			}
 
 			s1 = s1.toAlias(context);
 			s2 = s2.toAlias(context);
 
 			if (s1 == s2) {
-				// goto Ltrue;
+				return new IntegerExp(loc, 1, Type.tbool);
 			} else {
-				// goto Lfalse;
+				return new IntegerExp(loc, 0, Type.tbool);
 			}
 		} else {
 			if (context.acceptsErrors()) {
