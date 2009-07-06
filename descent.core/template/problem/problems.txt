@@ -1519,7 +1519,9 @@ DelimiterCannotBeWhitespace
 ArrayEqualityComparisonTypeMismatch
 	formatString=Array equality comparison type mismatch, %1$s vs %2$s
 	numArgs=2
-	
+GsharedNotAllowedInSafeMode
+	formatString=__gshared not allowed in safe mode; use shared
+	numArgs=0	
 	
 	
 	

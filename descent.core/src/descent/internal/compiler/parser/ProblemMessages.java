@@ -517,6 +517,7 @@ final class ProblemMessages extends NLS {
 	public static String EscapeStringLiteralDeprecated;
 	public static String DelimiterCannotBeWhitespace;
 	public static String ArrayEqualityComparisonTypeMismatch;
+	public static String GsharedNotAllowedInSafeMode;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

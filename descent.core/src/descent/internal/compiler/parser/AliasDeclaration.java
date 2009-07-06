@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.STC.STCref;
 import static descent.internal.compiler.parser.TOK.TOKfunction;
 import static descent.internal.compiler.parser.TOK.TOKvar;
 import melnorme.miscutil.tree.TreeVisitor;
@@ -148,58 +149,97 @@ public class AliasDeclaration extends Declaration {
 		 */
 		s[0] = type.toDsymbol(sc, context);
 		
-		boolean condition;
-		if (context.isD2()) {
-			condition = s[0] != null && ((s[0].getType(context) != null && type.equals(s[0].getType(context))) || s[0].isEnumMember() != null);
+		if (context.isD1()) {
+			if (s[0] != null) {
+				// goto L2;
+				semantic_L2(sc, context, s[0]); // it's a symbolic alias
+				return;
+			}
+	
+			type.resolve(loc, sc, e, t, s, context);
+			if (s[0] != null) {
+				// goto L2;
+				semantic_L2(sc, context, s[0]); // it's a symbolic alias
+				return;
+			} else if (e[0] != null) {
+				// Try to convert Expression to Dsymbol
+				if (context.isD2()) {
+					s[0] = getDsymbol(e[0], context);
+					if (s[0] != null) {
+					    // goto L2;
+						semantic_L2(sc, context, s[0]); // it's a symbolic alias
+						return;
+					}
+	
+					if (context.acceptsErrors()) {
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotAliasAnExpression, sourceType, e[0].toChars(context)));
+					}
+					t[0] = e[0].type;
+				} else {
+					if (e[0].op == TOKvar) {
+						s[0] = ((VarExp) e[0]).var;
+						// goto L2;
+						semantic_L2(sc, context, s[0]); // it's a symbolic alias
+						return;
+					} else if (e[0].op == TOKfunction) {
+						s[0] = ((FuncExp) e[0]).fd;
+						// goto L2;
+						semantic_L2(sc, context, s[0]); // it's a symbolic alias
+						return;
+					} else {
+						if (context.acceptsErrors()) {
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotAliasAnExpression, sourceType, e[0].toChars(context)));
+						}
+						t[0] = e[0].type;
+					}
+				}
+			} else if (t[0] != null) {
+				type = t[0];
+			}
 		} else {
-			condition = s[0] != null; 
-		}
-		
-		if (condition) {
-			// goto L2;
-			semantic_L2(sc, context, s[0]); // it's a symbolic alias
-			return;
-		}
+		    if (s[0] != null
+					&& ((s[0].getType(context) != null && type.equals(s[0]
+							.getType(context))) || s[0].isEnumMember() != null)) {
+				// it's a symbolic alias
+				// goto L2;
+				semantic_L2(sc, context, s[0]); // it's a symbolic alias
+				return;
+			}
 
-		type.resolve(loc, sc, e, t, s, context);
-		if (s[0] != null) {
-			// goto L2;
-			semantic_L2(sc, context, s[0]); // it's a symbolic alias
-			return;
-		} else if (e[0] != null) {
-			// Try to convert Expression to Dsymbol
-			if (context.isD2()) {
+			if ((storage_class & STCref) != 0) {
+				// For 'ref' to be attached to
+				// function types, and
+				// picked
+				// up by Type::resolve(), it has to go into sc.
+				sc = sc.push();
+				sc.stc |= STCref;
+				type.resolve(loc, sc, e, t, s, context);
+				sc = sc.pop();
+			} else
+				type.resolve(loc, sc, e, t, s, context);
+			if (s[0] != null) {
+				// goto L2;
+				semantic_L2(sc, context, s[0]); // it's a symbolic alias
+				return;
+			} else if (e[0] != null) {
+				// Try to convert Expression to Dsymbol
 				s[0] = getDsymbol(e[0], context);
 				if (s[0] != null) {
-				    // goto L2;
+					// goto L2;
 					semantic_L2(sc, context, s[0]); // it's a symbolic alias
 					return;
 				}
 
 				if (context.acceptsErrors()) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotAliasAnExpression, sourceType, e[0].toChars(context)));
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.CannotAliasAnExpression, sourceType, e[0]
+									.toChars(context)));
 				}
+
 				t[0] = e[0].type;
-			} else {
-				if (e[0].op == TOKvar) {
-					s[0] = ((VarExp) e[0]).var;
-					// goto L2;
-					semantic_L2(sc, context, s[0]); // it's a symbolic alias
-					return;
-				} else if (e[0].op == TOKfunction) {
-					s[0] = ((FuncExp) e[0]).fd;
-					// goto L2;
-					semantic_L2(sc, context, s[0]); // it's a symbolic alias
-					return;
-				} else {
-					if (context.acceptsErrors()) {
-						context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotAliasAnExpression, sourceType, e[0].toChars(context)));
-					}
-					t[0] = e[0].type;
-				}
+			} else if (t[0] != null) {
+				type = t[0];
 			}
-		} else if (t[0] != null) {
-			type = t[0];
 		}
 		if (overnext != null) {
 			ScopeDsymbol.multiplyDefined(Loc.ZERO, this, overnext, context);

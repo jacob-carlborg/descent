@@ -7,6 +7,7 @@ import static descent.internal.compiler.parser.STC.STCctorinit;
 import static descent.internal.compiler.parser.STC.STCextern;
 import static descent.internal.compiler.parser.STC.STCfield;
 import static descent.internal.compiler.parser.STC.STCforeach;
+import static descent.internal.compiler.parser.STC.STCgshared;
 import static descent.internal.compiler.parser.STC.STCin;
 import static descent.internal.compiler.parser.STC.STCinvariant;
 import static descent.internal.compiler.parser.STC.STClazy;
@@ -274,6 +275,16 @@ public class VarDeclaration extends Declaration {
 		linkage = sc.linkage;
 		this.parent = sc.parent;
 		protection = sc.protection;
+		
+		if (!context.isD1()) {
+		    if ((storage_class & STCgshared) != 0 && context.global.params.safe
+					&& !sc.module.safe) {
+		    	if (context.acceptsErrors()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.GsharedNotAllowedInSafeMode, this));
+				}
+			}
+		}
 
 		Dsymbol parent = toParent();
 		FuncDeclaration fd = parent.isFuncDeclaration();

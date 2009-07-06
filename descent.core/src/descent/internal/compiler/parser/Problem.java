@@ -1145,6 +1145,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.DelimiterCannotBeWhitespace);
 		case ArrayEqualityComparisonTypeMismatch:
 			return String.format(ProblemMessages.ArrayEqualityComparisonTypeMismatch, arguments[0], arguments[1]);
+		case GsharedNotAllowedInSafeMode:
+			return String.format(ProblemMessages.GsharedNotAllowedInSafeMode);
 		default:
 			return "";
 		}

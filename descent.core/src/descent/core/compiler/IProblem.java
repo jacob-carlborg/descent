@@ -716,5 +716,6 @@ public interface IProblem {
 	int EscapeStringLiteralDeprecated = 505;
 	int DelimiterCannotBeWhitespace = 506;
 	int ArrayEqualityComparisonTypeMismatch = 507;
+	int GsharedNotAllowedInSafeMode = 508;
 
 }

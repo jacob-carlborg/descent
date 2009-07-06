@@ -76,9 +76,9 @@ public abstract class Declaration extends Dsymbol {
 				if (isConst())
 					p = "const";
 				else if (isInvariant())
-					p = "invariant";
+					p = "mutable";
 				else if ((storage_class & STCmanifest) != 0)
-					p = "manifest constant";
+					p = "enum";
 				else if (!t.isAssignable())
 					p = "struct with immutable members";
 				if (p != null) {
@@ -123,6 +123,10 @@ public abstract class Declaration extends Dsymbol {
 	}
 
 	public boolean isCodepseg() {
+		return false;
+	}
+	
+	public boolean isThreadLocal() {
 		return false;
 	}
 

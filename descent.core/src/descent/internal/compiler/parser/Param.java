@@ -34,6 +34,7 @@ public class Param {
 	public char cov;		// generate code coverage data
 	public char nofloat;	// code should not pull in floating point support
 	public int Dversion;	// D version number
+	public boolean safe;
 
 	public String argv0;	// program name
 	public List<String> imppath; // array of char*'s of where to look for import modules

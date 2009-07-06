@@ -44,6 +44,8 @@ public class Module extends Package {
 	public HashtableOfCharArrayAndObject versionidsNot; // forward referenced version identifiers
 
 	public Array aimports; // all imported modules
+	
+	public boolean safe;
 
 	public File srcfile; // absolute path
 	public char[] arg;
