@@ -110,7 +110,6 @@ public abstract class BinExp extends Expression {
 		}
 
 		int namelen = buf.offset();
-		buf.writeByte(0);
 		String name = buf.extractData();
 
 		/*

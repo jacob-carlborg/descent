@@ -79,7 +79,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 	
 	private static Comparator<ASTNode> nameComparator = new Comparator<ASTNode>() {
 		public int compare(ASTNode o1, ASTNode o2) {
-			return getName(o1).compareTo(getName(o2));
+			return getName(o1).compareToIgnoreCase(getName(o2));
 		}
 	};
 
@@ -544,6 +544,11 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 	}
 	
 	private void writeBinding(IBinding binding, Writer out) throws IOException {
+		if (binding == null) {
+			System.out.println(123456);
+			return;
+		}
+		
 		switch(binding.getKind()) {
 		case IBinding.TYPE:
 			writeBinding((ITypeBinding) binding, out);
@@ -631,7 +636,11 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		case ASTNode.ALIAS_DECLARATION_FRAGMENT:
 			return ((AliasDeclarationFragment) decl).getName().getIdentifier();
 		case ASTNode.ENUM_DECLARATION:
-			return ((EnumDeclaration) decl).getName().getIdentifier();
+			EnumDeclaration e = (EnumDeclaration) decl;
+			if (e.getName() == null) {
+				return "(unnamed)";
+			}
+			return e.getName().getIdentifier();
 		case ASTNode.TEMPLATE_DECLARATION:
 			return ((TemplateDeclaration) decl).getName().getIdentifier();
 		case ASTNode.TYPEDEF_DECLARATION_FRAGMENT:

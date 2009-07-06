@@ -483,6 +483,8 @@ public class CompileTimeASTConverter {
 			return convert((TypeSlice) symbol);
 		case ASTDmdNode.TYPE_STRUCT:
 			return convert((TypeStruct) symbol);
+		case ASTDmdNode.TYPE_TYPEDEF:
+			return convert((TypeTypedef) symbol);
 		case ASTDmdNode.TYPE_TYPEOF:
 			return convert((TypeTypeof) symbol);
 		case ASTDmdNode.TYPE_RETURN:
@@ -1492,7 +1494,8 @@ public class CompileTimeASTConverter {
 			return convertModifiedType(a, b);
 		} else {
 			PointerType b = new PointerType(ast);
-			b.setComponentType(convert(a.next));
+			descent.core.dom.Type component = convert(a.next);
+			b.setComponentType(component);
 			setSourceRange(b, a.start, a.length);
 			
 			if (resolveBindings) {
@@ -3616,6 +3619,14 @@ public class CompileTimeASTConverter {
 		return ast.newSimpleType(ast.newSimpleName(new String(a.sym.ident.ident)));
 	}
 	
+	public descent.core.dom.Type convert(TypeTypedef a) {
+		if (a.sym.parent instanceof TemplateInstance) {
+			return (descent.core.dom.Type) convert(a.sym.parent);
+		}
+		
+		return ast.newSimpleType(ast.newSimpleName(new String(a.sym.ident.ident)));
+	}
+	
 	public descent.core.dom.Type convert(TypeStruct a) {
 		if (a.sym.parent instanceof TemplateInstance) {
 			return (descent.core.dom.Type) convert(a.sym.parent);
@@ -3988,8 +3999,10 @@ public class CompileTimeASTConverter {
 		}
 		
 		List<descent.core.dom.Statement> compilerDeclarations = findCompilerDeclarations(stm);
-		for(descent.core.dom.Statement compilerDecl : compilerDeclarations) {
-			destination.add(compilerDecl);
+		if (compilerDeclarations != null) {
+			for(descent.core.dom.Statement compilerDecl : compilerDeclarations) {
+				destination.add(compilerDecl);
+			}
 		}
 		
 		descent.core.dom.Statement convertStm = convert(stm);
@@ -4000,6 +4013,9 @@ public class CompileTimeASTConverter {
 	}
 	
 	private List<descent.core.dom.Statement> findCompilerDeclarations(Statement stm) {
+		if (stm == null)
+			return null;
+		
 		final List<descent.core.dom.Statement> statements = new ArrayList<descent.core.dom.Statement>();
 		stm.accept(new AstVisitorAdapter() {
 			@Override
