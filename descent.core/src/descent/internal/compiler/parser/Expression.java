@@ -645,6 +645,18 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		return toInteger(context).castToUns64();
 	}
 	
+	public Expression trySemantic(Scope sc, SemanticContext context) {
+		int errors = context.global.errors;
+		context.global.gag++;
+		Expression e = semantic(sc, context);
+		context.global.gag--;
+		if (errors != context.global.errors) {
+			context.global.errors = errors;
+			e = null;
+		}
+		return e;
+	}
+	
 	public static Expression shift_optimize(int result, BinExp e, BinExp_fp fp,
 			SemanticContext context) {
 		Expression ex = e;

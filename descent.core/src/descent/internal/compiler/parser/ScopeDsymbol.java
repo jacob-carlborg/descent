@@ -304,6 +304,10 @@ public class ScopeDsymbol extends Dsymbol {
 	 *	NULL		not found, *pn gets incremented by the number
 	 *			of Dsymbols
 	 */
+	public static Dsymbol getNth(Array members, int nth) {
+		return getNth(members, nth, null);
+	}
+	
 	public static Dsymbol getNth(Array members, int nth, int[] pn) {
 		if (null == members)
 			return null;

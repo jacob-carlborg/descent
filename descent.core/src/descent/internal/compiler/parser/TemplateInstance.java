@@ -893,7 +893,7 @@ public class TemplateInstance extends ScopeDsymbol {
 			return;
 		}
 		semantictiargsdone = true;
-		semanticTiargs(loc, sc, tiargs, context);
+		semanticTiargs(loc, sc, tiargs, 0, context);
 	}
 
 	@Override
@@ -973,7 +973,7 @@ public class TemplateInstance extends ScopeDsymbol {
 	 *	flags	1: replace const variables with their initializers
 	 */
 	public static void semanticTiargs(Loc loc, Scope sc, Objects tiargs,
-			SemanticContext context) {
+			int flags, SemanticContext context) {
 		// Run semantic on each argument, place results in tiargs[]
 		if (null == tiargs) {
 			return;

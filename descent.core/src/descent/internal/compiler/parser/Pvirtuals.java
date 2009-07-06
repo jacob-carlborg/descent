@@ -1,12 +1,14 @@
 package descent.internal.compiler.parser;
 
+import descent.internal.compiler.parser.ASTDmdNode.OverloadApply_fp;
 
-public class Pvirtuals
+
+public class Pvirtuals implements OverloadApply_fp
 {
 	public Expression e1;
 	public Expressions exps;
 	
-	static int fpvirtuals(Object param, FuncDeclaration f, SemanticContext context)
+	public int call(Object param, FuncDeclaration f, SemanticContext context)
 	{
 		Pvirtuals p = (Pvirtuals) param;
 
