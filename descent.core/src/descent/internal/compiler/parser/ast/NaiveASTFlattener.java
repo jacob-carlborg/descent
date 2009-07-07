@@ -294,6 +294,7 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 			}
 		}
 		this.buffer.append("]");
+		this.buffer.append(";");
 		return false;
 	}
 	

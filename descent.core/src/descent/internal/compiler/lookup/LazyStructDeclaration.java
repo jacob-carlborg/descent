@@ -1,5 +1,12 @@
 package descent.internal.compiler.lookup;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+import descent.core.IJavaElement;
+import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.DsymbolTable;
@@ -42,11 +49,35 @@ public class LazyStructDeclaration extends StructDeclaration implements ILazyAgg
 			}
 			
 			if (!lazy.cancelLazyness) {
-				
-				for(char[] key : lazy.javaElementMembersCache.keys()) {
-					if (key != null && CharOperation.prefixEquals(prefix, key, false)) {
-						search(Loc.ZERO, key, 0, context);
+				// We need to insert them in order, for struct initializers
+				try {
+					IJavaElement[] children = javaElement.getChildren();
+					final List<String> names = new ArrayList<String>();
+					for(IJavaElement child : children) {
+						names.add(child.getElementName());
 					}
+					
+					List<String> keys = new ArrayList<String>();
+					
+					for(char[] key : lazy.javaElementMembersCache.keys()) {
+						if (key != null && CharOperation.prefixEquals(prefix, key, false)) {
+							keys.add(new String(key));
+						}
+					}
+					
+					Collections.sort(keys, new Comparator<String>() {
+						public int compare(String arg0, String arg1) {
+							int i0 = names.indexOf(arg0);
+							int i1 = names.indexOf(arg1);
+							return i0 < i1 ? -1 : (i0 > i1 ? 1 : 0);
+						}
+					});
+					
+					for(String key : keys) {
+						search(Loc.ZERO, key.toCharArray(), 0, context);
+					}
+				} catch (JavaModelException e) {
+					e.printStackTrace();
 				}
 			}
 		}

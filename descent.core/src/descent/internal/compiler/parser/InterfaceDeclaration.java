@@ -169,6 +169,10 @@ public class InterfaceDeclaration extends ClassDeclaration {
 			
 			b.type = b.type.semantic(loc, sc, context);
 			
+			if (getModule() == context.Module_rootModule) {
+				unlazy(b, context);	
+			}
+			
 			if (getModule() == context.Module_rootModule && b.type instanceof TypeClass) {
 				unlazy(b, context);
 			}

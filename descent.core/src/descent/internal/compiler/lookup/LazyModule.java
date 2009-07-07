@@ -176,6 +176,12 @@ public class LazyModule extends Module implements ILazy {
 							Util.log(e);
 						}
 						
+						if (result.pendingSemantic != null) {
+							for(Dsymbol s2 : result.pendingSemantic) {
+								runMissingSemantic(s2, context);
+							}
+						}
+						
 						// Anonymous enums are "hard" for me :-P
 						if (result != null && result.hasAnonEnum) {
 							return search(loc, ident, flags, context);

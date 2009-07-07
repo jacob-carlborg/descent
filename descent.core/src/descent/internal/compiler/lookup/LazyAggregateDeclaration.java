@@ -180,6 +180,12 @@ public class LazyAggregateDeclaration {
 			} else {
 				assignParent(lazy.members());
 			}
+		} else {
+			if (result.pendingSemantic != null) {
+				for(Dsymbol s : result.pendingSemantic) {
+					lazy.runMissingSemantic(s, context);
+				}
+			}
 		}
 		
 		return result;

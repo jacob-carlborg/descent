@@ -892,6 +892,7 @@ public class ModuleBuilder {
 		public List<Dsymbol> publicImports = new ArrayList<Dsymbol>();
 		public Map<IJavaElement, AlignDeclaration> aligns = new HashMap<IJavaElement, AlignDeclaration>();
 		private AlignDeclaration align;
+		public List<Dsymbol> pendingSemantic;
 	}
 	
 	public FillResult fillJavaElementMembersCache(ILazy lazy, IJavaElement[] elements, Dsymbols symbols, SemanticContext context) {
@@ -972,7 +973,10 @@ public class ModuleBuilder {
 							if (type.isEnum()) {
 								Dsymbol sym = fillEnum(lazy.getModule(), symbols, type);
 								sym.addMember(lazy.getSemanticScope(), lazy.asScopeDsymbol(), 0, context);
-								lazy.runMissingSemantic(sym, context);
+								if (result.pendingSemantic == null) {
+									result.pendingSemantic = new ArrayList<Dsymbol>();
+								}
+								result.pendingSemantic.add(sym);
 								result.hasAnonEnum = true;
 							} else {
 								result.hasAnon = true;

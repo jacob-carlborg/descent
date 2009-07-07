@@ -31,6 +31,7 @@ import descent.internal.compiler.parser.AliasThis;
 import descent.internal.compiler.parser.AlignDeclaration;
 import descent.internal.compiler.parser.AnonDeclaration;
 import descent.internal.compiler.parser.Arguments;
+import descent.internal.compiler.parser.ArrayInitializer;
 import descent.internal.compiler.parser.AttribDeclaration;
 import descent.internal.compiler.parser.BaseClass;
 import descent.internal.compiler.parser.BaseClasses;
@@ -706,9 +707,17 @@ public class SourceElementParser extends AstVisitorAdapter {
 			return null;
 		}
 		
-		char[] value = new char[node.length];
-		System.arraycopy(source, node.start, value, 0, node.length);
-		return ASTNodeEncoder.encoderForIndexer(value);
+		if (node instanceof ArrayInitializer) {
+			// For the parser to work ok with array initializers, when decoding
+			char[] value = new char[node.length + 1];
+			System.arraycopy(source, node.start, value, 0, node.length);
+			value[value.length - 1] = ';';
+			return ASTNodeEncoder.encoderForIndexer(value);
+		} else {
+			char[] value = new char[node.length];
+			System.arraycopy(source, node.start, value, 0, node.length);
+			return ASTNodeEncoder.encoderForIndexer(value);
+		}
 	}
 
 	@Override

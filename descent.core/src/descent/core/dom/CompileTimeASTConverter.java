@@ -3783,9 +3783,15 @@ public class CompileTimeASTConverter {
 				continue;
 			}
 			
-			if (!(symbol instanceof TemplateInstance)) {
-				i = convertOneOfManyDeclarations(destination, source, i, symbol);
+			if (symbol instanceof TemplateInstance) {
+				continue;
 			}
+			
+			if (symbol instanceof TypeInfoDeclaration) {
+				continue;
+			}
+			
+			i = convertOneOfManyDeclarations(destination, source, i, symbol);
 		}
 	}
 	

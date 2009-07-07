@@ -49,11 +49,6 @@ public class TypeBasic extends Type {
 
 	public TypeBasic(TY ty) {
 		super(ty, null);
-
-		// HACK to get deco ready
-		OutBuffer out = new OutBuffer();
-		toDecoBuffer(out, null /* it's safe to pass null here */);
-		deco = out.extractData();
 	}
 
 	public TypeBasic(Type singleton) {
@@ -801,7 +796,7 @@ public class TypeBasic extends Type {
 	
 	@Override
 	public String getSignature0() {
-		return deco;
+		return String.valueOf(ty.mangleChar);
 	}
 	
 	@Override

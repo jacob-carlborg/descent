@@ -48,7 +48,7 @@ import descent.core.compiler.IProblem;
 public abstract class Type extends ASTDmdNode implements Cloneable {
 
 	public final static int PTRSIZE = 4;
-	public final static int REALSIZE = 8;
+	public final static int REALSIZE = 16;
 	public final static int MODconst = 1; // type is const
 	public final static int MODinvariant = 4; // type is invariant
 	public final static int MODshared = 2; // type is shared
@@ -633,7 +633,13 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		if (null == t.deco)
 			return t.merge(context);
 
-		StringValue sv = context.stringTable.lookup(t.deco);
+		// Changed for Descent
+//		StringValue sv = context.stringTable.lookup(t.deco);
+		StringValue sv = context.stringTable.update(t.deco);
+		if (sv.ptrvalue == null) {
+			sv.ptrvalue = this;
+			deco = sv.lstring;
+		}
 		if (sv != null && sv.ptrvalue != null) {
 			t = (Type) sv.ptrvalue;
 		} else {
