@@ -4,11 +4,11 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -80,6 +80,12 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 	private static Comparator<ASTNode> nameComparator = new Comparator<ASTNode>() {
 		public int compare(ASTNode o1, ASTNode o2) {
 			return getName(o1).compareToIgnoreCase(getName(o2));
+		}
+	};
+	
+	private static Comparator<ICompilationUnit> cuComparator = new Comparator<ICompilationUnit>() {
+		public int compare(ICompilationUnit o1, ICompilationUnit o2) {
+			return o1.getFullyQualifiedName().compareToIgnoreCase(o2.getFullyQualifiedName());
 		}
 	};
 
@@ -266,27 +272,55 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 			}
 		}
 	}
+	
+	private static class Symbols {
+		Set<ICompilationUnit> modules = new TreeSet<ICompilationUnit>(cuComparator);
+		Set<VariableDeclarationFragment> variables = new TreeSet<VariableDeclarationFragment>(nameComparator);
+		Set<AliasDeclarationFragment> aliases = new TreeSet<AliasDeclarationFragment>(nameComparator);
+		Set<TypedefDeclarationFragment> typedefs = new TreeSet<TypedefDeclarationFragment>(nameComparator);
+		Set<EnumDeclaration> enums = new TreeSet<EnumDeclaration>(nameComparator);
+		Set<FunctionDeclaration> functions = new TreeSet<FunctionDeclaration>(nameComparator);
+		Set<AggregateDeclaration> classes = new TreeSet<AggregateDeclaration>(nameComparator);
+		Set<AggregateDeclaration> interfaces = new TreeSet<AggregateDeclaration>(nameComparator);
+		Set<AggregateDeclaration> structs = new TreeSet<AggregateDeclaration>(nameComparator);
+		Set<AggregateDeclaration> unions = new TreeSet<AggregateDeclaration>(nameComparator);
+		Set<TemplateDeclaration> templates = new TreeSet<TemplateDeclaration>(nameComparator);
+	}
 
 	private boolean executeJavadocGeneration() {
 		try {
-			// 1. Generate frameset in index.html
+			// Collect symbols of packages
+			Symbols symbols = collectSymbols();
+			
+			// Generate frameset in index.html
 			generateIndex();
 			
-			// 2. Generate stylesheet
+			// Generate stylesheet
 			generateStylesheet();
 			
-			// 3. Generate packages list
-			generatePackagesList();
+			// Generate packages list
+			generateModulesListFrame(symbols);
 			
-			// 4. Generate all symbols frame
-			generateAllSymbolsFrame();
+			// Generate all symbols frame
+			generateAllSymbolsFrame(symbols);
 			
+			// For each module, generate module-listing
+//			for(IJavaElement pack : symbols.modules) {
+//				generateModuleFrame(pack, symbols);
+//			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return true;
 
 	}
+
+	private Symbols collectSymbols() throws JavaModelException {
+		Symbols symbols = new Symbols();
+		collect(fStore.getSourceElements(), symbols);
+		return symbols;
+	}
+
 
 	private void generateIndex() throws IOException {
 		Writer out = writerFor("index.html");
@@ -312,11 +346,11 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 				"</head>\r\n" + 
 				"<frameset cols=\"20%,80%\" title=\"\" onLoad=\"top.loadFrames()\">\r\n" + 
 				"<frameset rows=\"30%,70%\" title=\"\" onLoad=\"top.loadFrames()\">\r\n" + 
-				"<frame src=\"overview-frame.html\" name=\"packageListFrame\" title=\"All Packages\">\r\n" + 
+				"<frame src=\"overview-frame.html\" name=\"moduleListFrame\" title=\"All Modules\">\r\n" + 
 				"\r\n" + 
-				"<frame src=\"allsymbols-frame.html\" name=\"packageFrame\" title=\"All symbols\">\r\n" + 
+				"<frame src=\"allsymbols-frame.html\" name=\"moduleFrame\" title=\"All symbols\">\r\n" + 
 				"</frameset>\r\n" + 
-				"<frame src=\"overview-summary.html\" name=\"classFrame\" title=\"Module descriptions\" scrolling=\"yes\">\r\n" + 
+				"<frame src=\"overview-summary.html\" name=\"moduleDetailsFrame\" title=\"Module descriptions\" scrolling=\"yes\">\r\n" + 
 				"<noframes>\r\n" + 
 				"<h2>\r\n" + 
 				"Frame Alert</h2>\r\n" + 
@@ -331,7 +365,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		out.close();
 	}
 	
-	private void generatePackagesList() throws IOException {
+	private void generateModulesListFrame(Symbols symbols) throws IOException {
 		Writer out = writerFor("overview-frame.html");
 		out.write(
 			"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\r\n" + 
@@ -348,20 +382,11 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 			"<div class=\"title\">");
 		out.write(fStore.getTitle());
 		out.write("</div>\r\n" + 
-			"<div class=\"allSymbolsTitle\"><a href=\"allsymbols-frame.html\" target=\"packageFrame\">All Symbols</A></div>\r\n" +
-			"<div class=\"packagesTitle\">Packages</div>\r\n" +
-			"<ul class=\"packages\">");
+			"<div class=\"allSymbolsTitle\"><a href=\"allsymbols-frame.html\" target=\"moduleFrame\">All Symbols</A></div>\r\n" +
+			"<div class=\"modulesTitle\">Modules</div>\r\n" +
+			"<ul class=\"modules\">");
 		
-		IJavaElement[] elements = fStore.getSourceElements();
-		
-		// Sort packages by name
-		Arrays.sort(elements, new Comparator<IJavaElement>() {
-			public int compare(IJavaElement o1, IJavaElement o2) {
-				return o1.getElementName().compareTo(o2.getElementName());
-			}
-		});
-		
-		generatePackagesList(elements, out);
+		generateModulesList(symbols.modules, out);
 		
 		out.write(
 				"</ul>\r\n" +
@@ -370,34 +395,37 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		out.close();
 	}
 
-	private void generatePackagesList(IJavaElement[] elements, Writer out) throws IOException {
-		for(IJavaElement element : elements) {
-			generatePackagesList(element, out);
+	private void generateModulesList(Set<ICompilationUnit> cus, Writer out) throws IOException {
+		for(ICompilationUnit cu : cus) {
+			generateModulesList(cu, out);
 		}
 	}
 
-	private void generatePackagesList(IJavaElement element, Writer out) throws IOException {
-		if (element.getElementType() == IJavaElement.PACKAGE_FRAGMENT) {
-			String[] ids = element.getElementName().split("\\.");
-			
-			out.write("<li><a href=\"");
-			writePackageFrameHref(ids, out);
-			out.write("\" target=\"packageFrame\">");
-			
-			for (int i = 0; i < ids.length; i++) {
-				if (i != 0) {
-					out.write('.');
-				}
-				out.write(ids[i]);
-			}
-			out.write("</li>\r\n");
-			return;
-		}
+	private void generateModulesList(ICompilationUnit cu, Writer out) throws IOException {
+		String fqn = cu.getFullyQualifiedName();
+		String fqnPath = fqn.replace(".", File.separator);
+		
+		out.write("<li><a href=\"");
+		out.write(fqnPath);
+		out.write("\" target=\"moduleFrame\">");
+		out.write(fqn);
+		out.write("</li>\r\n");
 	}
 	
 	private static void writePackageFrameHref(IJavaElement element, Writer out) throws IOException {
-		String[] ids = element.getElementName().split("\\.");
+		String[] ids = getCompoundName(element);
 		writePackageFrameHref(ids, out);
+	}
+	
+	private static String[] getCompoundName(IJavaElement element) throws IOException {
+		String name = element.getElementName();
+		if (name.endsWith(".d")) {
+			name = name.substring(0, name.length() - 1);
+		} else if (name.endsWith(".di")) {
+			name = name.substring(0, name.length() - 2);
+		}
+		
+		return name.split("\\.");
 	}
 	
 	private static void writePackageFrameHref(String[] ids, Writer out) throws IOException {
@@ -410,7 +438,13 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		out.write("/package-frame.html");
 	}
 	
-	private void generateAllSymbolsFrame() throws IOException, JavaModelException {
+	private static String getPackageFrameHref(IJavaElement element) throws IOException {
+		StringWriter out = new StringWriter();
+		writePackageFrameHref(element, out);
+		return out.toString();
+	}
+	
+	private void generateAllSymbolsFrame(Symbols symbols) throws IOException, JavaModelException {
 		Writer out = writerFor("allsymbols-frame.html");
 		out.write(
 			"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\r\n" + 
@@ -424,7 +458,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 			"</head>\r\n" + 
 			"<body>\r\n");
 		
-		generateAllSymbolsFrame(fStore.getSourceElements(), out);
+		generateAllSymbolsFrame(symbols, out);
 		
 		out.write(
 			"</body>\r\n" + 
@@ -434,25 +468,17 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		out.close();
 	}
 	
-	private void generateAllSymbolsFrame(IJavaElement[] elements, Writer out) throws IOException, JavaModelException {
-		Set<VariableDeclarationFragment> variables = new TreeSet<VariableDeclarationFragment>(nameComparator);
-		Set<AliasDeclarationFragment> aliases = new TreeSet<AliasDeclarationFragment>(nameComparator);
-		Set<TypedefDeclarationFragment> typedefs = new TreeSet<TypedefDeclarationFragment>(nameComparator);
-		Set<EnumDeclaration> enums = new TreeSet<EnumDeclaration>(nameComparator);
-		Set<FunctionDeclaration> functions = new TreeSet<FunctionDeclaration>(nameComparator);
-		Set<AggregateDeclaration> classes = new TreeSet<AggregateDeclaration>(nameComparator);
-		Set<AggregateDeclaration> interfaces = new TreeSet<AggregateDeclaration>(nameComparator);
-		Set<AggregateDeclaration> structs = new TreeSet<AggregateDeclaration>(nameComparator);
-		Set<AggregateDeclaration> unions = new TreeSet<AggregateDeclaration>(nameComparator);
-		Set<TemplateDeclaration> templates = new TreeSet<TemplateDeclaration>(nameComparator);
-		
-		collect(elements, variables, aliases, typedefs, enums, classes, interfaces, structs, unions, templates, functions);
-		
+	private void generatePackageFrame(IJavaElement pack, Symbols symbols) throws IOException {
+		Writer out = writerFor(getPackageFrameHref(pack));
+		out.close();
+	}
+	
+	private void generateAllSymbolsFrame(Symbols symbols, Writer out) throws IOException, JavaModelException {
 		// Variables
-		if (!variables.isEmpty()) {
+		if (!symbols.variables.isEmpty()) {
 			writeHeader("Variables", out);
 			out.write("<ul class=\"symbols\">\r\n");
-			for(VariableDeclarationFragment node : variables) {
+			for(VariableDeclarationFragment node : symbols.variables) {
 				IBinding binding = node.getName().resolveTypeBinding();
 				writeBindedNode(out, node, binding);
 			}
@@ -460,10 +486,10 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		}
 		
 		// Aliases
-		if (!aliases.isEmpty()) {
+		if (!symbols.aliases.isEmpty()) {
 			writeHeader("Aliases", out);
 			out.write("<ul class=\"symbols\">\r\n");
-			for(AliasDeclarationFragment node : aliases) {
+			for(AliasDeclarationFragment node : symbols.aliases) {
 				IBinding binding = node.getName().resolveTypeBinding();
 				writeBindedNode(out, node, binding);
 			}
@@ -471,10 +497,10 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		}
 		
 		// Typedefs
-		if (!typedefs.isEmpty()) {
+		if (!symbols.typedefs.isEmpty()) {
 			writeHeader("Typedefs", out);
 			out.write("<ul class=\"symbols\">\r\n");
-			for(TypedefDeclarationFragment node : typedefs) {
+			for(TypedefDeclarationFragment node : symbols.typedefs) {
 				IBinding binding = (IBinding) node.getName().resolveTypeBinding();
 				writeBindedNode(out, node, binding);
 			}
@@ -482,10 +508,10 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		}
 		
 		// Enums
-		if (!enums.isEmpty()) {
+		if (!symbols.enums.isEmpty()) {
 			writeHeader("Enums", out);
 			out.write("<ul class=\"symbols\">\r\n");
-			for(EnumDeclaration node : enums) {
+			for(EnumDeclaration node : symbols.enums) {
 				IBinding binding = (IBinding) node.getBaseType().resolveBinding();
 				writeBindedNode(out, node, binding);
 			}
@@ -493,22 +519,22 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		}
 		
 		// Functions
-		writeHtmlList("Functions", functions, out);
+		writeHtmlList("Functions", symbols.functions, out);
 		
 		// Structs
-		writeHtmlList("Structs", structs, out);
+		writeHtmlList("Structs", symbols.structs, out);
 		
 		// Unions
-		writeHtmlList("Unions", unions, out);
+		writeHtmlList("Unions", symbols.unions, out);
 		
 		// Classes
-		writeHtmlList("Classes", classes, out);
+		writeHtmlList("Classes", symbols.classes, out);
 		
 		// Interfaces
-		writeHtmlList("Interfaces", interfaces, out);
+		writeHtmlList("Interfaces", symbols.interfaces, out);
 		
 		// Templates
-		writeHtmlList("Templates", templates, out);
+		writeHtmlList("Templates", symbols.templates, out);
 	}
 
 	private void writeBindedNode(Writer out, ASTNode node, IBinding binding) throws IOException {
@@ -659,73 +685,75 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 	}
 	
 	private static void writeHref(IJavaElement element, String name, Writer out) throws IOException {
-		IPackageFragment pack = (IPackageFragment) element.getAncestor(IJavaElement.PACKAGE_FRAGMENT);
-		
-		writePackageFrameHref(pack, out);
-		out.write('#');
-		out.write(name);
+//		IPackageFragment pack = (IPackageFragment) element.getAncestor(IJavaElement.PACKAGE_FRAGMENT);
+//		
+//		writePackageFrameHref(pack, out);
+//		out.write('#');
+//		out.write(name);
 	}
 	
-	private void collect(IJavaElement[] elements, Set<VariableDeclarationFragment> variables, Set<AliasDeclarationFragment> aliases, Set<TypedefDeclarationFragment> typedefs, Set<EnumDeclaration> enums, Set<AggregateDeclaration> classes, Set<AggregateDeclaration> interfaces, Set<AggregateDeclaration> structs, Set<AggregateDeclaration> unions, Set<TemplateDeclaration> templates, Set<FunctionDeclaration> functions) throws JavaModelException {
+	private void collect(IJavaElement[] elements, Symbols symbols) throws JavaModelException {
 		for(IJavaElement element : elements) {
-			collect(element, variables, aliases, typedefs, enums, classes, interfaces, structs, unions, templates, functions);
+			collect(element, symbols);
 		}
 	}
 	
-	private void collect(IJavaElement element, Set<VariableDeclarationFragment> variables, Set<AliasDeclarationFragment> aliases, Set<TypedefDeclarationFragment> typedefs, Set<EnumDeclaration> enums, Set<AggregateDeclaration> classes, Set<AggregateDeclaration> interfaces, Set<AggregateDeclaration> structs, Set<AggregateDeclaration> unions, Set<TemplateDeclaration> templates, Set<FunctionDeclaration> functions) throws JavaModelException{
+	private void collect(IJavaElement element, Symbols symbols) throws JavaModelException{
 		if (element.getElementType() == IJavaElement.COMPILATION_UNIT ||
 			element.getElementType() == IJavaElement.CLASS_FILE) {
-			collect((ICompilationUnit) element, variables, aliases, typedefs, enums, classes, interfaces, structs, unions, templates, functions);
+			ICompilationUnit unit = (ICompilationUnit) element;
+			symbols.modules.add(unit);
+			collect(unit, symbols);
 		} else if (element instanceof IParent) {
-			collect(((IParent) element).getChildren(), variables, aliases, typedefs, enums, classes, interfaces, structs, unions, templates, functions);
+			collect(((IParent) element).getChildren(), symbols);
 		}
 	}
 	
-	private void collect(ICompilationUnit unit, Set<VariableDeclarationFragment> variables, Set<AliasDeclarationFragment> aliases, Set<TypedefDeclarationFragment> typedefs, Set<EnumDeclaration> enums, Set<AggregateDeclaration> classes, Set<AggregateDeclaration> interfaces, Set<AggregateDeclaration> structs, Set<AggregateDeclaration> unions, Set<TemplateDeclaration> templates, Set<FunctionDeclaration> functions) throws JavaModelException {
+	private void collect(ICompilationUnit unit, Symbols symbols) throws JavaModelException {
 		CompilationUnit ast = unit.getResolvedAtCompileTime(AST.D1);
 		for(Declaration decl : ast.declarations()) {
 			switch(decl.getNodeType()) {
 			case ASTNode.ALIAS_DECLARATION:
 				AliasDeclaration alias = (AliasDeclaration) decl;
 				for(AliasDeclarationFragment fragment : alias.fragments()) {
-					aliases.add(fragment);
+					symbols.aliases.add(fragment);
 				}
 				break;
 			case ASTNode.TYPEDEF_DECLARATION:
 				TypedefDeclaration typedef = (TypedefDeclaration) decl;
 				for(TypedefDeclarationFragment fragment : typedef.fragments()) {
-					typedefs.add(fragment);
+					symbols.typedefs.add(fragment);
 				}
 				break;
 			case ASTNode.VARIABLE_DECLARATION:
 				VariableDeclaration var = (VariableDeclaration) decl;
 				for(VariableDeclarationFragment fragment : var.fragments()) {
-					variables.add(fragment);
+					symbols.variables.add(fragment);
 				}
 				break;
 			case ASTNode.ENUM_DECLARATION:
-				enums.add((EnumDeclaration) decl);
+				symbols.enums.add((EnumDeclaration) decl);
 				break;
 			case ASTNode.TEMPLATE_DECLARATION:
-				templates.add((TemplateDeclaration) decl);
+				symbols.templates.add((TemplateDeclaration) decl);
 				break;
 			case ASTNode.FUNCTION_DECLARATION:
-				functions.add((FunctionDeclaration) decl);
+				symbols.functions.add((FunctionDeclaration) decl);
 				break;
 			case ASTNode.AGGREGATE_DECLARATION:
 				AggregateDeclaration a = (AggregateDeclaration) decl;
 				switch(a.getKind()) {
 				case CLASS:
-					classes.add(a);
+					symbols.classes.add(a);
 					break;
 				case STRUCT:
-					structs.add(a);
+					symbols.structs.add(a);
 					break;
 				case UNION:
-					unions.add(a);
+					symbols.unions.add(a);
 					break;
 				case INTERFACE:
-					interfaces.add(a);
+					symbols.interfaces.add(a);
 					break;
 				}
 				break;
@@ -744,14 +772,23 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 				".symbols li { white-space: nowrap; }\r\n" +
 				".symbolType { font-weight:bold; }\r\n" +
 				".allSymbolsTitle { font-weight:bold; }\r\n" +
-				".packagesTitle { margin-top:4px; font-weight:bold; }\r\n" +
+				".modulesTitle { margin-top:4px; font-weight:bold; }\r\n" +
 				"a { text-decoration:none; }\r\n" +
 				"a:hover { text-decoration:underline}\r\n");
 		out.close();
 	}
 	
-	private Writer writerFor(String file) throws IOException {
-		return new BufferedWriter(new FileWriter(new File(fDestination.toOSString(), file)));
+	private Writer writerFor(String filename) throws IOException {
+		File file = new File(fDestination.toOSString(), filename);
+		createDirFor(file.getParentFile());
+		return new BufferedWriter(new FileWriter(file));
+	}
+
+	private void createDirFor(File file) throws IOException {
+		if (!file.exists()) {
+			createDirFor(file.getParentFile());
+			file.mkdir();
+		}
 	}
 
 //	private String checkForSpaces(String curr) {

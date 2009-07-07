@@ -18,6 +18,7 @@ import descent.core.dom.AST;
 import descent.internal.compiler.env.IModuleFinder;
 import descent.internal.compiler.env.INameEnvironment;
 import descent.internal.compiler.lookup.DescentModuleFinder;
+import descent.internal.compiler.lookup.DmdModuleFinder;
 import descent.internal.core.CancelableNameEnvironment;
 import descent.internal.core.CompilerConfiguration;
 import descent.internal.core.JavaProject;

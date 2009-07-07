@@ -2949,7 +2949,10 @@ public class CompileTimeASTConverter {
 		if (a.elements != null) {
 			for(int i = 0; i < a.elements.size(); i++) {
 				Expression value = a.elements.get(i);
-				b.expressions().add(convert(value));
+				descent.core.dom.Expression val = convert(value);
+				if (val != null) {
+					b.expressions().add(val);
+				}
 			}
 		}
 		setSourceRange(b, a.start, a.length);

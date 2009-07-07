@@ -77,70 +77,7 @@ public class BaseClass extends ASTDmdNode {
 			b.copyBaseInterfaces(vtblInterfaces);
 		}
 	}
-
-	public int fillVtbl(ClassDeclaration cd, Array vtbl, int newinstance,
-			SemanticContext context) {
-		ClassDeclaration id = base;
-		int j;
-		int result = 0;
-		
-		if (vtbl != null) {
-			vtbl.setDim(base.vtbl.size());
-		}
-
-		// first entry is ClassInfo reference
-		for (j = base.vtblOffset(context); j < base.vtbl.size(); j++) {
-			FuncDeclaration ifd = ((Dsymbol) base.vtbl.get(j))
-					.isFuncDeclaration();
-			FuncDeclaration fd;
-			TypeFunction tf;
-
-			if (ifd == null) {
-				throw new IllegalStateException("assert(ifd);");
-			}
-			// Find corresponding function in this class
-			tf = (ifd.type.ty == Tfunction) ? (TypeFunction) (ifd.type) : null;
-			fd = cd.findFunc(ifd.ident, tf, context);
-			if (fd != null && !fd.isAbstract()) {
-				// Check that calling conventions match
-				if (fd.linkage != ifd.linkage) {
-					if (context.acceptsErrors()) {
-						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.LinkageDoesNotMatchInterfaceFunction, this));
-					}
-				}
-
-				// Check that it is current
-				if (newinstance != 0 && fd.toParent() != cd
-						&& ifd.toParent() == base) {
-					if (context.acceptsErrors()) {
-						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.InterfaceFunctionIsNotImplemented, this, id
-										.toChars(context), ifd.ident.toChars()));
-					}
-				}
-
-				if (fd.toParent() == cd) {
-					result = 1;
-				}
-			} else {
-				// BUG: should mark this class as abstract?
-				if (!cd.isAbstract()) {
-					if (context.acceptsErrors()) {
-						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.InterfaceFunctionIsNotImplemented, this, id.toChars(context), ifd.ident.toChars()));
-					}
-				}
-				fd = null;
-			}
-			if (vtbl != null) {
-				vtbl.set(j, fd);
-			}
-		}
-
-		return result;
-	}
-
+	
 	@Override
 	public int getNodeType() {
 		return BASE_CLASS;
