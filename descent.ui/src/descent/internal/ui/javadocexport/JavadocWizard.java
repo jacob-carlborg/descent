@@ -4,12 +4,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -45,7 +43,6 @@ import org.eclipse.ui.PlatformUI;
 import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
-import descent.core.IPackageFragment;
 import descent.core.IParent;
 import descent.core.JavaModelException;
 import descent.core.dom.AST;
@@ -83,9 +80,9 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		}
 	};
 	
-	private static Comparator<ICompilationUnit> cuComparator = new Comparator<ICompilationUnit>() {
-		public int compare(ICompilationUnit o1, ICompilationUnit o2) {
-			return o1.getFullyQualifiedName().compareToIgnoreCase(o2.getFullyQualifiedName());
+	private static Comparator<Module> modulesComparator = new Comparator<Module>() {
+		public int compare(Module o1, Module o2) {
+			return o1.unit.getFullyQualifiedName().compareToIgnoreCase(o2.unit.getFullyQualifiedName());
 		}
 	};
 
@@ -273,8 +270,16 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		}
 	}
 	
+	private static class Module {
+		ICompilationUnit unit;
+		Symbols symbols;
+		public Module(ICompilationUnit unit) {
+			this.unit = unit;
+			this.symbols = new Symbols();
+		}
+	}
+	
 	private static class Symbols {
-		Set<ICompilationUnit> modules = new TreeSet<ICompilationUnit>(cuComparator);
 		Set<VariableDeclarationFragment> variables = new TreeSet<VariableDeclarationFragment>(nameComparator);
 		Set<AliasDeclarationFragment> aliases = new TreeSet<AliasDeclarationFragment>(nameComparator);
 		Set<TypedefDeclarationFragment> typedefs = new TreeSet<TypedefDeclarationFragment>(nameComparator);
@@ -289,8 +294,8 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 
 	private boolean executeJavadocGeneration() {
 		try {
-			// Collect symbols of packages
-			Symbols symbols = collectSymbols();
+			// Collect symbols of modules
+			Set<Module> modules = collectModules();
 			
 			// Generate frameset in index.html
 			generateIndex();
@@ -298,16 +303,12 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 			// Generate stylesheet
 			generateStylesheet();
 			
-			// Generate packages list
-			generateModulesListFrame(symbols);
+			// Generate modules list
+			generateModulesFrame(modules);
 			
-			// Generate all symbols frame
-			generateAllSymbolsFrame(symbols);
-			
-			// For each module, generate module-listing
-//			for(IJavaElement pack : symbols.modules) {
-//				generateModuleFrame(pack, symbols);
-//			}
+			for(Module module : modules) {
+				generateModuleDescriptionsFrame(module);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -315,12 +316,11 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 
 	}
 
-	private Symbols collectSymbols() throws JavaModelException {
-		Symbols symbols = new Symbols();
-		collect(fStore.getSourceElements(), symbols);
-		return symbols;
+	private Set<Module> collectModules() throws JavaModelException {
+		Set<Module> modules = new TreeSet<Module>(modulesComparator);
+		collect(fStore.getSourceElements(), modules);
+		return modules;
 	}
-
 
 	private void generateIndex() throws IOException {
 		Writer out = writerFor("index.html");
@@ -345,12 +345,9 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 				"</noscript>\r\n" + 
 				"</head>\r\n" + 
 				"<frameset cols=\"20%,80%\" title=\"\" onLoad=\"top.loadFrames()\">\r\n" + 
-				"<frameset rows=\"30%,70%\" title=\"\" onLoad=\"top.loadFrames()\">\r\n" + 
-				"<frame src=\"overview-frame.html\" name=\"moduleListFrame\" title=\"All Modules\">\r\n" + 
-				"\r\n" + 
-				"<frame src=\"allsymbols-frame.html\" name=\"moduleFrame\" title=\"All symbols\">\r\n" + 
+				"<frame src=\"modules-frame.html\" name=\"moduleList\" title=\"All Modules\">\r\n" + 
+				"<frame src=\"overview-summary.html\" name=\"module\" title=\"Module description\" scrolling=\"yes\">\r\n" +
 				"</frameset>\r\n" + 
-				"<frame src=\"overview-summary.html\" name=\"moduleDetailsFrame\" title=\"Module descriptions\" scrolling=\"yes\">\r\n" + 
 				"<noframes>\r\n" + 
 				"<h2>\r\n" + 
 				"Frame Alert</h2>\r\n" + 
@@ -365,8 +362,8 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		out.close();
 	}
 	
-	private void generateModulesListFrame(Symbols symbols) throws IOException {
-		Writer out = writerFor("overview-frame.html");
+	private void generateModulesFrame(Set<Module> modules) throws IOException {
+		Writer out = writerFor("modules-frame.html");
 		out.write(
 			"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\r\n" + 
 			"<html>\r\n" + 
@@ -382,11 +379,10 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 			"<div class=\"title\">");
 		out.write(fStore.getTitle());
 		out.write("</div>\r\n" + 
-			"<div class=\"allSymbolsTitle\"><a href=\"allsymbols-frame.html\" target=\"moduleFrame\">All Symbols</A></div>\r\n" +
 			"<div class=\"modulesTitle\">Modules</div>\r\n" +
 			"<ul class=\"modules\">");
 		
-		generateModulesList(symbols.modules, out);
+		generateModulesList(modules, out);
 		
 		out.write(
 				"</ul>\r\n" +
@@ -395,178 +391,191 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		out.close();
 	}
 
-	private void generateModulesList(Set<ICompilationUnit> cus, Writer out) throws IOException {
-		for(ICompilationUnit cu : cus) {
-			generateModulesList(cu, out);
+	private void generateModulesList(Set<Module> modules, Writer out) throws IOException {
+		for(Module module : modules) {
+			generateModulesList(module, out);
 		}
 	}
 
-	private void generateModulesList(ICompilationUnit cu, Writer out) throws IOException {
+	private void generateModulesList(Module module, Writer out) throws IOException {
+		ICompilationUnit cu = module.unit;
 		String fqn = cu.getFullyQualifiedName();
-		String fqnPath = fqn.replace(".", File.separator);
 		
 		out.write("<li><a href=\"");
-		out.write(fqnPath);
-		out.write("\" target=\"moduleFrame\">");
+		out.write(fqn);
+		out.write(".html");
+		out.write("\" target=\"module\">");
 		out.write(fqn);
 		out.write("</li>\r\n");
 	}
 	
-	private static void writePackageFrameHref(IJavaElement element, Writer out) throws IOException {
-		String[] ids = getCompoundName(element);
-		writePackageFrameHref(ids, out);
-	}
-	
-	private static String[] getCompoundName(IJavaElement element) throws IOException {
-		String name = element.getElementName();
-		if (name.endsWith(".d")) {
-			name = name.substring(0, name.length() - 1);
-		} else if (name.endsWith(".di")) {
-			name = name.substring(0, name.length() - 2);
-		}
+	private void generateModuleDescriptionsFrame(Module module) throws IOException {
+		String fqn = module.unit.getFullyQualifiedName();
 		
-		return name.split("\\.");
-	}
-	
-	private static void writePackageFrameHref(String[] ids, Writer out) throws IOException {
-		for (int i = 0; i < ids.length; i++) {
-			if (i != 0) {
-				out.write(File.separatorChar);
-			}
-			out.write(ids[i]);
-		}
-		out.write("/package-frame.html");
-	}
-	
-	private static String getPackageFrameHref(IJavaElement element) throws IOException {
-		StringWriter out = new StringWriter();
-		writePackageFrameHref(element, out);
-		return out.toString();
-	}
-	
-	private void generateAllSymbolsFrame(Symbols symbols) throws IOException, JavaModelException {
-		Writer out = writerFor("allsymbols-frame.html");
+		Writer out = writerFor(fqn + ".html");
 		out.write(
 			"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\r\n" + 
 			"<html>\r\n" + 
 			"<head>\r\n" + 
 			"<title>\r\n" + 
-			"All Symbols (");
-		out.write(fStore.getTitle());
-		out.write(")</title>\r\n" + 
+			"Module ");
+		out.write(
+			fqn);
+		out.write(
+			"</title>\r\n" + 
 			"<link rel=\"stylesheet\" type=\"text/css\" href=\"stylesheet.css\" title=\"Style\">\r\n" + 
 			"</head>\r\n" + 
-			"<body>\r\n");
-		
-		generateAllSymbolsFrame(symbols, out);
-		
+			"<body>\r\n" + 
+			"<div class=\"title\">");
 		out.write(
-			"</body>\r\n" + 
-			"</html>\r\n" + 
-			""
-		);
-		out.close();
-	}
-	
-	private void generatePackageFrame(IJavaElement pack, Symbols symbols) throws IOException {
-		Writer out = writerFor(getPackageFrameHref(pack));
-		out.close();
-	}
-	
-	private void generateAllSymbolsFrame(Symbols symbols, Writer out) throws IOException, JavaModelException {
+			"Module ");
+		out.write(
+			fqn);
+		out.write(
+			"</div>\r\n");
+		
 		// Variables
-		if (!symbols.variables.isEmpty()) {
+		if (!module.symbols.variables.isEmpty()) {
 			writeHeader("Variables", out);
-			out.write("<ul class=\"symbols\">\r\n");
-			for(VariableDeclarationFragment node : symbols.variables) {
-				IBinding binding = node.getName().resolveTypeBinding();
-				writeBindedNode(out, node, binding);
+			out.write("<ul>");
+			for(VariableDeclarationFragment v : module.symbols.variables) {
+				out.write("<li>");
+				IBinding binding = v.getName().resolveTypeBinding();
+				out.write(v.getName().getIdentifier());
+				out.write(" : ");
+				writeBinding(binding, out);
+				out.write("</li>");
 			}
-			out.write("</ul>\r\n");
+			out.write("</ul>");
 		}
 		
 		// Aliases
-		if (!symbols.aliases.isEmpty()) {
+		if (!module.symbols.aliases.isEmpty()) {
 			writeHeader("Aliases", out);
-			out.write("<ul class=\"symbols\">\r\n");
-			for(AliasDeclarationFragment node : symbols.aliases) {
-				IBinding binding = node.getName().resolveTypeBinding();
-				writeBindedNode(out, node, binding);
+			out.write("<ul>");
+			for(AliasDeclarationFragment a : module.symbols.aliases) {
+				out.write("<li>");
+				IBinding binding = a.getName().resolveTypeBinding();
+				out.write(a.getName().getIdentifier());
+				out.write(" : ");
+				writeBinding(binding, out);
+				out.write("</li>");
 			}
-			out.write("</ul>\r\n");
+			out.write("</ul>");
 		}
 		
 		// Typedefs
-		if (!symbols.typedefs.isEmpty()) {
+		if (!module.symbols.typedefs.isEmpty()) {
 			writeHeader("Typedefs", out);
-			out.write("<ul class=\"symbols\">\r\n");
-			for(TypedefDeclarationFragment node : symbols.typedefs) {
-				IBinding binding = (IBinding) node.getName().resolveTypeBinding();
-				writeBindedNode(out, node, binding);
+			out.write("<ul>");
+			for(TypedefDeclarationFragment t : module.symbols.typedefs) {
+				out.write("<li>");
+				IBinding binding = t.getName().resolveTypeBinding();
+				out.write(t.getName().getIdentifier());
+				out.write(" : ");
+				writeBinding(binding, out);
+				out.write("</li>");
 			}
-			out.write("</ul>\r\n");
+			out.write("</ul>");
 		}
 		
 		// Enums
-		if (!symbols.enums.isEmpty()) {
+		if (!module.symbols.enums.isEmpty()) {
 			writeHeader("Enums", out);
-			out.write("<ul class=\"symbols\">\r\n");
-			for(EnumDeclaration node : symbols.enums) {
-				IBinding binding = (IBinding) node.getBaseType().resolveBinding();
-				writeBindedNode(out, node, binding);
+			out.write("<ul>");
+			for(EnumDeclaration e : module.symbols.enums) {
+				out.write("<li>");
+				IBinding binding = e.getBaseType().resolveBinding();
+				out.write(e.getName().getIdentifier());
+				out.write(" : ");
+				writeBinding(binding, out);
+				out.write("</li>");
 			}
-			out.write("</ul>\r\n");
+			out.write("</ul>");
 		}
-		
-		// Functions
-		writeHtmlList("Functions", symbols.functions, out);
 		
 		// Structs
-		writeHtmlList("Structs", symbols.structs, out);
+		if (!module.symbols.structs.isEmpty()) {
+			writeHeader("Structs", out);
+			out.write("<ul>");
+			for(AggregateDeclaration a : module.symbols.structs) {
+				out.write("<li>");
+				out.write(a.getName().getIdentifier());
+				out.write("</li>");
+			}
+			out.write("</ul>");
+		}
 		
 		// Unions
-		writeHtmlList("Unions", symbols.unions, out);
+		if (!module.symbols.unions.isEmpty()) {
+			writeHeader("Unions", out);
+			out.write("<ul>");
+			for(AggregateDeclaration a : module.symbols.unions) {
+				out.write("<li>");
+				out.write(a.getName().getIdentifier());
+				out.write("</li>");
+			}
+			out.write("</ul>");
+		}
 		
 		// Classes
-		writeHtmlList("Classes", symbols.classes, out);
+		if (!module.symbols.classes.isEmpty()) {
+			writeHeader("Classes", out);
+			out.write("<ul>");
+			for(AggregateDeclaration a : module.symbols.classes) {
+				out.write("<li>");
+				out.write(a.getName().getIdentifier());
+				
+				out.write(" : ");
+				
+				ITypeBinding binding = a.resolveBinding();
+				writeBinding(binding.getSuperclass(), out);
+				
+				ITypeBinding[] interfaces = binding.getInterfaces();
+				if (interfaces != null) {
+					for (int i = 0; i < interfaces.length; i++) {
+						out.write(", ");
+						writeBinding(interfaces[i], out);
+					}
+				}
+				out.write("</li>");
+			}
+			out.write("</ul>");
+		}
 		
 		// Interfaces
-		writeHtmlList("Interfaces", symbols.interfaces, out);
-		
-		// Templates
-		writeHtmlList("Templates", symbols.templates, out);
-	}
-
-	private void writeBindedNode(Writer out, ASTNode node, IBinding binding) throws IOException {
-		out.write("<li><a href=\"");
-		writeHref(node, out);
-		out.write("\" target=\"classFrame\">");
-		out.write(getName(node));
-		out.write("</a>: ");		
-		writeBinding(binding, out);
-		out.write("</li>\r\n");
-	}
-	
-	private void writeHtmlList(String header, Collection<? extends ASTNode> nodes, Writer out) throws IOException {
-		if (!nodes.isEmpty()) {
-			writeHeader(header, out);
-			out.write("<ul class=\"symbols\">\r\n");
-			for(ASTNode node : nodes) {
-				out.write("<li><a href=\"");
-				writeHref(node, out);
-				out.write("\" target=\"classFrame\">");
-				out.write(getName(node));
-				out.write("</a></li>\r\n");
+		if (!module.symbols.interfaces.isEmpty()) {
+			writeHeader("Interfaces", out);
+			out.write("<ul>");
+			for(AggregateDeclaration a : module.symbols.interfaces) {
+				out.write("<li>");
+				out.write(a.getName().getIdentifier());
+				
+				ITypeBinding binding = a.resolveBinding();
+				ITypeBinding[] interfaces = binding.getInterfaces();
+				
+				if (interfaces == null || interfaces.length == 0)
+					continue;
+				
+				out.write(" : ");
+				for (int i = 0; i < interfaces.length; i++) {
+					if (i != 0)
+						out.write(", ");
+					writeBinding(interfaces[i], out);
+				}
+				out.write("</li>");
 			}
-			out.write("</ul>\r\n");
+			out.write("</ul>");
 		}
+		
+		out.write(
+			"</body>\r\n" +
+			"</html>");
+		out.close();
 	}
 	
 	private void writeHeader(String header, Writer out) throws IOException {
-		out.write(
-				"<div class=\"symbolType\">");
 		out.write(header);
-		out.write("</div>\r\n");
 	}
 	
 	private void writeBinding(IBinding binding, Writer out) throws IOException {
@@ -644,7 +653,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 	private void writeLink(ITypeBinding binding, Writer out) throws IOException {
 		out.write("<a href=\"");
 		writeHref(binding, out);
-		out.write("\" target=\"classFrame\">");
+		out.write("\" target=\"module\">");
 		out.write(binding.getName());
 		out.write("</a>");
 	}
@@ -692,20 +701,22 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 //		out.write(name);
 	}
 	
-	private void collect(IJavaElement[] elements, Symbols symbols) throws JavaModelException {
+	private void collect(IJavaElement[] elements, Set<Module> modules) throws JavaModelException {
 		for(IJavaElement element : elements) {
-			collect(element, symbols);
+			collect(element, modules);
 		}
 	}
 	
-	private void collect(IJavaElement element, Symbols symbols) throws JavaModelException{
+	private void collect(IJavaElement element, Set<Module> modules) throws JavaModelException{
 		if (element.getElementType() == IJavaElement.COMPILATION_UNIT ||
 			element.getElementType() == IJavaElement.CLASS_FILE) {
+			
 			ICompilationUnit unit = (ICompilationUnit) element;
-			symbols.modules.add(unit);
-			collect(unit, symbols);
+			Module module = new Module(unit);
+			collect(unit, module.symbols);
+			modules.add(module);
 		} else if (element instanceof IParent) {
-			collect(((IParent) element).getChildren(), symbols);
+			collect(((IParent) element).getChildren(), modules);
 		}
 	}
 	

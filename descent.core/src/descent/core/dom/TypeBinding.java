@@ -23,32 +23,26 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	}
 	
 	public IVariableBinding[] getDeclaredFields() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	
 	public IMethodBinding[] getDeclaredMethods() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	
 	public int getDeclaredModifiers() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 	
-	public ITypeBinding[] getDeclaredTypes() {
-		// TODO Auto-generated method stub
+	public ITypeBinding[] getDeclaredTypes()  {
 		return null;
 	}
 	
 	public IMethodBinding getDeclaringMethod() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	
 	public ITypeBinding getDeclaringType() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	
@@ -57,8 +51,19 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	}
 	
 	public ITypeBinding[] getInterfaces() {
-		// TODO Auto-generated method stub
-		return null;
+		if (!(node instanceof ClassDeclaration))
+			return null;
+		
+		ClassDeclaration c = (ClassDeclaration) node;
+		if (c.interfaces == null || c.interfaces.isEmpty()) {
+			return new ITypeBinding[0];
+		}
+		
+		ITypeBinding[] types = new ITypeBinding[c.interfaces.size()];
+		for (int i = 0; i < types.length; i++) {
+			types[i] = (ITypeBinding) bindingResolver.resolveDsymbol(c.interfaces.get(i).base);
+		}
+		return types;
 	}
 	
 	public String getKey() {
@@ -74,7 +79,6 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	}
 
 	public IPackageBinding getPackage() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -91,8 +95,11 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	}
 
 	public ITypeBinding getSuperclass() {
-		// TODO Auto-generated method stub
-		return null;
+		if (!(node instanceof ClassDeclaration))
+			return null;
+		
+		ClassDeclaration c = (ClassDeclaration) node;
+		return (ITypeBinding) bindingResolver.resolveDsymbol(c.baseClass);
 	}
 
 	public ITypeBinding getValueType() {
@@ -100,12 +107,10 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	}
 
 	public boolean isAnonymous() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	public boolean isAssignmentCompatible(ITypeBinding variableType) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -114,7 +119,6 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	}
 
 	public boolean isCastCompatible(ITypeBinding type) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -136,7 +140,6 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	}
 
 	public boolean isEqualTo(IBinding binding) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 	
@@ -149,7 +152,6 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	}
 
 	public boolean isGenericType() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -158,17 +160,14 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	}
 
 	public boolean isLocal() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	public boolean isMember() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	public boolean isNested() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -177,7 +176,6 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	}
 
 	public boolean isParameterizedType() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -199,12 +197,10 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	}
 
 	public boolean isSubTypeCompatible(ITypeBinding type) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	public boolean isSynthetic() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 	
@@ -215,7 +211,6 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	}
 
 	public boolean isTopLevel() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
