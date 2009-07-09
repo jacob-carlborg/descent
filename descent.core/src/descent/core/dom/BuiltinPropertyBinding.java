@@ -97,5 +97,15 @@ public class BuiltinPropertyBinding implements IVariableBinding {
 		// TODO Auto-generated method stub
 		return false;
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof IBinding)) {
+			return false;
+		}
+			
+		IBinding other = (IBinding) obj;
+		return getKey().equals(other.getKey());
+	}
 
 }

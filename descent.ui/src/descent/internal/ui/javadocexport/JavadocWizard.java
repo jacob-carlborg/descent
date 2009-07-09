@@ -9,6 +9,7 @@ import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -527,11 +528,77 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 				out.write(": ");
 				writeBinding(binding, out);
 				
-				binding = a.resolveBinding();
-				if (binding != null) {
-					IJavaElement element = binding.getJavaElement();
+				ITypeBinding tb = a.resolveBinding();
+				if (tb != null) {
+					IJavaElement element = tb.getJavaElement();
 					writeDdoc(out, element);
 				}
+				
+				IVariableBinding[] fields = tb.getDeclaredFields();
+				if (fields != null && fields.length > 0) {
+					Arrays.sort(fields, bindingsComparator);
+					out.write("<ul>");
+					for(IVariableBinding var : fields) {
+						out.write("<li><span class=\"symbol variable\">");
+						out.write(var.getName());
+						out.write("</span>");
+						
+						writeDdoc(out, var.getJavaElement());
+						
+						out.write("</li>");
+					}
+					out.write("</ul>");
+				}
+				
+				out.write("</li>");
+			}
+			out.write("</ul>");
+			out.write("</li>");
+		}
+		
+		// Functions
+		if (!module.symbols.functions.isEmpty()) {
+			out.write("<li><span class=\"first_header\">Functions</span>");
+			out.write("<ul>");
+			for(FunctionDeclaration a : module.symbols.functions) {
+				IMethodBinding method = a.resolveBinding();
+				out.write("<li>");
+				
+				writeBinding(method.getReturnType(), out);
+				out.write(" ");
+				out.write("<span class=\"function\">");
+				out.write(method.getName());
+				out.write("</span>");
+				out.write("(");
+				
+				IMethod m = (IMethod) method.getJavaElement();
+				String[] parameterNames = m.getParameterNames();
+				
+				IBinding[] params = method.getParameterTypes();
+				for (int i = 0; i < params.length; i++) {
+					if (i != 0)
+						out.write(", ");
+					writeBinding(params[i], out);
+					out.write(" ");
+					out.write(parameterNames[i]);
+				}
+				
+				switch(m.getVarargs()) {
+				case IMethod.VARARGS_NO:
+					break;
+				case IMethod.VARARGS_SAME_TYPES:
+					out.write("...");
+					break;
+				case IMethod.VARARGS_UNDEFINED_TYPES:
+					if (params.length > 0) {
+						out.write(", ");
+					}
+					out.write("...");
+				}
+				
+				out.write(")");
+				
+				writeDdoc(out, m);
 				
 				out.write("</li>");
 			}
@@ -706,6 +773,8 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 			
 			IVariableBinding[] fields = binding.getDeclaredFields();
 			if (fields != null && fields.length > 0) {
+				Arrays.sort(fields, bindingsComparator);
+				
 				out.write("<li><span class=\"second_header\">Fields</span>");
 				out.write("<ul>");
 				
@@ -729,6 +798,8 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 
 			IMethodBinding[] methods = binding.getDeclaredMethods();
 			if (methods != null && methods.length > 0) {
+				Arrays.sort(methods, bindingsComparator);
+				
 				out.write("<li><span class=\"second_header\">Methods</span>");
 				out.write("<ul>");
 				

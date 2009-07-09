@@ -40,5 +40,15 @@ public abstract class JavaElementBasedBinding implements IBinding {
 	public final boolean isDeprecated() {
 		return (getModifiers() & Modifier.DEPRECATED) != 0;
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof IBinding)) {
+			return false;
+		}
+			
+		IBinding other = (IBinding) obj;
+		return getKey().equals(other.getKey());
+	}
 
 }

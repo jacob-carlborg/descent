@@ -130,5 +130,15 @@ public abstract class PrimitiveTypeBinding implements ITypeBinding {
 	public String toString() {
 		return getName();
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof IBinding)) {
+			return false;
+		}
+			
+		IBinding other = (IBinding) obj;
+		return getKey().equals(other.getKey());
+	}
 
 }

@@ -8,6 +8,7 @@ import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.DsymbolTable;
 import descent.internal.compiler.parser.EnumDeclaration;
+import descent.internal.compiler.parser.EnumMember;
 import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.InterfaceDeclaration;
 import descent.internal.compiler.parser.StructDeclaration;
@@ -33,10 +34,12 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 		if (node instanceof ClassDeclaration) {
 			ClassDeclaration c = (ClassDeclaration) node;
 			symtab = c.symtab;
-			
 		} else if (node instanceof StructDeclaration) {
 			StructDeclaration s = (StructDeclaration) node;
 			symtab = s.symtab;
+		} else if (node instanceof EnumDeclaration) {
+			EnumDeclaration e = (EnumDeclaration) node;
+			symtab = e.symtab;
 		}
 		
 		if (symtab != null) {
@@ -46,7 +49,7 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 					continue;
 				
 				Dsymbol sym = symtab.lookup(key);
-				if (sym instanceof VarDeclaration) {
+				if (sym instanceof VarDeclaration || sym instanceof EnumMember) {
 					IVariableBinding resolveDsymbol = (IVariableBinding) bindingResolver.resolveDsymbol(sym);
 					if (resolveDsymbol != null) {
 						vars.add(resolveDsymbol);
