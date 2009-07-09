@@ -1,13 +1,19 @@
 package descent.core.dom;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import descent.core.IType;
 import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.Dsymbol;
+import descent.internal.compiler.parser.DsymbolTable;
 import descent.internal.compiler.parser.EnumDeclaration;
+import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.InterfaceDeclaration;
 import descent.internal.compiler.parser.StructDeclaration;
 import descent.internal.compiler.parser.TemplateDeclaration;
 import descent.internal.compiler.parser.UnionDeclaration;
+import descent.internal.compiler.parser.VarDeclaration;
 
 public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding {
 	
@@ -23,10 +29,60 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	}
 	
 	public IVariableBinding[] getDeclaredFields() {
+		DsymbolTable symtab = null;
+		if (node instanceof ClassDeclaration) {
+			ClassDeclaration c = (ClassDeclaration) node;
+			symtab = c.symtab;
+			
+		} else if (node instanceof StructDeclaration) {
+			StructDeclaration s = (StructDeclaration) node;
+			symtab = s.symtab;
+		}
+		
+		if (symtab != null) {
+			List<IVariableBinding> vars = new ArrayList<IVariableBinding>();
+			for(char[] key : symtab.keys()) {
+				if (key == null)
+					continue;
+				
+				Dsymbol sym = symtab.lookup(key);
+				if (sym instanceof VarDeclaration) {
+					IVariableBinding resolveDsymbol = (IVariableBinding) bindingResolver.resolveDsymbol(sym);
+					if (resolveDsymbol != null) {
+						vars.add(resolveDsymbol);
+					}
+				}
+			}
+			return vars.toArray(new IVariableBinding[vars.size()]);
+		}
+		
 		return null;
 	}
 	
 	public IMethodBinding[] getDeclaredMethods() {
+		DsymbolTable symtab = null;
+		if (node instanceof ClassDeclaration) {
+			ClassDeclaration c = (ClassDeclaration) node;
+			symtab = c.symtab;
+		}
+		
+		if (symtab != null) {
+			List<IMethodBinding> methods = new ArrayList<IMethodBinding>();
+			for(char[] key : symtab.keys()) {
+				if (key == null)
+					continue;
+				
+				Dsymbol sym = symtab.lookup(key);
+				if (sym instanceof FuncDeclaration) {
+					IBinding resolveDsymbol = (IBinding) bindingResolver.resolveDsymbol(sym);
+					if (resolveDsymbol != null && resolveDsymbol instanceof IMethodBinding) {
+						methods.add((IMethodBinding) resolveDsymbol);
+					}
+				}
+			}
+			return methods.toArray(new IMethodBinding[methods.size()]);
+		}
+		
 		return null;
 	}
 	
@@ -56,7 +112,7 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 		
 		ClassDeclaration c = (ClassDeclaration) node;
 		if (c.interfaces == null || c.interfaces.isEmpty()) {
-			return new ITypeBinding[0];
+			return null;
 		}
 		
 		ITypeBinding[] types = new ITypeBinding[c.interfaces.size()];

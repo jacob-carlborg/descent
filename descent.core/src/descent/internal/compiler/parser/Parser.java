@@ -168,7 +168,7 @@ public class Parser extends Lexer {
 	 */
 	public boolean diet;
 
-	Module module;
+	public Module module;
 	private ModuleDeclaration md;
 	private int inBrackets;	
 	

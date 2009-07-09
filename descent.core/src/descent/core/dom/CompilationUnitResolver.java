@@ -573,12 +573,13 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		return result;
 	}
 
-	public static ASTNode convert(AST ast, descent.internal.compiler.parser.Initializer initializer) {
+	public static ASTNode convert(AST ast, Module module, descent.internal.compiler.parser.Initializer initializer) {
 		int savedDefaultNodeFlag = ast.getDefaultNodeFlag();
 		ast.setDefaultNodeFlag(ASTNode.ORIGINAL);
 		
 		ASTConverter converter = new ASTConverter(false, null);
 		converter.setAST(ast);
+		converter.module = module;
 		Initializer init = converter.convert(initializer);
 		
 		ast.setOriginalModificationCount(ast.modificationCount());
@@ -587,12 +588,13 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		return init;
 	}
 	
-	public static ASTNode convert(AST ast, descent.internal.compiler.parser.Expression expression) {
+	public static ASTNode convert(AST ast, Module module, descent.internal.compiler.parser.Expression expression) {
 		int savedDefaultNodeFlag = ast.getDefaultNodeFlag();
 		ast.setDefaultNodeFlag(ASTNode.ORIGINAL);
 		
 		ASTConverter converter = new ASTConverter(false, null);
 		converter.setAST(ast);
+		converter.module = module;
 		Expression exp = converter.convert(expression);
 		
 		ast.setOriginalModificationCount(ast.modificationCount());
@@ -601,12 +603,13 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		return exp;
 	}
 	
-	public static ASTNode convert(AST ast, descent.internal.compiler.parser.Statement statement) {
+	public static ASTNode convert(AST ast, Module module, descent.internal.compiler.parser.Statement statement) {
 		int savedDefaultNodeFlag = ast.getDefaultNodeFlag();
 		ast.setDefaultNodeFlag(ASTNode.ORIGINAL);
 		
 		ASTConverter converter = new ASTConverter(false, null);
 		converter.setAST(ast);
+		converter.module = module;
 		Statement stm = converter.convert(statement);
 		
 		ast.setOriginalModificationCount(ast.modificationCount());

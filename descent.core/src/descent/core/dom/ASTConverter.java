@@ -2651,6 +2651,10 @@ public class ASTConverter {
 	public descent.core.dom.Argument convert(Argument a) {
 		descent.core.dom.Argument b = new descent.core.dom.Argument(ast);
 		
+		if (module == null) {
+			System.out.println(123456);
+		}
+		
 		List<Modifier> amodifiers = module.getModifiers(a);
 		if (amodifiers != null) {
 			convertModifiers(b.modifiers(), amodifiers);
