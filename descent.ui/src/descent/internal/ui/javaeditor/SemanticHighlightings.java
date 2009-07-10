@@ -530,8 +530,8 @@ public class SemanticHighlightings {
 		 */
 		public boolean consumes(SemanticToken token) {
 			IBinding binding= token.getBinding();
-			return binding != null && binding.getKind() == IBinding.VARIABLE &&
-				((IVariableBinding) binding).isAlias();
+			return binding != null && binding.getKind() == IBinding.TYPE &&
+				((ITypeBinding) binding).isAlias();
 		}
 	}
 	
@@ -587,8 +587,8 @@ public class SemanticHighlightings {
 		 */
 		public boolean consumes(SemanticToken token) {
 			IBinding binding= token.getBinding();
-			return binding != null && binding.getKind() == IBinding.VARIABLE &&
-				((IVariableBinding) binding).isTypedef();
+			return binding != null && binding.getKind() == IBinding.TYPE &&
+				((ITypeBinding) binding).isTypedef();
 		}
 	}
 

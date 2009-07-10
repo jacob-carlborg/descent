@@ -182,7 +182,7 @@ public class BindingVar_Test extends AbstractBinding_Test implements ISignatureT
 		
 		assertEquals(lastCompilationUnit.getAllTypes()[0], typeBinding.getJavaElement());
 		
-		IVariableBinding varBinding = fragment.resolveBinding();
+		ITypeBinding varBinding = fragment.resolveBinding();
 		assertNotNull(varBinding);
 		assertEquals("f",varBinding.getName());
 		assertEquals(MODULE + "4test" + ALIAS + "1f", varBinding.getKey());
@@ -212,7 +212,7 @@ public class BindingVar_Test extends AbstractBinding_Test implements ISignatureT
 		
 		assertEquals(lastCompilationUnit.getAllTypes()[0], typeBinding.getJavaElement());
 		
-		IVariableBinding varBinding = fragment.resolveBinding();
+		ITypeBinding varBinding = fragment.resolveBinding();
 		assertNotNull(varBinding);
 		assertEquals("f",varBinding.getName());
 		assertEquals(MODULE + "4test" + TYPEDEF + "1f", varBinding.getKey());

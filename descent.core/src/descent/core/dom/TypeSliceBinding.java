@@ -13,7 +13,7 @@ public class TypeSliceBinding extends PrimitiveTypeBinding {
 		this.type = type;
 	}
 
-	public IBinding getComponentType() {
+	public ITypeBinding getComponentType() {
 		return bindingResolver.resolveType(type.next);
 	}
 
@@ -21,7 +21,7 @@ public class TypeSliceBinding extends PrimitiveTypeBinding {
 		return 0;
 	}
 
-	public IBinding getKeyType() {
+	public ITypeBinding getKeyType() {
 		return null;
 	}
 	
@@ -40,15 +40,15 @@ public class TypeSliceBinding extends PrimitiveTypeBinding {
 		return getComponentType() + "[" + getLowerBound() + " .. " + getUpperBound() + "]";
 	}
 
-	public IBinding[] getParametersTypes() {
+	public ITypeBinding[] getParametersTypes() {
 		return null;
 	}
 
-	public IBinding getReturnType() {
+	public ITypeBinding getReturnType() {
 		return null;
 	}
 
-	public IBinding getValueType() {
+	public ITypeBinding getValueType() {
 		return null;
 	}
 
@@ -99,11 +99,6 @@ public class TypeSliceBinding extends PrimitiveTypeBinding {
 	}
 
 	public boolean isSubTypeCompatible(ITypeBinding type) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public boolean isEqualTo(IBinding binding) {
 		// TODO Auto-generated method stub
 		return false;
 	}

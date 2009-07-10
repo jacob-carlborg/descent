@@ -1773,9 +1773,9 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	
 	public final String getSignature() {
 		String sig = null;
-		if (alias != null) {
-			sig = alias.getSignature();
-		}
+//		if (alias != null) {
+//			sig = alias.getSignature();
+//		}
 		if (sig == null) {
 			StringBuilder sb = new StringBuilder();
 			

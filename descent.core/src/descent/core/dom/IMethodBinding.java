@@ -117,7 +117,7 @@ public interface IMethodBinding extends IBinding {
 	 * @return the binding for the return type of this method, or the
 	 *    <code>void</code> return type for constructors
 	 */
-	public IBinding getReturnType();
+	public ITypeBinding getReturnType();
 	
 	/**
 	 * Returns the type parameters of this method or constructor binding.

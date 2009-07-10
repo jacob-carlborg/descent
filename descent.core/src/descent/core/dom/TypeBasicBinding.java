@@ -63,11 +63,6 @@ public class TypeBasicBinding extends PrimitiveTypeBinding implements ITypeBindi
 		return false;
 	}
 
-	public boolean isEqualTo(IBinding binding) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 	public boolean isFunction() {
 		return false;
 	}

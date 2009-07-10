@@ -33,22 +33,6 @@ public interface IVariableBinding extends IBinding {
 	public boolean isVariable();
 	
 	/**
-	 * Returns whether this binding is for an alias.
-	 * 
-	 * @return <code>true</code> if this is the binding for an alias,
-	 *    and <code>false</code> otherwise
-	 */ 
-	public boolean isAlias();
-	
-	/**
-	 * Returns whether this binding is for a typedef.
-	 * 
-	 * @return <code>true</code> if this is the binding for a typedef,
-	 *    and <code>false</code> otherwise
-	 */ 
-	public boolean isTypedef();
-	
-	/**
 	 * Returns whether this binding is for an enum constant.
 	 * Note that this method returns <code>false</code> for local variables
 	 * and for fields other than enum constants.
@@ -96,11 +80,11 @@ public interface IVariableBinding extends IBinding {
 	public IBinding getDeclaringSymbol();
 
 	/**
-	 * Returns the binding for the type of this field, alias, typedef or local variable.
+	 * Returns the binding for the type of this field or local variable.
 	 * 
-	 * @return the binding for the type of this field, alias, typedef or local variable
+	 * @return the binding for the type of this field or local variable
 	 */
-	public IBinding getType();
+	public ITypeBinding getType();
 	
 	/**
 	 * Returns a small integer variable id for this variable binding.

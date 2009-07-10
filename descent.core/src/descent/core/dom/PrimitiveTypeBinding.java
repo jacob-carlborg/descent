@@ -2,16 +2,24 @@ package descent.core.dom;
 
 import descent.core.IJavaElement;
 
-public abstract class PrimitiveTypeBinding implements ITypeBinding {
-	
-	protected final static IVariableBinding[] NO_VARIABLES = new IVariableBinding[0];
-	protected final static IMethodBinding[] NO_METHODS = new IMethodBinding[0];
-	protected final static ITypeBinding[] NO_TYPES = new ITypeBinding[0];
+public abstract class PrimitiveTypeBinding extends AbstractBinding implements ITypeBinding {
 	
 	protected String signature;
 
 	public PrimitiveTypeBinding(String signature) {
 		this.signature = signature;
+	}
+	
+	public ITypeBinding getAliasedType() {
+		return null;
+	}
+	
+	public IBinding getAliasedSymbol() {
+		return null;
+	}
+	
+	public ITypeBinding getTypedefedType() {
+		return null;
 	}
 
 	public final IVariableBinding[] getDeclaredFields() {
@@ -102,7 +110,7 @@ public abstract class PrimitiveTypeBinding implements ITypeBinding {
 		return false;
 	}
 	
-	public boolean isTemplate() {
+	public final boolean isTemplate() {
 		return false;
 	}
 
@@ -126,19 +134,17 @@ public abstract class PrimitiveTypeBinding implements ITypeBinding {
 		return false;
 	}
 	
-	@Override
-	public String toString() {
-		return getName();
+	public final boolean isAlias() {
+		return false;
+	}
+	
+	public final boolean isTypedef() {
+		return false;
 	}
 	
 	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof IBinding)) {
-			return false;
-		}
-			
-		IBinding other = (IBinding) obj;
-		return getKey().equals(other.getKey());
+	public String toString() {
+		return getName();
 	}
 
 }

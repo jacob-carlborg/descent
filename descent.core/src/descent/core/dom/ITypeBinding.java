@@ -56,7 +56,31 @@ public interface ITypeBinding extends IBinding {
 	 * @return the component type binding, or <code>null</code> if this is
 	 *   not a static or dynamic array type, pointer type or slice type
 	 */	
-	public IBinding getComponentType();
+	public ITypeBinding getComponentType();
+	
+	/**
+	 * Returns the binding representing the aliased type of this
+	 * alias type, or <code>null</code> if this is not an alias type.
+	 * @return the alias type binding, or <code>null</code> if this is
+	 *   not an alias type
+	 */
+	public ITypeBinding getAliasedType();
+	
+	/**
+	 * Returns the binding representing the aliased symbol of this
+	 * alias type, or <code>null</code> if this is not an alias type.
+	 * @return the alias binding, or <code>null</code> if this is
+	 *   not an alias type
+	 */
+	public IBinding getAliasedSymbol();
+	
+	/**
+	 * Returns the binding representing the typedefed type of this
+	 * typedef type, or <code>null</code> if this is not an typedef type.
+	 * @return the typedefed type binding, or <code>null</code> if this is
+	 *   not a typedef type
+	 */
+	public ITypeBinding getTypedefedType();
 	
 	/**
 	 * Returns a list of bindings representing all the fields declared
@@ -239,7 +263,7 @@ public interface ITypeBinding extends IBinding {
 	 * @return the key type binding, or <code>null</code> if this is
 	 *   not an associative array type
 	 */	
-	public IBinding getKeyType();
+	public ITypeBinding getKeyType();
 	
 	/**
 	 * Returns the compiled modifiers for this class, interface, enum,
@@ -324,7 +348,7 @@ public interface ITypeBinding extends IBinding {
 	 * @return the parameters types bindings, or an empty list if this is
 	 *   not a function or delegate type binding
 	 */	
-	public IBinding[] getParametersTypes();
+	public ITypeBinding[] getParametersTypes();
 	
 	/**
 	 * Returns the fully qualified name of the type represented by this 
@@ -397,7 +421,7 @@ public interface ITypeBinding extends IBinding {
 	 * @return the return type binding, or <code>null</code> if this is
 	 *   not a function or delegate type binding
 	 */	
-	public IBinding getReturnType();
+	public ITypeBinding getReturnType();
 	
 	/**
 	 * Returns the type binding for the superclass of the type represented
@@ -426,7 +450,7 @@ public interface ITypeBinding extends IBinding {
 	 *    or <code>null</code> if none
 	 * @see AST#resolveWellKnownType(String)
 	 */
-	public IBinding getSuperclass();
+	public ITypeBinding getSuperclass();
 	
 	/**
 	 * Returns the binding representing the value type of this 
@@ -437,7 +461,7 @@ public interface ITypeBinding extends IBinding {
 	 * @return the value type binding, or <code>null</code> if this is
 	 *   not an associative array type
 	 */	
-	public IBinding getValueType();
+	public ITypeBinding getValueType();
 	
 	/**
 	 * Returns whether this type binding represents an anonymous class.
@@ -489,6 +513,22 @@ public interface ITypeBinding extends IBinding {
 	 * @since 3.1
 	 */
 	public boolean isCastCompatible(ITypeBinding type);
+	
+	/**
+	 * Returns whether this type binding represents an alias type.
+	 *
+	 * @return <code>true</code> if this object represents an alias,
+	 *    and <code>false</code> otherwise
+	 */
+	public boolean isAlias();
+	
+	/**
+	 * Returns whether this type binding represents a typedef type.
+	 *
+	 * @return <code>true</code> if this object represents a typedef,
+	 *    and <code>false</code> otherwise
+	 */
+	public boolean isTypedef();
 	
 	/**
 	 * Returns whether this type binding represents a class type.

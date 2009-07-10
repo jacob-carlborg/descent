@@ -12,7 +12,7 @@
 package descent.core.dom;
 
 /**
- * A package binding represents a compilation unit.
+ * A compilation unit binding represents a compilation unit.
  * <p>
  * This interface is not intended to be implemented by clients.
  * </p>
@@ -28,7 +28,7 @@ public interface ICompilationUnitBinding extends IBinding {
 	 * @return the fully qualified name of the compilation unit
 	 * represented by this binding
 	 */
-	public String getName();
+	String getName();
 	
 	/**
 	 * Returns the list of name component making up the name of the compilation
@@ -37,6 +37,42 @@ public interface ICompilationUnitBinding extends IBinding {
 	 * 
 	 * @return the name of the compilation unit represented by this binding
 	 */
-	public String[] getNameComponents();
+	String[] getNameComponents();
+	
+	/**
+	 * Returns the list of public imports made the compilation unit
+	 * respresented by this binding.
+	 * 
+	 * @return the list of public imports made the compilation unit
+	 * respresented by this binding.
+	 */
+	ICompilationUnitBinding[] getPublicImports();
+	
+	/**
+	 * Returns the list of variables declared by the compilation unit
+	 * respresented by this binding.
+	 * 
+	 * @return the list of variables declared by the compilation unit
+	 * respresented by this binding.
+	 */
+	IVariableBinding[] getDeclaredVariables();
+	
+	/**
+	 * Returns the list of functions declared by the compilation unit
+	 * respresented by this binding.
+	 * 
+	 * @return the list of functions declared by the compilation unit
+	 * respresented by this binding.
+	 */
+	IMethodBinding[] getDeclaredFunctions();
+	
+	/**
+	 * Returns the list of types declared by the compilation unit
+	 * respresented by this binding.
+	 * 
+	 * @return the list of types declared by the compilation unit
+	 * respresented by this binding.
+	 */
+	ITypeBinding[] getDeclaredTypes();
 	
 }

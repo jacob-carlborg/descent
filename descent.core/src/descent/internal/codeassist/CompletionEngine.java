@@ -1645,12 +1645,11 @@ public class CompletionEngine extends Engine
 				return;
 			}
 			
-			for(char[] key : table.keys()) {
-				if (key == null) {
+			for(Object value : table.values()) {
+				if (value == null)
 					continue;
-				}
 				
-				Dsymbol dsymbol = table.lookup(key);
+				Dsymbol dsymbol = (Dsymbol) value;
 				if (dsymbol != null) {
 					suggestDsymbol(dsymbol, includes);
 				}

@@ -867,6 +867,20 @@ public class CompilationUnit extends ASTNode {
 	public List<Declaration> declarations() {
 		return this.declarations;
 	}
+	
+	/**
+	 * Resolves and returns the binding for this compilation unit.
+	 * <p>
+	 * Note that bindings are generally unavailable unless requested when the
+	 * AST is being built.
+	 * </p>
+	 * 
+	 * @return the binding, or <code>null</code> if the binding cannot be 
+	 *    resolved
+	 */	
+	public ICompilationUnitBinding resolveBinding() {
+		return this.ast.getBindingResolver().resolveCompilationUnit(this);
+	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
@@ -886,7 +900,7 @@ public class CompilationUnit extends ASTNode {
 	;
 	}
 	
-	public List<IProblem> problems;
+	List<IProblem> problems;
 	
 	public IProblem[] getProblems() {
 		if (problems == null) return new IProblem[0];

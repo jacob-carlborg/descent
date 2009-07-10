@@ -1,12 +1,13 @@
 package descent.core.dom;
 
+import descent.core.IInitializer;
 import descent.core.IJavaElement;
 import descent.internal.compiler.parser.Dsymbol;
 
 /**
  * A binding based on a java element.
  */
-public abstract class JavaElementBasedBinding implements IBinding {
+public abstract class JavaElementBasedBinding extends AbstractBinding implements IBinding {
 	
 	protected final DefaultBindingResolver bindingResolver;
 	protected IJavaElement element;
@@ -26,6 +27,11 @@ public abstract class JavaElementBasedBinding implements IBinding {
 				element = bindingResolver.resolveBinarySearch(node);
 			}
 		}
+		
+		if (element instanceof IInitializer) {
+			element = bindingResolver.resolveBinarySearch(node);
+		}
+		
 		return element;
 	}
 	
@@ -39,16 +45,6 @@ public abstract class JavaElementBasedBinding implements IBinding {
 	
 	public final boolean isDeprecated() {
 		return (getModifiers() & Modifier.DEPRECATED) != 0;
-	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof IBinding)) {
-			return false;
-		}
-			
-		IBinding other = (IBinding) obj;
-		return getKey().equals(other.getKey());
 	}
 
 }

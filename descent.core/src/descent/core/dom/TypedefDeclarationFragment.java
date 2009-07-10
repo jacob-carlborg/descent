@@ -246,7 +246,7 @@ public class TypedefDeclarationFragment extends ASTNode {
 	 * @return the binding, or <code>null</code> if the binding cannot be 
 	 *    resolved
 	 */	
-	public IVariableBinding resolveBinding() {
+	public ITypeBinding resolveBinding() {
 		return this.ast.getBindingResolver().resolveTypedefFragment(this);
 	}
 

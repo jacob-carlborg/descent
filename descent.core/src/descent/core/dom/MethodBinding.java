@@ -32,7 +32,7 @@ public class MethodBinding extends JavaElementBasedBinding implements IMethodBin
 		return params;
 	}
 
-	public IBinding getReturnType() {
+	public ITypeBinding getReturnType() {
 		FuncDeclaration func = ((FuncDeclaration) node);
 		TypeFunction typeFunction = ((TypeFunction) func.type);
 		return bindingResolver.resolveType(typeFunction.next);
@@ -99,11 +99,6 @@ public class MethodBinding extends JavaElementBasedBinding implements IMethodBin
 
 	public int getKind() {
 		return METHOD;
-	}
-
-	public boolean isEqualTo(IBinding binding) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	public boolean isSynthetic() {

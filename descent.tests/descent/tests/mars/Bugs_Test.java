@@ -332,10 +332,10 @@ public class Bugs_Test extends Parser_Test {
 		String s;
 		
 		s = "char[] s = \"�a\";";
-		assertEquals(0, getCompilationUnit(s).problems.size());
+		assertEquals(0, getCompilationUnit(s).getProblems().length);
 		
 		s = "char[] s = \"a�\";";
-		assertEquals(0, getCompilationUnit(s).problems.size());
+		assertEquals(0, getCompilationUnit(s).getProblems().length);
 	}
 	
 	public void testTypeSArray1() {

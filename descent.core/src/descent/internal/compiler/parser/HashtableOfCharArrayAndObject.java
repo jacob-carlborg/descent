@@ -27,6 +27,14 @@ public final class HashtableOfCharArrayAndObject implements Cloneable {
 		init(size);
 	}
 	
+	public HashtableOfCharArrayAndObject(HashtableOfCharArrayAndObject other) {
+		this.keyTable = new char[other.keyTable.length][];
+		this.valueTable = new Object[other.valueTable.length];
+		
+		System.arraycopy(other.keyTable, 0, this.keyTable, 0, this.keyTable.length);
+		System.arraycopy(other.valueTable, 0, this.valueTable, 0, this.valueTable.length);
+	}
+	
 	public void clear() {
 		init(13);
 	}

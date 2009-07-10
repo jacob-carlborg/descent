@@ -118,7 +118,12 @@ public class ASTConverter {
 			unit.setModuleDeclaration(convert(module.md));
 		}
 		convertDeclarations(unit.declarations(), module.sourceMembers);
-		setSourceRange(unit, module.start, module.length);		
+		setSourceRange(unit, module.start, module.length);
+		
+		if (resolveBindings) {
+			recordNodes(unit, module);
+		}
+		
 		return unit;
 	}
 

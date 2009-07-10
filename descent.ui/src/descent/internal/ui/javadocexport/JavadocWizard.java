@@ -43,31 +43,25 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
+import descent.core.Flags;
 import descent.core.ICompilationUnit;
 import descent.core.IDocumented;
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
 import descent.core.IMethod;
+import descent.core.IPackageDeclaration;
 import descent.core.IParent;
 import descent.core.JavaModelException;
 import descent.core.dom.AST;
 import descent.core.dom.ASTNode;
 import descent.core.dom.AggregateDeclaration;
-import descent.core.dom.AliasDeclaration;
-import descent.core.dom.AliasDeclarationFragment;
 import descent.core.dom.CompilationUnit;
-import descent.core.dom.Declaration;
-import descent.core.dom.EnumDeclaration;
-import descent.core.dom.FunctionDeclaration;
 import descent.core.dom.IBinding;
+import descent.core.dom.ICompilationUnitBinding;
 import descent.core.dom.IMethodBinding;
 import descent.core.dom.ITypeBinding;
 import descent.core.dom.IVariableBinding;
-import descent.core.dom.TemplateDeclaration;
-import descent.core.dom.TypedefDeclaration;
-import descent.core.dom.TypedefDeclarationFragment;
-import descent.core.dom.VariableDeclaration;
-import descent.core.dom.VariableDeclarationFragment;
+import descent.core.dom.AggregateDeclaration.Kind;
 import descent.internal.corext.util.Messages;
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.JavaPluginImages;
@@ -82,15 +76,9 @@ import descent.ui.JavadocContentAccess;
 
 public class JavadocWizard extends Wizard implements IExportWizard {
 	
-	private static Comparator<ASTNode> astNodesComparator = new Comparator<ASTNode>() {
-		public int compare(ASTNode o1, ASTNode o2) {
-			return getName(o1).compareToIgnoreCase(getName(o2));
-		}
-	};
-	
 	private static Comparator<Module> modulesComparator = new Comparator<Module>() {
 		public int compare(Module o1, Module o2) {
-			return o1.unit.getFullyQualifiedName().compareToIgnoreCase(o2.unit.getFullyQualifiedName());
+			return o1.unit.getName().compareToIgnoreCase(o2.unit.getName());
 		}
 	};
 	
@@ -285,29 +273,31 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 	}
 	
 	private static class Module {
-		ICompilationUnit unit;
-		Symbols symbols;
-		public Module(ICompilationUnit unit) {
-			this.unit = unit;
-			this.symbols = new Symbols();
-		}
+		ICompilationUnitBinding unit;
+		Symbols symbols = new Symbols();
 	}
 	
 	private static class Symbols {
-		Set<VariableDeclarationFragment> variables = new TreeSet<VariableDeclarationFragment>(astNodesComparator);
-		Set<AliasDeclarationFragment> aliases = new TreeSet<AliasDeclarationFragment>(astNodesComparator);
-		Set<TypedefDeclarationFragment> typedefs = new TreeSet<TypedefDeclarationFragment>(astNodesComparator);
-		Set<EnumDeclaration> enums = new TreeSet<EnumDeclaration>(astNodesComparator);
-		Set<FunctionDeclaration> functions = new TreeSet<FunctionDeclaration>(astNodesComparator);
-		Set<AggregateDeclaration> classes = new TreeSet<AggregateDeclaration>(astNodesComparator);
-		Set<AggregateDeclaration> interfaces = new TreeSet<AggregateDeclaration>(astNodesComparator);
-		Set<AggregateDeclaration> structs = new TreeSet<AggregateDeclaration>(astNodesComparator);
-		Set<AggregateDeclaration> unions = new TreeSet<AggregateDeclaration>(astNodesComparator);
-		Set<TemplateDeclaration> templates = new TreeSet<TemplateDeclaration>(astNodesComparator);
+		Set<IVariableBinding> variables = new TreeSet<IVariableBinding>(bindingsComparator);
+		Set<ITypeBinding> aliases = new TreeSet<ITypeBinding>(bindingsComparator);
+		Set<ITypeBinding> typedefs = new TreeSet<ITypeBinding>(bindingsComparator);
+		Set<ITypeBinding> enums = new TreeSet<ITypeBinding>(bindingsComparator);
+		Set<IMethodBinding> functions = new TreeSet<IMethodBinding>(bindingsComparator);
+		Set<ITypeBinding> classes = new TreeSet<ITypeBinding>(bindingsComparator);
+		Set<ITypeBinding> interfaces = new TreeSet<ITypeBinding>(bindingsComparator);
+		Set<ITypeBinding> structs = new TreeSet<ITypeBinding>(bindingsComparator);
+		Set<ITypeBinding> unions = new TreeSet<ITypeBinding>(bindingsComparator);
+		Set<ITypeBinding> templates = new TreeSet<ITypeBinding>(bindingsComparator);
 	}
+	
+	private boolean fAcceptsPrivate;
+	private boolean fAcceptsProtected;
 
 	private boolean executeJavadocGeneration() {
 		try {
+			fAcceptsPrivate = fStore.getAccess().equals(fStore.PRIVATE);
+			fAcceptsProtected = fStore.getAccess().equals(fStore.PROTECTED);
+			
 			// Collect symbols of modules
 			Set<Module> modules = collectModules();
 			
@@ -360,7 +350,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 				"</head>\r\n" + 
 				"<frameset cols=\"20%,80%\" title=\"\" onLoad=\"top.loadFrames()\">\r\n" + 
 				"<frame src=\"modules-frame.html\" name=\"moduleList\" title=\"All Modules\">\r\n" + 
-				"<frame src=\"overview-summary.html\" name=\"module\" title=\"Module description\" scrolling=\"yes\">\r\n" +
+				"<frame src=\"modules-frame.html\" name=\"module\" title=\"Module description\" scrolling=\"yes\">\r\n" +
 				"</frameset>\r\n" + 
 				"<noframes>\r\n" + 
 				"<h2>\r\n" + 
@@ -369,7 +359,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 				"<p>\r\n" + 
 				"This document is designed to be viewed using the frames feature. If you see this message, you are using a non-frame-capable web client.\r\n" + 
 				"<br/>\r\n" + 
-				"Link to<a href=\"overview-summary.html\">Non-frame version.</a>\r\n" + 
+				"Link to<a href=\"modules-frame.html\">Non-frame version.</a>\r\n" + 
 				"</noframes>\r\n" + 
 				"</frameset>\r\n" + 
 				"</html>");
@@ -410,171 +400,107 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 			generateModulesList(module, out);
 		}
 	}
+	
+	private static String getHref(ICompilationUnitBinding unit) {
+		return unit.getName().replace('.', '_') + ".html";
+	}
+	
+	private static String getHref(ICompilationUnit unit) {
+		return unit.getFullyQualifiedName().replace('.', '_') + ".html";
+	}
 
 	private void generateModulesList(Module module, Writer out) throws IOException {
-		ICompilationUnit cu = module.unit;
-		String fqn = cu.getFullyQualifiedName();
-		
 		out.write("<li><a href=\"");
-		out.write(fqn);
-		out.write(".html");
+		out.write(getHref(module.unit));
 		out.write("\" target=\"module\">");
-		out.write(fqn);
+		out.write(module.unit.getName());
 		out.write("</li>\r\n");
 	}
 	
 	private void generateModuleDescriptionsFrame(Set<Module> modules, Module module) throws IOException, JavaModelException {
-		String fqn = module.unit.getFullyQualifiedName();
-		
-		Writer out = writerFor(fqn + ".html");
+		Writer out = writerFor(getHref(module.unit));
 		out.write(
 			"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\r\n" + 
 			"<html>\r\n" + 
 			"<head>\r\n" + 
 			"<title>\r\n" + 
 			"Module ");
-		out.write(
-			fqn);
+		out.write(module.unit.getName());
 		out.write(
 			"</title>\r\n" + 
 			"<link rel=\"stylesheet\" type=\"text/css\" href=\"stylesheet.css\" title=\"Style\">\r\n" + 
 			"</head>\r\n" + 
 			"<body>\r\n" + 
 			"<div class=\"module\">");
-		out.write(
-			fqn);
+		out.write(module.unit.getName());
 		out.write(
 			"</div>\r\n");
 		
-		writeDdoc(out, module.unit);
+		writeDdoc(out, module.unit.getJavaElement());
 		
-		// Variables
 		out.write("<ul>");
-		if (!module.symbols.variables.isEmpty()) {
-			out.write("<li><span class=\"first_header\">Variables</span>");
+		
+		// Public imports
+		ICompilationUnitBinding[] publicImports = module.unit.getPublicImports();
+		if (publicImports.length > 0) {
+			Arrays.sort(publicImports, bindingsComparator);
+			
+			out.write("<li><span class=\"first_header\">Public imports</span>");
 			out.write("<ul>");
-			for(VariableDeclarationFragment a : module.symbols.variables) {
-				out.write("<li>");
-				writeAnchor(out, a.getName().getIdentifier(), ASTNode.VARIABLE_DECLARATION);
-				
-				IBinding binding = a.getName().resolveTypeBinding();
-				out.write(": ");
-				writeBinding(binding, out);
-				
-				IJavaElement element = a.resolveBinding().getJavaElement();
-				writeDdoc(out, element);
-				
-				out.write("</li>");
+			for(ICompilationUnitBinding a : publicImports) {
+				out.write("<li><a href=\"");
+				out.write(getHref(a));
+				out.write("\">");
+				out.write(a.getName());
+				out.write("</a></li>");
 			}
 			out.write("</ul>");
 			out.write("</li>");
 		}
 		
-		// Aliases
-		if (!module.symbols.aliases.isEmpty()) {
-			out.write("<li><span class=\"first_header\">Aliases</span>");
-			out.write("<ul>");
-			for(AliasDeclarationFragment a : module.symbols.aliases) {
-				out.write("<li>");
-				writeAnchor(out, a.getName().getIdentifier(), ASTNode.ALIAS_DECLARATION);
-				
-				IBinding binding = a.getName().resolveTypeBinding();
-				out.write(": ");
-				writeBinding(binding, out);
-				
-				IJavaElement element = a.resolveBinding().getJavaElement();
-				writeDdoc(out, element);
-				
-				out.write("</li>");
-			}
-			out.write("</ul>");
-			out.write("</li>");
-		}
+		writeVariables("Variables", "first_header", module.symbols.variables, modules, out);
+		writeAliases("first_header", module.symbols.aliases, modules, out);
+		writeTypedefs("first_header", module.symbols.typedefs, modules, out);
+		writeEnums("first_header", module.symbols.enums, modules, out);
+		writeFunctions("Functions", "first_header", module.symbols.functions, modules, out);
+		writeAggregates("Structs", "first_header", module.symbols.structs, modules, out);
+		writeAggregates("Unions", "first_header", module.symbols.unions, modules, out);
+		writeAggregates("Classes", "first_header", module.symbols.classes, modules, out);
+		writeAggregates("Interfaces", "first_header", module.symbols.interfaces, modules, out);
 		
-		// Typedefs
-		if (!module.symbols.typedefs.isEmpty()) {
-			out.write("<li><span class=\"first_header\">Typedefs</span>");
+		out.write(
+			"</body>\r\n" +
+			"</html>");
+		out.close();
+	}
+	
+	private void writeFunctions(String title, String css, Set<IMethodBinding> functions, Set<Module> modules, Writer out) throws IOException, JavaModelException {
+		if (!functions.isEmpty()) {
+			out.write("<li><span class=\"");
+			out.write(css);
+			out.write("\">");
+			out.write(title);
+			out.write("</span>");
 			out.write("<ul>");
-			for(TypedefDeclarationFragment a : module.symbols.typedefs) {
+			for(IMethodBinding a : functions) {
 				out.write("<li>");
-				writeAnchor(out, a.getName().getIdentifier(), ASTNode.TYPEDEF_DECLARATION);
 				
-				IBinding binding = a.getName().resolveTypeBinding();
-				out.write(": ");
-				writeBinding(binding, out);
+				writeModifiers(a, out);
 				
-				IJavaElement element = a.resolveBinding().getJavaElement();
-				writeDdoc(out, element);
-				
-				out.write("</li>");
-			}
-			out.write("</ul>");
-			out.write("</li>");
-		}
-		
-		// Enums
-		if (!module.symbols.enums.isEmpty()) {
-			out.write("<li><span class=\"first_header\">Enums</span>");
-			out.write("<ul>");
-			for(EnumDeclaration a : module.symbols.enums) {
-				IBinding binding = a.getBaseType().resolveBinding();
-				if (a.getName() != null) {
-					out.write("<li>");
-					writeAnchor(out, a.getName().getIdentifier(), ASTNode.ENUM_DECLARATION);
+				if (a.isConstructor()) {
+					out.write("<span class=\"keyword\">this</span>");
 				} else {
-					out.write("<li>");
-					out.write("(anynomous)");
-				}
-				out.write(": ");
-				writeBinding(binding, out);
-				
-				ITypeBinding tb = a.resolveBinding();
-				if (tb != null) {
-					IJavaElement element = tb.getJavaElement();
-					writeDdoc(out, element);
+					writeBinding(a.getReturnType(), out);
+					out.write(" ");
+					writeAnchor(out, a, ASTNode.FUNCTION_DECLARATION);
 				}
 				
-				IVariableBinding[] fields = tb.getDeclaredFields();
-				if (fields != null && fields.length > 0) {
-					Arrays.sort(fields, bindingsComparator);
-					out.write("<ul>");
-					for(IVariableBinding var : fields) {
-						out.write("<li><span class=\"symbol variable\">");
-						out.write(var.getName());
-						out.write("</span>");
-						
-						writeDdoc(out, var.getJavaElement());
-						
-						out.write("</li>");
-					}
-					out.write("</ul>");
-				}
-				
-				out.write("</li>");
-			}
-			out.write("</ul>");
-			out.write("</li>");
-		}
-		
-		// Functions
-		if (!module.symbols.functions.isEmpty()) {
-			out.write("<li><span class=\"first_header\">Functions</span>");
-			out.write("<ul>");
-			for(FunctionDeclaration a : module.symbols.functions) {
-				IMethodBinding method = a.resolveBinding();
-				out.write("<li>");
-				
-				writeBinding(method.getReturnType(), out);
-				out.write(" ");
-				out.write("<span class=\"function\">");
-				out.write(method.getName());
-				out.write("</span>");
 				out.write("(");
 				
-				IMethod m = (IMethod) method.getJavaElement();
+				IMethod m = (IMethod) a.getJavaElement();
 				String[] parameterNames = m.getParameterNames();
 				
-				IBinding[] params = method.getParameterTypes();
+				IBinding[] params = a.getParameterTypes();
 				for (int i = 0; i < params.length; i++) {
 					if (i != 0)
 						out.write(", ");
@@ -605,295 +531,516 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 			out.write("</ul>");
 			out.write("</li>");
 		}
-		
-		// Structs
-		if (!module.symbols.structs.isEmpty()) {
-			out.write("<li><span class=\"first_header\">Structs</span>");
-			out.write("<ul>");
-			writeAggregate(modules, module.symbols.structs, out);
-			out.write("</ul>");
-			out.write("</li>");
-		}
-		
-		// Unions
-		if (!module.symbols.unions.isEmpty()) {
-			out.write("<li><span class=\"first_header\">Unions</span>");
-			out.write("<ul>");
-			writeAggregate(modules, module.symbols.unions, out);
-			out.write("</ul>");
-			out.write("</li>");
-		}
-		
-		// Classes
-		if (!module.symbols.classes.isEmpty()) {
-			out.write("<li><span class=\"first_header\">Classes</span>");
-			out.write("<ul>");
-			writeAggregate(modules, module.symbols.classes, out);
-			out.write("</ul>");
-			out.write("</li>");
-		}
-		
-		// Interfaces
-		if (!module.symbols.interfaces.isEmpty()) {
-			out.write("<li><span class=\"first_header\">Interfaces</span>");
-			out.write("<ul>");
-			writeAggregate(modules, module.symbols.interfaces, out);
-			out.write("</ul>");
-			out.write("</li>");
-		}
-		
-		out.write(
-			"</body>\r\n" +
-			"</html>");
-		out.close();
 	}
-
-
-	private void writeAggregate(Set<Module> modules, Set<AggregateDeclaration> agg, Writer out) throws IOException, JavaModelException {
-		for(AggregateDeclaration a : agg) {
-			out.write("<li>");
-			writeAnchor(out, a.getName().getIdentifier(), a.getNodeType(), a.getKind());
-			
-			ITypeBinding binding = a.resolveBinding();
-			IBinding superclass = binding.getSuperclass();
-			ITypeBinding[] interfaces = binding.getInterfaces();
-			
-			if (superclass != null || (interfaces != null && interfaces.length > 0)) {
-				out.write(" : ");
-			}
-				
-			if (superclass != null) {
-				writeBinding(superclass, out);
-			}
-			
-			if (superclass != null && (interfaces != null && interfaces.length > 0)) {
-				out.write(", ");
-			}
-			
-			if (interfaces != null) {
-				for (int i = 0; i < interfaces.length; i++) {
-					if (i != 0) {
-						out.write(", ");
-					}
-					writeBinding(interfaces[i], out);
-				}
-			}
-			
-			IJavaElement element = a.resolveBinding().getJavaElement();
-			writeDdoc(out, element);
-			
+	
+	private void writeVariables(String title, String css, Set<IVariableBinding> variables, Set<Module> modules, Writer out) throws IOException, JavaModelException {
+		if (!variables.isEmpty()) {
+			out.write("<li><span class=\"");
+			out.write(css);
+			out.write("\">");
+			out.write(title);
+			out.write("</span>");
 			out.write("<ul>");
-			
-			if (a.getKind() == AggregateDeclaration.Kind.CLASS) {
-				out.write("<li><span class=\"second_header\">Super hierarchy:</span> ");
+			for(IVariableBinding a : variables) {
+				out.write("<li>");
 				
-				Stack<IBinding> bindings = new Stack<IBinding>();
-				IBinding current = a.resolveBinding().getSuperclass();
-				while(current != null) {
-					bindings.push(current);
-					if (current instanceof ITypeBinding) {
-						current = ((ITypeBinding) current).getSuperclass();
-					}
-				}
+				writeModifiers(a, out);
+				writeAnchor(out, a, ASTNode.VARIABLE_DECLARATION);
 				
-				while(!bindings.isEmpty()) {
-					writeBinding(bindings.pop(), out);
-					out.write(" -> ");
-				}
+				ITypeBinding binding = (ITypeBinding) a.getType();
+				out.write(": ");
+				writeBinding(binding, out);
 				
-				out.write("<span class=\"symbol class\">");
-				out.write(a.getName().getIdentifier());
-				out.write("</span>");
+				IJavaElement element = a.getJavaElement();
+				writeDdoc(out, element);
 				
 				out.write("</li>");
 			}
+			out.write("</ul>");
+			out.write("</li>");
+		}
+	}
+	
+	private void writeAliases(String css, Set<ITypeBinding> aliases, Set<Module> modules, Writer out) throws IOException, JavaModelException {
+		if (!aliases.isEmpty()) {
+			out.write("<li><span class=\"");
+			out.write(css);
+			out.write("\">");
+			out.write("Aliases</span>");
+			out.write("<ul>");
+			for(ITypeBinding a : aliases) {
+				out.write("<li>");
+				
+				writeModifiers(a, out);
+				
+				writeAnchor(out, a, ASTNode.ALIAS_DECLARATION);
+				
+				out.write(": ");
+				
+				IBinding binding = a.getAliasedSymbol();
+				if (binding == null) {
+					binding = a.getAliasedType();
+				}
+				
+				writeBinding(binding, out);
+				
+				IJavaElement element = a.getJavaElement();
+				writeDdoc(out, element);
+				
+				out.write("</li>");
+			}
+			out.write("</ul>");
+			out.write("</li>");
+		}
+	}
+	
+	private void writeTypedefs(String css, Set<ITypeBinding> typedefs, Set<Module> modules, Writer out) throws IOException, JavaModelException {
+		if (!typedefs.isEmpty()) {
+			out.write("<li><span class=\"");
+			out.write(css);
+			out.write("\">");
+			out.write("Typedefs</span>");
+			out.write("<ul>");
+			for(ITypeBinding a : typedefs) {
+				out.write("<li>");
+				
+				writeModifiers(a, out);
+				
+				writeAnchor(out, a, ASTNode.TYPEDEF_DECLARATION);
+				
+				ITypeBinding binding = a.getTypedefedType();
+				out.write(": ");
+				writeBinding(binding, out);
+				
+				IJavaElement element = a.getJavaElement();
+				writeDdoc(out, element);
+				
+				out.write("</li>");
+			}
+			out.write("</ul>");
+			out.write("</li>");
+		}
+	}
+	
+	private void writeEnums(String css, Set<ITypeBinding> enums, Set<Module> modules, Writer out) throws IOException, JavaModelException {
+		if (!enums.isEmpty()) {
+			out.write("<li><span class=\"");
+			out.write(css);
+			out.write("\">");
+			out.write("Enums</span>");
+			out.write("<ul>");
+			for(ITypeBinding a : enums) {
+				ITypeBinding binding = a.getSuperclass();
+				if (a.getName() != null) {
+					out.write("<li>");
+					writeModifiers(a, out);					
+					writeAnchor(out, a, ASTNode.ENUM_DECLARATION);
+				} else {
+					out.write("<li>");
+					writeModifiers(a, out);
+					out.write("(anynomous)");
+				}
+				out.write(": ");
+				writeBinding(binding, out);
+				
+				IJavaElement element = a.getJavaElement();
+				writeDdoc(out, element);
+				
+				IVariableBinding[] fields = a.getDeclaredFields();
+				if (fields != null && fields.length > 0) {
+					Arrays.sort(fields, bindingsComparator);
+					out.write("<ul>");
+					for(IVariableBinding var : fields) {
+						out.write("<li><span class=\"symbol variable\">");
+						out.write(var.getName());
+						out.write("</span>");
+						
+						writeDdoc(out, var.getJavaElement());
+						
+						out.write("</li>");
+					}
+					out.write("</ul>");
+				}
+				
+				out.write("</li>");
+			}
+			out.write("</ul>");
+			out.write("</li>");
+		}
+	}
+	
+	private void writeAggregates(String title, String css, Set<ITypeBinding> aggs, Set<Module> modules, Writer out) throws IOException, JavaModelException {
+		if (!aggs.isEmpty()) {
+			out.write("<li><span class=\"");
+			out.write(css);
+			out.write("\">");
+			out.write(title);
+			out.write("</span>");
+			out.write("<ul>");
+			writeAggregate(modules, aggs, out);
+			out.write("</ul>");
+			out.write("</li>");
+		}
+	}
+
+	private void writeAggregate(Set<Module> modules, Set<ITypeBinding> agg, Writer out) throws IOException, JavaModelException {
+		for(ITypeBinding a : agg) {
+			writeAggregate(modules, out, a);
+		}
+	}
+
+	private void writeAggregate(Set<Module> modules, Writer out, ITypeBinding a) throws IOException, JavaModelException {
+		out.write("<li>");
+		
+		writeModifiers(a, out);
+		
+		writeAnchor(out, a, ASTNode.AGGREGATE_DECLARATION, getKind(a));
+		
+		ITypeBinding superclass = a.getSuperclass();
+		ITypeBinding[] interfaces = a.getInterfaces();
+		
+		if (superclass != null || (interfaces != null && interfaces.length > 0)) {
+			out.write(" : ");
+		}
 			
-			Set<IBinding> implementedInterfaces = getImplementedInterfaces(modules, binding);
+		if (superclass != null) {
+			writeBinding(superclass, out);
+		}
+		
+		if (superclass != null && (interfaces != null && interfaces.length > 0)) {
+			out.write(", ");
+		}
+		
+		if (interfaces != null) {
+			for (int i = 0; i < interfaces.length; i++) {
+				if (i != 0) {
+					out.write(", ");
+				}
+				writeBinding(interfaces[i], out);
+			}
+		}
+		
+		IJavaElement element = a.getJavaElement();
+		writeDdoc(out, element);
+		
+		out.write("<ul>");
+		
+		if (a.isClass()) {
+			out.write("<li><span class=\"second_header\">Super hierarchy:</span> ");
 			
-			if (!implementedInterfaces.isEmpty()) {
-				out.write("<li><span class=\"second_header\">All implemented interfaces:</span> ");
+			Stack<ITypeBinding> hierarchy = getSuperclassHierarchy(a);
+			
+			while(!hierarchy.isEmpty()) {
+				writeBinding(hierarchy.pop(), out);
+				out.write(" -> ");
+			}
+			
+			out.write("<span class=\"symbol class\">");
+			out.write(a.getName());
+			out.write("</span>");
+			
+			out.write("</li>");
+		}
+		
+		Set<ITypeBinding> implementedInterfaces = getImplementedInterfaces(modules, a);
+		
+		if (!implementedInterfaces.isEmpty()) {
+			out.write("<li><span class=\"second_header\">All implemented interfaces:</span> ");
+			
+			int i = 0;
+			for(IBinding inter : implementedInterfaces) {
+				if (i != 0)
+					out.write(", ");
+				writeBinding(inter, out);
+				i++;
+			}
+			out.write("</li>");
+		}
+		
+		if (a.isClass()) {
+			Set<ITypeBinding> subclasses = getSubclasses(modules, a);
+			if (!subclasses.isEmpty()) {
+				out.write("<li><span class=\"second_header\">Direct known subclasses:</span> ");
 				
 				int i = 0;
-				for(IBinding inter : implementedInterfaces) {
+				for(IBinding sub : subclasses) {
 					if (i != 0)
 						out.write(", ");
-					writeBinding(inter, out);
+					writeBinding(sub, out);
 					i++;
 				}
 				out.write("</li>");
 			}
-			
-			if (a.getKind() == AggregateDeclaration.Kind.CLASS) {
-				Set<IBinding> subclasses = getSubclasses(modules, a);
-				if (!subclasses.isEmpty()) {
-					out.write("<li><span class=\"second_header\">Direct known subclasses:</span> ");
-					
-					int i = 0;
-					for(IBinding sub : subclasses) {
-						if (i != 0)
-							out.write(", ");
-						writeBinding(sub, out);
-						i++;
-					}
-					out.write("</li>");
-				}
-			}
-			
-			if (a.getKind() == AggregateDeclaration.Kind.INTERFACE) {
-				Set<IBinding> subinterfaces = getSubinterfaces(modules, a);
-				if (!subinterfaces.isEmpty()) {
-					out.write("<li><span class=\"second_header\">All known subinterfaces:</span> ");
-					
-					int i = 0;
-					for(IBinding sub : subinterfaces) {
-						if (i != 0)
-							out.write(", ");
-						writeBinding(sub, out);
-						i++;
-					}
-					out.write("</li>");
-				}
-			}
-			
-			if (a.getKind() == AggregateDeclaration.Kind.INTERFACE) {
-				Set<IBinding> implementing = getImplementors(modules, a);
-				if (!implementing.isEmpty()) {
-					out.write("<li><span class=\"second_header\">All known implementing classes:</span> ");
-					
-					int i = 0;
-					for(IBinding sub : implementing) {
-						if (i != 0)
-							out.write(", ");
-						writeBinding(sub, out);
-						i++;
-					}
-					out.write("</li>");
-				}
-			}
-			
-			IVariableBinding[] fields = binding.getDeclaredFields();
-			if (fields != null && fields.length > 0) {
-				Arrays.sort(fields, bindingsComparator);
+		}
+		
+		if (a.isInterface()) {
+			Set<ITypeBinding> subinterfaces = getSubinterfaces(modules, a);
+			if (!subinterfaces.isEmpty()) {
+				out.write("<li><span class=\"second_header\">All known subinterfaces:</span> ");
 				
-				out.write("<li><span class=\"second_header\">Fields</span>");
-				out.write("<ul>");
-				
-				for(IVariableBinding var : fields) {
-					out.write("<li>");
-					out.write("<span class=\"variable\">");
-					out.write(var.getName());
-					out.write("</span>");
-					out.write(": ");
-					writeBinding(var.getType(), out);
-					
-					writeDdoc(out, var.getJavaElement());
-					
-					out.write("</li>");
+				int i = 0;
+				for(IBinding sub : subinterfaces) {
+					if (i != 0)
+						out.write(", ");
+					writeBinding(sub, out);
+					i++;
 				}
-				
-				out.write("</ul>");
 				out.write("</li>");
 			}
-			
+		}
+		
+		if (a.isInterface()) {
+			Set<ITypeBinding> implementing = getImplementors(modules, a);
+			if (!implementing.isEmpty()) {
+				out.write("<li><span class=\"second_header\">All known implementing classes:</span> ");
+				
+				int i = 0;
+				for(IBinding sub : implementing) {
+					if (i != 0)
+						out.write(", ");
+					writeBinding(sub, out);
+					i++;
+				}
+				out.write("</li>");
+			}
+		}
+		
+		Set<IVariableBinding> fields = getDeclaredFields(a);
+		writeVariables("Fields", "second_header", fields, modules, out);
+		
+		Set<IMethodBinding> constructors = getConstructors(a);
+		writeFunctions("Constructors", "second_header", constructors, modules, out);
 
-			IMethodBinding[] methods = binding.getDeclaredMethods();
-			if (methods != null && methods.length > 0) {
-				Arrays.sort(methods, bindingsComparator);
-				
-				out.write("<li><span class=\"second_header\">Methods</span>");
-				out.write("<ul>");
-				
-				for(IMethodBinding method : methods) {
-					out.write("<li>");
-					
-					writeBinding(method.getReturnType(), out);
-					out.write(" ");
-					out.write("<span class=\"function\">");
-					out.write(method.getName());
-					out.write("</span>");
-					out.write("(");
-					
-					IMethod m = (IMethod) method.getJavaElement();
-					String[] parameterNames = m.getParameterNames();
-					
-					IBinding[] params = method.getParameterTypes();
-					for (int i = 0; i < params.length; i++) {
-						if (i != 0)
-							out.write(", ");
-						writeBinding(params[i], out);
-						out.write(" ");
-						out.write(parameterNames[i]);
-					}
-					
-					switch(m.getVarargs()) {
-					case IMethod.VARARGS_NO:
-						break;
-					case IMethod.VARARGS_SAME_TYPES:
-						out.write("...");
-						break;
-					case IMethod.VARARGS_UNDEFINED_TYPES:
-						if (params.length > 0) {
-							out.write(", ");
-						}
-						out.write("...");
-					}
-					
-					out.write(")");
-					
-					writeDdoc(out, m);
-					
-					out.write("</li>");
-				}
-				
-				out.write("</ul>");
-				out.write("</li>");
+		Set<IMethodBinding> methods = getMethods(a);
+		writeFunctions("Methods", "second_header", methods, modules, out);
+		
+		// Inherited methods
+		if (a.getSuperclass() != null) {
+			out.write("<li><span class=\"second_header\">Inherited methods</span>");
+			out.write("<ul>");
+			
+			Stack<ITypeBinding> hierarchy = getSuperclassHierarchy(a);
+			while(!hierarchy.isEmpty()) {
+				writeInheritedMethods(hierarchy.pop(), out);
+			}
+			
+			for(ITypeBinding t : implementedInterfaces) {
+				writeInheritedMethods(t, out);
 			}
 			
 			out.write("</ul>");
-			out.write("<br/></li>");
+			out.write("</li>");
 		}
+		
+		writeAliases("second_header", getSubAliases(a), modules, out);
+		writeTypedefs("second_header", getSubTypedefs(a), modules, out);
+		writeEnums("second_header", getSubEnums(a), modules, out);
+		writeAggregates("Structs", "second_header", getSubStructs(a), modules, out);
+		writeAggregates("Unions", "second_header", getSubUnions(a), modules, out);
+		writeAggregates("Classes", "second_header", getSubClasses(a), modules, out);
+		writeAggregates("Interfaces", "second_header", getSubInterfaces(a), modules, out);
+		
+		out.write("</ul>");
+		out.write("</li>");
 	}
 	
-	private Set<IBinding> getImplementedInterfaces(Set<Module> modules, ITypeBinding binding) {
-		Set<IBinding> result = new TreeSet<IBinding>(bindingsComparator);
+	private void writeModifiers(IBinding a, Writer out) throws IOException {
+		long modifiers = a.getModifiers();
+		if ((modifiers & Flags.AccFinal) != 0) {
+			out.write("<span class=\"keyword\">final</span> ");
+		}
+		if ((modifiers & Flags.AccAbstract) != 0) {
+			out.write("<span class=\"keyword\">abstract</span> ");
+		}
+		if ((modifiers & Flags.AccStatic) != 0) {
+			out.write("<span class=\"keyword\">static</span> ");
+		}
+		if ((modifiers & Flags.AccConst) != 0) {
+			out.write("<span class=\"keyword\">const</span> ");
+		}
+	}
+
+
+	private Set<ITypeBinding> getSubAliases(ITypeBinding a) {
+		Set<ITypeBinding> result = new TreeSet<ITypeBinding>(bindingsComparator);
+		for(ITypeBinding t : a.getDeclaredTypes()) {
+			if (passesAccess(t) && t.isAlias())
+				result.add(t);
+		}
+		return result;
+	}
+
+	private Set<ITypeBinding> getSubTypedefs(ITypeBinding a) {
+		Set<ITypeBinding> result = new TreeSet<ITypeBinding>(bindingsComparator);
+		for(ITypeBinding t : a.getDeclaredTypes()) {
+			if (passesAccess(t) && t.isTypedef())
+				result.add(t);
+		}
+		return result;
+	}
+	
+	private Set<ITypeBinding> getSubEnums(ITypeBinding a) {
+		Set<ITypeBinding> result = new TreeSet<ITypeBinding>(bindingsComparator);
+		for(ITypeBinding t : a.getDeclaredTypes()) {
+			if (passesAccess(t) && t.isEnum())
+				result.add(t);
+		}
+		return result;
+	}
+	
+	private Set<ITypeBinding> getSubStructs(ITypeBinding a) {
+		Set<ITypeBinding> result = new TreeSet<ITypeBinding>(bindingsComparator);
+		for(ITypeBinding t : a.getDeclaredTypes()) {
+			if (passesAccess(t) && t.isStruct())
+				result.add(t);
+		}
+		return result;
+	}
+	
+	private Set<ITypeBinding> getSubUnions(ITypeBinding a) {
+		Set<ITypeBinding> result = new TreeSet<ITypeBinding>(bindingsComparator);
+		for(ITypeBinding t : a.getDeclaredTypes()) {
+			if (passesAccess(t) && t.isUnion())
+				result.add(t);
+		}
+		return result;
+	}
+	
+	private Set<ITypeBinding> getSubClasses(ITypeBinding a) {
+		Set<ITypeBinding> result = new TreeSet<ITypeBinding>(bindingsComparator);
+		for(ITypeBinding t : a.getDeclaredTypes()) {
+			if (passesAccess(t) && t.isClass())
+				result.add(t);
+		}
+		return result;
+	}
+	
+	private Set<ITypeBinding> getSubInterfaces(ITypeBinding a) {
+		Set<ITypeBinding> result = new TreeSet<ITypeBinding>(bindingsComparator);
+		for(ITypeBinding t : a.getDeclaredTypes()) {
+			if (passesAccess(t) && t.isInterface())
+				result.add(t);
+		}
+		return result;
+	}
+
+	private Set<IVariableBinding> getDeclaredFields(ITypeBinding a) {
+		Set<IVariableBinding> vars = new TreeSet<IVariableBinding>(bindingsComparator);
+		for(IVariableBinding var : a.getDeclaredFields()) {
+			if (!passesAccess(var))
+				continue;
+			vars.add(var);
+		}
+		return vars;
+	}
+
+	private Set<IMethodBinding> getMethods(ITypeBinding a) {
+		Set<IMethodBinding> methods = new TreeSet<IMethodBinding>(bindingsComparator);
+		for(IMethodBinding method : a.getDeclaredMethods()) {
+			if (!passesAccess(method))
+				continue;
+			
+			if (!method.isConstructor()) {
+				methods.add(method);
+			}
+		}
+		return methods;
+	}
+
+	private Set<IMethodBinding> getConstructors(ITypeBinding a) {
+		Set<IMethodBinding> methods = new TreeSet<IMethodBinding>(bindingsComparator);
+		for(IMethodBinding method : a.getDeclaredMethods()) {
+			if (!passesAccess(method))
+				continue;
+			
+			if (method.isConstructor()) {
+				methods.add(method);
+			}
+		}
+		return methods;
+	}
+
+	private void writeInheritedMethods(ITypeBinding t, Writer out) throws IOException {
+		Set<IMethodBinding> ms = getMethods(t);
+		if (ms.isEmpty())
+			return;
+		
+		out.write("<li>from ");
+		writeBinding(t, out);
+		out.write(": ");
+		
+		boolean writtenComma = false;
+		for(IMethodBinding m : ms) {
+			if (!passesAccess(m))
+				continue;
+			
+			if (writtenComma)
+				out.write(", ");
+			
+			out.write("<a href=\"");
+			writeHref(m, out);
+			out.write("\" class=\"symbol function\">");
+			out.write(m.getName());
+			out.write("</a>");
+			
+			writtenComma = true;
+		}
+		out.write("</li>");
+	}
+
+	private Stack<ITypeBinding> getSuperclassHierarchy(ITypeBinding a) {
+		Stack<ITypeBinding> hierarchy = new Stack<ITypeBinding>();
+		ITypeBinding current = a.getSuperclass();
+		while(current != null) {
+			hierarchy.push(current);
+			current = current.getSuperclass();
+		}
+		return hierarchy;
+	}
+
+	private Kind getKind(ITypeBinding a) {
+		if (a.isClass())
+			return AggregateDeclaration.Kind.CLASS;
+		else if (a.isInterface())
+			return AggregateDeclaration.Kind.INTERFACE;
+		else if (a.isStruct())
+			return AggregateDeclaration.Kind.STRUCT;
+		else if (a.isUnion())
+			return AggregateDeclaration.Kind.UNION;
+		throw new IllegalStateException();
+	}
+
+
+	private Set<ITypeBinding> getImplementedInterfaces(Set<Module> modules, ITypeBinding binding) {
+		Set<ITypeBinding> result = new TreeSet<ITypeBinding>(bindingsComparator);
 		fillImplementedInterfaces(binding.getSuperclass(), result);
 		fillImplementedInterfaces(binding.getInterfaces(), result);
 		return result;
 	}
 	
-	private Set<IBinding> getSubclasses(Set<Module> modules, AggregateDeclaration a) {
-		ITypeBinding target = a.resolveBinding();
-		
-		Set<IBinding> result = new TreeSet<IBinding>(bindingsComparator);
+	private Set<ITypeBinding> getSubclasses(Set<Module> modules, ITypeBinding target) {
+		Set<ITypeBinding> result = new TreeSet<ITypeBinding>(bindingsComparator);
 		for(Module module : modules) {
-			for(AggregateDeclaration other : module.symbols.classes) {
-				ITypeBinding binding = other.resolveBinding();
-				if (binding != null) {
-					IBinding superclass = binding.getSuperclass();
-					if (superclass != null && superclass.equals(target)) {
-						result.add(binding);
-					}
+			for(ITypeBinding binding : module.symbols.classes) {
+				IBinding superclass = binding.getSuperclass();
+				if (superclass != null && superclass.isEqualTo(target)) {
+					result.add(binding);
 				}
 			}
 		}
 		return result;
 	}
 
-	private Set<IBinding> getSubinterfaces(Set<Module> modules, AggregateDeclaration a) {
-		ITypeBinding target = a.resolveBinding();
-		
-		Set<IBinding> result = new TreeSet<IBinding>(bindingsComparator);
+	private Set<ITypeBinding> getSubinterfaces(Set<Module> modules, ITypeBinding target) {
+		Set<ITypeBinding> result = new TreeSet<ITypeBinding>(bindingsComparator);
 		for(Module module : modules) {
-			for(AggregateDeclaration other : module.symbols.interfaces) {
-				ITypeBinding binding = other.resolveBinding();
-				if (binding != null) {
-					ITypeBinding[] interfaces = binding.getInterfaces();
-					if (interfaces != null) {
-						for(ITypeBinding inter : interfaces) {
-							if (inter.equals(target)) {
-								result.add(binding);
-								break;
-							}
+			for(ITypeBinding binding : module.symbols.interfaces) {
+				ITypeBinding[] interfaces = binding.getInterfaces();
+				if (interfaces != null) {
+					for(ITypeBinding inter : interfaces) {
+						if (inter.isEqualTo(target)) {
+							result.add(binding);
+							break;
 						}
 					}
 				}
@@ -902,13 +1049,10 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		return result;
 	}
 
-	private Set<IBinding> getImplementors(Set<Module> modules, AggregateDeclaration a) {
-		ITypeBinding target = a.resolveBinding();
-		
-		Set<IBinding> result = new TreeSet<IBinding>(bindingsComparator);
+	private Set<ITypeBinding> getImplementors(Set<Module> modules, ITypeBinding target) {
+		Set<ITypeBinding> result = new TreeSet<ITypeBinding>(bindingsComparator);
 		for(Module module : modules) {
-			for(AggregateDeclaration other : module.symbols.classes) {
-				ITypeBinding binding = other.resolveBinding();
+			for(ITypeBinding binding : module.symbols.classes) {
 				if (binding != null) {
 					if (getImplementedInterfaces(modules, binding).contains(target)) {
 						result.add(binding);
@@ -919,7 +1063,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		return result;
 	}
 
-	private void fillImplementedInterfaces(ITypeBinding[] interfaces, Set<IBinding> implementedInterfaces) {
+	private void fillImplementedInterfaces(ITypeBinding[] interfaces, Set<ITypeBinding> implementedInterfaces) {
 		if (interfaces == null)
 			return;
 		
@@ -929,11 +1073,10 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		}
 	}
 	
-	private void fillImplementedInterfaces(IBinding binding, Set<IBinding> implementedInterfaces) {
-		if (!(binding instanceof ITypeBinding))
+	private void fillImplementedInterfaces(ITypeBinding type, Set<ITypeBinding> implementedInterfaces) {
+		if (type == null) {
 			return;
-		
-		ITypeBinding type = (ITypeBinding) binding;
+		}
 		
 		if (type.isInterface()) {
 			implementedInterfaces.add(type);
@@ -947,24 +1090,20 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 	}
 
 
-	private void writeAnchor(Writer out, String name, int nodeType) throws IOException {
-		writeAnchor(out, name, nodeType, null);
+	private void writeAnchor(Writer out, IBinding binding, int nodeType) throws IOException {
+		writeAnchor(out, binding, nodeType, null);
 	}
 
-	private void writeAnchor(Writer out, String name, int nodeType, AggregateDeclaration.Kind kind) throws IOException {
+	private void writeAnchor(Writer out, IBinding binding, int nodeType, AggregateDeclaration.Kind kind) throws IOException {
 		out.write("<a name=\"");
-		out.write(name);
+		out.write(binding.getKey());
 		out.write("\"");
 		out.write(" class=\"symbol ");
 		out.write(classFor(nodeType, kind));
 		out.write("\"");
 		out.write(">");
-		out.write(name);
+		out.write(binding.getName());
 		out.write("</a>");
-	}
-
-	private String classFor(int nodeType) {
-		return classFor(nodeType, null);
 	}
 
 	private String classFor(int nodeType, AggregateDeclaration.Kind kind) {
@@ -1001,6 +1140,15 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 	}
 
 	private void writeDdoc(Writer out, IJavaElement element) throws JavaModelException, IOException {
+		if (element instanceof ICompilationUnit) {
+			ICompilationUnit unit = (ICompilationUnit) element;
+			IPackageDeclaration[] packageDeclarations = unit.getPackageDeclarations();
+			if (packageDeclarations.length > 0) {
+				writeDdoc(out, packageDeclarations[0]);
+			}
+			return;
+		}
+		
 		if (element instanceof IDocumented) {
 			IDocumented documented = (IDocumented) element;
 			Reader reader = JavadocContentAccess.getHTMLContentReader(documented, true, false);
@@ -1034,8 +1182,15 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 	}
 	
 	private void writeBinding(ITypeBinding binding, Writer out) throws IOException {
+		if (binding == null) {
+			System.out.println(123456);
+			return;
+		}
+		
 		if (binding.isPrimitive()) {
+			out.write("<span class=\"keyword\">");
 			out.write(binding.getName());
+			out.write("</span>");
 		} else if (binding.isPointer()) {
 			writeBinding(binding.getComponentType(), out);
 			
@@ -1052,7 +1207,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 			out.write(']');
 		} else if (binding.isDelegate()) {
 			writeBinding(binding.getReturnType(), out);
-			out.write(" delegate(");
+			out.write(" <span class=\"keyword\">delegate</span>(");
 			for (int i = 0; i < binding.getParametersTypes().length; i++) {
 				if (i != 0)
 					out.write(", ");
@@ -1065,7 +1220,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 			out.write(']');
 		} else if (binding.isFunction()) {
 			writeBinding(binding.getReturnType(), out);
-			out.write(" function(");
+			out.write(" <span class=\"keyword\">function</span>(");
 			for (int i = 0; i < binding.getParametersTypes().length; i++) {
 				if (i != 0)
 					out.write(", ");
@@ -1084,15 +1239,18 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 			out.write('[');
 			out.write(String.valueOf(binding.getDimension()));
 			out.write(']');
-		} else if (binding.isClass() || binding.isStruct() || binding.isInterface() || binding.isUnion() || binding.isEnum()) {
-			writeLink(binding, out);
-		} else if (binding.isTemplate()) {
-			// TODO
+		} else {
 			writeLink(binding, out);
 		}
 	}
 
 	private void writeLink(ITypeBinding binding, Writer out) throws IOException {
+		// Might happen with references to private symbols
+		if (!passesAccess(binding)) {
+			out.write(binding.getName());
+			return;
+		}
+		
 		out.write("<a href=\"");
 		writeHref(binding, out);
 		out.write("\"");
@@ -1108,9 +1266,13 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		} else if (binding.isFunction()) {
 			out.write(" class=\"symbol function\"");
 		} else if (binding.isEnum()) {
-			out.write(" class=\"symbol function\"");
+			out.write(" class=\"symbol enum\"");
 		} else if (binding.isTemplate()) {
 			out.write(" class=\"symbol template\"");
+		} else if (binding.isAlias()) {
+			out.write(" class=\"symbol alias\"");
+		} else if (binding.isTypedef()) {
+			out.write(" class=\"symbol typedef\"");
 		}
 		
 		out.write(" target=\"module\">");
@@ -1118,44 +1280,10 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		out.write("</a>");
 	}
 
-	private void writeHref(ITypeBinding binding, Writer out) throws IOException {
-		writeHref(binding.getJavaElement(), binding.getName(), out);
-	}
-
-	private static String getName(ASTNode decl) {
-		switch(decl.getNodeType()) {
-		case ASTNode.FUNCTION_DECLARATION:
-			return ((FunctionDeclaration) decl).getName().getIdentifier();
-		case ASTNode.AGGREGATE_DECLARATION:
-			return ((AggregateDeclaration) decl).getName().getIdentifier();
-		case ASTNode.ALIAS_DECLARATION_FRAGMENT:
-			return ((AliasDeclarationFragment) decl).getName().getIdentifier();
-		case ASTNode.ENUM_DECLARATION:
-			EnumDeclaration e = (EnumDeclaration) decl;
-			if (e.getName() == null) {
-				return "(unnamed)";
-			}
-			return e.getName().getIdentifier();
-		case ASTNode.TEMPLATE_DECLARATION:
-			return ((TemplateDeclaration) decl).getName().getIdentifier();
-		case ASTNode.TYPEDEF_DECLARATION_FRAGMENT:
-			return ((TypedefDeclarationFragment) decl).getName().getIdentifier();
-		case ASTNode.VARIABLE_DECLARATION_FRAGMENT:
-			return ((VariableDeclarationFragment) decl).getName().getIdentifier();
-		default:
-			throw new IllegalStateException();
-		}
-	}
-	
-	private static void writeHref(ASTNode decl, Writer out) throws IOException {
-		CompilationUnit unit = (CompilationUnit) decl.getRoot();
-		IJavaElement element = unit.getJavaElement();
-		writeHref(element, getName(decl), out);
-	}
-	
-	private static void writeHref(IJavaElement element, String name, Writer out) throws IOException {
+	private void writeHref(IBinding binding, Writer out) throws IOException {
+		IJavaElement element = binding.getJavaElement();
 		if (element == null) {
-			// TODO
+			System.out.println(123456);
 			return;
 		}
 		
@@ -1169,10 +1297,9 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 			}
 		}
 		
-		out.write(unit.getFullyQualifiedName());
-		out.write(".html");
+		out.write(getHref(unit));
 		out.write("#");
-		out.write(name);
+		out.write(binding.getKey());
 	}
 	
 	private void collect(IJavaElement[] elements, Set<Module> modules) throws JavaModelException {
@@ -1186,69 +1313,75 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 			element.getElementType() == IJavaElement.CLASS_FILE) {
 			
 			ICompilationUnit unit = (ICompilationUnit) element;
-			Module module = new Module(unit);
-			collect(unit, module.symbols);
+			Module module = new Module();
+			collect(unit, module);
 			modules.add(module);
 		} else if (element instanceof IParent) {
 			collect(((IParent) element).getChildren(), modules);
 		}
 	}
 	
-	private void collect(ICompilationUnit unit, Symbols symbols) throws JavaModelException {
+	private void collect(ICompilationUnit unit, Module module) throws JavaModelException {
 		CompilationUnit ast = unit.getResolvedAtCompileTime(AST.D1);
-		for(Declaration decl : ast.declarations()) {
-			switch(decl.getNodeType()) {
-			case ASTNode.ALIAS_DECLARATION:
-				AliasDeclaration alias = (AliasDeclaration) decl;
-				for(AliasDeclarationFragment fragment : alias.fragments()) {
-					symbols.aliases.add(fragment);
-				}
-				break;
-			case ASTNode.TYPEDEF_DECLARATION:
-				TypedefDeclaration typedef = (TypedefDeclaration) decl;
-				for(TypedefDeclarationFragment fragment : typedef.fragments()) {
-					symbols.typedefs.add(fragment);
-				}
-				break;
-			case ASTNode.VARIABLE_DECLARATION:
-				VariableDeclaration var = (VariableDeclaration) decl;
-				for(VariableDeclarationFragment fragment : var.fragments()) {
-					symbols.variables.add(fragment);
-				}
-				break;
-			case ASTNode.ENUM_DECLARATION:
-				symbols.enums.add((EnumDeclaration) decl);
-				break;
-			case ASTNode.TEMPLATE_DECLARATION:
-				symbols.templates.add((TemplateDeclaration) decl);
-				break;
-			case ASTNode.FUNCTION_DECLARATION:
-				symbols.functions.add((FunctionDeclaration) decl);
-				break;
-			case ASTNode.AGGREGATE_DECLARATION:
-				AggregateDeclaration a = (AggregateDeclaration) decl;
-				switch(a.getKind()) {
-				case CLASS:
-					symbols.classes.add(a);
-					break;
-				case STRUCT:
-					symbols.structs.add(a);
-					break;
-				case UNION:
-					symbols.unions.add(a);
-					break;
-				case INTERFACE:
-					symbols.interfaces.add(a);
-					break;
-				}
-				break;
-			case ASTNode.MODIFIER_DECLARATION:
-				// TODO
-				break;
+		ICompilationUnitBinding unitBinding = ast.resolveBinding();
+		module.unit = unitBinding;
+		
+		for(IMethodBinding a : unitBinding.getDeclaredFunctions()) {
+			if (!passesAccess(a))
+				continue;
+			
+			module.symbols.functions.add(a);
+		}
+		
+		for(IVariableBinding a : unitBinding.getDeclaredVariables()) {
+			if (!passesAccess(a))
+				continue;
+			
+			module.symbols.variables.add(a);	
+		}
+		
+		for(ITypeBinding a : unitBinding.getDeclaredTypes()) {
+			if (!passesAccess(a))
+				continue;
+			
+			if (a.isAlias()) {
+				module.symbols.aliases.add(a);
+			} else if (a.isTypedef()) {
+				module.symbols.typedefs.add(a);
+			} else if (a.isEnum()) {
+				module.symbols.enums.add(a);
+			} else if (a.isClass()) {
+				module.symbols.classes.add(a);
+			} else if (a.isInterface()) {
+				module.symbols.interfaces.add(a);
+			} else if (a.isStruct()) {
+				module.symbols.structs.add(a);
+			} else if (a.isUnion()) {
+				module.symbols.unions.add(a);
+			} else if (a.isTemplate()) {
+				module.symbols.templates.add(a);
 			}
 		}
 	}
 	
+	private boolean passesAccess(IBinding a) {
+		long modifiers = a.getModifiers();
+		if ((modifiers & Flags.AccPrivate) == 0 
+			&& (modifiers & Flags.AccProtected) == 0
+			&& (modifiers & Flags.AccPackage) == 0) {
+			return true;
+		}
+		
+		if ((modifiers & Flags.AccPublic) != 0)
+			return true;
+			
+		if ((modifiers & Flags.AccProtected) != 0) {
+			return fAcceptsProtected;
+		}
+		
+		return fAcceptsPrivate;
+	}
+
 	private void generateStylesheet() throws IOException {
 		Writer out = writerFor("stylesheet.css");
 		out.write(
@@ -1276,15 +1409,16 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 				".second_header { font-weight: bold; font-size: 16px; }\r\n" +
 				
 				".symbol { }\r\n" +
-				".variable { color: #000040;  }\r\n" +
+				".variable { color: #0000B0; }\r\n" +
 				".alias { color: #008080; }\r\n" +
-				".typedef { color: #800000;  }\r\n" +
-				".function { color: #320050;  }\r\n" +
-				".enum { color: #644632;  }\r\n" +
+				".typedef { color: #800000; }\r\n" +
+				".function { color: #804040; }\r\n" +
+				".enum { color: #644632; }\r\n" +
 				".class { bold; color: #005032;  }\r\n" +
 				".struct { color: #003250;  }\r\n" +
 				".union { color: #325000;  }\r\n" +
-				".interface { color: #323F70;  }\r\n");
+				".interface { color: #323F70;  }\r\n" +
+				".keyword { color: #320020; }");
 		out.close();
 	}
 	

@@ -70,11 +70,11 @@ public class VariablesFinder {
 	}
 	
 	private void fillVariables(int stackFrame, DsymbolTable symtab, List<IDescentVariable> vars, HashtableOfCharArrayAndObject ids) {
-		for(char[] key : symtab.keys()) {
-			if (key == null)
+		for(Object value : symtab.values()) {
+			if (value == null)
 				continue;
 			
-			Dsymbol dsymbol = symtab.lookup(key);
+			Dsymbol dsymbol = (Dsymbol) value;
 			IDescentVariable var = toVariable(stackFrame, dsymbol);
 			if (var == null)
 				continue;

@@ -21,7 +21,7 @@ public class TypeAArrayBinding extends PrimitiveTypeBinding implements ITypeBind
 		return 0;
 	}
 	
-	public IBinding getKeyType() {
+	public ITypeBinding getKeyType() {
 		return bindingResolver.resolveType(type.index);
 	}
 	
@@ -38,7 +38,7 @@ public class TypeAArrayBinding extends PrimitiveTypeBinding implements ITypeBind
 		return null;
 	}
 
-	public IBinding getValueType() {
+	public ITypeBinding getValueType() {
 		return bindingResolver.resolveType(type.next);
 	}
 	
@@ -61,11 +61,6 @@ public class TypeAArrayBinding extends PrimitiveTypeBinding implements ITypeBind
 	}
 	
 	public boolean isDynamicArray() {
-		return false;
-	}
-
-	public boolean isEqualTo(IBinding binding) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 	

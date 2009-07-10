@@ -124,6 +124,11 @@ public class CompileTimeASTConverter {
 		}
 		convertDeclarations(unit.declarations(), module.members);
 		setSourceRange(unit, module.start, module.length);
+		
+		if (resolveBindings) {
+			recordNodes(unit, module);
+		}
+		
 		return unit;
 	}
 

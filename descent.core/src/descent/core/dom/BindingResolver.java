@@ -136,6 +136,24 @@ class BindingResolver {
 	}
 	
 	/**
+	 * Resolves the given compilation unit and returns the binding for it.
+	 * <p>
+	 * The implementation of <code>CompilationUnit.resolveBinding</code>
+	 * forwards to this method.
+	 * </p>
+	 * <p>
+	 * The default implementation of this method returns <code>null</code>.
+	 * Subclasses may reimplement.
+	 * </p>
+	 * 
+	 * @param unit the compilation unit of interest
+	 * @return the binding for the given compilation unit
+	 */
+	ICompilationUnitBinding resolveCompilationUnit(CompilationUnit unit) {
+		return null;
+	}
+	
+	/**
 	 * Resolves the given import declaration and returns the binding for it.
 	 * <p>
 	 * The implementation of <code>ImportDeclaration.resolveBinding</code>
@@ -147,7 +165,7 @@ class BindingResolver {
 	 * </p>
 	 * 
 	 * @param importDeclaration the import declaration of interest
-	 * @return the binding for the given compilation unit declaration
+	 * @return the binding for the given import
 	 */
 	ICompilationUnitBinding resolveImport(Import imp) {
 		return null;
@@ -385,7 +403,7 @@ class BindingResolver {
 	 * @return the binding for the given variable declaration, or 
 	 *    <code>null</code> if no binding is available
 	 */
-	IBinding resolveVariable(VariableDeclaration variable) {
+	ITypeBinding resolveVariable(VariableDeclaration variable) {
 		return null;
 	}
 	
@@ -409,7 +427,7 @@ class BindingResolver {
 	 * @return the binding for the given variable declaration, or 
 	 *    <code>null</code> if no binding is available
 	 */
-	IVariableBinding resolveAliasFragment(AliasDeclarationFragment variable) {
+	ITypeBinding resolveAliasFragment(AliasDeclarationFragment variable) {
 		return null;
 	}
 	
@@ -440,7 +458,7 @@ class BindingResolver {
 	/**
 	 * Resolves the given alias declaration and returns the binding for it.
 	 * <p>
-	 * The implementation of <code>AliasDeclarationFragment.resolveBinding</code>
+	 * The implementation of <code>TypedefDeclarationFragment.resolveBinding</code>
 	 * forwards to this method. How the variable declaration resolves is often
 	 * a function of the context in which the variable declaration node is 
 	 * embedded as well as the variable declaration subtree itself. VariableDeclaration 
@@ -457,7 +475,7 @@ class BindingResolver {
 	 * @return the binding for the given variable declaration, or 
 	 *    <code>null</code> if no binding is available
 	 */
-	IVariableBinding resolveTypedefFragment(TypedefDeclarationFragment variable) {
+	ITypeBinding resolveTypedefFragment(TypedefDeclarationFragment variable) {
 		return null;
 	}
 	
@@ -481,7 +499,7 @@ class BindingResolver {
 	 * @return the binding for the given variable declaration, or 
 	 *    <code>null</code> if no binding is available
 	 */
-	IBinding resolveTypedef(TypedefDeclaration variable) {
+	ITypeBinding resolveTypedef(TypedefDeclaration variable) {
 		return null;
 	}
 	

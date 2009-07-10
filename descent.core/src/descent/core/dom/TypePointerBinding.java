@@ -54,7 +54,7 @@ public class TypePointerBinding extends PrimitiveTypeBinding implements ITypeBin
 		return false;
 	}
 
-	public IBinding getComponentType() {
+	public ITypeBinding getComponentType() {
 		return bindingResolver.resolveType(type.next);
 	}
 
@@ -86,11 +86,6 @@ public class TypePointerBinding extends PrimitiveTypeBinding implements ITypeBin
 	}
 
 	public boolean isSubTypeCompatible(ITypeBinding type) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public boolean isEqualTo(IBinding binding) {
 		// TODO Auto-generated method stub
 		return false;
 	}

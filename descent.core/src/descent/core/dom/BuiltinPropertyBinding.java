@@ -31,7 +31,7 @@ public class BuiltinPropertyBinding implements IVariableBinding {
 		return property;
 	}
 
-	public IBinding getType() {
+	public ITypeBinding getType() {
 		return bindingResolver.resolveType(type);
 	}
 

@@ -13,7 +13,7 @@ public class TypeDArrayBinding extends PrimitiveTypeBinding implements ITypeBind
 		this.type = type;
 	}
 	
-	public IBinding getComponentType() {
+	public ITypeBinding getComponentType() {
 		return bindingResolver.resolveType(type.next);
 	}
 	
@@ -62,11 +62,6 @@ public class TypeDArrayBinding extends PrimitiveTypeBinding implements ITypeBind
 
 	public boolean isDynamicArray() {
 		return true;
-	}
-
-	public boolean isEqualTo(IBinding binding) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	public boolean isFunction() {

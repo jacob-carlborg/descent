@@ -651,7 +651,11 @@ public class InternalSignature {
 						return a[mid]; // key found
 					}
 				} else {
-					return null;
+					if (range.getOffset() + range.getLength() == start) {
+						return a[mid + 1]; // key found
+					} else {
+						return null;
+					}
 				}
 			}
 		}

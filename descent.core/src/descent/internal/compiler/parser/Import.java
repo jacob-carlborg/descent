@@ -202,29 +202,30 @@ public class Import extends Dsymbol {
 		load(sc, context);
 
 		if (null != mod) {
-			
+
 			if (sc.module.aimports == null) {
 				sc.module.aimports = new Array();
 			}
 			sc.module.aimports.add(mod);
-			
+
 			context.muteProblems++;
 			mod.semantic(null, context);
 			context.muteProblems--;
 
 			if (!isstatic && null == aliasId && 0 == size(names)) {
-				/* Default to private importing
+				/*
+				 * Default to private importing
 				 */
 				PROT prot = sc.protection;
 				if (sc.explicitProtection == 0) {
 					prot = PROTprivate;
 				}
-				
+
 				// Check added for Descent
 				else if (sc.protection == PROT.PROTpublic) {
 					this.ispublic = true;
 				}
-				
+
 				sc.scopesym.importScope(mod, prot);
 			}
 
@@ -233,14 +234,15 @@ public class Import extends Dsymbol {
 			}
 
 			sc = sc.push(mod);
-			
+
 			for (int i = 0; i < size(aliasdecls); i++) {
 				Dsymbol s = (Dsymbol) aliasdecls.get(i);
 
 				if (null == mod.search(loc, names.get(i), 0, context)) {
 					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.ImportNotFound, this, new String[] { (names.get(i)).toChars() }));
+								IProblem.ImportNotFound, this,
+								new String[] { (names.get(i)).toChars() }));
 					}
 				}
 

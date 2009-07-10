@@ -32,15 +32,15 @@ public class TypeFunctionOrDelegateBinding extends PrimitiveTypeBinding implemen
 		return "";
 	}
 	
-	public IBinding[] getParametersTypes() {
-		IBinding[] params = new IBinding[type.parameters.size()];
+	public ITypeBinding[] getParametersTypes() {
+		ITypeBinding[] params = new ITypeBinding[type.parameters.size()];
 		for (int i = 0; i < params.length; i++) {
 			params[i] = bindingResolver.resolveType(type.parameters.get(i).type);
 		}
 		return params;
 	}
 	
-	public IBinding getReturnType() {
+	public ITypeBinding getReturnType() {
 		return bindingResolver.resolveType(type.next);
 	}
 	
@@ -67,11 +67,6 @@ public class TypeFunctionOrDelegateBinding extends PrimitiveTypeBinding implemen
 	}
 
 	public boolean isDynamicArray() {
-		return false;
-	}
-
-	public boolean isEqualTo(IBinding binding) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

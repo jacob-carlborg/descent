@@ -5,6 +5,7 @@ import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.EnumMember;
 import descent.internal.compiler.parser.FuncDeclaration;
+import descent.internal.compiler.parser.TypeBasic;
 import descent.internal.compiler.parser.TypedefDeclaration;
 import descent.internal.compiler.parser.VarDeclaration;
 
@@ -26,26 +27,20 @@ public class VariableBinding extends JavaElementBasedBinding implements IVariabl
 		return bindingResolver.resolveDsymbol(node.parent);
 	}
 
-	public IBinding getType() {
+	public ITypeBinding getType() {
 		if (node instanceof VarDeclaration) {
 			VarDeclaration var = (VarDeclaration) node;
 			return bindingResolver.resolveType(var.type);
-		} else if (node instanceof AliasDeclaration) {
-			AliasDeclaration alias = (AliasDeclaration) node;
-			if (alias.type != null) {
-				return bindingResolver.resolveType(alias.type);
-			} else if (alias.aliassym != null) {
-				return bindingResolver.resolveDsymbol(alias.aliassym);
-			}
-		} else if (node instanceof TypedefDeclaration) {
-			TypedefDeclaration typedef = (TypedefDeclaration) node;
-			return bindingResolver.resolveType(typedef.basetype);
 		} else if (node instanceof EnumMember) {
 			EnumMember em = (EnumMember) node;
 			if (em.sourceType != null) {
 				return bindingResolver.resolveType(em.type);
 			} else {
-				return bindingResolver.resolveType(((EnumDeclaration) ((EnumMember) node).parent).type);
+				if (!(em.parent instanceof EnumDeclaration)) {
+					return null;
+				}
+				EnumDeclaration parent = (EnumDeclaration) em.parent;
+				return bindingResolver.resolveType(parent.type);
 			}
 		}
 		
@@ -70,16 +65,8 @@ public class VariableBinding extends JavaElementBasedBinding implements IVariabl
 		return node instanceof VarDeclaration;
 	}
 	
-	public boolean isAlias() {
-		return node instanceof descent.internal.compiler.parser.AliasDeclaration;
-	}
-	
 	public boolean isLocal() {
 		return node.effectiveParent() instanceof FuncDeclaration;
-	}
-	
-	public boolean isTypedef() {
-		return node instanceof descent.internal.compiler.parser.TypedefDeclaration;
 	}
 
 	public boolean isParameter() {
@@ -95,11 +82,6 @@ public class VariableBinding extends JavaElementBasedBinding implements IVariabl
 
 	public int getKind() {
 		return VARIABLE;
-	}
-
-	public boolean isEqualTo(IBinding binding) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	public boolean isSynthetic() {
