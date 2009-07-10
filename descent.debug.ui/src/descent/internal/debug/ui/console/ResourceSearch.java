@@ -56,10 +56,13 @@ import descent.internal.core.JavaProject;
 	
 	private ICompilationUnit searchClassFile(String filename) throws JavaModelException {
 		for(IPackageFragmentRoot root : activeProject.getAllPackageFragmentRoots()) {
-			if (!root.isExternal())
-				continue;
+			String rootDir;
+			if (root.isExternal()) {
+				rootDir = root.getPath().toOSString();
+			} else {
+				rootDir = root.getResource().getLocation().toOSString();
+			}
 			
-			String rootDir = root.getPath().toOSString();
 			if (filename.startsWith(rootDir)) {
 				String fqn = filename.substring(rootDir.length());
 				if (fqn.startsWith("/") || fqn.startsWith("\\")) {

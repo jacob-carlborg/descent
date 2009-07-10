@@ -991,6 +991,12 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		Scope paramscope = sc.push(paramsym);
 		paramscope.parameterSpecialization = 1;
 	    paramscope.stc = 0;
+	    
+	    if (!context.isD1()) {
+	        if (null == parent) {
+	        	parent = sc.parent;
+	        }
+	    }
 
 		for (int i = 0; i < parameters.size(); i++) {
 			TemplateParameter tp = parameters.get(i);
