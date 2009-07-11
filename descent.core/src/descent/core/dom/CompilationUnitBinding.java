@@ -11,6 +11,8 @@ import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.Module;
+import descent.internal.compiler.parser.PROT;
+import descent.internal.compiler.parser.ScopeDsymbol;
 import descent.internal.compiler.parser.StructDeclaration;
 import descent.internal.compiler.parser.TemplateDeclaration;
 import descent.internal.compiler.parser.TypedefDeclaration;
@@ -48,21 +50,16 @@ public class CompilationUnitBinding extends AbstractBinding implements ICompilat
 	}
 	
 	public ICompilationUnitBinding[] getPublicImports() {
-		if (module.symtab == null)
+		if (module.imports == null || module.imports.isEmpty())
 			return NO_UNITS;
 		
 		List<ICompilationUnitBinding> imps = new ArrayList<ICompilationUnitBinding>();
-		for(Object value : module.symtab.values()) {
-			if (value instanceof Import) {
-				Import imp = (Import) value;
-				if (imp.ispublic) {
-					while(imp != null) {
-						IBinding binding = bindingResolver.resolveModule(imp.mod);
-						if (binding instanceof ICompilationUnitBinding) {
-							imps.add((ICompilationUnitBinding) binding);
-						}
-						imp = imp.next;
-					}
+		for (int i = 0; i < module.imports.size(); i++) {
+			PROT prot = module.prots.get(i);
+			if (prot == PROT.PROTpublic) {
+				ScopeDsymbol maybeMod = module.imports.get(i);
+				if (maybeMod instanceof Module) {
+					imps.add(bindingResolver.resolveModule((Module) maybeMod));
 				}
 			}
 		}
