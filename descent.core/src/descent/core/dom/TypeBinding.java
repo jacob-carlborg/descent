@@ -1,22 +1,15 @@
 package descent.core.dom;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import descent.core.IType;
 import descent.internal.compiler.parser.AliasDeclaration;
 import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.Dsymbol;
-import descent.internal.compiler.parser.DsymbolTable;
 import descent.internal.compiler.parser.EnumDeclaration;
-import descent.internal.compiler.parser.EnumMember;
-import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.InterfaceDeclaration;
 import descent.internal.compiler.parser.StructDeclaration;
 import descent.internal.compiler.parser.TemplateDeclaration;
 import descent.internal.compiler.parser.TypedefDeclaration;
 import descent.internal.compiler.parser.UnionDeclaration;
-import descent.internal.compiler.parser.VarDeclaration;
 
 public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding {
 	
@@ -65,66 +58,11 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	}
 	
 	public IVariableBinding[] getDeclaredFields() {
-		DsymbolTable symtab = null;
-		if (node instanceof ClassDeclaration) {
-			ClassDeclaration c = (ClassDeclaration) node;
-			symtab = c.symtab;
-		} else if (node instanceof StructDeclaration) {
-			StructDeclaration s = (StructDeclaration) node;
-			symtab = s.symtab;
-		} else if (node instanceof EnumDeclaration) {
-			EnumDeclaration e = (EnumDeclaration) node;
-			symtab = e.symtab;
-		}
-		
-		if (symtab != null) {
-			List<IVariableBinding> vars = new ArrayList<IVariableBinding>();
-			for(Object value : symtab.values()) {
-				if (value == null)
-					continue;
-				
-				Dsymbol sym = (Dsymbol) value;
-				if (sym instanceof VarDeclaration || sym instanceof EnumMember) {
-					IVariableBinding resolveDsymbol = (IVariableBinding) bindingResolver.resolveDsymbol(sym);
-					if (resolveDsymbol != null) {
-						vars.add(resolveDsymbol);
-					}
-				}
-			}
-			return vars.toArray(new IVariableBinding[vars.size()]);
-		}
-		
-		return NO_VARIABLES;
+		return getDeclaredVariables(node, bindingResolver);
 	}
 	
 	public IMethodBinding[] getDeclaredMethods() {
-		DsymbolTable symtab = null;
-		if (node instanceof ClassDeclaration) {
-			ClassDeclaration c = (ClassDeclaration) node;
-			symtab = c.symtab;
-		} else if (node instanceof StructDeclaration) {
-			StructDeclaration c = (StructDeclaration) node;
-			symtab = c.symtab;
-		}
-		
-		if (symtab != null) {
-			List<IMethodBinding> methods = new ArrayList<IMethodBinding>();
-			for(Object value : symtab.values()) {
-				if (value == null)
-					continue;
-				
-				Dsymbol sym = (Dsymbol) value;
-				if (sym instanceof FuncDeclaration) {
-					IBinding resolveDsymbol = (IBinding) bindingResolver.resolveDsymbol(sym);
-					if (resolveDsymbol != null && resolveDsymbol instanceof IMethodBinding) {
-						methods.add((IMethodBinding) resolveDsymbol);
-					}
-				}
-			}
-			return methods.toArray(new IMethodBinding[methods.size()]);
-		}
-		
-		return NO_METHODS;
+		return getDeclaredMethods(node, bindingResolver);
 	}
 	
 	public int getDeclaredModifiers() {
@@ -132,38 +70,7 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	}
 	
 	public ITypeBinding[] getDeclaredTypes()  {
-		DsymbolTable symtab = null;
-		if (node instanceof ClassDeclaration) {
-			ClassDeclaration c = (ClassDeclaration) node;
-			symtab = c.symtab;
-		} else if (node instanceof StructDeclaration) {
-			StructDeclaration c = (StructDeclaration) node;
-			symtab = c.symtab;
-		}
-		
-		if (symtab != null) {
-			List<ITypeBinding> types = new ArrayList<ITypeBinding>();
-			for(Object value : symtab.values()) {
-				if (value == null)
-					continue;
-				
-				Dsymbol sym = (Dsymbol) value;
-				if (sym instanceof AliasDeclaration 
-					|| sym instanceof TypedefDeclaration
-					|| sym instanceof EnumDeclaration
-					|| sym instanceof ClassDeclaration
-					|| sym instanceof StructDeclaration
-					|| sym instanceof TemplateDeclaration) {
-					IBinding resolveDsymbol = bindingResolver.resolveDsymbol(sym);
-					if (resolveDsymbol != null && resolveDsymbol instanceof ITypeBinding) {
-						types.add((ITypeBinding) resolveDsymbol);
-					}
-				}
-			}
-			return types.toArray(new ITypeBinding[types.size()]);
-		}
-		
-		return NO_TYPES;
+		return getDeclaredTypes(node, bindingResolver);
 	}
 	
 	public IMethodBinding getDeclaringMethod() {
