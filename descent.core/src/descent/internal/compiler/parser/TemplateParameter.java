@@ -72,11 +72,15 @@ public abstract class TemplateParameter extends ASTDmdNode {
 
 	public abstract void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context);
 	
-	public abstract void appendSignature(StringBuilder sb);
+	protected abstract void appendSignature(StringBuilder sb, int options);
 	
 	public String getSignature() {
+		return getSignature(ISignatureOptions.Default);
+	}
+	
+	public String getSignature(int options) {
 		StringBuilder sb = new StringBuilder();
-		appendSignature(sb);
+		appendSignature(sb, options);
 		return sb.toString();
 	}
 	

@@ -113,9 +113,9 @@ public class TypeDelegate extends Type {
 	}
 	
 	@Override
-	protected void appendSignature0(StringBuilder sb) {
+	protected void appendSignature0(StringBuilder sb, int options) {
 		sb.append('D');
-		next.appendSignature(sb);
+		next.appendSignature(sb, options);
 	}
 	
 

@@ -11,6 +11,7 @@ import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.ScopeDsymbol;
 import descent.internal.compiler.parser.StructDeclaration;
 import descent.internal.compiler.parser.TemplateDeclaration;
+import descent.internal.compiler.parser.TemplateInstance;
 import descent.internal.compiler.parser.TemplateMixin;
 import descent.internal.compiler.parser.TypedefDeclaration;
 import descent.internal.compiler.parser.VarDeclaration;
@@ -65,7 +66,7 @@ public abstract class AbstractBinding implements IBinding {
 		if (sd.symtab != null) {
 			for(Object value : sd.symtab.values()) {
 				if (value instanceof VarDeclaration || value instanceof EnumMember) {
-					IBinding binding = bindingResolver.resolveDsymbol((VarDeclaration)value);
+					IBinding binding = bindingResolver.resolveDsymbol((Dsymbol) value);
 					if (binding instanceof IVariableBinding) {
 						vars.add((IVariableBinding) binding);
 					}
@@ -104,8 +105,10 @@ public abstract class AbstractBinding implements IBinding {
 					continue;
 				}
 				
-				IMethodBinding binding = (IMethodBinding) bindingResolver.resolveDsymbol(toResolve);
-				methods.add((IMethodBinding) binding);
+				IBinding binding = bindingResolver.resolveDsymbol(toResolve);
+				if (binding != null && binding instanceof IMethodBinding) {
+					methods.add((IMethodBinding) binding);
+				}
 			}	
 		}
 		
@@ -164,6 +167,35 @@ public abstract class AbstractBinding implements IBinding {
 				}
 			}
 		}
+	}
+	
+	static ITemplateParameterBinding[] getTypeParameters(Dsymbol node, DefaultBindingResolver bindingResolver) {
+		TemplateDeclaration template;
+		
+		if (node.templated()) {
+			if (node.parent instanceof TemplateDeclaration) {
+				template = (TemplateDeclaration) node.parent;
+			} else if (node.parent instanceof TemplateInstance) {
+				template = ((TemplateInstance) node.parent).tempdecl;
+			} else {
+				return NO_TEMPLATE_PARAMETERS;
+			}
+		} else {
+			if (node instanceof TemplateDeclaration) {
+				template = (TemplateDeclaration) node;
+			} else {
+				return NO_TEMPLATE_PARAMETERS;
+			}
+		}
+		
+		if (template.parameters == null || template.parameters.isEmpty())
+			return NO_TEMPLATE_PARAMETERS;
+		
+		ITemplateParameterBinding[] parameters = new ITemplateParameterBinding[template.parameters.size()];
+		for (int i = 0; i < parameters.length; i++) {
+			parameters[i] = new TemplateParameterBinding(template.parameters.get(i), bindingResolver);
+		}
+		return parameters;
 	}
 	
 }

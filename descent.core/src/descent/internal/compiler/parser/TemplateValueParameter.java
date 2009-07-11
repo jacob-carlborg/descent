@@ -285,9 +285,9 @@ public class TemplateValueParameter extends TemplateParameter {
 	}
 	
 	@Override
-	public void appendSignature(StringBuilder sb) {
+	public void appendSignature(StringBuilder sb, int options) {
 		sb.append(Signature.C_TEMPLATE_VALUE_PARAMETER);
-		valType.appendSignature(sb);
+		valType.appendSignature(sb, options);
 		if (specValue != null) {
 			sb.append(Signature.C_TEMPLATE_VALUE_PARAMETER_SPECIFIC_VALUE);
 			char[] exp = encoder.encodeExpression(specValue);

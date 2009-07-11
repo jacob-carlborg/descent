@@ -108,7 +108,7 @@ public interface IMethodBinding extends IBinding {
 	 * @return a (possibly empty) list of type bindings for the formal
 	 *   parameters of this method or constructor
 	 */
-	public IBinding[] getParameterTypes();
+	public ITypeBinding[] getParameterTypes();
 
 	/**
 	 * Returns the binding for the return type of this method. Returns the

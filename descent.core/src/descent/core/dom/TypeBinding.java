@@ -211,7 +211,7 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	}
 
 	public boolean isParameterizedType() {
-		return node.templated();
+		return node instanceof TemplateDeclaration || node.templated();
 	}
 
 	public boolean isPointer() {
@@ -261,6 +261,10 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	
 	public boolean isTemplateParameter() {
 		return false;
+	}
+	
+	public ITemplateParameterBinding[] getTypeParameters() {
+		return getTypeParameters(node, bindingResolver);
 	}
 	
 	@Override

@@ -177,12 +177,12 @@ public class TypeTuple extends Type {
 	}
 	
 	@Override
-	protected void appendSignature0(StringBuilder sb) {
+	protected void appendSignature0(StringBuilder sb, int options) {
 		sb.append(Signature.C_TUPLE);
 		sb.append(size(arguments));
 		sb.append(Signature.C_TUPLE);
 		for(Argument argument : arguments) {
-			argument.type.appendSignature(sb);
+			argument.type.appendSignature(sb, options);
 		}
 	}
 

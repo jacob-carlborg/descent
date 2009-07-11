@@ -224,11 +224,11 @@ public class TemplateAliasParameter extends TemplateParameter {
 	}
 	
 	@Override
-	public void appendSignature(StringBuilder sb) {
+	public void appendSignature(StringBuilder sb, int options) {
 		sb.append(Signature.C_TEMPLATE_ALIAS_PARAMETER);
 		if (specAliasT != null) {
 			sb.append(Signature.C_TEMPLATE_ALIAS_PARAMETER_SPECIFIC_TYPE);
-			specAliasT.appendSignature(sb);
+			specAliasT.appendSignature(sb, options);
 		}
 	}
 	

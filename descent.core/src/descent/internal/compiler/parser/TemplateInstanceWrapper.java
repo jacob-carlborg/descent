@@ -33,8 +33,8 @@ public class TemplateInstanceWrapper extends IdentifierExp {
 	}
 	
 	@Override
-	protected void appendSignature(StringBuilder sb) {
-		tempinst.appendSignature(sb);
+	protected void appendSignature(StringBuilder sb, int options) {
+		tempinst.appendSignature(sb, options);
 	}
 
 }

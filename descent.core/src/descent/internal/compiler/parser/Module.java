@@ -352,22 +352,24 @@ public class Module extends Package {
 					int count2 = td.members.size();
 					
 					for(int j = 0; j < count2; j++) {
-						Dsymbol s2 = td.members.get(j);
-						switch(semanticPass) {
-						case 0:
-							
-							
-							s2.addMember(sc, td, 1, context);
-							break;
-						case 1:
-							s2.semantic(sc, context);
-							break;
-						case 2:
-							s2.semantic2(sc, context);
-							break;
-						case 3:
-							s2.semantic3(sc, context);
-							break;
+						try {
+							Dsymbol s2 = td.members.get(j);
+							switch(semanticPass) {
+							case 0:
+								s2.addMember(sc, td, 1, context);
+								break;
+							case 1:
+								s2.semantic(sc, context);
+								break;
+							case 2:
+								s2.semantic2(sc, context);
+								break;
+							case 3:
+								s2.semantic3(sc, context);
+								break;
+							}
+						} catch (Exception e) {
+//							Util.log(e, "Exception in template semantic in module " + moduleName);
 						}
 					}
 				}
@@ -535,16 +537,17 @@ public class Module extends Package {
 	}
 	
 	@Override
-	public String getSignature() {
+	public String getSignature(int options) {
 		if (signature == null) {
 			StringBuilder sb = new StringBuilder();
-			appendSignature(sb);
+			appendSignature(sb, options);
 			signature = sb.toString();
 		}
 		return signature;
 	}
 	
-	public void appendSignature(StringBuilder sb) {
+	@Override
+	public void appendSignature(StringBuilder sb, int options) {
 		sb.append(Signature.C_MODULE);
 		String[] pieces = moduleName.split("\\.");
 		for(String piece : pieces) {

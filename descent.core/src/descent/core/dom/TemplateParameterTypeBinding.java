@@ -215,6 +215,10 @@ public class TemplateParameterTypeBinding extends AbstractBinding implements ITy
 	public boolean isUnion() {
 		return false;
 	}
+	
+	public ITemplateParameterBinding[] getTypeParameters() {
+		return NO_TEMPLATE_PARAMETERS;
+	}
 
 	public IJavaElement getJavaElement() {
 		return null;

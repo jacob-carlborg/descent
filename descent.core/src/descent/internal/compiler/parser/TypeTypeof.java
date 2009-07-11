@@ -129,14 +129,7 @@ public class TypeTypeof extends TypeQualified {
 	}
 	
 	@Override
-	public String getSignature0() {
-		StringBuilder sb = new StringBuilder();
-		appendSignature0(sb);
-		return sb.toString();
-	}
-	
-	@Override
-	protected void appendSignature0(StringBuilder sb) {
+	protected void appendSignature0(StringBuilder sb, int options) {
 		sb.append(Signature.C_TYPEOF);
 		char[] expc = encoder.encodeExpression(exp);
 		sb.append(expc.length);

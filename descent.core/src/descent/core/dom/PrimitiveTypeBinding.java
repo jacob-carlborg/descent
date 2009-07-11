@@ -146,6 +146,10 @@ public abstract class PrimitiveTypeBinding extends AbstractBinding implements IT
 		return false;
 	}
 	
+	public ITemplateParameterBinding[] getTypeParameters() {
+		return NO_TEMPLATE_PARAMETERS;
+	}
+	
 	@Override
 	public String toString() {
 		return getName();

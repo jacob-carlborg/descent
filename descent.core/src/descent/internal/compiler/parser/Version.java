@@ -26,7 +26,7 @@ public class Version extends Dsymbol {
 	}
 	
 	@Override
-	public String getSignature() {
+	public String getSignature(int options) {
 		// TODO Auto-generated method stub
 		return null;
 	}

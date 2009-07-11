@@ -320,9 +320,9 @@ public class Import extends Dsymbol {
 	}
 	
 	@Override
-	public String getSignature() {
+	public String getSignature(int options) {
 		if (mod != null && equals(mod.ident, ident)) {
-			return mod.getSignature();
+			return mod.getSignature(options);
 		}
 		return null;
 	}

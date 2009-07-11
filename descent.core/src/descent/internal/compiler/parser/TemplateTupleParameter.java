@@ -119,7 +119,7 @@ public class TemplateTupleParameter extends TemplateParameter {
 	}
 	
 	@Override
-	public void appendSignature(StringBuilder sb) {
+	public void appendSignature(StringBuilder sb, int options) {
 		sb.append(Signature.C_TEMPLATE_TUPLE_PARAMETER);
 	}
 	

@@ -80,12 +80,12 @@ public class Package extends ScopeDsymbol {
 	}
 	
 	@Override
-	public String getSignature() {
+	public String getSignature(int options) {
 		return null;
 	}
 	
 	@Override
-	public void appendSignature(StringBuilder sb) {
+	public void appendSignature(StringBuilder sb, int options) {
 		
 	}
 	

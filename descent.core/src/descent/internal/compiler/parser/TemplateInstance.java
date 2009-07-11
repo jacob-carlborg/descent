@@ -321,10 +321,10 @@ public class TemplateInstance extends ScopeDsymbol {
 				if (ta.deco != null) {
 					buf.writestring(ta.deco);
 				} else {
-					if (context.global.errors == 0) {
-						throw new IllegalStateException(
-								"assert(context.global.errors);");
-					}
+//					if (context.global.errors == 0) {
+//						throw new IllegalStateException(
+//								"assert(context.global.errors);");
+//					}
 				}
 			} else if (ea != null) {
 				//				sinteger_t v;
@@ -707,10 +707,10 @@ public class TemplateInstance extends ScopeDsymbol {
 		}
 		
 		// Descent: added to avoid errors in Module::templateSemantic
-		if (context.templateSemanticStarted) {
+//		if (context.templateSemanticStarted) {
 //			computeAliasDecl(tempdecl.members, context);
-			return;
-		}
+//			return;
+//		}
 
 		// Copy the syntax trees from the TemplateDeclaration
 		members = Dsymbol.arraySyntaxCopy(tempdecl.members, context);
@@ -843,6 +843,10 @@ public class TemplateInstance extends ScopeDsymbol {
 
 	@Override
 	public void semantic2(Scope sc, SemanticContext context) {
+		// Descent: for template semantic anlaysis to work
+		if (context.templateSemanticStarted)
+			return;
+		
 		int i;
 
 		if (semanticdone >= 2) {
@@ -867,6 +871,10 @@ public class TemplateInstance extends ScopeDsymbol {
 
 	@Override
 	public void semantic3(Scope sc, SemanticContext context) {
+		// Descent: for template semantic anlaysis to work
+		if (context.templateSemanticStarted)
+			return;
+		
 		int i;
 
 		//if (toChars()[0] == 'D') *(char*)0=0;
@@ -1059,13 +1067,13 @@ public class TemplateInstance extends ScopeDsymbol {
 	}
 	
 	@Override
-	public void appendSignature(StringBuilder sb) {
+	public void appendSignature(StringBuilder sb, int options) {
 		sb.append(name.ident.length);
 		sb.append(name.ident);
-		appendInstanceSignature(sb);
+		appendInstanceSignature(sb, options);
 	}
 	
-	public void appendInstanceSignature(StringBuilder sb) {
+	public void appendInstanceSignature(StringBuilder sb, int options) {
 		sb.append(Signature.C_TEMPLATE_INSTANCE);
 		for (int j = 0; j < size(tiargs); j++) {
 			ASTDmdNode o = tiargs.get(j);
@@ -1075,7 +1083,7 @@ public class TemplateInstance extends ScopeDsymbol {
 			
 			if (ta != null) {
 				sb.append(Signature.C_TEMPLATE_INSTANCE_TYPE_PARAMETER);
-				ta.appendSignature(sb);
+				ta.appendSignature(sb, options);
 			} else if (ea != null) {
 				sb.append(Signature.C_TEMPLATE_INSTANCE_VALUE_PARAMETER);
 				char[] exp = encoder.encodeExpression(ea);
@@ -1084,7 +1092,7 @@ public class TemplateInstance extends ScopeDsymbol {
 				sb.append(exp);
 			} else if (sa != null) {
 				sb.append(Signature.C_TEMPLATE_INSTANCE_SYMBOL_PARAMETER);
-				sa.appendSignature(sb);
+				sa.appendSignature(sb, options);
 			} else {
 				// TODO Descent probably tuple
 			}

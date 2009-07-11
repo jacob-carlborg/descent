@@ -490,9 +490,9 @@ public class TypeSArray extends TypeArray {
 	}
 	
 	@Override
-	protected void appendSignature0(StringBuilder sb) {
+	protected void appendSignature0(StringBuilder sb, int options) {
 		sb.append(Signature.C_STATIC_ARRAY);
-		next.appendSignature(sb);
+		next.appendSignature(sb, options);
 		sb.append(Signature.C_STATIC_ARRAY2);
 		
 		char[] expc = encoder.encodeExpression(dim);

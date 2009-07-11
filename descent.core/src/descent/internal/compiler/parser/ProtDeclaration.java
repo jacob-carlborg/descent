@@ -102,8 +102,8 @@ public class ProtDeclaration extends AttribDeclaration {
 	}
 	
 	@Override
-	public String getSignature() {
-		return parent.getSignature();
+	public String getSignature(int options) {
+		return parent.getSignature(options);
 	}
 	
 	@Override

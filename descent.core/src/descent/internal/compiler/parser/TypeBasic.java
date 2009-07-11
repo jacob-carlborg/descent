@@ -795,12 +795,7 @@ public class TypeBasic extends Type {
 	}
 	
 	@Override
-	public String getSignature0() {
-		return String.valueOf(ty.mangleChar);
-	}
-	
-	@Override
-	protected void appendSignature0(StringBuilder sb) {
+	protected void appendSignature0(StringBuilder sb, int options) {
 		sb.append(ty.mangleChar);
 	}
 

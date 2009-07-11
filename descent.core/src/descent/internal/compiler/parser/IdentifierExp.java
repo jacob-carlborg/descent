@@ -282,7 +282,7 @@ public class IdentifierExp extends Expression {
 		}
 	}
 	
-	protected void appendSignature(StringBuilder sb) {
+	protected void appendSignature(StringBuilder sb, int options) {
 		sb.append(ident.length);
 		sb.append(ident);
 	}

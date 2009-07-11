@@ -183,16 +183,9 @@ public class TypeSlice extends Type {
 	}
 	
 	@Override
-	public String getSignature0() {
-		StringBuilder sb = new StringBuilder();
-		appendSignature0(sb);
-		return sb.toString();
-	}
-	
-	@Override
-	protected void appendSignature0(StringBuilder sb) {
+	protected void appendSignature0(StringBuilder sb, int options) {
 		sb.append(Signature.C_SLICE);
-		next.appendSignature(sb);
+		next.appendSignature(sb, options);
 		sb.append(Signature.C_SLICE2);
 		
 		char[] expc = encoder.encodeExpression(lwr);

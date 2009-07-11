@@ -1,12 +1,9 @@
 package descent.core.dom;
 
-import descent.internal.compiler.parser.AliasDeclaration;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.EnumMember;
 import descent.internal.compiler.parser.FuncDeclaration;
-import descent.internal.compiler.parser.TypeBasic;
-import descent.internal.compiler.parser.TypedefDeclaration;
 import descent.internal.compiler.parser.VarDeclaration;
 
 public class VariableBinding extends JavaElementBasedBinding implements IVariableBinding {

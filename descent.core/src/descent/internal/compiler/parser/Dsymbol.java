@@ -668,16 +668,16 @@ public class Dsymbol extends ASTDmdNode {
 		return null;
 	}
 	
-	private String signature;
-	public String getSignature() {
-		if (signature == null) {
-			signature = SemanticMixin.getSignature(this);
-		}
-		return signature;
+	public final String getSignature() {
+		return getSignature(ISignatureOptions.Default);
 	}
 	
-	public void appendSignature(StringBuilder sb) {
-		SemanticMixin.appendSignature(this, sb);
+	public String getSignature(int options) {
+		return SemanticMixin.getSignature(this, options);
+	}
+	
+	public void appendSignature(StringBuilder sb, int options) {
+		SemanticMixin.appendSignature(this, options, sb);
 	}
 	
 	public IJavaElement getJavaElement() {

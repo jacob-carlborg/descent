@@ -742,29 +742,29 @@ public class TypeFunction extends Type implements Cloneable {
 	private static final GotoL1 GOTO_L1 = new GotoL1();
 	
 	@Override
-	protected void appendSignature0(StringBuilder sb) {
+	protected void appendSignature0(StringBuilder sb, int options) {
 		sb.append(linkageChar == 0 ? LINK.LINKd.mangleChar : linkageChar);
 		if (parameters != null) {
 			for(Argument arg : parameters) {
-				appendArgumentSignature(arg, sb);
+				appendArgumentSignature(arg, options, sb);
 			}
 		}
 		sb.append((char) ('Z' - varargs));
 		if (next == null) {
 			sb.append(Signature.C_AUTO);
 		} else {
-			next.appendSignature(sb);
+			next.appendSignature(sb, options);
 		}
 	}
 	
-	private void appendArgumentSignature(Argument arg, StringBuilder sb) {
+	private void appendArgumentSignature(Argument arg, int options, StringBuilder sb) {
 		if (arg.type instanceof TypeTuple) {
 			TypeTuple tuple = (TypeTuple) arg.type;
 			for(Argument arg2 : tuple.arguments) {
-				appendArgumentSignature(arg2, sb);
+				appendArgumentSignature(arg2, options, sb);
 			}
 		} else {
-			arg.appendSignature(sb);
+			arg.appendSignature(sb, options);
 		}
 	}
 	

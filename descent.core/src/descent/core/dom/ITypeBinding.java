@@ -351,6 +351,20 @@ public interface ITypeBinding extends IBinding {
 	public ITypeBinding[] getParametersTypes();
 	
 	/**
+	 * Returns the type parameters of this type binding.
+	 * <p>
+	 * Note that type parameters only occur on the binding of the
+	 * declaring generic method. Type bindings corresponding to a raw or
+	 * parameterized reference to a generic method do not carry type
+	 * parameters (they instead have non-empty type arguments
+	 * and non-trivial erasure).
+	 * </p>
+	 *
+	 * @return the list of binding for the type parameters of this type
+	 */
+	public ITemplateParameterBinding[] getTypeParameters();
+	
+	/**
 	 * Returns the fully qualified name of the type represented by this 
 	 * binding if it has one.
 	 * <ul>

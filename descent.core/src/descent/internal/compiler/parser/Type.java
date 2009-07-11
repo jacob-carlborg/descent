@@ -518,11 +518,6 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	 */
 	public Dsymbol alias;
 	
-	/*
-	 * Descent: custom signature.
-	 */
-	private String signature;
-	
 	// This field is kept in SemanticContext
 	// public TypeInfoDeclaration vtinfo; // TypeInfo object for this Type
 
@@ -1772,56 +1767,45 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	}
 	
 	public final String getSignature() {
+		return getSignature(ISignatureOptions.Default);
+	}
+	
+	public final String getSignature(int options) {
 		String sig = null;
-//		if (alias != null) {
-//			sig = alias.getSignature();
-//		}
+		if ((options & ISignatureOptions.AliasResolution) != 0 && alias != null) {
+			sig = alias.getSignature();
+		}
 		if (sig == null) {
 			StringBuilder sb = new StringBuilder();
-			
-			if ((mod & MODinvariant) != 0) {
-				sb.append(Signature.C_IMMUTABLE);
-			} else if ((mod & MODconst) != 0) {
-				sb.append(Signature.C_CONST);
-			}
-			
-			sb.append(getSignature0());			
+			appendSignature(sb, options);			
 			sig = sb.toString();
 		}
 		return sig;
 	}
 	
-	public String getSignature0() {
-		if (signature == null) {
-			StringBuilder sb = new StringBuilder();
-			appendSignature0(sb);
-			signature = sb.toString();
-		}
-		return signature;
-	}
-	
-	protected final void appendSignature(StringBuilder sb) {
+	protected final void appendSignature(StringBuilder sb, int options) {
 		if ((mod & MODinvariant) != 0) {
 			sb.append(Signature.C_IMMUTABLE);
 		} else if ((mod & MODconst) != 0) {
 			sb.append(Signature.C_CONST);
 		}
 		
-		if (alias != null && 
-				!(alias instanceof AliasDeclaration && ((AliasDeclaration) alias).isTemplateParameter) &&
-				!(alias instanceof Import)) {
+		if ((options & ISignatureOptions.AliasResolution) != 0 
+				&& alias != null 
+				&& !(alias instanceof AliasDeclaration && ((AliasDeclaration) alias).isTemplateParameter)
+				&& !(alias instanceof Import)) {
 			StringBuilder sb2 = new StringBuilder();
-			alias.appendSignature(sb2);
+			alias.appendSignature(sb2, options);
 			if (sb2.length() > 0) {
 				sb.append(sb2);
 				return;
 			}
 		}
 		
-		appendSignature0(sb);
+		appendSignature0(sb, options);
 	}
 	
-	protected abstract void appendSignature0(StringBuilder sb);
+	protected abstract void appendSignature0(StringBuilder sb, int options);
 	
 	/**
 	 * Returns the java element associated with this type, if any,

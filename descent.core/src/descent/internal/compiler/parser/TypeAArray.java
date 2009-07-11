@@ -272,10 +272,10 @@ public class TypeAArray extends TypeArray {
 	}
 	
 	@Override
-	protected void appendSignature0(StringBuilder sb) {
+	protected void appendSignature0(StringBuilder sb, int options) {
 		sb.append('H');
-		index.appendSignature(sb);
-		next.appendSignature(sb);
+		index.appendSignature(sb, options);
+		next.appendSignature(sb, options);
 	}
 
 }

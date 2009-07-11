@@ -29,7 +29,7 @@ public class SymbolDeclaration extends Declaration {
 	}
 
 	@Override
-	public String getSignature() {
+	public String getSignature(int options) {
 		// TODO Auto-generated method stub
 		return null;
 	}

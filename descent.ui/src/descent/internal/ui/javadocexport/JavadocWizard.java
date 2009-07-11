@@ -439,7 +439,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		
 		writeDdoc(out, module.unit.getJavaElement());
 		
-		out.write("<ul>");
+		out.write("<ul>\r\n");
 		
 		// Public imports
 		ICompilationUnitBinding[] publicImports = module.unit.getPublicImports();
@@ -447,16 +447,16 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 			Arrays.sort(publicImports, bindingsComparator);
 			
 			out.write("<li><span class=\"first_header\">Public imports</span>");
-			out.write("<ul>");
+			out.write("<ul>\r\n");
 			for(ICompilationUnitBinding a : publicImports) {
 				out.write("<li><a href=\"");
 				out.write(getHref(a));
 				out.write("\">");
 				out.write(a.getName());
-				out.write("</a></li>");
+				out.write("</a></li>\r\n");
 			}
-			out.write("</ul>");
-			out.write("</li>");
+			out.write("</ul>\r\n");
+			out.write("</li>\r\n");
 		}
 		
 		writeVariables("Variables", "first_header", module.symbols.variables, modules, out);
@@ -468,6 +468,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		writeAggregates("Unions", "first_header", module.symbols.unions, modules, out);
 		writeAggregates("Classes", "first_header", module.symbols.classes, modules, out);
 		writeAggregates("Interfaces", "first_header", module.symbols.interfaces, modules, out);
+		writeAggregates("Templates", "first_header", module.symbols.templates, modules, out);
 		
 		out.write(
 			"</body>\r\n" +
@@ -482,7 +483,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 			out.write("\">");
 			out.write(title);
 			out.write("</span>");
-			out.write("<ul>");
+			out.write("<ul>\r\n");
 			for(IMethodBinding a : functions) {
 				out.write("<li>");
 				
@@ -497,14 +498,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 				}
 				
 				if (a.isParameterizedMethod()) {
-					out.write("(");
-					ITemplateParameterBinding[] typeParameters = a.getTypeParameters();
-					for (int i = 0; i < typeParameters.length; i++) {
-						if (i != 0)
-							out.write(", ");
-						out.write(typeParameters[i].getName());
-					}
-					out.write(")");
+					writeTemplateParameters(a.getTypeParameters(), out);
 				}
 				
 				out.write("(");
@@ -538,10 +532,10 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 				
 				writeDdoc(out, m);
 				
-				out.write("</li>");
+				out.write("</li>\r\n");
 			}
-			out.write("</ul>");
-			out.write("</li>");
+			out.write("</ul>\r\n");
+			out.write("</li>\r\n");
 		}
 	}
 	
@@ -552,7 +546,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 			out.write("\">");
 			out.write(title);
 			out.write("</span>");
-			out.write("<ul>");
+			out.write("<ul>\r\n");
 			for(IVariableBinding a : variables) {
 				out.write("<li>");
 				
@@ -566,10 +560,10 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 				IJavaElement element = a.getJavaElement();
 				writeDdoc(out, element);
 				
-				out.write("</li>");
+				out.write("</li>\r\n");
 			}
-			out.write("</ul>");
-			out.write("</li>");
+			out.write("</ul>\r\n");
+			out.write("</li>\r\n");
 		}
 	}
 	
@@ -579,7 +573,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 			out.write(css);
 			out.write("\">");
 			out.write("Aliases</span>");
-			out.write("<ul>");
+			out.write("<ul>\r\n");
 			for(ITypeBinding a : aliases) {
 				out.write("<li>");
 				
@@ -599,10 +593,10 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 				IJavaElement element = a.getJavaElement();
 				writeDdoc(out, element);
 				
-				out.write("</li>");
+				out.write("</li>\r\n");
 			}
-			out.write("</ul>");
-			out.write("</li>");
+			out.write("</ul>\r\n");
+			out.write("</li>\r\n");
 		}
 	}
 	
@@ -612,7 +606,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 			out.write(css);
 			out.write("\">");
 			out.write("Typedefs</span>");
-			out.write("<ul>");
+			out.write("<ul>\r\n");
 			for(ITypeBinding a : typedefs) {
 				out.write("<li>");
 				
@@ -627,10 +621,10 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 				IJavaElement element = a.getJavaElement();
 				writeDdoc(out, element);
 				
-				out.write("</li>");
+				out.write("</li>\r\n");
 			}
-			out.write("</ul>");
-			out.write("</li>");
+			out.write("</ul>\r\n");
+			out.write("</li>\r\n");
 		}
 	}
 	
@@ -640,7 +634,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 			out.write(css);
 			out.write("\">");
 			out.write("Enums</span>");
-			out.write("<ul>");
+			out.write("<ul>\r\n");
 			for(ITypeBinding a : enums) {
 				ITypeBinding binding = a.getSuperclass();
 				if (a.getName() != null) {
@@ -669,15 +663,15 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 						
 						writeDdoc(out, var.getJavaElement());
 						
-						out.write("</li>");
+						out.write("</li>\r\n");
 					}
-					out.write("</ul>");
+					out.write("</ul>\r\n");
 				}
 				
-				out.write("</li>");
+				out.write("</li>\r\n");
 			}
-			out.write("</ul>");
-			out.write("</li>");
+			out.write("</ul>\r\n");
+			out.write("</li>\r\n");
 		}
 	}
 	
@@ -688,10 +682,10 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 			out.write("\">");
 			out.write(title);
 			out.write("</span>");
-			out.write("<ul>");
+			out.write("<ul>\r\n");
 			writeAggregate(modules, aggs, out);
-			out.write("</ul>");
-			out.write("</li>");
+			out.write("</ul>\r\n");
+			out.write("</li>\r\n");
 		}
 	}
 
@@ -706,7 +700,15 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		
 		writeModifiers(a, out);
 		
-		writeAnchor(out, a, ASTNode.AGGREGATE_DECLARATION, getKind(a));
+		if (a.isTemplate()) {
+			writeAnchor(out, a, ASTNode.TEMPLATE_DECLARATION, null);
+		} else {
+			writeAnchor(out, a, ASTNode.AGGREGATE_DECLARATION, getKind(a));
+		}
+		
+		if (a.isParameterizedType()) {
+			writeTemplateParameters(a.getTypeParameters(), out);
+		}
 		
 		ITypeBinding superclass = a.getSuperclass();
 		ITypeBinding[] interfaces = a.getInterfaces();
@@ -735,7 +737,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		IJavaElement element = a.getJavaElement();
 		writeDdoc(out, element);
 		
-		out.write("<ul>");
+		out.write("<ul>\r\n");
 		
 		if (a.isClass()) {
 			out.write("<li><span class=\"second_header\">Super hierarchy:</span> ");
@@ -747,11 +749,9 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 				out.write(" -> ");
 			}
 			
-			out.write("<span class=\"symbol class\">");
-			out.write(a.getName());
-			out.write("</span>");
+			writeBinding(a, out);
 			
-			out.write("</li>");
+			out.write("</li>\r\n");
 		}
 		
 		Set<ITypeBinding> implementedInterfaces = getImplementedInterfaces(modules, a);
@@ -766,7 +766,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 				writeBinding(inter, out);
 				i++;
 			}
-			out.write("</li>");
+			out.write("</li>\r\n");
 		}
 		
 		if (a.isClass()) {
@@ -781,7 +781,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 					writeBinding(sub, out);
 					i++;
 				}
-				out.write("</li>");
+				out.write("</li>\r\n");
 			}
 		}
 		
@@ -797,7 +797,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 					writeBinding(sub, out);
 					i++;
 				}
-				out.write("</li>");
+				out.write("</li>\r\n");
 			}
 		}
 		
@@ -813,7 +813,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 					writeBinding(sub, out);
 					i++;
 				}
-				out.write("</li>");
+				out.write("</li>\r\n");
 			}
 		}
 		
@@ -829,7 +829,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		// Inherited methods
 		if (a.getSuperclass() != null) {
 			out.write("<li><span class=\"second_header\">Inherited methods</span>");
-			out.write("<ul>");
+			out.write("<ul>\r\n");
 			
 			Stack<ITypeBinding> hierarchy = getSuperclassHierarchy(a);
 			while(!hierarchy.isEmpty()) {
@@ -840,8 +840,8 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 				writeInheritedMethods(t, out);
 			}
 			
-			out.write("</ul>");
-			out.write("</li>");
+			out.write("</ul>\r\n");
+			out.write("</li>\r\n");
 		}
 		
 		writeAliases("second_header", getSubAliases(a), modules, out);
@@ -851,6 +851,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		writeAggregates("Unions", "second_header", getSubUnions(a), modules, out);
 		writeAggregates("Classes", "second_header", getSubClasses(a), modules, out);
 		writeAggregates("Interfaces", "second_header", getSubInterfaces(a), modules, out);
+		writeAggregates("Templates", "second_header", getSubTemplates(a), modules, out);
 		
 		out.write("</ul>");
 		out.write("</li>");
@@ -935,6 +936,15 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		}
 		return result;
 	}
+	
+	private Set<ITypeBinding> getSubTemplates(ITypeBinding a) {
+		Set<ITypeBinding> result = new TreeSet<ITypeBinding>(bindingsComparator);
+		for(ITypeBinding t : a.getDeclaredTypes()) {
+			if (passesAccess(t) && t.isTemplate())
+				result.add(t);
+		}
+		return result;
+	}
 
 	private Set<IVariableBinding> getDeclaredFields(ITypeBinding a) {
 		Set<IVariableBinding> vars = new TreeSet<IVariableBinding>(bindingsComparator);
@@ -997,7 +1007,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 			
 			writtenComma = true;
 		}
-		out.write("</li>");
+		out.write("</li>\r\n");
 	}
 
 	private Stack<ITypeBinding> getSuperclassHierarchy(ITypeBinding a) {
@@ -1019,9 +1029,9 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 			return AggregateDeclaration.Kind.STRUCT;
 		else if (a.isUnion())
 			return AggregateDeclaration.Kind.UNION;
-		throw new IllegalStateException();
+		else
+			throw new IllegalStateException();
 	}
-
 
 	private Set<ITypeBinding> getImplementedInterfaces(Set<Module> modules, ITypeBinding binding) {
 		Set<ITypeBinding> result = new TreeSet<ITypeBinding>(bindingsComparator);
@@ -1034,7 +1044,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		Set<ITypeBinding> result = new TreeSet<ITypeBinding>(bindingsComparator);
 		for(Module module : modules) {
 			for(ITypeBinding binding : module.symbols.classes) {
-				IBinding superclass = binding.getSuperclass();
+				ITypeBinding superclass = binding.getSuperclass();
 				if (superclass != null && superclass.isEqualTo(target)) {
 					result.add(binding);
 				}
@@ -1107,6 +1117,16 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 	}
 
 	private void writeAnchor(Writer out, IBinding binding, int nodeType, AggregateDeclaration.Kind kind) throws IOException {
+		if (binding == null) {
+			System.out.println(123456);
+			return;
+		}
+		
+		if (binding.getKey() == null) {
+			out.write(binding.getName());
+			return;
+		}
+		
 		out.write("<a name=\"");
 		out.write(binding.getKey());
 		out.write("\"");
@@ -1176,7 +1196,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 					break;
 				}
 			}
-			out.write("</div>");
+			out.write("</div>\r\n");
 		}
 	}
 	
@@ -1291,8 +1311,24 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 		
 		out.write(" target=\"module\">");
 		out.write(binding.getName());
+		
+		if (binding.isParameterizedType()) {
+			writeTemplateParameters(binding.getTypeParameters(), out);
+		}
+		
 		out.write("</a>");
 	}
+
+	private void writeTemplateParameters(ITemplateParameterBinding[] typeParameters, Writer out) throws IOException {
+		out.write("(");
+		for (int i = 0; i < typeParameters.length; i++) {
+			if (i != 0)
+				out.write(", ");
+			out.write(typeParameters[i].getName());
+		}
+		out.write(")");
+	}
+
 
 	private void writeHref(IBinding binding, Writer out) throws IOException {
 		IJavaElement element = binding.getJavaElement();
@@ -1379,6 +1415,10 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 	}
 	
 	private boolean passesAccess(IBinding a) {
+		if (a == null) {
+			System.out.println(123456);
+		}
+		
 		long modifiers = a.getModifiers();
 		if ((modifiers & Flags.AccPrivate) == 0 
 			&& (modifiers & Flags.AccProtected) == 0
@@ -1432,6 +1472,7 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 				".struct { color: #003250;  }\r\n" +
 				".union { color: #325000;  }\r\n" +
 				".interface { color: #323F70;  }\r\n" +
+				".template { color: #804080;  }\r\n" +
 				".keyword { color: #320020; }");
 		out.close();
 	}

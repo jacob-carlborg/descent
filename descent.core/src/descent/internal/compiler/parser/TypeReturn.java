@@ -86,7 +86,7 @@ public class TypeReturn extends TypeQualified {
 	}
 
 	@Override
-	protected void appendSignature0(StringBuilder sb) {
+	protected void appendSignature0(StringBuilder sb, int options) {
 		sb.append(Signature.C_TYPEOF_RETURN);
 	}
 

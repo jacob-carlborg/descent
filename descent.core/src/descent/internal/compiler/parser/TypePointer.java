@@ -132,9 +132,9 @@ public class TypePointer extends Type {
 	}
 	
 	@Override
-	protected void appendSignature0(StringBuilder sb) {
+	protected void appendSignature0(StringBuilder sb, int options) {
 		sb.append('P');
-		next.appendSignature(sb);
+		next.appendSignature(sb, options);
 	}
 
 }

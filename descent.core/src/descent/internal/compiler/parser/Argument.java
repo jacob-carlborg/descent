@@ -266,12 +266,16 @@ public class Argument extends ASTDmdNode implements Cloneable {
 	}
 
 	public String getSignature() {
+		return getSignature(ISignatureOptions.Default);
+	}
+	
+	public String getSignature(int options) {
 		StringBuilder sb = new StringBuilder();
-		appendSignature(sb);
+		appendSignature(sb, options);
 		return sb.toString();
 	}
 	
-	public void appendSignature(StringBuilder sb) {
+	public void appendSignature(StringBuilder sb, int options) {
 		switch (storageClass & (STCin | STCout | STCref | STClazy)) {
 		case 0:
 		case STCin:
@@ -286,7 +290,7 @@ public class Argument extends ASTDmdNode implements Cloneable {
 			sb.append('L');
 			break;
 		}
-		type.appendSignature(sb);
+		type.appendSignature(sb, options);
 	}
 
 }

@@ -1,18 +1,16 @@
 package descent.internal.compiler.parser;
 
-import descent.core.IJavaElement;
-import descent.core.compiler.IProblem;
-import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.DYNCAST.DYNCAST_IDENTIFIER;
-
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
-
 import static descent.internal.compiler.parser.TOK.TOKdotexp;
 import static descent.internal.compiler.parser.TOK.TOKimport;
 import static descent.internal.compiler.parser.TOK.TOKtype;
-
 import static descent.internal.compiler.parser.TY.Tinstance;
-import static descent.internal.compiler.parser.TY.*;
+import static descent.internal.compiler.parser.TY.Tsarray;
+import static descent.internal.compiler.parser.TY.Tstruct;
+import descent.core.IJavaElement;
+import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
 public class TypeStruct extends Type {
@@ -395,13 +393,8 @@ public class TypeStruct extends Type {
 	}
 	
 	@Override
-	public String getSignature0() {
-		return sym.getSignature();
-	}
-	
-	@Override
-	protected void appendSignature0(StringBuilder sb) {
-		sb.append(getSignature());
+	protected void appendSignature0(StringBuilder sb, int options) {
+		sym.appendSignature(sb, options);
 	}
 	
 	//PERHAPS dt_t **toDt(dt_t **pdt);

@@ -2,8 +2,6 @@ package descent.core.dom;
 
 import descent.internal.compiler.parser.CtorDeclaration;
 import descent.internal.compiler.parser.FuncDeclaration;
-import descent.internal.compiler.parser.TemplateDeclaration;
-import descent.internal.compiler.parser.TemplateParameter;
 import descent.internal.compiler.parser.TypeFunction;
 
 public class MethodBinding extends JavaElementBasedBinding implements IMethodBinding {
@@ -24,10 +22,14 @@ public class MethodBinding extends JavaElementBasedBinding implements IMethodBin
 		return null;
 	}
 
-	public IBinding[] getParameterTypes() {
+	public ITypeBinding[] getParameterTypes() {
 		FuncDeclaration func = ((FuncDeclaration) node);
 		TypeFunction typeFunction = ((TypeFunction) func.type);
-		IBinding[] params = new IBinding[typeFunction.parameters.size()];
+		if (typeFunction == null) {
+			System.out.println(123456);
+			return NO_TYPES;
+		}
+		ITypeBinding[] params = new ITypeBinding[typeFunction.parameters.size()];
 		for (int i = 0; i < params.length; i++) {
 			params[i] = bindingResolver.resolveType(typeFunction.parameters.get(i).type);
 		}
@@ -37,6 +39,10 @@ public class MethodBinding extends JavaElementBasedBinding implements IMethodBin
 	public ITypeBinding getReturnType() {
 		FuncDeclaration func = ((FuncDeclaration) node);
 		TypeFunction typeFunction = ((TypeFunction) func.type);
+		if (typeFunction == null) {
+			System.out.println(123456);
+			return null;
+		}
 		return bindingResolver.resolveType(typeFunction.next);
 	}
 
@@ -46,18 +52,7 @@ public class MethodBinding extends JavaElementBasedBinding implements IMethodBin
 	}
 
 	public ITemplateParameterBinding[] getTypeParameters() {
-		if (!node.templated())
-			return NO_TEMPLATE_PARAMETERS;
-		
-		TemplateDeclaration template = (TemplateDeclaration) node.parent;
-		if (template.parameters == null || template.parameters.isEmpty())
-			return NO_TEMPLATE_PARAMETERS;
-		
-		ITemplateParameterBinding[] parameters = new ITemplateParameterBinding[template.parameters.size()];
-		for (int i = 0; i < parameters.length; i++) {
-			parameters[i] = new TemplateParameterBinding(template.parameters.get(i), bindingResolver);
-		}
-		return parameters;
+		return getTypeParameters(node, bindingResolver);
 	}
 
 	public boolean isConstructor() {

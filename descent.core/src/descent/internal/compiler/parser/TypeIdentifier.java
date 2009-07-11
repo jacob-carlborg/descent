@@ -211,9 +211,9 @@ public class TypeIdentifier extends TypeQualified {
 	}
 	
 	@Override
-	protected void appendSignature0(StringBuilder sb) {
+	protected void appendSignature0(StringBuilder sb, int options) {
 		sb.append(Signature.C_IDENTIFIER);
-		ident.appendSignature(sb);
+		ident.appendSignature(sb, options);
 		
 		if (idents != null) {
 			for (int i = 0; i < idents.size(); i++) {
@@ -221,7 +221,7 @@ public class TypeIdentifier extends TypeQualified {
 				if (ident == null) {
 					sb.append(0);
 				} else {
-					ident.appendSignature(sb);
+					ident.appendSignature(sb, options);
 				}
 				
 				if (ident instanceof TemplateInstanceWrapper && i != idents.size() - 1) {

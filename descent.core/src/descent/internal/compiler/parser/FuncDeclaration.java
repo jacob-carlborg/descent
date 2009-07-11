@@ -2572,8 +2572,12 @@ public class FuncDeclaration extends Declaration {
 	}
 
 	public String getFunctionSignature() {
+		return getFunctionSignature(ISignatureOptions.Default);
+	}
+	
+	public String getFunctionSignature(int options) {
 		StringBuilder sb = new StringBuilder();
-		SemanticMixin.appendNameSignature(this, sb);
+		SemanticMixin.appendNameSignature(this, options, sb);
 		return sb.toString();
 	}
 
@@ -2595,6 +2599,10 @@ public class FuncDeclaration extends Declaration {
 	public long getFlags() {
 		long flags = super.getFlags();
 		TypeFunction ty = (TypeFunction) type;
+		if (ty == null) {
+			System.out.println(123456);
+			return 0;
+		}
 		if (ty.isnothrow) {
 			flags |= Flags.AccNothrow;
 		}

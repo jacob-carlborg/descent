@@ -217,11 +217,11 @@ public class TemplateTypeParameter extends TemplateParameter {
 		}
 	}
 	@Override
-	public void appendSignature(StringBuilder sb) {
+	public void appendSignature(StringBuilder sb, int options) {
 		sb.append(Signature.C_TEMPLATE_TYPE_PARAMETER);
 		if (specType != null) {
 			sb.append(Signature.C_TEMPLATE_TYPE_PARAMETER_SPECIFIC_TYPE);
-			specType.appendSignature(sb);
+			specType.appendSignature(sb, options);
 		}
 	}
 	

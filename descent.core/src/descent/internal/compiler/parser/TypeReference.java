@@ -77,13 +77,7 @@ public class TypeReference extends Type {
 	}
 	
 	@Override
-	public String getSignature0() {
-		// TODO Descent signature
-		return null;
-	}
-	
-	@Override
-	protected void appendSignature0(StringBuilder sb) {
+	protected void appendSignature0(StringBuilder sb, int options) {
 		// TODO Descent signature		
 	}
 

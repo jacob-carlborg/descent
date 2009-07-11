@@ -120,7 +120,7 @@ public class StaticAssert extends Dsymbol {
 	}
 	
 	@Override
-	public String getSignature() {
+	public String getSignature(int optionsoptions) {
 		// TODO Auto-generated method stub
 		return null;
 	}

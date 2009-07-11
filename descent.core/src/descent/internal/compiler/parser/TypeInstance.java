@@ -1,14 +1,13 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+import static descent.internal.compiler.parser.TOK.TOKvar;
+import static descent.internal.compiler.parser.TY.Tident;
+import static descent.internal.compiler.parser.TY.Tinstance;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
-import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
-import static descent.internal.compiler.parser.TOK.*;
-import static descent.internal.compiler.parser.TY.Tident;
-import static descent.internal.compiler.parser.TY.Tinstance;
 
 
 public class TypeInstance extends TypeQualified {
@@ -348,20 +347,12 @@ public class TypeInstance extends TypeQualified {
 
 		return s[0];
 	}
-
 	
 	@Override
-	public String getSignature0() {
-		StringBuilder sb = new StringBuilder();
-		appendSignature(sb);
-		return sb.toString();
-	}
-	
-	@Override
-	protected void appendSignature0(StringBuilder sb) {
+	protected void appendSignature0(StringBuilder sb, int options) {
 		sb.append(Signature.C_IDENTIFIER);
-		tempinst.name.appendSignature(sb);
-		tempinst.appendInstanceSignature(sb);
+		tempinst.name.appendSignature(sb, options);
+		tempinst.appendInstanceSignature(sb, options);
 		
 		if (idents != null) {
 			for(IdentifierExp ident : idents) {
@@ -370,7 +361,7 @@ public class TypeInstance extends TypeQualified {
 				if (ident == null) {
 					sb.append(0);
 				} else {
-					ident.appendSignature(sb);
+					ident.appendSignature(sb, options);
 				}
 			}
 		}

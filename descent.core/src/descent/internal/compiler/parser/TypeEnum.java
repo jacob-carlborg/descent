@@ -268,13 +268,8 @@ public class TypeEnum extends Type {
 	}
 	
 	@Override
-	public String getSignature0() {
-		return sym.getSignature();
-	}
-	
-	@Override
-	protected void appendSignature0(StringBuilder sb) {
-		sb.append(getSignature());
+	protected void appendSignature0(StringBuilder sb, int options) {
+		sym.appendSignature(sb, options);
 	}
 
 }

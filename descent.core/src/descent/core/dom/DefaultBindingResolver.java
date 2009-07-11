@@ -23,6 +23,7 @@ import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.EnumMember;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.FuncDeclaration;
+import descent.internal.compiler.parser.ISignatureOptions;
 import descent.internal.compiler.parser.Id;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Module;
@@ -257,8 +258,8 @@ class DefaultBindingResolver extends BindingResolver {
 		if (dsymbol.ident == null || dsymbol.ident.ident == null) {
 			return null;
 		}
-
-		return resolveAggregateOrEnum(dsymbol, dsymbol.getSignature());
+		
+		return resolveAggregateOrEnum(dsymbol, getSignature(dsymbol));
 	}
 
 	ITypeBinding resolveAggregateOrEnum(Dsymbol dsymbol, String key) {
@@ -365,7 +366,7 @@ class DefaultBindingResolver extends BindingResolver {
 			return null;
 		}
 		
-		String key = sym.getSignature();
+		String key = getSignature(sym);
 		if (key == null) {
 			return null;
 		}
@@ -388,7 +389,7 @@ class DefaultBindingResolver extends BindingResolver {
 			return null;
 		}
 
-		String key = sym.getSignature();
+		String key = getSignature(sym);
 		if (key == null) {
 			return null;
 		}
@@ -509,7 +510,7 @@ class DefaultBindingResolver extends BindingResolver {
 
 	private IBinding resolveBuiltinProperty(descent.core.dom.Expression exp, Type type, SimpleName name) {
 		String identifier = name.getIdentifier();
-		String signature = type.getSignature() + Signature.C_VARIABLE
+		String signature = getSignature(type) + Signature.C_VARIABLE
 				+ identifier.length() + identifier;
 
 		IBinding binding = bindingTables.bindingKeysToBindings.get(signature);
@@ -909,7 +910,7 @@ class DefaultBindingResolver extends BindingResolver {
 			return new TemplateParameterTypeBinding((TypeIdentifier) type);
 		}
 		
-		String key = type.getSignature();
+		String key = getSignature(type);
 		if (key == null) {
 			return null;
 		}
@@ -979,7 +980,7 @@ class DefaultBindingResolver extends BindingResolver {
 			return null;
 		}
 
-		String key = func.getSignature();
+		String key = getSignature(func);
 		if (key == null) {
 			return null;
 		}
@@ -1002,7 +1003,7 @@ class DefaultBindingResolver extends BindingResolver {
 			return null;
 		}
 
-		String key = em.getSignature();
+		String key = getSignature(em);
 		if (key == null) {
 			return null;
 		}
@@ -1025,7 +1026,7 @@ class DefaultBindingResolver extends BindingResolver {
 			return null;
 		}
 
-		String key = mod.getSignature();
+		String key = getSignature(mod);
 		if (key == null) {
 			return null;
 		}
@@ -1055,9 +1056,21 @@ class DefaultBindingResolver extends BindingResolver {
 		}
 		return null;
 	}
+	
+	private String getSignature(Dsymbol sym) {
+		return sym.getSignature(ISignatureOptions.None);
+	}
+	
+	private String getSignature(Type type) {
+		return type.getSignature(ISignatureOptions.None);
+	}
 
 	descent.core.ICompilationUnit getCompilationUnit(Dsymbol node) {
-		String fqn = node.getModule().getFullyQualifiedName();
+		Module module = node.getModule();
+		if (module == null) {
+			return null;
+		}
+		String fqn = module.getFullyQualifiedName();
 		return internalSignature.getCompilationUnit(fqn);
 	}
 
