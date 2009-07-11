@@ -59,6 +59,7 @@ import descent.core.dom.CompilationUnit;
 import descent.core.dom.IBinding;
 import descent.core.dom.ICompilationUnitBinding;
 import descent.core.dom.IMethodBinding;
+import descent.core.dom.ITemplateParameterBinding;
 import descent.core.dom.ITypeBinding;
 import descent.core.dom.IVariableBinding;
 import descent.core.dom.AggregateDeclaration.Kind;
@@ -493,6 +494,17 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 					writeBinding(a.getReturnType(), out);
 					out.write(" ");
 					writeAnchor(out, a, ASTNode.FUNCTION_DECLARATION);
+				}
+				
+				if (a.isParameterizedMethod()) {
+					out.write("(");
+					ITemplateParameterBinding[] typeParameters = a.getTypeParameters();
+					for (int i = 0; i < typeParameters.length; i++) {
+						if (i != 0)
+							out.write(", ");
+						out.write(typeParameters[i].getName());
+					}
+					out.write(")");
 				}
 				
 				out.write("(");
@@ -1239,6 +1251,8 @@ public class JavadocWizard extends Wizard implements IExportWizard {
 			out.write('[');
 			out.write(String.valueOf(binding.getDimension()));
 			out.write(']');
+		} else if (binding.isTemplateParameter()) {
+			out.write(binding.getName());
 		} else {
 			writeLink(binding, out);
 		}

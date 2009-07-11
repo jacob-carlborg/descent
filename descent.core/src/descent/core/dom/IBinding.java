@@ -76,6 +76,15 @@ public interface IBinding {
 	 * @see ICompilationUnitBinding
 	 */
 	public static final int COMPILATION_UNIT = 5;
+	
+	/**
+	 * Kind constant (value 6) indicating a template parameter binding.
+	 * Bindings of this kind can be safely cast to <code>ITemplateParameterBinding</code>.
+	 * 
+	 * @see #getKind()
+	 * @see ITemplateParameterBinding
+	 */
+	public static final int TEMPLATE_PARAMETER = 6;
 
 	/**
 	 * Returns the kind of bindings this is. That is one of the kind constants:

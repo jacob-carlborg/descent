@@ -619,62 +619,63 @@ public class Bindings {
 	 */
 	public static boolean isSubsignature(IMethodBinding overriding, IMethodBinding overridden) {
 		//TODO: use IMethodBinding#isSubsignature(..) once it is tested and fixed (only erasure of m1's parameter types, considering type variable counts, doing type variable substitution		
-		if (!overriding.getName().equals(overridden.getName()))
-			return false;
-			
-		IBinding[] m1Params= overriding.getParameterTypes();
-		IBinding[] m2Params= overridden.getParameterTypes();
-		if (m1Params.length != m2Params.length)
-			return false;
-		
-		ITypeBinding[] m1TypeParams= overriding.getTypeParameters();
-		ITypeBinding[] m2TypeParams= overridden.getTypeParameters();
-		if (m1TypeParams.length != m2TypeParams.length
-				&& m1TypeParams.length != 0) //non-generic m1 can override a generic m2
-			return false;
-		
-		//m1TypeParameters.length == (m2TypeParameters.length || 0)
-		if (m2TypeParams.length != 0) {
-			//Note: this branch does not 100% adhere to the spec and may report some false positives.
-			// Full compliance would require major duplication of compiler code.
-			
-			//Compare type parameter bounds:
-			for (int i= 0; i < m1TypeParams.length; i++) {
-				// loop over m1TypeParams, which is either empty, or equally long as m2TypeParams
-				Set m1Bounds= getTypeBoundsForSubsignature(m1TypeParams[i]);
-				Set m2Bounds= getTypeBoundsForSubsignature(m2TypeParams[i]);
-				if (! m1Bounds.equals(m2Bounds))
-					return false;
-			}
-			//Compare parameter types:
-			if (equals(m2Params, m1Params))
-				return true;
-			for (int i= 0; i < m1Params.length; i++) {
-				IBinding m1Param= m1Params[i];
-				// TODO JDT Bindings
-//				if (containsTypeVariables(m1Param))
-//					m1Param= m1Param.getErasure(); // try to achieve effect of "rename type variables"
-//				else if (m1Param.isRawType())
-//					m1Param= m1Param.getTypeDeclaration();
-//				if (! (equals(m1Param, m2Params[i].getErasure()))) // can erase m2
+//		if (!overriding.getName().equals(overridden.getName()))
+//			return false;
+//			
+//		IBinding[] m1Params= overriding.getParameterTypes();
+//		IBinding[] m2Params= overridden.getParameterTypes();
+//		if (m1Params.length != m2Params.length)
+//			return false;
+//		
+//		ITypeBinding[] m1TypeParams= overriding.getTypeParameters();
+//		ITypeBinding[] m2TypeParams= overridden.getTypeParameters();
+//		if (m1TypeParams.length != m2TypeParams.length
+//				&& m1TypeParams.length != 0) //non-generic m1 can override a generic m2
+//			return false;
+//		
+//		//m1TypeParameters.length == (m2TypeParameters.length || 0)
+//		if (m2TypeParams.length != 0) {
+//			//Note: this branch does not 100% adhere to the spec and may report some false positives.
+//			// Full compliance would require major duplication of compiler code.
+//			
+//			//Compare type parameter bounds:
+//			for (int i= 0; i < m1TypeParams.length; i++) {
+//				// loop over m1TypeParams, which is either empty, or equally long as m2TypeParams
+//				Set m1Bounds= getTypeBoundsForSubsignature(m1TypeParams[i]);
+//				Set m2Bounds= getTypeBoundsForSubsignature(m2TypeParams[i]);
+//				if (! m1Bounds.equals(m2Bounds))
 //					return false;
-			}
-			return true;
-			
-		} else {
-			// m1TypeParams.length == m2TypeParams.length == 0  
-			if (equals(m1Params, m2Params))
-				return true;
-			for (int i= 0; i < m1Params.length; i++) {
-				IBinding m1Param= m1Params[i];
-				// TODO JDT Bindings
-//				if (m1Param.isRawType())
-//					m1Param= m1Param.getTypeDeclaration();
-//				if (! (equals(m1Param, m2Params[i].getErasure()))) // can erase m2
-//					return false;
-			}
-			return true;
-		}
+//			}
+//			//Compare parameter types:
+//			if (equals(m2Params, m1Params))
+//				return true;
+//			for (int i= 0; i < m1Params.length; i++) {
+//				IBinding m1Param= m1Params[i];
+//				// TODO JDT Bindings
+////				if (containsTypeVariables(m1Param))
+////					m1Param= m1Param.getErasure(); // try to achieve effect of "rename type variables"
+////				else if (m1Param.isRawType())
+////					m1Param= m1Param.getTypeDeclaration();
+////				if (! (equals(m1Param, m2Params[i].getErasure()))) // can erase m2
+////					return false;
+//			}
+//			return true;
+//			
+//		} else {
+//			// m1TypeParams.length == m2TypeParams.length == 0  
+//			if (equals(m1Params, m2Params))
+//				return true;
+//			for (int i= 0; i < m1Params.length; i++) {
+//				IBinding m1Param= m1Params[i];
+//				// TODO JDT Bindings
+////				if (m1Param.isRawType())
+////					m1Param= m1Param.getTypeDeclaration();
+////				if (! (equals(m1Param, m2Params[i].getErasure()))) // can erase m2
+////					return false;
+//			}
+//			return true;
+//		}
+		return false;
 	}
 
 	private static boolean containsTypeVariables(ITypeBinding type) {

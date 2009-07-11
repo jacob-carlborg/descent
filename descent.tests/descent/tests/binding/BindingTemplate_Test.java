@@ -9,7 +9,6 @@ import descent.core.dom.IMethodBinding;
 import descent.core.dom.ITypeBinding;
 import descent.core.dom.MixinDeclaration;
 import descent.core.dom.TemplateDeclaration;
-import descent.core.dom.TemplateMixinDeclaration;
 import descent.core.dom.TemplateType;
 import descent.core.dom.TypeExpression;
 import descent.core.dom.VariableDeclaration;
@@ -75,7 +74,7 @@ public class BindingTemplate_Test extends AbstractBinding_Test {
 		CompilationUnit unit = createCU("test.d", "void foo()() { }");
 		FunctionDeclaration decl = (FunctionDeclaration) unit.declarations().get(0);
 		IMethodBinding binding = decl.resolveBinding();
-		assertTrue(binding.isTemplate());
+		assertTrue(binding.isParameterizedMethod());
 		
 		assertEquals(getFunction(lastCompilationUnit, 0), binding.getJavaElement());
 		
@@ -88,7 +87,7 @@ public class BindingTemplate_Test extends AbstractBinding_Test {
 		ExpressionStatement stm = (ExpressionStatement) decl.getBody().statements().get(0);
 		CallExpression exp = (CallExpression) stm.getExpression();
 		IMethodBinding binding = exp.resolveCallBinding();
-		assertTrue(binding.isTemplate());
+		assertTrue(binding.isParameterizedMethod());
 		
 		assertEquals(getFunction(lastCompilationUnit, 0), binding.getJavaElement());
 		
@@ -96,7 +95,7 @@ public class BindingTemplate_Test extends AbstractBinding_Test {
 		TemplateType templateType = (TemplateType) typeExp.getType();
 		
 		IMethodBinding binding2 = (IMethodBinding) templateType.getName().resolveBinding();
-		assertTrue(binding2.isTemplate());
+		assertTrue(binding2.isParameterizedMethod());
 	}
 
 }

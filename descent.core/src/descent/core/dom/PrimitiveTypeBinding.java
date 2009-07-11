@@ -113,7 +113,7 @@ public abstract class PrimitiveTypeBinding extends AbstractBinding implements IT
 	public final boolean isTemplate() {
 		return false;
 	}
-
+	
 	public final IJavaElement getJavaElement() {
 		return null;
 	}
@@ -139,6 +139,10 @@ public abstract class PrimitiveTypeBinding extends AbstractBinding implements IT
 	}
 	
 	public final boolean isTypedef() {
+		return false;
+	}
+	
+	public boolean isTemplateParameter() {
 		return false;
 	}
 	

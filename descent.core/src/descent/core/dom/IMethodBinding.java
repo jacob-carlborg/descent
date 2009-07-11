@@ -134,7 +134,7 @@ public interface IMethodBinding extends IBinding {
 	 * @see ITypeBinding#isTypeVariable()
 	 * @since 3.1
 	 */
-	public ITypeBinding[] getTypeParameters();
+	public ITemplateParameterBinding[] getTypeParameters();
 
 	/**
 	 * Returns whether this method binding represents a declaration of
@@ -254,14 +254,6 @@ public interface IMethodBinding extends IBinding {
 	 * @since 3.1
 	 */ 
 	public int getVarargs();
-	
-	/**
-	 * Returns whether this method is templated.
-	 *
-	 * @return <code>true</code> if this object represents a templated function,
-	 *    and <code>false</code> otherwise
-	 */
-	public boolean isTemplate();
 	
 	/**
 	 * Returns whether this method overrides the given method,

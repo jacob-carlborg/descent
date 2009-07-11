@@ -21,6 +21,7 @@ public abstract class AbstractBinding implements IBinding {
 	protected final static IMethodBinding[] NO_METHODS = new IMethodBinding[0];
 	protected final static ITypeBinding[] NO_TYPES = new ITypeBinding[0];
 	protected final static ICompilationUnitBinding[] NO_UNITS = new ICompilationUnitBinding[0];
+	protected final static ITemplateParameterBinding[] NO_TEMPLATE_PARAMETERS = new ITemplateParameterBinding[0];
 
 	@Override
 	public final boolean equals(Object obj) {
@@ -89,12 +90,22 @@ public abstract class AbstractBinding implements IBinding {
 		
 		if (sd.symtab != null) {
 			for(Object value : sd.symtab.values()) {
+				Dsymbol toResolve;
 				if (value instanceof FuncDeclaration) {
-					IBinding binding = bindingResolver.resolveDsymbol((Dsymbol)value);
-					if (binding instanceof IMethodBinding) {
-						methods.add((IMethodBinding) binding);
+					toResolve = (Dsymbol) value;
+				} else if (value instanceof TemplateDeclaration) {
+					TemplateDeclaration temp = (TemplateDeclaration) value;
+					if (temp.wrapper && temp.members.get(0) instanceof FuncDeclaration) {
+						toResolve = temp.members.get(0);
+					} else {
+						continue;
 					}
+				} else {
+					continue;
 				}
+				
+				IMethodBinding binding = (IMethodBinding) bindingResolver.resolveDsymbol(toResolve);
+				methods.add((IMethodBinding) binding);
 			}	
 		}
 		
@@ -115,17 +126,33 @@ public abstract class AbstractBinding implements IBinding {
 		
 		if (sd.symtab != null) {
 			for(Object value : sd.symtab.values()) {
+				Dsymbol toResolve;
 				if (value instanceof ClassDeclaration
 						|| value instanceof StructDeclaration
-						|| value instanceof TemplateDeclaration
 						|| value instanceof AliasDeclaration
 						|| value instanceof TypedefDeclaration
 						|| value instanceof descent.internal.compiler.parser.EnumDeclaration) {
-					IBinding binding = bindingResolver
-							.resolveDsymbol((Dsymbol) value);
-					if (binding instanceof ITypeBinding) {
-						types.add((ITypeBinding) binding);
+					toResolve = (Dsymbol) value;
+				} else if (value instanceof TemplateDeclaration) {
+					TemplateDeclaration temp = (TemplateDeclaration) value;
+					if (temp.wrapper) {
+						Dsymbol wrapped = temp.members.get(0);
+						if (wrapped instanceof ClassDeclaration ||
+							wrapped instanceof StructDeclaration) {
+							toResolve = wrapped;
+						} else {
+							continue;
+						}
+					} else {
+						toResolve = temp;
 					}
+				} else {
+					continue;
+				}
+				
+				IBinding binding = bindingResolver .resolveDsymbol(toResolve);
+				if (binding instanceof ITypeBinding) {
+					types.add((ITypeBinding) binding);
 				}
 			}	
 		}

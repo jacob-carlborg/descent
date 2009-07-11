@@ -211,7 +211,7 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	}
 
 	public boolean isParameterizedType() {
-		return false;
+		return node.templated();
 	}
 
 	public boolean isPointer() {
@@ -240,9 +240,7 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	}
 	
 	public boolean isTemplate() {
-		return node instanceof TemplateDeclaration ||
-			((node instanceof descent.internal.compiler.parser.AggregateDeclaration) && 
-					((descent.internal.compiler.parser.AggregateDeclaration) node).templated);
+		return node instanceof TemplateDeclaration;
 	}
 
 	public boolean isTopLevel() {
@@ -259,6 +257,10 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	
 	public boolean isTypedef() {
 		return node instanceof TypedefDeclaration;
+	}
+	
+	public boolean isTemplateParameter() {
+		return false;
 	}
 	
 	@Override

@@ -2,6 +2,8 @@ package descent.core.dom;
 
 import descent.internal.compiler.parser.CtorDeclaration;
 import descent.internal.compiler.parser.FuncDeclaration;
+import descent.internal.compiler.parser.TemplateDeclaration;
+import descent.internal.compiler.parser.TemplateParameter;
 import descent.internal.compiler.parser.TypeFunction;
 
 public class MethodBinding extends JavaElementBasedBinding implements IMethodBinding {
@@ -40,12 +42,22 @@ public class MethodBinding extends JavaElementBasedBinding implements IMethodBin
 
 	public ITypeBinding[] getTypeArguments() {
 		// TODO Auto-generated method stub
-		return PrimitiveTypeBinding.NO_TYPES;
+		return NO_TYPES;
 	}
 
-	public ITypeBinding[] getTypeParameters() {
-		// TODO Auto-generated method stub
-		return null;
+	public ITemplateParameterBinding[] getTypeParameters() {
+		if (!node.templated())
+			return NO_TEMPLATE_PARAMETERS;
+		
+		TemplateDeclaration template = (TemplateDeclaration) node.parent;
+		if (template.parameters == null || template.parameters.isEmpty())
+			return NO_TEMPLATE_PARAMETERS;
+		
+		ITemplateParameterBinding[] parameters = new ITemplateParameterBinding[template.parameters.size()];
+		for (int i = 0; i < parameters.length; i++) {
+			parameters[i] = new TemplateParameterBinding(template.parameters.get(i), bindingResolver);
+		}
+		return parameters;
 	}
 
 	public boolean isConstructor() {
@@ -63,8 +75,7 @@ public class MethodBinding extends JavaElementBasedBinding implements IMethodBin
 	}
 
 	public boolean isParameterizedMethod() {
-		// TODO Auto-generated method stub
-		return false;
+		return node.templated();
 	}
 
 	public boolean isRawMethod() {
@@ -75,11 +86,6 @@ public class MethodBinding extends JavaElementBasedBinding implements IMethodBin
 	public boolean isSubsignature(IMethodBinding otherMethod) {
 		// TODO Auto-generated method stub
 		return false;
-	}
-	
-	public boolean isTemplate() {
-		return ((node instanceof FuncDeclaration) && 
-				((FuncDeclaration) node).templated);
 	}
 
 	public int getVarargs() {

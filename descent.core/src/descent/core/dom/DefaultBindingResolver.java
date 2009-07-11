@@ -3,6 +3,8 @@ package descent.core.dom;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.text.html.ParagraphView;
+
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
 import descent.core.JavaModelException;
@@ -27,6 +29,7 @@ import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.NewExp;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.TemplateDeclaration;
+import descent.internal.compiler.parser.TemplateParameter;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeAArray;
 import descent.internal.compiler.parser.TypeBasic;
@@ -36,6 +39,7 @@ import descent.internal.compiler.parser.TypeDelegate;
 import descent.internal.compiler.parser.TypeEnum;
 import descent.internal.compiler.parser.TypeExp;
 import descent.internal.compiler.parser.TypeFunction;
+import descent.internal.compiler.parser.TypeIdentifier;
 import descent.internal.compiler.parser.TypePointer;
 import descent.internal.compiler.parser.TypeSArray;
 import descent.internal.compiler.parser.TypeSlice;
@@ -901,6 +905,10 @@ class DefaultBindingResolver extends BindingResolver {
 	}
 
 	ITypeBinding resolveType(Type type) {
+		if (type instanceof TypeIdentifier) {
+			return new TemplateParameterTypeBinding((TypeIdentifier) type);
+		}
+		
 		String key = type.getSignature();
 		if (key == null) {
 			return null;

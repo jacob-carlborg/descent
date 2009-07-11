@@ -515,6 +515,14 @@ public interface ITypeBinding extends IBinding {
 	public boolean isCastCompatible(ITypeBinding type);
 	
 	/**
+	 * Returns whether this type represents a template parameter.
+	 * 
+	 * @return <code>true</code> if this type represents an template parameter,
+	 *    and <code>false</code> otherwise
+	 */
+	public boolean isTemplateParameter();
+	
+	/**
 	 * Returns whether this type binding represents an alias type.
 	 *
 	 * @return <code>true</code> if this object represents an alias,
