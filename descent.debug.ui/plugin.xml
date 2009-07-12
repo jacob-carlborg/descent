@@ -150,5 +150,10 @@
             id="descent.console.dmdfeConsoleLineTracker.bud"
             processType="bud">
       </consoleLineTracker>
+      <consoleLineTracker
+            class="descent.internal.debug.ui.console.DmdfeConsoleLineTracker"
+            id="descent.console.dmdfeConsoleLineTracker.xfBuild"
+            processType="xfBuild">
+      </consoleLineTracker>
    </extension>
 </plugin>
