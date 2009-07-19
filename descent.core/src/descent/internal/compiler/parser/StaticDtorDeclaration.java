@@ -75,7 +75,7 @@ public class StaticDtorDeclaration extends FuncDeclaration {
 			VarDeclaration v = new VarDeclaration(Loc.ZERO, Type.tint32, id,
 					null);
 			v.storage_class = STC.STCstatic;
-			Statements sa = new Statements();
+			Statements sa = new Statements(1);
 			Statement s = new DeclarationStatement(Loc.ZERO, v);
 			sa.add(s);
 			Expression e = new IdentifierExp(Loc.ZERO, id);

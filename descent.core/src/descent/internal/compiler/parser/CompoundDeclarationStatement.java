@@ -8,7 +8,7 @@ public class CompoundDeclarationStatement extends CompoundStatement {
 
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
-		Statements a = new Statements();
+		Statements a = new Statements(size(statements));
 		a.setDim(size(statements));
 		for (int i = 0; i < size(statements); i++) {
 			Statement s = (Statement) statements.get(i);

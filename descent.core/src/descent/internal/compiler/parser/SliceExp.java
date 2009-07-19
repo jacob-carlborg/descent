@@ -251,7 +251,7 @@ public class SliceExp extends UnaExp {
 				//int j2 = (size_t) i2;
 
 				if (e1.op == TOK.TOKtuple) {
-					Expressions exps = new Expressions();
+					Expressions exps = new Expressions(i2 - i1);
 					exps.setDim(i2 - i1);
 					for (int i = 0; i < (i2 - i1); i++) {
 						Expression tmp = (Expression) te.exps.get(i1 + i);
@@ -355,7 +355,7 @@ public class SliceExp extends UnaExp {
 	    Argument param = new Argument(STCconst, type, id, null);
 	    fparams.shift(param);
 	    Expression e = new IdentifierExp(Loc.ZERO, id);
-	    Expressions arguments = new Expressions();
+	    Expressions arguments = new Expressions(1);
 	    Expression index = new IdentifierExp(Loc.ZERO, Id.p);
 	    arguments.add(index);
 	    e = new ArrayExp(Loc.ZERO, e, arguments);

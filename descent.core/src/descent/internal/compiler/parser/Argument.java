@@ -106,7 +106,7 @@ public class Argument extends ASTDmdNode implements Cloneable {
 		Arguments a = null;
 
 		if (args != null) {
-			a = new Arguments();
+			a = new Arguments(args.size());
 			a.setDim(args.size());
 			for (int i = 0; i < a.size(); i++) {
 				Argument arg = args.get(i);

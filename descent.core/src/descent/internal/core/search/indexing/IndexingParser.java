@@ -16,6 +16,7 @@ public class IndexingParser extends SourceElementParser {
 	public Module parseCompilationUnit(descent.internal.compiler.env.ICompilationUnit unit, boolean resolveBindings) {
 		char[] contents = unit.getContents();
 		Parser parser = new Parser(contents, 0, contents.length, false, false, false, false, getASTlevel(), null, null, false, unit.getFileName());
+		parser.muteErrors = true;
 		parser.nextToken();
 		
 		module = parser.parseModuleObj();

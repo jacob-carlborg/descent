@@ -73,14 +73,14 @@ public class GotoStatement extends Statement {
 			 * so we can patch it later, and add it to a 'look at this later'
 			 * list.
 			 */
-			Statements a = new Statements();
+			Statements a = new Statements(1);
 			Statement s;
 
 			a.add(this);
 			s = new CompoundStatement(loc, a);
 			
 			if (sc.fes.gotos == null) {
-				sc.fes.gotos = new ArrayList();
+				sc.fes.gotos = new ArrayList(1);
 			}			
 			sc.fes.gotos.add(s); // 'look at this later' list
 			return s;

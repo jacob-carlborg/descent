@@ -897,7 +897,7 @@ public abstract class ASTDmdNode extends ASTNode {
 						 * Set arg to be: new Tclass(arg0, arg1,
 						 * ..., argn)
 						 */
-							Expressions args = new Expressions();
+							Expressions args = new Expressions(nargs - 1);
 							args.setDim(nargs - 1);
 							for (int u = i; u < nargs; u++) {
 								args.set(u - i, arguments.get(u));
@@ -1784,7 +1784,7 @@ public abstract class ASTDmdNode extends ASTNode {
         {
             if (s.dsym().toInitializer() == s.sym())
             {
-                Expressions exps = new Expressions();
+                Expressions exps = new Expressions(0);
                 e = new StructLiteralExp(Loc.ZERO, s.dsym(), exps);
                 e = e.semantic(null, context);
             }

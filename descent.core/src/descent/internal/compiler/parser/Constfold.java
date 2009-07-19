@@ -1485,7 +1485,7 @@ public class Constfold {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.ArraySliceIfOutOfBounds, es1, String.valueOf(ilwr), String.valueOf(iupr)));
 			} else {
-				Expressions elements = new Expressions();
+				Expressions elements = new Expressions(iupr - ilwr);
 				elements.setDim(iupr - ilwr);
 
 				for (int i = ilwr; i < iupr; i++) {
@@ -1606,7 +1606,7 @@ public class Constfold {
 			if (sd == null) {
 				throw new IllegalStateException("assert(sd);");
 			}
-			Expressions elements = new Expressions();
+			Expressions elements = new Expressions(sd.fields.size());
 			for (int i = 0; i < sd.fields.size(); i++) {
 				Dsymbol s = sd.fields.get(i);
 				VarDeclaration v = s.isVarDeclaration();

@@ -25,7 +25,7 @@ public class ArrayLiteralExp extends Expression {
 	
 	public ArrayLiteralExp(Loc loc, Expression e) {
 		super(loc, TOK.TOKarrayliteral);
-		this.elements = new Expressions();
+		this.elements = new Expressions(1);
 		this.elements.add(e);
 		this.sourceElements = new Expressions(elements);
 	}
@@ -257,7 +257,7 @@ public class ArrayLiteralExp extends Expression {
 				 */
 				if (ex != e) {
 					if (null == expsx) {
-						expsx = new Expressions();
+						expsx = new Expressions(size(elements));
 						expsx.setDim(size(elements));
 						for (int j = 0; j < size(elements); j++) {
 							expsx.set(j, elements.get(j));

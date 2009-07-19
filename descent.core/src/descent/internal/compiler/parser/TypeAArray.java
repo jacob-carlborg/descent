@@ -70,7 +70,7 @@ public class TypeAArray extends TypeArray {
 
 			fd = context.genCfunc(Type.tsize_t, Id.aaLen);
 			ec = new VarExp(Loc.ZERO, fd);
-			arguments = new Expressions();
+			arguments = new Expressions(1);
 			arguments.add(e);
 			e = new CallExp(e.loc, ec, arguments);
 			e.type = fd.type.next;
@@ -85,7 +85,7 @@ public class TypeAArray extends TypeArray {
 			}
 			fd = context.genCfunc(Type.tindex, Id.aaKeys);
 			ec = new VarExp(Loc.ZERO, fd);
-			arguments = new Expressions();
+			arguments = new Expressions(2);
 			arguments.add(e);
 			arguments.add(new IntegerExp(Loc.ZERO, size, Type.tsize_t));
 			e = new CallExp(e.loc, ec, arguments);
@@ -97,7 +97,7 @@ public class TypeAArray extends TypeArray {
 
 			fd = context.genCfunc(Type.tindex, Id.aaValues);
 			ec = new VarExp(Loc.ZERO, fd);
-			arguments = new Expressions();
+			arguments = new Expressions(3);
 			arguments.add(e);
 			int keysize = key.size(e.loc, context);
 			keysize = (keysize + 3) & ~3; // BUG: 64 bit pointers?
@@ -113,7 +113,7 @@ public class TypeAArray extends TypeArray {
 
 			fd = context.genCfunc(Type.tint64, Id.aaRehash);
 			ec = new VarExp(Loc.ZERO, fd);
-			arguments = new Expressions();
+			arguments = new Expressions(2);
 			arguments.add(e.addressOf(sc, context));
 			arguments.add(key.getInternalTypeInfo(sc, context));
 			e = new CallExp(e.loc, ec, arguments);

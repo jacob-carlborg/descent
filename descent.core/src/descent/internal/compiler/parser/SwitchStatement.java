@@ -161,7 +161,7 @@ public class SwitchStatement extends Statement {
 		sc.sbreak = this;
 		sc.sw = this;
 
-		cases = new ArrayList();
+		cases = new ArrayList(size(gotoCases));
 		sc.noctor++; // BUG: should use Scope::mergeCallSuper() for each case instead
 		body = body.semantic(sc, context);
 		sc.noctor--;
@@ -214,7 +214,7 @@ public class SwitchStatement extends Statement {
 			}
 
 			// Generate runtime error if the default is hit
-			Statements a = new Statements();
+			Statements a = new Statements(3);
 			CompoundStatement cs;
 			Statement s;
 

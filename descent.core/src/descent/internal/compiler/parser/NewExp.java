@@ -252,7 +252,7 @@ public class NewExp extends Expression {
 					}
 
 					if (arguments == null) {
-						arguments = new Expressions();
+						arguments = new Expressions(0);
 					}
 					functionArguments(loc, sc, tf, arguments, context);
 				} else {
@@ -272,7 +272,7 @@ public class NewExp extends Expression {
 					// Prepend the uint size argument to newargs[]
 					e = new IntegerExp(loc, cd.size(context), Type.tuns32);
 					if (newargs == null) {
-						newargs = new Expressions();
+						newargs = new Expressions(0);
 					}
 					newargs.add(0, e);
 
@@ -310,7 +310,7 @@ public class NewExp extends Expression {
 					// Prepend the uint size argument to newargs[]
 					e = new IntegerExp(loc, sd.size(context), Type.tuns32);
 					if (newargs == null) {
-						newargs = new Expressions();
+						newargs = new Expressions(0);
 					}
 					newargs.add(0, e);
 

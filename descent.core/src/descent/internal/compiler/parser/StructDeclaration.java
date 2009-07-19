@@ -188,7 +188,7 @@ public class StructDeclaration extends AggregateDeclaration {
 
 		TypeFunction tfeqptr;
 		{
-			Arguments arguments = new Arguments();
+			Arguments arguments = new Arguments(1);
 			Argument arg = new Argument(STCin, handle, new IdentifierExp(loc,
 					Id.p), null);
 
@@ -199,7 +199,7 @@ public class StructDeclaration extends AggregateDeclaration {
 
 		TypeFunction tfeq;
 		{
-			Arguments arguments = new Arguments();
+			Arguments arguments = new Arguments(1);
 			Argument arg = new Argument(STCin, type, null, null);
 
 			arguments.add(arg);
@@ -220,7 +220,7 @@ public class StructDeclaration extends AggregateDeclaration {
 								fdx.ident, STC.STCundefined, tfeqptr);
 						Expression e = new IdentifierExp(loc, Id.p);
 						e = new PtrExp(loc, e);
-						Expressions args = new Expressions();
+						Expressions args = new Expressions(1);
 						args.add(e);
 						e = new IdentifierExp(loc, id);
 						e = new CallExp(loc, e, args);
@@ -360,11 +360,11 @@ public class StructDeclaration extends AggregateDeclaration {
 					new IdentifierExp(Id.__fieldPostBlit));
 			dd.fbody = new ExpStatement(Loc.ZERO, e);
 			if (dtors == null) {
-				dtors = new FuncDeclarations();
+				dtors = new FuncDeclarations(1);
 			}
 			dtors.add(dd);
 			if (members == null) {
-				members = new Dsymbols();
+				members = new Dsymbols(1);
 			}
 			members.add(dd);
 			dd.semantic(sc, context);
@@ -390,7 +390,7 @@ public class StructDeclaration extends AggregateDeclaration {
 					new IdentifierExp(Id.__aggrPostBlit));
 			dd.fbody = new ExpStatement(Loc.ZERO, e);
 			if (members == null) {
-				members = new Dsymbols();
+				members = new Dsymbols(1);
 			}
 			members.add(dd);
 			dd.semantic(sc, context);
@@ -408,7 +408,7 @@ public class StructDeclaration extends AggregateDeclaration {
 		if (postblit != null) {
 			Argument param = new Argument(STCref, type,
 					new IdentifierExp(Id.p), null);
-			Arguments fparams = new Arguments();
+			Arguments fparams = new Arguments(1);
 			fparams.add(param);
 			Type ftype = new TypeFunction(fparams, Type.tvoid, 0, LINKd);
 
@@ -432,7 +432,7 @@ public class StructDeclaration extends AggregateDeclaration {
 			fcp.fbody = s;
 
 			if (members == null) {
-				members = new Dsymbols();
+				members = new Dsymbols(1);
 			}
 			members.add(fcp);
 
@@ -457,7 +457,7 @@ public class StructDeclaration extends AggregateDeclaration {
 
 		Argument param = new Argument(STCnodtor, type, new IdentifierExp(Id.p),
 				null);
-		Arguments fparams = new Arguments();
+		Arguments fparams = new Arguments(1);
 		fparams.add(param);
 		Type ftype = new TypeFunction(fparams, handle, 0, LINKd);
 
@@ -527,7 +527,7 @@ public class StructDeclaration extends AggregateDeclaration {
 		fop.fbody = new CompoundStatement(Loc.ZERO, s1, s2);
 
 		if (members == null) {
-			members = new Dsymbols();
+			members = new Dsymbols(1);
 		}
 		members.add(fop);
 		fop.addMember(sc, this, 1, context);

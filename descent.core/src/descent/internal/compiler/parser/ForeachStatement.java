@@ -688,7 +688,7 @@ public class ForeachStatement extends Statement {
 		 * Turn body into the function literal: int delegate(ref T arg) {
 		 * body }
 		 */
-		args = new Arguments();
+		args = new Arguments(dim);
 		for (i = 0; i < dim; i++) {
 			Argument arg = arguments.get(i);
 
@@ -775,7 +775,7 @@ public class ForeachStatement extends Statement {
 				fdapply = context.genCfunc(Type.tindex, _aaApply);
 			}
 			ec = new VarExp(loc, fdapply);
-			Expressions exps = new Expressions();
+			Expressions exps = new Expressions(3);
 			exps.add(aggr);
 			int keysize;
 			
@@ -828,7 +828,7 @@ public class ForeachStatement extends Statement {
 			fdapply = context.genCfunc(Type.tindex, fdname.toCharArray());
 
 			ec = new VarExp(loc, fdapply);
-			Expressions exps = new Expressions();
+			Expressions exps = new Expressions(2);
 			if (tab.ty == Tsarray) {
 				aggr = aggr.castTo(sc, tn.arrayOf(context), context);
 			}
@@ -840,7 +840,7 @@ public class ForeachStatement extends Statement {
 			/*
 			 * Call: aggr(flde)
 			 */
-			Expressions exps = new Expressions();
+			Expressions exps = new Expressions(2);
 			exps.add(flde);
 			e = new CallExp(loc, aggr, exps);
 			e = e.semantic(sc, context);
@@ -855,7 +855,7 @@ public class ForeachStatement extends Statement {
 			 * Call: aggr.apply(flde)
 			 */
 			ec = new DotIdExp(loc, aggr, (op == TOKforeach_reverse) ? Id.applyReverse : Id.apply);
-			Expressions exps = new Expressions();
+			Expressions exps = new Expressions(1);
 			exps.add(flde);
 			
 			// TODO: kludge to not lose source ranges, fixme
@@ -881,7 +881,7 @@ public class ForeachStatement extends Statement {
 			s[0] = new ExpStatement(loc, e);
 		} else { // Construct a switch statement around the return value
 			// of the apply function.
-			Statements a2 = new Statements();
+			Statements a2 = new Statements(cases.size() + 1);
 
 			// default: break; takes care of cases 0 and 1
 			s[0] = new BreakStatement(loc, null);

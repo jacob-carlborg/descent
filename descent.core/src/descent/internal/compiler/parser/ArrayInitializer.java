@@ -32,9 +32,9 @@ public class ArrayInitializer extends Initializer {
 
 	public void addInit(Expression index, Initializer value) {
 		if (this.index == null) {
-			this.index = new Expressions();
+			this.index = new Expressions(3);
 			this.value = new Initializers();
-			this.sourceIndex = new Expressions();
+			this.sourceIndex = new Expressions(3);
 			this.sourceValue = new Initializers();
 		}
 		this.index.add(index);
@@ -176,9 +176,9 @@ public class ArrayInitializer extends Initializer {
 		Expressions values;
 		Expression e;
 
-		keys = new Expressions();
+		keys = new Expressions(value.size());
 		keys.setDim(value.size());
-		values = new Expressions();
+		values = new Expressions(value.size());
 		values.setDim(value.size());
 
 		for (int i = 0; i < value.size(); i++) {
@@ -238,7 +238,7 @@ public class ArrayInitializer extends Initializer {
 		Expressions elements;
 		Expression e;
 
-		elements = new Expressions();
+		elements = new Expressions(size(value));
 		for (int i = 0; i < size(value); i++) {
 			if (index.get(i) != null) {
 				// goto Lno;

@@ -61,8 +61,8 @@ public class Import extends Dsymbol {
 
 	public void addAlias(IdentifierExp name, IdentifierExp alias) {
 		if (names == null) {
-			names = new Identifiers();
-			aliases = new Identifiers();
+			names = new Identifiers(3);
+			aliases = new Identifiers(3);
 		}
 		names.add(name);
 		aliases.add(alias);
@@ -101,7 +101,7 @@ public class Import extends Dsymbol {
 			result |= ad.addMember(sc, sd, memnum, context);
 
 			if (aliasdecls == null) {
-				aliasdecls = new Dsymbols();
+				aliasdecls = new Dsymbols(3);
 			}
 			aliasdecls.add(ad);
 		}

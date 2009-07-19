@@ -24,7 +24,7 @@ public class TypeTuple extends Type {
 	
 	public TypeTuple(Expressions exps, SemanticContext context) {
 		super(Ttuple, null);
-		Arguments arguments = new Arguments();
+		Arguments arguments = new Arguments(size(exps));
 		if (exps != null) {
 			arguments.setDim(exps.size());
 			for (int i = 0; i < exps.size(); i++) {
@@ -157,7 +157,7 @@ public class TypeTuple extends Type {
 	public static TypeTuple newExpressions(Expressions exps,
 			SemanticContext context) {
 		TypeTuple tt = new TypeTuple();
-		Arguments arguments = new Arguments();
+		Arguments arguments = new Arguments(size(exps));
 		if (exps != null) {
 			arguments.setDim(exps.size());
 			for (int i = 0; i < exps.size(); i++) {

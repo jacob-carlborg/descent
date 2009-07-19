@@ -152,7 +152,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		MATCH m_best = MATCH.MATCHnomatch;
 		TemplateDeclaration td_ambig = null;
 		TemplateDeclaration td_best = null;
-		Objects tdargs = new Objects();
+		Objects tdargs = new Objects(3);
 		TemplateInstance ti;
 		FuncDeclaration fd;
 
@@ -273,7 +273,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		MATCH match = MATCHexact;
 		FuncDeclaration fd = onemember.toAlias(context).isFuncDeclaration();
 		TypeFunction fdtype;
-		Objects dedtypes = new Objects(); // for T:T*, the dedargs is the T*,
+		Objects dedtypes = new Objects(3); // for T:T*, the dedargs is the T*,
 		// dedtypes is the T
 
 		dedargs.setDim(parameters.size());
@@ -722,12 +722,12 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		// dummy
 		// template
 		// instance
-		Objects dedtypes = new Objects();
+		Objects dedtypes = new Objects(size(parameters));
 
 		// Set type arguments to dummy template instance to be types
 		// generated from the parameters to this template declaration
 		if (ti.tiargs == null) {
-			ti.tiargs = new Objects();
+			ti.tiargs = new Objects(size(parameters));
 		}
 		ti.tiargs.setDim(size(parameters));
 
@@ -1069,7 +1069,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 
 		p = null;
 		if (parameters != null) {
-			p = new TemplateParameters();
+			p = new TemplateParameters(parameters.size());
 			p.setDim(parameters.size());
 			for (int i = 0; i < p.size(); i++) {
 				TemplateParameter tp = parameters.get(i);

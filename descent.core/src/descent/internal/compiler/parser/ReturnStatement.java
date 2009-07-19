@@ -231,7 +231,7 @@ public class ReturnStatement extends Statement {
 					|| exp.op == TOKthis || exp.op == TOKsuper
 					|| exp.op == TOKnull || exp.op == TOKstring) {
 				if (sc.fes.cases == null) {
-					sc.fes.cases = new ArrayList();
+					sc.fes.cases = new ArrayList(1);
 				}
 				sc.fes.cases.add(this);
 				s = new ReturnStatement(loc, new IntegerExp(loc, sc.fes.cases
@@ -261,7 +261,7 @@ public class ReturnStatement extends Statement {
 				s = new ReturnStatement(loc, new VarExp(loc, fd.vresult));
 				
 				if (sc.fes.cases == null) {
-					sc.fes.cases = new Objects();
+					sc.fes.cases = new Objects(1);
 				}
 				sc.fes.cases.add(s);
 

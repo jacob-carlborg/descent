@@ -147,7 +147,7 @@ public class Module extends Package {
 			Import im = new Import(Loc.ZERO, null,
 					new IdentifierExp(Id.object), null, false);
 			if (members == null) {
-				members = new Dsymbols();
+				members = new Dsymbols(1);
 			}
 			members.add(0, im);
 			imObject = false;

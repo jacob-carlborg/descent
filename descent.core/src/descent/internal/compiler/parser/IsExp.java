@@ -204,7 +204,7 @@ public class IsExp extends Expression {
 			if (context.isD2()) {
 				MATCH m;
 
-				Objects dedtypes = new Objects();
+				Objects dedtypes = new Objects(size(parameters));
 				dedtypes.setDim(size(parameters));
 				dedtypes.zero();
 
@@ -337,7 +337,7 @@ public class IsExp extends Expression {
 			// This section is identical to that in
 			// TemplateDeclaration::syntaxCopy()			
 			if (parameters != null) {
-				p = new TemplateParameters();
+				p = new TemplateParameters(parameters.size());
 				p.setDim(parameters.size());
 				for (int i = 0; i < size(p); i++) {
 					TemplateParameter tp = (TemplateParameter) parameters

@@ -140,6 +140,8 @@ public class Lexer implements IProblemRequestor {
 	 * The filename of the module being parsed.
 	 */
 	public char[] filename;
+	
+	public boolean muteErrors;
 
 	// support for the  poor-line-debuggers ....
 	// remember the position of the cr/lf
@@ -289,41 +291,57 @@ public class Lexer implements IProblemRequestor {
 
 	public void error(int id, int line, int offset, int length,
 			String[] arguments) {
+		if (muteErrors) return;
+		
 		reportProblem(Problem.newSyntaxError(id, line, offset, length,
 				arguments));
 	}
 
 	public void error(int id, int line, int offset, int length) {
+		if (muteErrors) return;
+		
 		reportProblem(Problem.newSyntaxError(id, line, offset, length));
 	}
 
 	public void error(int id, int line, ASTDmdNode node) {
+		if (muteErrors) return;
+		
 		reportProblem(Problem.newSyntaxError(id, line, node.start, node.length));
 	}
 
 	public void error(int id, int line, descent.core.dom.ASTNode node) {
+		if (muteErrors) return;
+		
 		reportProblem(Problem.newSyntaxError(id, line, node.getStartPosition(),
 				node.getLength()));
 	}
 
 	public void error(int id, Token token, String[] arguments) {
+		if (muteErrors) return;
+		
 		reportProblem(Problem.newSyntaxError(id, token.lineNumber, token.ptr,
 				token.sourceLen, arguments));
 	}
 
 	public void error(int id, Token token) {
+		if (muteErrors) return;
+		
 		reportProblem(Problem.newSyntaxError(id, token.lineNumber, token.ptr,
 				token.sourceLen));
 	}
 
 	public void error(int id, Token firstToken, Token secondToken,
 			String[] arguments) {
+		if (muteErrors) return;
+		
 		reportProblem(Problem.newSyntaxError(id, firstToken.lineNumber,
 				firstToken.ptr, secondToken.ptr + secondToken.sourceLen
 						- firstToken.ptr, arguments));
 	}
 
 	public void error(int id, Token firstToken, Token secondToken) {
+		if (muteErrors) return;
+		
 		reportProblem(Problem.newSyntaxError(id, firstToken.lineNumber,
 				firstToken.ptr, secondToken.ptr + secondToken.sourceLen
 						- firstToken.ptr));

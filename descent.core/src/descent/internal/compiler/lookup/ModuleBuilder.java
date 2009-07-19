@@ -196,7 +196,7 @@ public class ModuleBuilder {
 			packageDeclarations = unit.getPackageDeclarations();
 			if (packageDeclarations.length == 1) {
 				String elementName = packageDeclarations[0].getElementName();
-				Identifiers packages = new Identifiers();
+				Identifiers packages = new Identifiers(3);
 				IdentifierExp name = splitName(elementName, packages);	
 				module.md = new ModuleDeclaration(packages, name, packageDeclarations[0].isSafe());
 			}
@@ -573,7 +573,7 @@ public class ModuleBuilder {
 
 	public Dsymbol fillImportDeclaration(Module module, Dsymbols members, IImportDeclaration impDecl) throws JavaModelException {
 		String elementName = impDecl.getElementName();
-		Identifiers packages = new Identifiers();
+		Identifiers packages = new Identifiers(3);
 		IdentifierExp name = splitName(elementName, packages);
 		IdentifierExp alias = impDecl.getAlias() == null ? null : new IdentifierExp(impDecl.getAlias().toCharArray());
 		
@@ -657,9 +657,10 @@ public class ModuleBuilder {
 	}
 	
 	private TemplateParameters getTemplateParameters(ITemplated templated) throws JavaModelException {
-		TemplateParameters params = new TemplateParameters();
+		ITypeParameter[] typeParameters = templated.getTypeParameters();
 		
-		for(ITypeParameter typeParameter : templated.getTypeParameters()) {
+		TemplateParameters params = new TemplateParameters(typeParameters.length);		
+		for(ITypeParameter typeParameter : typeParameters) {
 			params.add(getTemplateParameter(
 					typeParameter.getElementName(),
 					typeParameter.getSignature(),
@@ -712,7 +713,7 @@ public class ModuleBuilder {
 	}
 	
 	public BaseClasses getBaseClasses(IType type) throws JavaModelException {
-		BaseClasses baseClasses = new BaseClasses();
+		BaseClasses baseClasses = new BaseClasses(2);
 		BaseClass baseClass = getBaseClass(type.getSuperclassTypeSignature(), type);
 		if (baseClass != null) {
 			baseClasses.add(baseClass);
@@ -768,10 +769,11 @@ public class ModuleBuilder {
 	}
 
 	private Arguments getArguments(IMethod method) throws JavaModelException {
-		Arguments args = new Arguments();
 		String[] names = method.getParameterNames();
 		String[] types = method.getParameterTypes();
 		String[] defaultValues = method.getParameterDefaultValues();
+		
+		Arguments args = new Arguments(names.length);
 		for (int i = 0; i < types.length; i++) {
 			Argument argument = getArgument(names[i], types[i], defaultValues == null ? null : defaultValues[i], method);
 			copySourceRange(argument, method);

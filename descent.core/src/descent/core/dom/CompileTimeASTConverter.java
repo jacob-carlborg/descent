@@ -3490,7 +3490,7 @@ public class CompileTimeASTConverter {
 				b.setExpression(convertedExp);
 			}
 		}
-		if (a.idents == null || a.idents.size() == 0) {
+		if (a.idents == null || a.idents.isEmpty()) {
 			setSourceRange(b, a.start, a.length);
 			
 			if (resolveBindings) {
@@ -3545,21 +3545,23 @@ public class CompileTimeASTConverter {
 	}
 	
 	public descent.core.dom.Type convertQualifiedType(descent.core.dom.Type q, TypeQualified a, int start) {
-		for(IdentifierExp idExp : a.idents) {
-			if (idExp instanceof TemplateInstanceWrapper) {
-				descent.core.dom.Type tt = convert((TemplateInstanceWrapper) idExp);
-				q = ast.newQualifiedType(q, tt);
-				setSourceRange(q, start, a.start + a.length - start);
-			} else {
-				descent.core.dom.SimpleName n = (SimpleName) convert(idExp);
-				descent.core.dom.SimpleType t = ast.newSimpleType(n);
-				setSourceRange(t, n.getStartPosition(), n.getLength());
-				q = ast.newQualifiedType(q, t);
-				setSourceRange(q, start, idExp.start + idExp.length - start);
-				
-				if (resolveBindings) {
-					recordNodes(t, idExp);
-					recordNodes(q, idExp);
+		if (a.idents != null) {
+			for(IdentifierExp idExp : a.idents) {
+				if (idExp instanceof TemplateInstanceWrapper) {
+					descent.core.dom.Type tt = convert((TemplateInstanceWrapper) idExp);
+					q = ast.newQualifiedType(q, tt);
+					setSourceRange(q, start, a.start + a.length - start);
+				} else {
+					descent.core.dom.SimpleName n = (SimpleName) convert(idExp);
+					descent.core.dom.SimpleType t = ast.newSimpleType(n);
+					setSourceRange(t, n.getStartPosition(), n.getLength());
+					q = ast.newQualifiedType(q, t);
+					setSourceRange(q, start, idExp.start + idExp.length - start);
+					
+					if (resolveBindings) {
+						recordNodes(t, idExp);
+						recordNodes(q, idExp);
+					}
 				}
 			}
 		}
@@ -4303,7 +4305,7 @@ public class CompileTimeASTConverter {
 	
 	public descent.internal.compiler.parser.CompoundStatement ensureBlock(descent.internal.compiler.parser.Statement stm) {
 		if (!(stm instanceof CompoundStatement)) {
-			Statements stms = new Statements();
+			Statements stms = new Statements(1);
 			stms.add(stm);
 			stm = new CompoundStatement(Loc.ZERO, stms);
 		}

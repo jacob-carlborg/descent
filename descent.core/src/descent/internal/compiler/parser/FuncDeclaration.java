@@ -271,7 +271,7 @@ public class FuncDeclaration extends Declaration {
 		if (null == fbody) {
 			Statements a;
 
-			a = new Statements();
+			a = new Statements(0);
 			fbody = new CompoundStatement(Loc.ZERO, a);
 		}
 		cs = fbody.isCompoundStatement();
@@ -1880,7 +1880,7 @@ public class FuncDeclaration extends Declaration {
 				if (arg.type.ty == Ttuple) {
 					TypeTuple t = (TypeTuple) arg.type;
 					int dim = Argument.dim(t.arguments, context);
-					Objects exps = new Objects();
+					Objects exps = new Objects(dim);
 					exps.setDim(dim);
 					for (int j = 0; j < dim; j++) {
 						Argument narg = Argument
@@ -2206,7 +2206,7 @@ public class FuncDeclaration extends Declaration {
 		}
 
 		{
-			Statements a = new Statements();
+			Statements a = new Statements(parameters.size());
 
 			// Merge in initialization of 'out' parameters
 			if (parameters != null) {

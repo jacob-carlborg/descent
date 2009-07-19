@@ -20,7 +20,7 @@ public abstract class Initializer extends ASTDmdNode {
 		Initializers a = null;
 
 		if (ai != null) {
-			a = new Initializers();
+			a = new Initializers(ai.size());
 			a.setDim(ai.size());
 			for (int i = 0; i < a.size(); i++) {
 				Initializer e = ai.get(i);

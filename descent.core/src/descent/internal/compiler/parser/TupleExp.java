@@ -143,7 +143,7 @@ public class TupleExp extends Expression {
 			 */
 			if (ex != e) {
 				if (null == expsx) {
-					expsx = new Expressions();
+					expsx = new Expressions(exps.size());
 					expsx.setDim(exps.size());
 					for (int j = 0; j < i; j++) {
 						expsx.set(j, exps.get(j));

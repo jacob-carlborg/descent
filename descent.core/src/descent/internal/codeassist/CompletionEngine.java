@@ -1199,8 +1199,8 @@ public class CompletionEngine extends Engine
 		
 		if (func == null && !((ClassDeclaration) sym).isAbstract()) {
 			// Suggest default constructor
-			cd.ctor(new CtorDeclaration(Loc.ZERO, new Arguments(), 0));
-			cd.ctor(context).type = new TypeFunction(new Arguments(), cd.type, 0, LINK.LINKd);
+			cd.ctor(new CtorDeclaration(Loc.ZERO, new Arguments(0), 0));
+			cd.ctor(context).type = new TypeFunction(new Arguments(0), cd.type, 0, LINK.LINKd);
 			cd.ctor(context).parent = cd;
 			
 			suggestMember(cd.ctor(context), false, 0, hash, INCLUDE_CONSTRUCTORS);

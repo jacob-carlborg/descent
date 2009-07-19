@@ -35,7 +35,7 @@ public abstract class TypeArray extends Type {
 			fd = context.genCfunc(Type.tindex, nm);
 			ec = new VarExp(Loc.ZERO, fd);
 			e = e.castTo(sc, n.arrayOf(context), context); // convert to dynamic array
-			arguments = new Expressions();
+			arguments = new Expressions(1);
 			arguments.add(e);
 			e = new CallExp(e.loc, ec, arguments);
 			e.type = next.arrayOf(context);
@@ -50,7 +50,7 @@ public abstract class TypeArray extends Type {
 			fd = context.genCfunc(Type.tindex, nm);
 			ec = new VarExp(Loc.ZERO, fd);
 			e = e.castTo(sc, n.arrayOf(context), context); // convert to dynamic array
-			arguments = new Expressions();
+			arguments = new Expressions(1);
 			arguments.add(e);
 			e = new CallExp(e.loc, ec, arguments);
 			e.type = next.arrayOf(context);
@@ -70,7 +70,7 @@ public abstract class TypeArray extends Type {
 			fd = context.genCfunc(Type.tindex, dup ? Id.adDup : Id.adReverse);
 			ec = new VarExp(Loc.ZERO, fd);
 			e = e.castTo(sc, n.arrayOf(context), context); // convert to dynamic array
-			arguments = new Expressions();
+			arguments = new Expressions(3);
 			if (dup) {
 				arguments.add(getTypeInfo(sc, context));
 			}
@@ -89,7 +89,7 @@ public abstract class TypeArray extends Type {
 					(n.ty == Tbit ? name3[0] : name3[1]));
 			ec = new VarExp(Loc.ZERO, fd);
 			e = e.castTo(sc, n.arrayOf(context), context); // convert to dynamic array
-			arguments = new Expressions();
+			arguments = new Expressions(2);
 			arguments.add(e);
 			if (next.ty != Tbit) {
 				arguments.add(n.ty == Tsarray ? n.getTypeInfo(sc, context) // don't convert to dynamic array

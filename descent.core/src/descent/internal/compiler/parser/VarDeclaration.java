@@ -325,7 +325,7 @@ public class VarDeclaration extends Declaration {
 			 */
 			TypeTuple tt = (TypeTuple) tb;
 			int nelems = Argument.dim(tt.arguments, context);
-			Objects exps = new Objects();
+			Objects exps = new Objects(nelems);
 			exps.setDim(nelems);
 			Expression ie = init != null ? init.toExpression(context) : null;
 

@@ -56,7 +56,7 @@ public class BaseClass extends ASTDmdNode {
 	}
 
 	public void copyBaseInterfaces(BaseClasses vtblInterfaces) {
-		baseInterfaces = new BaseClasses();
+		baseInterfaces = new BaseClasses(size(base.interfaces));
 		baseInterfaces.memcpy(base.interfaces);
 
 		for (int i = 0; i < size(base.interfaces); i++) {

@@ -36,10 +36,10 @@ public class StructInitializer extends Initializer {
 
 	public void addInit(IdentifierExp field, Initializer value) {
 		if (this.field == null) {
-			this.field = new Identifiers();
-			this.value = new Initializers();
-			this.sourceField = new Identifiers();
-			this.sourceValue = new Initializers();
+			this.field = new Identifiers(3);
+			this.value = new Initializers(3);
+			this.sourceField = new Identifiers(3);
+			this.sourceValue = new Initializers(3);
 		}
 		this.field.add(field);
 		this.value.add(value);
@@ -140,11 +140,11 @@ public class StructInitializer extends Initializer {
 				fieldi++;
 			}		
 		} else if (t.ty == Tdelegate && value.size() == 0) { //  Rewrite as empty delegate literal { }
-			Arguments arguments = new Arguments();
+			Arguments arguments = new Arguments(0);
 			Type tf = new TypeFunction(arguments, null, 0, LINKd);
 			FuncLiteralDeclaration fd = new FuncLiteralDeclaration(loc, tf,
 					TOKdelegate, null);
-			fd.fbody = new CompoundStatement(loc, new Statements());
+			fd.fbody = new CompoundStatement(loc, new Statements(0));
 			// fd.endloc = loc; // this was removed from DMD (in case a bug exists in Descent)
 			Expression e = new FuncExp(loc, fd);
 			ExpInitializer ie = new ExpInitializer(loc, e);
@@ -222,7 +222,7 @@ public class StructInitializer extends Initializer {
 			return null;
 		}
 		StructDeclaration sd = ad.isStructDeclaration();
-		Expressions elements = new Expressions();
+		Expressions elements = new Expressions(value.size());
 		for (int i = 0; i < value.size(); i++) {
 			if (field.get(i) != null) {
 				// goto Lno;

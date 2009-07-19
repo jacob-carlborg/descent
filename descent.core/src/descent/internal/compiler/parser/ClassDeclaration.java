@@ -1065,7 +1065,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		if (ctor == null && baseClass != null && baseClass.ctor != null) {
 			// toChars());
 			CtorDeclaration ctor = new CtorDeclaration(loc, null, 0);
-			ctor.fbody = context.newCompoundStatement(loc, new Statements());
+			ctor.fbody = context.newCompoundStatement(loc, new Statements(0));
 			this.ctor = ctor;
 			
 			members.add(ctor);

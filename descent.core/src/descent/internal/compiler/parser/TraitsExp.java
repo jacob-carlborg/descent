@@ -258,7 +258,7 @@ public class TraitsExp extends Expression {
 				/*
 				 * Create tuple of virtual function overloads of e
 				 */
-				Expressions exps = new Expressions();
+				Expressions exps = new Expressions(3);
 				FuncDeclaration f;
 				if (e.op == TOKvar) {
 					VarExp ve = (VarExp) e;
@@ -342,7 +342,7 @@ public class TraitsExp extends Expression {
 				return new IntegerExp(loc, 0, Type.tbool);
 			}
 
-			Expressions exps = new Expressions();
+			Expressions exps = new Expressions(3);
 			Louter: while (true) {
 				Linner: for (int i = 0; i < sd.members.size(); i++) {
 					Dsymbol sm = (Dsymbol) sd.members.get(i);

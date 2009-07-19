@@ -79,7 +79,7 @@ public class DtorDeclaration extends FuncDeclaration {
 			}
 		} else {
 			if (cd.dtors == null) {
-				cd.dtors = new FuncDeclarations();
+				cd.dtors = new FuncDeclarations(1);
 			}
 			cd.dtors.add(this);
 		}

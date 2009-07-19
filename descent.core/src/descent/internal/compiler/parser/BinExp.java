@@ -86,7 +86,7 @@ public abstract class BinExp extends Expression {
 	}
 	
 	public Expression arrayOp(Scope sc, SemanticContext context) {
-		Expressions arguments = new Expressions();
+		Expressions arguments = new Expressions(3);
 
 		/*
 		 * The expression to generate an array operation for is mangled into a
@@ -127,7 +127,7 @@ public abstract class BinExp extends Expression {
 				 * i++) loopbody; return p;
 				 */
 
-				Arguments fparams = new Arguments();
+				Arguments fparams = new Arguments(1);
 				Expression loopbody = buildArrayLoop(fparams, context);
 				Argument p = (Argument) fparams.get(0 /* fparams.dim - 1 */);
 
@@ -985,7 +985,7 @@ public abstract class BinExp extends Expression {
 
 			/* Create new struct literal reflecting updated fieldi
 			 */
-			Expressions expsx = new Expressions();
+			Expressions expsx = new Expressions(se.elements.size());
 			expsx.setDim(se.elements.size());
 			for (int j = 0; j < se.elements.size(); j++) {
 				if (j == fieldi) {
@@ -1049,7 +1049,7 @@ public abstract class BinExp extends Expression {
 		/*
 		 * Create new struct literal reflecting updated fieldi
 		 */
-		Expressions expsx = new Expressions();
+		Expressions expsx = new Expressions(size(se.elements));
 		expsx.setDim(size(se.elements));
 		for (int j = 0; j < size(expsx); j++)
 		{
@@ -1094,7 +1094,7 @@ public abstract class BinExp extends Expression {
 					Expression ev = v.type.defaultInit(context);
 					int dim = ((TypeSArray) t).dim.toInteger(context)
 							.intValue();
-					Expressions elements = new Expressions();
+					Expressions elements = new Expressions(dim);
 					for (int i = 0; i < dim; i++)
 						elements.add(ev);
 					ArrayLiteralExp ae = new ArrayLiteralExp(Loc.ZERO, elements);
@@ -1149,7 +1149,7 @@ public abstract class BinExp extends Expression {
 				/* Create new array literal reflecting updated elem
 				 */
 				int elemi = index.toInteger(context).intValue();
-				Expressions expsx = new Expressions();
+				Expressions expsx = new Expressions(ae.elements.size());
 				expsx.setDim(ae.elements.size());
 				for (int j = 0; j < ae.elements.size(); j++) {
 					if (j == elemi)
@@ -1163,7 +1163,7 @@ public abstract class BinExp extends Expression {
 				/* Create new associative array literal reflecting updated key/value
 				 */
 				Expressions keysx = aae.keys;
-				Expressions valuesx = new Expressions();
+				Expressions valuesx = new Expressions(aae.values.size());
 				valuesx.setDim(aae.values.size());
 				int updated = 0;
 				for (int j = aae.values.size(); j > 0;) {

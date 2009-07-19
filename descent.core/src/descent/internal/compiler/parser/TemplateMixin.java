@@ -408,7 +408,7 @@ public class TemplateMixin extends TemplateInstance {
 	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		TemplateMixin tm;
 
-		Identifiers ids = new Identifiers();
+		Identifiers ids = new Identifiers(idents.size());
 		ids.setDim(idents.size());
 		for (int i = 0; i < idents.size(); i++) { // Matches TypeQualified::syntaxCopyHelper()
 			IdentifierExp id = idents.get(i);

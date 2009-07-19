@@ -64,7 +64,7 @@ public class GotoCaseStatement extends Statement {
 			}
 		} else {
 			if (sc.sw.gotoCases == null) {
-				sc.sw.gotoCases = new Identifiers();
+				sc.sw.gotoCases = new Identifiers(4);
 			}
 			sc.sw.gotoCases.add(this);
 			if (exp != null) {

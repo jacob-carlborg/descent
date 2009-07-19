@@ -99,7 +99,7 @@ public class TypeFunction extends Type implements Cloneable {
 						break loop;
 					}
 					TypeIdentifier tid = (TypeIdentifier) fparam.type;
-					if (!tid.idents.isEmpty()) {
+					if (size(tid.idents) > 0) {
 						// goto l1
 						gotoL1 = true;
 						break loop;
@@ -257,7 +257,7 @@ public class TypeFunction extends Type implements Cloneable {
 		
 	    TypeFunction tf = copy();
 	    if (parameters != null) {
-		    tf.parameters = new Arguments();
+		    tf.parameters = new Arguments(size(parameters));
 		    for (int i = 0; i < size(parameters); i++) {
 				tf.parameters.add(parameters.get(i).copy());
 			}

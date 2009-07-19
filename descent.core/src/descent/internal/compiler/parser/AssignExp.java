@@ -123,7 +123,7 @@ public class AssignExp extends BinExp {
 				// Rewrite (a[i..j] = value) to (a.opIndexAssign(value, i, j))
 				if (null != search_function(ad, Id.sliceass, context)) {
 					Expression e = new DotIdExp(loc, ae.e1, Id.sliceass);
-					Expressions a = new Expressions();
+					Expressions a = new Expressions(3);
 
 					a.add(e2);
 					if (null != ae.lwr) {
@@ -171,7 +171,7 @@ public class AssignExp extends BinExp {
 			}
 		}
 		else
-		{   Expressions exps = new Expressions();
+		{   Expressions exps = new Expressions(dim);
 		    exps.setDim(dim);
 
 		    for (int i = 0; i < dim; i++)

@@ -8,7 +8,6 @@ import static descent.internal.compiler.parser.TOK.TOKtype;
 import static descent.internal.compiler.parser.TOK.TOKvar;
 import static descent.internal.compiler.parser.TY.Ttuple;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
@@ -28,7 +27,7 @@ public class TemplateInstance extends ScopeDsymbol {
 	public WithScopeSymbol withsym;
 	public IdentifierExp name;
 	public ScopeDsymbol argsym; // argument symbol table
-	public Objects tdtypes = new Objects(); // Array of Types/Expressions corresponding
+	public Objects tdtypes = new Objects(3); // Array of Types/Expressions corresponding
 	public int havetempdecl; // 1 if used second constructor
 	public Dsymbol isnested; // if referencing local symbols, this is the context
 	public boolean nest; // For recursion detection
@@ -77,7 +76,7 @@ public class TemplateInstance extends ScopeDsymbol {
 	public static Objects arraySyntaxCopy(Objects objs, SemanticContext context) {
 		Objects a = null;
 		if (objs != null) {
-			a = new Objects();
+			a = new Objects(objs.size());
 			a.setDim(objs.size());
 			for (int i = 0; i < objs.size(); i++) {
 				Type ta = isType(objs.get(i));
@@ -111,7 +110,7 @@ public class TemplateInstance extends ScopeDsymbol {
 		TemplateDeclaration td_ambig = null;
 		TemplateDeclaration td_best = null;
 		MATCH m_best = MATCHnomatch;
-		Objects dedtypes = new Objects();
+		Objects dedtypes = new Objects(3);
 
 		for (TemplateDeclaration td = tempdecl; td != null; td = td.overnext) {
 			MATCH m;
@@ -679,7 +678,7 @@ public class TemplateInstance extends ScopeDsymbol {
 		int dosemantic3 = 0;
 
 		{
-			List a = new ArrayList();
+			List a;
 			Scope scx = sc;
 			
 			if (scx != null && scx.scopesym != null &&

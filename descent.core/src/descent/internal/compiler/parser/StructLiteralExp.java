@@ -156,7 +156,7 @@ public class StructLiteralExp extends Expression {
 				 */
 				if (ex != e) {
 					if (null == expsx) {
-						expsx = new Expressions();
+						expsx = new Expressions(elements.size());
 						expsx.setDim(elements.size());
 						for (int j = 0; j < elements.size(); j++) {
 							expsx.set(j, elements.get(j));

@@ -25,7 +25,7 @@ public class ScopeCopy {
 		b.func = a.func;
 		
 		if (b.scopesym != null) {
-			Dsymbols dsymbols = new Dsymbols();
+			Dsymbols dsymbols = new Dsymbols(1);
 			dsymbols.add(a.scopesym);
 			b.scopesym.members = dsymbols;
 		}

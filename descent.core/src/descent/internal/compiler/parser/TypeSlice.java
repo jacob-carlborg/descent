@@ -93,7 +93,7 @@ public class TypeSlice extends Type {
 				 * Create a new TupleDeclaration which is a slice [i1..i2] out
 				 * of the old one.
 				 */
-				Objects objects = new Objects();
+				Objects objects = new Objects(i2 - i1);
 				objects.setDim(i2 - i1);
 				for(int i = 0; i < objects.size(); i++)
 				{

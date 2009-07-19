@@ -124,7 +124,7 @@ public class DotVarExp extends UnaExp {
 				 * with:
 				 *	tuple(e1.a, e1.b, e1.c)
 				 */
-				Expressions exps = new Expressions();
+				Expressions exps = new Expressions(tup.objects.size());
 				exps.setDim(tup.objects.size());
 				for (int i = 0; i < tup.objects.size(); i++) {
 					ASTDmdNode o = tup.objects.get(i);

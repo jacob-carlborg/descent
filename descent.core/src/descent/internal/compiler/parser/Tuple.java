@@ -9,7 +9,7 @@ public class Tuple extends ASTDmdNode {
 	
 	public Tuple()
 	{
-		objects = new Objects();
+		objects = new Objects(3);
 	}
 	
 	@Override

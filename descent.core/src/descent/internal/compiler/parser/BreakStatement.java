@@ -78,7 +78,7 @@ public class BreakStatement extends Statement {
 						 */
 						Statement s;
 						if (sc.fes.cases == null) {
-							sc.fes.cases = new ArrayList();
+							sc.fes.cases = new ArrayList(1);
 						}
 						sc.fes.cases.add(this);
 						s = new ReturnStatement(Loc.ZERO, new IntegerExp(

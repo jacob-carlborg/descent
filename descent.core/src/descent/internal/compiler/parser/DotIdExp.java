@@ -115,7 +115,7 @@ public class DotIdExp extends UnaExp {
 				 * 'distribute' the .offsetof to each of the tuple elements.
 				 */
 				TupleExp te = (TupleExp) e1;
-				Expressions exps = new Expressions();
+				Expressions exps = new Expressions(size(te.exps));
 				exps.setDim(size(te.exps));
 				for (int i = 0; i < size(exps); i++) {
 					Expression e2 = (Expression) te.exps.get(i);

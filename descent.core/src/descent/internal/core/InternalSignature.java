@@ -236,7 +236,7 @@ public class InternalSignature {
 				}
 				@Override
 				public void enterTemplateInstance() {
-					tiargsStack.add(new Objects());
+					tiargsStack.add(new Objects(3));
 				}
 				@Override
 				public void enterTemplateInstanceType() {

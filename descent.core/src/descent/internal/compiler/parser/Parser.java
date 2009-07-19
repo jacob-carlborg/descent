@@ -389,7 +389,7 @@ public class Parser extends Lexer {
 				id = newIdentifierExp();
 				while (nextToken() == TOKdot) {
 					if (a == null) {
-						a = new Identifiers();
+						a = new Identifiers(3);
 					}
 					a.add(id);
 					nextToken();
@@ -802,9 +802,11 @@ public class Parser extends Lexer {
 					case TOKprotected:
 					case TOKpublic:
 					case TOKexport:
-						acceptProblem(Problem.newSyntaxError(
-								IProblem.RedundantProtectionAttribute,
-								token.lineNumber, token.ptr, token.sourceLen));
+						if (!muteErrors) {
+							acceptProblem(Problem.newSyntaxError(
+									IProblem.RedundantProtectionAttribute,
+									token.lineNumber, token.ptr, token.sourceLen));
+						}
 						break;
 					}
 				}
@@ -1225,7 +1227,7 @@ public class Parser extends Lexer {
 	}
 
 	private Dsymbols parseAutoDeclarations(int storageClass, int firstTokenStart, int start, List<Modifier> modifiers) {
-		Dsymbols a = new Dsymbols();
+		Dsymbols a = new Dsymbols(3);
 		
 		VarDeclaration previous = null;
 		boolean first = true;
@@ -1632,7 +1634,7 @@ public class Parser extends Lexer {
 				f.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 
 				// Wrap a template around it
-				Dsymbols decldefs = new Dsymbols();
+				Dsymbols decldefs = new Dsymbols(1);
 				decldefs.add(f);
 				f.templated = true;
 				
@@ -1780,7 +1782,7 @@ public class Parser extends Lexer {
 	}
 	
 	private Arguments parseParametersD1(int[] pvarargs) {
-		Arguments arguments = new Arguments();
+		Arguments arguments = new Arguments(3);
 		int varargs = 0;
 		boolean hasdefault = false;
 
@@ -1892,7 +1894,7 @@ public class Parser extends Lexer {
 	}
 	
 	private Arguments parseParametersD2(int[] pvarargs) {
-		Arguments arguments = new Arguments();
+		Arguments arguments = new Arguments(3);
 		int varargs = 0;
 		boolean hasdefault = false;
 
@@ -2132,7 +2134,7 @@ public class Parser extends Lexer {
 			e.setSourceRange(enumTokenStart, token.ptr + token.sourceLen - enumTokenStart);
 			nextToken();			  
 		} else if (token.value == TOKlcurly) {
-			e.members = new Dsymbols();
+			e.members = new Dsymbols(6);
 			nextToken();
 			while (token.value != TOKrcurly) {
 				if (token.value == TOKeof) {
@@ -2377,7 +2379,7 @@ public class Parser extends Lexer {
 			TemplateDeclaration tempdecl;
 	
 			// Wrap a template around the aggregate declaration
-			decldefs = new Dsymbols();
+			decldefs = new Dsymbols(1);
 			decldefs.add(a);
 			tempdecl = newTemplateDeclaration(loc(), id, tpl, constraint, decldefs);
 			tempdecl.setSourceRange(a.start, a.length);
@@ -2391,7 +2393,7 @@ public class Parser extends Lexer {
 
 	private BaseClasses parseBaseClasses() {
 		PROT protection = PROT.PROTpublic;
-		BaseClasses baseclasses = new BaseClasses();
+		BaseClasses baseclasses = new BaseClasses(2);
 		Modifier modifier = null;
 		
 		int start = token.ptr;
@@ -2500,7 +2502,7 @@ public class Parser extends Lexer {
 		// Change from DMD: empty template parameter list is returned in case
 		// of a syntax error
 		
-		TemplateParameters tpl = new TemplateParameters();
+		TemplateParameters tpl = new TemplateParameters(3);
 
 		if ((apiLevel < D2 && token.value != TOKlparen) || (apiLevel >= D2 && 0 == flag && token.value != TOKlparen)) {
 			parsingErrorInsertToComplete(prevToken, "Parenthesized TemplateParameterList", "TemplateDeclaration");
@@ -2772,7 +2774,7 @@ public class Parser extends Lexer {
 			nextToken();
 		}
 		
-		idents = new Identifiers();
+		idents = new Identifiers(3);
 		while (true) {
 			int thisStart = prevToken.ptr;
 			
@@ -2846,13 +2848,13 @@ public class Parser extends Lexer {
 	    if (token.value != TOKlparen)
 	    {   
 	    	parsingErrorInsertToComplete(prevToken, "!(TemplateArgumentList)", "TemplateType");
-	    	return new Objects();
+	    	return new Objects(0);
 	    }
 	    return parseTemplateArgumentList2();
 	}
 	
 	private Objects parseTemplateArgumentList2() {
-		Objects tiargs = new Objects();
+		Objects tiargs = new Objects(3);
 		nextToken();
 
 		// Get TemplateArgumentList
@@ -2910,14 +2912,14 @@ public class Parser extends Lexer {
 										TemplateParameter tp = new TemplateTypeParameter(
 												fd.loc, id, null, null);
 										if (null == tpl)
-											tpl = new TemplateParameters();
+											tpl = new TemplateParameters(3);
 										tpl.add(tp);
 									}
 								}
 
-								if (tpl != null) { // Wrap a template around
-													// function fd
-									Dsymbols decldefs = new Dsymbols();
+								if (tpl != null) { 
+									// Wrap a template around function fd
+									Dsymbols decldefs = new Dsymbols(1);
 									decldefs.add(fd);
 									TemplateDeclaration tempdecl = new TemplateDeclaration(
 											fd.loc, fd.ident, tpl, null,
@@ -2955,7 +2957,7 @@ public class Parser extends Lexer {
 	 */
 	private Objects parseTemplateArgument()
 	{
-	    Objects tiargs = new Objects();
+	    Objects tiargs = new Objects(3);
 	    Type ta;
 	    switch (token.value)
 	    {
@@ -3074,7 +3076,7 @@ public class Parser extends Lexer {
 
 				while (token.value == TOKdot) {
 					if (a == null) {
-						a = new Identifiers();
+						a = new Identifiers(3);
 					}
 					a.add(id);
 					nextToken();
@@ -3902,7 +3904,7 @@ public class Parser extends Lexer {
 				check(TOKsemicolon);
 				s.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 				this.setPreComments(s, lastComments);
-				a = new Dsymbols();
+				a = new Dsymbols(1);
 				a.add(s);
 				return a;
 			}
@@ -4003,7 +4005,7 @@ public class Parser extends Lexer {
 			nextToken();
 		}
 
-		a = new Dsymbols();
+		a = new Dsymbols(2);
 		
 		boolean first = true;
 		VarDeclaration previousVar = null;
@@ -4194,7 +4196,7 @@ public class Parser extends Lexer {
 					a.add(v);
 			    } else {
 			    	// TODO: this is never reached by tests
-			    	Dsymbols ax = new Dsymbols();
+			    	Dsymbols ax = new Dsymbols(1);
 			    	ax.add(v);
 			    	Dsymbol s = newLinkDeclaration(link, ax);
 			    	a.add(s);
@@ -4258,7 +4260,7 @@ public class Parser extends Lexer {
 				if (link == linkage) {
 					s = f;
 				} else {
-					Dsymbols ax = new Dsymbols();
+					Dsymbols ax = new Dsymbols(1);
 					ax.add(f);
 					s = newLinkDeclaration(link, ax);
 				}
@@ -4268,7 +4270,7 @@ public class Parser extends Lexer {
 					TemplateDeclaration tempdecl;
 
 					// Wrap a template around the aggregate declaration
-					decldefs = new Dsymbols();
+					decldefs = new Dsymbols(1);
 					decldefs.add(s);
 					tempdecl = newTemplateDeclaration(loc(), s.ident, tpl, constraint, decldefs);
 					tempdecl.setSourceRange(s.start, s.length);
@@ -5085,7 +5087,7 @@ public class Parser extends Lexer {
 			nextToken();
 			check(TOKlparen);
 
-			arguments = new Arguments();
+			arguments = new Arguments(2);
 
 			while (true) {
 				Type tb;
@@ -7219,7 +7221,7 @@ public class Parser extends Lexer {
 					if (token.value == TOKcomma)
 						tpl = parseTemplateParameterList(1);
 					else {
-						tpl = new TemplateParameters();
+						tpl = new TemplateParameters(1);
 						check(TOKrparen);
 					}
 					TemplateParameter tp = new TemplateTypeParameter(loc,
@@ -7332,7 +7334,7 @@ public class Parser extends Lexer {
 							&& (keys != null || values.size() == 0)) {
 						nextToken();
 						if (keys == null) {
-							keys = new Expressions();
+							keys = new Expressions(1);
 						}
 						keys.add(e2);
 						e2 = parseAssignExp();
@@ -7495,7 +7497,7 @@ public class Parser extends Lexer {
 						upr = parseAssignExp();
 						e = new SliceExp(loc(), e, index, upr);
 					} else { // array[index, i2, i3, i4, ...]
-						Expressions arguments = new Expressions();
+						Expressions arguments = new Expressions(2);
 						arguments.add(index);
 						if (token.value == TOKcomma) {
 							nextToken();
@@ -7829,7 +7831,7 @@ public class Parser extends Lexer {
 		if (token.value == TOKlcurly) {
 			t = null;
 			varargs = 0;
-			arguments = new Arguments();
+			arguments = new Arguments(3);
 		} else {
 			if (token.value == TOKlparen) {
 				t = null;
@@ -8257,7 +8259,7 @@ public class Parser extends Lexer {
 		Expression arg;
 		TOK endtok;
 
-		arguments = new Expressions();
+		arguments = new Expressions(3);
 		if (token.value == TOKlbracket) {
 			endtok = TOKrbracket;
 		} else {
@@ -8354,7 +8356,7 @@ public class Parser extends Lexer {
 				
 				Expression e2 = index.toExpression();
 				if (e2 != null) {
-					arguments = new Expressions();
+					arguments = new Expressions(1);
 					arguments.add(e2);				
 					t = new TypeDArray(t.next);
 				} else {
@@ -8367,7 +8369,7 @@ public class Parser extends Lexer {
 				TypeSArray tsa = (TypeSArray) t;
 				Expression e2 = tsa.dim;
 	
-				arguments = new Expressions();
+				arguments = new Expressions(1);
 				arguments.add(e2);
 				
 				t = new TypeDArray(t.next);

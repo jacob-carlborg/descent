@@ -12,7 +12,7 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 public class Dsymbol extends ASTDmdNode {
 
 	public static Arguments arraySyntaxCopy(Arguments a, SemanticContext context) {
-		Arguments b = new Arguments();
+		Arguments b = new Arguments(a.size());
 		b.setDim(a.size());
 		for(int i = 0; i < a.size(); i++) {
 			Argument s = a.get(i);
@@ -24,7 +24,7 @@ public class Dsymbol extends ASTDmdNode {
 	public static Dsymbols arraySyntaxCopy(Dsymbols a, SemanticContext context) {
 		Dsymbols b = null;
 		if (a != null) {
-			b = new Dsymbols();
+			b = new Dsymbols(a.size());
 			b.setDim(a.size());
 			for(int i = 0; i < a.size(); i++) {
 				Dsymbol s = a.get(i);

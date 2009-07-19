@@ -1284,6 +1284,10 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 			return true;
 		}
 		
+		if (this.getNodeType() == TYPE_BASIC &&  t.getNodeType() == TYPE_BASIC) {
+			return this.ty == t.ty;
+		}
+		
 //		if (getSignature().equals(t.getSignature())) {
 //			return true;
 //		}

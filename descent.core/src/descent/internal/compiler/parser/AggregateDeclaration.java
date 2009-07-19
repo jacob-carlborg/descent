@@ -238,12 +238,12 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 			DtorDeclaration dd = new DtorDeclaration(Loc.ZERO, new IdentifierExp(Id.__fieldDtor));
 			dd.fbody = new ExpStatement(Loc.ZERO, e);
 			if (dtors == null) {
-				dtors = new FuncDeclarations();
+				dtors = new FuncDeclarations(1);
 			}
 			dtors.add(0, dd);
 
 			if (members == null) {
-				members = new Dsymbols();
+				members = new Dsymbols(1);
 			}
 			members.add(dd);
 			dd.semantic(sc, context);

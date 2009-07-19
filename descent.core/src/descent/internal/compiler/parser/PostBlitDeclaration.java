@@ -34,7 +34,7 @@ public class PostBlitDeclaration extends FuncDeclaration {
 			}
 		} else if (equals(ident, Id._postblit)) {
 			if (ad.postblits == null) {
-				ad.postblits = new FuncDeclarations();
+				ad.postblits = new FuncDeclarations(1);
 			}
 			ad.postblits.add(this);
 		}

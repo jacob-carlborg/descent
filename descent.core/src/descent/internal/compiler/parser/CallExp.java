@@ -161,7 +161,7 @@ public class CallExp extends UnaExp {
 
 					BUILTIN b = fd.isBuiltin(context);
 					if (b != BUILTIN.BUILTINunknown) {
-						Expressions args = new Expressions();
+						Expressions args = new Expressions(size(arguments));
 						args.setDim(size(arguments));
 						for (int i = 0; i < size(args); i++) {
 							Expression earg = (Expression) arguments.get(i);
@@ -344,7 +344,7 @@ public class CallExp extends UnaExp {
 					}
 				} else if (e1ty == Tarray || e1ty == Tsarray || e1ty == Taarray) {
 					if (arguments == null) {
-						arguments = new Expressions();
+						arguments = new Expressions(1);
 					}
 					arguments.shift(dotid.e1);
 					if (context.isD2()) {
@@ -534,7 +534,7 @@ public class CallExp extends UnaExp {
 					Assert.isNotNull(td);
 					if (arguments == null) {
 						// Should fix deduce() so it works on null argument
-						arguments = new Expressions();
+						arguments = new Expressions(0);
 					}
 					f = td.deduceFunctionTemplate(sc, loc, targsi, ue.e1, arguments, context);
 					if (f == null) {
@@ -923,7 +923,7 @@ public class CallExp extends UnaExp {
 		type = tf.next;
 
 		if (arguments == null) {
-			arguments = new Expressions();
+			arguments = new Expressions(0);
 		}
 		functionArguments(loc, sc, tf, arguments, context);
 

@@ -163,7 +163,7 @@ public class CompoundStatement extends Statement {
 								 * (Object __o) { sexception; throw __o; }
 								 */
 								Statement body;
-								Statements a2 = new Statements();
+								Statements a2 = new Statements(statements.size());
 
 								for (int j = i + 1; j < statements.size(); j++) {
 									a2.add(statements.get(j));
@@ -232,7 +232,7 @@ public class CompoundStatement extends Statement {
 
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
-		Statements a = new Statements();
+		Statements a = new Statements(statements.size());
 		a.setDim(statements.size());
 		for (int i = 0; i < statements.size(); i++) {
 			Statement s = statements.get(i);

@@ -47,7 +47,7 @@ public class ConditionalStatement extends Statement {
 			s = elsebody;
 		}
 
-		Statements a = new Statements();
+		Statements a = new Statements(1);
 		if (s != null) {
 			a.add(s);
 		}
