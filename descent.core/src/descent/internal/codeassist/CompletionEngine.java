@@ -1580,6 +1580,21 @@ public class CompletionEngine extends Engine
 		// No current scope properties
 		wantProperties = false;
 		completeScope0(scope, includes);
+		
+		// If inside a variadic function, suggest _arguments and _argptr
+		if (scope.func != null && 
+				(scope.func.type instanceof TypeFunction) &&
+				((TypeFunction) scope.func.type).varargs != 0) {
+			
+			suggestProperty(scope.func.getSignature().toCharArray(), 
+					RelevanceConstants.R_LOCAL_VAR, 
+					Id._arguments, context.Type_typeinfo.type.arrayOf(context));
+			
+			suggestProperty(scope.func.getSignature().toCharArray(), 
+					RelevanceConstants.R_LOCAL_VAR, 
+					Id._argptr, context.Type_tvoidptr);
+		}
+		
 		wantProperties = true;
 	}
 

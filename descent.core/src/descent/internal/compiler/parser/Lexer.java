@@ -360,7 +360,7 @@ public class Lexer implements IProblemRequestor {
 		return Lexer_nextToken();
 	}
 	
-	protected TOK Lexer_nextToken() {
+	protected final TOK Lexer_nextToken() {
 		Token t;
 
 		if (token != null
