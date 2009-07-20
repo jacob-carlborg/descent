@@ -4,6 +4,7 @@ import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 import static descent.internal.compiler.parser.TY.Tident;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.Signature;
+import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -75,18 +76,12 @@ public class TypeIdentifier extends TypeQualified {
 		resolveHelper(filename, lineNumber, sc, s, scopesym[0], pe, pt, ps, context);
 		
 		if (pt != null && pt.length > 0 && pt[0] != null && 
-				s != null 
-//				&&
-//				!(pt[0] instanceof TypeClass) &&
-//				!(pt[0] instanceof TypeStruct) &&
-//				!(pt[0] instanceof TypeEnum) &&
-//				!(pt[0] instanceof TypeTypedef)
+				s != null
 				) {
-			if (pt[0] instanceof TypeBasic) {
-				pt[0] = new TypeBasic(pt[0]);
+			if (!equals(ident.ident, pt[0].identRep())) {
+				pt[0] = pt[0].copy();
+				pt[0].alias = s;
 			}
-			
-			pt[0].alias = s;
 		}
 	}
 

@@ -397,6 +397,11 @@ public class TypeStruct extends Type {
 		sym.appendSignature(sb, options);
 	}
 	
+	@Override
+	public char[] identRep() {
+		return sym.ident == null ? null : sym.ident.ident;
+	}
+	
 	//PERHAPS dt_t **toDt(dt_t **pdt);
 	//PERHAPS type *toCtype();
 }

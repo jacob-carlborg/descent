@@ -1823,4 +1823,8 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		return null;
 	}
 
+	public char[] identRep() {
+		return null;
+	}
+
 }

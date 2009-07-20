@@ -270,5 +270,10 @@ public class TypeEnum extends Type {
 	protected void appendSignature0(StringBuilder sb, int options) {
 		sym.appendSignature(sb, options);
 	}
+	
+	@Override
+	public char[] identRep() {
+		return sym.ident == null ? null : sym.ident.ident;
+	}
 
 }
