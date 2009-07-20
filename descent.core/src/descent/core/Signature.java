@@ -1615,9 +1615,6 @@ public static String getReturnType(String methodSignature) throws IllegalArgumen
 	if (!valid[0]) {
 		throw new IllegalArgumentException();
 	}
-	if (ret[0] == null) {
-		System.out.println(123456);
-	}
 	return ret[0];
 }
 
