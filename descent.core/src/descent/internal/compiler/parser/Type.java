@@ -611,8 +611,12 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 			toDecoBuffer(buf, context);
 			sv = context.stringTable.update(buf.toString());
 			if (sv.ptrvalue != null) {
-				t = (Type) sv.ptrvalue;
-				Assert.isTrue(t.deco != null);
+				// Descent: changed to have better alias resolution in UI
+//				t = (Type) sv.ptrvalue;
+//				Assert.isTrue(t.deco != null);
+				Type other = (Type) sv.ptrvalue;
+				Assert.isTrue(other.deco != null);
+				deco = other.deco;
 			} else {
 				sv.ptrvalue = this;
 				deco = sv.lstring;
@@ -638,7 +642,11 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 			deco = sv.lstring;
 		}
 		if (sv != null && sv.ptrvalue != null) {
-			t = (Type) sv.ptrvalue;
+			// Descent: changed to have better alias UI resolution
+//			t = (Type) sv.ptrvalue;
+			Type other = (Type) sv.ptrvalue;
+			Assert.isTrue(other.deco != null);
+			deco = other.deco;
 		} else {
 			throw new IllegalStateException();
 		}
