@@ -55,9 +55,10 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 	// Descent: whether special members (aggNew, aggDelete, ctor, etc.) were initialized
 	protected boolean specialInitialized;
 
-	public AggregateDeclaration(Loc loc, IdentifierExp id) {
+	public AggregateDeclaration(char[] filename, int lineNumber, IdentifierExp id) {
 		super(id);
-		this.loc = loc;
+		this.filename = filename;
+		this.lineNumber = lineNumber;
 		fields = new ArrayList<VarDeclaration>(0);
 	}
 	
@@ -132,7 +133,7 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 			return;
 		}
 
-		memsize = v.type().size(loc, context);
+		memsize = v.type().size(filename, lineNumber, context);
 		memalignsize = v.type().alignsize(context);
 		xalign = v.type().memalign(sc.structalign, context);
 
@@ -209,22 +210,22 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 					Expression ex;
 
 					// this.v
-					ex = new ThisExp(Loc.ZERO);
-					ex = new DotVarExp(Loc.ZERO, ex, v, false);
+					ex = new ThisExp(null, 0);
+					ex = new DotVarExp(null, 0, ex, v, false);
 
 					if (dim == 1) { // this.v.dtor()
-						ex = new DotVarExp(Loc.ZERO, ex, sd.dtor, false);
-						ex = new CallExp(Loc.ZERO, ex);
+						ex = new DotVarExp(null, 0, ex, sd.dtor, false);
+						ex = new CallExp(null, 0, ex);
 					} else {
 						// Typeinfo.destroy(cast(void*)&this.v);
-						Expression ea = new AddrExp(Loc.ZERO, ex);
-						ea = new CastExp(Loc.ZERO, ea, Type.tvoid
+						Expression ea = new AddrExp(null, 0, ex);
+						ea = new CastExp(null, 0, ea, Type.tvoid
 								.pointerTo(context));
 
 						Expression et = v.type.getTypeInfo(sc, context);
-						et = new DotIdExp(Loc.ZERO, et, Id.destroy);
+						et = new DotIdExp(null, 0, et, Id.destroy);
 
-						ex = new CallExp(Loc.ZERO, et, ea);
+						ex = new CallExp(null, 0, et, ea);
 					}
 					e = Expression.combine(ex, e); // combine in reverse order
 				}
@@ -235,8 +236,8 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 		 * Build our own "destructor" which executes e
 		 */
 		if (e != null) {
-			DtorDeclaration dd = new DtorDeclaration(Loc.ZERO, new IdentifierExp(Id.__fieldDtor));
-			dd.fbody = new ExpStatement(Loc.ZERO, e);
+			DtorDeclaration dd = new DtorDeclaration(null, 0, new IdentifierExp(Id.__fieldDtor));
+			dd.fbody = new ExpStatement(null, 0, e);
 			if (dtors == null) {
 				dtors = new FuncDeclarations(1);
 			}
@@ -260,13 +261,13 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 			e = null;
 			for (int i = 0; i < size(dtors); i++) {
 				FuncDeclaration fd = (FuncDeclaration) dtors.get(i);
-				Expression ex = new ThisExp(Loc.ZERO);
-				ex = new DotVarExp(Loc.ZERO, ex, fd, false);
-				ex = new CallExp(Loc.ZERO, ex);
+				Expression ex = new ThisExp(null, 0);
+				ex = new DotVarExp(null, 0, ex, fd, false);
+				ex = new CallExp(null, 0, ex);
 				e = Expression.combine(ex, e);
 			}
-			DtorDeclaration dd = new DtorDeclaration(Loc.ZERO, new IdentifierExp(Id.__aggrDtor));
-			dd.fbody = new ExpStatement(Loc.ZERO, e);
+			DtorDeclaration dd = new DtorDeclaration(null, 0, new IdentifierExp(Id.__aggrDtor));
+			dd.fbody = new ExpStatement(null, 0, e);
 			if (members == null) {
 				members = new Dsymbols();
 			}
@@ -421,7 +422,7 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 	
 	@Override
 	public int getLineNumber() {
-		return loc.linnum;
+		return lineNumber;
 	}
 	
 	@Override

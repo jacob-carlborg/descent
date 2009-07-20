@@ -13,14 +13,11 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.TextUtilities;
 import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.TextEdit;
 
-import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.TextUtilities;
-
-import descent.core.dom.SimplePropertyDescriptor;
-import descent.core.dom.StructuralPropertyDescriptor;
 import descent.core.dom.rewrite.TargetSourceRangeComputer;
 import descent.internal.core.dom.rewrite.ASTRewriteAnalyzer;
 import descent.internal.core.dom.rewrite.LineInformation;

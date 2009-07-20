@@ -10,9 +10,9 @@ public class ConditionalStatement extends Statement {
 	public Statement ifbody, sourceIfbody;
 	public Statement elsebody, sourceElsebody;
 
-	public ConditionalStatement(Loc loc, Condition condition, Statement ifbody,
+	public ConditionalStatement(char[] filename, int lineNumber, Condition condition, Statement ifbody,
 			Statement elsebody) {
-		super(loc);
+		super(filename, lineNumber);
 		this.condition = this.sourceCondition = condition;
 		this.ifbody = this.sourceIfbody = ifbody;
 		this.elsebody = this.sourceElsebody = elsebody;
@@ -78,7 +78,7 @@ public class ConditionalStatement extends Statement {
 		if (elsebody != null) {
 			e = elsebody.syntaxCopy(context);
 		}
-		ConditionalStatement s = context.newConditionalStatement(loc, condition
+		ConditionalStatement s = context.newConditionalStatement(filename, lineNumber, condition
 				.syntaxCopy(context), ifbody.syntaxCopy(context), e);
 		s.copySourceRange(this);
 		return s;

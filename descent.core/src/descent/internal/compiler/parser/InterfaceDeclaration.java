@@ -27,9 +27,9 @@ public class InterfaceDeclaration extends ClassDeclaration {
 	
 	public boolean cpp; // true if this is a C++ interface
 	
-	public InterfaceDeclaration(Loc loc, IdentifierExp id,
+	public InterfaceDeclaration(char[] filename, int lineNumber, IdentifierExp id,
 			BaseClasses baseclasses) {
-		super(loc, id, baseclasses);
+		super(filename, lineNumber, id, baseclasses);
 		com = false;
 		if (id != null && equals(id, Id.IUnknown)) { // IUnknown is the root
 			// of all COM
@@ -136,8 +136,8 @@ public class InterfaceDeclaration extends ClassDeclaration {
 		int i;
 
 		if (scope == null) {
-			type = type.semantic(loc, sc, context);
-			handle = handle.semantic(loc, sc, context);
+			type = type.semantic(filename, lineNumber, sc, context);
+			handle = handle.semantic(filename, lineNumber, sc, context);
 		}
 		if (members == null) // if forward reference
 		{
@@ -167,7 +167,7 @@ public class InterfaceDeclaration extends ClassDeclaration {
 		for (i = 0; i < baseclasses.size();) {
 			BaseClass b = baseclasses.get(0);
 			
-			b.type = b.type.semantic(loc, sc, context);
+			b.type = b.type.semantic(filename, lineNumber, sc, context);
 			
 			if (getModule() == context.Module_rootModule) {
 				unlazy(b, context);	
@@ -207,7 +207,7 @@ public class InterfaceDeclaration extends ClassDeclaration {
 			Type tb;
 
 			b = baseclasses.get(i);
-			b.type = b.type.semantic(loc, sc, context);
+			b.type = b.type.semantic(filename, lineNumber, sc, context);
 			tb = b.type.toBasetype(context);
 			if (tb.ty == Tclass) {
 				tc = (TypeClass) tb;
@@ -334,7 +334,7 @@ public class InterfaceDeclaration extends ClassDeclaration {
 		if (s != null) {
 			id = (InterfaceDeclaration) s;
 		} else {
-			id = context.newInterfaceDeclaration(loc, ident, null);
+			id = context.newInterfaceDeclaration(filename, lineNumber, ident, null);
 		}
 
 		super.syntaxCopy(id, context);

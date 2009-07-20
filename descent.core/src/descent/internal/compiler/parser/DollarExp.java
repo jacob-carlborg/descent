@@ -5,8 +5,8 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class DollarExp extends IdentifierExp {
 
-	public DollarExp(Loc loc) {
-		super(loc, Id.dollar);
+	public DollarExp(char[] filename, int lineNumber) {
+		super(filename, lineNumber, Id.dollar);
 	}
 	
 	@Override

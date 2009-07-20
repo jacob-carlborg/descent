@@ -40,9 +40,10 @@ public class TemplateInstance extends ScopeDsymbol {
 	// to TemplateDeclaration.parameters
 	// [int, char, 100]
 
-	public TemplateInstance(Loc loc, IdentifierExp id, ASTNodeEncoder encoder) {
+	public TemplateInstance(char[] filename, int lineNumber, IdentifierExp id, ASTNodeEncoder encoder) {
 		super(null);
-		this.loc = loc;
+		this.filename = filename;
+		this.lineNumber = lineNumber;
 		this.name = id;
 		this.semantictiargsdone = false;
 		this.encoder = encoder;
@@ -52,9 +53,10 @@ public class TemplateInstance extends ScopeDsymbol {
 	 * This constructor is only called when we figured out which function
 	 * template to instantiate.
 	 */
-	public TemplateInstance(Loc loc, TemplateDeclaration td, Objects tiargs, ASTNodeEncoder encoder) {
+	public TemplateInstance(char[] filename, int lineNumber, TemplateDeclaration td, Objects tiargs, ASTNodeEncoder encoder) {
 		super(null);
-		this.loc = loc;
+		this.filename = filename;
+		this.lineNumber = lineNumber;
 		this.name = td.ident;
 		tiargs(tiargs);
 		this.tempdecl = td;
@@ -219,7 +221,7 @@ public class TemplateInstance extends ScopeDsymbol {
 			//int i;
 
 			id = name;
-			s = sc.search(loc, id, scopesym, context);
+			s = sc.search(filename, lineNumber, id, scopesym, context);
 			if (null == s) {
 				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
@@ -831,7 +833,7 @@ public class TemplateInstance extends ScopeDsymbol {
 			Dsymbol[] s = new Dsymbol[] { null };
 			if (Dsymbol.oneMembers(members, s, context) && null != s[0]) {
 				if (null != s[0].ident && equals(s[0].ident, tempdecl.ident)) {
-					aliasdecl = new AliasDeclaration(loc, s[0].ident, s[0]);
+					aliasdecl = new AliasDeclaration(filename, lineNumber, s[0].ident, s[0]);
 					
 					// Descent
 					aliasdecl.isTemplateParameter = true;
@@ -900,7 +902,7 @@ public class TemplateInstance extends ScopeDsymbol {
 			return;
 		}
 		semantictiargsdone = true;
-		semanticTiargs(loc, sc, tiargs, 0, context);
+		semanticTiargs(filename, lineNumber, sc, tiargs, 0, context);
 	}
 
 	@Override
@@ -910,7 +912,7 @@ public class TemplateInstance extends ScopeDsymbol {
 		if (s != null) {
 			ti = (TemplateInstance) s;
 		} else {
-			ti = context.newTemplateInstance(loc, name);
+			ti = context.newTemplateInstance(filename, lineNumber, name);
 		}
 
 		ti.tiargs = arraySyntaxCopy(tiargs, context);
@@ -979,7 +981,7 @@ public class TemplateInstance extends ScopeDsymbol {
 	 * Input:
 	 *	flags	1: replace const variables with their initializers
 	 */
-	public static void semanticTiargs(Loc loc, Scope sc, Objects tiargs,
+	public static void semanticTiargs(char[] filename, int lineNumber, Scope sc, Objects tiargs,
 			int flags, SemanticContext context) {
 		// Run semantic on each argument, place results in tiargs[]
 		if (null == tiargs) {
@@ -993,7 +995,7 @@ public class TemplateInstance extends ScopeDsymbol {
 
 			if (ta[0] != null) {
 				// It might really be an Expression or an Alias
-				ta[0].resolve(loc, sc, ea, ta, sa, context);
+				ta[0].resolve(filename, lineNumber, sc, ea, ta, sa, context);
 				if (ea[0] != null) {
 					ea[0] = ea[0].semantic(sc, context);
 					ea[0] = ea[0].optimize(WANTvalue | WANTinterpret, context);
@@ -1037,7 +1039,7 @@ public class TemplateInstance extends ScopeDsymbol {
 						throw new IllegalStateException(
 								"assert(context.global.errors);");
 					}
-					ea[0] = new IntegerExp(Loc.ZERO, 0);
+					ea[0] = new IntegerExp(null, 0, 0);
 				}
 				if (ea[0] == null) {
 					throw new IllegalStateException("assert(ea);");

@@ -10,9 +10,10 @@
  *******************************************************************************/
 package descent.internal.core;
 
-import descent.core.IBuffer;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
+
+import descent.core.IBuffer;
 
 /*
  * Adapts an IBuffer to IDocument

@@ -20,7 +20,6 @@ import descent.core.compiler.CharOperation;
 import descent.internal.compiler.env.ISourceField;
 import descent.internal.compiler.env.ISourceMethod;
 import descent.internal.compiler.env.ISourceType;
-import descent.internal.compiler.parser.integer_t;
 
 /** 
  * Element info for an IType element that originated from source. 

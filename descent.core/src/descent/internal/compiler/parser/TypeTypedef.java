@@ -1,15 +1,13 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.MATCH.MATCHconvert;
+import static descent.internal.compiler.parser.MATCH.MATCHexact;
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+import static descent.internal.compiler.parser.TY.Ttypedef;
 import descent.core.IJavaElement;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
-import static descent.internal.compiler.parser.MATCH.MATCHconvert;
-import static descent.internal.compiler.parser.MATCH.MATCHexact;
-import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
-
-import static descent.internal.compiler.parser.TY.Ttypedef;
 
 
 public class TypeTypedef extends Type {
@@ -53,7 +51,7 @@ public class TypeTypedef extends Type {
 	}
 
 	@Override
-	public Expression defaultInit(Loc loc, SemanticContext context) {
+	public Expression defaultInit(char[] filename, int lineNumber, SemanticContext context) {
 		Expression e;
 		Type bt;
 
@@ -61,7 +59,7 @@ public class TypeTypedef extends Type {
 			return sym.init.toExpression(context);
 		}
 		bt = sym.basetype;
-		e = bt.defaultInit(loc, context);
+		e = bt.defaultInit(filename, lineNumber, context);
 		e.type = this;
 		while (bt.ty == TY.Tsarray) {
 			e.type = bt.next;
@@ -145,7 +143,7 @@ public class TypeTypedef extends Type {
 	}
 
 	@Override
-	public boolean isZeroInit(Loc loc, SemanticContext context) {
+	public boolean isZeroInit(char[] filename, int lineNumber, SemanticContext context) {
 		if (sym.init != null) {
 			if (sym.init.isVoidInitializer() != null) {
 				return true; // initialize voids to 0
@@ -163,20 +161,20 @@ public class TypeTypedef extends Type {
 			sym.basetype = Type.terror;
 		}
 		sym.inuse = 1;
-		boolean result = sym.basetype.isZeroInit(loc, context);
+		boolean result = sym.basetype.isZeroInit(filename, lineNumber, context);
 		sym.inuse = 0;
 		return result;
 	}
 
 	@Override
-	public Type semantic(Loc loc, Scope sc, SemanticContext context) {
+	public Type semantic(char[] filename, int lineNumber, Scope sc, SemanticContext context) {
 		sym.semantic(sc, context);
 		return merge(context);
 	}
 
 	@Override
-	public int size(Loc loc, SemanticContext context) {
-		return sym.basetype.size(loc, context);
+	public int size(char[] filename, int lineNumber, SemanticContext context) {
+		return sym.basetype.size(filename, lineNumber, context);
 	}
 
 	@Override
@@ -226,12 +224,12 @@ public class TypeTypedef extends Type {
 	}
 	
 	@Override
-	public Expression getProperty(Loc loc, char[] ident, int lineNumber, int start, int length, SemanticContext context) {
+	public Expression getProperty(char[] filename, int lineNumber, char[] ident, int start, int length, SemanticContext context) {
 		if (CharOperation.equals(ident, Id.init)) {
-			return super.getProperty(loc, ident, lineNumber, start, length,
+			return super.getProperty(filename, lineNumber, ident, start, length,
 					context);
 		}
-		return sym.basetype.getProperty(loc, ident, lineNumber, start, length,
+		return sym.basetype.getProperty(filename, lineNumber, ident, start, length,
 				context);
 	}
 	

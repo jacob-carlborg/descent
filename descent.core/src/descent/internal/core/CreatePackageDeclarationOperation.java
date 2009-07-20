@@ -11,6 +11,8 @@
 package descent.internal.core;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jface.text.IDocument;
+
 import descent.core.ICompilationUnit;
 import descent.core.IImportDeclaration;
 import descent.core.IJavaElement;
@@ -22,12 +24,11 @@ import descent.core.JavaModelException;
 import descent.core.dom.AST;
 import descent.core.dom.ASTNode;
 import descent.core.dom.CompilationUnit;
-import descent.core.dom.Name;
 import descent.core.dom.ModuleDeclaration;
+import descent.core.dom.Name;
 import descent.core.dom.StructuralPropertyDescriptor;
 import descent.core.dom.rewrite.ASTRewrite;
 import descent.internal.core.util.Messages;
-import org.eclipse.jface.text.IDocument;
 
 /**
  * <p>This operation adds/replaces a package declaration in an existing compilation unit.

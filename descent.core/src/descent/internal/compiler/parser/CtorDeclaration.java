@@ -11,8 +11,8 @@ public class CtorDeclaration extends FuncDeclaration {
 	public int varargs;
 	public int thisStart; // where the "this" keyword starts
 
-	public CtorDeclaration(Loc loc, Arguments arguments, int varags) {
-		super(loc, new IdentifierExp(Id.ctor), STC.STCundefined, null);
+	public CtorDeclaration(char[] filename, int lineNumber, Arguments arguments, int varags) {
+		super(filename, lineNumber, new IdentifierExp(Id.ctor), STC.STCundefined, null);
 		this.arguments = arguments;
 		this.varargs = varags;
 	}
@@ -93,7 +93,7 @@ public class CtorDeclaration extends FuncDeclaration {
 		}
 
 		sc.flags |= Scope.SCOPEctor;
-		type = type.semantic(loc, sc, context);
+		type = type.semantic(filename, lineNumber, sc, context);
 		sc.flags &= ~Scope.SCOPEctor;
 
 		// Append:
@@ -103,9 +103,9 @@ public class CtorDeclaration extends FuncDeclaration {
 			Expression e;
 			Statement s;
 
-			e = new ThisExp(loc);
-			s = new ReturnStatement(loc, e);
-			fbody = new CompoundStatement(loc, fbody, s);
+			e = new ThisExp(filename, lineNumber);
+			s = new ReturnStatement(filename, lineNumber, e);
+			fbody = new CompoundStatement(filename, lineNumber, fbody, s);
 		}
 
 		super.semantic(sc, context);
@@ -123,7 +123,7 @@ public class CtorDeclaration extends FuncDeclaration {
 	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		CtorDeclaration f;
 
-		f = context.newCtorDeclaration(loc, null, varargs);
+		f = context.newCtorDeclaration(filename, lineNumber, null, varargs);
 
 		f.outId = outId;
 		f.frequire = frequire != null ? frequire.syntaxCopy(context) : null;

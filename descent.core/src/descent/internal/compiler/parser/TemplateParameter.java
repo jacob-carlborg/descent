@@ -4,19 +4,21 @@ package descent.internal.compiler.parser;
 
 public abstract class TemplateParameter extends ASTDmdNode {
 
-	public Loc loc;
+	public int lineNumber;
+	public char[] filename;
 	public IdentifierExp ident;
 	public Declaration sparam;
 
-	public TemplateParameter(Loc loc, IdentifierExp ident) {
-		this.loc = loc;
+	public TemplateParameter(char[] filename, int lineNumber, IdentifierExp ident) {
+		this.filename = filename;
+		this.lineNumber = lineNumber;
 		this.ident = ident;
 		this.sparam = null;
 	}
 
 	public abstract void declareParameter(Scope sc, SemanticContext context);
 
-	public abstract ASTDmdNode defaultArg(Loc loc, Scope sc, SemanticContext context);
+	public abstract ASTDmdNode defaultArg(char[] filename, int lineNumber, Scope sc, SemanticContext context);
 
 	/**
 	 * Create dummy argument based on parameter.

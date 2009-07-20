@@ -18,6 +18,7 @@ import org.eclipse.core.resources.IResourceProxyVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+
 import descent.core.JavaCore;
 import descent.internal.compiler.SourceElementParser;
 import descent.internal.core.index.Index;

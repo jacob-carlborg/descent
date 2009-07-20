@@ -8,7 +8,7 @@ public class TypeInfoDeclaration extends VarDeclaration {
 	public Type tinfo;
 	
 	public TypeInfoDeclaration(Type tinfo, int internal, SemanticContext context) {
-		super(Loc.ZERO, 
+		super(null, 0, 
 				context.Type_typeinfo.type, 
 				tinfo.getTypeInfoIdent(internal), 
 				null);

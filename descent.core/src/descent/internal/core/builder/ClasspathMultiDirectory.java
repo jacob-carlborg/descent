@@ -10,7 +10,8 @@
  *******************************************************************************/
 package descent.internal.core.builder;
 
-import org.eclipse.core.resources.*;
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IResource;
 
 import descent.core.compiler.CharOperation;
 import descent.internal.core.util.Util;

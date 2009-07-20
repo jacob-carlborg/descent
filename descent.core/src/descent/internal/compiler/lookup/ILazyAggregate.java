@@ -4,13 +4,12 @@ import descent.core.IParent;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.DsymbolTable;
 import descent.internal.compiler.parser.Dsymbols;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.SemanticContext;
 
 public interface ILazyAggregate extends ILazy {
 
-	Dsymbol super_search(Loc loc, char[] ident, int flags, SemanticContext context);
+	Dsymbol super_search(char[] filename, int lineNumber, char[] ident, int flags, SemanticContext context);
 
 	DsymbolTable symtab();
 

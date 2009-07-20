@@ -8,8 +8,8 @@ public class TypeidExp extends Expression {
 
 	public Type typeidType, sourceTypeidType;
 
-	public TypeidExp(Loc loc, Type typeidType) {
-		super(loc, TOK.TOKtypeid);
+	public TypeidExp(char[] filename, int lineNumber, Type typeidType) {
+		super(filename, lineNumber, TOK.TOKtypeid);
 		this.typeidType = this.sourceTypeidType = typeidType;
 	}
 
@@ -30,17 +30,17 @@ public class TypeidExp extends Expression {
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		Expression e;
-		typeidType = typeidType.semantic(loc, sc, context);
+		typeidType = typeidType.semantic(filename, lineNumber, sc, context);
 		e = typeidType.getTypeInfo(sc, context);
-		if (e.loc != null && e.loc.linnum == 0) {
-			e.loc = loc;		// so there's at least some line number info
+		if (e.lineNumber == 0) {
+			e.lineNumber = lineNumber;		// so there's at least some line number info
 		}
 		return e;
 	}
 
 	@Override
 	public Expression syntaxCopy(SemanticContext context) {
-		return new TypeidExp(loc, typeidType.syntaxCopy(context));
+		return new TypeidExp(filename, lineNumber, typeidType.syntaxCopy(context));
 	}
 
 	@Override

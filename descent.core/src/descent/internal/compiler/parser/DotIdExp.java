@@ -19,12 +19,12 @@ public class DotIdExp extends UnaExp {
 
 	public IdentifierExp ident;
 	
-	public DotIdExp(Loc loc, Expression e, char[] id) {
-		this(loc, e, new IdentifierExp(id));
+	public DotIdExp(char[] filename, int lineNumber, Expression e, char[] id) {
+		this(filename, lineNumber, e, new IdentifierExp(id));
 	}
 
-	public DotIdExp(Loc loc, Expression e, IdentifierExp id) {
-		super(loc, TOK.TOKdot, e);
+	public DotIdExp(char[] filename, int lineNumber, Expression e, IdentifierExp id) {
+		super(filename, lineNumber, TOK.TOKdot, e);
 		this.ident = id;
 	}
 
@@ -75,17 +75,17 @@ public class DotIdExp extends UnaExp {
 				cd = ad.isClassDeclaration();
 				if (cd != null) {
 					if (e1.op == TOKthis) {
-						e = context.newTypeDotIdExp(loc, cd.type, ident);
+						e = context.newTypeDotIdExp(filename, lineNumber, cd.type, ident);
 						return e.semantic(sc, context);
 					} else if (cd.baseClass != null && e1.op == TOKsuper) {
-						e = context.newTypeDotIdExp(loc, cd.baseClass.type, ident);
+						e = context.newTypeDotIdExp(filename, lineNumber, cd.baseClass.type, ident);
 						return e.semantic(sc, context);
 					}
 				} else {
 					sd = ad.isStructDeclaration();
 					if (sd != null) {
 						if (e1.op == TOKthis) {
-							e = context.newTypeDotIdExp(loc, sd.type, ident);
+							e = context.newTypeDotIdExp(filename, lineNumber, sd.type, ident);
 							return e.semantic(sc, context);
 						}
 					}
@@ -120,10 +120,10 @@ public class DotIdExp extends UnaExp {
 				for (int i = 0; i < size(exps); i++) {
 					Expression e2 = (Expression) te.exps.get(i);
 					e2 = e2.semantic(sc, context);
-					e2 = new DotIdExp(e2.loc, e2, Id.offsetof);
+					e2 = new DotIdExp(e2.filename, e2.lineNumber, e2, Id.offsetof);
 					exps.set(i, e2);
 				}
-				e = new TupleExp(loc, exps);
+				e = new TupleExp(filename, lineNumber, exps);
 				e = e.semantic(sc, context);
 				return e;
 			}
@@ -131,7 +131,7 @@ public class DotIdExp extends UnaExp {
 
 		if (e1.op == TOKtuple && !equals(ident, Id.length)) {
 			TupleExp te = (TupleExp) e1;
-			e = new IntegerExp(loc, te.exps.size(), Type.tsize_t);
+			e = new IntegerExp(filename, lineNumber, te.exps.size(), Type.tsize_t);
 			return e;
 		}
 		
@@ -164,7 +164,7 @@ public class DotIdExp extends UnaExp {
 			 * The check for 'is sds our current module' is because
 			 * the current module should have access to its own imports.
 			 */
-			Dsymbol s = ie.sds.search(loc, ident,
+			Dsymbol s = ie.sds.search(filename, lineNumber, ident,
 			    (ie.sds.isModule() != null && ie.sds != sc.module) ? 1 : 0, context);
 			
 			// Descent: for binding resolution
@@ -201,27 +201,29 @@ public class DotIdExp extends UnaExp {
 								if (ei != null) {
 									if (same(ei.exp.type, type, context)) {
 										e = ei.exp.copy(); // make copy so we can change loc
-										e.loc = loc;
+										e.filename = filename;
+										e.lineNumber = lineNumber;
 										return e;
 									}
 								}
 							} else if (type.isscalar(context)) {
 								e = type.defaultInit(context);
-								e.loc = loc;
+								e.filename = filename;
+								e.lineNumber = lineNumber;
 								return e;
 							}
 						}
 					}
 					if (v.needThis()) {
 						if (eleft == null) {
-							eleft = new ThisExp(loc);
+							eleft = new ThisExp(filename, lineNumber);
 						}
-						e = new DotVarExp(loc, eleft, v);
+						e = new DotVarExp(filename, lineNumber, eleft, v);
 						e = e.semantic(sc, context);
 					} else {
-						e = new VarExp(loc, v);
+						e = new VarExp(filename, lineNumber, v);
 						if (eleft != null) {
-							e = new CommaExp(loc, eleft, e);
+							e = new CommaExp(filename, lineNumber, eleft, e);
 							e.type = v.type;
 						}
 					}
@@ -232,18 +234,18 @@ public class DotIdExp extends UnaExp {
 				if (f != null) {
 					if (f.needThis()) {
 						if (eleft == null) {
-							eleft = new ThisExp(loc);
+							eleft = new ThisExp(filename, lineNumber);
 						}
 						if (context.isD2()) {
-							e = new DotVarExp(loc, eleft, f, true);
+							e = new DotVarExp(filename, lineNumber, eleft, f, true);
 						} else {
-							e = new DotVarExp(loc, eleft, f);
+							e = new DotVarExp(filename, lineNumber, eleft, f);
 						}
 						e = e.semantic(sc, context);
 					} else {
-						e = new VarExp(loc, f);
+						e = new VarExp(filename, lineNumber, f);
 						if (eleft != null) {
-							e = new CommaExp(loc, eleft, e);
+							e = new CommaExp(filename, lineNumber, eleft, e);
 							e.type = f.type;
 						}
 					}
@@ -259,7 +261,7 @@ public class DotIdExp extends UnaExp {
 
 				Type t = s.getType(context);
 				if (t != null) {
-					return new TypeExp(loc, t);
+					return new TypeExp(filename, lineNumber, t);
 				}
 				
 			    TupleDeclaration tup = s.isTupleDeclaration();
@@ -270,18 +272,18 @@ public class DotIdExp extends UnaExp {
 									IProblem.CannotHaveEDotTuple, this));
 						}
 					}
-					e = new TupleExp(loc, tup, context);
+					e = new TupleExp(filename, lineNumber, tup, context);
 					e = e.semantic(sc, context);
 					return e;
 				}
 
 				ScopeDsymbol sds = s.isScopeDsymbol();
 				if (sds != null) {
-					e = new ScopeExp(loc, sds);
+					e = new ScopeExp(filename, lineNumber, sds);
 					e.copySourceRange(this);
 					e = e.semantic(sc, context);
 					if (eleft != null) {
-						e = new DotExp(loc, eleft, e);
+						e = new DotExp(filename, lineNumber, eleft, e);
 					}
 					return e;
 				}
@@ -290,7 +292,7 @@ public class DotIdExp extends UnaExp {
 				if (imp != null) {
 					ScopeExp ie2;
 
-					ie2 = new ScopeExp(loc, imp.pkg);
+					ie2 = new ScopeExp(filename, lineNumber, imp.pkg);
 					return ie2.semantic(sc, context);
 				}
 
@@ -298,7 +300,7 @@ public class DotIdExp extends UnaExp {
 			}
 			else if (equals(ident, Id.stringof))
 			{   String s2 = ie.toChars(context);
-			    e = new StringExp(loc, s2.toCharArray(), 'c');
+			    e = new StringExp(filename, lineNumber, s2.toCharArray(), 'c');
 			    e = e.semantic(sc, context);
 			    return e;
 			}
@@ -319,7 +321,7 @@ public class DotIdExp extends UnaExp {
 					&& !equals(ident, Id.__sizeof) && !equals(ident, Id.alignof)
 					&& !equals(ident, Id.offsetof) && !equals(ident, Id.mangleof)
 					&& !equals(ident, Id.stringof)) {
-				e = new PtrExp(loc, e1);
+				e = new PtrExp(filename, lineNumber, e1);
 				e.type = ((TypePointer) e1.type).next;
 				return e.type.dotExp(sc, e, ident, context);
 			}     
@@ -338,8 +340,8 @@ public class DotIdExp extends UnaExp {
 		    	if (errors != context.global.errors)	// if failed to find the property
 		    	{
 		    		context.global.errors = errors;
-		    	    e = new DotIdExp(loc, new IdentifierExp(loc, Id.empty), ident);
-		    	    e = new CallExp(loc, e, e1);
+		    	    e = new DotIdExp(filename, lineNumber, new IdentifierExp(filename, lineNumber, Id.empty), ident);
+		    	    e = new CallExp(filename, lineNumber, e, e1);
 		    	}
 		    	e = e.semantic(sc, context);
 		    	return e;

@@ -1,11 +1,12 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.MATCH.MATCHexact;
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+import static descent.internal.compiler.parser.TOK.TOKequal;
+import static descent.internal.compiler.parser.TOK.TOKreserved;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
-import static descent.internal.compiler.parser.TOK.*;
-import static descent.internal.compiler.parser.MATCH.*;
 
 
 public class IsExp extends Expression {
@@ -17,14 +18,14 @@ public class IsExp extends Expression {
 	public TOK tok2;
 	public TemplateParameters parameters;
 
-	public IsExp(Loc loc, Type targ, IdentifierExp id, TOK tok, Type tspec,
+	public IsExp(char[] filename, int lineNumber, Type targ, IdentifierExp id, TOK tok, Type tspec,
 			TOK tok2) {
-		this(loc, targ, id, tok, tspec, tok2, null);
+		this(filename, lineNumber, targ, id, tok, tspec, tok2, null);
 	}
 	
-	public IsExp(Loc loc, Type targ, IdentifierExp id, TOK tok, Type tspec,
+	public IsExp(char[] filename, int lineNumber, Type targ, IdentifierExp id, TOK tok, Type tspec,
 			TOK tok2, TemplateParameters parameters) {
-		super(loc, TOK.TOKis);
+		super(filename, lineNumber, TOK.TOKis);
 		this.targ = this.sourceTarg = targ;
 		this.id = id;
 		this.tok = tok;
@@ -64,7 +65,7 @@ public class IsExp extends Expression {
 		int errors_save = context.global.errors;
 		context.global.errors = 0;
 		context.global.gag++; // suppress printing of error messages
-		targ = targ.semantic(loc, sc, context);
+		targ = targ.semantic(filename, lineNumber, sc, context);
 		context.global.gag--;
 		int gerrors = context.global.errors;
 		context.global.errors = errors_save;
@@ -248,7 +249,7 @@ public class IsExp extends Expression {
 				}
 			} else {
 				MATCH m;
-				TemplateTypeParameter tp = new TemplateTypeParameter(loc, id, null,
+				TemplateTypeParameter tp = new TemplateTypeParameter(filename, lineNumber, id, null,
 						null);
 	
 				TemplateParameters parameters = new TemplateParameters(1);
@@ -276,7 +277,7 @@ public class IsExp extends Expression {
 		} else if (null != tspec) {
 			/* Evaluate to TRUE if targ matches tspec
 			 */
-			tspec = tspec.semantic(loc, sc, context);
+			tspec = tspec.semantic(filename, lineNumber, sc, context);
 			if (tok == TOK.TOKcolon) {
 				if (targ.implicitConvTo(tspec, context) != MATCH.MATCHnomatch)
 					return yes(tded, sc, context); // goto Lyes;
@@ -297,16 +298,16 @@ public class IsExp extends Expression {
 	 // Lno;
 	private Expression no(SemanticContext context) {
 		if (context.isD2()) {
-			return new IntegerExp(Loc.ZERO, 0, Type.tbool);
+			return new IntegerExp(null, 0, 0, Type.tbool);
 		} else {
-			return new IntegerExp(Loc.ZERO, 0);
+			return new IntegerExp(null, 0, 0);
 		}
 	}
 
 	// Lyes:
 	private Expression yes(Type tded, Scope sc, SemanticContext context) {
 		if (null != id) {
-			Dsymbol s = new AliasDeclaration(loc, id, tded);
+			Dsymbol s = new AliasDeclaration(filename, lineNumber, id, tded);
 			s.semantic(sc, context);
 			if (context.isD2()) {
 				if (null == sc.insert(s)) {
@@ -323,9 +324,9 @@ public class IsExp extends Expression {
 				s.addMember(sc, sc.sd, 1, context);
 		}
 		if (context.isD2()) {
-			return new IntegerExp(Loc.ZERO, 1, Type.tbool);
+			return new IntegerExp(null, 0, 1, Type.tbool);
 		} else {
-			return new IntegerExp(Loc.ZERO, 1);
+			return new IntegerExp(null, 0, 1);
 		}
 	}
 
@@ -347,7 +348,7 @@ public class IsExp extends Expression {
 			}
 		}
 		
-		return new IsExp(loc, targ.syntaxCopy(context), id, tok,
+		return new IsExp(filename, lineNumber, targ.syntaxCopy(context), id, tok,
 				null != tspec ? tspec.syntaxCopy(context) : null, tok2, p);
 	}
 

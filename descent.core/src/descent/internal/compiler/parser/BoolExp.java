@@ -1,13 +1,13 @@
 package descent.internal.compiler.parser;
 
-import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Constfold.Bool;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
 public class BoolExp extends UnaExp {
 
-	public BoolExp(Loc loc, Expression e, Type t) {
-		super(loc, TOK.TOKtobool, e);
+	public BoolExp(char[] filename, int lineNumber, Expression e, Type t) {
+		super(filename, lineNumber, TOK.TOKtobool, e);
 		this.type = t;
 	}
 

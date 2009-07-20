@@ -10,10 +10,12 @@
  *******************************************************************************/
 package descent.internal.core.index;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 
 import descent.core.compiler.CharOperation;
-import descent.core.search.*;
+import descent.core.search.IJavaSearchScope;
+import descent.core.search.SearchPattern;
 import descent.internal.compiler.util.HashtableOfObject;
 import descent.internal.compiler.util.SimpleSet;
 import descent.internal.core.search.indexing.ReadWriteMonitor;

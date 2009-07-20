@@ -12,7 +12,6 @@ package descent.internal.core;
 
 import descent.core.ISourceRange;
 import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
-import descent.internal.compiler.util.HashtableOfObject;
 
 public class CompilationUnitElementInfo extends OpenableElementInfo {
 

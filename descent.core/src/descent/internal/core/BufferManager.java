@@ -15,6 +15,7 @@ import java.util.Enumeration;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
+
 import descent.core.IBuffer;
 import descent.core.IJavaElement;
 import descent.core.IOpenable;

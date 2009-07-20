@@ -22,8 +22,8 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class AddrExp extends UnaExp {
 
-	public AddrExp(Loc loc, Expression e) {
-		super(loc, TOK.TOKaddress, e);
+	public AddrExp(char[] filename, int lineNumber, Expression e) {
+		super(filename, lineNumber, TOK.TOKaddress, e);
 	}
 
 	@Override
@@ -58,9 +58,9 @@ public class AddrExp extends UnaExp {
 					if (f != null) {
 						f = f.overloadExactMatch(tb.next, context);
 						if (f != null) {
-							e = new VarExp(loc, f);
+							e = new VarExp(filename, lineNumber, f);
 							e.type = f.type;
-							e = new AddrExp(loc, e);
+							e = new AddrExp(filename, lineNumber, e);
 							e.type = t;
 							return e;
 						}
@@ -83,7 +83,7 @@ public class AddrExp extends UnaExp {
 								 * even if one is a 'better' match than the
 								 * other.
 								 */
-								ScopeDsymbol.multiplyDefined(loc, f, f2,
+								ScopeDsymbol.multiplyDefined(filename, lineNumber, f, f2,
 										context);
 							else
 								f = f2;
@@ -91,7 +91,7 @@ public class AddrExp extends UnaExp {
 					}
 					if (f != null) {
 						f.tookAddressOf++;
-						SymOffExp se = new SymOffExp(loc, f, integer_t.ZERO,
+						SymOffExp se = new SymOffExp(filename, lineNumber, f, integer_t.ZERO,
 								false, context);
 						se.semantic(sc, context);
 						// Let SymOffExp::castTo() do the heavy lifting
@@ -109,9 +109,9 @@ public class AddrExp extends UnaExp {
 															// SymOffExp instead
 //						f = f.overloadExactMatch(tb.nextOf(), context);
 //						if (f != null) {
-//							e = new VarExp(loc, f);
+//							e = new VarExp(filename, lineNumber, f);
 //							e.type = f.type;
-//							e = new AddrExp(loc, e);
+//							e = new AddrExp(filename, lineNumber, e);
 //							e.type = t;
 //							return e;
 //						}
@@ -170,7 +170,7 @@ public class AddrExp extends UnaExp {
 								 * even if one is a 'better' match than the
 								 * other.
 								 */
-								ScopeDsymbol.multiplyDefined(loc, f, f2,
+								ScopeDsymbol.multiplyDefined(filename, lineNumber, f, f2,
 										context);
 							else
 								f = f2;
@@ -206,9 +206,9 @@ public class AddrExp extends UnaExp {
 			 */
 			if (e1.op == TOKcomma) {
 				CommaExp ce = (CommaExp) e1;
-				AddrExp ae = new AddrExp(loc, ce.e2);
+				AddrExp ae = new AddrExp(filename, lineNumber, ce.e2);
 				ae.type = type;
-				e = new CommaExp(ce.loc, ce.e1, ae);
+				e = new CommaExp(ce.filename, ce.lineNumber, ce.e1, ae);
 				e.type = type;
 				return e.optimize(result, context);
 			}
@@ -243,11 +243,11 @@ public class AddrExp extends UnaExp {
 			if (!ve.var.isOut() && !ve.var.isRef()
 					&& !ve.var.isImportedSymbol()) {
 				if (context.isD2()) {
-				    SymOffExp se = new SymOffExp(loc, ve.var, 0, ve.hasOverloads, context);
+				    SymOffExp se = new SymOffExp(filename, lineNumber, ve.var, 0, ve.hasOverloads, context);
 				    se.type = type;
 				    return se;
 				} else {
-					e = new SymOffExp(loc, ve.var, 0, context);
+					e = new SymOffExp(filename, lineNumber, ve.var, 0, context);
 					e.copySourceRange(ve);
 					e.type = type;
 					return e;
@@ -284,10 +284,10 @@ public class AddrExp extends UnaExp {
 						}
 					}
 					if (context.isD2()) {
-						e = new SymOffExp(loc, ve.var, index.multiply(ts.nextOf()
+						e = new SymOffExp(filename, lineNumber, ve.var, index.multiply(ts.nextOf()
 								.size(context)), context);
 					} else {
-						e = new SymOffExp(loc, ve.var, index.multiply(ts.next
+						e = new SymOffExp(filename, lineNumber, ve.var, index.multiply(ts.next
 								.size(context)), context);
 					}
 					e.type = type;
@@ -319,7 +319,7 @@ public class AddrExp extends UnaExp {
 				FuncDeclaration f = dve.var.isFuncDeclaration();
 
 				if (f != null) {
-					Expression e = new DelegateExp(loc, dve.e1, f);
+					Expression e = new DelegateExp(filename, lineNumber, dve.e1, f);
 					e = e.semantic(sc, context);	
 					return e;
 				}
@@ -330,7 +330,7 @@ public class AddrExp extends UnaExp {
 				if (f != null && f.isNested()) {
 					Expression e;
 
-					e = new DelegateExp(loc, e1, f);
+					e = new DelegateExp(filename, lineNumber, e1, f);
 					e = e.semantic(sc, context);
 					return e;
 				}

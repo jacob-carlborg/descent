@@ -5,8 +5,8 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class AsmBlock extends CompoundStatement {
 
-	public AsmBlock(Loc loc, Statements statements) {
-		super(loc, statements);
+	public AsmBlock(char[] filename, int lineNumber, Statements statements) {
+		super(filename, lineNumber, statements);
 	}
 	
 	@Override

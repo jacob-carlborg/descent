@@ -7,8 +7,8 @@ public class FuncAliasDeclaration extends FuncDeclaration {
 
 	public FuncDeclaration funcalias;
 
-	public FuncAliasDeclaration(Loc loc, FuncDeclaration funcalias) {
-		super(funcalias.loc, funcalias.ident, funcalias.storage_class,
+	public FuncAliasDeclaration(char[] filename, int lineNumber, FuncDeclaration funcalias) {
+		super(funcalias.filename, funcalias.lineNumber, funcalias.ident, funcalias.storage_class,
 				funcalias.type);
 		if (funcalias == this) {
 			throw new IllegalStateException("assert(funcalias != this);");

@@ -2,7 +2,6 @@ package descent.internal.codeassist.complete;
 
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.IdentifierExp;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.Token;
@@ -17,18 +16,18 @@ public class CompletionOnIdentifierExp extends IdentifierExp {
 	 */
 	public int dot;
 
-	public CompletionOnIdentifierExp(Loc loc, Token token) {
-		super(loc, token);
+	public CompletionOnIdentifierExp(char[] filename, int lineNumber, Token token) {
+		super(filename, lineNumber, token);
 		this.dot = -1;
 	}
 	
-	public CompletionOnIdentifierExp(Loc loc, Token token, int dot) {
-		super(loc, token);
+	public CompletionOnIdentifierExp(char[] filename, int lineNumber, Token token, int dot) {
+		super(filename, lineNumber, token);
 		this.dot = dot;
 	}
 	
-	public CompletionOnIdentifierExp(Loc loc, IdentifierExp ident) {
-		super(loc, ident);
+	public CompletionOnIdentifierExp(char[] filename, int lineNumber, IdentifierExp ident) {
+		super(filename, lineNumber, ident);
 	}
 	
 	@Override

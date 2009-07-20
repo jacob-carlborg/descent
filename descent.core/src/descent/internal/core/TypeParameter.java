@@ -13,7 +13,12 @@ package descent.internal.core;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import descent.core.*;
+
+import descent.core.IClassFile;
+import descent.core.IMember;
+import descent.core.ISourceRange;
+import descent.core.ITypeParameter;
+import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
 
 public class TypeParameter extends SourceRefElement implements ITypeParameter {

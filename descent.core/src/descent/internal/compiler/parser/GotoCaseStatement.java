@@ -11,8 +11,8 @@ public class GotoCaseStatement extends Statement {
 	public Expression exp, sourceExp;
 	public CaseStatement cs; // case statement it resolves to
 
-	public GotoCaseStatement(Loc loc, Expression exp) {
-		super(loc);
+	public GotoCaseStatement(char[] filename, int lineNumber, Expression exp) {
+		super(filename, lineNumber);
 		this.exp = this.sourceExp = exp;
 	}
 
@@ -78,7 +78,7 @@ public class GotoCaseStatement extends Statement {
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
 		Expression e = exp != null ? exp.syntaxCopy(context) : null;
-		GotoCaseStatement s = context.newGotoCaseStatement(loc, e);
+		GotoCaseStatement s = context.newGotoCaseStatement(filename, lineNumber, e);
 		s.copySourceRange(this);
 		return s;
 	}

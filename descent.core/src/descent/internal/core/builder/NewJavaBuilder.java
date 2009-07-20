@@ -1,6 +1,5 @@
 package descent.internal.core.builder;
 
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IContainer;

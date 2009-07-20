@@ -1,6 +1,11 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.TypeBasic.*;
+import static descent.internal.compiler.parser.TypeBasic.TFLAGScomplex;
+import static descent.internal.compiler.parser.TypeBasic.TFLAGSfloating;
+import static descent.internal.compiler.parser.TypeBasic.TFLAGSimaginary;
+import static descent.internal.compiler.parser.TypeBasic.TFLAGSintegral;
+import static descent.internal.compiler.parser.TypeBasic.TFLAGSreal;
+import static descent.internal.compiler.parser.TypeBasic.TFLAGSunsigned;
 
 
 public enum TY {

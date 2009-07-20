@@ -1,15 +1,15 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.BE.BEfallthru;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.BE.*;
 
 public class ScopeStatement extends Statement {
 
 	public Statement statement, sourceStatement;
 
-	public ScopeStatement(Loc loc, Statement s) {
-		super(loc);
+	public ScopeStatement(char[] filename, int lineNumber, Statement s) {
+		super(filename, lineNumber);
 		this.statement = this.sourceStatement = s;
 	}
 
@@ -75,7 +75,7 @@ public class ScopeStatement extends Statement {
 
 			a = statement.flatten(sc, context);
 			if (a != null) {
-				statement = context.newCompoundStatement(loc, a);
+				statement = context.newCompoundStatement(filename, lineNumber, a);
 				statement.copySourceRange(a);
 			}
 
@@ -87,7 +87,7 @@ public class ScopeStatement extends Statement {
 
 				statement.scopeCode(sc, sentry, sexception, sfinally, context);
 				if (sfinally[0] != null) {
-					statement = new CompoundStatement(loc, statement,
+					statement = new CompoundStatement(filename, lineNumber, statement,
 							sfinally[0]);
 				}
 			}
@@ -102,7 +102,7 @@ public class ScopeStatement extends Statement {
 		Statement s;
 
 		s = statement != null ? statement.syntaxCopy(context) : null;
-		s = context.newScopeStatement(loc, s);
+		s = context.newScopeStatement(filename, lineNumber, s);
 		s.copySourceRange(this);
 		return s;
 	}

@@ -4,8 +4,8 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class AnonymousAggregateDeclaration extends AggregateDeclaration {
 
-	public AnonymousAggregateDeclaration(Loc loc) {
-		super(loc, null);
+	public AnonymousAggregateDeclaration(char[] filename, int lineNumber) {
+		super(filename, lineNumber, null);
 	}
 	
 	@Override

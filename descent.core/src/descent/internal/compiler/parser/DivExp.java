@@ -7,8 +7,8 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class DivExp extends BinExp {
 
-	public DivExp(Loc loc, Expression e1, Expression e2) {
-		super(loc, TOK.TOKdiv, e1, e2);
+	public DivExp(char[] filename, int lineNumber, Expression e1, Expression e2) {
+		super(filename, lineNumber, TOK.TOKdiv, e1, e2);
 	}
 
 	@Override
@@ -85,7 +85,7 @@ public class DivExp extends BinExp {
 				if (t2.isimaginary()) {
 					// x/iv = i(-x/v)
 					e2.type = t1;
-					e = new NegExp(loc, this);
+					e = new NegExp(filename, lineNumber, this);
 					e = e.semantic(sc, context);
 					return e;
 				}
@@ -132,7 +132,7 @@ public class DivExp extends BinExp {
 	     */
 	    Expression ex1 = e1.buildArrayLoop(fparams, context);
 	    Expression ex2 = e2.buildArrayLoop(fparams, context);
-	    Expression e = new DivExp(Loc.ZERO, ex1, ex2);
+	    Expression e = new DivExp(null, 0, ex1, ex2);
 	    return e;
 	}
 

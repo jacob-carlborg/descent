@@ -1,18 +1,17 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.TOK.TOKindex;
+import static descent.internal.compiler.parser.TY.Taarray;
+import static descent.internal.compiler.parser.TY.Tstruct;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.TOK.TOKindex;
-
-import static descent.internal.compiler.parser.TY.Taarray;
-import static descent.internal.compiler.parser.TY.Tstruct;
 
 
 public class DeleteExp extends UnaExp {
 
-	public DeleteExp(Loc loc, Expression e1) {
-		super(loc, TOK.TOKdelete, e1);
+	public DeleteExp(char[] filename, int lineNumber, Expression e1) {
+		super(filename, lineNumber, TOK.TOKdelete, e1);
 	}
 
 	@Override
@@ -80,8 +79,8 @@ public class DeleteExp extends UnaExp {
 					Type tpv = Type.tvoid.pointerTo(context);
 
 					Expression e = e1.castTo(sc, tpv, context);
-					Expression ec = new VarExp(loc, f);
-					e = new CallExp(loc, ec, e);
+					Expression ec = new VarExp(filename, lineNumber, f);
+					e = new CallExp(filename, lineNumber, ec, e);
 					return e.semantic(sc, context);
 				}
 			}

@@ -9,8 +9,8 @@ public class AddAssignExp extends BinExp {
 	
 	public boolean isPreIncrement;
 	
-	public AddAssignExp(Loc loc, Expression e1, Expression e2) {
-		super(loc, TOK.TOKaddass, e1, e2);
+	public AddAssignExp(char[] filename, int lineNumber, Expression e1, Expression e2) {
+		super(filename, lineNumber, TOK.TOKaddass, e1, e2);
 	}
 
 	@Override
@@ -77,9 +77,9 @@ public class AddAssignExp extends BinExp {
 				e = scaleFactor(sc, context);
 			} else if (tb1.ty == TY.Tbit || tb1.ty == TY.Tbool) {
 				// Rewrite e1+=e2 to e1=e1+e2
-				e = new AddExp(loc, e1, e2);
-				e = new CastExp(loc, e, e1.type);
-				e = new AssignExp(loc, e1.syntaxCopy(context), e);
+				e = new AddExp(filename, lineNumber, e1, e2);
+				e = new CastExp(filename, lineNumber, e, e1.type);
+				e = new AssignExp(filename, lineNumber, e1.syntaxCopy(context), e);
 				e = e.semantic(sc, context);
 			} else {
 				type = e1.type;
@@ -115,7 +115,7 @@ public class AddAssignExp extends BinExp {
 	    Expression ex1 = e1.buildArrayLoop(fparams, context);
 	    Argument param = (Argument) fparams.get(0);
 	    param.storageClass = 0;
-	    Expression e = new AddAssignExp(Loc.ZERO, ex1, ex2);
+	    Expression e = new AddAssignExp(null, 0, ex1, ex2);
 	    return e;	
 	}
 

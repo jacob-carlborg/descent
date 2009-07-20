@@ -100,8 +100,8 @@ public class ScopeDsymbol extends Dsymbol {
 		return "ScopeDsymbol";
 	}
 	
-	public static void multiplyDefined(Loc loc, Dsymbol s1, Dsymbol s2, SemanticContext context) {
-		if (loc != null && loc.filename != null) {
+	public static void multiplyDefined(char[] filename, int lineNumber, Dsymbol s1, Dsymbol s2, SemanticContext context) {
+		if (filename != null) {
 			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 						IProblem.SymbolAtLocationConflictsWithSymbolAtLocation, 
@@ -137,12 +137,12 @@ public class ScopeDsymbol extends Dsymbol {
 				return sprev;
 			}
 		}
-		multiplyDefined(Loc.ZERO, s, sprev, context);
+		multiplyDefined(null, 0, s, sprev, context);
 		return sprev;
 	}
 	
 	@Override
-	public Dsymbol search(Loc loc, char[] ident, int flags, SemanticContext context) {
+	public Dsymbol search(char[] filename, int lineNumber, char[] ident, int flags, SemanticContext context) {
 //		 Look in symbols declared in this module
 		Dsymbol s = symtab != null ? symtab.lookup(ident) : null;
 		if (s != null) {
@@ -160,7 +160,7 @@ public class ScopeDsymbol extends Dsymbol {
 					continue;
 				}
 
-				s2 = ss.search(loc, ident, ss.isModule() != null ? 1 : 0, context);
+				s2 = ss.search(filename, lineNumber, ident, ss.isModule() != null ? 1 : 0, context);
 				if (s == null) {
 					s = s2;
 				} else if (s2 != null && s != s2) {
@@ -206,11 +206,11 @@ public class ScopeDsymbol extends Dsymbol {
 									return null;
 								}
 								if (0 == (flags & 2)) {
-									ScopeDsymbol.multiplyDefined(loc, s, s2,
+									ScopeDsymbol.multiplyDefined(filename, lineNumber, s, s2,
 											context);
 								}
 							} else {
-								ScopeDsymbol.multiplyDefined(loc, s, s2,
+								ScopeDsymbol.multiplyDefined(filename, lineNumber, s, s2,
 										context);
 							}
 							break;

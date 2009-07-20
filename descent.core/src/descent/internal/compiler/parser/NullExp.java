@@ -1,11 +1,8 @@
 package descent.internal.compiler.parser;
 
-import descent.internal.compiler.parser.ast.IASTVisitor;
-
 import static descent.internal.compiler.parser.MATCH.MATCHconst;
 import static descent.internal.compiler.parser.MATCH.MATCHconvert;
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
-
 import static descent.internal.compiler.parser.TY.Taarray;
 import static descent.internal.compiler.parser.TY.Tarray;
 import static descent.internal.compiler.parser.TY.Tclass;
@@ -13,14 +10,15 @@ import static descent.internal.compiler.parser.TY.Tdelegate;
 import static descent.internal.compiler.parser.TY.Tpointer;
 import static descent.internal.compiler.parser.TY.Ttypedef;
 import static descent.internal.compiler.parser.TY.Tvoid;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
 public class NullExp extends Expression {
 
 	public boolean committed; // !=0 if type is committed
 
-	public NullExp(Loc loc) {
-		super(loc, TOK.TOKnull);
+	public NullExp(char[] filename, int lineNumber) {
+		super(filename, lineNumber, TOK.TOKnull);
 		this.committed = false;
 	}
 

@@ -10,8 +10,8 @@ public class DefaultStatement extends Statement {
 	public Statement statement;
 	public Statement sourceStatement;
 
-	public DefaultStatement(Loc loc, Statement s) {
-		super(loc);
+	public DefaultStatement(char[] filename, int lineNumber, Statement s) {
+		super(filename, lineNumber);
 		this.statement = s;
 		this.sourceStatement = s;
 	}
@@ -82,7 +82,7 @@ public class DefaultStatement extends Statement {
 
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
-		DefaultStatement s = context.newDefaultStatement(loc, statement.syntaxCopy(context));
+		DefaultStatement s = context.newDefaultStatement(filename, lineNumber, statement.syntaxCopy(context));
 		s.copySourceRange(this);
 		return s;
 	}

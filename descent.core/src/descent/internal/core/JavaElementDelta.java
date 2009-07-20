@@ -13,6 +13,7 @@ package descent.internal.core;
 import java.util.ArrayList;
 
 import org.eclipse.core.resources.IResourceDelta;
+
 import descent.core.IJavaElement;
 import descent.core.IJavaElementDelta;
 import descent.core.dom.CompilationUnit;

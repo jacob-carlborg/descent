@@ -1,13 +1,14 @@
 package descent.internal.compiler.parser;
 
-import java.math.BigInteger;
-
-import descent.core.compiler.IProblem;
-import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Constfold.ArrayLength;
 import static descent.internal.compiler.parser.Constfold.Index;
 import static descent.internal.compiler.parser.TOK.TOKarrayliteral;
 import static descent.internal.compiler.parser.TOK.TOKstring;
+
+import java.math.BigInteger;
+
+import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
 public class IndexExp extends BinExp {
@@ -15,8 +16,8 @@ public class IndexExp extends BinExp {
 	public VarDeclaration lengthVar;
 	public int modifiable;
 
-	public IndexExp(Loc loc, Expression e1, Expression e2) {
-		super(loc, TOK.TOKindex, e1, e2);
+	public IndexExp(char[] filename, int lineNumber, Expression e1, Expression e2) {
+		super(filename, lineNumber, TOK.TOKindex, e1, e2);
 		// THey should implicitly get these values in Java, but this way
 		// prettier.
 		lengthVar = null;
@@ -135,7 +136,8 @@ public class IndexExp extends BinExp {
 		if (t1.ty == TY.Tsarray || t1.ty == TY.Tarray || t1.ty == TY.Ttuple) {
 			// Create scope for 'length' variable
 			sym = new ArrayScopeSymbol(sc, this);
-			sym.loc = loc;
+			sym.filename = filename;
+			sym.lineNumber = lineNumber;
 			sym.parent = sc.scopesym;
 			sc = sc.push(sym);
 		}
@@ -205,7 +207,7 @@ public class IndexExp extends BinExp {
 				if (e1.op == TOK.TOKtuple) {
 					e = te.exps.get((int) index.longValue());
 				} else {
-					e = new TypeExp(e1.loc, Argument.getNth(tup.arguments,
+					e = new TypeExp(e1.filename, e1.lineNumber, Argument.getNth(tup.arguments,
 							(int) index.longValue(), context).type);
 				}
 			}

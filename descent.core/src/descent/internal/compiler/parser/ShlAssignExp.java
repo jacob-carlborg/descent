@@ -1,14 +1,14 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.Constfold.Shl;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.Constfold.Shl;
 
 
 public class ShlAssignExp extends BinExp {
 
-	public ShlAssignExp(Loc loc, Expression e1, Expression e2) {
-		super(loc, TOK.TOKshlass, e1, e2);
+	public ShlAssignExp(char[] filename, int lineNumber, Expression e1, Expression e2) {
+		super(filename, lineNumber, TOK.TOKshlass, e1, e2);
 	}
 
 	@Override

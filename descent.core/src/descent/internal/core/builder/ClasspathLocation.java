@@ -10,8 +10,9 @@
  *******************************************************************************/
 package descent.internal.core.builder;
 
-import org.eclipse.core.resources.*;
-import org.eclipse.core.runtime.*;
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IPath;
 
 import descent.internal.compiler.env.AccessRuleSet;
 import descent.internal.compiler.env.NameEnvironmentAnswer;

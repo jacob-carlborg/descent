@@ -10,7 +10,8 @@
  *******************************************************************************/
 package descent.internal.core.search.matching;
 
-import descent.internal.core.index.*;
+import descent.internal.core.index.EntryResult;
+import descent.internal.core.index.Index;
 import descent.internal.core.search.indexing.IIndexConstants;
 
 public class PackageDeclarationPattern extends JavaSearchPattern implements IIndexConstants {

@@ -34,12 +34,13 @@ public class AliasDeclaration extends Declaration {
 	
 	private IField javaElement;
 
-	public AliasDeclaration(Loc loc, IdentifierExp id, Dsymbol s) {
+	public AliasDeclaration(char[] filename, int lineNumber, IdentifierExp id, Dsymbol s) {
 		super(id);
 
 		Assert.isTrue(s != this);
 
-		this.loc = loc;
+		this.filename =  filename;
+		this.lineNumber = lineNumber;
 		this.type = null;
 		this.aliassym = s;
 		this.htype = null;
@@ -50,9 +51,10 @@ public class AliasDeclaration extends Declaration {
 		Assert.isNotNull(s);
 	}
 
-	public AliasDeclaration(Loc loc, IdentifierExp id, Type type) {
+	public AliasDeclaration(char[] filename, int lineNumber, IdentifierExp id, Type type) {
 		super(id);
-		this.loc = loc;
+		this.filename = filename;
+		this.lineNumber = lineNumber;
 		this.type = type;
 		this.sourceType = type;
 		this.aliassym = null;
@@ -156,7 +158,7 @@ public class AliasDeclaration extends Declaration {
 				return;
 			}
 	
-			type.resolve(loc, sc, e, t, s, context);
+			type.resolve(filename, lineNumber, sc, e, t, s, context);
 			if (s[0] != null) {
 				// goto L2;
 				semantic_L2(sc, context, s[0]); // it's a symbolic alias
@@ -213,10 +215,10 @@ public class AliasDeclaration extends Declaration {
 				// up by Type::resolve(), it has to go into sc.
 				sc = sc.push();
 				sc.stc |= STCref;
-				type.resolve(loc, sc, e, t, s, context);
+				type.resolve(filename, lineNumber, sc, e, t, s, context);
 				sc = sc.pop();
 			} else
-				type.resolve(loc, sc, e, t, s, context);
+				type.resolve(filename, lineNumber, sc, e, t, s, context);
 			if (s[0] != null) {
 				// goto L2;
 				semantic_L2(sc, context, s[0]); // it's a symbolic alias
@@ -242,7 +244,7 @@ public class AliasDeclaration extends Declaration {
 			}
 		}
 		if (overnext != null) {
-			ScopeDsymbol.multiplyDefined(Loc.ZERO, this, overnext, context);
+			ScopeDsymbol.multiplyDefined(null, 0, this, overnext, context);
 		}
 		this.inSemantic = 0;
 		return;
@@ -250,9 +252,9 @@ public class AliasDeclaration extends Declaration {
 
 	public void semantic_L1(Scope sc, SemanticContext context) {
 		if (overnext != null) {
-			ScopeDsymbol.multiplyDefined(Loc.ZERO, this, overnext, context);
+			ScopeDsymbol.multiplyDefined(null, 0, this, overnext, context);
 		}
-		type = type.semantic(loc, sc, context);
+		type = type.semantic(filename, lineNumber, sc, context);
 		this.inSemantic = 0;
 		return;
 	}
@@ -274,9 +276,9 @@ public class AliasDeclaration extends Declaration {
 			FuncDeclaration f = s.toAlias(context).isFuncDeclaration();
 			if (f != null) {
 				if (overnext != null) {
-					FuncAliasDeclaration fa = new FuncAliasDeclaration(loc, f);
+					FuncAliasDeclaration fa = new FuncAliasDeclaration(filename, lineNumber, f);
 					if (!fa.overloadInsert(overnext, context)) {
-						ScopeDsymbol.multiplyDefined(Loc.ZERO, f, overnext, context);
+						ScopeDsymbol.multiplyDefined(null, 0, f, overnext, context);
 					}
 					overnext = null;
 					s = fa;
@@ -284,7 +286,7 @@ public class AliasDeclaration extends Declaration {
 				}
 			}
 			if (overnext != null) {
-				ScopeDsymbol.multiplyDefined(Loc.ZERO, s, overnext, context);
+				ScopeDsymbol.multiplyDefined(null, 0, s, overnext, context);
 			}
 			if (s == this) {
 				s = null;
@@ -299,9 +301,9 @@ public class AliasDeclaration extends Declaration {
 		Assert.isTrue(s == null);
 		AliasDeclaration sa;
 		if (type != null) {
-			sa = context.newAliasDeclaration(loc, ident, type.syntaxCopy(context));
+			sa = context.newAliasDeclaration(filename, lineNumber, ident, type.syntaxCopy(context));
 		} else {
-			sa = context.newAliasDeclaration(loc, ident, aliassym.syntaxCopy(null, context));
+			sa = context.newAliasDeclaration(filename, lineNumber, ident, aliassym.syntaxCopy(null, context));
 		}
 		// Syntax copy for header file
 		if (htype == null) // Don't overwrite original
@@ -336,7 +338,7 @@ public class AliasDeclaration extends Declaration {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.CircularDefinition, ident, toChars(context)));
 			}
-			aliassym = new TypedefDeclaration(loc, ident, Type.terror, null);
+			aliassym = new TypedefDeclaration(filename, lineNumber, ident, Type.terror, null);
 		}
 		Dsymbol s = aliassym != null ? aliassym.toAlias(context) : this;
 		return s;

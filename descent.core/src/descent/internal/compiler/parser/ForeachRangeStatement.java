@@ -1,12 +1,14 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.Constfold.Add;
+import static descent.internal.compiler.parser.Constfold.Cmp;
+import static descent.internal.compiler.parser.Constfold.Min;
 import static descent.internal.compiler.parser.TOK.TOKforeach;
 import static descent.internal.compiler.parser.TOK.TOKgt;
 import static descent.internal.compiler.parser.TOK.TOKlt;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.Constfold.*;
 
 // DMD 2.003
 public class ForeachRangeStatement extends Statement {
@@ -18,9 +20,9 @@ public class ForeachRangeStatement extends Statement {
 	public Statement body;
 	public VarDeclaration key;
 
-	public ForeachRangeStatement(Loc loc, TOK op, Argument arg, Expression lwr,
+	public ForeachRangeStatement(char[] filename, int lineNumber, TOK op, Argument arg, Expression lwr,
 			Expression upr, Statement body) {
-		super(loc);
+		super(filename, lineNumber);
 
 		this.op = op;
 		this.arg = arg;
@@ -83,7 +85,7 @@ public class ForeachRangeStatement extends Statement {
 					e = null;
 					break;
 				}
-				e = Add.call(key.value.type, key.value, new IntegerExp(loc, 1,
+				e = Add.call(key.value.type, key.value, new IntegerExp(filename, lineNumber, 1,
 						key.value.type), context);
 				if (e == EXP_CANT_INTERPRET)
 					break;
@@ -102,7 +104,7 @@ public class ForeachRangeStatement extends Statement {
 					break;
 				}
 
-				e = Min.call(key.value.type, key.value, new IntegerExp(loc, 1,
+				e = Min.call(key.value.type, key.value, new IntegerExp(filename, lineNumber, 1,
 						key.value.type), context);
 				if (e == EXP_CANT_INTERPRET)
 					break;
@@ -152,7 +154,7 @@ public class ForeachRangeStatement extends Statement {
 		} else {
 			/* Must infer types from lwr and upr
 			 */
-			AddExp ea = new AddExp(loc, lwr, upr);
+			AddExp ea = new AddExp(filename, lineNumber, lwr, upr);
 			ea.typeCombine(sc, context);
 			arg.type = ea.type;
 			lwr = ea.e1;
@@ -172,8 +174,8 @@ public class ForeachRangeStatement extends Statement {
 
 		sc.noctor++;
 
-		VarDeclaration key = new VarDeclaration(loc, arg.type, arg.ident, null);
-		DeclarationExp de = new DeclarationExp(loc, key);
+		VarDeclaration key = new VarDeclaration(filename, lineNumber, arg.type, arg.ident, null);
+		DeclarationExp de = new DeclarationExp(filename, lineNumber, key);
 		de.semantic(sc, context);
 
 		if (0 < key.storage_class) {
@@ -194,7 +196,7 @@ public class ForeachRangeStatement extends Statement {
 
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
-		ForeachRangeStatement s = context.newForeachRangeStatement(loc, op, arg
+		ForeachRangeStatement s = context.newForeachRangeStatement(filename, lineNumber, op, arg
 				.syntaxCopy(context), lwr.syntaxCopy(context), upr.syntaxCopy(context),
 				null != body ? body.syntaxCopy(context) : null);
 		s.copySourceRange(this);

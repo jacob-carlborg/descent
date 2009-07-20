@@ -12,9 +12,7 @@ package descent.internal.core.util;
 
 import java.util.ArrayList;
 
-import descent.core.Signature;
 import descent.core.compiler.CharOperation;
-import descent.internal.compiler.codegen.ConstantPool;
 
 /*
  * Converts a binding key into a signature 

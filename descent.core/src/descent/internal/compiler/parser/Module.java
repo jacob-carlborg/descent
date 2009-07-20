@@ -144,7 +144,7 @@ public class Module extends Package {
 
 		boolean imObject;
 		if (ident == null || ident.ident != Id.object) {
-			Import im = new Import(Loc.ZERO, null,
+			Import im = new Import(null, 0, null,
 					new IdentifierExp(Id.object), null, false);
 			if (members == null) {
 				members = new Dsymbols(1);
@@ -461,7 +461,7 @@ public class Module extends Package {
 	}
 
 	@Override
-	public Dsymbol search(Loc loc, char[] ident, int flags,
+	public Dsymbol search(char[] filename, int lineNumber, char[] ident, int flags,
 			SemanticContext context) {
 		/* Since modules can be circularly referenced,
 		 * need to stop infinite recursive searches.
@@ -476,7 +476,7 @@ public class Module extends Package {
 		} else {
 			this.insearch = true;
 			
-			s = super.search(loc, ident, flags, context);
+			s = super.search(filename, lineNumber, ident, flags, context);
 			
 			this.insearch = false;
 
@@ -488,11 +488,11 @@ public class Module extends Package {
 		return s;
 	}
 
-	public static Module load(Loc loc, Identifiers packages,
+	public static Module load(char[] filename, int lineNumber, Identifiers packages,
 			IdentifierExp ident, SemanticContext context) {
 		
 		// Delegate to SemanticContext in order to start resolving the Descent way
-		return context.load(loc, packages, ident);
+		return context.load(filename, lineNumber, packages, ident);
 	}
 	
 	/************************************

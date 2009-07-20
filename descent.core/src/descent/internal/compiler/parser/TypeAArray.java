@@ -1,15 +1,13 @@
 package descent.internal.compiler.parser;
 
-import melnorme.miscutil.tree.TreeVisitor;
-import descent.core.compiler.IProblem;
-import descent.internal.compiler.parser.ast.IASTVisitor;
-
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
-
 import static descent.internal.compiler.parser.TY.Taarray;
 import static descent.internal.compiler.parser.TY.Tident;
 import static descent.internal.compiler.parser.TY.Tinstance;
 import static descent.internal.compiler.parser.TY.Tsarray;
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
 public class TypeAArray extends TypeArray {
@@ -53,9 +51,9 @@ public class TypeAArray extends TypeArray {
 	}
 
 	@Override
-	public Expression defaultInit(Loc loc, SemanticContext context) {
+	public Expression defaultInit(char[] filename, int lineNumber, SemanticContext context) {
 		Expression e;
-		e = new NullExp(loc);
+		e = new NullExp(filename, lineNumber);
 		e.type = this;
 		return e;
 	}
@@ -69,26 +67,26 @@ public class TypeAArray extends TypeArray {
 			Expressions arguments;
 
 			fd = context.genCfunc(Type.tsize_t, Id.aaLen);
-			ec = new VarExp(Loc.ZERO, fd);
+			ec = new VarExp(null, 0, fd);
 			arguments = new Expressions(1);
 			arguments.add(e);
-			e = new CallExp(e.loc, ec, arguments);
+			e = new CallExp(e.filename, e.lineNumber,  ec, arguments);
 			e.type = fd.type.next;
 		} else if (equals(ident, Id.keys)) {
 			Expression ec;
 			FuncDeclaration fd;
 			Expressions arguments;
-			int size = key.size(e.loc, context);
+			int size = key.size(e.filename, e.lineNumber,  context);
 
 			if (size == 0) {
 				throw new IllegalStateException("assert(size);");
 			}
 			fd = context.genCfunc(Type.tindex, Id.aaKeys);
-			ec = new VarExp(Loc.ZERO, fd);
+			ec = new VarExp(null, 0, fd);
 			arguments = new Expressions(2);
 			arguments.add(e);
-			arguments.add(new IntegerExp(Loc.ZERO, size, Type.tsize_t));
-			e = new CallExp(e.loc, ec, arguments);
+			arguments.add(new IntegerExp(null, 0, size, Type.tsize_t));
+			e = new CallExp(e.filename, e.lineNumber,  ec, arguments);
 			e.type = index.arrayOf(context);
 		} else if (equals(ident, Id.values)) {
 			Expression ec;
@@ -96,15 +94,15 @@ public class TypeAArray extends TypeArray {
 			Expressions arguments;
 
 			fd = context.genCfunc(Type.tindex, Id.aaValues);
-			ec = new VarExp(Loc.ZERO, fd);
+			ec = new VarExp(null, 0, fd);
 			arguments = new Expressions(3);
 			arguments.add(e);
-			int keysize = key.size(e.loc, context);
+			int keysize = key.size(e.filename, e.lineNumber,  context);
 			keysize = (keysize + 3) & ~3; // BUG: 64 bit pointers?
-			arguments.add(new IntegerExp(Loc.ZERO, keysize, Type.tsize_t));
-			arguments.add(new IntegerExp(Loc.ZERO, next.size(e.loc, context),
+			arguments.add(new IntegerExp(null, 0, keysize, Type.tsize_t));
+			arguments.add(new IntegerExp(null, 0, next.size(e.filename, e.lineNumber,  context),
 					Type.tsize_t));
-			e = new CallExp(e.loc, ec, arguments);
+			e = new CallExp(e.filename, e.lineNumber,  ec, arguments);
 			e.type = next.arrayOf(context);
 		} else if (equals(ident, Id.rehash)) {
 			Expression ec;
@@ -112,11 +110,11 @@ public class TypeAArray extends TypeArray {
 			Expressions arguments;
 
 			fd = context.genCfunc(Type.tint64, Id.aaRehash);
-			ec = new VarExp(Loc.ZERO, fd);
+			ec = new VarExp(null, 0, fd);
 			arguments = new Expressions(2);
 			arguments.add(e.addressOf(sc, context));
 			arguments.add(key.getInternalTypeInfo(sc, context));
-			e = new CallExp(e.loc, ec, arguments);
+			e = new CallExp(e.filename, e.lineNumber,  ec, arguments);
 			e.type = this;
 		} else {
 			e = super.dotExp(sc, e, ident, context);
@@ -140,12 +138,12 @@ public class TypeAArray extends TypeArray {
 	}
 	
 	@Override
-	public boolean isZeroInit(Loc loc, SemanticContext context) {
+	public boolean isZeroInit(char[] filename, int lineNumber, SemanticContext context) {
 		return true;
 	}
 
 	@Override
-	public Type semantic(Loc loc, Scope sc, SemanticContext context) {
+	public Type semantic(char[] filename, int lineNumber, Scope sc, SemanticContext context) {
 		// Deal with the case where we thought the index was a type, but
 		// in reality it was an expression.
 		if (index.ty == Tident || index.ty == Tinstance || index.ty == Tsarray) {
@@ -153,13 +151,13 @@ public class TypeAArray extends TypeArray {
 			Type t[] = { null };
 			Dsymbol s[] = { null };
 
-			index.resolve(loc, sc, e, t, s, context);
+			index.resolve(filename, lineNumber, sc, e, t, s, context);
 			if (e[0] != null) { // It was an expression -
 				// Rewrite as a static array
 				TypeSArray tsa;
 
 				tsa = new TypeSArray(next, e[0], context.encoder);
-				return tsa.semantic(loc, sc, context);
+				return tsa.semantic(filename, lineNumber, sc, context);
 			} else if (t[0] != null) {
 				index = t[0];
 			} else {
@@ -169,7 +167,7 @@ public class TypeAArray extends TypeArray {
 				}
 			}
 		} else {
-			index = index.semantic(loc, sc, context);
+			index = index.semantic(filename, lineNumber, sc, context);
 		}
 
 		// Compute key type; the purpose of the key type is to
@@ -189,7 +187,7 @@ public class TypeAArray extends TypeArray {
 			}
 			break;
 		}
-		next = next.semantic(loc, sc, context);
+		next = next.semantic(filename, lineNumber, sc, context);
 		switch (next.toBasetype(context).ty) {
 		case Tfunction:
 		case Tnone:
@@ -208,7 +206,7 @@ public class TypeAArray extends TypeArray {
 	}
 
 	@Override
-	public int size(Loc loc, SemanticContext context) {
+	public int size(char[] filename, int lineNumber, SemanticContext context) {
 		return PTRSIZE; /* * 2*/
 	}
 
@@ -245,7 +243,7 @@ public class TypeAArray extends TypeArray {
 	}
 	
 	@Override
-	public void resolve(Loc loc, Scope sc, Expression[] pe, Type[] pt, Dsymbol[] ps, SemanticContext context) {
+	public void resolve(char[] filename, int lineNumber, Scope sc, Expression[] pe, Type[] pt, Dsymbol[] ps, SemanticContext context) {
 	    // Deal with the case where we thought the index was a type, but
 		// in reality it was an expression.
 		if (index.ty == Tident || index.ty == Tinstance || index.ty == Tsarray) {
@@ -253,12 +251,12 @@ public class TypeAArray extends TypeArray {
 			Type[] t = { null };
 			Dsymbol[] s = { null };
 
-			index.resolve(loc, sc, e, t, s, context);
+			index.resolve(filename, lineNumber, sc, e, t, s, context);
 			if (e[0] != null) { // It was an expression -
 				// Rewrite as a static array
 
 				TypeSArray tsa = new TypeSArray(next, e[0], context.encoder);
-				tsa.resolve(loc, sc, pe, pt, ps, context);
+				tsa.resolve(filename, lineNumber, sc, pe, pt, ps, context);
 				return;
 			} else if (t != null) {
 				index = t[0];
@@ -268,7 +266,7 @@ public class TypeAArray extends TypeArray {
 				}
 			}
 		}
-		super.resolve(loc, sc, pe, pt, ps, context);
+		super.resolve(filename, lineNumber, sc, pe, pt, ps, context);
 	}
 	
 	@Override

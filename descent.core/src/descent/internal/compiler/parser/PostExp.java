@@ -1,16 +1,16 @@
 package descent.internal.compiler.parser;
 
-import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Constfold.Add;
 import static descent.internal.compiler.parser.Constfold.Min;
 import static descent.internal.compiler.parser.TOK.TOKplusplus;
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
 public class PostExp extends BinExp {
 	
-	public PostExp(Loc loc, TOK op, Expression e) {
-		super(loc, op, e, new IntegerExp(Loc.ZERO, 1, Type.tint32));
+	public PostExp(char[] filename, int lineNumber, TOK op, Expression e) {
+		super(filename, lineNumber, op, e, new IntegerExp(null, 0, 1, Type.tint32));
 	}
 
 	@Override

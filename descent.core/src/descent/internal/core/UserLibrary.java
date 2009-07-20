@@ -6,6 +6,7 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -13,16 +14,17 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import descent.core.IAccessRule;
-import descent.core.IClasspathAttribute;
-import descent.core.IClasspathEntry;
-import descent.core.JavaCore;
-import descent.internal.core.util.Messages;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import descent.core.IAccessRule;
+import descent.core.IClasspathAttribute;
+import descent.core.IClasspathEntry;
+import descent.core.JavaCore;
+import descent.internal.core.util.Messages;
 
 /**
  * Internal model element to represent a user library and code to serialize / deserialize.

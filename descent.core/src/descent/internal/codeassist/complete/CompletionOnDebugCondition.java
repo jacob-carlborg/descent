@@ -1,13 +1,12 @@
 package descent.internal.codeassist.complete;
 
 import descent.internal.compiler.parser.DebugCondition;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Module;
 
 public class CompletionOnDebugCondition extends DebugCondition {
 
-	public CompletionOnDebugCondition(Module mod, Loc loc, long level, char[] id) {
-		super(mod, loc, level, id);
+	public CompletionOnDebugCondition(Module mod, char[] filename, int lineNumber, long level, char[] id) {
+		super(mod, filename, lineNumber, level, id);
 	}
 
 }

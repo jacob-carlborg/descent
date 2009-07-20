@@ -18,7 +18,6 @@ import descent.internal.compiler.parser.Arguments;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.LINK;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Objects;
 import descent.internal.compiler.parser.TemplateAliasParameter;
 import descent.internal.compiler.parser.TemplateInstance;
@@ -151,14 +150,14 @@ public class InternalSignature {
 				@Override
 				public void acceptTypeof(char[] expression, String signature) {
 					Stack<Type> sub = stack.peek();
-					TypeTypeof type = new TypeTypeof(Loc.ZERO, encoder.decodeExpression(expression), encoder);
+					TypeTypeof type = new TypeTypeof(null, 0, encoder.decodeExpression(expression), encoder);
 					type.setSourceRange(startPosition, length);
 					sub.push(type);
 				}
 				@Override
 				public void acceptTypeofReturn() {
 					Stack<Type> sub = stack.peek();
-					TypeReturn type = new TypeReturn(Loc.ZERO);
+					TypeReturn type = new TypeReturn(null, 0);
 					type.setSourceRange(startPosition, length);
 					sub.push(type);
 				}
@@ -181,7 +180,7 @@ public class InternalSignature {
 							ti.idents.add(id);
 						}
 					} else {
-						TypeIdentifier type = new TypeIdentifier(Loc.ZERO, compoundName[0]);
+						TypeIdentifier type = new TypeIdentifier(null, 0, compoundName[0]);
 						for (int i = 1; i < compoundName.length; i++) {
 							IdentifierExp id = new IdentifierExp(compoundName[i]);
 							id.setSourceRange(startPosition, length);
@@ -272,19 +271,19 @@ public class InternalSignature {
 						TypeIdentifier typeIdent = (TypeIdentifier) previousType;
 						
 						if (typeIdent.idents == null || typeIdent.idents.isEmpty()) {
-							TemplateInstance templInstance = new TemplateInstance(Loc.ZERO, typeIdent.ident, encoder);
+							TemplateInstance templInstance = new TemplateInstance(null, 0, typeIdent.ident, encoder);
 							templInstance.setSourceRange(startPosition, length);
 							templInstance.tiargs = tiargs;
 							
-							TypeInstance typeInstance = new TypeInstance(Loc.ZERO, templInstance);
+							TypeInstance typeInstance = new TypeInstance(null, 0, templInstance);
 							typeInstance.setSourceRange(startPosition, length);
 							previous.push(typeInstance);
 						} else {
-							TemplateInstance templInstance = new TemplateInstance(Loc.ZERO, typeIdent.idents.get(typeIdent.idents.size() - 1), encoder);
+							TemplateInstance templInstance = new TemplateInstance(null, 0, typeIdent.idents.get(typeIdent.idents.size() - 1), encoder);
 							templInstance.setSourceRange(startPosition, length);
 							templInstance.tiargs = tiargs;
 							
-							TemplateInstanceWrapper wrapper = new TemplateInstanceWrapper(Loc.ZERO, templInstance);
+							TemplateInstanceWrapper wrapper = new TemplateInstanceWrapper(null, 0, templInstance);
 							wrapper.setSourceRange(startPosition, length);
 							typeIdent.idents.set(typeIdent.idents.size() - 1, wrapper);
 							
@@ -301,10 +300,10 @@ public class InternalSignature {
 					} else {
 						TypeInstance typeIdent = (TypeInstance) previousType;
 						
-						TemplateInstance templInstance = new TemplateInstance(Loc.ZERO, typeIdent.idents.get(typeIdent.idents.size() - 1), encoder);
+						TemplateInstance templInstance = new TemplateInstance(null, 0, typeIdent.idents.get(typeIdent.idents.size() - 1), encoder);
 						templInstance.setSourceRange(startPosition, length);
 						templInstance.tiargs = tiargs;
-						TemplateInstanceWrapper wrapper = new TemplateInstanceWrapper(Loc.ZERO, templInstance);
+						TemplateInstanceWrapper wrapper = new TemplateInstanceWrapper(null, 0, templInstance);
 						wrapper.setSourceRange(startPosition, length);
 						typeIdent.idents.set(typeIdent.idents.size() - 1, wrapper);
 						previous.push(typeIdent);
@@ -401,14 +400,14 @@ public class InternalSignature {
 				@Override
 				public void acceptTypeof(char[] expression, String signature) {
 					Stack<Type> sub = stack.peek();
-					TypeTypeof type = new TypeTypeof(Loc.ZERO, encoder.decodeExpression(expression), encoder);
+					TypeTypeof type = new TypeTypeof(null, 0, encoder.decodeExpression(expression), encoder);
 					type.setSourceRange(startPosition, length);
 					sub.push(type);
 				}
 				@Override
 				public void acceptTypeofReturn() {
 					Stack<Type> sub = stack.peek();
-					TypeReturn type = new TypeReturn(Loc.ZERO);
+					TypeReturn type = new TypeReturn(null, 0);
 					type.setSourceRange(startPosition, length);
 					sub.push(type);
 				}
@@ -453,7 +452,7 @@ public class InternalSignature {
 				public void acceptIdentifier(char[][] compoundName, String signature) {
 					Stack<Type> sub = stack.peek();
 					
-					TypeIdentifier type = new TypeIdentifier(Loc.ZERO, compoundName[compoundName.length - 1]);
+					TypeIdentifier type = new TypeIdentifier(null, 0, compoundName[compoundName.length - 1]);
 					type.setSourceRange(startPosition, length);
 					for (int i = 0; i < compoundName.length - 1; i++) {
 						IdentifierExp id = new IdentifierExp(compoundName[i]);
@@ -504,7 +503,7 @@ public class InternalSignature {
 				}
 				@Override
 				public void acceptTemplateTupleParameter() {
-					param[0] = new TemplateTupleParameter(Loc.ZERO, null);
+					param[0] = new TemplateTupleParameter(null, 0, null);
 					param[0].setSourceRange(startPosition, length);
 				}
 				@Override
@@ -513,7 +512,7 @@ public class InternalSignature {
 					Type type = types.isEmpty() ? null : types.get(0);				
 					Type def = defaultValue == null ? null : toType(defaultValue, encoder, startPosition,  length);
 					
-					param[0] = new TemplateTypeParameter(Loc.ZERO, null, type, def);
+					param[0] = new TemplateTypeParameter(null, 0, null, type, def);
 					param[0].setSourceRange(startPosition, length);
 				}
 				@Override
@@ -522,7 +521,7 @@ public class InternalSignature {
 					Type type = types.isEmpty() ? null : types.get(0);
 					Type def = defaultValue == null ? null : toType(defaultValue, encoder, startPosition, length);
 					
-					param[0] = new TemplateAliasParameter(Loc.ZERO, null, type, def);
+					param[0] = new TemplateAliasParameter(null, 0, null, type, def);
 					param[0].setSourceRange(startPosition, length);
 				}
 				@Override
@@ -535,7 +534,7 @@ public class InternalSignature {
 					Type type = types.get(0);
 					Expression def = defaultValue == null ? null : encoder.decodeExpression(defaultValue.toCharArray());
 					
-					param[0] = new TemplateValueParameter(Loc.ZERO, null, type, specValue[0], def, encoder);
+					param[0] = new TemplateValueParameter(null, 0, null, type, specValue[0], def, encoder);
 					param[0].setSourceRange(startPosition, length);
 				}
 				

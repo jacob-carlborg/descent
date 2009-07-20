@@ -15,7 +15,17 @@ import java.util.HashMap;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import descent.core.*;
+
+import descent.core.Flags;
+import descent.core.IBuffer;
+import descent.core.IJavaElement;
+import descent.core.ILocalVariable;
+import descent.core.IOpenable;
+import descent.core.ISourceRange;
+import descent.core.ISourceReference;
+import descent.core.JavaModelException;
+import descent.core.Signature;
+import descent.core.WorkingCopyOwner;
 import descent.internal.core.util.MementoTokenizer;
 import descent.internal.core.util.Util;
 

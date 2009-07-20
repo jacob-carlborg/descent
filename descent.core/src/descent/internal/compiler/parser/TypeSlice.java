@@ -1,11 +1,10 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.TY.Ttuple;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
-import static descent.internal.compiler.parser.TY.*;
 
 
 public class TypeSlice extends Type {
@@ -40,15 +39,15 @@ public class TypeSlice extends Type {
 	}
 
 	@Override
-	public void resolve(Loc loc, Scope sc, Expression[] pe, Type[] pt,
+	public void resolve(char[] filename, int lineNumber, Scope sc, Expression[] pe, Type[] pt,
 			Dsymbol[] ps, SemanticContext context)
 	{
-		next.resolve(loc, sc, pe, pt, ps, context);
+		next.resolve(filename, lineNumber, sc, pe, pt, ps, context);
 		if(null != pe[0])
 		{ 
 			// It's really a slice expression
 			Expression e;
-			e = new SliceExp(loc, pe[0], lwr, upr);
+			e = new SliceExp(filename, lineNumber, pe[0], lwr, upr);
 			pe[0] = e;
 		}
 		else if(null != ps[0])
@@ -80,7 +79,7 @@ public class TypeSlice extends Type {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.SliceIsOutOfRange, this, new String[] { String.valueOf(i1), String.valueOf(i2), String.valueOf(td.objects.size()) }));
 					}
-					super.resolve(loc, sc, pe, pt, ps, context); // goto Ldefault;
+					super.resolve(filename, lineNumber, sc, pe, pt, ps, context); // goto Ldefault;
 				}
 				
 				if(i1 == 0 && i2 == td.objects.size())
@@ -100,25 +99,25 @@ public class TypeSlice extends Type {
 					objects.set(i, td.objects.get(i1 + i));
 				}
 				
-				TupleDeclaration tds = new TupleDeclaration(loc, td.ident,
+				TupleDeclaration tds = new TupleDeclaration(filename, lineNumber, td.ident,
 						objects);
 				ps[0] = tds;
 			}
 			else
-				super.resolve(loc, sc, pe, pt, ps, context); // goto Ldefault;
+				super.resolve(filename, lineNumber, sc, pe, pt, ps, context); // goto Ldefault;
 		}
 		else
 		{
 			// Ldefault:
-			super.resolve(loc, sc, pe, pt, ps, context);
+			super.resolve(filename, lineNumber, sc, pe, pt, ps, context);
 		}
 	}
 
 	@Override
-	public Type semantic(Loc loc, Scope sc, SemanticContext context)
+	public Type semantic(char[] filename, int lineNumber, Scope sc, SemanticContext context)
 	{
 		// printf("TypeSlice.semantic() %s\n", toChars());
-		next = next.semantic(loc, sc, context);
+		next = next.semantic(filename, lineNumber, sc, context);
 		// printf("next: %s\n", next.toChars());
 		
 		Type tbn = next.toBasetype(context);

@@ -282,7 +282,7 @@ public abstract class ASTDmdNode extends ASTNode {
 
 	private final static class EXP_SOMETHING_INTERPRET extends Expression {
 		public EXP_SOMETHING_INTERPRET() {
-			super(null, null);
+			super(null, 0, null);
 		}
 
 		@Override
@@ -570,7 +570,7 @@ public abstract class ASTDmdNode extends ASTNode {
 			if (condition) {
 				Expression e2 = e;
 				
-				e = new CallExp(e.loc, e);
+				e = new CallExp(e.filename, e.lineNumber,  e);
 				e.copySourceRange(e2);
 				e = e.semantic(sc, context);
 			}
@@ -582,7 +582,7 @@ public abstract class ASTDmdNode extends ASTNode {
 				VarExp ve = (VarExp) e;
 
 				if ((ve.var.storage_class & STClazy) != 0) {
-					e = new CallExp(e.loc, e);
+					e = new CallExp(e.filename, e.lineNumber,  e);
 					e = e.semantic(sc, context);
 				}
 			}
@@ -619,7 +619,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		FuncDeclaration fd;
 		TemplateDeclaration td;
 
-		s = ad.search(Loc.ZERO, funcid, 0, context);
+		s = ad.search(null, 0, funcid, 0, context);
 		if (s != null) {
 			Dsymbol s2;
 
@@ -768,7 +768,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		return ids != null && ids.containsKey(ident.ident);
 	}
 
-	public void functionArguments(Loc loc, Scope sc, TypeFunction tf,
+	public void functionArguments(char[] filename, int lineNumber, Scope sc, TypeFunction tf,
 			Expressions arguments, SemanticContext context) {
 		int n;
 		int done;
@@ -820,7 +820,7 @@ public abstract class ASTDmdNode extends ASTNode {
 						if (context.isD2()) {
 							if (arg.op == TOKdefault) {
 								DefaultInitExp de = (DefaultInitExp) arg;
-								arg = de.resolve(loc, sc, context);
+								arg = de.resolve(filename, lineNumber, sc, context);
 							} else {
 								arg = arg.copy();
 							}
@@ -857,15 +857,15 @@ public abstract class ASTDmdNode extends ASTNode {
 							// arg.type
 	
 							IdentifierExp id = context.uniqueId("__arrayArg");
-							Type t = new TypeSArray(((TypeArray) tb).next, new IntegerExp(loc,
+							Type t = new TypeSArray(((TypeArray) tb).next, new IntegerExp(filename, lineNumber,
 									nargs - i), context.encoder);
-							t = t.semantic(loc, sc, context);
-							VarDeclaration v = new VarDeclaration(loc, t, id,
-									new VoidInitializer(loc));
+							t = t.semantic(filename, lineNumber, sc, context);
+							VarDeclaration v = new VarDeclaration(filename, lineNumber, t, id,
+									new VoidInitializer(filename, lineNumber));
 							v.semantic(sc, context);
 							v.parent = sc.parent;
 	
-							Expression c = new DeclarationExp(loc, v);
+							Expression c = new DeclarationExp(filename, lineNumber, v);
 							c.type = v.type;
 	
 							for (int u = i; u < nargs; u++) {
@@ -874,22 +874,22 @@ public abstract class ASTDmdNode extends ASTNode {
 									a = a.toDelegate(sc, tret, context);
 								}
 	
-								Expression e = new VarExp(loc, v);
-								e = new IndexExp(loc, e, new IntegerExp(loc, u + 1
+								Expression e = new VarExp(filename, lineNumber, v);
+								e = new IndexExp(filename, lineNumber, e, new IntegerExp(filename, lineNumber, u + 1
 										- nparams));
-								AssignExp ae = new AssignExp(loc, e, a);
+								AssignExp ae = new AssignExp(filename, lineNumber, e, a);
 								if (context.isD2()) {
 									ae.op = TOK.TOKconstruct;
 								}
 								if (c != null) {
-									c = new CommaExp(loc, c, ae);
+									c = new CommaExp(filename, lineNumber, c, ae);
 								} else {
 									c = ae;
 								}
 							}
-							arg = new VarExp(loc, v);
+							arg = new VarExp(filename, lineNumber, v);
 							if (c != null) {
-								arg = new CommaExp(loc, c, arg);
+								arg = new CommaExp(filename, lineNumber, c, arg);
 							}
 							break;
 						}
@@ -902,7 +902,7 @@ public abstract class ASTDmdNode extends ASTNode {
 							for (int u = i; u < nargs; u++) {
 								args.set(u - i, arguments.get(u));
 							}
-							arg = new NewExp(loc, null, null, p.type, args);
+							arg = new NewExp(filename, lineNumber, null, null, p.type, args);
 							break;
 						}
 						default:
@@ -942,7 +942,7 @@ public abstract class ASTDmdNode extends ASTNode {
 
 					if (tb.ty == Tstruct
 							&& 0 == (p.storageClass & (STCref | STCout))) {
-						arg = callCpCtor(loc, sc, arg, context);
+						arg = callCpCtor(filename, lineNumber, sc, arg, context);
 					}
 
 					// Convert lazy argument to a delegate
@@ -1040,8 +1040,8 @@ public abstract class ASTDmdNode extends ASTNode {
 				if (tb.ty == Tsarray) {
 					TypeSArray ts = (TypeSArray) tb;
 					Type ta = ts.next.arrayOf(context);
-					if (ts.size(arg.loc, context) == 0) {
-						arg = new NullExp(arg.loc);
+					if (ts.size(arg.filename, arg.lineNumber, context) == 0) {
+						arg = new NullExp(arg.filename, arg.lineNumber);
 						arg.type = ta;
 					} else {
 						arg = arg.castTo(sc, ta, context);
@@ -1049,7 +1049,7 @@ public abstract class ASTDmdNode extends ASTNode {
 				}
 				
 			    if (tb.ty == Tstruct) {
-					arg = callCpCtor(loc, sc, arg, context);
+					arg = callCpCtor(filename, lineNumber, sc, arg, context);
 				}
 
 				// Give error for overloaded function addresses
@@ -1083,7 +1083,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		}
 	}
 
-	private Expression callCpCtor(Loc loc, Scope sc, Expression e, SemanticContext context) {
+	private Expression callCpCtor(char[] filename, int lineNumber, Scope sc, Expression e, SemanticContext context) {
 		Type tb = e.type.toBasetype(context);
 		assert (tb.ty == Tstruct);
 		StructDeclaration sd = ((TypeStruct) tb).sym;
@@ -1095,10 +1095,10 @@ public abstract class ASTDmdNode extends ASTNode {
 			 * the stack.
 			 */
 			IdentifierExp idtmp = context.uniqueId("__tmp");
-			VarDeclaration tmp = new VarDeclaration(loc, tb, idtmp,
-					new ExpInitializer(Loc.ZERO, e));
-			Expression ae = new DeclarationExp(loc, tmp);
-			e = new CommaExp(loc, ae, new VarExp(loc, tmp));
+			VarDeclaration tmp = new VarDeclaration(filename, lineNumber, tb, idtmp,
+					new ExpInitializer(null, 0, e));
+			Expression ae = new DeclarationExp(filename, lineNumber, tmp);
+			e = new CommaExp(filename, lineNumber, ae, new VarExp(filename, lineNumber, tmp));
 			e = e.semantic(sc, context);
 		}
 		return e;
@@ -1167,7 +1167,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		return fd;
 	}
 
-	public void preFunctionArguments(Loc loc, Scope sc, Expressions exps,
+	public void preFunctionArguments(char[] filename, int lineNumber, Scope sc, Expressions exps,
 			SemanticContext context) {
 		if (exps != null) {
 			expandTuples(exps, context);
@@ -1181,7 +1181,7 @@ public abstract class ASTDmdNode extends ASTNode {
 								IProblem.SymbolNotAnExpression, 0, arg.start,
 								arg.length, arg.toChars(context)));
 					}
-					arg = new IntegerExp(arg.loc, 0, Type.tint32);
+					arg = new IntegerExp(arg.filename, arg.lineNumber, 0, Type.tint32);
 				}
 
 				arg = resolveProperties(sc, arg, context);
@@ -1652,7 +1652,7 @@ public abstract class ASTDmdNode extends ASTNode {
 			return null;
 		}
 		AssocArrayLiteralExp aae = (AssocArrayLiteralExp) earg;
-		Expression e = new IntegerExp(aae.loc, aae.keys.size(), Type.tsize_t);
+		Expression e = new IntegerExp(aae.filename, aae.lineNumber, aae.keys.size(), Type.tsize_t);
 		return e;
 	}
 
@@ -1670,7 +1670,7 @@ public abstract class ASTDmdNode extends ASTNode {
 			return null;
 		}
 		AssocArrayLiteralExp aae = (AssocArrayLiteralExp) earg;
-		Expression e = new ArrayLiteralExp(aae.loc, aae.keys);
+		Expression e = new ArrayLiteralExp(aae.filename, aae.lineNumber, aae.keys);
 		return e;
 	}
 
@@ -1688,7 +1688,7 @@ public abstract class ASTDmdNode extends ASTNode {
 			return null;
 		}
 		AssocArrayLiteralExp aae = (AssocArrayLiteralExp) earg;
-		Expression e = new ArrayLiteralExp(aae.loc, aae.values);
+		Expression e = new ArrayLiteralExp(aae.filename, aae.lineNumber, aae.values);
 		return e;
 	}
 
@@ -1740,7 +1740,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		return e;
 	}
 
-	public static final Expression getVarExp(Loc loc, InterState istate,
+	public static final Expression getVarExp(char[] filename, int lineNumber, InterState istate,
                                              Declaration d,
                                              SemanticContext context)
     {
@@ -1785,7 +1785,7 @@ public abstract class ASTDmdNode extends ASTNode {
             if (s.dsym().toInitializer() == s.sym())
             {
                 Expressions exps = new Expressions(0);
-                e = new StructLiteralExp(Loc.ZERO, s.dsym(), exps);
+                e = new StructLiteralExp(null, 0, s.dsym(), exps);
                 e = e.semantic(null, context);
             }
         }
@@ -1822,12 +1822,12 @@ public abstract class ASTDmdNode extends ASTNode {
 	}
 
 	public static void templateResolve(Match m, TemplateDeclaration td,
-			Scope sc, Loc loc, Objects targsi, Expression ethis, Expressions arguments,
+			Scope sc, char[] filename, int lineNumber, Objects targsi, Expression ethis, Expressions arguments,
 			SemanticContext context) {
 		FuncDeclaration fd;
 
 		assert (td != null);
-		fd = td.deduceFunctionTemplate(sc, loc, targsi, ethis, arguments, context);
+		fd = td.deduceFunctionTemplate(sc, filename, lineNumber, targsi, ethis, arguments, context);
 		if (null == fd) {
 			return;
 		}
@@ -2131,35 +2131,35 @@ public abstract class ASTDmdNode extends ASTNode {
 		switch (builtin) {
 		case BUILTINsin:
 			if (arg0.op == TOKfloat64) {
-				e = new RealExp(Loc.ZERO, arg0.toReal(context).sin(),
+				e = new RealExp(null, 0, arg0.toReal(context).sin(),
 						context.isD2() ? arg0.type : Type.tfloat80);
 			}
 			break;
 
 		case BUILTINcos:
 			if (arg0.op == TOKfloat64) {
-				e = new RealExp(Loc.ZERO, arg0.toReal(context).cos(),
+				e = new RealExp(null, 0, arg0.toReal(context).cos(),
 						context.isD2() ? arg0.type : Type.tfloat80);
 			}
 			break;
 
 		case BUILTINtan:
 			if (arg0.op == TOKfloat64) {
-				e = new RealExp(Loc.ZERO, arg0.toReal(context).tan(),
+				e = new RealExp(null, 0, arg0.toReal(context).tan(),
 						context.isD2() ? arg0.type : Type.tfloat80);
 			}
 			break;
 
 		case BUILTINsqrt:
 			if (arg0.op == TOKfloat64) {
-				e = new RealExp(Loc.ZERO, arg0.toReal(context).sqrt(),
+				e = new RealExp(null, 0, arg0.toReal(context).sqrt(),
 						context.isD2() ? arg0.type : Type.tfloat80);
 			}
 			break;
 
 		case BUILTINfabs:
 			if (arg0.op == TOKfloat64) {
-				e = new RealExp(Loc.ZERO, arg0.toReal(context).abs(),
+				e = new RealExp(null, 0, arg0.toReal(context).abs(),
 						context.isD2() ? arg0.type : Type.tfloat80);
 			}
 			break;
@@ -2174,7 +2174,7 @@ public abstract class ASTDmdNode extends ASTNode {
 	 * This code is analogous to that used for variables
 	 * in DotVarExp::semantic().
 	 */
-	public static Expression getRightThis(Loc loc, Scope sc,
+	public static Expression getRightThis(char[] filename, int lineNumber, Scope sc,
 			AggregateDeclaration ad, Expression e1, Declaration var,
 			SemanticContext context) {
 		boolean gotoL1 = true;
@@ -2194,7 +2194,7 @@ public abstract class ASTDmdNode extends ASTNode {
 						|| !(tcd == cd || cd.isBaseOf(tcd, null, context))) {
 					if (tcd != null && tcd.isNested()) { // Try again with outer scope
 	
-						e1 = new DotVarExp(loc, e1, tcd.vthis);
+						e1 = new DotVarExp(filename, lineNumber, e1, tcd.vthis);
 						e1.type = tcd.vthis.type;
 //						e1 = e1.semantic(sc, context);
 	
@@ -2206,7 +2206,7 @@ public abstract class ASTDmdNode extends ASTNode {
 							FuncDeclaration f = s.isFuncDeclaration();
 							if (f.vthis != null) {
 								n++;
-								e1 = new VarExp(loc, f.vthis);
+								e1 = new VarExp(filename, lineNumber, f.vthis);
 							}
 							s = s.toParent();
 						}
@@ -2581,7 +2581,7 @@ public abstract class ASTDmdNode extends ASTNode {
 	 * This is to enable comparing things like an immutable
 	 * array with a mutable one.
 	 */
-	public boolean arrayTypeCompatible(Loc loc, Type t1, Type t2,
+	public boolean arrayTypeCompatible(char[] filename, int lineNumber, Type t1, Type t2,
 			SemanticContext context) {
 		t1 = t1.toBasetype(context);
 		t2 = t2.toBasetype(context);

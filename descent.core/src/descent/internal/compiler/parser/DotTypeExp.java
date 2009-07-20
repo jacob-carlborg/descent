@@ -7,8 +7,8 @@ public class DotTypeExp extends UnaExp {
 
 	public Dsymbol sym;
 
-	public DotTypeExp(Loc loc, Expression e, Dsymbol s, SemanticContext context) {
-		super(loc, TOK.TOKdottype, e);
+	public DotTypeExp(char[] filename, int lineNumber, Expression e, Dsymbol s, SemanticContext context) {
+		super(filename, lineNumber, TOK.TOKdottype, e);
 		this.sym = s;
 		this.type = s.getType(context);
 	}

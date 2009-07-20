@@ -1,14 +1,14 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.Constfold.Not;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.Constfold.Not;
 
 
 public class NotExp extends UnaExp {
 
-	public NotExp(Loc loc, Expression e1) {
-		super(loc, TOK.TOKnot, e1);
+	public NotExp(char[] filename, int lineNumber, Expression e1) {
+		super(filename, lineNumber, TOK.TOKnot, e1);
 	}
 	
 	@Override

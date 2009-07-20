@@ -4,13 +4,12 @@ import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.GotoStatement;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.InterState;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.SemanticContext;
 
 public class CompileTimeGotoStatement extends GotoStatement {
 
-	public CompileTimeGotoStatement(Loc loc, IdentifierExp ident) {
-		super(loc, ident);
+	public CompileTimeGotoStatement(char[] filename, int lineNumber, IdentifierExp ident) {
+		super(filename, lineNumber, ident);
 	}
 	
 	@Override

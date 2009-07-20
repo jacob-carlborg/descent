@@ -9,8 +9,8 @@ public class ComplexExp extends Expression {
 
 	public complex_t value;
 
-	public ComplexExp(Loc loc, complex_t value, Type type) {
-		super(loc, TOK.TOKcomplex80);
+	public ComplexExp(char[] filename, int lineNumber, complex_t value, Type type) {
+		super(filename, lineNumber, TOK.TOKcomplex80);
 		this.value = value;
 		this.type = type;
 	}
@@ -72,7 +72,7 @@ public class ComplexExp extends Expression {
 		if (type == null) {
 			type = Type.tcomplex80;
 		} else {
-			type = type.semantic(loc, sc, context);
+			type = type.semantic(filename, lineNumber, sc, context);
 		}
 		return this;
 	}

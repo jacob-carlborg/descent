@@ -14,8 +14,8 @@ public class GotoStatement extends Statement {
 	public LabelDsymbol label;
 	public TryFinallyStatement tf;
 
-	public GotoStatement(Loc loc, IdentifierExp ident) {
-		super(loc);
+	public GotoStatement(char[] filename, int lineNumber, IdentifierExp ident) {
+		super(filename, lineNumber);
 		this.ident = ident;
 	}
 
@@ -77,7 +77,7 @@ public class GotoStatement extends Statement {
 			Statement s;
 
 			a.add(this);
-			s = new CompoundStatement(loc, a);
+			s = new CompoundStatement(filename, lineNumber, a);
 			
 			if (sc.fes.gotos == null) {
 				sc.fes.gotos = new ArrayList(1);
@@ -95,7 +95,7 @@ public class GotoStatement extends Statement {
 
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
-		GotoStatement s = context.newGotoStatement(loc, ident);
+		GotoStatement s = context.newGotoStatement(filename, lineNumber, ident);
 		s.copySourceRange(this);
 		return s;
 	}

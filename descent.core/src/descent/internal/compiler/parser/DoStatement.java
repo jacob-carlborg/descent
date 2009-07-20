@@ -1,16 +1,19 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.BE.BEbreak;
+import static descent.internal.compiler.parser.BE.BEcontinue;
+import static descent.internal.compiler.parser.BE.BEfallthru;
+import static descent.internal.compiler.parser.BE.BEthrow;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.BE.*;
 
 public class DoStatement extends Statement {
 
 	public Expression condition;
 	public Statement body;
 
-	public DoStatement(Loc loc, Statement b, Expression c) {
-		super(loc);
+	public DoStatement(char[] filename, int lineNumber, Statement b, Expression c) {
+		super(filename, lineNumber);
 		this.condition = c;
 		this.body = b;
 	}
@@ -155,7 +158,7 @@ public class DoStatement extends Statement {
 
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
-		DoStatement s = context.newDoStatement(loc, body != null ? body.syntaxCopy(context)
+		DoStatement s = context.newDoStatement(filename, lineNumber, body != null ? body.syntaxCopy(context)
 				: null, condition.syntaxCopy(context));
 		s.copySourceRange(this);
 		return s;

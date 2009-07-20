@@ -13,8 +13,8 @@ public class BreakStatement extends Statement {
 
 	public IdentifierExp ident;
 
-	public BreakStatement(Loc loc, IdentifierExp ident) {
-		super(loc);
+	public BreakStatement(char[] filename, int lineNumber, IdentifierExp ident) {
+		super(filename, lineNumber);
 		this.ident = ident;
 	}
 
@@ -81,7 +81,7 @@ public class BreakStatement extends Statement {
 							sc.fes.cases = new ArrayList(1);
 						}
 						sc.fes.cases.add(this);
-						s = new ReturnStatement(Loc.ZERO, new IntegerExp(
+						s = new ReturnStatement(null, 0, new IntegerExp(
 								sc.fes.cases.size() + 1));
 						return s;
 					}
@@ -113,7 +113,7 @@ public class BreakStatement extends Statement {
 				Statement s;
 
 				// Replace break; with return 1;
-				s = new ReturnStatement(0, new IntegerExp(1));
+				s = new ReturnStatement(null, 0, new IntegerExp(1));
 				return s;
 			}
 			if (context.acceptsErrors()) {
@@ -125,7 +125,7 @@ public class BreakStatement extends Statement {
 
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
-		BreakStatement s = context.newBreakStatement(loc, ident);
+		BreakStatement s = context.newBreakStatement(filename, lineNumber, ident);
 		s.copySourceRange(this);
 		return s;
 	}

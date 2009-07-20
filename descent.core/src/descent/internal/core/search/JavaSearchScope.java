@@ -17,6 +17,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+
 import descent.core.IClasspathContainer;
 import descent.core.IClasspathEntry;
 import descent.core.IJavaElement;

@@ -1,6 +1,7 @@
 package descent.internal.core.search.matching;
 
 import org.eclipse.core.runtime.IPath;
+
 import descent.core.IPackageFragmentRoot;
 import descent.internal.compiler.util.ObjectVector;
 import descent.internal.compiler.util.SimpleLookupTable;

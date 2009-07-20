@@ -32,12 +32,8 @@ public class ReturnStatement extends Statement {
 
 	public Expression exp, sourceExp;
 
-	public ReturnStatement(int loc, Expression exp) {
-		this(new Loc(loc), exp);
-	}
-
-	public ReturnStatement(Loc loc, Expression exp) {
-		super(loc);
+	public ReturnStatement(char[] filename, int lineNumber, Expression exp) {
+		super(filename, lineNumber);
 		this.exp = exp;
 		this.sourceExp = exp;
 	}
@@ -117,7 +113,7 @@ public class ReturnStatement extends Statement {
 		// main() returns 0, even if it returns void
 		if (exp == null && (tbret == null || tbret.ty == Tvoid) && fd.isMain()) {
 			implicit0 = 1;
-			exp = new IntegerExp(loc, 0);
+			exp = new IntegerExp(filename, lineNumber, 0);
 		}
 
 		if (sc.incontract != 0 || scx.incontract != 0) {
@@ -140,7 +136,7 @@ public class ReturnStatement extends Statement {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotReturnExpressionFromConstructor, this));
 				}
 			}
-			exp = new ThisExp(loc);
+			exp = new ThisExp(filename, lineNumber);
 		}
 
 		if (exp == null) {
@@ -188,7 +184,7 @@ public class ReturnStatement extends Statement {
 					}
 				} else {
 					fd.type.next = exp.type;
-					fd.type = fd.type.semantic(new LocWithNode(loc, this), sc, context);
+					fd.type = fd.type.semantic(filename, lineNumber, sc, context);
 					if (fd.tintro == null) {
 						tret = fd.type.nextOf();
 						tbret = tret.toBasetype(context);
@@ -207,7 +203,7 @@ public class ReturnStatement extends Statement {
 				}
 			} else {
 				fd.type.next = Type.tvoid;
-				fd.type = fd.type.semantic(loc, sc, context);
+				fd.type = fd.type.semantic(filename, lineNumber, sc, context);
 				if (fd.tintro == null) {
 					tret = Type.tvoid;
 					tbret = tret;
@@ -234,21 +230,21 @@ public class ReturnStatement extends Statement {
 					sc.fes.cases = new ArrayList(1);
 				}
 				sc.fes.cases.add(this);
-				s = new ReturnStatement(loc, new IntegerExp(loc, sc.fes.cases
+				s = new ReturnStatement(filename, lineNumber, new IntegerExp(filename, lineNumber, sc.fes.cases
 						.size() + 1));
 			} else if (fd.type.nextOf().toBasetype(context) == Type.tvoid) {
-				s = new ReturnStatement(loc, null);
+				s = new ReturnStatement(filename, lineNumber, null);
 				sc.fes.cases.add(s);
 
 				// Construct: { exp; return cases.dim + 1; }
-				Statement s1 = new ExpStatement(loc, exp);
-				Statement s2 = new ReturnStatement(loc, new IntegerExp(loc, sc.fes.cases
+				Statement s1 = new ExpStatement(filename, lineNumber, exp);
+				Statement s2 = new ReturnStatement(filename, lineNumber, new IntegerExp(filename, lineNumber, sc.fes.cases
 						.size() + 1));
-				s = new CompoundStatement(loc, s1, s2);
+				s = new CompoundStatement(filename, lineNumber, s1, s2);
 			} else {
 				// Construct: return vresult;
 				if (fd.vresult == null) {
-					VarDeclaration v = new VarDeclaration(loc, tret, Id.result, null);
+					VarDeclaration v = new VarDeclaration(filename, lineNumber, tret, Id.result, null);
 					v.noauto = true;
 					v.semantic(scx, context);
 					if (scx.insert(v) == null) {
@@ -258,7 +254,7 @@ public class ReturnStatement extends Statement {
 					fd.vresult = v;
 				}
 
-				s = new ReturnStatement(loc, new VarExp(loc, fd.vresult));
+				s = new ReturnStatement(filename, lineNumber, new VarExp(filename, lineNumber, fd.vresult));
 				
 				if (sc.fes.cases == null) {
 					sc.fes.cases = new Objects(1);
@@ -266,12 +262,12 @@ public class ReturnStatement extends Statement {
 				sc.fes.cases.add(s);
 
 				// Construct: { vresult = exp; return cases.dim + 1; }
-				exp = new AssignExp(loc, new VarExp(loc, fd.vresult), exp);
+				exp = new AssignExp(filename, lineNumber, new VarExp(filename, lineNumber, fd.vresult), exp);
 				exp = exp.semantic(sc, context);
-				Statement s1 = new ExpStatement(loc, exp);
-				Statement s2 = new ReturnStatement(loc, new IntegerExp(loc, sc.fes.cases
+				Statement s1 = new ExpStatement(filename, lineNumber, exp);
+				Statement s2 = new ReturnStatement(filename, lineNumber, new IntegerExp(filename, lineNumber, sc.fes.cases
 						.size() + 1));
-				s = new CompoundStatement(loc, s1, s2);
+				s = new CompoundStatement(filename, lineNumber, s1, s2);
 			}
 			return s;
 		}
@@ -279,9 +275,9 @@ public class ReturnStatement extends Statement {
 		if (exp != null) {
 			if (fd.returnLabel != null && tbret.ty != Tvoid) {
 				Assert.isNotNull(fd.vresult);
-				VarExp v = new VarExp(loc, fd.vresult);
+				VarExp v = new VarExp(filename, lineNumber, fd.vresult);
 
-				exp = new AssignExp(loc, v, exp);
+				exp = new AssignExp(filename, lineNumber, v, exp);
 				exp = exp.semantic(sc, context);
 			}
 			//exp.dump(0);
@@ -308,7 +304,7 @@ public class ReturnStatement extends Statement {
 
 		// See if all returns are instead to be replaced with a goto returnLabel;
 		if (fd.returnLabel != null) {
-			GotoStatement gs = new GotoStatement(loc, new IdentifierExp(loc,
+			GotoStatement gs = new GotoStatement(filename, lineNumber, new IdentifierExp(filename, lineNumber,
 					Id.returnLabel));
 
 			gs.label = fd.returnLabel;
@@ -316,8 +312,8 @@ public class ReturnStatement extends Statement {
 				/* Replace: return exp;
 				 * with:    exp; goto returnLabel;
 				 */
-				Statement s = new ExpStatement(loc, exp);
-				return new CompoundStatement(loc, s, gs);
+				Statement s = new ExpStatement(filename, lineNumber, exp);
+				return new CompoundStatement(filename, lineNumber, s, gs);
 			}
 			
 			return gs;
@@ -326,10 +322,10 @@ public class ReturnStatement extends Statement {
 		if (exp != null && tbret.ty == Tvoid && !fd.isMain()) {
 			Statement s;
 
-			s = new ExpStatement(loc, exp);
+			s = new ExpStatement(filename, lineNumber, exp);
 			
 			exp = null;
-			return new CompoundStatement(loc, s, this);
+			return new CompoundStatement(filename, lineNumber, s, this);
 		}
 
 		return this;
@@ -341,7 +337,7 @@ public class ReturnStatement extends Statement {
 		if (exp != null) {
 			e = exp.syntaxCopy(context);
 		}
-		ReturnStatement s = context.newReturnStatement(loc, e);
+		ReturnStatement s = context.newReturnStatement(filename, lineNumber, e);
 		s.copySourceRange(this);
 		return s;
 	}

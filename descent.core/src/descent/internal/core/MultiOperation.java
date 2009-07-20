@@ -14,7 +14,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IStatus;
-import descent.core.*;
+
+import descent.core.IJavaElement;
+import descent.core.IJavaModelStatus;
+import descent.core.IJavaModelStatusConstants;
+import descent.core.IMethod;
+import descent.core.IPackageFragment;
+import descent.core.JavaConventions;
+import descent.core.JavaModelException;
 
 /**
  * This class is used to perform operations on multiple <code>IJavaElement</code>.

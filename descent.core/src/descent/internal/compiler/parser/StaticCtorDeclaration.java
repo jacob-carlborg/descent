@@ -9,8 +9,8 @@ public class StaticCtorDeclaration extends FuncDeclaration {
 	
 	public int thisStart; // where the "this" keyword starts
 
-	public StaticCtorDeclaration(Loc loc) {
-		super(loc, new IdentifierExp(Id.staticCtor), STC.STCstatic,
+	public StaticCtorDeclaration(char[] filename, int lineNumber) {
+		super(filename, lineNumber, new IdentifierExp(Id.staticCtor), STC.STCstatic,
 				null);
 	}
 
@@ -78,22 +78,22 @@ public class StaticCtorDeclaration extends FuncDeclaration {
 			 * threads during static construction.
 			 */
 			IdentifierExp id = context.uniqueId("__gate");
-			VarDeclaration v = new VarDeclaration(Loc.ZERO, Type.tint32, id,
+			VarDeclaration v = new VarDeclaration(null, 0, Type.tint32, id,
 					null);
 			v.storage_class = STC.STCstatic;
 			Statements sa = new Statements(1);
-			Statement s = new DeclarationStatement(Loc.ZERO, v);
+			Statement s = new DeclarationStatement(null, 0, v);
 			sa.add(s);
-			Expression e = new IdentifierExp(Loc.ZERO, id);
-			e = new AddAssignExp(Loc.ZERO, e, new IntegerExp(1));
-			e = new EqualExp(Loc.ZERO, TOK.TOKnotequal, e, new IntegerExp(1));
-			s = new IfStatement(Loc.ZERO, null, e, new ReturnStatement(
-					Loc.ZERO, null), null);
+			Expression e = new IdentifierExp(null, 0, id);
+			e = new AddAssignExp(null, 0, e, new IntegerExp(1));
+			e = new EqualExp(null, 0, TOK.TOKnotequal, e, new IntegerExp(1));
+			s = new IfStatement(null, 0, null, e, new ReturnStatement(
+					null, 0, null), null);
 			sa.add(s);
 			if (fbody != null) {
 				sa.add(fbody);
 			}
-			fbody = new CompoundStatement(Loc.ZERO, sa);
+			fbody = new CompoundStatement(null, 0, sa);
 		}
 
 		super.semantic(sc, context);
@@ -114,7 +114,7 @@ public class StaticCtorDeclaration extends FuncDeclaration {
 			throw new IllegalStateException("assert(!s);");
 		}
 
-		StaticCtorDeclaration scd = context.newStaticCtorDeclaration(loc);
+		StaticCtorDeclaration scd = context.newStaticCtorDeclaration(filename, lineNumber);
 		scd.copySourceRange(this);
 		return super.syntaxCopy(scd, context);
 	}

@@ -1,26 +1,25 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.TOK.TOKdotexp;
+import static descent.internal.compiler.parser.TOK.TOKimport;
+import static descent.internal.compiler.parser.TOK.TOKtype;
+import static descent.internal.compiler.parser.TY.Tclass;
+import static descent.internal.compiler.parser.TY.Tpointer;
+import static descent.internal.compiler.parser.TY.Tstruct;
 import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.TOK.TOKdotexp;
-import static descent.internal.compiler.parser.TOK.TOKimport;
-import static descent.internal.compiler.parser.TOK.TOKtype;
-
-import static descent.internal.compiler.parser.TY.Tclass;
-import static descent.internal.compiler.parser.TY.Tpointer;
-import static descent.internal.compiler.parser.TY.Tstruct;
 
 
 public class DotTemplateInstanceExp extends UnaExp {
 
 	public TemplateInstance ti;
 
-	public DotTemplateInstanceExp(Loc loc, Expression e, TemplateInstance ti) {
-		super(loc, TOK.TOKdotti, e);
+	public DotTemplateInstanceExp(char[] filename, int lineNumber, Expression e, TemplateInstance ti) {
+		super(filename, lineNumber, TOK.TOKdotti, e);
 		this.ti = ti;
 	}
 
@@ -82,7 +81,7 @@ public class DotTemplateInstanceExp extends UnaExp {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.TemplateIsNotAMemberOf, this, ti.toChars(context), e1.toChars(context)));
 					}
-					return new IntegerExp(loc, 0);
+					return new IntegerExp(filename, lineNumber, 0);
 				}
 			}
 		} else if (t1 != null && (t1.ty == Tstruct || t1.ty == Tclass)) {
@@ -96,7 +95,7 @@ public class DotTemplateInstanceExp extends UnaExp {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.TemplateIsNotAMemberOf, this, ti.toChars(context), e1.toChars(context)));
 				}
-				return new IntegerExp(loc, 0);
+				return new IntegerExp(filename, lineNumber, 0);
 			}
 			s = t1.toDsymbol(sc, context);
 			eleft = e1;
@@ -107,12 +106,12 @@ public class DotTemplateInstanceExp extends UnaExp {
 						IProblem.TemplateIsNotAMemberOf, this, ti.toChars(context), e1.toChars(context)));
 			}
 			// goto Lerr;
-			return new IntegerExp(loc, 0);
+			return new IntegerExp(filename, lineNumber, 0);
 		}
 
 		Assert.isNotNull(s);
 		id = ti.name.ident;
-		s2 = s.search(loc, id, 0, context);
+		s2 = s.search(filename, lineNumber, id, 0, context);
 		if (s2 == null) {
 			if (s.ident == null) {
 				if (context.acceptsErrors()) {
@@ -126,7 +125,7 @@ public class DotTemplateInstanceExp extends UnaExp {
 				}
 			}
 			// goto Lerr;
-			return new IntegerExp(loc, 0);
+			return new IntegerExp(filename, lineNumber, 0);
 		}
 		s = s2;
 		s.semantic(sc, context);
@@ -137,11 +136,11 @@ public class DotTemplateInstanceExp extends UnaExp {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolNotATemplate, ti.name, new String(id)));
 			}
 			// goto Lerr;
-			return new IntegerExp(loc, 0);
+			return new IntegerExp(filename, lineNumber, 0);
 		}
 		if (context.global.errors > 0) {
 			// goto Lerr;
-			return new IntegerExp(loc, 0);
+			return new IntegerExp(filename, lineNumber, 0);
 		}
 
 		ti.tempdecl = td;
@@ -153,15 +152,15 @@ public class DotTemplateInstanceExp extends UnaExp {
 			s = ti.inst.toAlias(context);
 			v = s.isDeclaration();
 			if (v != null) {
-				e = new DotVarExp(loc, eleft, v);
+				e = new DotVarExp(filename, lineNumber, eleft, v);
 				e = e.semantic(sc, context);
 				return e;
 			}
 		}
 
-		e = new ScopeExp(loc, ti);
+		e = new ScopeExp(filename, lineNumber, ti);
 		if (eleft != null) {
-			e = new DotExp(loc, eleft, e);
+			e = new DotExp(filename, lineNumber, eleft, e);
 		}
 		e = e.semantic(sc, context);
 		return e;
@@ -171,7 +170,7 @@ public class DotTemplateInstanceExp extends UnaExp {
 
 	@Override
 	public Expression syntaxCopy(SemanticContext context) {
-		DotTemplateInstanceExp de = new DotTemplateInstanceExp(loc, e1
+		DotTemplateInstanceExp de = new DotTemplateInstanceExp(filename, lineNumber, e1
 				.syntaxCopy(context), (TemplateInstance) ti.syntaxCopy(null, context));
 		return de;
 	}

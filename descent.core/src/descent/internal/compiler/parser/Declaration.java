@@ -36,7 +36,7 @@ public abstract class Declaration extends Dsymbol {
 	 * Issue error if not.
 	 */
 
-	public void checkModify(Loc loc, Scope sc, Type t, SemanticContext context) {
+	public void checkModify(char[] filename, int lineNumber, Scope sc, Type t, SemanticContext context) {
 		if (sc.incontract != 0 && isParameter()) {
 			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotModifyParameterInContract, this, toChars(context)));
@@ -98,7 +98,7 @@ public abstract class Declaration extends Dsymbol {
 
 	@Override
 	public int size(SemanticContext context) {
-		return type.size(loc, context);
+		return type.size(filename, lineNumber, context);
 	}
 
 	public boolean isStaticConstructor() {

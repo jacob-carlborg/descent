@@ -13,13 +13,14 @@ package descent.internal.core;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.jface.text.IDocument;
+
 import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
 import descent.core.IJavaModelStatus;
 import descent.core.IJavaModelStatusConstants;
 import descent.core.IType;
 import descent.core.JavaModelException;
-import descent.core.Signature;
 import descent.core.dom.ASTNode;
 import descent.core.dom.Argument;
 import descent.core.dom.FunctionDeclaration;
@@ -27,7 +28,6 @@ import descent.core.dom.SimpleName;
 import descent.core.dom.rewrite.ASTRewrite;
 import descent.internal.core.util.Messages;
 import descent.internal.core.util.Util;
-import org.eclipse.jface.text.IDocument;
 
 /**
  * <p>This operation creates an instance method. 

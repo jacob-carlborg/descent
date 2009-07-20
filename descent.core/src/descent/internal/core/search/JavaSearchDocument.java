@@ -15,6 +15,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+
 import descent.core.JavaModelException;
 import descent.core.search.IJavaSearchScope;
 import descent.core.search.SearchDocument;

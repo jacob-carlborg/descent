@@ -12,6 +12,7 @@ package descent.internal.core;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+
 import descent.core.IClasspathEntry;
 import descent.core.IJavaElement;
 import descent.core.JavaCore;

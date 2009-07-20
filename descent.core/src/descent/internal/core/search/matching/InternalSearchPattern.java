@@ -13,13 +13,18 @@ package descent.internal.core.search.matching;
 import java.io.File;
 import java.io.IOException;
 
-import org.eclipse.core.runtime.*;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
+
 import descent.core.IJavaElement;
-import descent.core.search.*;
+import descent.core.search.IJavaSearchScope;
+import descent.core.search.SearchParticipant;
+import descent.core.search.SearchPattern;
 import descent.internal.compiler.env.AccessRuleSet;
-import descent.internal.compiler.util.Util;
-import descent.internal.core.index.*;
-import descent.internal.core.search.*;
+import descent.internal.core.index.EntryResult;
+import descent.internal.core.index.Index;
+import descent.internal.core.search.IndexQueryRequestor;
+import descent.internal.core.search.JavaSearchScope;
 
 /**
  * Internal search pattern implementation

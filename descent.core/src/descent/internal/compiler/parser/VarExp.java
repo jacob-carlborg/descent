@@ -16,12 +16,12 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class VarExp extends SymbolExp {
 	
-	public VarExp(Loc loc, Declaration var) {
-		this(loc, var, false);
+	public VarExp(char[] filename, int lineNumber, Declaration var) {
+		this(filename, lineNumber, var, false);
 	}
 
-	public VarExp(Loc loc, Declaration var, boolean hasOverloads) {
-		super(loc, TOK.TOKvar, var, hasOverloads);
+	public VarExp(char[] filename, int lineNumber, Declaration var, boolean hasOverloads) {
+		super(filename, lineNumber, TOK.TOKvar, var, hasOverloads);
 		this.type = var.type;
 	}
 
@@ -81,7 +81,7 @@ public class VarExp extends SymbolExp {
 
 	@Override
 	public Expression interpret(InterState istate, SemanticContext context) {
-		return getVarExp(loc, istate, var, context);
+		return getVarExp(filename, lineNumber, istate, var, context);
 	}
 	
 	@Override
@@ -113,7 +113,7 @@ public class VarExp extends SymbolExp {
 		}
 
 		if (context.isD2()) {
-			var.checkModify(loc, sc, type, context);
+			var.checkModify(filename, lineNumber, sc, type, context);
 		} else {
 			VarDeclaration v = var.isVarDeclaration();
 			if (v != null
@@ -181,7 +181,7 @@ public class VarExp extends SymbolExp {
 		//printf("VarExp.scanForNestedRef(%s)\n", toChars());
 		VarDeclaration v = var.isVarDeclaration();
 		if(null != v)
-			v.checkNestedReference(sc, Loc.ZERO, context);
+			v.checkNestedReference(sc, null, 0, context);
 	}
 
 	@Override
@@ -199,7 +199,7 @@ public class VarExp extends SymbolExp {
 					return ei.exp.implicitCastTo(sc, type, context);
 				}
 			}
-			v.checkNestedReference(sc, loc, context);
+			v.checkNestedReference(sc, filename, lineNumber, context);
 			if (context.isD2()) {
 				if (sc.func != null && sc.func.isPure() && 0 == sc.intypeof)
 				{

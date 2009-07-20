@@ -10,8 +10,8 @@ public class InvariantDeclaration extends FuncDeclaration {
 
 	public int invariantStart;
 
-	public InvariantDeclaration(Loc loc) {
-		super(loc, new IdentifierExp(Id.classInvariant),
+	public InvariantDeclaration(char[] filename, int lineNumber) {
+		super(filename, lineNumber, new IdentifierExp(Id.classInvariant),
 				STC.STCundefined, null);
 	}
 
@@ -89,7 +89,7 @@ public class InvariantDeclaration extends FuncDeclaration {
 		if (s != null) {
 			throw new IllegalStateException("assert(!s);");
 		}
-		id = context.newInvariantDeclaration(loc);
+		id = context.newInvariantDeclaration(filename, lineNumber);
 		super.syntaxCopy(id, context);
 		id.copySourceRange(this);
 		return id;

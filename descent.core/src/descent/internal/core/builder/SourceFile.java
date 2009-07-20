@@ -11,8 +11,8 @@
 package descent.internal.core.builder;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.env.ICompilationUnit;

@@ -1,10 +1,11 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.MATCH.MATCHconst;
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+import static descent.internal.compiler.parser.TY.Tsarray;
+import static descent.internal.compiler.parser.TY.Tstruct;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
-import static descent.internal.compiler.parser.TY.*;
-import static descent.internal.compiler.parser.MATCH.*;
 
 
 public class StructLiteralExp extends Expression {
@@ -17,8 +18,8 @@ public class StructLiteralExp extends Expression {
 	public int soffset; // offset from start of s
 	public int fillHoles; // fill alignment 'holes' with zero
 
-	public StructLiteralExp(Loc loc, StructDeclaration sd, Expressions elements) {
-		super(loc, TOK.TOKstructliteral);
+	public StructLiteralExp(char[] filename, int lineNumber, StructDeclaration sd, Expressions elements) {
+		super(filename, lineNumber, TOK.TOKstructliteral);
 		this.sd = sd;
 		this.elements = elements;
 		// this.sym = null;
@@ -172,7 +173,7 @@ public class StructLiteralExp extends Expression {
 				expsx = null;
 				return EXP_CANT_INTERPRET;
 			}
-			StructLiteralExp se = new StructLiteralExp(loc, sd, expsx);
+			StructLiteralExp se = new StructLiteralExp(filename, lineNumber, sd, expsx);
 			se.type = type;
 			return se;
 		}
@@ -295,7 +296,8 @@ public class StructLiteralExp extends Expression {
 					}
 				} else {
 					e = v.type.defaultInit(context);
-					e.loc = loc;
+					e.filename = filename;
+					e.lineNumber = lineNumber;
 				}
 				offset = v.offset() + v.type.size(context);
 			}
@@ -308,7 +310,7 @@ public class StructLiteralExp extends Expression {
 
 	@Override
 	public Expression syntaxCopy(SemanticContext context) {
-		return new StructLiteralExp(loc, sd, arraySyntaxCopy(elements, context));
+		return new StructLiteralExp(filename, lineNumber, sd, arraySyntaxCopy(elements, context));
 	}
 
 	@Override

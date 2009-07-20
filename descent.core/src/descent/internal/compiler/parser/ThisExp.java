@@ -10,8 +10,8 @@ public class ThisExp extends Expression {
 
 	public Declaration var;
 
-	public ThisExp(Loc loc) {
-		super(loc, TOK.TOKthis);
+	public ThisExp(char[] filename, int lineNumber) {
+		super(filename, lineNumber, TOK.TOKthis);
 		this.var = null;
 	}
 
@@ -41,7 +41,7 @@ public class ThisExp extends Expression {
 		if (var == null) {
 			throw new IllegalStateException("assert(var);");
 		}
-		var.isVarDeclaration().checkNestedReference(sc, Loc.ZERO, context);
+		var.isVarDeclaration().checkNestedReference(sc, null, 0, context);
 	}
 
 	@Override
@@ -99,7 +99,7 @@ public class ThisExp extends Expression {
 		var = fd.vthis();
 		Assert.isNotNull(var.parent);
 		type = var.type;
-		var.isVarDeclaration().checkNestedReference(sc, loc, context);
+		var.isVarDeclaration().checkNestedReference(sc, filename, lineNumber, context);
 		if (context.isD2()) {
 			sc.callSuper |= Scope.CSXthis;
 		} else {

@@ -1,7 +1,21 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.PREC.PREC_add;
+import static descent.internal.compiler.parser.PREC.PREC_and;
+import static descent.internal.compiler.parser.PREC.PREC_andand;
+import static descent.internal.compiler.parser.PREC.PREC_assign;
+import static descent.internal.compiler.parser.PREC.PREC_cond;
+import static descent.internal.compiler.parser.PREC.PREC_expr;
+import static descent.internal.compiler.parser.PREC.PREC_mul;
+import static descent.internal.compiler.parser.PREC.PREC_or;
+import static descent.internal.compiler.parser.PREC.PREC_oror;
+import static descent.internal.compiler.parser.PREC.PREC_primary;
+import static descent.internal.compiler.parser.PREC.PREC_rel;
+import static descent.internal.compiler.parser.PREC.PREC_shift;
+import static descent.internal.compiler.parser.PREC.PREC_unary;
+import static descent.internal.compiler.parser.PREC.PREC_xor;
+import static descent.internal.compiler.parser.PREC.PREC_zero;
 import descent.core.compiler.ITerminalSymbols;
-import static descent.internal.compiler.parser.PREC.*;
 
 
 public enum TOK implements ITerminalSymbols {

@@ -1,14 +1,14 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.Constfold.Add;
+import static descent.internal.compiler.parser.TOK.TOKsymoff;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.TOK.*;
-import static descent.internal.compiler.parser.Constfold.Add;
 
 public class AddExp extends BinExp {
 
-	public AddExp(Loc loc, Expression e1, Expression e2) {
-		super(loc, TOK.TOKadd, e1, e2);
+	public AddExp(char[] filename, int lineNumber, Expression e1, Expression e2) {
+		super(filename, lineNumber, TOK.TOKadd, e1, e2);
 	}
 
 	@Override
@@ -135,7 +135,7 @@ public class AddExp extends BinExp {
 	     */
 	    Expression ex1 = e1.buildArrayLoop(fparams, context);
 	    Expression ex2 = e2.buildArrayLoop(fparams, context);
-	    Expression e = new AddExp(Loc.ZERO, ex1, ex2);
+	    Expression e = new AddExp(null, 0, ex1, ex2);
 	    return e;
 	}
 

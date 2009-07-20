@@ -1,16 +1,14 @@
 package descent.internal.compiler.parser;
 
-import melnorme.miscutil.tree.TreeVisitor;
-import descent.core.compiler.IProblem;
-import descent.internal.compiler.parser.ast.IASTVisitor;
-
 import static descent.internal.compiler.parser.MATCH.MATCHconvert;
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
-
 import static descent.internal.compiler.parser.TY.Tfunction;
 import static descent.internal.compiler.parser.TY.Tpointer;
 import static descent.internal.compiler.parser.TY.Tvoid;
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
 public class TypePointer extends Type {
@@ -29,9 +27,9 @@ public class TypePointer extends Type {
 	}
 
 	@Override
-	public Expression defaultInit(Loc loc, SemanticContext context) {
+	public Expression defaultInit(char[] filename, int lineNumber, SemanticContext context) {
 		Expression e;
-		e = new NullExp(loc);
+		e = new NullExp(filename, lineNumber);
 		e.type = this;
 		return e;
 	}
@@ -79,13 +77,13 @@ public class TypePointer extends Type {
 	}
 
 	@Override
-	public boolean isZeroInit(Loc loc, SemanticContext context) {
+	public boolean isZeroInit(char[] filename, int lineNumber, SemanticContext context) {
 		return true;
 	}
 
 	@Override
-	public Type semantic(Loc loc, Scope sc, SemanticContext context) {
-		Type n = next.semantic(loc, sc, context);
+	public Type semantic(char[] filename, int lineNumber, Scope sc, SemanticContext context) {
+		Type n = next.semantic(filename, lineNumber, sc, context);
 		switch (n.toBasetype(context).ty) {
 		case Ttuple:
 			if (context.acceptsErrors()) {
@@ -103,7 +101,7 @@ public class TypePointer extends Type {
 	}
 
 	@Override
-	public int size(Loc loc, SemanticContext context) {
+	public int size(char[] filename, int lineNumber, SemanticContext context) {
 		return PTRSIZE;
 	}
 

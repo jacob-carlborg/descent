@@ -10,6 +10,8 @@
  *******************************************************************************/
 package descent.internal.core;
 
+import org.eclipse.jface.text.IDocument;
+
 import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
 import descent.core.IJavaModelStatus;
@@ -21,7 +23,6 @@ import descent.core.dom.AggregateDeclaration;
 import descent.core.dom.SimpleName;
 import descent.core.dom.rewrite.ASTRewrite;
 import descent.internal.core.util.Messages;
-import org.eclipse.jface.text.IDocument;
 
 /**
  * <p>This operation creates a class or interface.

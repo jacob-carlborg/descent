@@ -10,9 +10,10 @@ public class StaticAssert extends Dsymbol {
 	public Expression exp, sourceExp;
 	public Expression msg, sourceMsg;
 
-	public StaticAssert(Loc loc, Expression exp, Expression msg) {
+	public StaticAssert(char[] filename, int lineNumber, Expression exp, Expression msg) {
 		super(IdentifierExp.EMPTY);
-		this.loc = loc;
+		this.filename = filename;
+		this.lineNumber = lineNumber;
 		this.exp = this.sourceExp = exp;
 		this.msg = this.sourceMsg = msg;
 	}
@@ -99,7 +100,7 @@ public class StaticAssert extends Dsymbol {
 		if (s != null) {
 			throw new IllegalStateException("assert(!s);");
 		}
-		sa = context.newStaticAssert(loc, exp.syntaxCopy(context), msg != null ? msg
+		sa = context.newStaticAssert(filename, lineNumber, exp.syntaxCopy(context), msg != null ? msg
 				.syntaxCopy(context) : null);
 		sa.copySourceRange(this);
 		return sa;

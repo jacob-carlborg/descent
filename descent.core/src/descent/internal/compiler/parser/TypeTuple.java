@@ -1,12 +1,10 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.STC.STCin;
+import static descent.internal.compiler.parser.TY.Ttuple;
 import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
-import static descent.internal.compiler.parser.STC.STCin;
-
-import static descent.internal.compiler.parser.TY.Ttuple;
 
 
 public class TypeTuple extends Type {
@@ -81,19 +79,19 @@ public class TypeTuple extends Type {
 	}
 
 	@Override
-	public Expression getProperty(Loc loc, char[] ident, int lineNumber, int start, int length,
+	public Expression getProperty(char[] filename, int lineNumber, char[] ident, int start, int length,
 			SemanticContext context) {
 		Expression e;
 
 		if (equals(ident, Id.length)) {
-			e = new IntegerExp(loc, arguments.size(), Type.tsize_t);
+			e = new IntegerExp(filename, lineNumber, arguments.size(), Type.tsize_t);
 		} else {
 			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.NoPropertyForTuple, lineNumber, start, length, new String[] { new String(ident),
 								toChars(context) }));
 			}
-			e = new IntegerExp(loc, 1, Type.tint32);
+			e = new IntegerExp(filename, lineNumber, 1, Type.tint32);
 		}
 		return e;
 	}
@@ -117,7 +115,7 @@ public class TypeTuple extends Type {
 	}
 
 	@Override
-	public Type semantic(Loc loc, Scope sc, SemanticContext context) {
+	public Type semantic(char[] filename, int lineNumber, Scope sc, SemanticContext context) {
 		if (null == deco)
 			deco = merge(context).deco;
 

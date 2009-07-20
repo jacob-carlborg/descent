@@ -64,21 +64,21 @@ public class ClassDeclaration extends AggregateDeclaration {
 	// Scope used in the initializeSpecial method
 	private Scope specialInitializeScope;
 
-	public ClassDeclaration(Loc loc, char[] id) { 
-		this(loc, id, null);
+	public ClassDeclaration(char[] filename, int lineNumber, char[] id) { 
+		this(filename, lineNumber, id, null);
 	}
 	
-	public ClassDeclaration(Loc loc, IdentifierExp id) { 
-		this(loc, id, null);
+	public ClassDeclaration(char[] filename, int lineNumber, IdentifierExp id) { 
+		this(filename, lineNumber, id, null);
 	}
 
-	public ClassDeclaration(Loc loc, char[] id, BaseClasses baseclasses) {
-		this(loc, new IdentifierExp(loc, id), baseclasses);
+	public ClassDeclaration(char[] filename, int lineNumber, char[] id, BaseClasses baseclasses) {
+		this(filename, lineNumber, new IdentifierExp(filename, lineNumber, id), baseclasses);
 	}
 
-	public ClassDeclaration(Loc loc, IdentifierExp id,
+	public ClassDeclaration(char[] filename, int lineNumber, IdentifierExp id,
 			BaseClasses baseclasses) {
-		super(loc, id);
+		super(filename, lineNumber, id);
 		if (baseclasses == null) {
 			this.baseclasses = new BaseClasses(0);
 		} else {
@@ -300,7 +300,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 	}
 
 	@Override
-	public Dsymbol search(Loc loc, char[] ident, int flags,
+	public Dsymbol search(char[] filename, int lineNumber, char[] ident, int flags,
 			SemanticContext context) {
 		Dsymbol s;
 
@@ -318,7 +318,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 			return null;
 		}
 
-		s = super.search(loc, ident, flags, context);
+		s = super.search(filename, lineNumber, ident, flags, context);
 		if (s == null) {
 			// Search bases classes in depth-first, left to right order
 
@@ -335,7 +335,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 											.toChars()));
 						}
 					} else {
-						s = b.base.search(loc, ident, flags, context);
+						s = b.base.search(filename, lineNumber, ident, flags, context);
 						if (s == this) {
 							// derives from this
 							s = null;
@@ -365,8 +365,8 @@ public class ClassDeclaration extends AggregateDeclaration {
 				parent = sc.parent;
 			}
 
-			type = type.semantic(loc, sc, context);
-			handle = handle.semantic(loc, sc, context);
+			type = type.semantic(filename, lineNumber, sc, context);
+			handle = handle.semantic(filename, lineNumber, sc, context);
 		}
 		if (members == null) // if forward reference
 		{
@@ -401,7 +401,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		for (i = 0; i < baseclasses.size();) {
 			BaseClass b = baseclasses.get(i);
 			
-			b.type = b.type.semantic(loc, sc, context);
+			b.type = b.type.semantic(filename, lineNumber, sc, context);
 			
 			if (getModule() == context.Module_rootModule) {
 				unlazy(b, context);	
@@ -438,7 +438,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 			Type tb;
 
 			b = baseclasses.get(0);
-			// b.type = b.type.semantic(loc, sc);
+			// b.type = b.type.semantic(filename, lineNumber, sc);
 			tb = b.type.toBasetype(context);
 			if (tb.ty != TY.Tclass) {
 				// If already reported error, don't report it twice
@@ -456,7 +456,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 						// Deriving from deprecated class makes this one deprecated too
 						isdeprecated = true;
 
-						tc.checkDeprecated(loc, sc, context);
+						tc.checkDeprecated(filename, lineNumber, sc, context);
 					}
 				}
 				
@@ -508,7 +508,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 			Type tb;
 
 			b = baseclasses.get(i);
-			b.type = b.type.semantic(loc, sc, context);
+			b.type = b.type.semantic(filename, lineNumber, sc, context);
 			tb = b.type.toBasetype(context);
 			if (tb.ty == TY.Tclass) {
 				tc = (TypeClass) tb;
@@ -531,7 +531,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 						// Deriving from deprecated class makes this one deprecated too
 						isdeprecated = true;
 
-						tc.checkDeprecated(loc, sc, context);
+						tc.checkDeprecated(filename, lineNumber, sc, context);
 					}
 				}
 				
@@ -567,7 +567,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		// If no base class, and this is not an Object, use Object as base class
 		if (baseClass == null && !equals(ident, Id.Object)) {
 			// BUG: what if Object is redefined in an inner scope?
-			Type tbase = new TypeIdentifier(loc, Id.Object);
+			Type tbase = new TypeIdentifier(filename, lineNumber, Id.Object);
 			BaseClass b;
 			TypeClass tc;
 			Type bt;
@@ -579,7 +579,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 				}
 				fatal(context);
 			}
-			bt = tbase.semantic(loc, sc, context).toBasetype(context);
+			bt = tbase.semantic(filename, lineNumber, sc, context).toBasetype(context);
 			b = new BaseClass(bt, PROT.PROTpublic);
 			baseclasses.add(0, b);
 			if (b.type.ty != Tclass) {
@@ -709,13 +709,13 @@ public class ClassDeclaration extends AggregateDeclaration {
 									t = ad.handle;
 								} else {
 									t = new TypePointer(Type.tvoid);
-									t = t.semantic(loc, sc, context);
+									t = t.semantic(filename, lineNumber, sc, context);
 								}
 							} else {
 								Assert.isTrue(false);
 							}
 							Assert.isTrue(vthis == null);
-							vthis = new ThisDeclaration(loc, t);
+							vthis = new ThisDeclaration(filename, lineNumber, t);
 							members.add(vthis);
 						}
 					} else {
@@ -741,7 +741,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 								t = context.Type_tvoidptr;
 							}
 							assert (null == vthis);
-							vthis = new ThisDeclaration(loc, t);
+							vthis = new ThisDeclaration(filename, lineNumber, t);
 							members.add(vthis);
 						}
 					}
@@ -891,7 +891,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 	};
 
 	private boolean isFuncHidden(FuncDeclaration fd, SemanticContext context) {
-		Dsymbol s = search(Loc.ZERO, fd.ident, 4 | 2, context);
+		Dsymbol s = search(null, 0, fd.ident, 4 | 2, context);
 		if (null == s) {
 			/* Because, due to a hack, if there are multiple definitions
 			 * of fd.ident, NULL is returned.
@@ -928,7 +928,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		if (s != null) {
 			cd = (ClassDeclaration) s;
 		} else {
-			cd = context.newClassDeclaration(loc, ident, null);
+			cd = context.newClassDeclaration(filename, lineNumber, ident, null);
 		}
 		
 		// Descent
@@ -1042,7 +1042,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		 * Look for special member functions. They must be in this class, not in
 		 * a base class.
 		 */
-		ctor = (CtorDeclaration) search(loc, Id.ctor, 0, context);
+		ctor = (CtorDeclaration) search(filename, lineNumber, Id.ctor, 0, context);
 		if (ctor != null && (ctor.toParent() != this || ctor.isCtorDeclaration() == null)) {
 			ctor = null;
 		}
@@ -1056,16 +1056,16 @@ public class ClassDeclaration extends AggregateDeclaration {
 		// inv = NULL;
 
 		// Can be in base class
-		aggNew((NewDeclaration) search(loc, Id.classNew, 0, context));
-		aggDelete((DeleteDeclaration) search(loc, Id.classDelete, 0, context));
+		aggNew((NewDeclaration) search(filename, lineNumber, Id.classNew, 0, context));
+		aggDelete((DeleteDeclaration) search(filename, lineNumber, Id.classDelete, 0, context));
 
 		// If this class has no constructor, but base class does, create
 		// a constructor:
 		// this() { }
 		if (ctor == null && baseClass != null && baseClass.ctor != null) {
 			// toChars());
-			CtorDeclaration ctor = new CtorDeclaration(loc, null, 0);
-			ctor.fbody = context.newCompoundStatement(loc, new Statements(0));
+			CtorDeclaration ctor = new CtorDeclaration(filename, lineNumber, null, 0);
+			ctor.fbody = context.newCompoundStatement(filename, lineNumber, new Statements(0));
 			this.ctor = ctor;
 			
 			members.add(ctor);

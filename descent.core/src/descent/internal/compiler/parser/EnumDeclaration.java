@@ -36,9 +36,10 @@ public class EnumDeclaration extends ScopeDsymbol {
 	
 	private IType javaElement;
 	
-	public EnumDeclaration(Loc loc, IdentifierExp id, Type memtype) {
+	public EnumDeclaration(char[] filename, int lineNumber, IdentifierExp id, Type memtype) {
 		super(id);
-		this.loc = loc;
+		this.filename = filename;
+		this.lineNumber = lineNumber;
 		this.type = new TypeEnum(this);
 		this.memtype = this.sourceMemtype = memtype;
 		this.maxval = integer_t.ZERO;
@@ -93,7 +94,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 	}
 	
 	@Override
-	public Dsymbol search(Loc loc, char[] ident, int flags, SemanticContext context) {
+	public Dsymbol search(char[] filename, int lineNumber, char[] ident, int flags, SemanticContext context) {
 		if (context.isD2()) {
 		    if (scope != null) {
 				// Try one last time to resolve this enum
@@ -107,10 +108,10 @@ public class EnumDeclaration extends ScopeDsymbol {
 				return null;
 			}
 
-			Dsymbol s = super.search(loc, ident, flags, context);
+			Dsymbol s = super.search(filename, lineNumber, ident, flags, context);
 			return s;
 		} else {
-			return super.search(loc, ident, flags, context);
+			return super.search(filename, lineNumber, ident, flags, context);
 		}
 	}
 
@@ -157,7 +158,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 			 */
 
 			if (memtype != null) {
-				memtype = memtype.semantic(loc, sc, context);
+				memtype = memtype.semantic(filename, lineNumber, sc, context);
 
 				/*
 				 * Check to see if memtype is forward referenced
@@ -182,7 +183,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 				}
 			}
 
-			type = type.semantic(loc, sc, context);
+			type = type.semantic(filename, lineNumber, sc, context);
 			if (isAnonymous()) {
 				sce = sc;
 			} else {
@@ -210,7 +211,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 				}
 
 				if (em.type != null) {
-					em.type = em.type.semantic(em.loc, sce, context);
+					em.type = em.type.semantic(em.filename, em.lineNumber, sce, context);
 				}
 				e = em.value;
 				if (e != null) {
@@ -238,7 +239,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 					} else {
 						t = Type.tint32;
 					}
-					e = new IntegerExp(em.loc, 0, Type.tint32);
+					e = new IntegerExp(em.filename, em.lineNumber, 0, Type.tint32);
 					e = e.implicitCastTo(sce, t, context);
 					e = e.optimize(WANTvalue | WANTinterpret, context);
 					if (!isAnonymous()) {
@@ -247,8 +248,8 @@ public class EnumDeclaration extends ScopeDsymbol {
 				} else {
 					// Set value to (elast + 1).
 					// But first check that (elast != t.max)
-					e = new EqualExp(em.loc, TOK.TOKequal, elast, t
-							.getProperty(Loc.ZERO, Id.max, 0, 0, 0, context));
+					e = new EqualExp(em.filename, em.lineNumber, TOK.TOKequal, elast, t
+							.getProperty(null, 0, Id.max, 0, 0, context));
 					e = e.semantic(sce, context);
 					e = e.optimize(WANTvalue | WANTinterpret, context);
 					if (e.toInteger(context).isTrue()) {
@@ -256,7 +257,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 					}
 
 					// Now set e to (elast + 1)
-					e = new AddExp(em.loc, elast, new IntegerExp(em.loc, 1,
+					e = new AddExp(em.filename, em.lineNumber, elast, new IntegerExp(em.filename, em.lineNumber, 1,
 							Type.tint32));
 					e = e.semantic(sce, context);
 					e = e.castTo(sce, elast.type, context);
@@ -304,7 +305,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 						 */
 
 						// Compute if(e < minval)
-						ec = new CmpExp(em.loc, TOK.TOKlt, e,
+						ec = new CmpExp(em.filename, em.lineNumber, TOK.TOKlt, e,
 								(Expression) minval);
 						ec = ec.semantic(sce, context);
 						ec = ec.optimize(WANTvalue | WANTinterpret, context);
@@ -312,7 +313,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 							minval = e;
 						}
 
-						ec = new CmpExp(em.loc, TOK.TOKgt, e,
+						ec = new CmpExp(em.filename, em.lineNumber, TOK.TOKgt, e,
 								(Expression) maxval);
 						ec = ec.semantic(sce, context);
 						ec = ec.optimize(WANTvalue | WANTinterpret, context);
@@ -346,7 +347,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 			}
 	
 			parent = sc.scopesym;
-			memtype = memtype.semantic(loc, sc, context);
+			memtype = memtype.semantic(filename, lineNumber, sc, context);
 	
 			/*
 			 * Check to see if memtype is forward referenced
@@ -481,7 +482,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 							throw new IllegalStateException();
 						}
 					}
-					e = new IntegerExp(em.loc, number, t);
+					e = new IntegerExp(em.filename, em.lineNumber, number, t);
 				}
 				em.value(e);
 	
@@ -544,7 +545,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 			ed = (EnumDeclaration) s;
 			ed.memtype = t;
 		} else {
-			ed = context.newEnumDeclaration(loc, ident, t);
+			ed = context.newEnumDeclaration(filename, lineNumber, ident, t);
 		}
 		super.syntaxCopy(ed, context);
 		

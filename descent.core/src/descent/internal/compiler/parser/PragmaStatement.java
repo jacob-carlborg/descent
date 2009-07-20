@@ -1,9 +1,9 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.BE.BEfallthru;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.BE.*;
 
 public class PragmaStatement extends Statement {
 
@@ -11,9 +11,9 @@ public class PragmaStatement extends Statement {
 	public Expressions args, sourceArgs;
 	public Statement body, sourceBody;
 
-	public PragmaStatement(Loc loc, IdentifierExp ident, Expressions args,
+	public PragmaStatement(char[] filename, int lineNumber, IdentifierExp ident, Expressions args,
 			Statement body) {
-		super(loc);
+		super(filename, lineNumber);
 		this.ident = ident;
 		this.args = args;
 		if (args != null) {
@@ -168,7 +168,7 @@ public class PragmaStatement extends Statement {
 		Statement b = null;
 		if (body != null)
 			b = body.syntaxCopy(context);
-		PragmaStatement s = context.newPragmaStatement(loc, ident, Expression
+		PragmaStatement s = context.newPragmaStatement(filename, lineNumber, ident, Expression
 				.arraySyntaxCopy(args, context), b);
 		s.copySourceRange(this);
 		return s;

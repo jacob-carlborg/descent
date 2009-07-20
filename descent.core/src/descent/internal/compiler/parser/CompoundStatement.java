@@ -1,9 +1,9 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.BE.BEfallthru;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.BE.*;
 
 public class CompoundStatement extends Statement {	
 
@@ -12,16 +12,16 @@ public class CompoundStatement extends Statement {
 	public Statements statements;
 	public Statements sourceStatements;
 
-	public CompoundStatement(Loc loc, Statements statements) {
-		super(loc);
+	public CompoundStatement(char[] filename, int lineNumber, Statements statements) {
+		super(filename, lineNumber);
 		this.statements = statements;
 		if (statements != null) {
 			this.sourceStatements = new Statements(statements);
 		}
 	}
 
-	public CompoundStatement(Loc loc, Statement s1, Statement s2) {
-		super(loc);
+	public CompoundStatement(char[] filename, int lineNumber, Statement s1, Statement s2) {
+		super(filename, lineNumber);
 		this.statements = new Statements(2);
 		this.statements.add(s1);
 		this.statements.add(s2);
@@ -168,25 +168,25 @@ public class CompoundStatement extends Statement {
 								for (int j = i + 1; j < statements.size(); j++) {
 									a2.add(statements.get(j));
 								}
-								body = context.newCompoundStatement(loc, a2);
+								body = context.newCompoundStatement(filename, lineNumber, a2);
 								body.copySourceRange(a2);
-								body = new ScopeStatement(loc, body);
+								body = new ScopeStatement(filename, lineNumber, body);
 								
 								IdentifierExp id = context.uniqueId("__o");
 
-								Statement handler = new ThrowStatement(loc,
-										new IdentifierExp(loc, id));
-								handler = new CompoundStatement(loc,
+								Statement handler = new ThrowStatement(filename, lineNumber,
+										new IdentifierExp(filename, lineNumber, id));
+								handler = new CompoundStatement(filename, lineNumber,
 										sexception[0], handler);
 
 								Array catches = new Array();
-								Catch ctch = new Catch(loc, null,
-										new IdentifierExp(loc, id), handler);
+								Catch ctch = new Catch(filename, lineNumber, null,
+										new IdentifierExp(filename, lineNumber, id), handler);
 								catches.add(ctch);
-								s = new TryCatchStatement(loc, body, catches);
+								s = new TryCatchStatement(filename, lineNumber, body, catches);
 
 								if (sfinally[0] != null) {
-									s = new TryFinallyStatement(loc, s,
+									s = new TryFinallyStatement(filename, lineNumber, s,
 											sfinally[0]);
 								}
 								s = s.semantic(sc, context);
@@ -208,10 +208,10 @@ public class CompoundStatement extends Statement {
 								for (int j = i + 1; j < statements.size(); j++) {
 									a2.add(statements.get(j));
 								}
-								body = new CompoundStatement(loc, a2);
+								body = new CompoundStatement(filename, lineNumber, a2);
 								body.copySourceRange(a2.get(0), a2.get(a2.size() - 1));
 								
-								s = new TryFinallyStatement(loc, body, sfinally[0]);
+								s = new TryFinallyStatement(filename, lineNumber, body, sfinally[0]);
 								s.copySourceRange(body, sfinally[0]);
 								s = s.semantic(sc, context);
 								statements.setDim(i + 1);
@@ -241,7 +241,7 @@ public class CompoundStatement extends Statement {
 			}
 			a.set(i, s);
 		}
-		CompoundStatement cs = context.newCompoundStatement(loc, a);
+		CompoundStatement cs = context.newCompoundStatement(filename, lineNumber, a);
 		cs.copySourceRange(this);
 		return cs;
 	}

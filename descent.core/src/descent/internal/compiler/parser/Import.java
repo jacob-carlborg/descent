@@ -1,10 +1,10 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.PROT.PROTprivate;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.IJavaElement;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.PROT.PROTprivate;
 
 
 public class Import extends Dsymbol {
@@ -30,10 +30,11 @@ public class Import extends Dsymbol {
 
 	public descent.internal.compiler.parser.Array aliasdecls;
 
-	public Import(Loc loc, Identifiers packages, IdentifierExp id,
+	public Import(char[] filename, int lineNumber, Identifiers packages, IdentifierExp id,
 			IdentifierExp aliasId, boolean isstatic) {
 		super(id);
-		this.loc = loc;
+		this.filename = filename;
+		this.lineNumber = lineNumber;
 		this.id = id;
 		this.packages = packages;
 		this.aliasId = aliasId;
@@ -95,8 +96,8 @@ public class Import extends Dsymbol {
 				alias = name;
 			}
 
-			TypeIdentifier tname = new TypeIdentifier(loc, name);
-			AliasDeclaration ad = new AliasDeclaration(loc, alias, tname);
+			TypeIdentifier tname = new TypeIdentifier(filename, lineNumber, name);
+			AliasDeclaration ad = new AliasDeclaration(filename, lineNumber, alias, tname);
 			ad.isImportAlias = true;
 			result |= ad.addMember(sc, sd, memnum, context);
 
@@ -147,7 +148,7 @@ public class Import extends Dsymbol {
 
 		if (null == mod) {
 			// Load module
-			mod = Module.load(loc, packages, id, context);
+			mod = Module.load(filename, lineNumber, packages, id, context);
 			
 			// Changed from DMD, since now a module that doesn't load
 			// yields a null value
@@ -176,7 +177,7 @@ public class Import extends Dsymbol {
 	}
 
 	@Override
-	public Dsymbol search(Loc loc, char[] ident, int flags,
+	public Dsymbol search(char[] filename, int lineNumber, char[] ident, int flags,
 			SemanticContext context) {
 		if (null == pkg) {
 			load(null, context);
@@ -194,7 +195,7 @@ public class Import extends Dsymbol {
 		}
 
 		// Forward it to the package/module
-		return pkg.search(loc, ident, flags, context);
+		return pkg.search(filename, lineNumber, ident, flags, context);
 	}
 
 	@Override
@@ -238,7 +239,7 @@ public class Import extends Dsymbol {
 			for (int i = 0; i < size(aliasdecls); i++) {
 				Dsymbol s = (Dsymbol) aliasdecls.get(i);
 
-				if (null == mod.search(loc, names.get(i), 0, context)) {
+				if (null == mod.search(filename, lineNumber, names.get(i), 0, context)) {
 					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.ImportNotFound, this,
@@ -274,7 +275,7 @@ public class Import extends Dsymbol {
 		assert (null == s);
 
 		Import si;
-		si = new Import(loc, packages, id, aliasId, isstatic);
+		si = new Import(filename, lineNumber, packages, id, aliasId, isstatic);
 
 		for (int i = 0; i < size(names); i++) {
 			si.addAlias(names.get(i), aliases.get(i));

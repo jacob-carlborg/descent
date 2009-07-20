@@ -2,6 +2,7 @@ package descent.internal.core;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+
 import descent.core.ClasspathContainerInitializer;
 import descent.core.IClasspathContainer;
 import descent.core.IJavaProject;

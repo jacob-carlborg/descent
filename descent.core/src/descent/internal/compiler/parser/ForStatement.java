@@ -1,8 +1,12 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.BE.BEbreak;
+import static descent.internal.compiler.parser.BE.BEcontinue;
+import static descent.internal.compiler.parser.BE.BEfallthru;
+import static descent.internal.compiler.parser.BE.BEgoto;
+import static descent.internal.compiler.parser.BE.BEthrow;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.BE.*;
 
 public class ForStatement extends Statement {
 
@@ -11,9 +15,9 @@ public class ForStatement extends Statement {
 	public Expression increment;
 	public Statement body;
 
-	public ForStatement(Loc loc, Statement init, Expression condition,
+	public ForStatement(char[] filename, int lineNumber, Statement init, Expression condition,
 			Expression increment, Statement body) {
-		super(loc);
+		super(filename, lineNumber);
 		this.init = init;
 		this.condition = condition;
 		this.increment = increment;
@@ -220,7 +224,7 @@ public class ForStatement extends Statement {
 		if (increment != null) {
 			inc = increment.syntaxCopy(context);
 		}
-		ForStatement s = context.newForStatement(loc, i, c, inc, body.syntaxCopy(context));
+		ForStatement s = context.newForStatement(filename, lineNumber, i, c, inc, body.syntaxCopy(context));
 		s.copySourceRange(this);
 		return s;
 	}

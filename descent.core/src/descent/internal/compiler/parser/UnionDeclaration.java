@@ -8,8 +8,8 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class UnionDeclaration extends StructDeclaration {
 
-	public UnionDeclaration(Loc loc, IdentifierExp id) {
-		super(loc, id);
+	public UnionDeclaration(char[] filename, int lineNumber, IdentifierExp id) {
+		super(filename, lineNumber, id);
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class UnionDeclaration extends StructDeclaration {
 		if (s != null) {
 			ud = (UnionDeclaration) s;
 		} else {
-			ud = context.newUnionDeclaration(loc, ident);
+			ud = context.newUnionDeclaration(filename, lineNumber, ident);
 		}
 		super.syntaxCopy(ud, context);
 		

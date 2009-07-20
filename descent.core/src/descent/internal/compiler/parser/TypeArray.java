@@ -33,11 +33,11 @@ public abstract class TypeArray extends Type {
 
 			nm = name1[n.ty == Twchar ? 1 : 0];
 			fd = context.genCfunc(Type.tindex, nm);
-			ec = new VarExp(Loc.ZERO, fd);
+			ec = new VarExp(null, 0, fd);
 			e = e.castTo(sc, n.arrayOf(context), context); // convert to dynamic array
 			arguments = new Expressions(1);
 			arguments.add(e);
-			e = new CallExp(e.loc, ec, arguments);
+			e = new CallExp(e.filename, e.lineNumber,  ec, arguments);
 			e.type = next.arrayOf(context);
 		} else if (equals(ident, Id.sort)
 				&& (n.ty == Tchar || n.ty == Twchar)) {
@@ -48,18 +48,18 @@ public abstract class TypeArray extends Type {
 
 			nm = name2[n.ty == Twchar ? 1 : 0];
 			fd = context.genCfunc(Type.tindex, nm);
-			ec = new VarExp(Loc.ZERO, fd);
+			ec = new VarExp(null, 0, fd);
 			e = e.castTo(sc, n.arrayOf(context), context); // convert to dynamic array
 			arguments = new Expressions(1);
 			arguments.add(e);
-			e = new CallExp(e.loc, ec, arguments);
+			e = new CallExp(e.filename, e.lineNumber,  ec, arguments);
 			e.type = next.arrayOf(context);
 		} else if (equals(ident, Id.reverse)
 				|| equals(ident, Id.dup)) {
 			Expression ec;
 			FuncDeclaration fd;
 			Expressions arguments;
-			int size = next.size(e.loc, context);
+			int size = next.size(e.filename, e.lineNumber,  context);
 			boolean dup;
 
 			if (size == 0) {
@@ -68,7 +68,7 @@ public abstract class TypeArray extends Type {
 
 			dup = equals(ident, Id.dup);
 			fd = context.genCfunc(Type.tindex, dup ? Id.adDup : Id.adReverse);
-			ec = new VarExp(Loc.ZERO, fd);
+			ec = new VarExp(null, 0, fd);
 			e = e.castTo(sc, n.arrayOf(context), context); // convert to dynamic array
 			arguments = new Expressions(3);
 			if (dup) {
@@ -76,9 +76,9 @@ public abstract class TypeArray extends Type {
 			}
 			arguments.add(e);
 			if (!dup) {
-				arguments.add(new IntegerExp(Loc.ZERO, size, Type.tsize_t));
+				arguments.add(new IntegerExp(null, 0, size, Type.tsize_t));
 			}
-			e = new CallExp(e.loc, ec, arguments);
+			e = new CallExp(e.filename, e.lineNumber,  ec, arguments);
 			e.type = next.arrayOf(context);
 		} else if (equals(ident, Id.sort)) {
 			Expression ec;
@@ -87,7 +87,7 @@ public abstract class TypeArray extends Type {
 
 			fd = context.genCfunc(tint32.arrayOf(context),
 					(n.ty == Tbit ? name3[0] : name3[1]));
-			ec = new VarExp(Loc.ZERO, fd);
+			ec = new VarExp(null, 0, fd);
 			e = e.castTo(sc, n.arrayOf(context), context); // convert to dynamic array
 			arguments = new Expressions(2);
 			arguments.add(e);
@@ -95,7 +95,7 @@ public abstract class TypeArray extends Type {
 				arguments.add(n.ty == Tsarray ? n.getTypeInfo(sc, context) // don't convert to dynamic array
 						: n.getInternalTypeInfo(sc, context));
 			}
-			e = new CallExp(e.loc, ec, arguments);
+			e = new CallExp(e.filename, e.lineNumber,  ec, arguments);
 			e.type = next.arrayOf(context);
 		} else {
 			e = super.dotExp(sc, e, ident, context);

@@ -11,14 +11,12 @@
 package descent.core.search;
 
 import descent.core.IField;
-import descent.core.IImportDeclaration;
 import descent.core.IJavaElement;
 import descent.core.IMember;
 import descent.core.IMethod;
 import descent.core.IType;
 import descent.core.ITypeParameter;
 import descent.core.JavaModelException;
-import descent.core.Signature;
 import descent.core.ToolFactory;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IScanner;

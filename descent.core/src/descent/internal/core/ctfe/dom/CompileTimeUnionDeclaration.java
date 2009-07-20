@@ -2,15 +2,14 @@ package descent.internal.core.ctfe.dom;
 
 import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.IdentifierExp;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.UnionDeclaration;
 
 public class CompileTimeUnionDeclaration extends UnionDeclaration {
 
-	public CompileTimeUnionDeclaration(Loc loc, IdentifierExp id) {
-		super(loc, id);
+	public CompileTimeUnionDeclaration(char[] filename, int lineNumber, IdentifierExp id) {
+		super(filename, lineNumber, id);
 	}
 	
 	@Override

@@ -3,7 +3,6 @@ package descent.internal.core.ctfe.dom;
 import descent.internal.compiler.parser.Dsymbols;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.IdentifierExp;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.TemplateDeclaration;
@@ -14,12 +13,12 @@ public class CompileTimeTemplateDeclaration extends TemplateDeclaration {
 	private final boolean fIgnoreFirstSemanticAnalysis;
 	private boolean fDoneSemanticAnalysis;
 
-	public CompileTimeTemplateDeclaration(Loc loc, IdentifierExp id, TemplateParameters parameters, Expression constraint, Dsymbols decldefs) {
-		this(loc, id, parameters, constraint, decldefs, false);
+	public CompileTimeTemplateDeclaration(char[] filename, int lineNumber, IdentifierExp id, TemplateParameters parameters, Expression constraint, Dsymbols decldefs) {
+		this(filename, lineNumber, id, parameters, constraint, decldefs, false);
 	}
 	
-	public CompileTimeTemplateDeclaration(Loc loc, IdentifierExp id, TemplateParameters parameters, Expression constraint, Dsymbols decldefs, boolean ignoreFirstSemanticAnalysis) {
-		super(loc, id, parameters, constraint, decldefs);
+	public CompileTimeTemplateDeclaration(char[] filename, int lineNumber, IdentifierExp id, TemplateParameters parameters, Expression constraint, Dsymbols decldefs, boolean ignoreFirstSemanticAnalysis) {
+		super(filename, lineNumber, id, parameters, constraint, decldefs);
 		
 		this.fIgnoreFirstSemanticAnalysis = ignoreFirstSemanticAnalysis;
 	}

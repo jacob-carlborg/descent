@@ -16,7 +16,6 @@ import descent.core.IMethod;
 import descent.core.IType;
 import descent.core.ITypeParameter;
 import descent.core.JavaModelException;
-import descent.core.Signature;
 import descent.core.compiler.CharOperation;
 import descent.core.search.SearchPattern;
 import descent.internal.core.util.Util;

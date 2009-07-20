@@ -1,10 +1,9 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
-import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 
 
 public class TryCatchStatement extends Statement {
@@ -12,8 +11,8 @@ public class TryCatchStatement extends Statement {
 	public Statement body, sourceBody;
 	public Array<Catch> catches, sourceCatches;
 
-	public TryCatchStatement(Loc loc, Statement body, Array<Catch> catches) {
-		super(loc);
+	public TryCatchStatement(char[] filename, int lineNumber, Statement body, Array<Catch> catches) {
+		super(filename, lineNumber);
 		this.body = this.sourceBody = body;
 		this.catches = catches;
 		if (this.catches != null) {
@@ -67,8 +66,8 @@ public class TryCatchStatement extends Statement {
 			// Determine if current catch 'hides' any previous catches
 			for (int j = 0; j < i; j++) {
 				Catch cj = catches.get(j);
-				String si = c.loc.toChars();
-				String sj = cj.loc.toChars();
+				String si = c.filename == null ? "" : new String(c.filename);
+				String sj = cj.filename == null ? "" : new String(cj.filename);
 
 				if (c.type.toBasetype(context).implicitConvTo(
 						cj.type.toBasetype(context), context) != MATCHnomatch) {
@@ -99,7 +98,7 @@ public class TryCatchStatement extends Statement {
 			c = c.syntaxCopy(context);
 			a.set(i, c);
 		}
-		TryCatchStatement s = context.newTryCatchStatement(loc, body.syntaxCopy(context), a);
+		TryCatchStatement s = context.newTryCatchStatement(filename, lineNumber, body.syntaxCopy(context), a);
 		s.copySourceRange(this);
 		return s;
 	}

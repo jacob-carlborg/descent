@@ -4,7 +4,6 @@ import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.Expressions;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.InterState;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.PragmaStatement;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.SemanticContext;
@@ -14,8 +13,8 @@ public class CompileTimePragmaStatement extends PragmaStatement {
 	
 	private Expression fMessage;
 
-	public CompileTimePragmaStatement(Loc loc, IdentifierExp ident, Expressions args, Statement body) {
-		super(loc, ident, args, body);
+	public CompileTimePragmaStatement(char[] filename, int lineNumber, IdentifierExp ident, Expressions args, Statement body) {
+		super(filename, lineNumber, ident, args, body);
 	}
 	
 	@Override

@@ -1,11 +1,13 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.BE.BEfallthru;
+import static descent.internal.compiler.parser.BE.BEnone;
+import static descent.internal.compiler.parser.BE.BEthrow;
 import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.BE.*;
 
 
 public class IfStatement extends Statement {
@@ -17,9 +19,9 @@ public class IfStatement extends Statement {
 
 	public VarDeclaration match; // for MatchExpression results
 
-	public IfStatement(Loc loc, Argument arg, Expression condition,
+	public IfStatement(char[] filename, int lineNumber, Argument arg, Expression condition,
 			Statement ifbody, Statement elsebody) {
-		super(loc);
+		super(filename, lineNumber);
 		this.arg = arg;
 		this.condition = this.sourceCondition = condition;
 		this.ifbody = this.sourceIfbody = ifbody;
@@ -127,7 +129,7 @@ public class IfStatement extends Statement {
 			scd = sc.push(sym);
 
 			Type t = arg.type != null ? arg.type : condition.type;
-			match = new VarDeclaration(loc, t, arg.ident, null);
+			match = new VarDeclaration(filename, lineNumber, t, arg.ident, null);
 			arg.var = match;
 			
 			match.noauto = true;
@@ -140,8 +142,8 @@ public class IfStatement extends Statement {
 			/*
 			 * Generate: (arg = condition)
 			 */
-			VarExp v = new VarExp(loc, match);
-			condition = new AssignExp(loc, v, condition);
+			VarExp v = new VarExp(filename, lineNumber, match);
+			condition = new AssignExp(filename, lineNumber, v, condition);
 			condition = condition.semantic(scd, context);
 		} else {
 			scd = sc.push();
@@ -160,7 +162,7 @@ public class IfStatement extends Statement {
 		if (elsebody != null) {
 			elsebody = elsebody.semanticScope(sc, null, null, context);
 		}
-		sc.mergeCallSuper(loc, cs1, this);
+		sc.mergeCallSuper(filename, lineNumber, cs1, this);
 
 		return this;
 	}
@@ -178,7 +180,7 @@ public class IfStatement extends Statement {
 		}
 
 		Argument a = arg != null ? arg.syntaxCopy(context) : null;
-		IfStatement s = context.newIfStatement(loc, a, condition.syntaxCopy(context), i, e);
+		IfStatement s = context.newIfStatement(filename, lineNumber, a, condition.syntaxCopy(context), i, e);
 		s.copySourceRange(this);
 		return s;
 	}

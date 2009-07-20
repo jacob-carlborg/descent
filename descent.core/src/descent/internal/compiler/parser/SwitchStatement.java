@@ -1,16 +1,19 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.BE.BEbreak;
+import static descent.internal.compiler.parser.BE.BEfallthru;
+import static descent.internal.compiler.parser.BE.BEnone;
+import static descent.internal.compiler.parser.BE.BEthrow;
+import static descent.internal.compiler.parser.Constfold.Equal;
+import static descent.internal.compiler.parser.TOK.TOKequal;
+import static descent.internal.compiler.parser.TY.Tarray;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.Constfold.Equal;
-import static descent.internal.compiler.parser.TOK.TOKequal;
-
-import static descent.internal.compiler.parser.TY.Tarray;
-import static descent.internal.compiler.parser.BE.*;
 
 public class SwitchStatement extends Statement {
 
@@ -23,8 +26,8 @@ public class SwitchStatement extends Statement {
 	public TryFinallyStatement tf;
 	public int hasVars;
 
-	public SwitchStatement(Loc loc, Expression c, Statement b) {
-		super(loc);
+	public SwitchStatement(char[] filename, int lineNumber, Expression c, Statement b) {
+		super(filename, lineNumber);
 		this.condition = this.sourceCondition = c;
 		this.body = this.sourceBody = b;
 	}
@@ -219,17 +222,17 @@ public class SwitchStatement extends Statement {
 			Statement s;
 
 			if (context.global.params.useSwitchError) {
-				s = new SwitchErrorStatement(loc);
+				s = new SwitchErrorStatement(filename, lineNumber);
 			} else {
-				Expression e = new HaltExp(loc);
-				s = new ExpStatement(loc, e);
+				Expression e = new HaltExp(filename, lineNumber);
+				s = new ExpStatement(filename, lineNumber, e);
 			}
 
 			a.add(body);
-			a.add(new BreakStatement(loc, null));
-			sc.sw.sdefault = new DefaultStatement(loc, s);
+			a.add(new BreakStatement(filename, lineNumber, null));
+			sc.sw.sdefault = new DefaultStatement(filename, lineNumber, s);
 			a.add(sc.sw.sdefault);
-			cs = new CompoundStatement(loc, a);
+			cs = new CompoundStatement(filename, lineNumber, a);
 			body = cs;
 		}
 
@@ -239,7 +242,7 @@ public class SwitchStatement extends Statement {
 
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
-		SwitchStatement s = context.newSwitchStatement(loc, condition.syntaxCopy(context),
+		SwitchStatement s = context.newSwitchStatement(filename, lineNumber, condition.syntaxCopy(context),
 				body.syntaxCopy(context));
 		s.copySourceRange(this);
 		return s;

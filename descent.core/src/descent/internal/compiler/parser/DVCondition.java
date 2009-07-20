@@ -9,8 +9,8 @@ public abstract class DVCondition extends Condition {
 	public int startPosition;
 	public int length;
 	
-	public DVCondition(Module mod, Loc loc, long level, char[] id) {
-		super(loc);
+	public DVCondition(Module mod, char[] filename, int lineNumber, long level, char[] id) {
+		super(filename, lineNumber);
 		this.mod = mod;
 		this.level = level;
 		this.ident = id;

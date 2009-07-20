@@ -7,8 +7,8 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
  
 public class XorExp extends BinExp {
 
-	public XorExp(Loc loc, Expression e1, Expression e2) {
-		super(loc, TOK.TOKxor, e1, e2);
+	public XorExp(char[] filename, int lineNumber, Expression e1, Expression e2) {
+		super(filename, lineNumber, TOK.TOKxor, e1, e2);
 	}
 
 	@Override
@@ -102,7 +102,7 @@ public class XorExp extends BinExp {
 	     */
 	    Expression ex1 = e1.buildArrayLoop(fparams, context);
 	    Expression ex2 = e2.buildArrayLoop(fparams, context);
-	    Expression e = new XorExp(Loc.ZERO, ex1, ex2);
+	    Expression e = new XorExp(null, 0, ex1, ex2);
 	    return e;
 	}
 

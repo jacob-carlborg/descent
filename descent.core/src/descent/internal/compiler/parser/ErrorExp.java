@@ -4,7 +4,7 @@ package descent.internal.compiler.parser;
 public class ErrorExp extends IntegerExp {
 
 	public ErrorExp() {
-		super(Loc.ZERO, Id.ZERO, 0, Type.tint32);
+		super(null, 0, Id.ZERO, 0, Type.tint32);
 	}
 
 }

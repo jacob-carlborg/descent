@@ -1,14 +1,13 @@
 package descent.internal.core.ctfe.dom;
 
 import descent.internal.compiler.parser.InvariantDeclaration;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.SemanticContext;
 
 public class CompileTimeInvariantDeclaration extends InvariantDeclaration {
 
-	public CompileTimeInvariantDeclaration(Loc loc) {
-		super(loc);
+	public CompileTimeInvariantDeclaration(char[] filename, int lineNumber) {
+		super(filename, lineNumber);
 	}
 	
 	@Override

@@ -4,8 +4,8 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class FileInitExp extends DefaultInitExp {
 
-	public FileInitExp(Loc loc) {
-		super(loc, TOK.TOKfile);
+	public FileInitExp(char[] filename, int lineNumber) {
+		super(filename, lineNumber, TOK.TOKfile);
 	}
 
 	@Override
@@ -26,10 +26,10 @@ public class FileInitExp extends DefaultInitExp {
 	}
 
 	@Override
-	public Expression resolve(Loc loc, Scope sc, SemanticContext context) {
-		char[] s = loc != null && loc.filename != null ? loc.filename
+	public Expression resolve(char[] filename, int lineNumber, Scope sc, SemanticContext context) {
+		char[] s = filename != null ? filename
 				: sc.module.ident.toChars().toCharArray();
-		Expression e = new StringExp(loc, s);
+		Expression e = new StringExp(filename, lineNumber, s);
 		e = e.semantic(sc, context);
 		e = e.castTo(sc, type, context);
 		return e;

@@ -10,12 +10,10 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import descent.core.JavaModelException;
-import descent.core.search.IJavaSearchConstants;
 import descent.core.search.IJavaSearchScope;
 import descent.core.search.SearchEngine;
 import descent.core.search.SearchParticipant;
 import descent.internal.compiler.util.SimpleLookupTable;
-import descent.internal.compiler.util.Util;
 import descent.internal.core.JavaModelManager;
 import descent.internal.core.index.Index;
 import descent.internal.core.search.JavaSearchDocument;

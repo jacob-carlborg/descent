@@ -1,30 +1,29 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.MATCH.MATCHexact;
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+import static descent.internal.compiler.parser.TY.Tarray;
+import static descent.internal.compiler.parser.TY.Tpointer;
+import static descent.internal.compiler.parser.TY.Tsarray;
+import static descent.internal.compiler.parser.TY.Tvoid;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
-import static descent.internal.compiler.parser.MATCH.MATCHexact;
-import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
-
-import static descent.internal.compiler.parser.TY.*;
-import static descent.internal.compiler.parser.TY.Tpointer;
-import static descent.internal.compiler.parser.TY.Tsarray;
 
 public class ArrayLiteralExp extends Expression {
 
 	public Expressions elements, sourceElements;
 
-	public ArrayLiteralExp(Loc loc, Expressions elements) {
-		super(loc, TOK.TOKarrayliteral);
+	public ArrayLiteralExp(char[] filename, int lineNumber, Expressions elements) {
+		super(filename, lineNumber, TOK.TOKarrayliteral);
 		this.elements = elements;
 		if (this.elements != null) {
 			this.sourceElements = new Expressions(elements);
 		}
 	}
 	
-	public ArrayLiteralExp(Loc loc, Expression e) {
-		super(loc, TOK.TOKarrayliteral);
+	public ArrayLiteralExp(char[] filename, int lineNumber, Expression e) {
+		super(filename, lineNumber, TOK.TOKarrayliteral);
 		this.elements = new Expressions(1);
 		this.elements.add(e);
 		this.sourceElements = new Expressions(elements);
@@ -204,14 +203,14 @@ public class ArrayLiteralExp extends Expression {
 			t0 = Type.tvoid;
 		}
 		// PERHAPS singleton
-		type = new TypeSArray(t0, new IntegerExp(loc, elements.size()), context.encoder);
-		type = type.semantic(loc, sc, context);
+		type = new TypeSArray(t0, new IntegerExp(filename, lineNumber, elements.size()), context.encoder);
+		type = type.semantic(filename, lineNumber, sc, context);
 		return this;
 	}
 
 	@Override
 	public Expression syntaxCopy(SemanticContext context) {
-		return new ArrayLiteralExp(loc, arraySyntaxCopy(elements, context));
+		return new ArrayLiteralExp(filename, lineNumber, arraySyntaxCopy(elements, context));
 	}
 
 	@Override
@@ -274,7 +273,7 @@ public class ArrayLiteralExp extends Expression {
 			if (expsx.size() != elements.size()) {
 				return EXP_CANT_INTERPRET;
 			}
-			ArrayLiteralExp ae = new ArrayLiteralExp(loc, expsx);
+			ArrayLiteralExp ae = new ArrayLiteralExp(filename, lineNumber, expsx);
 			ae.type = type;
 			return ae;
 		}

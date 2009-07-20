@@ -35,20 +35,20 @@ public class StringExp extends Expression {
 
 	public List<StringExp> allStringExps;
 
-	public StringExp(Loc loc, char[] string) {
-		this(loc, string, string.length);
+	public StringExp(char[] filename, int lineNumber, char[] string) {
+		this(filename, lineNumber, string, string.length);
 	}
 
-	public StringExp(Loc loc, char[] string, char postfix) {
-		this(loc, string, string.length, (char) 0);
+	public StringExp(char[] filename, int lineNumber, char[] string, char postfix) {
+		this(filename, lineNumber, string, string.length, (char) 0);
 	}
 
-	public StringExp(Loc loc, char[] string, int len) {
-		this(loc, string, len, (char) 0);
+	public StringExp(char[] filename, int lineNumber, char[] string, int len) {
+		this(filename, lineNumber, string, len, (char) 0);
 	}
 
-	public StringExp(Loc loc, char[] string, int len, char postfix) {
-		super(loc, TOK.TOKstring);
+	public StringExp(char[] filename, int lineNumber, char[] string, int len, char postfix) {
+		super(filename, lineNumber, TOK.TOKstring);
 		this.string = string;
 		this.len = len;
 		this.sz = 1;
@@ -126,7 +126,7 @@ public class StringExp extends Expression {
 				string = buffer.extractData().toCharArray();
 				len = newlen;
 				sz = 4;
-				type = new TypeSArray(Type.tdchar, new IntegerExp(loc, len,
+				type = new TypeSArray(Type.tdchar, new IntegerExp(filename, lineNumber, len,
 						Type.tindex), context.encoder);
 				committed = true;
 				break;
@@ -152,7 +152,7 @@ public class StringExp extends Expression {
 				string = buffer.extractData().toCharArray();
 				len = newlen;
 				sz = 2;
-				type = new TypeSArray(Type.twchar, new IntegerExp(loc, len,
+				type = new TypeSArray(Type.twchar, new IntegerExp(filename, lineNumber, len,
 						Type.tindex), context.encoder);
 				committed = true;
 				break;
@@ -160,11 +160,11 @@ public class StringExp extends Expression {
 			case 'c':
 				committed = true;
 			default:
-				type = new TypeSArray(Type.tchar, new IntegerExp(loc, len,
+				type = new TypeSArray(Type.tchar, new IntegerExp(filename, lineNumber, len,
 						Type.tindex), context.encoder);
 				break;
 			}
-			type = type.semantic(loc, sc, context);
+			type = type.semantic(filename, lineNumber, sc, context);
 			if (context.isD2()) {
 				type = type.invariantOf(context);
 			}
@@ -563,7 +563,7 @@ public class StringExp extends Expression {
 				// Extend with 0, add terminating 0
 				// TODO semantic
 				// memset((char *)s + d * newsz, 0, (dim2 + 1 - d) * newsz);
-				se = new StringExp(loc, s, dim2);
+				se = new StringExp(filename, lineNumber, s, dim2);
 				se.string = s;
 				se.len = dim2;
 			}
@@ -573,7 +573,7 @@ public class StringExp extends Expression {
 	}
 
 	private Expression castTo_Lcast(StringExp se, Type t) {
-		Expression e = new CastExp(loc, se, t);
+		Expression e = new CastExp(filename, lineNumber, se, t);
 		e.type = t;
 		return e;
 	}

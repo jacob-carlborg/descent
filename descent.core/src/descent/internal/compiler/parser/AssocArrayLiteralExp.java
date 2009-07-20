@@ -1,27 +1,24 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.Constfold.Equal;
+import static descent.internal.compiler.parser.MATCH.MATCHexact;
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+import static descent.internal.compiler.parser.PREC.PREC_assign;
+import static descent.internal.compiler.parser.TOK.TOKequal;
+import static descent.internal.compiler.parser.TY.Taarray;
+import static descent.internal.compiler.parser.TY.Tvoid;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.Constfold.Equal;
-
-import static descent.internal.compiler.parser.MATCH.MATCHexact;
-import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
-
-import static descent.internal.compiler.parser.PREC.PREC_assign;
-import static descent.internal.compiler.parser.TOK.TOKequal;
-
-import static descent.internal.compiler.parser.TY.Taarray;
-import static descent.internal.compiler.parser.TY.Tvoid;
 
 public class AssocArrayLiteralExp extends Expression {
 
 	public Expressions keys, sourceKeys;
 	public Expressions values, sourceValues;
 
-	public AssocArrayLiteralExp(Loc loc, Expressions keys,
+	public AssocArrayLiteralExp(char[] filename, int lineNumber, Expressions keys,
 			Expressions values) {
-		super(loc, TOK.TOKassocarrayliteral);
+		super(filename, lineNumber, TOK.TOKassocarrayliteral);
 		this.keys = keys;
 		this.values = values;
 		if (this.keys != null) {
@@ -229,7 +226,7 @@ public class AssocArrayLiteralExp extends Expression {
 		if(keysx != keys || valuesx != values)
 		{
 			AssocArrayLiteralExp ae;
-			ae = new AssocArrayLiteralExp(loc, keysx, valuesx);
+			ae = new AssocArrayLiteralExp(filename, lineNumber, keysx, valuesx);
 			ae.type = type;
 			return ae;
 		}
@@ -338,14 +335,14 @@ public class AssocArrayLiteralExp extends Expression {
 			tvalue = Type.tvoid;
 		}
 		type = new TypeAArray(tvalue, tkey);
-		type = type.semantic(loc, sc, context);
+		type = type.semantic(filename, lineNumber, sc, context);
 		return this;
 	}
 
 	@Override
 	public Expression syntaxCopy(SemanticContext context)
 	{
-		 return new AssocArrayLiteralExp(loc, 
+		 return new AssocArrayLiteralExp(filename, lineNumber, 
 				 arraySyntaxCopy(keys, context), arraySyntaxCopy(values, context));
 	}
 

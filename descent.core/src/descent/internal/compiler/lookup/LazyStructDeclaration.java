@@ -12,7 +12,6 @@ import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.DsymbolTable;
 import descent.internal.compiler.parser.Dsymbols;
 import descent.internal.compiler.parser.IdentifierExp;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.ScopeDsymbol;
 import descent.internal.compiler.parser.SemanticContext;
@@ -28,8 +27,8 @@ public class LazyStructDeclaration extends StructDeclaration implements ILazyAgg
 	
 	private final LazyAggregateDeclaration lazy;
 
-	public LazyStructDeclaration(Loc loc, IdentifierExp id, ModuleBuilder builder) {
-		super(loc, id);
+	public LazyStructDeclaration(char[] filename, int lineNumber, IdentifierExp id, ModuleBuilder builder) {
+		super(filename, lineNumber, id);
 		this.builder = builder;
 		this.lazy = new LazyAggregateDeclaration(this);
 	}
@@ -74,7 +73,7 @@ public class LazyStructDeclaration extends StructDeclaration implements ILazyAgg
 					});
 					
 					for(String key : keys) {
-						search(Loc.ZERO, key.toCharArray(), 0, context);
+						search(null, 0, key.toCharArray(), 0, context);
 					}
 				} catch (JavaModelException e) {
 					e.printStackTrace();
@@ -109,8 +108,8 @@ public class LazyStructDeclaration extends StructDeclaration implements ILazyAgg
 	}
 	
 	@Override
-	public Dsymbol search(Loc loc, char[] ident, int flags, SemanticContext context) {
-		return lazy.search(loc, ident, flags, context);
+	public Dsymbol search(char[] filename, int lineNumber, char[] ident, int flags, SemanticContext context) {
+		return lazy.search(filename, lineNumber, ident, flags, context);
 	}
 	
 	public void runMissingSemantic(Dsymbol sym, SemanticContext context) {
@@ -153,8 +152,8 @@ public class LazyStructDeclaration extends StructDeclaration implements ILazyAgg
 		return semantic3Scope;
 	}
 
-	public Dsymbol super_search(Loc loc, char[] ident, int flags, SemanticContext context) {
-		return super.search(loc, ident, flags, context);
+	public Dsymbol super_search(char[] filename, int lineNumber, char[] ident, int flags, SemanticContext context) {
+		return super.search(filename, lineNumber, ident, flags, context);
 	}
 
 	public DsymbolTable symtab() {

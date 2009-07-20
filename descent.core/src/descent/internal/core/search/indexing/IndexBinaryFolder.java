@@ -11,6 +11,7 @@ import org.eclipse.core.resources.IResourceProxy;
 import org.eclipse.core.resources.IResourceProxyVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+
 import descent.internal.compiler.util.SimpleLookupTable;
 import descent.internal.core.index.Index;
 import descent.internal.core.search.processing.JobManager;

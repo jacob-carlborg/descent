@@ -14,8 +14,8 @@ public class AsmStatement extends Statement {
 	
 	public List<Token> toklist;
 
-	public AsmStatement(Loc loc, List<Token> toklist) {
-		super(loc);
+	public AsmStatement(char[] filename, int lineNumber, List<Token> toklist) {
+		super(filename, lineNumber);
 		this.toklist = toklist;		
 	}
 		
@@ -42,7 +42,7 @@ public class AsmStatement extends Statement {
 	
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
-		return new AsmStatement(loc, toklist);
+		return new AsmStatement(filename, lineNumber, toklist);
 	}
 	
 	@Override

@@ -9,8 +9,8 @@ public class StaticIfCondition extends Condition {
 
 	public Expression exp, sourceExp;
 
-	public StaticIfCondition(Loc loc, Expression exp) {
-		super(loc);
+	public StaticIfCondition(char[] filename, int lineNumber, Expression exp) {
+		super(filename, lineNumber);
 		this.exp = this.sourceExp = exp;
 	}
 
@@ -61,7 +61,7 @@ public class StaticIfCondition extends Condition {
 
 	@Override
 	public Condition syntaxCopy(SemanticContext context) {
-		return new StaticIfCondition(loc, exp.syntaxCopy(context));
+		return new StaticIfCondition(filename, lineNumber, exp.syntaxCopy(context));
 	}
 
 	@Override

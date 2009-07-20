@@ -16,6 +16,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+
 import descent.internal.core.index.Index;
 import descent.internal.core.search.processing.JobManager;
 import descent.internal.core.util.Util;

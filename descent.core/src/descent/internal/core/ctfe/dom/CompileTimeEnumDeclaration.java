@@ -2,15 +2,14 @@ package descent.internal.core.ctfe.dom;
 
 import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.IdentifierExp;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.Type;
 
 public class CompileTimeEnumDeclaration extends EnumDeclaration {
 
-	public CompileTimeEnumDeclaration(Loc loc, IdentifierExp id, Type memtype) {
-		super(loc, id, memtype);
+	public CompileTimeEnumDeclaration(char[] filename, int lineNumber, IdentifierExp id, Type memtype) {
+		super(filename, lineNumber, id, memtype);
 	}
 	
 	@Override

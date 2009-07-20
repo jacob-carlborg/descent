@@ -129,7 +129,6 @@ public class Lexer implements IProblemRequestor {
 	public int p;
 	public int end;
 	public char[] input;
-	public Loc loc;
 
 	public Token token;
 	public Token prevToken = new Token();
@@ -146,7 +145,7 @@ public class Lexer implements IProblemRequestor {
 	// support for the  poor-line-debuggers ....
 	// remember the position of the cr/lf
 	protected int[] lineEnds;
-	protected int linnum = 1;
+	protected int lineNumber = 1;
 	protected int maxLinnum = 1;
 
 	// task tag support
@@ -242,7 +241,7 @@ public class Lexer implements IProblemRequestor {
 	}
 
 	public void reset(int offset, int length) {
-		this.linnum = 1;
+		this.lineNumber = 1;
 		this.base = offset;
 		this.end = offset + length;
 		this.p = offset;
@@ -286,7 +285,6 @@ public class Lexer implements IProblemRequestor {
 		reset(source, offset, length, tokenizeComments, tokenizePragmas,
 				tokenizeWhiteSpace, recordLineSeparator);
 		this.filename = filename;
-		this.loc = new Loc(filename, 1);
 	}
 
 	public void error(int id, int line, int offset, int length,
@@ -459,7 +457,7 @@ public class Lexer implements IProblemRequestor {
 	//	public static Map<String, Integer> count = new HashMap<String, Integer>(); 
 
 	public void scan(Token t) {
-		int linnum = this.linnum;
+		int linnum = this.lineNumber;
 
 		t.lineNumber = linnum;
 		t.special = 0;
@@ -719,7 +717,7 @@ public class Lexer implements IProblemRequestor {
 
 				case '*':
 					p++;
-					linnum = this.linnum;
+					linnum = this.lineNumber;
 					while (true) {
 						while (true) {
 							char c = input(p);
@@ -780,7 +778,7 @@ public class Lexer implements IProblemRequestor {
 					}
 
 				case '/': // do // style comments
-					linnum = this.linnum;
+					linnum = this.lineNumber;
 					while (true) {
 						char c = input(++p);
 						switch (c) {
@@ -843,7 +841,7 @@ public class Lexer implements IProblemRequestor {
 				case '+': {
 					int nest;
 
-					linnum = this.linnum;
+					linnum = this.lineNumber;
 					p++;
 					nest = 1;
 					while (true) {
@@ -3729,7 +3727,7 @@ public class Lexer implements IProblemRequestor {
 												t.value = TOK.TOKline;
 											} else {
 												t.value = TOK.TOKint64v;
-												t.intValue = new integer_t(linnum);
+												t.intValue = new integer_t(lineNumber);
 												t.special = Token.SPECIAL__LINE__;
 												t.sourceString = Id.LINE;
 											}
@@ -4301,20 +4299,20 @@ public class Lexer implements IProblemRequestor {
 					if (!Chars.ishex(c)) {
 						error(
 								IProblem.IncorrectNumberOfHexDigitsInEscapeSequence,
-								linnum, startOfNumber, p - startOfNumber,
+								lineNumber, startOfNumber, p - startOfNumber,
 								new String[] { String.valueOf(n),
 										String.valueOf(ndigits) });
 						break;
 					}
 				}
 				if (ndigits != 2 && !Utf.isValidDchar(v)) {
-					error(IProblem.InvalidUtfCharacter, linnum, startOfNumber,
+					error(IProblem.InvalidUtfCharacter, lineNumber, startOfNumber,
 							p - startOfNumber, new String[] { Long
 									.toHexString(v) });
 				}
 				c = (int) v;
 			} else {
-				error(IProblem.UndefinedEscapeHexSequence, linnum,
+				error(IProblem.UndefinedEscapeHexSequence, lineNumber,
 						startOfNumber, p - startOfNumber + 1);
 			}
 			break;
@@ -4325,7 +4323,7 @@ public class Lexer implements IProblemRequestor {
 				switch (c2) {
 				case ';':
 					c = Entity.HtmlNamedEntity(input, idstart, p - idstart,
-							linnum, this);
+							lineNumber, this);
 					if (c == ~0) {
 						// error("unnamed character entity &%.*s;", p - idstart,
 						// idstart);
@@ -4340,7 +4338,7 @@ public class Lexer implements IProblemRequestor {
 							|| (p != idstart + 1 && ('0' <= c2 && c2 <= '9'))) {
 						continue;
 					}
-					error(IProblem.UnterminatedNamedEntity, linnum,
+					error(IProblem.UnterminatedNamedEntity, lineNumber,
 							idstart - 1, p - idstart + 1);
 					break;
 				}
@@ -4367,10 +4365,10 @@ public class Lexer implements IProblemRequestor {
 				} while (++n < 3 && ('0' <= c && c <= '7'));
 				c = v;
 			    if (c > 0xFF) {
-					error(IProblem.ValueIsLargerThanAByte, linnum, p - 1, 2, new String[] { String.valueOf(c) });
+					error(IProblem.ValueIsLargerThanAByte, lineNumber, p - 1, 2, new String[] { String.valueOf(c) });
 			    }
 			} else {
-				error(IProblem.UndefinedEscapeSequence, linnum, p - 1, 2);
+				error(IProblem.UndefinedEscapeSequence, lineNumber, p - 1, 2);
 			}
 			break;
 		}
@@ -4514,11 +4512,11 @@ public class Lexer implements IProblemRequestor {
 					if (u == PS || u == LS) {
 						newline(NOT_IN_COMMENT);
 					} else {
-						error(IProblem.NonHexCharacter, linnum, p - 1, 1,
+						error(IProblem.NonHexCharacter, lineNumber, p - 1, 1,
 								new String[] { String.valueOf((char) u) });
 					}
 				} else {
-					error(IProblem.NonHexCharacter, linnum, p - 1, 1,
+					error(IProblem.NonHexCharacter, lineNumber, p - 1, 1,
 							new String[] { String.valueOf((char) c) });
 				}
 				if ((n & 1) != 0) {
@@ -4663,13 +4661,13 @@ public class Lexer implements IProblemRequestor {
 					nest = 0;
 					if (apiLevel >= D2) {
 						if (Character.isWhitespace(c)) {
-							error(IProblem.DelimiterCannotBeWhitespace, linnum, p, p - start);
+							error(IProblem.DelimiterCannotBeWhitespace, lineNumber, p, p - start);
 						}
 					}
 				}
 			} else {
 				if (blankrol != 0) {
-					error(IProblem.HeredocRestOfLineShouldBeBlank, linnum,
+					error(IProblem.HeredocRestOfLineShouldBeBlank, lineNumber,
 							t.ptr, p - t.ptr);
 					blankrol = 0;
 					continue;
@@ -5180,7 +5178,7 @@ public class Lexer implements IProblemRequestor {
 						return inreal(t);
 					}
 					if (state == STATE_hex0) {
-						error(IProblem.HexDigitExpected, linnum, p, 1,
+						error(IProblem.HexDigitExpected, lineNumber, p, 1,
 								new String[] { String.valueOf(c) });
 					}
 					break goto_done;
@@ -5244,7 +5242,7 @@ public class Lexer implements IProblemRequestor {
 						break;
 					}
 					if (state == STATE_binary0) {
-						error(IProblem.BinaryDigitExpected, linnum, p, 1);
+						error(IProblem.BinaryDigitExpected, lineNumber, p, 1);
 						state = STATE_error;
 						break;
 					} else {
@@ -5273,7 +5271,7 @@ public class Lexer implements IProblemRequestor {
 		}
 
 		if (state == STATE_octale) {
-			error(IProblem.OctalDigitExpected, linnum, p - 1, 1);
+			error(IProblem.OctalDigitExpected, lineNumber, p - 1, 1);
 		}
 
 		// uinteger_t n; // unsigned >=64 bit integer type
@@ -5339,19 +5337,19 @@ public class Lexer implements IProblemRequestor {
 				f = FLAGS_unsigned;
 				p++;
 				if ((flags & f) != 0) {
-					error(IProblem.UnrecognizedToken, linnum, p - 1, 1);
+					error(IProblem.UnrecognizedToken, lineNumber, p - 1, 1);
 				}
 				flags = (flags | f);
 				continue;
 
 			case 'l':
 				// if (!global.params.useDeprecated)
-				error(IProblem.LSuffixDeprecated, linnum, p, 1);
+				error(IProblem.LSuffixDeprecated, lineNumber, p, 1);
 			case 'L':
 				f = FLAGS_long;
 				p++;
 				if ((flags & f) != 0) {
-					error(IProblem.UnrecognizedToken, linnum, p - 1, 1);
+					error(IProblem.UnrecognizedToken, lineNumber, p - 1, 1);
 				}
 				flags = (flags | f);
 				continue;
@@ -5404,7 +5402,7 @@ public class Lexer implements IProblemRequestor {
 				result = TOKint32v;
 			} else {
 				if (n.and(X_8000000000000000).compareTo(BigInteger.ZERO) != 0) {
-					error(IProblem.SignedIntegerOverflow, linnum, start, p
+					error(IProblem.SignedIntegerOverflow, lineNumber, start, p
 							- start);
 					result = TOKuns64v;
 				} else if (n.and(X_FFFFFFFF80000000).compareTo(BigInteger.ZERO) != 0) {
@@ -5429,7 +5427,7 @@ public class Lexer implements IProblemRequestor {
 
 		case FLAGS_decimal | FLAGS_long:
 			if (n.and(X_8000000000000000).compareTo(BigInteger.ZERO) != 0) {
-				error(IProblem.SignedIntegerOverflow, linnum, start, p - start);
+				error(IProblem.SignedIntegerOverflow, lineNumber, start, p - start);
 				result = TOKuns64v;
 			} else {
 				result = TOKint64v;
@@ -5517,7 +5515,7 @@ public class Lexer implements IProblemRequestor {
 						break;
 					}
 					if (hex != 0) {
-						error(IProblem.BinaryExponentPartRequired, linnum,
+						error(IProblem.BinaryExponentPartRequired, lineNumber,
 								p - 1, 1);
 					}
 					break done;
@@ -5530,7 +5528,7 @@ public class Lexer implements IProblemRequestor {
 				case 6: // 1st exponent digit expected
 					// !Chars.isdigit inlined
 					if (c < '0' || c > '9') {
-						error(IProblem.ExponentExpected, linnum, p - 1, 1);
+						error(IProblem.ExponentExpected, lineNumber, p - 1, 1);
 					}
 					dblstate++;
 					break;
@@ -5570,7 +5568,7 @@ public class Lexer implements IProblemRequestor {
 
 		case 'l':
 			// if (!global.params.useDeprecated)
-			error(IProblem.LSuffixDeprecated, linnum, p, 1);
+			error(IProblem.LSuffixDeprecated, lineNumber, p, 1);
 		case 'L':
 			result = TOKfloat80v;
 			p++;
@@ -5578,7 +5576,7 @@ public class Lexer implements IProblemRequestor {
 		}
 		if (input(p) == 'i' || input(p) == 'I') {
 			if (input(p) == 'I') {
-				error(IProblem.ISuffixDeprecated, linnum, p, 1);
+				error(IProblem.ISuffixDeprecated, lineNumber, p, 1);
 			}
 			p++;
 			switch (result) {
@@ -5687,7 +5685,7 @@ public class Lexer implements IProblemRequestor {
 			return result;
 		} catch (Exception e) {
 			// a problem while decoding the codepoint occured => invalid input 
-			error(IProblem.InvalidUtf8Sequence, linnum, p, 1);
+			error(IProblem.InvalidUtf8Sequence, lineNumber, p, 1);
 			return 0;
 		}
 	}
@@ -5837,18 +5835,18 @@ public class Lexer implements IProblemRequestor {
 	 */
 
 	protected void newline(boolean inComment) {
-		if (recordLineSeparator && linnum == maxLinnum) {
+		if (recordLineSeparator && lineNumber == maxLinnum) {
 			final int INCREMENT = 250;
 			int length = this.lineEnds.length;
-			if (this.linnum - 1 >= length) {
+			if (this.lineNumber - 1 >= length) {
 				System.arraycopy(this.lineEnds, 0,
 						this.lineEnds = new int[length + INCREMENT], 0, length);
 			}
-			this.lineEnds[this.linnum - 1] = p;
+			this.lineEnds[this.lineNumber - 1] = p;
 		}
-		this.linnum++;
-		if (this.linnum > maxLinnum) {
-			maxLinnum = this.linnum;
+		this.lineNumber++;
+		if (this.lineNumber > maxLinnum) {
+			maxLinnum = this.lineNumber;
 		}
 	}
 
@@ -5867,7 +5865,7 @@ public class Lexer implements IProblemRequestor {
 	 */
 	public final int getLineStart(int lineNumber) {
 
-		if (this.lineEnds == null || this.linnum == -1) {
+		if (this.lineEnds == null || this.lineNumber == -1) {
 			return -1;
 		}
 		if (lineNumber > this.lineEnds.length + 1) {
@@ -5893,7 +5891,7 @@ public class Lexer implements IProblemRequestor {
 	 */
 	public final int getLineEnd(int lineNumber) {
 
-		if (this.lineEnds == null || this.linnum == -1) {
+		if (this.lineEnds == null || this.lineNumber == -1) {
 			return -1;
 		}
 		if (lineNumber > this.lineEnds.length + 1) {
@@ -5902,7 +5900,7 @@ public class Lexer implements IProblemRequestor {
 		if (lineNumber <= 0) {
 			return -1;
 		}
-		if (lineNumber == this.lineEnds.length + 1 || lineNumber == this.linnum) {
+		if (lineNumber == this.lineEnds.length + 1 || lineNumber == this.lineNumber) {
 			return this.end;
 		}
 		return this.lineEnds[lineNumber - 1]; // next line start one character behind the lineEnd of the previous line
@@ -5943,12 +5941,12 @@ public class Lexer implements IProblemRequestor {
 	public int[] getLineEnds() {
 		// return a bounded copy of this.lineEnds
 		// Return empty if line ends were not requested
-		if (this.linnum == -1 || this.lineEnds == null || this.linnum >= this.lineEnds.length) {
+		if (this.lineNumber == -1 || this.lineEnds == null || this.lineNumber >= this.lineEnds.length) {
 			return EMPTY_LINE_ENDS;
 		}
 		int[] copy;
-		System.arraycopy(this.lineEnds, 0, copy = new int[this.linnum - 1], 0,
-				this.linnum - 1);
+		System.arraycopy(this.lineEnds, 0, copy = new int[this.lineNumber - 1], 0,
+				this.lineNumber - 1);
 		return copy;
 	}
 

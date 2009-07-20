@@ -14,7 +14,8 @@ import java.io.IOException;
 
 import descent.core.compiler.CharOperation;
 import descent.core.search.SearchPattern;
-import descent.internal.core.index.*;
+import descent.internal.core.index.EntryResult;
+import descent.internal.core.index.Index;
 import descent.internal.core.search.indexing.IIndexConstants;
 
 public class MultiTypeDeclarationPattern extends JavaSearchPattern implements IIndexConstants {

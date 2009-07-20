@@ -16,12 +16,12 @@ public class SymOffExp extends SymbolExp {
 
 	public integer_t offset;
 	
-	public SymOffExp(Loc loc, Declaration var, integer_t offset, SemanticContext context) {
-		this(loc, var, offset, false, context);
+	public SymOffExp(char[] filename, int lineNumber, Declaration var, integer_t offset, SemanticContext context) {
+		this(filename, lineNumber, var, offset, false, context);
 	}
 	
-	public SymOffExp(Loc loc, Declaration var, integer_t offset, boolean hasOverloads, SemanticContext context) {
-		super(loc, TOK.TOKsymoff, var, hasOverloads);
+	public SymOffExp(char[] filename, int lineNumber, Declaration var, integer_t offset, boolean hasOverloads, SemanticContext context) {
+		super(filename, lineNumber, TOK.TOKsymoff, var, hasOverloads);
 		Assert.isNotNull(var);
 		this.offset = offset;
 		VarDeclaration v = var.isVarDeclaration();
@@ -32,12 +32,12 @@ public class SymOffExp extends SymbolExp {
 		}
 	}
 
-	public SymOffExp(Loc loc, Declaration var, int offset, SemanticContext context) {
-		this(loc, var, new integer_t(offset), false, context);
+	public SymOffExp(char[] filename, int lineNumber, Declaration var, int offset, SemanticContext context) {
+		this(filename, lineNumber, var, new integer_t(offset), false, context);
 	}
 	
-	public SymOffExp(Loc loc, Declaration var, int offset, boolean hasOverloads, SemanticContext context) {
-		this(loc, var, new integer_t(offset), hasOverloads, context);
+	public SymOffExp(char[] filename, int lineNumber, Declaration var, int offset, boolean hasOverloads, SemanticContext context) {
+		this(filename, lineNumber, var, new integer_t(offset), hasOverloads, context);
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public class SymOffExp extends SymbolExp {
 					if (f != null) {
 						f = f.overloadExactMatch(tb.next, context);
 						if (f != null) {
-							e = new SymOffExp(loc, f, 0, context);
+							e = new SymOffExp(filename, lineNumber, f, 0, context);
 							e.type = t;
 							return e;
 						}
@@ -98,13 +98,13 @@ public class SymOffExp extends SymbolExp {
 						if (f != null) {
 							if (tb.ty == Tdelegate && f.needThis()
 									&& hasThis(sc) != null) {
-								e = new DelegateExp(loc, new ThisExp(loc), f);
+								e = new DelegateExp(filename, lineNumber, new ThisExp(filename, lineNumber), f);
 								e = e.semantic(sc, context);
 							} else if (tb.ty == Tdelegate && f.isNested()) {
-								e = new DelegateExp(loc, new IntegerExp(0), f);
+								e = new DelegateExp(filename, lineNumber, new IntegerExp(0), f);
 								e = e.semantic(sc, context);
 							} else {
-								e = new SymOffExp(loc, f, integer_t.ZERO,
+								e = new SymOffExp(filename, lineNumber, f, integer_t.ZERO,
 										context);
 								e.type = t;
 							}
@@ -195,7 +195,7 @@ public class SymOffExp extends SymbolExp {
 		}
 		VarDeclaration v = var.isVarDeclaration();
 		if (v != null) {
-			v.checkNestedReference(sc, loc, context);
+			v.checkNestedReference(sc, filename, lineNumber, context);
 		}
 		return this;
 	}

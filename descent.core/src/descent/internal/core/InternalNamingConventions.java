@@ -26,7 +26,6 @@ import descent.internal.compiler.parser.ScannerHelper;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeAArray;
 import descent.internal.compiler.parser.TypeInstance;
-import descent.internal.compiler.parser.TypeSlice;
 
 public class InternalNamingConventions {
 	private static final char[] DEFAULT_NAME = "name".toCharArray(); //$NON-NLS-1$

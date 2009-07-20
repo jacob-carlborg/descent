@@ -5,15 +5,17 @@ import descent.core.compiler.IProblem;
 
 public abstract class Initializer extends ASTDmdNode {
 	
-	public Loc loc;
+	public int lineNumber;
+	public char[] filename;
 	
 	/*
 	 * Descent: for code evaluate.
 	 */
 	public Initializer resolvedInitializer;
 
-	public Initializer(Loc loc) {
-		this.loc = loc;
+	public Initializer(char[] filename, int lineNumber) {
+		this.filename = filename;
+		this.lineNumber = lineNumber;
 	}
 
 	public Initializers arraySyntaxCopy(Initializers ai, SemanticContext context) {
@@ -78,17 +80,13 @@ public abstract class Initializer extends ASTDmdNode {
 	
 //	public abstract void toDt(SemanticContext context);
 	
-	public Loc loc() {
-		return loc;
-	}
-	
 	@Override
 	public int getLineNumber() {
-		return loc.linnum;
+		return lineNumber;
 	}
 	
 	public void setLineNumber(int lineNumber) {
-		this.loc.linnum = lineNumber;
+		this.lineNumber = lineNumber;
 	}
 
 }

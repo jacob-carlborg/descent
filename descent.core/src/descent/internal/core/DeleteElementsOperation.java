@@ -18,6 +18,10 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.text.edits.TextEdit;
+
 import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
 import descent.core.IJavaModelStatusConstants;
@@ -29,9 +33,6 @@ import descent.core.dom.ASTParser;
 import descent.core.dom.CompilationUnit;
 import descent.core.dom.rewrite.ASTRewrite;
 import descent.internal.core.util.Messages;
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.IDocument;
-import org.eclipse.text.edits.TextEdit;
 
 /**
  * This operation deletes a collection of elements (and

@@ -17,9 +17,14 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import descent.core.*;
-import descent.internal.core.util.Util;
+
+import descent.core.IClasspathEntry;
+import descent.core.ICompilationUnit;
+import descent.core.IJavaElement;
+import descent.core.IPackageFragmentRoot;
+import descent.core.JavaModelException;
 import descent.internal.core.util.HashtableOfArrayToObject;
+import descent.internal.core.util.Util;
 
 /** 
  * Info for IJavaProject.

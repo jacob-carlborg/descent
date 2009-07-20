@@ -1,17 +1,16 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
-import static descent.internal.compiler.parser.MATCH.MATCHexact;
-
 
 public class TemplateTupleParameter extends TemplateParameter {
 
-	public TemplateTupleParameter(Loc loc, IdentifierExp ident) {
-		super(loc, ident);
+	public TemplateTupleParameter(char[] filename, int lineNumber, IdentifierExp ident) {
+		super(filename, lineNumber, ident);
 	}
 
 	@Override
@@ -25,8 +24,8 @@ public class TemplateTupleParameter extends TemplateParameter {
 
 	@Override
 	public void declareParameter(Scope sc, SemanticContext context) {
-		TypeIdentifier ti = new TypeIdentifier(loc, ident);
-		sparam = new AliasDeclaration(loc, ident, ti);
+		TypeIdentifier ti = new TypeIdentifier(filename, lineNumber, ident);
+		sparam = new AliasDeclaration(filename, lineNumber, ident, ti);
 		
 		// Descent
 		((AliasDeclaration) sparam).isTemplateParameter = true;
@@ -39,7 +38,7 @@ public class TemplateTupleParameter extends TemplateParameter {
 	}
 
 	@Override
-	public ASTDmdNode defaultArg(Loc loc, Scope sc, SemanticContext context) {
+	public ASTDmdNode defaultArg(char[] filename, int lineNumber, Scope sc, SemanticContext context) {
 		return null;
 	}
 
@@ -80,7 +79,7 @@ public class TemplateTupleParameter extends TemplateParameter {
 				}
 			}
 		}
-		psparam[0] = new TupleDeclaration(loc, ident, ovar.objects);
+		psparam[0] = new TupleDeclaration(filename, lineNumber, ident, ovar.objects);
 		dedtypes.set(i, ovar);
 		return MATCHexact;
 	}
@@ -108,7 +107,7 @@ public class TemplateTupleParameter extends TemplateParameter {
 	
 	@Override
 	public TemplateParameter syntaxCopy(SemanticContext context) {
-		TemplateTupleParameter tp = new TemplateTupleParameter(loc, ident);
+		TemplateTupleParameter tp = new TemplateTupleParameter(filename, lineNumber, ident);
 		return tp;
 	}
 	

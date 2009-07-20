@@ -15,14 +15,13 @@ import descent.core.IJavaElement;
 import descent.core.IJavaProject;
 import descent.core.IPackageFragment;
 import descent.core.IType;
-import descent.core.ITypeParameter;
 import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
 import descent.internal.codeassist.ISearchRequestor;
+import descent.internal.compiler.env.AccessRestriction;
 import descent.internal.compiler.env.AccessRuleSet;
 import descent.internal.compiler.env.ICompilationUnit;
-import descent.internal.compiler.env.AccessRestriction;
 import descent.internal.core.search.SearchUtil;
 import descent.internal.core.util.Util;
 

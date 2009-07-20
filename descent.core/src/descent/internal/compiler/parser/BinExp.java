@@ -2,8 +2,11 @@ package descent.internal.compiler.parser;
 
 import static descent.internal.compiler.parser.Constfold.Equal;
 import static descent.internal.compiler.parser.Constfold.Index;
+import static descent.internal.compiler.parser.LINK.LINKc;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
-import static descent.internal.compiler.parser.TOK.*;
+import static descent.internal.compiler.parser.PROT.PROTpublic;
+import static descent.internal.compiler.parser.STC.STCundefined;
+import static descent.internal.compiler.parser.TOK.TOKadd;
 import static descent.internal.compiler.parser.TOK.TOKaddass;
 import static descent.internal.compiler.parser.TOK.TOKandass;
 import static descent.internal.compiler.parser.TOK.TOKarrayliteral;
@@ -15,7 +18,9 @@ import static descent.internal.compiler.parser.TOK.TOKcatass;
 import static descent.internal.compiler.parser.TOK.TOKconstruct;
 import static descent.internal.compiler.parser.TOK.TOKdivass;
 import static descent.internal.compiler.parser.TOK.TOKdottd;
+import static descent.internal.compiler.parser.TOK.TOKdotvar;
 import static descent.internal.compiler.parser.TOK.TOKequal;
+import static descent.internal.compiler.parser.TOK.TOKforeach;
 import static descent.internal.compiler.parser.TOK.TOKge;
 import static descent.internal.compiler.parser.TOK.TOKgt;
 import static descent.internal.compiler.parser.TOK.TOKin;
@@ -54,9 +59,6 @@ import static descent.internal.compiler.parser.TY.Tpointer;
 import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Tstruct;
 import static descent.internal.compiler.parser.TY.Tvoid;
-import static descent.internal.compiler.parser.LINK.*;
-import static descent.internal.compiler.parser.STC.*;
-import static descent.internal.compiler.parser.PROT.*;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -73,8 +75,8 @@ public abstract class BinExp extends Expression {
 	public Expression e1, sourceE1;
 	public Expression e2, sourceE2;
 
-	public BinExp(Loc loc, TOK op, Expression e1, Expression e2) {
-		super(loc, op);
+	public BinExp(char[] filename, int lineNumber, TOK op, Expression e1, Expression e2) {
+		super(filename, lineNumber, op);
 		this.e1 = e1;
 		this.sourceE1 = e1;
 		this.e2 = e2;
@@ -134,38 +136,38 @@ public abstract class BinExp extends Expression {
 				Statement s1;
 				if (!context.isD2()) {
 					// for (size_t i = 0; i < p.length; i++)
-					Initializer init = new ExpInitializer(Loc.ZERO,
-							new IntegerExp(Loc.ZERO, 0, Type.tsize_t));
-					Dsymbol d = new VarDeclaration(Loc.ZERO, Type.tsize_t,
+					Initializer init = new ExpInitializer(null, 0,
+							new IntegerExp(null, 0, 0, Type.tsize_t));
+					Dsymbol d = new VarDeclaration(null, 0, Type.tsize_t,
 							Id.p, init);
-					s1 = new ForStatement(Loc.ZERO, new DeclarationStatement(
-							Loc.ZERO, d), new CmpExp(Loc.ZERO, TOKlt,
-							new IdentifierExp(Loc.ZERO, Id.p),
-							new ArrayLengthExp(Loc.ZERO, new IdentifierExp(
-									Loc.ZERO, p.ident))), new PostExp(Loc.ZERO,
-							TOKplusplus, new IdentifierExp(Loc.ZERO, Id.p)),
-							new ExpStatement(Loc.ZERO, loopbody));
+					s1 = new ForStatement(null, 0, new DeclarationStatement(
+							null, 0, d), new CmpExp(null, 0, TOKlt,
+							new IdentifierExp(null, 0, Id.p),
+							new ArrayLengthExp(null, 0, new IdentifierExp(
+									null, 0, p.ident))), new PostExp(null, 0,
+							TOKplusplus, new IdentifierExp(null, 0, Id.p)),
+							new ExpStatement(null, 0, loopbody));
 				} else {
 					// foreach (i; 0 .. p.length)
 					s1 = new ForeachRangeStatement(
-							Loc.ZERO,
+							null, 0,
 							TOKforeach,
 							new Argument(0, null, new IdentifierExp(Id.p), null),
-							new IntegerExp(Loc.ZERO, 0, Type.tint32),
-							new ArrayLengthExp(Loc.ZERO, new IdentifierExp(
-									Loc.ZERO, p.ident)), new ExpStatement(
-									Loc.ZERO, loopbody));
+							new IntegerExp(null, 0, 0, Type.tint32),
+							new ArrayLengthExp(null, 0, new IdentifierExp(
+									null, 0, p.ident)), new ExpStatement(
+									null, 0, loopbody));
 				}
-				Statement s2 = new ReturnStatement(Loc.ZERO, new IdentifierExp(
-						Loc.ZERO, p.ident));
-				Statement fbody = new CompoundStatement(Loc.ZERO, s1, s2);
+				Statement s2 = new ReturnStatement(null, 0, new IdentifierExp(
+						null, 0, p.ident));
+				Statement fbody = new CompoundStatement(null, 0, s1, s2);
 
 				/*
 				 * Construct the function
 				 */
 				TypeFunction ftype = new TypeFunction(fparams, type, 0, LINKc);
 				// printf("ftype: %s\n", ftype.toChars());
-				fd = new FuncDeclaration(Loc.ZERO, new IdentifierExp(name
+				fd = new FuncDeclaration(null, 0, new IdentifierExp(name
 						.toCharArray()), STCundefined, ftype);
 				fd.fbody = fbody;
 				fd.protection = PROTpublic;
@@ -190,8 +192,8 @@ public abstract class BinExp extends Expression {
 		/*
 		 * Call the function fd(arguments)
 		 */
-		Expression ec = new VarExp(Loc.ZERO, fd);
-		Expression e = new CallExp(loc, ec, arguments);
+		Expression ec = new VarExp(null, 0, fd);
+		Expression e = new CallExp(filename, lineNumber, ec, arguments);
 		e.copySourceRange(this);
 		e.type = type;
 		return e;
@@ -315,7 +317,7 @@ public abstract class BinExp extends Expression {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.CannotPerformModuloComplexArithmetic, this));
 				}
-				return new IntegerExp(loc, 0);
+				return new IntegerExp(filename, lineNumber, 0);
 			}
 		}
 
@@ -341,7 +343,7 @@ public abstract class BinExp extends Expression {
 			// Replace (ptr + int) with (ptr + (int * stride))
 			Type t = Type.tptrdiff_t;
 
-			stride = new BigInteger(String.valueOf(t1b.nextOf().size(loc, context)));
+			stride = new BigInteger(String.valueOf(t1b.nextOf().size(filename, lineNumber, context)));
 			if (!t.equals(t2b)) {
 				e2 = e2.castTo(sc, t, context);
 			}
@@ -351,13 +353,13 @@ public abstract class BinExp extends Expression {
 					// BUG: should add runtime check for misaligned offsets
 					// This perhaps should be done by rewriting as &p[i]
 					// and letting back end do it.
-					e2 = new UshrExp(loc, e2, new IntegerExp(loc, 3, t));
+					e2 = new UshrExp(filename, lineNumber, e2, new IntegerExp(filename, lineNumber, 3, t));
 				} else {
-					e2 = new MulExp(loc, e2, new IntegerExp(loc, new integer_t(
+					e2 = new MulExp(filename, lineNumber, e2, new IntegerExp(filename, lineNumber, new integer_t(
 							stride), t));
 				}
 			} else {
-				e2 = new MulExp(loc, e2, new IntegerExp(loc, new integer_t(
+				e2 = new MulExp(filename, lineNumber, e2, new IntegerExp(filename, lineNumber, new integer_t(
 						stride), t));
 			}
 			e2.type = t;
@@ -367,7 +369,7 @@ public abstract class BinExp extends Expression {
 			Type t = Type.tptrdiff_t;
 			Expression e;
 
-			stride = new BigInteger(String.valueOf(t2b.nextOf().size(loc, context)));
+			stride = new BigInteger(String.valueOf(t2b.nextOf().size(filename, lineNumber, context)));
 			if (!t.equals(t1b)) {
 				e = e1.castTo(sc, t, context);
 			} else {
@@ -377,13 +379,13 @@ public abstract class BinExp extends Expression {
 			if (context.isD1()) {
 				if (t2b.next.isbit()) {
 					// BUG: should add runtime check for misaligned offsets
-					e = new UshrExp(loc, e, new IntegerExp(loc, 3, t));
+					e = new UshrExp(filename, lineNumber, e, new IntegerExp(filename, lineNumber, 3, t));
 				} else {
-					e = new MulExp(loc, e, new IntegerExp(loc,
+					e = new MulExp(filename, lineNumber, e, new IntegerExp(filename, lineNumber,
 							new integer_t(stride), t));
 				}
 			} else {
-				e = new MulExp(loc, e, new IntegerExp(loc,
+				e = new MulExp(filename, lineNumber, e, new IntegerExp(filename, lineNumber,
 						new integer_t(stride), t));
 			}
 			e.type = t;
@@ -490,8 +492,8 @@ public abstract class BinExp extends Expression {
 					return typeCombine_Lincompatible_End(t, context);
 				}
 			} else if (t1.isintegral() && t2.isintegral()) {
-				int sz1 = t1.size(loc, context);
-				int sz2 = t2.size(loc, context);
+				int sz1 = t1.size(filename, lineNumber, context);
+				int sz2 = t2.size(filename, lineNumber, context);
 				boolean sign1 = t1.isunsigned();
 				boolean sign2 = t2.isunsigned();
 	
@@ -951,7 +953,7 @@ public abstract class BinExp extends Expression {
 			Expression vie = v.value;
 			if (vie.op == TOKvar) {
 				Declaration d = ((VarExp) vie).var;
-				vie = getVarExp(e1.loc, istate, d, context);
+				vie = getVarExp(e1.filename, e1.lineNumber, istate, d, context);
 			}
 			if (vie.op != TOKstructliteral) {
 				return EXP_CANT_INTERPRET;
@@ -994,7 +996,7 @@ public abstract class BinExp extends Expression {
 					expsx.set(j, se.elements.get(j));
 				}
 			}
-			v.value(new StructLiteralExp(se.loc, se.sd, expsx));
+			v.value(new StructLiteralExp(se.filename, se.lineNumber, se.sd, expsx));
 			v.value().type = se.type;
 
 			e = Constfold.Cast(type, type, post > 0 ? ev : e2, context);
@@ -1019,7 +1021,7 @@ public abstract class BinExp extends Expression {
 			Expression vie = v.value;
 			if (vie.op == TOKvar) {
 				Declaration d = ((VarExp) vie).var;
-				vie = getVarExp(e1.loc, istate, d, context);
+				vie = getVarExp(e1.filename, e1.lineNumber, istate, d, context);
 			}
 			if (vie.op != TOKstructliteral)
 				return EXP_CANT_INTERPRET;
@@ -1058,7 +1060,7 @@ public abstract class BinExp extends Expression {
 		    else
 			expsx.set(j, se.elements.get(j));
 		}
-		v.value = new StructLiteralExp(se.loc, se.sd, expsx);
+		v.value = new StructLiteralExp(se.filename, se.lineNumber, se.sd, expsx);
 		v.value.type = se.type;
 
 		e = Constfold.Cast(type, type, post != 0 ? ev : e2, context);
@@ -1097,7 +1099,7 @@ public abstract class BinExp extends Expression {
 					Expressions elements = new Expressions(dim);
 					for (int i = 0; i < dim; i++)
 						elements.add(ev);
-					ArrayLiteralExp ae = new ArrayLiteralExp(Loc.ZERO, elements);
+					ArrayLiteralExp ae = new ArrayLiteralExp(null, 0, elements);
 					ae.type = v.type;
 					v.value(ae);
 				} else
@@ -1157,7 +1159,7 @@ public abstract class BinExp extends Expression {
 					else
 						expsx.add(ae.elements.get(j));
 				}
-				v.value(new ArrayLiteralExp(ae.loc, expsx));
+				v.value(new ArrayLiteralExp(ae.filename, ae.lineNumber, expsx));
 				v.value().type = ae.type;
 			} else if (null != aae) {
 				/* Create new associative array literal reflecting updated key/value
@@ -1184,7 +1186,7 @@ public abstract class BinExp extends Expression {
 					keysx = new Expressions(keysx);
 					keysx.add(index);
 				}
-				v.value(new AssocArrayLiteralExp(aae.loc, keysx, valuesx));
+				v.value(new AssocArrayLiteralExp(aae.filename, aae.lineNumber, keysx, valuesx));
 				v.value().type = aae.type;
 			} else if (null != se) {
 				/* Create new string literal reflecting updated elem
@@ -1219,7 +1221,7 @@ public abstract class BinExp extends Expression {
 					assert (false);
 					break;
 				}
-				StringExp se2 = new StringExp(se.loc, s, se.len);
+				StringExp se2 = new StringExp(se.filename, se.lineNumber, s, se.len);
 				se2.committed = se.committed;
 				se2.postfix = se.postfix;
 				se2.type = se.type;
@@ -1295,7 +1297,7 @@ public abstract class BinExp extends Expression {
 					overloadResolveX(m, fd, null, args2, context);
 				} else {
 					td = s.isTemplateDeclaration();
-					templateResolve(m, td, sc, loc, null, null, args2, context);
+					templateResolve(m, td, sc, filename, lineNumber, null, null, args2, context);
 				}
 			}
 
@@ -1307,7 +1309,7 @@ public abstract class BinExp extends Expression {
 					overloadResolveX(m, fd, null, args1, context);
 				} else {
 					td = s_r.isTemplateDeclaration();
-					templateResolve(m, td, sc, loc, null, null, args1, context);
+					templateResolve(m, td, sc, filename, lineNumber, null, null, args1, context);
 				}
 			}
 
@@ -1326,14 +1328,14 @@ public abstract class BinExp extends Expression {
 				// as unary, but it's implemented as a binary.
 				// Rewrite (e1 ++ e2) as e1.postinc()
 				// Rewrite (e1 -- e2) as e1.postdec()
-				e = build_overload(loc, sc, e1, null, id, context);
+				e = build_overload(filename, lineNumber, sc, e1, null, id, context);
 			else if (lastf != null && m.lastf == lastf
 					|| m.last == MATCHnomatch)
 				// Rewrite (e1 op e2) as e1.opfunc(e2)
-				e = build_overload(loc, sc, e1, e2, id, context);
+				e = build_overload(filename, lineNumber, sc, e1, e2, id, context);
 			else
 				// Rewrite (e1 op e2) as e2.opfunc_r(e1)
-				e = build_overload(loc, sc, e2, e1, id_r, context);
+				e = build_overload(filename, lineNumber, sc, e2, e1, id_r, context);
 			return e;
 		}
 
@@ -1372,7 +1374,7 @@ public abstract class BinExp extends Expression {
 						overloadResolveX(m, fd, null, args2, context);
 					} else {
 						td = s_r.isTemplateDeclaration();
-						templateResolve(m, td, sc, loc, null, null, args2, context);
+						templateResolve(m, td, sc, filename, lineNumber, null, null, args2, context);
 					}
 				}
 				lastf = m.lastf;
@@ -1383,7 +1385,7 @@ public abstract class BinExp extends Expression {
 						overloadResolveX(m, fd, null, args1, context);
 					} else {
 						td = s.isTemplateDeclaration();
-						templateResolve(m, td, sc, loc, null, null, args1, context);
+						templateResolve(m, td, sc, filename, lineNumber, null, null, args1, context);
 					}
 				}
 
@@ -1400,10 +1402,10 @@ public abstract class BinExp extends Expression {
 				if (lastf != null && m.lastf == lastf || id_r != null
 						&& m.last == MATCHnomatch)
 					// Rewrite (e1 op e2) as e1.opfunc_r(e2)
-					e = build_overload(loc, sc, e1, e2, id_r, context);
+					e = build_overload(filename, lineNumber, sc, e1, e2, id_r, context);
 				else
 					// Rewrite (e1 op e2) as e2.opfunc(e1)
-					e = build_overload(loc, sc, e2, e1, id, context);
+					e = build_overload(filename, lineNumber, sc, e2, e1, id, context);
 
 				// When reversing operands of comparison operators,
 				// need to reverse the sense of the op

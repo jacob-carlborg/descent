@@ -2,7 +2,6 @@ package descent.internal.core.ctfe.dom;
 
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.InterState;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.OnScopeStatement;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.Statement;
@@ -10,8 +9,8 @@ import descent.internal.compiler.parser.TOK;
 
 public class CompileTimeOnScopeStatement extends OnScopeStatement {
 
-	public CompileTimeOnScopeStatement(Loc loc, TOK tok, Statement statement) {
-		super(loc, tok, statement);
+	public CompileTimeOnScopeStatement(char[] filename, int lineNumber, TOK tok, Statement statement) {
+		super(filename, lineNumber, tok, statement);
 	}
 	
 	@Override

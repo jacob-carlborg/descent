@@ -1,18 +1,18 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.TOK.TOKdeclaration;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.TOK.TOKdeclaration;
 
 
 public class DeclarationStatement extends ExpStatement {
 
-	public DeclarationStatement(Loc loc, Dsymbol s) {
-		super(loc, new DeclarationExp(loc, s));
+	public DeclarationStatement(char[] filename, int lineNumber, Dsymbol s) {
+		super(filename, lineNumber, new DeclarationExp(filename, lineNumber, s));
 	}
 
-	public DeclarationStatement(Loc loc, Expression exp) {
-		super(loc, exp);
+	public DeclarationStatement(char[] filename, int lineNumber, Expression exp) {
+		super(filename, lineNumber, exp);
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class DeclarationStatement extends ExpStatement {
 
 					e = v.callAutoDtor(sc);
 					if (e != null) {
-						sfinally[0] = new ExpStatement(loc, e);
+						sfinally[0] = new ExpStatement(filename, lineNumber, e);
 					}
 				}
 			}
@@ -55,7 +55,7 @@ public class DeclarationStatement extends ExpStatement {
 
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
-		DeclarationStatement ds = context.newDeclarationStatement(loc, exp
+		DeclarationStatement ds = context.newDeclarationStatement(filename, lineNumber, exp
 				.syntaxCopy(context));
 		ds.copySourceRange(this);
 		return ds;

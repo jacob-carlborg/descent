@@ -11,6 +11,7 @@
 package descent.core.search;
 
 import org.eclipse.core.runtime.IPath;
+
 import descent.core.IJavaElement;
 
 /**

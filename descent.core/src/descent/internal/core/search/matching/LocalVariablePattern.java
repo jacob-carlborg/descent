@@ -13,8 +13,12 @@ package descent.internal.core.search.matching;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
-import descent.core.*;
-import descent.core.search.*;
+
+import descent.core.IJavaElement;
+import descent.core.IPackageFragmentRoot;
+import descent.core.IType;
+import descent.core.search.IJavaSearchScope;
+import descent.core.search.SearchParticipant;
 import descent.internal.compiler.env.AccessRuleSet;
 import descent.internal.compiler.util.SuffixConstants;
 import descent.internal.core.LocalVariable;

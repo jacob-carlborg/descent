@@ -14,7 +14,11 @@ package descent.internal.core;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import descent.core.*;
+import descent.core.IJavaElement;
+import descent.core.IJavaElementDelta;
+import descent.core.IJavaProject;
+import descent.core.IPackageFragmentRoot;
+import descent.core.JavaModelException;
 
 /**
  * This class is used by <code>JavaModelManager</code> to update the JavaModel

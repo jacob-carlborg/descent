@@ -23,7 +23,6 @@ import descent.core.compiler.CharOperation;
 import descent.core.compiler.IScanner;
 import descent.core.compiler.ITerminalSymbols;
 import descent.core.compiler.InvalidInputException;
-import descent.core.dom.AST;
 import descent.internal.compiler.lookup.TypeConstants;
 import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.ScannerHelper;

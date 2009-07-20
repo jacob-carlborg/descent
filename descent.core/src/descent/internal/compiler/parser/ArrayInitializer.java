@@ -16,8 +16,8 @@ public class ArrayInitializer extends Initializer {
 	public Type type; // type that array will be used to initialize
 	public int sem; // !=0 if semantic() is run
 
-	public ArrayInitializer(Loc loc) {
-		super(loc);
+	public ArrayInitializer(char[] filename, int lineNumber) {
+		super(filename, lineNumber);
 	}
 
 	@Override
@@ -67,8 +67,8 @@ public class ArrayInitializer extends Initializer {
 				Initializer iz = value.get(0);
 				if (iz != null) {
 					Type t = iz.inferType(sc, context);
-					t = new TypeSArray(t, new IntegerExp(iz.loc, value.size()), context.encoder);
-					t = t.semantic(loc, sc, context);
+					t = new TypeSArray(t, new IntegerExp(iz.filename, iz.lineNumber, value.size()), context.encoder);
+					t = t.semantic(filename, lineNumber, sc, context);
 					return t;
 				}
 			}
@@ -146,7 +146,7 @@ public class ArrayInitializer extends Initializer {
 
 	@Override
 	public Initializer syntaxCopy(SemanticContext context) {
-		ArrayInitializer ai = new ArrayInitializer(loc);
+		ArrayInitializer ai = new ArrayInitializer(filename, lineNumber);
 
 		if (!(size(index) == size(value))) {
 			throw new IllegalStateException("assert(index.dim == value.dim);");
@@ -201,8 +201,8 @@ public class ArrayInitializer extends Initializer {
 			}
 			values.set(i, e);
 		}
-		e = new AssocArrayLiteralExp(loc, keys, values);
-		return new ExpInitializer(loc, e);
+		e = new AssocArrayLiteralExp(filename, lineNumber, keys, values);
+		return new ExpInitializer(filename, lineNumber, e);
 	}
 
 	private Initializer toAssocArrayInitializer_Lno(SemanticContext context) {
@@ -256,7 +256,7 @@ public class ArrayInitializer extends Initializer {
 			}
 			elements.add(ex);
 		}
-		e = new ArrayLiteralExp(loc, elements);
+		e = new ArrayLiteralExp(filename, lineNumber, elements);
 		e.type = type;
 		e.copySourceRange(this);
 		return e;

@@ -8,8 +8,8 @@ public class ScopeExp extends Expression {
 
 	public ScopeDsymbol sds, sourceSds;
 
-	public ScopeExp(Loc loc, ScopeDsymbol pkg) {
-		super(loc, TOK.TOKimport);
+	public ScopeExp(char[] filename, int lineNumber, ScopeDsymbol pkg) {
+		super(filename, lineNumber, TOK.TOKimport);
 		this.sds = this.sourceSds = pkg;
 	}
 
@@ -53,10 +53,10 @@ public class ScopeExp extends Expression {
 
 					if (ti.withsym != null) {
 						// Same as wthis.s
-						e = new VarExp(loc, ti.withsym.withstate.wthis);
-						e = new DotVarExp(loc, e, s.isDeclaration());
+						e = new VarExp(filename, lineNumber, ti.withsym.withstate.wthis);
+						e = new DotVarExp(filename, lineNumber, e, s.isDeclaration());
 					} else {
-						e = new DsymbolExp(loc, s);
+						e = new DsymbolExp(filename, lineNumber, s);
 					}
 					e = e.semantic(sc, context);
 					return e;
@@ -78,7 +78,7 @@ public class ScopeExp extends Expression {
 
 	@Override
 	public Expression syntaxCopy(SemanticContext context) {
-		ScopeExp se = new ScopeExp(loc, (ScopeDsymbol) sds.syntaxCopy(null, context));
+		ScopeExp se = new ScopeExp(filename, lineNumber, (ScopeDsymbol) sds.syntaxCopy(null, context));
 		return se;
 	}
 

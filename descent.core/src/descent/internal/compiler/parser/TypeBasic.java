@@ -1,18 +1,17 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.MATCH.MATCHconvert;
+import static descent.internal.compiler.parser.MATCH.MATCHexact;
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+import static descent.internal.compiler.parser.TY.Tbit;
+import static descent.internal.compiler.parser.TY.Tbool;
+import static descent.internal.compiler.parser.TY.Tvoid;
+
 import java.math.BigInteger;
 
 import org.eclipse.core.runtime.Assert;
 
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
-import static descent.internal.compiler.parser.MATCH.MATCHconvert;
-import static descent.internal.compiler.parser.MATCH.MATCHexact;
-import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
-
-import static descent.internal.compiler.parser.TY.Tbit;
-import static descent.internal.compiler.parser.TY.Tbool;
-import static descent.internal.compiler.parser.TY.Tvoid;
 
 
 public class TypeBasic extends Type {
@@ -74,7 +73,7 @@ public class TypeBasic extends Type {
 			break;
 
 		default:
-			sz = size(Loc.ZERO, context);
+			sz = size(null, 0, context);
 			break;
 		}
 		return sz;
@@ -90,7 +89,7 @@ public class TypeBasic extends Type {
 	}
 
 	@Override
-	public Expression defaultInit(Loc loc, SemanticContext context) {
+	public Expression defaultInit(char[] filename, int lineNumber, SemanticContext context) {
 		BigInteger value;
 
 		switch (ty) {
@@ -112,11 +111,11 @@ public class TypeBasic extends Type {
 		case Tcomplex32:
 		case Tcomplex64:
 		case Tcomplex80:
-			return getProperty(loc, Id.nan, 0, 0, 0, context);
+			return getProperty(filename, lineNumber, Id.nan, 0, 0, context);
 		default:
-			return new IntegerExp(loc, Id.ZERO, 0, this);
+			return new IntegerExp(filename, lineNumber, Id.ZERO, 0, this);
 		}
-		return new IntegerExp(loc, new integer_t(value), this);
+		return new IntegerExp(filename, lineNumber, new integer_t(value), this);
 	}
 
 	@Override
@@ -153,22 +152,22 @@ public class TypeBasic extends Type {
 			case Timaginary32:
 				t = tfloat32;
 				// goto L2;
-				e = new RealExp(Loc.ZERO, 0.0, t);
+				e = new RealExp(null, 0, 0.0, t);
 				break;
 			case Timaginary64:
 				t = tfloat64; // goto L2;
-				e = new RealExp(Loc.ZERO, 0.0, t);
+				e = new RealExp(null, 0, 0.0, t);
 				break;
 			case Timaginary80:
 				t = tfloat80; // goto L2;
-				e = new RealExp(Loc.ZERO, 0.0, t);
+				e = new RealExp(null, 0, 0.0, t);
 				break;
 			// L2:
-			// e = new RealExp(Loc.ZERO, 0.0, t);
+			// e = new RealExp(null, 0, 0.0, t);
 			// break;
 
 			default:
-				return getProperty(e.loc, ident, context);
+				return getProperty(e.filename, e.lineNumber,  ident, context);
 			}
 		} else if (equals(ident, Id.im)) {
 			Type t2;
@@ -222,11 +221,11 @@ public class TypeBasic extends Type {
 			case Tfloat32:
 			case Tfloat64:
 			case Tfloat80:
-				e = new RealExp(Loc.ZERO, 0.0, this);
+				e = new RealExp(null, 0, 0.0, this);
 				break;
 
 			default:
-				return getProperty(e.loc, ident, context);
+				return getProperty(e.filename, e.lineNumber,  ident, context);
 			}
 		} else {
 			return super.dotExp(sc, e, ident, context);
@@ -240,7 +239,7 @@ public class TypeBasic extends Type {
 	}
 
 	@Override
-	public Expression getProperty(Loc loc, char[] ident, int lineNumber, int start, int length,
+	public Expression getProperty(char[] filename, int lineNumber, char[] ident, int start, int length,
 			SemanticContext context) {
 //		Expression e;
 		integer_t ivalue;
@@ -251,117 +250,117 @@ public class TypeBasic extends Type {
 			switch (ty) {
 			case Tint8:
 				ivalue = new integer_t(0x7F);
-				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+				return new IntegerExp(filename, lineNumber, ivalue, this); // goto Livalue;
 			case Tuns8:
 				ivalue = new integer_t(0xFF);
-				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+				return new IntegerExp(filename, lineNumber, ivalue, this); // goto Livalue;
 			case Tint16:
 				ivalue = new integer_t(0x7FFF);
-				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+				return new IntegerExp(filename, lineNumber, ivalue, this); // goto Livalue;
 			case Tuns16:
 				ivalue = new integer_t(0xFFFF);
-				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+				return new IntegerExp(filename, lineNumber, ivalue, this); // goto Livalue;
 			case Tint32:
 				ivalue = new integer_t(0x7FFFFFFF);
-				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+				return new IntegerExp(filename, lineNumber, ivalue, this); // goto Livalue;
 			case Tuns32:
 				ivalue = new integer_t(0xFFFFFFFF);
-				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+				return new IntegerExp(filename, lineNumber, ivalue, this); // goto Livalue;
 			case Tint64:
 				ivalue = new integer_t(new BigInteger("7FFFFFFFFFFFFFFF", 16));
-				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+				return new IntegerExp(filename, lineNumber, ivalue, this); // goto Livalue;
 			case Tuns64:
 				ivalue = new integer_t(new BigInteger("FFFFFFFFFFFFFFFF", 16));
-				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+				return new IntegerExp(filename, lineNumber, ivalue, this); // goto Livalue;
 			case Tbit:
 				ivalue = new integer_t(1);
-				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+				return new IntegerExp(filename, lineNumber, ivalue, this); // goto Livalue;
 			case Tbool:
 				ivalue = new integer_t(1);
-				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+				return new IntegerExp(filename, lineNumber, ivalue, this); // goto Livalue;
 			case Tchar:
 				ivalue = new integer_t(0xFF);
-				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+				return new IntegerExp(filename, lineNumber, ivalue, this); // goto Livalue;
 			case Twchar:
 				ivalue = new integer_t(0xFFFF);
-				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+				return new IntegerExp(filename, lineNumber, ivalue, this); // goto Livalue;
 			case Tdchar:
 				ivalue = new integer_t(0x10FFFF);
-				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+				return new IntegerExp(filename, lineNumber, ivalue, this); // goto Livalue;
 
 			case Tcomplex32:
 			case Timaginary32:
 			case Tfloat32:
 				fvalue = new real_t(Float.MAX_VALUE);
-				return Lfvalue(loc, fvalue); // goto Lfvalue;
+				return Lfvalue(filename, lineNumber, fvalue); // goto Lfvalue;
 			case Tcomplex64:
 			case Timaginary64:
 			case Tfloat64:
 				fvalue = new real_t(Double.MAX_VALUE);
-				return Lfvalue(loc, fvalue); // goto Lfvalue;
+				return Lfvalue(filename, lineNumber, fvalue); // goto Lfvalue;
 			case Tcomplex80:
 			case Timaginary80:
 			case Tfloat80:
 				fvalue = new real_t(0 /* TODO LDBL_MAX */);
-				return Lfvalue(loc, fvalue); // goto Lfvalue;
+				return Lfvalue(filename, lineNumber, fvalue); // goto Lfvalue;
 			}
 		} else if (equals(ident, Id.min)) {
 			switch (ty) {
 			case Tint8:
 				ivalue = new integer_t(-128);
-				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+				return new IntegerExp(filename, lineNumber, ivalue, this); // goto Livalue;
 			case Tuns8:
 				ivalue = new integer_t(0);
-				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+				return new IntegerExp(filename, lineNumber, ivalue, this); // goto Livalue;
 			case Tint16:
 				ivalue = new integer_t(Short.MIN_VALUE);
-				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+				return new IntegerExp(filename, lineNumber, ivalue, this); // goto Livalue;
 			case Tuns16:
 				ivalue = new integer_t(0);
-				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+				return new IntegerExp(filename, lineNumber, ivalue, this); // goto Livalue;
 			case Tint32:
 				ivalue = new integer_t(Integer.MIN_VALUE);
-				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+				return new IntegerExp(filename, lineNumber, ivalue, this); // goto Livalue;
 			case Tuns32:
 				ivalue = new integer_t(0);
-				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+				return new IntegerExp(filename, lineNumber, ivalue, this); // goto Livalue;
 			case Tint64:
 				ivalue = new integer_t(Long.MIN_VALUE);
-				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+				return new IntegerExp(filename, lineNumber, ivalue, this); // goto Livalue;
 			case Tuns64:
 				ivalue = new integer_t(0);
-				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+				return new IntegerExp(filename, lineNumber, ivalue, this); // goto Livalue;
 			case Tbit:
 				ivalue = new integer_t(0);
-				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+				return new IntegerExp(filename, lineNumber, ivalue, this); // goto Livalue;
 			case Tbool:
 				ivalue = new integer_t(0);
-				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+				return new IntegerExp(filename, lineNumber, ivalue, this); // goto Livalue;
 			case Tchar:
 				ivalue = new integer_t(0);
-				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+				return new IntegerExp(filename, lineNumber, ivalue, this); // goto Livalue;
 			case Twchar:
 				ivalue = new integer_t(0);
-				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+				return new IntegerExp(filename, lineNumber, ivalue, this); // goto Livalue;
 			case Tdchar:
 				ivalue = new integer_t(0);
-				return new IntegerExp(loc, ivalue, this); // goto Livalue;
+				return new IntegerExp(filename, lineNumber, ivalue, this); // goto Livalue;
 
 			case Tcomplex32:
 			case Timaginary32:
 			case Tfloat32:
 				fvalue = new real_t(Float.MIN_VALUE);
-				return Lfvalue(loc, fvalue); // goto Lfvalue;
+				return Lfvalue(filename, lineNumber, fvalue); // goto Lfvalue;
 			case Tcomplex64:
 			case Timaginary64:
 			case Tfloat64:
 				fvalue = new real_t(Double.MIN_VALUE);
-				return Lfvalue(loc, fvalue); // goto Lfvalue;
+				return Lfvalue(filename, lineNumber, fvalue); // goto Lfvalue;
 			case Tcomplex80:
 			case Timaginary80:
 			case Tfloat80:
 				fvalue = new real_t(0 /* TODO LDBL_MIN */);
-				return Lfvalue(loc, fvalue); // goto Lfvalue;
+				return Lfvalue(filename, lineNumber, fvalue); // goto Lfvalue;
 			}
 		} else if (equals(ident, Id.nan)) {
 			switch (ty) {
@@ -375,7 +374,7 @@ public class TypeBasic extends Type {
 			case Tfloat64:
 			case Tfloat80: {
 				fvalue = new real_t(Double.NaN);
-				return Lfvalue(loc, fvalue); // goto Lfvalue;
+				return Lfvalue(filename, lineNumber, fvalue); // goto Lfvalue;
 			}
 			}
 		} else if (equals(ident, Id.infinity)) {
@@ -390,7 +389,7 @@ public class TypeBasic extends Type {
 			case Tfloat64:
 			case Tfloat80:
 				fvalue = new real_t(Double.POSITIVE_INFINITY);
-				return Lfvalue(loc, fvalue); // goto Lfvalue;
+				return Lfvalue(filename, lineNumber, fvalue); // goto Lfvalue;
 			}
 		}
 
@@ -400,19 +399,19 @@ public class TypeBasic extends Type {
 			case Timaginary32:
 			case Tfloat32:
 				ivalue = FLT_DIG;
-				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+				return new IntegerExp(filename, lineNumber, ivalue, Type.tint32); // goto
 																	// Lint;
 			case Tcomplex64:
 			case Timaginary64:
 			case Tfloat64:
 				ivalue = DBL_DIG;
-				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+				return new IntegerExp(filename, lineNumber, ivalue, Type.tint32); // goto
 																	// Lint;
 			case Tcomplex80:
 			case Timaginary80:
 			case Tfloat80:
 				ivalue = LDBL_DIG;
-				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+				return new IntegerExp(filename, lineNumber, ivalue, Type.tint32); // goto
 																	// Lint;
 			}
 		} else if (equals(ident, Id.epsilon)) {
@@ -421,17 +420,17 @@ public class TypeBasic extends Type {
 			case Timaginary32:
 			case Tfloat32:
 				fvalue = FLT_EPSILON;
-				return Lfvalue(loc, fvalue); // goto Lfvalue;
+				return Lfvalue(filename, lineNumber, fvalue); // goto Lfvalue;
 			case Tcomplex64:
 			case Timaginary64:
 			case Tfloat64:
 				fvalue = DBL_EPSILON;
-				return Lfvalue(loc, fvalue); // goto Lfvalue;
+				return Lfvalue(filename, lineNumber, fvalue); // goto Lfvalue;
 			case Tcomplex80:
 			case Timaginary80:
 			case Tfloat80:
 				fvalue = LDBL_EPSILON;
-				return Lfvalue(loc, fvalue); // goto Lfvalue;
+				return Lfvalue(filename, lineNumber, fvalue); // goto Lfvalue;
 			}
 		} else if (equals(ident, Id.mant_dig)) {
 			switch (ty) {
@@ -439,19 +438,19 @@ public class TypeBasic extends Type {
 			case Timaginary32:
 			case Tfloat32:
 				ivalue = FLT_MANT_DIG;
-				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+				return new IntegerExp(filename, lineNumber, ivalue, Type.tint32); // goto
 																	// Lint;
 			case Tcomplex64:
 			case Timaginary64:
 			case Tfloat64:
 				ivalue = DBL_MANT_DIG;
-				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+				return new IntegerExp(filename, lineNumber, ivalue, Type.tint32); // goto
 																	// Lint;
 			case Tcomplex80:
 			case Timaginary80:
 			case Tfloat80:
 				ivalue = LDBL_MANT_DIG;
-				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+				return new IntegerExp(filename, lineNumber, ivalue, Type.tint32); // goto
 																	// Lint;
 			}
 		} else if (equals(ident, Id.max_10_exp)) {
@@ -460,19 +459,19 @@ public class TypeBasic extends Type {
 			case Timaginary32:
 			case Tfloat32:
 				ivalue = FLT_MAX_10_EXP;
-				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+				return new IntegerExp(filename, lineNumber, ivalue, Type.tint32); // goto
 																	// Lint;
 			case Tcomplex64:
 			case Timaginary64:
 			case Tfloat64:
 				ivalue = DBL_MAX_10_EXP;
-				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+				return new IntegerExp(filename, lineNumber, ivalue, Type.tint32); // goto
 																	// Lint;
 			case Tcomplex80:
 			case Timaginary80:
 			case Tfloat80:
 				ivalue = LDBL_MAX_10_EXP;
-				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+				return new IntegerExp(filename, lineNumber, ivalue, Type.tint32); // goto
 																	// Lint;
 			}
 		} else if (equals(ident, Id.max_exp)) {
@@ -481,19 +480,19 @@ public class TypeBasic extends Type {
 			case Timaginary32:
 			case Tfloat32:
 				ivalue = FLT_MAX_EXP;
-				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+				return new IntegerExp(filename, lineNumber, ivalue, Type.tint32); // goto
 																	// Lint;
 			case Tcomplex64:
 			case Timaginary64:
 			case Tfloat64:
 				ivalue = DBL_MAX_EXP;
-				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+				return new IntegerExp(filename, lineNumber, ivalue, Type.tint32); // goto
 																	// Lint;
 			case Tcomplex80:
 			case Timaginary80:
 			case Tfloat80:
 				ivalue = LDBL_MAX_EXP;
-				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+				return new IntegerExp(filename, lineNumber, ivalue, Type.tint32); // goto
 																	// Lint;
 			}
 		} else if (equals(ident, Id.min_10_exp)) {
@@ -502,19 +501,19 @@ public class TypeBasic extends Type {
 			case Timaginary32:
 			case Tfloat32:
 				ivalue = FLT_MIN_10_EXP;
-				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+				return new IntegerExp(filename, lineNumber, ivalue, Type.tint32); // goto
 																	// Lint;
 			case Tcomplex64:
 			case Timaginary64:
 			case Tfloat64:
 				ivalue = DBL_MIN_10_EXP;
-				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+				return new IntegerExp(filename, lineNumber, ivalue, Type.tint32); // goto
 																	// Lint;
 			case Tcomplex80:
 			case Timaginary80:
 			case Tfloat80:
 				ivalue = LDBL_MIN_10_EXP;
-				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+				return new IntegerExp(filename, lineNumber, ivalue, Type.tint32); // goto
 																	// Lint;
 			}
 		} else if (equals(ident, Id.min_exp)) {
@@ -523,24 +522,24 @@ public class TypeBasic extends Type {
 			case Timaginary32:
 			case Tfloat32:
 				ivalue = FLT_MIN_EXP;
-				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+				return new IntegerExp(filename, lineNumber, ivalue, Type.tint32); // goto
 																	// Lint;
 			case Tcomplex64:
 			case Timaginary64:
 			case Tfloat64:
 				ivalue = DBL_MIN_EXP;
-				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+				return new IntegerExp(filename, lineNumber, ivalue, Type.tint32); // goto
 																	// Lint;
 			case Tcomplex80:
 			case Timaginary80:
 			case Tfloat80:
 				ivalue = LDBL_MIN_EXP;
-				return new IntegerExp(loc, ivalue, Type.tint32); // goto
+				return new IntegerExp(filename, lineNumber, ivalue, Type.tint32); // goto
 																	// Lint;
 			}
 		}
 
-		return super.getProperty(loc, ident, lineNumber, start, length, context);
+		return super.getProperty(filename, lineNumber, ident, start, length, context);
 	}
 
 	@Override
@@ -580,8 +579,8 @@ public class TypeBasic extends Type {
 
 			// If converting to integral
 			if (false && context.global.params.Dversion > 1 && (tob.ty.flags & TFLAGSintegral) != 0) {
-				int sz = size(Loc.ZERO, context);
-				int tosz = tob.size(Loc.ZERO, context);
+				int sz = size(null, 0, context);
+				int tosz = tob.size(null, 0, context);
 	
 			    /* Can't convert to smaller size or, if same size, change sign
 			     */
@@ -663,7 +662,7 @@ public class TypeBasic extends Type {
 	}
 
 	@Override
-	public boolean isZeroInit(Loc loc, SemanticContext context) {
+	public boolean isZeroInit(char[] filename, int lineNumber, SemanticContext context) {
 		switch (ty) {
 		case Tchar:
 		case Twchar:
@@ -683,7 +682,7 @@ public class TypeBasic extends Type {
 	}
 
 	@Override
-	public int size(Loc loc, SemanticContext context) {
+	public int size(char[] filename, int lineNumber, SemanticContext context) {
 		int size;
 
 		switch (ty) {
@@ -777,12 +776,12 @@ public class TypeBasic extends Type {
 		}
 	}
 
-	private Expression Lfvalue(Loc loc, real_t fvalue) {
+	private Expression Lfvalue(char[] filename, int lineNumber, real_t fvalue) {
 		if (isreal() || isimaginary()) {
-			return new RealExp(loc, fvalue, this);
+			return new RealExp(filename, lineNumber, fvalue, this);
 		} else {
 			complex_t cvalue = new complex_t(fvalue, fvalue);
-			return new ComplexExp(loc, cvalue, this);
+			return new ComplexExp(filename, lineNumber, cvalue, this);
 		}
 	}
 	

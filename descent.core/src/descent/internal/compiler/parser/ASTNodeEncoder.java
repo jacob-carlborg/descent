@@ -115,7 +115,7 @@ public class ASTNodeEncoder {
 		// The parser expects "void;", so if there's no semicolon after "void",
 		// it tries to parse an expression. This is why this if is here.
 		if (CharOperation.equals(value, TOK.TOKvoid.charArrayValue)) {
-			return new VoidInitializer(Loc.ZERO);
+			return new VoidInitializer(null, 0);
 		}
 		
 		value = decodeForIndexer(value);

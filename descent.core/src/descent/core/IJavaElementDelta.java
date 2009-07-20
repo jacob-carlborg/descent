@@ -11,6 +11,7 @@
 package descent.core;
 
 import org.eclipse.core.resources.IResourceDelta;
+
 import descent.core.dom.CompilationUnit;
 
 /**

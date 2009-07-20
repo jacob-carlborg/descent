@@ -5,8 +5,8 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class SwitchErrorStatement extends Statement {
 
-	public SwitchErrorStatement(Loc loc) {
-		super(loc);
+	public SwitchErrorStatement(char[] filename, int lineNumber) {
+		super(filename, lineNumber);
 	}
 
 	@Override

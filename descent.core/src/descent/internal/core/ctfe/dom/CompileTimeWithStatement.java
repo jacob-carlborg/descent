@@ -2,15 +2,14 @@ package descent.internal.core.ctfe.dom;
 
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.InterState;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.Statement;
 import descent.internal.compiler.parser.WithStatement;
 
 public class CompileTimeWithStatement extends WithStatement {
 
-	public CompileTimeWithStatement(Loc loc, Expression exp, Statement body) {
-		super(loc, exp, body);
+	public CompileTimeWithStatement(char[] filename, int lineNumber, Expression exp, Statement body) {
+		super(filename, lineNumber, exp, body);
 	}
 	
 	@Override

@@ -1,5 +1,10 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.TOK.TOKint64;
+import static descent.internal.compiler.parser.TY.Tarray;
+import static descent.internal.compiler.parser.TY.Tclass;
+import static descent.internal.compiler.parser.TY.Tstruct;
+
 import java.math.BigInteger;
 
 import melnorme.miscutil.tree.TreeVisitor;
@@ -8,11 +13,6 @@ import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.TOK.TOKint64;
-
-import static descent.internal.compiler.parser.TY.Tarray;
-import static descent.internal.compiler.parser.TY.Tclass;
-import static descent.internal.compiler.parser.TY.Tstruct;
 
 
 public class NewExp extends Expression {
@@ -26,9 +26,9 @@ public class NewExp extends Expression {
 	public NewDeclaration allocator; // allocator function
 	public boolean onstack; // allocate on stack
 
-	public NewExp(Loc loc, Expression thisexp, Expressions newargs,
+	public NewExp(char[] filename, int lineNumber, Expression thisexp, Expressions newargs,
 			Type newtype, Expressions arguments) {
-		super(loc, TOK.TOKnew);
+		super(filename, lineNumber, TOK.TOKnew);
 		this.thisexp = thisexp;
 		this.sourceThisexp = thisexp;
 		this.newargs = newargs;
@@ -107,25 +107,25 @@ public class NewExp extends Expression {
 				cdthis = thisexp.type.isClassHandle();
 				if (cdthis != null) {
 					sc = sc.push(cdthis);
-					type = newtype.semantic(loc, sc, context);
+					type = newtype.semantic(filename, lineNumber, sc, context);
 					sc = sc.pop();
 				} else {
 					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.ThisForNestedClassMustBeAClassType, this, new String[] { thisexp.type.toChars(context) }));
 					}
-					type = newtype.semantic(loc, sc, context);
+					type = newtype.semantic(filename, lineNumber, sc, context);
 				}
 			} else {
-				type = newtype.semantic(loc, sc, context);
+				type = newtype.semantic(filename, lineNumber, sc, context);
 			}
 		    newtype = type;		// in case type gets cast to something else
 			tb = type.toBasetype(context);
 
 			arrayExpressionSemantic(newargs, sc, context);
-			preFunctionArguments(loc, sc, newargs, context);
+			preFunctionArguments(filename, lineNumber, sc, newargs, context);
 			arrayExpressionSemantic(arguments, sc, context);
-			preFunctionArguments(loc, sc, arguments, context);
+			preFunctionArguments(filename, lineNumber, sc, arguments, context);
 
 			if (thisexp != null && tb.ty != Tclass) {
 				if (context.acceptsErrors()) {
@@ -173,7 +173,7 @@ public class NewExp extends Expression {
 					if (cdn != null) {
 						if (cdthis == null) {
 							// Supply an implicit 'this' and try again
-							thisexp = new ThisExp(loc);
+							thisexp = new ThisExp(filename, lineNumber);
 							for (Dsymbol sp = sc.parent; true; sp = sp.parent) {
 								if (sp == null) {
 									if (context.acceptsErrors()) {
@@ -191,7 +191,7 @@ public class NewExp extends Expression {
 									break;
 								}
 								// Add a '.outer' and try again
-								thisexp = new DotIdExp(loc, thisexp, Id.outer);
+								thisexp = new DotIdExp(filename, lineNumber, thisexp, Id.outer);
 							}
 							if (context.global.errors == 0) {
 								// goto Lagain;
@@ -236,7 +236,7 @@ public class NewExp extends Expression {
 
 				FuncDeclaration f = cd.ctor(context);
 				if (f != null) {
-					f = f.overloadResolve(loc, null, arguments, context, this);
+					f = f.overloadResolve(filename, lineNumber, null, arguments, context, this);
 					
 					checkDeprecated(sc, f, context);
 					member = f.isCtorDeclaration();
@@ -254,7 +254,7 @@ public class NewExp extends Expression {
 					if (arguments == null) {
 						arguments = new Expressions(0);
 					}
-					functionArguments(loc, sc, tf, arguments, context);
+					functionArguments(filename, lineNumber, sc, tf, arguments, context);
 				} else {
 					if (arguments != null && arguments.size() > 0) {
 						if (context.acceptsErrors()) {
@@ -270,18 +270,18 @@ public class NewExp extends Expression {
 					f = cd.aggNew(context);
 
 					// Prepend the uint size argument to newargs[]
-					e = new IntegerExp(loc, cd.size(context), Type.tuns32);
+					e = new IntegerExp(filename, lineNumber, cd.size(context), Type.tuns32);
 					if (newargs == null) {
 						newargs = new Expressions(0);
 					}
 					newargs.add(0, e);
 
-					f = f.overloadResolve(loc, null, newargs, context, this);
+					f = f.overloadResolve(filename, lineNumber, null, newargs, context, this);
 					allocator = f.isNewDeclaration();
 					Assert.isNotNull(allocator);
 
 					tf = (TypeFunction) f.type;
-					functionArguments(loc, sc, tf, newargs, context);
+					functionArguments(filename, lineNumber, sc, tf, newargs, context);
 				} else {
 					if (newargs != null && newargs.size() > 0) {
 						if (context.acceptsErrors()) {
@@ -308,21 +308,21 @@ public class NewExp extends Expression {
 					Expression e;
 
 					// Prepend the uint size argument to newargs[]
-					e = new IntegerExp(loc, sd.size(context), Type.tuns32);
+					e = new IntegerExp(filename, lineNumber, sd.size(context), Type.tuns32);
 					if (newargs == null) {
 						newargs = new Expressions(0);
 					}
 					newargs.add(0, e);
 
-					f = f.overloadResolve(loc, null, newargs, context, this);
+					f = f.overloadResolve(filename, lineNumber, null, newargs, context, this);
 					allocator = f.isNewDeclaration();
 					Assert.isNotNull(allocator);
 
 					tf = (TypeFunction) f.type;
-					functionArguments(loc, sc, tf, newargs, context);
+					functionArguments(filename, lineNumber, sc, tf, newargs, context);
 
-					e = new VarExp(loc, f);
-					e = new CallExp(loc, e, newargs);
+					e = new VarExp(filename, lineNumber, f);
+					e = new CallExp(filename, lineNumber, e, newargs);
 					e = e.semantic(sc, context);
 					e.type = type.pointerTo(context);
 					return e;
@@ -380,7 +380,7 @@ public class NewExp extends Expression {
 
 	@Override
 	public Expression syntaxCopy(SemanticContext context) {
-		return new NewExp(loc, thisexp != null ? thisexp.syntaxCopy(context) : null,
+		return new NewExp(filename, lineNumber, thisexp != null ? thisexp.syntaxCopy(context) : null,
 				arraySyntaxCopy(newargs, context), newtype.syntaxCopy(context),
 				arraySyntaxCopy(arguments, context));
 	}

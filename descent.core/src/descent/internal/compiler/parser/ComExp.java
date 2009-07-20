@@ -1,15 +1,15 @@
 package descent.internal.compiler.parser;
 
-import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.Constfold.Com;
 import static descent.internal.compiler.parser.TOK.TOKslice;
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
 public class ComExp extends UnaExp {
 
-	public ComExp(Loc loc, Expression e1) {
-		super(loc, TOK.TOKtilde, e1);
+	public ComExp(char[] filename, int lineNumber, Expression e1) {
+		super(filename, lineNumber, TOK.TOKtilde, e1);
 	}
 
 	@Override
@@ -79,7 +79,7 @@ public class ComExp extends UnaExp {
 	@Override
 	public Expression buildArrayLoop(Arguments fparams, SemanticContext context) {
 		Expression ex1 = e1.buildArrayLoop(fparams, context);
-	    Expression e = new ComExp(Loc.ZERO, ex1);
+	    Expression e = new ComExp(null, 0, ex1);
 	    return e;
 	}
 

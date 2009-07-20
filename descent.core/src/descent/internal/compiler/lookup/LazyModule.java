@@ -20,7 +20,6 @@ import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
 import descent.internal.compiler.parser.Id;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.InterfaceDeclaration;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.ProtDeclaration;
 import descent.internal.compiler.parser.Scope;
@@ -97,7 +96,7 @@ public class LazyModule extends Module implements ILazy {
 			
 			for(char[] key : topLevelIdentifiers.keys()) {
 				if (key != null && CharOperation.prefixEquals(prefix, key, false)) {
-					search(Loc.ZERO, key, 0, context);
+					search(null, 0, key, 0, context);
 				}
 			}
 		}
@@ -120,7 +119,7 @@ public class LazyModule extends Module implements ILazy {
 	}
 	
 	@Override
-	public Dsymbol search(Loc loc, char[] ident, int flags,
+	public Dsymbol search(char[] filename, int lineNumber, char[] ident, int flags,
 			SemanticContext context) {
 		Dsymbol s = symtab != null ? symtab.lookup(ident) : null;
 		
@@ -184,7 +183,7 @@ public class LazyModule extends Module implements ILazy {
 						
 						// Anonymous enums are "hard" for me :-P
 						if (result != null && result.hasAnonEnum) {
-							return search(loc, ident, flags, context);
+							return search(filename, lineNumber, ident, flags, context);
 						}
 					}
 					
@@ -206,7 +205,7 @@ public class LazyModule extends Module implements ILazy {
 		}
 		
 		if (s == null) {
-			s = super.search(loc, ident, flags, context);
+			s = super.search(filename, lineNumber, ident, flags, context);
 		}
 		
 		return s;
@@ -319,21 +318,21 @@ public class LazyModule extends Module implements ILazy {
 					IType type = (IType) target;
 					if (!type.isTemplate() && !type.isForwardDeclaration()) {
 						if (LAZY_CLASSES && type.isClass()) {
-							ClassDeclaration cd = new LazyClassDeclaration(builder.getLoc(this, type), builder.getIdent(type), builder.getBaseClasses(type), builder);
+							ClassDeclaration cd = new LazyClassDeclaration(filename, lineNumber, builder.getIdent(type), builder.getBaseClasses(type), builder);
 							cd.setJavaElement(type);
 							cd.members = new Dsymbols();
 							s = builder.wrap(cd, type);
 							members.add(s);
 							done = true;
 						} else if (LAZY_INTERFACES && type.isInterface()) {
-							InterfaceDeclaration cd = new LazyInterfaceDeclaration(builder.getLoc(this, type), builder.getIdent(type), builder.getBaseClasses(type), builder);
+							InterfaceDeclaration cd = new LazyInterfaceDeclaration(filename, lineNumber, builder.getIdent(type), builder.getBaseClasses(type), builder);
 							cd.setJavaElement(type);
 							cd.members = new Dsymbols();
 							s = builder.wrap(cd, type);
 							members.add(s);
 							done = true;
 						} else if (LAZY_STRUCTS && type.isStruct()) {
-							StructDeclaration cd = new LazyStructDeclaration(builder.getLoc(this, type), builder.getIdent(type), builder);
+							StructDeclaration cd = new LazyStructDeclaration(filename, lineNumber, builder.getIdent(type), builder);
 							cd.setJavaElement(type);
 							cd.members = new Dsymbols();
 							s = builder.wrap(cd, type);

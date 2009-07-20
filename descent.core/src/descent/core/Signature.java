@@ -1385,7 +1385,7 @@ public static String[] getParameterTypes(String methodSignature) throws IllegalA
 			}
 			@Override
 			public void acceptPrimitive(TypeBasic type) {
-				add(type.deco);
+				add(String.valueOf(type.ty.mangleChar));
 			}
 			@Override
 			public void acceptPointer(String signature) {
@@ -1535,7 +1535,7 @@ public static String getReturnType(String methodSignature) throws IllegalArgumen
 			}
 			@Override
 			public void acceptPrimitive(TypeBasic type) {
-				copy(type.deco);
+				copy(String.valueOf(type.ty.mangleChar));
 			}
 			@Override
 			public void acceptAutomaticTypeInference() {
@@ -1614,6 +1614,9 @@ public static String getReturnType(String methodSignature) throws IllegalArgumen
 	
 	if (!valid[0]) {
 		throw new IllegalArgumentException();
+	}
+	if (ret[0] == null) {
+		System.out.println(123456);
 	}
 	return ret[0];
 }

@@ -10,10 +10,11 @@
  *******************************************************************************/
 package descent.internal.core;
 
-import java.util.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
@@ -23,6 +24,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
+
 import descent.core.IClasspathEntry;
 import descent.core.IJavaElement;
 import descent.core.IJavaElementDelta;
@@ -32,7 +34,6 @@ import descent.core.IJavaProject;
 import descent.core.IPackageFragment;
 import descent.core.IPackageFragmentRoot;
 import descent.core.JavaModelException;
-
 import descent.internal.compiler.env.AccessRuleSet;
 import descent.internal.compiler.util.ObjectVector;
 import descent.internal.core.search.indexing.IndexManager;

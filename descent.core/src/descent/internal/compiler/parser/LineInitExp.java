@@ -4,8 +4,8 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class LineInitExp extends DefaultInitExp {
 
-	public LineInitExp(Loc loc) {
-		super(loc, TOK.TOKline);
+	public LineInitExp(char[] filename, int lineNumber) {
+		super(filename, lineNumber, TOK.TOKline);
 	}
 
 	@Override
@@ -26,8 +26,8 @@ public class LineInitExp extends DefaultInitExp {
 	}
 
 	@Override
-	public Expression resolve(Loc loc, Scope sc, SemanticContext context) {
-		Expression e = new IntegerExp(loc, loc.linnum, Type.tint32);
+	public Expression resolve(char[] filename, int lineNumber, Scope sc, SemanticContext context) {
+		Expression e = new IntegerExp(filename, lineNumber, lineNumber, Type.tint32);
 		e = e.castTo(sc, type, context);
 		return e;
 	}

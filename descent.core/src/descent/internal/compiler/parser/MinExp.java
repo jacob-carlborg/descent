@@ -1,16 +1,16 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.Constfold.Min;
+import static descent.internal.compiler.parser.TOK.TOKsymoff;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.Constfold.Min;
-import static descent.internal.compiler.parser.TOK.TOKsymoff;
 
 
 public class MinExp extends BinExp {
 
-	public MinExp(Loc loc, Expression e1, Expression e2) {
-		super(loc, TOK.TOKmin, e1, e2);
+	public MinExp(char[] filename, int lineNumber, Expression e1, Expression e2) {
+		super(filename, lineNumber, TOK.TOKmin, e1, e2);
 	}
 
 	@Override
@@ -87,11 +87,11 @@ public class MinExp extends BinExp {
 
 				typeCombine(sc, context); // make sure pointer types are compatible
 				type = Type.tptrdiff_t;
-				stride = t2.nextOf().size(Loc.ZERO, context);
+				stride = t2.nextOf().size(null, 0, context);
 			    if (stride == 0) {
-					e_ = new IntegerExp(loc, 0, Type.tptrdiff_t);
+					e_ = new IntegerExp(filename, lineNumber, 0, Type.tptrdiff_t);
 				} else {
-					e_ = new DivExp(loc, this, new IntegerExp(Loc.ZERO,
+					e_ = new DivExp(filename, lineNumber, this, new IntegerExp(null, 0,
 							new integer_t(stride), Type.tptrdiff_t));
 					e_.type = Type.tptrdiff_t;
 					e_.copySourceRange(this);
@@ -104,7 +104,7 @@ public class MinExp extends BinExp {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.IncompatibleTypesForMinus, this));
 				}
-				return new IntegerExp(loc, 0);
+				return new IntegerExp(filename, lineNumber, 0);
 			}
 		} else if (t2.ty == TY.Tpointer) {
 			type = e2.type;
@@ -112,7 +112,7 @@ public class MinExp extends BinExp {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.CannotSubtractPointerFromSymbol, this, new String[] { e1.type.toChars(context) }));
 			}
-			return new IntegerExp(loc, 0);
+			return new IntegerExp(filename, lineNumber, 0);
 		} else {
 			typeCombine(sc, context);
 			t1 = e1.type.toBasetype(context);
@@ -159,7 +159,7 @@ public class MinExp extends BinExp {
 	     */
 	    Expression ex1 = e1.buildArrayLoop(fparams, context);
 	    Expression ex2 = e2.buildArrayLoop(fparams, context);
-	    Expression e = new MinExp(Loc.ZERO, ex1, ex2);
+	    Expression e = new MinExp(null, 0, ex1, ex2);
 	    return e;
 	}
 

@@ -1,26 +1,29 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.DYNCAST.DYNCAST_DSYMBOL;
+
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.IProblem;
-import static descent.internal.compiler.parser.DYNCAST.DYNCAST_DSYMBOL;
 
 
 public abstract class TypeQualified extends Type {
 
-	public Loc loc;
+	public int lineNumber;
+	public char[] filename;
 	public Identifiers idents = new Identifiers(2);
 
-	public TypeQualified(Loc loc, TY ty) {
+	public TypeQualified(char[] filename, int lineNumber, TY ty) {
 		super(ty, null);
-		this.loc = loc;
+		this.filename = filename;
+		this.lineNumber = lineNumber;
 	}
 
 	public void addIdent(IdentifierExp ident) {
 		idents.add(ident);
 	}
 
-	public void resolveHelper(Loc loc, Scope sc, Dsymbol s,
+	public void resolveHelper(char[] filename, int lineNumber, Scope sc, Dsymbol s,
 			Dsymbol scopesym, Expression[] pe, Type[] pt, Dsymbol[] ps, SemanticContext context) {
 		VarDeclaration v;
 		EnumMember em;
@@ -44,7 +47,7 @@ public abstract class TypeQualified extends Type {
 						TemplateDeclaration td;
 						TemplateInstance ti = ((TemplateInstanceWrapper) id).tempinst;
 						id = ti.name;
-						sm = s.search(loc, id, 0, context);
+						sm = s.search(filename, lineNumber, id, 0, context);
 						
 						// Descent: for binding resolution
 						context.setResolvedSymbol(id, sm);
@@ -77,7 +80,7 @@ public abstract class TypeQualified extends Type {
 							return;
 						}
 						
-						sm = s.search(loc, id, 0, context);
+						sm = s.search(filename, lineNumber, id, 0, context);
 						
 						// Descent: for binding resolution
 						context.setResolvedSymbol(id, sm);
@@ -91,7 +94,7 @@ public abstract class TypeQualified extends Type {
 									&& v.getExpInitializer(context) != null) {
 								e = v.getExpInitializer(context).exp;
 							} else {
-								e = new VarExp(loc, v);
+								e = new VarExp(filename, lineNumber, v);
 							}
 							t = e.type;
 							if (t == null) {
@@ -110,15 +113,15 @@ public abstract class TypeQualified extends Type {
 						if (t != null) {
 							sm = t.toDsymbol(sc, context);
 							if (sm != null) {
-								sm = sm.search(loc, id, 0, context);
+								sm = sm.search(filename, lineNumber, id, 0, context);
 								if (sm != null) {
 									// goto L2;
 									s = sm.toAlias(context);
 									continue;
 								}
 							}
-							// e = t.getProperty(loc, id, context);
-						    e = new TypeExp(loc, t);
+							// e = t.getProperty(filename, lineNumber, id, context);
+						    e = new TypeExp(filename, lineNumber, t);
 						    e = t.dotExp(sc, e, id, context);
 							resolveHelper_L3(sc, pe, e, context);
 						} else {
@@ -141,7 +144,7 @@ public abstract class TypeQualified extends Type {
 					Assert.isNotNull(ei);
 					pe[0] = ei.exp.copy(); // make copy so we can change loc
 				} else {
-					pe[0] = new VarExp(loc, v);
+					pe[0] = new VarExp(filename, lineNumber, v);
 				}
 				return;
 			}
@@ -175,7 +178,7 @@ public abstract class TypeQualified extends Type {
 
 			si = s.isImport();
 			if (si != null) {
-				s = si.search(loc, s.ident, 0, context);
+				s = si.search(filename, lineNumber, s.ident, 0, context);
 				if (s != null && s != si) {
 					// goto L1
 					resolveHelper_L1_plus_end(sc, s, scopesym, pe, pt, ps, e,
@@ -211,8 +214,8 @@ public abstract class TypeQualified extends Type {
 						break;
 					}
 				}
-				t = t.semantic(loc, scx, context);
-				// ((TypeIdentifier )t).resolve(loc, scx, pe, &t, ps);
+				t = t.semantic(filename, lineNumber, scx, context);
+				// ((TypeIdentifier )t).resolve(filename, lineNumber, scx, pe, &t, ps);
 			}
 		}
 		if (t.ty == TY.Ttuple) {
@@ -244,7 +247,7 @@ public abstract class TypeQualified extends Type {
 	}
 
 	@Override
-	public int size(Loc loc, SemanticContext context) {
+	public int size(char[] filename, int lineNumber, SemanticContext context) {
 		if (context.acceptsErrors()) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.SizeOfTypeIsNotKnown, this, new String[] { toChars(context) }));
@@ -261,7 +264,7 @@ public abstract class TypeQualified extends Type {
 					TemplateInstance ti = ((TemplateInstanceWrapper) id).tempinst;
 	
 					ti = (TemplateInstance) ti.syntaxCopy(null, context);
-					id = new TemplateInstanceWrapper(Loc.ZERO, ti);
+					id = new TemplateInstanceWrapper(null, 0, ti);
 				}
 				idents.set(i, id);
 			}
@@ -307,11 +310,11 @@ public abstract class TypeQualified extends Type {
 	
 	@Override
 	public int getLineNumber() {
-		return loc.linnum;
+		return lineNumber;
 	}
 	
 	public void setLineNumber(int lineNumber) {
-		this.loc.linnum = lineNumber;
+		this.lineNumber = lineNumber;
 	}
 
 }

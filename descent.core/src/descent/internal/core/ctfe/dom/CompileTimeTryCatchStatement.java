@@ -4,15 +4,14 @@ import descent.internal.compiler.parser.Array;
 import descent.internal.compiler.parser.Catch;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.InterState;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.Statement;
 import descent.internal.compiler.parser.TryCatchStatement;
 
 public class CompileTimeTryCatchStatement extends TryCatchStatement {
 
-	public CompileTimeTryCatchStatement(Loc loc, Statement body, Array<Catch> catches) {
-		super(loc, body, catches);
+	public CompileTimeTryCatchStatement(char[] filename, int lineNumber, Statement body, Array<Catch> catches) {
+		super(filename, lineNumber, body, catches);
 	}
 	
 	@Override

@@ -10,8 +10,9 @@
  *******************************************************************************/
 package descent.internal.core;
 
-import descent.core.*;
 import descent.core.IJavaElement;
+import descent.core.IJavaElementDelta;
+import descent.core.IProblemRequestor;
 import descent.core.JavaModelException;
 
 /**

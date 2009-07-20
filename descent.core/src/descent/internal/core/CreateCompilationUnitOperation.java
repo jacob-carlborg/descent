@@ -14,15 +14,16 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.eclipse.core.resources.*;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
+
 import descent.core.IBuffer;
 import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
@@ -31,7 +32,6 @@ import descent.core.IJavaModelStatus;
 import descent.core.IJavaModelStatusConstants;
 import descent.core.IPackageFragment;
 import descent.core.JavaConventions;
-//import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.internal.core.util.Messages;
 import descent.internal.core.util.Util;

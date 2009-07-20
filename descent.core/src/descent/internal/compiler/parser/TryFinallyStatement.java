@@ -10,13 +10,13 @@ public class TryFinallyStatement extends Statement {
 	public Statement finalbody, sourceFinalbody;
 	public boolean isTryCatchFinally;
 
-	public TryFinallyStatement(Loc loc, Statement body, Statement finalbody) {
-		this(loc, body, finalbody, false);
+	public TryFinallyStatement(char[] filename, int lineNumber, Statement body, Statement finalbody) {
+		this(filename, lineNumber, body, finalbody, false);
 	}
 
-	public TryFinallyStatement(Loc loc, Statement body, Statement finalbody,
+	public TryFinallyStatement(char[] filename, int lineNumber, Statement body, Statement finalbody,
 			boolean isTryCatchFinally) {
-		super(loc);
+		super(filename, lineNumber);
 		this.body = this.sourceBody = body;
 		this.finalbody = this.sourceFinalbody = finalbody;
 		this.isTryCatchFinally = isTryCatchFinally;
@@ -72,7 +72,7 @@ public class TryFinallyStatement extends Statement {
 				return body;
 			}
 			if (body.blockExit(context) == BEfallthru) {
-				Statement s = new CompoundStatement(loc, body, finalbody);
+				Statement s = new CompoundStatement(filename, lineNumber, body, finalbody);
 				return s;
 			}
 		}
@@ -82,7 +82,7 @@ public class TryFinallyStatement extends Statement {
 
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
-		TryFinallyStatement s = context.newTryFinallyStatement(loc, body.syntaxCopy(context),
+		TryFinallyStatement s = context.newTryFinallyStatement(filename, lineNumber, body.syntaxCopy(context),
 				finalbody.syntaxCopy(context));
 		s.copySourceRange(this);
 		return s;

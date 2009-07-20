@@ -2,7 +2,6 @@ package descent.internal.compiler.parser;
 
 import static descent.internal.compiler.parser.TY.Tbit;
 import static descent.internal.compiler.parser.TY.Treference;
-
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -34,7 +33,7 @@ public class TypeReference extends Type {
 	}
 
 	@Override
-	public int size(Loc loc, SemanticContext context) {
+	public int size(char[] filename, int lineNumber, SemanticContext context) {
 		return PTRSIZE;
 	}
 
@@ -55,15 +54,15 @@ public class TypeReference extends Type {
 	}
 	
 	@Override
-	public Expression defaultInit(Loc loc, SemanticContext context) {
+	public Expression defaultInit(char[] filename, int lineNumber, SemanticContext context) {
 		Expression e;
-	    e = new NullExp(loc);
+	    e = new NullExp(filename, lineNumber);
 	    e.type = this;
 	    return e;
 	}
 	
 	@Override
-	public boolean isZeroInit(Loc loc, SemanticContext context) {
+	public boolean isZeroInit(char[] filename, int lineNumber, SemanticContext context) {
 		return true;
 	}
 

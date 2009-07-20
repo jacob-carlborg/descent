@@ -9,8 +9,8 @@ public class VolatileStatement extends Statement {
 	public Statement statement;
 	public Statement sourceStatement;
 
-	public VolatileStatement(Loc loc, Statement statement) {
-		super(loc);
+	public VolatileStatement(char[] filename, int lineNumber, Statement statement) {
+		super(filename, lineNumber);
 		this.sourceStatement = statement;
 		this.statement = statement;
 	}
@@ -38,7 +38,7 @@ public class VolatileStatement extends Statement {
 			for (int i = 0; i < a.size(); i++) {
 				Statement s = a.get(i);
 
-				s = new VolatileStatement(loc, s);
+				s = new VolatileStatement(filename, lineNumber, s);
 				a.set(i, s);
 			}
 		}
@@ -61,7 +61,7 @@ public class VolatileStatement extends Statement {
 
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
-		VolatileStatement s = context.newVolatileStatement(loc,
+		VolatileStatement s = context.newVolatileStatement(filename, lineNumber,
 				statement != null ? statement.syntaxCopy(context) : null);
 		s.copySourceRange(this);
 		return s;

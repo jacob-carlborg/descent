@@ -13,9 +13,10 @@ package descent.internal.core;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.core.runtime.preferences.PreferenceModifyListener;
-import descent.core.*;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
+
+import descent.core.JavaCore;
 
 public class JavaCorePreferenceModifyListener extends PreferenceModifyListener {
 	

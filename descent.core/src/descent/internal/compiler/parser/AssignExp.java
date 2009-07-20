@@ -1,17 +1,28 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.TOK.TOKadd;
+import static descent.internal.compiler.parser.TOK.TOKand;
+import static descent.internal.compiler.parser.TOK.TOKdiv;
+import static descent.internal.compiler.parser.TOK.TOKdottd;
+import static descent.internal.compiler.parser.TOK.TOKmin;
+import static descent.internal.compiler.parser.TOK.TOKmod;
+import static descent.internal.compiler.parser.TOK.TOKmul;
+import static descent.internal.compiler.parser.TOK.TOKneg;
+import static descent.internal.compiler.parser.TOK.TOKor;
+import static descent.internal.compiler.parser.TOK.TOKslice;
+import static descent.internal.compiler.parser.TOK.TOKtilde;
+import static descent.internal.compiler.parser.TOK.TOKtuple;
+import static descent.internal.compiler.parser.TOK.TOKxor;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
-import static descent.internal.compiler.parser.TOK.*;
 
 public class AssignExp extends BinExp {
 
 	public boolean ismemset;
 
-	public AssignExp(Loc loc, Expression e1, Expression e2) {
-		super(loc, TOK.TOKassign, e1, e2);
+	public AssignExp(char[] filename, int lineNumber, Expression e1, Expression e2) {
+		super(filename, lineNumber, TOK.TOKassign, e1, e2);
 		ismemset = false;
 	}
 
@@ -73,24 +84,24 @@ public class AssignExp extends BinExp {
 
 				// Rewrite (a[i] = value) to (a.opIndexAssign(value, i))
 				if (null != search_function(ad, Id.indexass, context)) {
-					Expression e = new DotIdExp(loc, ae.e1, Id.indexass);
+					Expression e = new DotIdExp(filename, lineNumber, ae.e1, Id.indexass);
 					Expressions a = new Expressions(ae.arguments);
 
 					a.add(0, e2);
-					e = new CallExp(loc, e, a);
+					e = new CallExp(filename, lineNumber, e, a);
 					e = e.semantic(sc, context);
 					return e;
 				} else {
 					// Rewrite (a[i] = value) to (a.opIndex(i, value))
 					if (null != search_function(ad, id, context)) {
-						Expression e = new DotIdExp(loc, ae.e1, id);
+						Expression e = new DotIdExp(filename, lineNumber, ae.e1, id);
 
 						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
 									IProblem.OperatorAssignmentOverloadWithOpIndexIllegal, this));
 						}
 
-						e = new CallExp(loc, e, ae.arguments.get(0), e2);
+						e = new CallExp(filename, lineNumber, e, ae.arguments.get(0), e2);
 						e = e.semantic(sc, context);
 						return e;
 					}
@@ -122,7 +133,7 @@ public class AssignExp extends BinExp {
 
 				// Rewrite (a[i..j] = value) to (a.opIndexAssign(value, i, j))
 				if (null != search_function(ad, Id.sliceass, context)) {
-					Expression e = new DotIdExp(loc, ae.e1, Id.sliceass);
+					Expression e = new DotIdExp(filename, lineNumber, ae.e1, Id.sliceass);
 					Expressions a = new Expressions(3);
 
 					a.add(e2);
@@ -134,7 +145,7 @@ public class AssignExp extends BinExp {
 						assert (null == ae.upr);
 					}
 
-					e = new CallExp(loc, e, a);
+					e = new CallExp(filename, lineNumber, e, a);
 					e = e.semantic(sc, context);
 					return e;
 				}
@@ -148,7 +159,7 @@ public class AssignExp extends BinExp {
 		
 	    if (e1.op == TOKdottd) {	
 	    	// Rewrite a.b=e2, when b is a template, as a.b(e2)
-	    	Expression e = new CallExp(loc, e1, e2);
+	    	Expression e = new CallExp(filename, lineNumber, e1, e2);
 	    	e.copySourceRange(e1, e2);
 	    	e = e.semantic(sc, context);
 	    	return e;
@@ -178,9 +189,9 @@ public class AssignExp extends BinExp {
 		    {	
 		    	Expression ex1 = (Expression) tup1.exps.get(i);
 				Expression ex2 = (Expression) tup2.exps.get(i);
-				exps.set(i, new AssignExp(loc, ex1, ex2));
+				exps.set(i, new AssignExp(filename, lineNumber, ex1, ex2));
 		    }
-		    Expression e = new TupleExp(loc, exps);
+		    Expression e = new TupleExp(filename, lineNumber, exps);
 		    e = e.semantic(sc, context);
 		    return e;
 		}
@@ -193,7 +204,7 @@ public class AssignExp extends BinExp {
 			// Rewrite f=value to f(value)
 			Expression e;
 
-			e = new CallExp(loc, e1, e2);
+			e = new CallExp(filename, lineNumber, e1, e2);
 			e = e.semantic(sc, context);
 			
 			if (e instanceof CallExp) {
@@ -286,7 +297,7 @@ public class AssignExp extends BinExp {
 	    Expression ex1 = e1.buildArrayLoop(fparams, context);
 	    Argument param = (Argument) fparams.get(0);
 	    param.storageClass = 0;
-	    Expression e = new AssignExp(Loc.ZERO, ex1, ex2);
+	    Expression e = new AssignExp(null, 0, ex1, ex2);
 	    return e;
 	}
 

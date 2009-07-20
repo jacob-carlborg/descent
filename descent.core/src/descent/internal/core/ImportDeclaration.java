@@ -11,7 +11,10 @@
 package descent.internal.core;
 
 import org.eclipse.core.runtime.Assert;
-import descent.core.*;
+
+import descent.core.IImportDeclaration;
+import descent.core.IJavaElement;
+import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
 
 /**

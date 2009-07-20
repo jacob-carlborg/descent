@@ -3,7 +3,6 @@ package descent.internal.codeassist.complete;
 import descent.internal.compiler.parser.ASTNodeEncoder;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Identifiers;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Objects;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.SemanticContext;
@@ -14,8 +13,8 @@ public class CompletionOnTemplateMixin extends TemplateMixin {
 	
 	public Scope scope;
 
-	public CompletionOnTemplateMixin(Loc loc, IdentifierExp ident, Type tqual, Identifiers idents, Objects tiargs, ASTNodeEncoder encoder) {
-		super(loc, ident, tqual, idents, tiargs, encoder);
+	public CompletionOnTemplateMixin(char[] filename, int lineNumber, IdentifierExp ident, Type tqual, Identifiers idents, Objects tiargs, ASTNodeEncoder encoder) {
+		super(filename, lineNumber, ident, tqual, idents, tiargs, encoder);
 	}
 	
 	@Override

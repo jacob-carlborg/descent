@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IPath;
+
 import descent.core.ICompilationUnit;
 import descent.core.IImportDeclaration;
 import descent.core.IJavaElement;

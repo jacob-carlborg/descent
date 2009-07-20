@@ -13,8 +13,8 @@ public class LabelStatement extends Statement {
 	public TryFinallyStatement tf;
 	public boolean isReturnLabel;
 
-	public LabelStatement(Loc loc, IdentifierExp ident, Statement statement) {
-		super(loc);
+	public LabelStatement(char[] filename, int lineNumber, IdentifierExp ident, Statement statement) {
+		super(filename, lineNumber);
 		this.ident = ident;
 		this.statement = this.sourceStatement = statement;
 	}
@@ -47,11 +47,11 @@ public class LabelStatement extends Statement {
 			a = statement.flatten(sc, context);
 			if (a != null) {
 				if (0 == a.size()) {
-					a.add(new ExpStatement(loc, null));
+					a.add(new ExpStatement(filename, lineNumber, null));
 				}
 				Statement s = a.get(0);
 
-				s = new LabelStatement(loc, ident, s);
+				s = new LabelStatement(filename, lineNumber, ident, s);
 				a.set(0, s);
 			}
 		}
@@ -100,7 +100,7 @@ public class LabelStatement extends Statement {
 
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
-		LabelStatement s = context.newLabelStatement(loc, ident, statement
+		LabelStatement s = context.newLabelStatement(filename, lineNumber, ident, statement
 				.syntaxCopy(context));
 		s.copySourceRange(this);
 		return s;

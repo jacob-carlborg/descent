@@ -64,7 +64,6 @@ import descent.internal.compiler.parser.InvariantDeclaration;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.LabelStatement;
 import descent.internal.compiler.parser.LinkDeclaration;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.NewDeclaration;
 import descent.internal.compiler.parser.Objects;
@@ -228,8 +227,8 @@ public class CompileTimeSemanticContext extends SemanticContext {
 	}
 	
 	@Override
-	protected VarDeclaration newVarDeclaration(Loc loc, Type type, IdentifierExp exp, Initializer init) {
-		return new CompileTimeVarDeclaration(loc, type, exp, init);
+	protected VarDeclaration newVarDeclaration(char[] filename, int lineNumber, Type type, IdentifierExp exp, Initializer init) {
+		return new CompileTimeVarDeclaration(filename, lineNumber, type, exp, init);
 	}
 	
 	@Override
@@ -243,123 +242,123 @@ public class CompileTimeSemanticContext extends SemanticContext {
 	}
 
 	@Override
-	public CallExp newCallExp(Loc loc, Expression e, Expressions args) {
-		return new CompileTimeCallExp(loc, e, args);
+	public CallExp newCallExp(char[] filename, int lineNumber, Expression e, Expressions args) {
+		return new CompileTimeCallExp(filename, lineNumber, e, args);
 	}
 	
 	@Override
-	protected FuncDeclaration newFuncDeclaration(Loc loc, IdentifierExp ident, int storage_class, Type syntaxCopy) {
-		return new CompileTimeFuncDeclaration(loc, ident, storage_class, syntaxCopy);
+	protected FuncDeclaration newFuncDeclaration(char[] filename, int lineNumber, IdentifierExp ident, int storage_class, Type syntaxCopy) {
+		return new CompileTimeFuncDeclaration(filename, lineNumber, ident, storage_class, syntaxCopy);
 	}
 	
 	@Override
-	protected IfStatement newIfStatement(Loc loc, Argument a, Expression condition, Statement ifbody, Statement elsebody) {
-		return new CompileTimeIfStatement(loc, a, condition, ifbody, elsebody);
+	protected IfStatement newIfStatement(char[] filename, int lineNumber, Argument a, Expression condition, Statement ifbody, Statement elsebody) {
+		return new CompileTimeIfStatement(filename, lineNumber, a, condition, ifbody, elsebody);
 	}
 	
 	@Override
-	protected ReturnStatement newReturnStatement(Loc loc, Expression e) {
-		return new CompileTimeReturnStatement(loc, e);
+	protected ReturnStatement newReturnStatement(char[] filename, int lineNumber, Expression e) {
+		return new CompileTimeReturnStatement(filename, lineNumber, e);
 	}
 	
 	@Override
-	protected DeclarationStatement newDeclarationStatement(Loc loc, Expression e) {
-		return new CompileTimeDeclarationStatement(loc, e);
+	protected DeclarationStatement newDeclarationStatement(char[] filename, int lineNumber, Expression e) {
+		return new CompileTimeDeclarationStatement(filename, lineNumber, e);
 	}
 	
 	@Override
-	protected ExpStatement newExpStatement(Loc loc, Expression e) {
-		return new CompileTimeExpStatement(loc, e);
+	protected ExpStatement newExpStatement(char[] filename, int lineNumber, Expression e) {
+		return new CompileTimeExpStatement(filename, lineNumber, e);
 	}
 	
 	@Override
-	public BreakStatement newBreakStatement(Loc loc, IdentifierExp ident) {
-		return new CompileTimeBreakStatement(loc, ident);
+	public BreakStatement newBreakStatement(char[] filename, int lineNumber, IdentifierExp ident) {
+		return new CompileTimeBreakStatement(filename, lineNumber, ident);
 	}
 	
 	@Override
-	public CaseStatement newCaseStatement(Loc loc, Expression expression, Statement statement) {
-		return new CompileTimeCaseStatement(loc, expression, statement);
+	public CaseStatement newCaseStatement(char[] filename, int lineNumber, Expression expression, Statement statement) {
+		return new CompileTimeCaseStatement(filename, lineNumber, expression, statement);
 	}
 	
 	@Override
-	public CompileStatement newCompileStatement(Loc loc, Expression e) {
-		return new CompileTimeCompileStatement(loc, e);
+	public CompileStatement newCompileStatement(char[] filename, int lineNumber, Expression e) {
+		return new CompileTimeCompileStatement(filename, lineNumber, e);
 	}
 	
 	@Override
-	protected CompoundStatement newCompoundStatement(Loc loc, Statements a) {
-		return new CompileTimeCompoundStatement(loc, a);
+	protected CompoundStatement newCompoundStatement(char[] filename, int lineNumber, Statements a) {
+		return new CompileTimeCompoundStatement(filename, lineNumber, a);
 	}
 	
 	@Override
-	protected ConditionalStatement newConditionalStatement(Loc loc, Condition condition, Statement statement, Statement e) {
-		return new CompileTimeConditionalStatement(loc, condition, statement, e);
+	protected ConditionalStatement newConditionalStatement(char[] filename, int lineNumber, Condition condition, Statement statement, Statement e) {
+		return new CompileTimeConditionalStatement(filename, lineNumber, condition, statement, e);
 	}
 	
 	@Override
-	protected ContinueStatement newContinueStatement(Loc loc, IdentifierExp ident) {
-		return new CompileTimeContinueStatement(loc, ident);
+	protected ContinueStatement newContinueStatement(char[] filename, int lineNumber, IdentifierExp ident) {
+		return new CompileTimeContinueStatement(filename, lineNumber, ident);
 	}
 	
 	@Override
-	protected DefaultStatement newDefaultStatement(Loc loc, Statement statement) {
-		return new CompileTimeDefaultStatement(loc, statement);
+	protected DefaultStatement newDefaultStatement(char[] filename, int lineNumber, Statement statement) {
+		return new CompileTimeDefaultStatement(filename, lineNumber, statement);
 	}
 	
 	@Override
-	public DoStatement newDoStatement(Loc loc, Statement statement, Expression expression) {
-		return new CompileTimeDoStatement(loc, statement, expression);
+	public DoStatement newDoStatement(char[] filename, int lineNumber, Statement statement, Expression expression) {
+		return new CompileTimeDoStatement(filename, lineNumber, statement, expression);
 	}
 	
 	@Override
-	protected ForeachRangeStatement newForeachRangeStatement(Loc loc, TOK op, Argument argument, Expression expression, Expression expression2, Statement statement) {
-		return new CompileTimeForeachRangeStatement(loc, op, argument, expression, expression2, statement);
+	protected ForeachRangeStatement newForeachRangeStatement(char[] filename, int lineNumber, TOK op, Argument argument, Expression expression, Expression expression2, Statement statement) {
+		return new CompileTimeForeachRangeStatement(filename, lineNumber, op, argument, expression, expression2, statement);
 	}
 	
 	@Override
-	protected ForeachStatement newForeachStatement(Loc loc, TOK op, Arguments args, Expression exp, Statement statement) {
-		return new CompileTimeForeachStatement(loc, op, args, exp, statement);
+	protected ForeachStatement newForeachStatement(char[] filename, int lineNumber, TOK op, Arguments args, Expression exp, Statement statement) {
+		return new CompileTimeForeachStatement(filename, lineNumber, op, args, exp, statement);
 	}
 	
 	@Override
-	public ForStatement newForStatement(Loc loc, Statement i, Expression c, Expression inc, Statement statement) {
-		return new CompileTimeForStatement(loc, i, c, inc, statement);
+	public ForStatement newForStatement(char[] filename, int lineNumber, Statement i, Expression c, Expression inc, Statement statement) {
+		return new CompileTimeForStatement(filename, lineNumber, i, c, inc, statement);
 	}
 	
 	@Override
-	protected GotoCaseStatement newGotoCaseStatement(Loc loc, Expression e) {
-		return new CompileTimeGotoCaseStatement(loc, e);
+	protected GotoCaseStatement newGotoCaseStatement(char[] filename, int lineNumber, Expression e) {
+		return new CompileTimeGotoCaseStatement(filename, lineNumber, e);
 	}
 	
 	@Override
-	protected GotoDefaultStatement newGotoDefaultStatement(Loc loc) {
-		return new CompileTimeGotoDefaultStatement(loc);
+	protected GotoDefaultStatement newGotoDefaultStatement(char[] filename, int lineNumber) {
+		return new CompileTimeGotoDefaultStatement(filename, lineNumber);
 	}
 	
 	@Override
-	protected GotoStatement newGotoStatement(Loc loc, IdentifierExp ident) {
-		return new CompileTimeGotoStatement(loc, ident);
+	protected GotoStatement newGotoStatement(char[] filename, int lineNumber, IdentifierExp ident) {
+		return new CompileTimeGotoStatement(filename, lineNumber, ident);
 	}
 	
 	@Override
-	protected LabelStatement newLabelStatement(Loc loc, IdentifierExp ident, Statement statement) {
-		return new CompileTimeLabelStatement(loc, ident, statement);
+	protected LabelStatement newLabelStatement(char[] filename, int lineNumber, IdentifierExp ident, Statement statement) {
+		return new CompileTimeLabelStatement(filename, lineNumber, ident, statement);
 	}
 	
 	@Override
-	protected OnScopeStatement newOnScopeStatement(Loc loc, TOK tok, Statement statement) {
-		return new CompileTimeOnScopeStatement(loc, tok, statement);
+	protected OnScopeStatement newOnScopeStatement(char[] filename, int lineNumber, TOK tok, Statement statement) {
+		return new CompileTimeOnScopeStatement(filename, lineNumber, tok, statement);
 	}
 	
 	@Override
-	protected PragmaStatement newPragmaStatement(Loc loc, IdentifierExp ident, Expressions expressions, Statement b) {
-		return new CompileTimePragmaStatement(loc, ident, expressions, b);
+	protected PragmaStatement newPragmaStatement(char[] filename, int lineNumber, IdentifierExp ident, Expressions expressions, Statement b) {
+		return new CompileTimePragmaStatement(filename, lineNumber, ident, expressions, b);
 	}
 	
 	@Override
-	protected ScopeStatement newScopeStatement(Loc loc, Statement s) {
-		return new CompileTimeScopeStatement(loc, s);
+	protected ScopeStatement newScopeStatement(char[] filename, int lineNumber, Statement s) {
+		return new CompileTimeScopeStatement(filename, lineNumber, s);
 	}
 	
 	@Override
@@ -368,48 +367,48 @@ public class CompileTimeSemanticContext extends SemanticContext {
 	}
 	
 	@Override
-	protected SwitchStatement newSwitchStatement(Loc loc, Expression expression, Statement statement) {
-		return new CompileTimeSwitchStatement(loc, expression, statement);
+	protected SwitchStatement newSwitchStatement(char[] filename, int lineNumber, Expression expression, Statement statement) {
+		return new CompileTimeSwitchStatement(filename, lineNumber, expression, statement);
 	}
 	
 	@Override
-	protected SynchronizedStatement newSynchronizedStatement(Loc loc, Expression e, Statement statement) {
-		return new CompileTimeSynchronizedStatement(loc, e, statement);
+	protected SynchronizedStatement newSynchronizedStatement(char[] filename, int lineNumber, Expression e, Statement statement) {
+		return new CompileTimeSynchronizedStatement(filename, lineNumber, e, statement);
 	}
 	
 	@Override
-	protected ThrowStatement newThrowStatement(Loc loc, Expression expression) {
-		return new CompileTimeThrowStatement(loc, expression);
+	protected ThrowStatement newThrowStatement(char[] filename, int lineNumber, Expression expression) {
+		return new CompileTimeThrowStatement(filename, lineNumber, expression);
 	}
 	
 	@Override
-	protected TryCatchStatement newTryCatchStatement(Loc loc, Statement statement, Array<Catch> a) {
-		return new CompileTimeTryCatchStatement(loc, statement, a);
+	protected TryCatchStatement newTryCatchStatement(char[] filename, int lineNumber, Statement statement, Array<Catch> a) {
+		return new CompileTimeTryCatchStatement(filename, lineNumber, statement, a);
 	}
 	
 	@Override
-	protected TryFinallyStatement newTryFinallyStatement(Loc loc, Statement statement, Statement statement2) {
-		return new CompileTimeTryFinallyStatement(loc, statement, statement2);
+	protected TryFinallyStatement newTryFinallyStatement(char[] filename, int lineNumber, Statement statement, Statement statement2) {
+		return new CompileTimeTryFinallyStatement(filename, lineNumber, statement, statement2);
 	}
 	
 	@Override
-	protected VolatileStatement newVolatileStatement(Loc loc, Statement statement) {
-		return new CompileTimeVolatileStatement(loc, statement);
+	protected VolatileStatement newVolatileStatement(char[] filename, int lineNumber, Statement statement) {
+		return new CompileTimeVolatileStatement(filename, lineNumber, statement);
 	}
 	
 	@Override
-	protected WhileStatement newWhileStatement(Loc loc, Expression expression, Statement statement) {
-		return new CompileTimeWhileStatement(loc, expression, statement);
+	protected WhileStatement newWhileStatement(char[] filename, int lineNumber, Expression expression, Statement statement) {
+		return new CompileTimeWhileStatement(filename, lineNumber, expression, statement);
 	}
 	
 	@Override
-	protected WithStatement newWithStatement(Loc loc, Expression expression, Statement statement) {
-		return new CompileTimeWithStatement(loc, expression, statement);
+	protected WithStatement newWithStatement(char[] filename, int lineNumber, Expression expression, Statement statement) {
+		return new CompileTimeWithStatement(filename, lineNumber, expression, statement);
 	}
 	
 	@Override
-	protected PragmaDeclaration newPragmaDeclaration(Loc loc, IdentifierExp ident, Expressions expressions, Dsymbols dsymbols) {
-		return new CompileTimePragmaDeclaration(loc, ident, expressions, dsymbols);
+	protected PragmaDeclaration newPragmaDeclaration(char[] filename, int lineNumber, IdentifierExp ident, Expressions expressions, Dsymbols dsymbols) {
+		return new CompileTimePragmaDeclaration(filename, lineNumber, ident, expressions, dsymbols);
 	}
 	
 	@Override
@@ -418,13 +417,13 @@ public class CompileTimeSemanticContext extends SemanticContext {
 	}
 	
 	@Override
-	protected AnonDeclaration newAnonDeclaration(Loc loc, boolean isunion, Dsymbols dsymbols) {
-		return new CompileTimeAnonDeclaration(loc, isunion, dsymbols);
+	protected AnonDeclaration newAnonDeclaration(char[] filename, int lineNumber, boolean isunion, Dsymbols dsymbols) {
+		return new CompileTimeAnonDeclaration(filename, lineNumber, isunion, dsymbols);
 	}
 	
 	@Override
-	protected CompileDeclaration newCompileDeclaration(Loc loc, Expression expression) {
-		return new CompileTimeCompileDeclaration(loc, expression);
+	protected CompileDeclaration newCompileDeclaration(char[] filename, int lineNumber, Expression expression) {
+		return new CompileTimeCompileDeclaration(filename, lineNumber, expression);
 	}
 	
 	@Override
@@ -433,128 +432,128 @@ public class CompileTimeSemanticContext extends SemanticContext {
 	}
 	
 	@Override
-	protected DebugSymbol newDebugSymbol(Loc loc, IdentifierExp ident, Version version) {
-		return new CompileTimeDebugSymbol(loc, ident, version);
+	protected DebugSymbol newDebugSymbol(char[] filename, int lineNumber, IdentifierExp ident, Version version) {
+		return new CompileTimeDebugSymbol(filename, lineNumber, ident, version);
 	}
 	
 	@Override
-	protected AliasDeclaration newAliasDeclaration(Loc loc, IdentifierExp ident, Dsymbol dsymbol) {
-		return new CompileTimeAliasDeclaration(loc, ident, dsymbol);
+	protected AliasDeclaration newAliasDeclaration(char[] filename, int lineNumber, IdentifierExp ident, Dsymbol dsymbol) {
+		return new CompileTimeAliasDeclaration(filename, lineNumber, ident, dsymbol);
 	}
 	
 	@Override
-	protected AliasDeclaration newAliasDeclaration(Loc loc, IdentifierExp ident, Type type) {
-		return new CompileTimeAliasDeclaration(loc, ident, type);
+	protected AliasDeclaration newAliasDeclaration(char[] filename, int lineNumber, IdentifierExp ident, Type type) {
+		return new CompileTimeAliasDeclaration(filename, lineNumber, ident, type);
 	}
 	
 	@Override
-	protected CtorDeclaration newCtorDeclaration(Loc loc, Arguments arguments, int varargs) {
-		return new CompileTimeCtorDeclaration(loc, arguments, varargs);
+	protected CtorDeclaration newCtorDeclaration(char[] filename, int lineNumber, Arguments arguments, int varargs) {
+		return new CompileTimeCtorDeclaration(filename, lineNumber, arguments, varargs);
 	}
 	
 	@Override
-	protected DeleteDeclaration newDeleteDeclaration(Loc loc, Arguments arguments) {
-		return new CompileTimeDeleteDeclaration(loc, arguments);
+	protected DeleteDeclaration newDeleteDeclaration(char[] filename, int lineNumber, Arguments arguments) {
+		return new CompileTimeDeleteDeclaration(filename, lineNumber, arguments);
 	}
 	
 	@Override
-	protected DtorDeclaration newDtorDeclaration(Loc loc, IdentifierExp ident) {
-		return new CompileTimeDtorDeclaration(loc, ident);
+	protected DtorDeclaration newDtorDeclaration(char[] filename, int lineNumber, IdentifierExp ident) {
+		return new CompileTimeDtorDeclaration(filename, lineNumber, ident);
 	}
 	
 	@Override
-	protected InvariantDeclaration newInvariantDeclaration(Loc loc) {
-		return new CompileTimeInvariantDeclaration(loc);
+	protected InvariantDeclaration newInvariantDeclaration(char[] filename, int lineNumber) {
+		return new CompileTimeInvariantDeclaration(filename, lineNumber);
 	}
 	
 	@Override
-	protected NewDeclaration newNewDeclaration(Loc loc, Arguments arguments, int varargs) {
-		return new CompileTimeNewDeclaration(loc, arguments, varargs);
+	protected NewDeclaration newNewDeclaration(char[] filename, int lineNumber, Arguments arguments, int varargs) {
+		return new CompileTimeNewDeclaration(filename, lineNumber, arguments, varargs);
 	}
 	
 	@Override
-	protected PostBlitDeclaration newPostBlitDeclaration(Loc loc, IdentifierExp ident) {
-		return new CompileTimePostBlitDeclaration(loc, ident);
+	protected PostBlitDeclaration newPostBlitDeclaration(char[] filename, int lineNumber, IdentifierExp ident) {
+		return new CompileTimePostBlitDeclaration(filename, lineNumber, ident);
 	}
 	
 	@Override
-	protected StaticCtorDeclaration newStaticCtorDeclaration(Loc loc) {
-		return new CompileTimeStaticCtorDeclaration(loc);
+	protected StaticCtorDeclaration newStaticCtorDeclaration(char[] filename, int lineNumber) {
+		return new CompileTimeStaticCtorDeclaration(filename, lineNumber);
 	}
 	
 	@Override
-	protected StaticDtorDeclaration newStaticDtorDeclaration(Loc loc) {
-		return new CompileTimeStaticDtorDeclaration(loc);
+	protected StaticDtorDeclaration newStaticDtorDeclaration(char[] filename, int lineNumber) {
+		return new CompileTimeStaticDtorDeclaration(filename, lineNumber);
 	}
 	
 	@Override
-	protected UnitTestDeclaration newUnitTestDeclaration(Loc loc) {
-		return new CompileTimeUnitTestDeclaration(loc);
+	protected UnitTestDeclaration newUnitTestDeclaration(char[] filename, int lineNumber) {
+		return new CompileTimeUnitTestDeclaration(filename, lineNumber);
 	}
 	
 	@Override
-	protected TypedefDeclaration newTypedefDeclaration(Loc loc, IdentifierExp ident, Type basetype, Initializer init) {
-		return new CompileTimeTypedefDeclaration(loc, ident, basetype, init);
+	protected TypedefDeclaration newTypedefDeclaration(char[] filename, int lineNumber, IdentifierExp ident, Type basetype, Initializer init) {
+		return new CompileTimeTypedefDeclaration(filename, lineNumber, ident, basetype, init);
 	}
 	
 	@Override
-	protected EnumMember newEnumMember(Loc loc, IdentifierExp ident, Expression e, Type t) {
-		return new CompileTimeEnumMember(loc, ident, e, t);
+	protected EnumMember newEnumMember(char[] filename, int lineNumber, IdentifierExp ident, Expression e, Type t) {
+		return new CompileTimeEnumMember(filename, lineNumber, ident, e, t);
 	}
 	
 	@Override
-	protected StaticAssert newStaticAssert(Loc loc, Expression expression, Expression expression2) {
-		return new CompileTimeStaticAssert(loc, expression, expression2);
+	protected StaticAssert newStaticAssert(char[] filename, int lineNumber, Expression expression, Expression expression2) {
+		return new CompileTimeStaticAssert(filename, lineNumber, expression, expression2);
 	}
 	
 	@Override
-	protected VersionSymbol newVersionSymbol(Loc loc, IdentifierExp ident, Version version) {
-		return new CompileTimeVersionSymbol(loc, ident, version);
+	protected VersionSymbol newVersionSymbol(char[] filename, int lineNumber, IdentifierExp ident, Version version) {
+		return new CompileTimeVersionSymbol(filename, lineNumber, ident, version);
 	}
 	
 	@Override
-	protected ClassDeclaration newClassDeclaration(Loc loc, IdentifierExp ident, BaseClasses baseClasses) {
-		return new CompileTimeClassDeclaration(loc, ident, baseClasses);
+	protected ClassDeclaration newClassDeclaration(char[] filename, int lineNumber, IdentifierExp ident, BaseClasses baseClasses) {
+		return new CompileTimeClassDeclaration(filename, lineNumber, ident, baseClasses);
 	}
 	
 	@Override
-	protected InterfaceDeclaration newInterfaceDeclaration(Loc loc, IdentifierExp ident, BaseClasses baseClasses) {
-		return new CompileTimeInterfaceDeclaration(loc, ident, baseClasses);
+	protected InterfaceDeclaration newInterfaceDeclaration(char[] filename, int lineNumber, IdentifierExp ident, BaseClasses baseClasses) {
+		return new CompileTimeInterfaceDeclaration(filename, lineNumber, ident, baseClasses);
 	}
 	
 	@Override
-	protected UnionDeclaration newUnionDeclaration(Loc loc, IdentifierExp ident) {
-		return new CompileTimeUnionDeclaration(loc, ident);
+	protected UnionDeclaration newUnionDeclaration(char[] filename, int lineNumber, IdentifierExp ident) {
+		return new CompileTimeUnionDeclaration(filename, lineNumber, ident);
 	}
 	
 	@Override
-	protected StructDeclaration newStructDeclaration(Loc loc, IdentifierExp ident) {
-		return new CompileTimeStructDeclaration(loc, ident);
+	protected StructDeclaration newStructDeclaration(char[] filename, int lineNumber, IdentifierExp ident) {
+		return new CompileTimeStructDeclaration(filename, lineNumber, ident);
 	}
 	
 	@Override
-	protected EnumDeclaration newEnumDeclaration(Loc loc, IdentifierExp ident, Type t) {
-		return new CompileTimeEnumDeclaration(loc, ident, t);
+	protected EnumDeclaration newEnumDeclaration(char[] filename, int lineNumber, IdentifierExp ident, Type t) {
+		return new CompileTimeEnumDeclaration(filename, lineNumber, ident, t);
 	}
 	
 	@Override
-	protected TemplateDeclaration newTemplateDeclaration(Loc loc, IdentifierExp ident, TemplateParameters p, Expression c, Dsymbols d) {
-		return new CompileTimeTemplateDeclaration(loc, ident, p, c, d);
+	protected TemplateDeclaration newTemplateDeclaration(char[] filename, int lineNumber, IdentifierExp ident, TemplateParameters p, Expression c, Dsymbols d) {
+		return new CompileTimeTemplateDeclaration(filename, lineNumber, ident, p, c, d);
 	}
 	
 	@Override
-	protected TemplateMixin newTemplateMixin(Loc loc, IdentifierExp ident, Type type, Identifiers ids, Objects tiargs) {
-		return new CompileTimeTemplateMixin(loc, ident, type, ids, tiargs, encoder);
+	protected TemplateMixin newTemplateMixin(char[] filename, int lineNumber, IdentifierExp ident, Type type, Identifiers ids, Objects tiargs) {
+		return new CompileTimeTemplateMixin(filename, lineNumber, ident, type, ids, tiargs, encoder);
 	}
 	
 	@Override
-	public TemplateInstance newTemplateInstance(Loc loc, IdentifierExp name) {
-		return new CompileTimeTemplateInstance(loc, name, encoder);
+	public TemplateInstance newTemplateInstance(char[] filename, int lineNumber, IdentifierExp name) {
+		return new CompileTimeTemplateInstance(filename, lineNumber, name, encoder);
 	}
 	
 	@Override
-	public CompoundDeclarationStatement newCompoundDeclarationStatement(Loc loc, Statements a) {
-		return new CompileTimeCompoundDeclarationStatement(loc, a);
+	public CompoundDeclarationStatement newCompoundDeclarationStatement(char[] filename, int lineNumber, Statements a) {
+		return new CompileTimeCompoundDeclarationStatement(filename, lineNumber, a);
 	}
 
 }

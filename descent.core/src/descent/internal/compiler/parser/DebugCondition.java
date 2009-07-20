@@ -5,8 +5,8 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class DebugCondition extends DVCondition {
 
-	public DebugCondition(Module mod, Loc loc, long level, char[] id) {
-		super(mod, loc, level, id);
+	public DebugCondition(Module mod, char[] filename, int lineNumber, long level, char[] id) {
+		super(mod, filename, lineNumber, level, id);
 	}
 
 	@Override

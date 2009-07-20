@@ -8,7 +8,7 @@ public class TypeBasicBinding extends PrimitiveTypeBinding implements ITypeBindi
 	final TypeBasic type;
 	
 	public TypeBasicBinding(DefaultBindingResolver bindingResolver, TypeBasic type) {
-		super(type.deco);
+		super(String.valueOf(type.ty.mangleChar));
 		this.bindingResolver = bindingResolver;
 		this.type = type;		
 	}

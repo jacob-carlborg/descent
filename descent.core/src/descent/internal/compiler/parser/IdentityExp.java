@@ -1,14 +1,14 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.Constfold.Identity;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.Constfold.Identity;
 
 
 public class IdentityExp extends BinExp {
 
-	public IdentityExp(Loc loc, TOK op, Expression e1, Expression e2) {
-		super(loc, op, e1, e2);
+	public IdentityExp(char[] filename, int lineNumber, TOK op, Expression e1, Expression e2) {
+		super(filename, lineNumber, op, e1, e2);
 	}
 
 	@Override

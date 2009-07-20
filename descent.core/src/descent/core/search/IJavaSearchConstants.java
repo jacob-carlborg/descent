@@ -10,7 +10,7 @@
  *******************************************************************************/
 package descent.core.search;
 
-import descent.internal.core.search.processing.*;
+import descent.internal.core.search.processing.IJob;
 
 /**
  * <p>

@@ -16,8 +16,8 @@ public class CaseStatement extends Statement {
 	
 	public SwitchStatement sw; // descent
 
-	public CaseStatement(Loc loc, Expression exp, Statement s) {
-		super(loc);
+	public CaseStatement(char[] filename, int lineNumber, Expression exp, Statement s) {
+		super(filename, lineNumber);
 		this.exp = sourceExp = exp;
 		this.statement = sourceStatement = s;
 	}
@@ -159,7 +159,7 @@ public class CaseStatement extends Statement {
 	
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
-		CaseStatement s = context.newCaseStatement(loc, exp.syntaxCopy(context), statement.syntaxCopy(context));
+		CaseStatement s = context.newCaseStatement(filename, lineNumber, exp.syntaxCopy(context), statement.syntaxCopy(context));
 		s.copySourceRange(this);
 	    return s;
 	}

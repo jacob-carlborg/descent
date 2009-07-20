@@ -13,13 +13,14 @@ public class EnumMember extends Dsymbol {
 	
 	private IField javaElement;
 
-	public EnumMember(Loc loc, IdentifierExp id, Expression value) {
-		this(loc, id, value, null);
+	public EnumMember(char[] filename, int lineNumber, IdentifierExp id, Expression value) {
+		this(filename, lineNumber, id, value, null);
 	}
 	
-	public EnumMember(Loc loc, IdentifierExp id, Expression value, Type type) {
+	public EnumMember(char[] filename, int lineNumber, IdentifierExp id, Expression value, Type type) {
 		super(id);
-		this.loc = loc;
+		this.filename = filename;
+		this.lineNumber = lineNumber;
 		this.value = this.sourceValue = value;
 		if (value == null) {
 			if (id != null) {
@@ -78,7 +79,7 @@ public class EnumMember extends Dsymbol {
 			em.value = e;
 			em.type = t;
 		} else {
-			em = context.newEnumMember(loc, ident, e, t);
+			em = context.newEnumMember(filename, lineNumber, ident, e, t);
 		}
 		
 		em.copySourceRange(this);

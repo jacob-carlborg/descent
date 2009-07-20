@@ -12,6 +12,8 @@ package descent.internal.core;
 
 import java.util.Iterator;
 
+import org.eclipse.jface.text.IDocument;
+
 import descent.core.ICompilationUnit;
 import descent.core.IField;
 import descent.core.IJavaElement;
@@ -20,12 +22,11 @@ import descent.core.IJavaModelStatusConstants;
 import descent.core.IType;
 import descent.core.JavaModelException;
 import descent.core.dom.ASTNode;
-import descent.core.dom.VariableDeclaration;
 import descent.core.dom.SimpleName;
+import descent.core.dom.VariableDeclaration;
 import descent.core.dom.VariableDeclarationFragment;
 import descent.core.dom.rewrite.ASTRewrite;
 import descent.internal.core.util.Messages;
-import org.eclipse.jface.text.IDocument;
 
 /**
  * <p>This operation creates a field declaration in a type.

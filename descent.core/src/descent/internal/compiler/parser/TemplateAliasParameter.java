@@ -1,12 +1,11 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.MATCH.MATCHexact;
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
-import static descent.internal.compiler.parser.MATCH.MATCHexact;
-import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 
 
 public class TemplateAliasParameter extends TemplateParameter {
@@ -15,9 +14,9 @@ public class TemplateAliasParameter extends TemplateParameter {
 	public Type defaultAlias, sourceDefaultAlias;
 	public Dsymbol specAlias;
 	
-	public TemplateAliasParameter(Loc loc, IdentifierExp ident,
+	public TemplateAliasParameter(char[] filename, int lineNumber, IdentifierExp ident,
 			Type specType, ASTDmdNode specAlias, ASTDmdNode defaultAlias) {
-		super(loc, ident);
+		super(filename, lineNumber, ident);
 		// TODO Semantic D2
 		this.specAliasT = this.sourceSpecAliasT = specType;
 		if (defaultAlias instanceof Type) {
@@ -25,9 +24,9 @@ public class TemplateAliasParameter extends TemplateParameter {
 		}
 	}
 
-	public TemplateAliasParameter(Loc loc, IdentifierExp ident,
+	public TemplateAliasParameter(char[] filename, int lineNumber, IdentifierExp ident,
 			Type specAliasT, Type defaultAlias) {
-		super(loc, ident);
+		super(filename, lineNumber, ident);
 		this.specAliasT = this.sourceSpecAliasT = specAliasT;
 		this.defaultAlias = this.sourceDefaultAlias = defaultAlias;
 
@@ -47,8 +46,8 @@ public class TemplateAliasParameter extends TemplateParameter {
 
 	@Override
 	public void declareParameter(Scope sc, SemanticContext context) {
-		TypeIdentifier ti = new TypeIdentifier(loc, ident);
-		sparam = new AliasDeclaration(loc, ident, ti);
+		TypeIdentifier ti = new TypeIdentifier(filename, lineNumber, ident);
+		sparam = new AliasDeclaration(filename, lineNumber, ident, ti);
 		
 		// Descent
 		((AliasDeclaration) sparam).isTemplateParameter = true;
@@ -61,7 +60,7 @@ public class TemplateAliasParameter extends TemplateParameter {
 	}
 
 	@Override
-	public ASTDmdNode defaultArg(Loc loc, Scope sc, SemanticContext context) {
+	public ASTDmdNode defaultArg(char[] filename, int lineNumber, Scope sc, SemanticContext context) {
 		Dsymbol s = null;
 
 		if (defaultAlias != null) {
@@ -110,7 +109,7 @@ public class TemplateAliasParameter extends TemplateParameter {
 		if (i < size(tiargs)) {
 			oarg = tiargs.get(i);
 		} else { // Get default argument instead
-			oarg = defaultArg(loc, sc, context);
+			oarg = defaultArg(filename, lineNumber, sc, context);
 			if (oarg == null) {
 				if (i >= size(dedtypes)) {
 					throw new IllegalStateException("assert(i < dedtypes.dim);");
@@ -154,7 +153,7 @@ public class TemplateAliasParameter extends TemplateParameter {
 		}
 		dedtypes.set(i, sa);
 
-		psparam[0] = new AliasDeclaration(loc, ident, sa);
+		psparam[0] = new AliasDeclaration(filename, lineNumber, ident, sa);
 		
 		// Descent
 		((AliasDeclaration) psparam[0]).isTemplateParameter = true;
@@ -197,7 +196,7 @@ public class TemplateAliasParameter extends TemplateParameter {
 
 	@Override
 	public TemplateParameter syntaxCopy(SemanticContext context) {
-		TemplateAliasParameter tp = new TemplateAliasParameter(loc, ident,
+		TemplateAliasParameter tp = new TemplateAliasParameter(filename, lineNumber, ident,
 				specAliasT, defaultAlias);
 		if (tp.specAliasT != null) {
 			tp.specAliasT = specAliasT.syntaxCopy(context);

@@ -8,14 +8,16 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class Catch extends ASTDmdNode {
 
-	public Loc loc;
+	public int lineNumber;
+	public char[] filename;
 	public Type type, sourceType;
 	public IdentifierExp ident;
 	public VarDeclaration var;
 	public Statement handler, sourceHandler;
 
-	public Catch(Loc loc, Type type, IdentifierExp id, Statement handler) {
-		this.loc = loc;
+	public Catch(char[] filename, int lineNumber, Type type, IdentifierExp id, Statement handler) {
+		this.filename = filename;
+		this.lineNumber = lineNumber;
 		this.type = sourceType = type;
 		this.ident = id;
 		this.handler = sourceHandler = handler;
@@ -57,16 +59,16 @@ public class Catch extends ASTDmdNode {
 		sc = sc.push(sym);
 
 		if (type == null) {
-			type = new TypeIdentifier(Loc.ZERO, Id.Object);
+			type = new TypeIdentifier(null, 0, Id.Object);
 		}
-		type = type.semantic(loc, sc, context);
+		type = type.semantic(filename, lineNumber, sc, context);
 		if (type.toBasetype(context).isClassHandle() == null) {
 			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.CanOnlyCatchClassObjects, sourceType, type.toChars(context)));
 			}
 		} else if (ident != null) {
-			var = new VarDeclaration(loc, type, ident, null);
+			var = new VarDeclaration(filename, lineNumber, type, ident, null);
 			var.parent = sc.parent;
 			sc.insert(var);
 		}
@@ -78,7 +80,7 @@ public class Catch extends ASTDmdNode {
 	}
 
 	public Catch syntaxCopy(SemanticContext context) {
-		Catch c = new Catch(loc, (type != null ? type.syntaxCopy(context) : null),
+		Catch c = new Catch(filename, lineNumber, (type != null ? type.syntaxCopy(context) : null),
 				ident, (handler != null ? handler.syntaxCopy(context) : null));
 		return c;
 	}

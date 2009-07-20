@@ -10,7 +10,6 @@ public class Objects extends Array<ASTDmdNode> {
 
 	public Objects(int capacity) {
 		super(capacity);
-		setDim(capacity);
 	}
 
 	public Objects(Objects elements) {

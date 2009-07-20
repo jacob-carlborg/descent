@@ -2,15 +2,14 @@ package descent.internal.core.ctfe.dom;
 
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.InterState;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.ScopeStatement;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.Statement;
 
 public class CompileTimeScopeStatement extends ScopeStatement {
 
-	public CompileTimeScopeStatement(Loc loc, Statement s) {
-		super(loc, s);
+	public CompileTimeScopeStatement(char[] filename, int lineNumber, Statement s) {
+		super(filename, lineNumber, s);
 	}
 	
 	@Override

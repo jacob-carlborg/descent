@@ -10,14 +10,16 @@ public class DebugSymbol extends Dsymbol {
 	public long level;
 	public Version version;
 
-	public DebugSymbol(Loc loc, IdentifierExp ident, Version version) {
+	public DebugSymbol(char[] filename, int lineNumber, IdentifierExp ident, Version version) {
 		super(ident);
-		this.loc = loc;
+		this.filename = filename;
+		this.lineNumber = lineNumber;
 		this.version = version;
 	}
 
-	public DebugSymbol(Loc loc, long level, Version version) {
-		this.loc = loc;
+	public DebugSymbol(char[] filename, int lineNumber, long level, Version version) {
+		this.filename = filename;
+		this.lineNumber = lineNumber;
 		this.level = level;
 		this.version = version;
 	}
@@ -87,7 +89,7 @@ public class DebugSymbol extends Dsymbol {
 		if (s != null) {
 			throw new IllegalStateException("assert(!s)");
 		}
-		DebugSymbol ds = context.newDebugSymbol(loc, ident, version);
+		DebugSymbol ds = context.newDebugSymbol(filename, lineNumber, ident, version);
 		ds.level = level;
 		ds.copySourceRange(this);
 		return ds;

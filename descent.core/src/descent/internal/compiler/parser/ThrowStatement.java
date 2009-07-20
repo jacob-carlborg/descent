@@ -9,8 +9,8 @@ public class ThrowStatement extends Statement {
 
 	public Expression exp, sourceExp;
 
-	public ThrowStatement(Loc loc, Expression exp) {
-		super(loc);
+	public ThrowStatement(char[] filename, int lineNumber, Expression exp) {
+		super(filename, lineNumber);
 		this.exp = this.sourceExp = exp;
 	}
 
@@ -58,7 +58,7 @@ public class ThrowStatement extends Statement {
 
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
-		ThrowStatement s = context.newThrowStatement(loc, exp.syntaxCopy(context));
+		ThrowStatement s = context.newThrowStatement(filename, lineNumber, exp.syntaxCopy(context));
 		s.copySourceRange(this);
 		return s;
 	}

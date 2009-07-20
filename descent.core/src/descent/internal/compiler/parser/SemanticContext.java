@@ -18,7 +18,6 @@ import descent.core.dom.AST;
 import descent.internal.compiler.env.IModuleFinder;
 import descent.internal.compiler.env.INameEnvironment;
 import descent.internal.compiler.lookup.DescentModuleFinder;
-import descent.internal.compiler.lookup.DmdModuleFinder;
 import descent.internal.core.CancelableNameEnvironment;
 import descent.internal.core.CompilerConfiguration;
 import descent.internal.core.JavaProject;
@@ -373,7 +372,7 @@ public class SemanticContext {
 			Assert.isTrue(fd.type.nextOf().equals(treturn));
 		} else {
 			tf = new TypeFunction(null, treturn, 0, LINK.LINKc);
-			fd = new FuncDeclaration(Loc.ZERO, new IdentifierExp(id),
+			fd = new FuncDeclaration(null, 0, new IdentifierExp(id),
 					STC.STCstatic, tf);
 			fd.protection = PROT.PROTpublic;
 			fd.linkage = LINK.LINKc;
@@ -400,7 +399,7 @@ public class SemanticContext {
 		this.templateEvaluationStack.remove(this.templateEvaluationStack.size() - 1);
 	}
 	
-	public Module load(Loc loc, Identifiers packages,
+	public Module load(char[] filename, int lineNumber, Identifiers packages,
 			IdentifierExp ident) {
 		
 		// Build the compound module name
@@ -524,8 +523,8 @@ public class SemanticContext {
 		return false;
 	}
 
-	protected VarDeclaration newVarDeclaration(Loc loc, Type type, IdentifierExp exp, Initializer init) {
-		return new VarDeclaration(loc, type, exp, init);
+	protected VarDeclaration newVarDeclaration(char[] filename, int lineNumber, Type type, IdentifierExp exp, Initializer init) {
+		return new VarDeclaration(filename, lineNumber, type, exp, init);
 	}
 
 	protected ConditionalDeclaration newConditionalDeclaration(Condition condition, Dsymbols a, Dsymbols elseDecl) {
@@ -536,261 +535,261 @@ public class SemanticContext {
 		return new StaticIfDeclaration(condition, a, aelse);
 	}
 
-	protected CallExp newCallExp(Loc loc, Expression e, Expressions args) {
-		return new CallExp(loc, e, args);
+	protected CallExp newCallExp(char[] filename, int lineNumber, Expression e, Expressions args) {
+		return new CallExp(filename, lineNumber, e, args);
 	}
 
-	protected FuncDeclaration newFuncDeclaration(Loc loc, IdentifierExp ident,
+	protected FuncDeclaration newFuncDeclaration(char[] filename, int lineNumber, IdentifierExp ident,
 			int storage_class, Type syntaxCopy) {
-		return new FuncDeclaration(loc, ident, storage_class, syntaxCopy);
+		return new FuncDeclaration(filename, lineNumber, ident, storage_class, syntaxCopy);
 	}
 
-	protected IfStatement newIfStatement(Loc loc, Argument a, Expression condition, Statement ifbody, Statement elsebody) {
-		return new IfStatement(loc, a, condition, ifbody, elsebody);
+	protected IfStatement newIfStatement(char[] filename, int lineNumber, Argument a, Expression condition, Statement ifbody, Statement elsebody) {
+		return new IfStatement(filename, lineNumber, a, condition, ifbody, elsebody);
 	}
 
-	protected ReturnStatement newReturnStatement(Loc loc, Expression e) {
-		return new ReturnStatement(loc, e);
+	protected ReturnStatement newReturnStatement(char[] filename, int lineNumber, Expression e) {
+		return new ReturnStatement(filename, lineNumber, e);
 	}
 
-	protected DeclarationStatement newDeclarationStatement(Loc loc, Expression e) {
-		return new DeclarationStatement(loc, e);
+	protected DeclarationStatement newDeclarationStatement(char[] filename, int lineNumber, Expression e) {
+		return new DeclarationStatement(filename, lineNumber, e);
 	}
 
-	protected ExpStatement newExpStatement(Loc loc, Expression e) {
-		return new ExpStatement(loc, e);
+	protected ExpStatement newExpStatement(char[] filename, int lineNumber, Expression e) {
+		return new ExpStatement(filename, lineNumber, e);
 	}
 
-	protected BreakStatement newBreakStatement(Loc loc, IdentifierExp ident) {
-		return new BreakStatement(loc, ident);
+	protected BreakStatement newBreakStatement(char[] filename, int lineNumber, IdentifierExp ident) {
+		return new BreakStatement(filename, lineNumber, ident);
 	}
 
-	protected CaseStatement newCaseStatement(Loc loc, Expression expression, Statement statement) {
-		return new CaseStatement(loc, expression, statement);
+	protected CaseStatement newCaseStatement(char[] filename, int lineNumber, Expression expression, Statement statement) {
+		return new CaseStatement(filename, lineNumber, expression, statement);
 	}
 
-	protected CompileStatement newCompileStatement(Loc loc, Expression e) {
-		return new CompileStatement(loc, e);
+	protected CompileStatement newCompileStatement(char[] filename, int lineNumber, Expression e) {
+		return new CompileStatement(filename, lineNumber, e);
 	}
 
-	protected CompoundStatement newCompoundStatement(Loc loc, Statements a) {
-		return new CompoundStatement(loc, a);
+	protected CompoundStatement newCompoundStatement(char[] filename, int lineNumber, Statements a) {
+		return new CompoundStatement(filename, lineNumber, a);
 	}
 
-	protected ConditionalStatement newConditionalStatement(Loc loc, Condition condition, Statement statement, Statement e) {
-		return new ConditionalStatement(loc, condition, statement, e);
+	protected ConditionalStatement newConditionalStatement(char[] filename, int lineNumber, Condition condition, Statement statement, Statement e) {
+		return new ConditionalStatement(filename, lineNumber, condition, statement, e);
 	}
 
-	protected ContinueStatement newContinueStatement(Loc loc, IdentifierExp ident) {
-		return new ContinueStatement(loc, ident);
+	protected ContinueStatement newContinueStatement(char[] filename, int lineNumber, IdentifierExp ident) {
+		return new ContinueStatement(filename, lineNumber, ident);
 	}
 
-	protected DefaultStatement newDefaultStatement(Loc loc, Statement statement) {
-		return new DefaultStatement(loc, statement);
+	protected DefaultStatement newDefaultStatement(char[] filename, int lineNumber, Statement statement) {
+		return new DefaultStatement(filename, lineNumber, statement);
 	}
 
-	protected DoStatement newDoStatement(Loc loc, Statement statement, Expression expression) {
-		return new DoStatement(loc, statement, expression);
+	protected DoStatement newDoStatement(char[] filename, int lineNumber, Statement statement, Expression expression) {
+		return new DoStatement(filename, lineNumber, statement, expression);
 	}
 
-	protected ForeachRangeStatement newForeachRangeStatement(Loc loc, TOK op, Argument argument, Expression expression, Expression expression2, Statement statement) {
-		return new ForeachRangeStatement(loc, op, argument, expression, expression2, statement);
+	protected ForeachRangeStatement newForeachRangeStatement(char[] filename, int lineNumber, TOK op, Argument argument, Expression expression, Expression expression2, Statement statement) {
+		return new ForeachRangeStatement(filename, lineNumber, op, argument, expression, expression2, statement);
 	}
 
-	protected ForeachStatement newForeachStatement(Loc loc, TOK op, Arguments args, Expression exp, Statement statement) {
-		return new ForeachStatement(loc, op, args, exp, statement);
+	protected ForeachStatement newForeachStatement(char[] filename, int lineNumber, TOK op, Arguments args, Expression exp, Statement statement) {
+		return new ForeachStatement(filename, lineNumber, op, args, exp, statement);
 	}
 
-	protected ForStatement newForStatement(Loc loc, Statement i, Expression c, Expression inc, Statement statement) {
-		return new ForStatement(loc, i, c, inc, statement);
+	protected ForStatement newForStatement(char[] filename, int lineNumber, Statement i, Expression c, Expression inc, Statement statement) {
+		return new ForStatement(filename, lineNumber, i, c, inc, statement);
 	}
 
-	protected GotoCaseStatement newGotoCaseStatement(Loc loc, Expression e) {
-		return new GotoCaseStatement(loc, e);
+	protected GotoCaseStatement newGotoCaseStatement(char[] filename, int lineNumber, Expression e) {
+		return new GotoCaseStatement(filename, lineNumber, e);
 	}
 
-	protected GotoDefaultStatement newGotoDefaultStatement(Loc loc) {
-		return new GotoDefaultStatement(loc);
+	protected GotoDefaultStatement newGotoDefaultStatement(char[] filename, int lineNumber) {
+		return new GotoDefaultStatement(filename, lineNumber);
 	}
 
-	protected GotoStatement newGotoStatement(Loc loc, IdentifierExp ident) {
-		return new GotoStatement(loc, ident);
+	protected GotoStatement newGotoStatement(char[] filename, int lineNumber, IdentifierExp ident) {
+		return new GotoStatement(filename, lineNumber, ident);
 	}
 
-	protected LabelStatement newLabelStatement(Loc loc, IdentifierExp ident, Statement statement) {
-		return new LabelStatement(loc, ident, statement);
+	protected LabelStatement newLabelStatement(char[] filename, int lineNumber, IdentifierExp ident, Statement statement) {
+		return new LabelStatement(filename, lineNumber, ident, statement);
 	}
 
-	protected OnScopeStatement newOnScopeStatement(Loc loc, TOK tok, Statement statement) {
-		return new OnScopeStatement(loc, tok, statement);
+	protected OnScopeStatement newOnScopeStatement(char[] filename, int lineNumber, TOK tok, Statement statement) {
+		return new OnScopeStatement(filename, lineNumber, tok, statement);
 	}
 
-	protected PragmaStatement newPragmaStatement(Loc loc, IdentifierExp ident, Expressions expressions, Statement b) {
-		return new PragmaStatement(loc, ident, expressions, b);
+	protected PragmaStatement newPragmaStatement(char[] filename, int lineNumber, IdentifierExp ident, Expressions expressions, Statement b) {
+		return new PragmaStatement(filename, lineNumber, ident, expressions, b);
 	}
 
-	protected ScopeStatement newScopeStatement(Loc loc, Statement s) {
-		return new ScopeStatement(loc, s);
+	protected ScopeStatement newScopeStatement(char[] filename, int lineNumber, Statement s) {
+		return new ScopeStatement(filename, lineNumber, s);
 	}
 
 	protected StaticAssertStatement newStaticAssertStatement(StaticAssert assert1) {
 		return new StaticAssertStatement(assert1);
 	}
 
-	protected SwitchStatement newSwitchStatement(Loc loc, Expression expression, Statement statement) {
-		return new SwitchStatement(loc, expression, statement);
+	protected SwitchStatement newSwitchStatement(char[] filename, int lineNumber, Expression expression, Statement statement) {
+		return new SwitchStatement(filename, lineNumber, expression, statement);
 	}
 
-	protected SynchronizedStatement newSynchronizedStatement(Loc loc, Expression e, Statement statement) {
-		return new SynchronizedStatement(loc, e, statement);
+	protected SynchronizedStatement newSynchronizedStatement(char[] filename, int lineNumber, Expression e, Statement statement) {
+		return new SynchronizedStatement(filename, lineNumber, e, statement);
 	}
 
-	protected ThrowStatement newThrowStatement(Loc loc, Expression expression) {
-		return new ThrowStatement(loc, expression);
+	protected ThrowStatement newThrowStatement(char[] filename, int lineNumber, Expression expression) {
+		return new ThrowStatement(filename, lineNumber, expression);
 	}
 
-	protected TryCatchStatement newTryCatchStatement(Loc loc, Statement statement, Array<Catch> a) {
-		return new TryCatchStatement(loc, statement, a);
+	protected TryCatchStatement newTryCatchStatement(char[] filename, int lineNumber, Statement statement, Array<Catch> a) {
+		return new TryCatchStatement(filename, lineNumber, statement, a);
 	}
 
-	protected TryFinallyStatement newTryFinallyStatement(Loc loc, Statement statement, Statement statement2) {
-		return new TryFinallyStatement(loc, statement, statement2);
+	protected TryFinallyStatement newTryFinallyStatement(char[] filename, int lineNumber, Statement statement, Statement statement2) {
+		return new TryFinallyStatement(filename, lineNumber, statement, statement2);
 	}
 
-	protected VolatileStatement newVolatileStatement(Loc loc, Statement statement) {
-		return new VolatileStatement(loc, statement);
+	protected VolatileStatement newVolatileStatement(char[] filename, int lineNumber, Statement statement) {
+		return new VolatileStatement(filename, lineNumber, statement);
 	}
 
-	protected WhileStatement newWhileStatement(Loc loc, Expression expression, Statement statement) {
-		return new WhileStatement(loc, expression, statement);
+	protected WhileStatement newWhileStatement(char[] filename, int lineNumber, Expression expression, Statement statement) {
+		return new WhileStatement(filename, lineNumber, expression, statement);
 	}
 
-	protected WithStatement newWithStatement(Loc loc, Expression expression, Statement statement) {
-		return new WithStatement(loc, expression, statement);
+	protected WithStatement newWithStatement(char[] filename, int lineNumber, Expression expression, Statement statement) {
+		return new WithStatement(filename, lineNumber, expression, statement);
 	}
 
-	protected PragmaDeclaration newPragmaDeclaration(Loc loc, IdentifierExp ident, Expressions expressions, Dsymbols dsymbols) {
-		return new PragmaDeclaration(loc, ident, expressions, dsymbols);
+	protected PragmaDeclaration newPragmaDeclaration(char[] filename, int lineNumber, IdentifierExp ident, Expressions expressions, Dsymbols dsymbols) {
+		return new PragmaDeclaration(filename, lineNumber, ident, expressions, dsymbols);
 	}
 
 	protected AlignDeclaration newAlignDeclaration(int salign, Dsymbols dsymbols) {
 		return new AlignDeclaration(salign, dsymbols);
 	}
 
-	protected AnonDeclaration newAnonDeclaration(Loc loc, boolean isunion, Dsymbols dsymbols) {
-		return new AnonDeclaration(loc, isunion, dsymbols);
+	protected AnonDeclaration newAnonDeclaration(char[] filename, int lineNumber, boolean isunion, Dsymbols dsymbols) {
+		return new AnonDeclaration(filename, lineNumber, isunion, dsymbols);
 	}
 
-	protected CompileDeclaration newCompileDeclaration(Loc loc, Expression expression) {
-		return new CompileDeclaration(loc, expression);
+	protected CompileDeclaration newCompileDeclaration(char[] filename, int lineNumber, Expression expression) {
+		return new CompileDeclaration(filename, lineNumber, expression);
 	}
 
 	protected LinkDeclaration newLinkDeclaration(LINK linkage, Dsymbols dsymbols) {
 		return new LinkDeclaration(linkage, dsymbols);
 	}
 
-	protected DebugSymbol newDebugSymbol(Loc loc, IdentifierExp ident, Version version) {
-		return new DebugSymbol(loc, ident, version);
+	protected DebugSymbol newDebugSymbol(char[] filename, int lineNumber, IdentifierExp ident, Version version) {
+		return new DebugSymbol(filename, lineNumber, ident, version);
 	}
 
-	protected AliasDeclaration newAliasDeclaration(Loc loc, IdentifierExp ident, Type type) {
-		return new AliasDeclaration(loc, ident, type);
+	protected AliasDeclaration newAliasDeclaration(char[] filename, int lineNumber, IdentifierExp ident, Type type) {
+		return new AliasDeclaration(filename, lineNumber, ident, type);
 	}
 
-	protected AliasDeclaration newAliasDeclaration(Loc loc, IdentifierExp ident, Dsymbol dsymbol) {
-		return new AliasDeclaration(loc, ident, dsymbol);
+	protected AliasDeclaration newAliasDeclaration(char[] filename, int lineNumber, IdentifierExp ident, Dsymbol dsymbol) {
+		return new AliasDeclaration(filename, lineNumber, ident, dsymbol);
 	}
 
-	protected CtorDeclaration newCtorDeclaration(Loc loc, Arguments arguments, int varargs) {
-		return new CtorDeclaration(loc, arguments, varargs);
+	protected CtorDeclaration newCtorDeclaration(char[] filename, int lineNumber, Arguments arguments, int varargs) {
+		return new CtorDeclaration(filename, lineNumber, arguments, varargs);
 	}
 
-	protected DeleteDeclaration newDeleteDeclaration(Loc loc, Arguments arguments) {
-		return new DeleteDeclaration(loc, arguments);
+	protected DeleteDeclaration newDeleteDeclaration(char[] filename, int lineNumber, Arguments arguments) {
+		return new DeleteDeclaration(filename, lineNumber, arguments);
 	}
 
-	protected DtorDeclaration newDtorDeclaration(Loc loc, IdentifierExp ident) {
-		return new DtorDeclaration(loc, ident);
+	protected DtorDeclaration newDtorDeclaration(char[] filename, int lineNumber, IdentifierExp ident) {
+		return new DtorDeclaration(filename, lineNumber, ident);
 	}
 
-	protected InvariantDeclaration newInvariantDeclaration(Loc loc) {
-		return new InvariantDeclaration(loc);
+	protected InvariantDeclaration newInvariantDeclaration(char[] filename, int lineNumber) {
+		return new InvariantDeclaration(filename, lineNumber);
 	}
 
-	protected NewDeclaration newNewDeclaration(Loc loc, Arguments arguments, int varargs) {
-		return new NewDeclaration(loc, arguments, varargs);
+	protected NewDeclaration newNewDeclaration(char[] filename, int lineNumber, Arguments arguments, int varargs) {
+		return new NewDeclaration(filename, lineNumber, arguments, varargs);
 	}
 
-	protected PostBlitDeclaration newPostBlitDeclaration(Loc loc, IdentifierExp ident) {
-		return new PostBlitDeclaration(loc, ident);
+	protected PostBlitDeclaration newPostBlitDeclaration(char[] filename, int lineNumber, IdentifierExp ident) {
+		return new PostBlitDeclaration(filename, lineNumber, ident);
 	}
 
-	protected StaticCtorDeclaration newStaticCtorDeclaration(Loc loc) {
-		return new StaticCtorDeclaration(loc);
+	protected StaticCtorDeclaration newStaticCtorDeclaration(char[] filename, int lineNumber) {
+		return new StaticCtorDeclaration(filename, lineNumber);
 	}
 
-	protected StaticDtorDeclaration newStaticDtorDeclaration(Loc loc) {
-		return new StaticDtorDeclaration(loc);
+	protected StaticDtorDeclaration newStaticDtorDeclaration(char[] filename, int lineNumber) {
+		return new StaticDtorDeclaration(filename, lineNumber);
 	}
 
-	protected UnitTestDeclaration newUnitTestDeclaration(Loc loc) {
-		return new UnitTestDeclaration(loc);
+	protected UnitTestDeclaration newUnitTestDeclaration(char[] filename, int lineNumber) {
+		return new UnitTestDeclaration(filename, lineNumber);
 	}
 
-	protected TypedefDeclaration newTypedefDeclaration(Loc loc, IdentifierExp ident, Type basetype, Initializer init) {
-		return new TypedefDeclaration(loc, ident, basetype, init);
+	protected TypedefDeclaration newTypedefDeclaration(char[] filename, int lineNumber, IdentifierExp ident, Type basetype, Initializer init) {
+		return new TypedefDeclaration(filename, lineNumber, ident, basetype, init);
 	}
 
-	protected EnumMember newEnumMember(Loc loc, IdentifierExp ident, Expression e, Type t) {
-		return new EnumMember(loc, ident, e, t);
+	protected EnumMember newEnumMember(char[] filename, int lineNumber, IdentifierExp ident, Expression e, Type t) {
+		return new EnumMember(filename, lineNumber, ident, e, t);
 	}
 
-	protected StaticAssert newStaticAssert(Loc loc, Expression expression, Expression expression2) {
-		return new StaticAssert(loc, expression, expression2);
+	protected StaticAssert newStaticAssert(char[] filename, int lineNumber, Expression expression, Expression expression2) {
+		return new StaticAssert(filename, lineNumber, expression, expression2);
 	}
 
-	protected VersionSymbol newVersionSymbol(Loc loc, IdentifierExp ident, Version version) {
-		return new VersionSymbol(loc, ident, version);
+	protected VersionSymbol newVersionSymbol(char[] filename, int lineNumber, IdentifierExp ident, Version version) {
+		return new VersionSymbol(filename, lineNumber, ident, version);
 	}
 
-	protected ClassDeclaration newClassDeclaration(Loc loc, IdentifierExp ident, BaseClasses baseClasses) {
-		return new ClassDeclaration(loc, ident, baseClasses);
+	protected ClassDeclaration newClassDeclaration(char[] filename, int lineNumber, IdentifierExp ident, BaseClasses baseClasses) {
+		return new ClassDeclaration(filename, lineNumber, ident, baseClasses);
 	}
 
-	protected InterfaceDeclaration newInterfaceDeclaration(Loc loc, IdentifierExp ident, BaseClasses baseClasses) {
-		return new InterfaceDeclaration(loc, ident, baseClasses);
+	protected InterfaceDeclaration newInterfaceDeclaration(char[] filename, int lineNumber, IdentifierExp ident, BaseClasses baseClasses) {
+		return new InterfaceDeclaration(filename, lineNumber, ident, baseClasses);
 	}
 
-	protected UnionDeclaration newUnionDeclaration(Loc loc, IdentifierExp ident) {
-		return new UnionDeclaration(loc, ident);
+	protected UnionDeclaration newUnionDeclaration(char[] filename, int lineNumber, IdentifierExp ident) {
+		return new UnionDeclaration(filename, lineNumber, ident);
 	}
 
-	protected StructDeclaration newStructDeclaration(Loc loc, IdentifierExp ident) {
-		return new StructDeclaration(loc, ident);
+	protected StructDeclaration newStructDeclaration(char[] filename, int lineNumber, IdentifierExp ident) {
+		return new StructDeclaration(filename, lineNumber, ident);
 	}
 
-	protected EnumDeclaration newEnumDeclaration(Loc loc, IdentifierExp ident, Type t) {
-		return new EnumDeclaration(loc, ident, t);
+	protected EnumDeclaration newEnumDeclaration(char[] filename, int lineNumber, IdentifierExp ident, Type t) {
+		return new EnumDeclaration(filename, lineNumber, ident, t);
 	}
 
-	protected TemplateDeclaration newTemplateDeclaration(Loc loc, IdentifierExp ident, TemplateParameters p, Expression c, Dsymbols d) {
-		return new TemplateDeclaration(loc, ident, p, c, d);
+	protected TemplateDeclaration newTemplateDeclaration(char[] filename, int lineNumber, IdentifierExp ident, TemplateParameters p, Expression c, Dsymbols d) {
+		return new TemplateDeclaration(filename, lineNumber, ident, p, c, d);
 	}
 
-	protected TemplateMixin newTemplateMixin(Loc loc, IdentifierExp ident, Type type, Identifiers ids, Objects tiargs) {
-		return new TemplateMixin(loc, ident, type, ids, tiargs, encoder);
+	protected TemplateMixin newTemplateMixin(char[] filename, int lineNumber, IdentifierExp ident, Type type, Identifiers ids, Objects tiargs) {
+		return new TemplateMixin(filename, lineNumber, ident, type, ids, tiargs, encoder);
 	}
 
-	public TemplateInstance newTemplateInstance(Loc loc, IdentifierExp name) {
-		return new TemplateInstance(loc, name, encoder);
+	public TemplateInstance newTemplateInstance(char[] filename, int lineNumber, IdentifierExp name) {
+		return new TemplateInstance(filename, lineNumber, name, encoder);
 	}
 
-	public Expression newTypeDotIdExp(Loc loc, Type type, IdentifierExp ident) {
-		return new DotIdExp(loc, new TypeExp(loc, type), ident);
+	public Expression newTypeDotIdExp(char[] filename, int lineNumber, Type type, IdentifierExp ident) {
+		return new DotIdExp(filename, lineNumber, new TypeExp(filename, lineNumber, type), ident);
 	}
 
-	public CompoundDeclarationStatement newCompoundDeclarationStatement(Loc loc, Statements a) {
-		return new CompoundDeclarationStatement(loc, a);
+	public CompoundDeclarationStatement newCompoundDeclarationStatement(char[] filename, int lineNumber, Statements a) {
+		return new CompoundDeclarationStatement(filename, lineNumber, a);
 	}
 
 }

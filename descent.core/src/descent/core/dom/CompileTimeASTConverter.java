@@ -1586,7 +1586,7 @@ public class CompileTimeASTConverter {
 				ExpInitializer expInit = (ExpInitializer) aInit;
 				if (expInit.exp instanceof AssignExp) {
 					AssignExp assignExp = (AssignExp) expInit.exp;
-					aInit = new ExpInitializer(Loc.ZERO, assignExp.e2);
+					aInit = new ExpInitializer(null, 0, assignExp.e2);
 				}
 			}
 			
@@ -4307,14 +4307,14 @@ public class CompileTimeASTConverter {
 		if (!(stm instanceof CompoundStatement)) {
 			Statements stms = new Statements(1);
 			stms.add(stm);
-			stm = new CompoundStatement(Loc.ZERO, stms);
+			stm = new CompoundStatement(null, 0, stms);
 		}
 		return (CompoundStatement) stm;
 	}
 	
 	public descent.internal.compiler.parser.ScopeStatement ensureScope(descent.internal.compiler.parser.Statement stm) {
 		if (!(stm instanceof ScopeStatement)) {
-			stm = new ScopeStatement(Loc.ZERO, stm);
+			stm = new ScopeStatement(null, 0, stm);
 		}
 		return (ScopeStatement) stm;
 	}

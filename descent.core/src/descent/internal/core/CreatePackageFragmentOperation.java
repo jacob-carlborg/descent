@@ -16,6 +16,7 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+
 import descent.core.IJavaElement;
 import descent.core.IJavaModelStatus;
 import descent.core.IJavaModelStatusConstants;

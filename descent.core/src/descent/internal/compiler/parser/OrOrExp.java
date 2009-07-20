@@ -1,16 +1,15 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.TY.Tvoid;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
-import static descent.internal.compiler.parser.TY.Tvoid;
-
 
 public class OrOrExp extends BinExp {
 
-	public OrOrExp(Loc loc, Expression e1, Expression e2) {
-		super(loc, TOK.TOKoror, e1, e2);
+	public OrOrExp(char[] filename, int lineNumber, Expression e1, Expression e2) {
+		super(filename, lineNumber, TOK.TOKoror, e1, e2);
 	}
 
 	@Override
@@ -50,14 +49,14 @@ public class OrOrExp extends BinExp {
 		Expression e = e1.interpret(istate, context);
 		if (e != EXP_CANT_INTERPRET) {
 			if (e.isBool(true)) {
-				e = new IntegerExp(e1.loc, 1, type);
+				e = new IntegerExp(e1.filename, e1.lineNumber, 1, type);
 			} else if (e.isBool(false)) {
 				e = e2.interpret(istate, context);
 				if (e != EXP_CANT_INTERPRET) {
 					if (e.isBool(false)) {
-						e = new IntegerExp(e1.loc, 0, type);
+						e = new IntegerExp(e1.filename, e1.lineNumber, 0, type);
 					} else if (e.isBool(true)) {
-						e = new IntegerExp(e1.loc, 1, type);
+						e = new IntegerExp(e1.filename, e1.lineNumber, 1, type);
 					} else {
 						e = EXP_CANT_INTERPRET;
 					}
@@ -81,7 +80,7 @@ public class OrOrExp extends BinExp {
 		e1 = e1.optimize(WANTflags | (result & WANTinterpret), context);
 		e = this;
 		if (e1.isBool(true)) { // Replace with (e1, 1)
-			e = new CommaExp(loc, e1, new IntegerExp(loc, 1, type));
+			e = new CommaExp(filename, lineNumber, e1, new IntegerExp(filename, lineNumber, 1, type));
 			e.type = type;
 			e = e.optimize(result, context);
 		} else {
@@ -97,9 +96,9 @@ public class OrOrExp extends BinExp {
 					boolean n1 = e1.isBool(true);
 					boolean n2 = e2.isBool(true);
 
-					e = new IntegerExp(loc, (n1 || n2) ? 1 : 0, type);
+					e = new IntegerExp(filename, lineNumber, (n1 || n2) ? 1 : 0, type);
 				} else if (e1.isBool(false)) {
-					e = new BoolExp(loc, e2, type);
+					e = new BoolExp(filename, lineNumber, e2, type);
 				}
 			}
 		}
@@ -118,12 +117,12 @@ public class OrOrExp extends BinExp {
 			//If in static if, don't evaluate e2 if we don't have to.
 			e1 = e1.optimize(WANTflags, context);
 			if (e1.isBool(true)) {
-				return new IntegerExp(loc, 1, Type.tboolean);
+				return new IntegerExp(filename, lineNumber, 1, Type.tboolean);
 			}
 		}
 
 		e2 = e2.semantic(sc, context);
-		sc.mergeCallSuper(loc, cs1, this);
+		sc.mergeCallSuper(filename, lineNumber, cs1, this);
 		e2 = resolveProperties(sc, e2, context);
 		e2 = e2.checkToPointer(context);
 

@@ -8,8 +8,8 @@ public class TemplateInstanceWrapper extends IdentifierExp {
 
 	public TemplateInstance tempinst;
 
-	public TemplateInstanceWrapper(Loc loc, TemplateInstance tempinst) {
-		super(loc);
+	public TemplateInstanceWrapper(char[] filename, int lineNumber, TemplateInstance tempinst) {
+		super(filename, lineNumber);
 		this.tempinst = tempinst;
 	}
 	

@@ -2,15 +2,14 @@ package descent.internal.core.ctfe.dom;
 
 import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.IdentifierExp;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.StructDeclaration;
 
 public class CompileTimeStructDeclaration extends StructDeclaration {
 
-	public CompileTimeStructDeclaration(Loc loc, IdentifierExp id) {
-		super(loc, id);
+	public CompileTimeStructDeclaration(char[] filename, int lineNumber, IdentifierExp id) {
+		super(filename, lineNumber, id);
 	}
 	
 	@Override

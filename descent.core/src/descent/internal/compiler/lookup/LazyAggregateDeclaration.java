@@ -11,7 +11,6 @@ import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.DsymbolTable;
 import descent.internal.compiler.parser.Dsymbols;
 import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.ProtDeclaration;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.SemanticContext;
@@ -30,9 +29,9 @@ public class LazyAggregateDeclaration {
 		this.lazy = lazy;
 	}
 	
-	public Dsymbol search(Loc loc, char[] ident, int flags, SemanticContext context) {
+	public Dsymbol search(char[] filename, int lineNumber, char[] ident, int flags, SemanticContext context) {
 		if (cancelLazyness) {
-			return lazy.super_search(loc, ident, flags, context);
+			return lazy.super_search(filename, lineNumber, ident, flags, context);
 		}
 		
 		Dsymbol s = lazy.symtab() != null ? lazy.symtab().lookup(ident) : null;
@@ -42,12 +41,12 @@ public class LazyAggregateDeclaration {
 				FillResult result = fillJavaElementMemebrsCache(context);
 				
 				if (result.hasMixinDeclaration || result.hasStaticIf || result.hasAnon) {
-					return search(loc, ident, flags, context);
+					return search(filename, lineNumber, ident, flags, context);
 				}
 				
 				// Anonymous enums are "hard" for me :-P
 				if (result.hasAnonEnum) {
-					return search(loc, ident, flags, context);
+					return search(filename, lineNumber, ident, flags, context);
 				}
 			}
 			
@@ -132,7 +131,7 @@ public class LazyAggregateDeclaration {
 		}
 
 		if (s == null) {
-			s = lazy.super_search(loc, ident, flags, context);
+			s = lazy.super_search(filename, lineNumber, ident, flags, context);
 		}
 		
 		return s;

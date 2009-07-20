@@ -1,14 +1,14 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.Constfold.Or;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.Constfold.Or;
 
 
 public class OrAssignExp extends BinExp {
 
-	public OrAssignExp(Loc loc, Expression e1, Expression e2) {
-		super(loc, TOK.TOKorass, e1, e2);
+	public OrAssignExp(char[] filename, int lineNumber, Expression e1, Expression e2) {
+		super(filename, lineNumber, TOK.TOKorass, e1, e2);
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class OrAssignExp extends BinExp {
 	    Expression ex1 = e1.buildArrayLoop(fparams, context);
 	    Argument param = (Argument) fparams.get(0);
 	    param.storageClass = 0;
-	    Expression e = new OrAssignExp(Loc.ZERO, ex1, ex2);
+	    Expression e = new OrAssignExp(null, 0, ex1, ex2);
 	    return e;	
 	}
 

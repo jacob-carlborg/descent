@@ -34,15 +34,15 @@ public class IntegerExp extends Expression {
 	public integer_t value;
 
 	public IntegerExp(int value) {
-		this(Loc.ZERO, value);
+		this(null, 0, value);
 	}
 
-	public IntegerExp(Loc loc, char[] str, int value, Type type) {
-		this(loc, str, new integer_t(value), type);
+	public IntegerExp(char[] filename, int lineNumber, char[] str, int value, Type type) {
+		this(filename, lineNumber, str, new integer_t(value), type);
 	}
 	
-	public IntegerExp(Loc loc, char[] str, integer_t value, Type type) {
-		super(loc, TOK.TOKint64);
+	public IntegerExp(char[] filename, int lineNumber, char[] str, integer_t value, Type type) {
+		super(filename, lineNumber, TOK.TOKint64);
 		this.str = str;
 		if (value == null) {
 			throw new IllegalStateException("assert(value)");
@@ -51,20 +51,20 @@ public class IntegerExp extends Expression {
 		this.type = type;
 	}
 
-	public IntegerExp(Loc loc, int value) {
-		this(loc, new integer_t(value));
+	public IntegerExp(char[] filename, int lineNumber, int value) {
+		this(filename, lineNumber, new integer_t(value));
 	}
 
-	public IntegerExp(Loc loc, int value, Type type) {
-		this(loc, new integer_t(value), type);
+	public IntegerExp(char[] filename, int lineNumber, int value, Type type) {
+		this(filename, lineNumber, new integer_t(value), type);
 	}
 	
-	public IntegerExp(Loc loc, integer_t value) {
-		this(loc, CharOperation.NO_CHAR, value, Type.tint32);
+	public IntegerExp(char[] filename, int lineNumber, integer_t value) {
+		this(filename, lineNumber, CharOperation.NO_CHAR, value, Type.tint32);
 	}
 
-	public IntegerExp(Loc loc, integer_t value, Type type) {
-		this(loc, null, value, type);
+	public IntegerExp(char[] filename, int lineNumber, integer_t value, Type type) {
+		this(filename, lineNumber, null, value, type);
 	}
 	
 	@Override
@@ -314,11 +314,11 @@ public class IntegerExp extends Expression {
 		} else {
 			if (context.isD2()) {
 				if (null == type.deco) {
-					type = type.semantic(loc, sc, context);
+					type = type.semantic(filename, lineNumber, sc, context);
 				}
 			} else {
 				if (type.deco == null) {
-					type = type.semantic(loc, sc, context);
+					type = type.semantic(filename, lineNumber, sc, context);
 				}
 			}
 		}
@@ -563,8 +563,8 @@ public class IntegerExp extends Expression {
 	public Expression toLvalue(Scope sc, Expression e, SemanticContext context) {
 		if (e == null) {
 			e = this;
-		} else if (loc != null && loc.filename == null) {
-			loc = e.loc;
+		} else if (filename == null) {
+			filename = e.filename;
 		}
 		if (context.acceptsErrors()) {
 			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ConstantIsNotAnLValue, 

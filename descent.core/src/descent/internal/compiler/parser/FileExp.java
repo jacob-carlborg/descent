@@ -24,8 +24,8 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class FileExp extends UnaExp {
 
-	public FileExp(Loc loc, Expression e) {
-		super(loc, TOK.TOKmixin, e);
+	public FileExp(char[] filename, int lineNumber, Expression e) {
+		super(filename, lineNumber, TOK.TOKmixin, e);
 	}
 	
 	@Override
@@ -64,7 +64,7 @@ public class FileExp extends UnaExp {
 		    			e1,
 		    			new String[] { e1.toChars(context) }));
 	    	}
-			return (new StringExp(loc, Id.empty, 0)).semantic(sc, context);
+			return (new StringExp(filename, lineNumber, Id.empty, 0)).semantic(sc, context);
 	    }
 	    
 	    String filename = new String(((StringExp) e1).string);
@@ -85,7 +85,7 @@ public class FileExp extends UnaExp {
 //	    			IProblem.FileImportsMustBeSpecified,
 //	    			e1,
 //	    			new String[] { filename }));
-//			return (new StringExp(loc, Id.empty, 0)).semantic(sc, context);
+//			return (new StringExp(filename, lineNumber, Id.empty, 0)).semantic(sc, context);
 //	    }
 	    
 	    if(file == null)
@@ -96,13 +96,13 @@ public class FileExp extends UnaExp {
 		    			e1,
 		    			new String[] { filename }));
 	    	}
-			return (new StringExp(loc, Id.empty, 0)).semantic(sc, context);
+			return (new StringExp(this.filename, lineNumber, Id.empty, 0)).semantic(sc, context);
 	    }
 	    
 	    try
 	    {
 	    	char[] data = getFile(file);
-	    	return (new StringExp(loc, data, data.length)).semantic(sc, context);
+	    	return (new StringExp(this.filename, lineNumber, data, data.length)).semantic(sc, context);
 	    }
 	    catch(IOException e)
 	    {
@@ -112,7 +112,7 @@ public class FileExp extends UnaExp {
 		    			e1,
 		    			new String[] { file.getAbsolutePath() }));
 	    	}
-	    	return (new StringExp(loc, Id.empty, 0)).semantic(sc, context);
+	    	return (new StringExp(this.filename, lineNumber, Id.empty, 0)).semantic(sc, context);
 	    }
 	}
 	

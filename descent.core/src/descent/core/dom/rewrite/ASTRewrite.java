@@ -14,6 +14,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.TextUtilities;
+import org.eclipse.text.edits.MultiTextEdit;
+import org.eclipse.text.edits.TextEdit;
+import org.eclipse.text.edits.TextEditGroup;
+
 import descent.core.ICompilationUnit;
 import descent.core.JavaCore;
 import descent.core.JavaModelException;
@@ -31,11 +37,6 @@ import descent.internal.core.dom.rewrite.NodeRewriteEvent;
 import descent.internal.core.dom.rewrite.RewriteEventStore;
 import descent.internal.core.dom.rewrite.TrackedNodePosition;
 import descent.internal.core.dom.rewrite.RewriteEventStore.CopySourceInfo;
-import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.TextUtilities;
-import org.eclipse.text.edits.MultiTextEdit;
-import org.eclipse.text.edits.TextEdit;
-import org.eclipse.text.edits.TextEditGroup;
 
 /**
  * Infrastructure for modifying code by describing changes to AST nodes.

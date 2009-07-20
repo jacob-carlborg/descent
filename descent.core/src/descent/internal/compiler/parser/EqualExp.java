@@ -1,18 +1,18 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.Constfold.Equal;
+import static descent.internal.compiler.parser.TOK.TOKequal;
+import static descent.internal.compiler.parser.TOK.TOKnull;
+import static descent.internal.compiler.parser.TY.Tclass;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.Constfold.Equal;
-
-import static descent.internal.compiler.parser.TOK.*;
-import static descent.internal.compiler.parser.TY.*;
 
 
 public class EqualExp extends BinExp {
 
-	public EqualExp(Loc loc, TOK op, Expression e1, Expression e2) {
-		super(loc, op, e1, e2);
+	public EqualExp(char[] filename, int lineNumber, TOK op, Expression e1, Expression e2) {
+		super(filename, lineNumber, op, e1, e2);
 	}
 
 	@Override
@@ -94,7 +94,7 @@ public class EqualExp extends BinExp {
 
 				if (ve1.var == ve2.var) {
 					// They are the same, result is 'true' for ==, 'false' for !=
-					e = new IntegerExp(loc, (op == TOK.TOKequal) ? 1 : 0,
+					e = new IntegerExp(filename, lineNumber, (op == TOK.TOKequal) ? 1 : 0,
 							Type.tboolean);
 					return e;
 				}
@@ -111,7 +111,7 @@ public class EqualExp extends BinExp {
 		e = op_overload(sc, context);
 		if (null != e) {
 			if (op == TOK.TOKnotequal) {
-				e = new NotExp(e.loc, e);
+				e = new NotExp(e.filename, e.lineNumber,  e);
 				e = e.semantic(sc, context);
 			}
 			return e;

@@ -10,7 +10,13 @@
  *******************************************************************************/
 package descent.internal.core;
 
-import descent.core.*;
+import descent.core.IImportContainer;
+import descent.core.IImportDeclaration;
+import descent.core.IJavaElement;
+import descent.core.ISourceRange;
+import descent.core.ISourceReference;
+import descent.core.JavaModelException;
+import descent.core.WorkingCopyOwner;
 import descent.internal.core.util.MementoTokenizer;
 
 /**

@@ -1,19 +1,13 @@
 package descent.internal.compiler.parser;
 
-import melnorme.miscutil.tree.TreeVisitor;
-import descent.core.Signature;
-import descent.core.compiler.IProblem;
-import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.DYNCAST.DYNCAST_DSYMBOL;
 import static descent.internal.compiler.parser.DYNCAST.DYNCAST_EXPRESSION;
 import static descent.internal.compiler.parser.DYNCAST.DYNCAST_TYPE;
-
 import static descent.internal.compiler.parser.MATCH.MATCHconvert;
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
-
-import static descent.internal.compiler.parser.STC.*;
-import static descent.internal.compiler.parser.TOK.*;
+import static descent.internal.compiler.parser.STC.STCtemplateparameter;
+import static descent.internal.compiler.parser.TOK.TOKvar;
 import static descent.internal.compiler.parser.TY.Taarray;
 import static descent.internal.compiler.parser.TY.Tarray;
 import static descent.internal.compiler.parser.TY.Tbit;
@@ -25,6 +19,10 @@ import static descent.internal.compiler.parser.TY.Tpointer;
 import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Tvoid;
 import static descent.internal.compiler.parser.TY.Twchar;
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.Signature;
+import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
 public class TypeSArray extends TypeArray {
@@ -88,7 +86,7 @@ public class TypeSArray extends TypeArray {
 							return MATCHnomatch;
 						}
 					} else {
-						Type vt = tvp.valType.semantic(Loc.ZERO, sc, context);
+						Type vt = tvp.valType.semantic(null, 0, sc, context);
 						MATCH m = (MATCH) dim.implicitConvTo(vt, context);
 						if (m == MATCHnomatch) {
 							// goto Lnomatch;
@@ -148,8 +146,8 @@ public class TypeSArray extends TypeArray {
 	}
 
 	@Override
-	public Expression defaultInit(Loc loc, SemanticContext context) {
-		return next.defaultInit(loc, context);
+	public Expression defaultInit(char[] filename, int lineNumber, SemanticContext context) {
+		return next.defaultInit(filename, lineNumber, context);
 	}
 
 	@Override
@@ -208,8 +206,8 @@ public class TypeSArray extends TypeArray {
 	}
 
 	@Override
-	public boolean isZeroInit(Loc loc, SemanticContext context) {
-		return next.isZeroInit(loc, context);
+	public boolean isZeroInit(char[] filename, int lineNumber, SemanticContext context) {
+		return next.isZeroInit(filename, lineNumber, context);
 	}
 
 	@Override
@@ -218,14 +216,14 @@ public class TypeSArray extends TypeArray {
 	}
 
 	@Override
-	public void resolve(Loc loc, Scope sc, Expression[] pe, Type[] pt,
+	public void resolve(char[] filename, int lineNumber, Scope sc, Expression[] pe, Type[] pt,
 			Dsymbol[] ps, SemanticContext context) {
 		// printf("TypeSArray.resolve() %s\n", toChars());
-		next.resolve(loc, sc, pe, pt, ps, context);
+		next.resolve(filename, lineNumber, sc, pe, pt, ps, context);
 		// printf("s = %p, e = %p, t = %p\n", ps, pe, pt);
 		if (null != pe[0]) { // It's really an index expression
 			Expression e;
-			e = new IndexExp(loc, pe[0], dim);
+			e = new IndexExp(filename, lineNumber, pe[0], dim);
 			pe[0] = e;
 		} else if (null != ps[0]) {
 			Dsymbol s = ps[0];
@@ -246,7 +244,7 @@ public class TypeSArray extends TypeArray {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.TupleIndexExceedsBounds, this, new String[] { String.valueOf(d), String.valueOf(td.objects.size()) }));
 					}
-					super.resolve(loc, sc, pe, pt, ps, context); // goto
+					super.resolve(filename, lineNumber, sc, pe, pt, ps, context); // goto
 					// Ldefault;
 				}
 				ASTDmdNode o = (ASTDmdNode) td.objects.get(d);
@@ -269,24 +267,24 @@ public class TypeSArray extends TypeArray {
 				Objects objects = new Objects(1);
 				objects.add(o);
 
-				TupleDeclaration tds = new TupleDeclaration(loc, td.ident,
+				TupleDeclaration tds = new TupleDeclaration(filename, lineNumber, td.ident,
 						objects);
 				ps[0] = tds;
 			} else
-				super.resolve(loc, sc, pe, pt, ps, context); // goto
+				super.resolve(filename, lineNumber, sc, pe, pt, ps, context); // goto
 			// Ldefault;
 		} else {
 			// Ldefault:
-			super.resolve(loc, sc, pe, pt, ps, context);
+			super.resolve(filename, lineNumber, sc, pe, pt, ps, context);
 		}
 	}
 
 	@Override
-	public Type semantic(Loc loc, Scope sc, SemanticContext context) {
+	public Type semantic(char[] filename, int lineNumber, Scope sc, SemanticContext context) {
 		Type t = null;
 		Expression e = null;
 		Dsymbol s = null;
-		next.resolve(loc, sc, new Expression[] { e }, new Type[] { t },
+		next.resolve(filename, lineNumber, sc, new Expression[] { e }, new Type[] { t },
 				new Dsymbol[] { s }, context);
 		if (null != dim && null != s && null != s.isTupleDeclaration()) {
 			TupleDeclaration sd = s.isTupleDeclaration();
@@ -313,7 +311,7 @@ public class TypeSArray extends TypeArray {
 			return t;
 		}
 
-		next = next.semantic(loc, sc, context);
+		next = next.semantic(filename, lineNumber, sc, context);
 		Type tbn = next.toBasetype(context);
 
 		if (null != dim) {
@@ -341,7 +339,7 @@ public class TypeSArray extends TypeArray {
 				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.IndexOverflowForStaticArray, sourceDim, new String[] { String.valueOf(d1) }));
 				}
-				dim = new IntegerExp(Loc.ZERO, 1, tsize_t);
+				dim = new IntegerExp(null, 0, 1, tsize_t);
 			}
 
 			if (tbn.isintegral() || tbn.isfloating() || tbn.ty == Tpointer
@@ -350,14 +348,14 @@ public class TypeSArray extends TypeArray {
 				/* Only do this for types that don't need to have semantic()
 				 * run on them for the size, since they may be forward referenced.
 				 */
-				n = tbn.size(loc, context);
+				n = tbn.size(filename, lineNumber, context);
 				n2 = n * d2;
 				if ((int) n2 < 0) {
 					//goto Loverflow;
 					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(IProblem.IndexOverflowForStaticArray, sourceDim, new String[] { String.valueOf(d1) }));
 					}
-					dim = new IntegerExp(Loc.ZERO, 1, tsize_t);
+					dim = new IntegerExp(null, 0, 1, tsize_t);
 				}
 				if (n2 >= 0x1000000) // put a 'reasonable' limit on it
 				{
@@ -365,14 +363,14 @@ public class TypeSArray extends TypeArray {
 					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(IProblem.IndexOverflowForStaticArray, sourceDim, new String[] { String.valueOf(d1) }));
 					}
-					dim = new IntegerExp(Loc.ZERO, 1, tsize_t);
+					dim = new IntegerExp(null, 0, 1, tsize_t);
 				}
 				if (n != 0 && ((n2 / n) != d2)) {
 					//Loverflow:
 					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(IProblem.IndexOverflowForStaticArray, sourceDim, new String[] { String.valueOf(d1) }));
 					}
-					dim = new IntegerExp(Loc.ZERO, 1, tsize_t);
+					dim = new IntegerExp(null, 0, 1, tsize_t);
 				}
 			}
 		}
@@ -412,11 +410,11 @@ public class TypeSArray extends TypeArray {
 	}
 
 	@Override
-	public int size(Loc loc, SemanticContext context) {
+	public int size(char[] filename, int lineNumber, SemanticContext context) {
 		int sz;
 
 		if (null == dim)
-			return super.size(loc, context);
+			return super.size(filename, lineNumber, context);
 		sz = dim.toInteger(context).intValue();
 		if (next.toBasetype(context).ty == Tbit) // if array of bits
 		{
@@ -471,7 +469,7 @@ public class TypeSArray extends TypeArray {
 		if (e != null) {
 			Expressions arguments = new Expressions(1);
 			arguments.add(dim);
-			e = new ArrayExp(dim.loc, e, arguments);
+			e = new ArrayExp(dim.filename, dim.lineNumber, e, arguments);
 			e.setSourceRange(start, length);
 		}
 		return e;

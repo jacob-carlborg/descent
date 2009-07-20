@@ -7,8 +7,8 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class NegExp extends UnaExp {
 
-	public NegExp(Loc loc, Expression e1) {
-		super(loc, TOK.TOKneg, e1);
+	public NegExp(char[] filename, int lineNumber, Expression e1) {
+		super(filename, lineNumber, TOK.TOKneg, e1);
 	}
 
 	@Override
@@ -79,7 +79,7 @@ public class NegExp extends UnaExp {
 	@Override
 	public Expression buildArrayLoop(Arguments fparams, SemanticContext context) {
 		Expression ex1 = e1.buildArrayLoop(fparams, context);
-	    Expression e = new NegExp(Loc.ZERO, ex1);
+	    Expression e = new NegExp(null, 0, ex1);
 	    return e;
 	}
 

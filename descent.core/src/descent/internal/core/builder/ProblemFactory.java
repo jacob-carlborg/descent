@@ -10,10 +10,10 @@
  *******************************************************************************/
 package descent.internal.core.builder;
 
+import java.util.Locale;
+
 import descent.internal.compiler.problem.DefaultProblemFactory;
 import descent.internal.compiler.util.SimpleLookupTable;
-
-import java.util.*;
 
 public class ProblemFactory extends DefaultProblemFactory {
 

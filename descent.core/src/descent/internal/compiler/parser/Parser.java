@@ -523,7 +523,7 @@ public class Parser extends Lexer {
 				    Expression e = parseAssignExp();
 				    check(TOKrparen);
 				    check(TOKsemicolon);
-				    s = newCompileDeclaration(loc(), e);
+				    s = newCompileDeclaration(filename, lineNumber, e);
 				    break;
 				}
 
@@ -869,7 +869,7 @@ public class Parser extends Lexer {
 					a = parseBlock();
 				}
 				
-				s = newPragmaDeclaration(loc(), ident, args, a);
+				s = newPragmaDeclaration(filename, lineNumber, ident, args, a);
 				attachLeadingComments = prevToken.value == TOKrcurly;
 				break;
 			}
@@ -988,7 +988,7 @@ public class Parser extends Lexer {
 	 * Current token is '='.
 	 */
 	private PostBlitDeclaration parsePostBlit() {
-		Loc loc = this.loc;
+		int lineNumber = this.lineNumber;
 
 		nextToken();
 
@@ -998,18 +998,18 @@ public class Parser extends Lexer {
 		check(TOKlparen);
 		check(TOKrparen);
 
-		PostBlitDeclaration f = newPostBlitDeclaration(loc);
+		PostBlitDeclaration f = newPostBlitDeclaration(filename, lineNumber);
 		f.thisStart = start;
 		parseContracts(f);
 		return f;
 	}
 
 	private Modifier newModifier() {
-		return new Modifier(token, linnum);
+		return new Modifier(token, lineNumber);
 	}
 	
 	private Modifier newModifier(Token token) {
-		return new Modifier(token, linnum);
+		return new Modifier(token, lineNumber);
 	}
 
 	private Dsymbol parseDeclDefs_Lerror() {
@@ -1154,7 +1154,7 @@ public class Parser extends Lexer {
 				    nextToken();
 				    nextToken();
 				    Initializer init = parseInitializer();
-				    VarDeclaration v = newVarDeclaration(loc(), null, ident, init);
+				    VarDeclaration v = newVarDeclaration(filename, lineNumber, null, ident, init);
 				    v.first = first;
 				    first = false;
 				    
@@ -1237,7 +1237,7 @@ public class Parser extends Lexer {
 			nextToken(); // skip over ident
 			nextToken(); // skip over '='
 			Initializer init = parseInitializer();
-			VarDeclaration v = new VarDeclaration(loc, null, ident, init);
+			VarDeclaration v = new VarDeclaration(filename, lineNumber, null, ident, init);
 			v.first = first;
 		    first = false;
 			v.storage_class = storageClass;
@@ -1359,7 +1359,7 @@ public class Parser extends Lexer {
 		check(TOKrparen);
 		check(TOKsemicolon);
 
-		return newStaticAssert(loc(), exp, msg);
+		return newStaticAssert(filename, lineNumber, exp, msg);
 	}
 
 	/***********************************
@@ -1368,7 +1368,7 @@ public class Parser extends Lexer {
 	 */
 	private TypeQualified parseTypeof() {
 		TypeQualified t;
-		Loc loc = this.loc;
+		int lineNumber = this.lineNumber;
 		
 		int start = token.ptr;
 
@@ -1377,10 +1377,10 @@ public class Parser extends Lexer {
 		if (token.value == TOKreturn) // typeof(return)
 		{
 			nextToken();
-			t = new TypeReturn(loc);
+			t = new TypeReturn(filename, lineNumber);
 		} else {
 			Expression exp = parseExpression(); // typeof(expression)
-			t = new TypeTypeof(loc, exp, encoder);
+			t = new TypeTypeof(filename, lineNumber, exp, encoder);
 		}
 		check(TOKrparen);
 		
@@ -1451,7 +1451,7 @@ public class Parser extends Lexer {
 				idTokenLength = token.sourceLen;
 				
 				nextToken();			
-				c = newDebugCondition(module, loc(), level, id);			
+				c = newDebugCondition(module, filename, lineNumber, level, id);			
 				check(TOKrparen);
 			} else if (token.value == TOKint32v) {
 				id = token.sourceString;
@@ -1460,12 +1460,12 @@ public class Parser extends Lexer {
 				idTokenLength = token.sourceLen;
 				
 				nextToken();
-				c = newDebugCondition(module, loc(), level, id);
+				c = newDebugCondition(module, filename, lineNumber, level, id);
 				check(TOKrparen);
 			} else {
 				parsingErrorInsertTokenAfter(prevToken, "Identifier or Integer");
 				
-				c = newDebugCondition(module, loc(), level, id);
+				c = newDebugCondition(module, filename, lineNumber, level, id);
 				
 				// For improved syntax error recovery
 				if (token.value != TOKrparen) {
@@ -1474,7 +1474,7 @@ public class Parser extends Lexer {
 				nextToken();
 			}
 		} else {
-			c = newDebugCondition(module, loc(), level, id);
+			c = newDebugCondition(module, filename, lineNumber, level, id);
 		}
 		
 		// Don't bring the "c = ..." statement here: it needs to be
@@ -1501,7 +1501,7 @@ public class Parser extends Lexer {
 				idTokenLength = token.sourceLen;
 				
 				nextToken();			
-				c = newVersionCondition(module, loc(), level, id);			
+				c = newVersionCondition(module, filename, lineNumber, level, id);			
 				check(TOKrparen);
 			} else if (token.value == TOKint32v) {
 				id = token.sourceString;
@@ -1510,7 +1510,7 @@ public class Parser extends Lexer {
 				idTokenLength = token.sourceLen;
 				
 				nextToken();
-				c = newVersionCondition(module, loc(), level, id);
+				c = newVersionCondition(module, filename, lineNumber, level, id);
 				check(TOKrparen);		
 			} else {
 				/* Allow:
@@ -1526,7 +1526,7 @@ public class Parser extends Lexer {
 					parsingErrorInsertTokenAfter(prevToken, "Identifier or Integer");
 				}
 				
-				c = newVersionCondition(module, loc(), level, id);
+				c = newVersionCondition(module, filename, lineNumber, level, id);
 					
 				// For improved syntax error recovery
 				if (token.value != TOKrparen) {
@@ -1535,7 +1535,7 @@ public class Parser extends Lexer {
 				nextToken();
 			}			
 		} else {
-			c = newVersionCondition(module, loc(), level, id);
+			c = newVersionCondition(module, filename, lineNumber, level, id);
 			
 			parsingErrorInsertToComplete(prevToken, "(condition)", "VersionDeclaration");
 		}
@@ -1559,7 +1559,7 @@ public class Parser extends Lexer {
 			parsingErrorInsertToComplete(prevToken, "(expression)", "StaticIfDeclaration");
 			exp = null;
 		}
-		return new StaticIfCondition(loc(), exp);
+		return new StaticIfCondition(filename, lineNumber, exp);
 	}
 	
 	private IftypeCondition parseIftypeCondition() {
@@ -1586,14 +1586,14 @@ public class Parser extends Lexer {
 			check(TOKrparen);
 		} else {
 			parsingErrorInsertToComplete(prevToken, "(type identifier : specialization)", "IftypeDeclaration");
-			return new IftypeCondition(loc(), null, null, null, null);
+			return new IftypeCondition(filename, lineNumber, null, null, null, null);
 		}
 
 		error(
 				IProblem.IftypeDeprecated, firstTokenLine,
 				firstTokenStart, firstTokenLength);
 
-		return new IftypeCondition(loc(), targ, ident[0], tok, tspec);
+		return new IftypeCondition(filename, lineNumber, targ, ident[0], tok, tspec);
 	}
 	
 	private Dsymbol parseCtor() {
@@ -1607,7 +1607,7 @@ public class Parser extends Lexer {
 	        	nextToken();
 	        	nextToken();
 	        	check(TOKrparen);
-	        	PostBlitDeclaration f = newPostBlitDeclaration(loc);
+	        	PostBlitDeclaration f = newPostBlitDeclaration(filename, lineNumber);
 	        	f.thisStart = start;
 	        	parseContracts(f);
 	        	return f;
@@ -1629,7 +1629,7 @@ public class Parser extends Lexer {
 				if (tpl != null)
 					constraint = parseConstraint();
 
-				CtorDeclaration f = new CtorDeclaration(loc, arguments, varargs[0]);
+				CtorDeclaration f = new CtorDeclaration(filename, lineNumber, arguments, varargs[0]);
 				parseContracts(f);
 				f.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 
@@ -1638,7 +1638,7 @@ public class Parser extends Lexer {
 				decldefs.add(f);
 				f.templated = true;
 				
-				TemplateDeclaration tempdecl = new TemplateDeclaration(loc, f.ident, tpl, constraint, decldefs);
+				TemplateDeclaration tempdecl = new TemplateDeclaration(filename, lineNumber, f.ident, tpl, constraint, decldefs);
 				tempdecl.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 				tempdecl.wrapper = true;
 				return tempdecl;
@@ -1650,7 +1650,7 @@ public class Parser extends Lexer {
 		 */
 	    int[] varargs = { 0 };	    
 	    Arguments arguments = parseParameters(varargs);
-	    CtorDeclaration f = newCtorDeclaration(loc(), arguments, varargs[0]);
+	    CtorDeclaration f = newCtorDeclaration(filename, lineNumber, arguments, varargs[0]);
 	    f.thisStart = start;
 	    parseContracts(f);
 	    f.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
@@ -1668,7 +1668,7 @@ public class Parser extends Lexer {
 	    check(TOKlparen);
 	    check(TOKrparen);
 		
-		DtorDeclaration f = newDtorDeclaration(loc());
+		DtorDeclaration f = newDtorDeclaration(filename, lineNumber);
 		f.thisStart = thisStart;
 	    parseContracts(f);
 	    f.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
@@ -1682,7 +1682,7 @@ public class Parser extends Lexer {
 	    check(TOKlparen);
 	    check(TOKrparen);
 
-	    StaticCtorDeclaration f = newStaticCtorDeclaration(loc());
+	    StaticCtorDeclaration f = newStaticCtorDeclaration(filename, lineNumber);
 	    f.thisStart = start;
 	    
 		f.setSourceRange(start, 0);
@@ -1701,7 +1701,7 @@ public class Parser extends Lexer {
 	    check(TOKlparen);
 	    check(TOKrparen);
 		
-		StaticDtorDeclaration f = newStaticDtorDeclaration(loc());
+		StaticDtorDeclaration f = newStaticDtorDeclaration(filename, lineNumber);
 		f.thisStart = thisStart;
 		f.setSourceRange(start, 0);
 	    parseContracts(f);
@@ -1718,7 +1718,7 @@ public class Parser extends Lexer {
 			check(TOKrparen);
 	    }
 
-	    InvariantDeclaration invariant = newInvariantDeclaration(loc());
+	    InvariantDeclaration invariant = newInvariantDeclaration(filename, lineNumber);
 	    invariant.invariantStart = start;
 	    invariant.setFbody(dietParseStatement(invariant));
 	    invariant.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
@@ -1729,7 +1729,7 @@ public class Parser extends Lexer {
 		int start = token.ptr;
 		nextToken();
 		
-		UnitTestDeclaration unitTest = newUnitTestDeclaration(loc());
+		UnitTestDeclaration unitTest = newUnitTestDeclaration(filename, lineNumber);
 		unitTest.setFbody(dietParseStatement(unitTest));
 	    unitTest.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 	    return unitTest;
@@ -1742,7 +1742,7 @@ public class Parser extends Lexer {
 		int[] varargs = new int[1];
 		Arguments arguments = parseParameters(varargs);
 		
-		NewDeclaration f = newNewDeclaration(loc(), arguments, varargs[0]);
+		NewDeclaration f = newNewDeclaration(filename, lineNumber, arguments, varargs[0]);
 		f.newStart = start;
 	    parseContracts(f);
 	    f.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
@@ -1765,7 +1765,7 @@ public class Parser extends Lexer {
 	    			startLine, name);
 	    }
 		
-		DeleteDeclaration f = newDeleteDeclaration(loc(), arguments);
+		DeleteDeclaration f = newDeleteDeclaration(filename, lineNumber, arguments);
 		f.deleteStart = start;
 	    parseContracts(f);
 	    f.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
@@ -2128,7 +2128,7 @@ public class Parser extends Lexer {
 			memtype = null;
 		}
 		
-		EnumDeclaration e = newEnumDeclaration(loc(), id, memtype);
+		EnumDeclaration e = newEnumDeclaration(filename, lineNumber, id, memtype);
 		
 		if (token.value == TOKsemicolon && id != null) {
 			e.setSourceRange(enumTokenStart, token.ptr + token.sourceLen - enumTokenStart);
@@ -2182,7 +2182,7 @@ public class Parser extends Lexer {
 					
 					lastComments = getLastComments();
 					
-				    em = newEnumMember(loc, ident[0], value, type);
+				    em = newEnumMember(filename, lineNumber, ident[0], value, type);
 				} else {
 					if (token.value == TOKidentifier) {
 						Expression value;
@@ -2200,7 +2200,7 @@ public class Parser extends Lexer {
 //							lastComments = null;
 //						}
 						
-						em = newEnumMember(loc(), ident, value);
+						em = newEnumMember(filename, lineNumber, ident, value);
 					} else {
 						parsingErrorInsertToComplete(prevToken, "EnumMember", "EnumDeclaration");
 						nextToken();
@@ -2293,21 +2293,21 @@ public class Parser extends Lexer {
 			}
 			
 			if (firstTokenValue == TOKclass) {
-				a = newClassDeclaration(loc(), id, baseClasses);
+				a = newClassDeclaration(filename, lineNumber, id, baseClasses);
 			} else {
-				a = newInterfaceDeclaration(loc(), id, baseClasses);
+				a = newInterfaceDeclaration(filename, lineNumber, id, baseClasses);
 			}
 			break;			
 		case TOKstruct:
 			if (id != null) {
-				a = newStructDeclaration(loc(), id);
+				a = newStructDeclaration(filename, lineNumber, id);
 			} else {
 				anon = 2;
 			}
 			break;
 		case TOKunion:
 			if (id != null) {
-				a = newUnionDeclaration(loc(), id);
+				a = newUnionDeclaration(filename, lineNumber, id);
 			} else {
 				anon = 1;
 			}
@@ -2328,7 +2328,7 @@ public class Parser extends Lexer {
 			}
 			if (anon != 0) {
 				nextToken();
-			    return newAnonDeclaration(loc(), anon == 1, decl);
+			    return newAnonDeclaration(filename, lineNumber, anon == 1, decl);
 			}
 			a.members = decl;
 			a.sourceMembers = new Dsymbols(decl);
@@ -2340,9 +2340,9 @@ public class Parser extends Lexer {
 				if (firstTokenValue == TOKstruct || firstTokenValue == TOKunion) {
 					// Signal the creation of the struct or union, anyway
 					if (firstTokenValue == TOKstruct) {
-						newStructDeclaration(loc, null);
+						newStructDeclaration(filename, lineNumber, null);
 					} else {
-						newUnionDeclaration(loc, null);
+						newUnionDeclaration(filename, lineNumber, null);
 					}
 					
 					String word = toWord(firstTokenValue.toString());
@@ -2357,16 +2357,16 @@ public class Parser extends Lexer {
 				if (a == null) {
 					switch(firstTokenValue) {
 					case TOKclass:
-						a = newClassDeclaration(loc(), id, baseClasses);
+						a = newClassDeclaration(filename, lineNumber, id, baseClasses);
 						break;
 					case TOKinterface:
-						a = newInterfaceDeclaration(loc(), id, baseClasses);
+						a = newInterfaceDeclaration(filename, lineNumber, id, baseClasses);
 						break;
 					case TOKstruct:
-						a = newStructDeclaration(loc(), id);
+						a = newStructDeclaration(filename, lineNumber, id);
 						break;
 					case TOKunion:
-						a = newUnionDeclaration(loc(), id);
+						a = newUnionDeclaration(filename, lineNumber, id);
 						break;
 					}
 				}
@@ -2381,7 +2381,7 @@ public class Parser extends Lexer {
 			// Wrap a template around the aggregate declaration
 			decldefs = new Dsymbols(1);
 			decldefs.add(a);
-			tempdecl = newTemplateDeclaration(loc(), id, tpl, constraint, decldefs);
+			tempdecl = newTemplateDeclaration(filename, lineNumber, id, tpl, constraint, decldefs);
 			tempdecl.setSourceRange(a.start, a.length);
 			tempdecl.wrapper = true;
 			a.templated = true;
@@ -2485,7 +2485,7 @@ public class Parser extends Lexer {
 			nextToken();
 		}
 
-		TemplateDeclaration tempdecl = newTemplateDeclaration(loc(), id, tpl, constraint,  decldefs);
+		TemplateDeclaration tempdecl = newTemplateDeclaration(filename, lineNumber, id, tpl, constraint,  decldefs);
 		tempdecl.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 		return tempdecl;
 
@@ -2602,9 +2602,9 @@ public class Parser extends Lexer {
 					}
 					
 					if (apiLevel < D2) {
-						tp = new TemplateAliasParameter(loc(), tp_ident, tp_spectype, tp_defaulttype);
+						tp = new TemplateAliasParameter(filename, lineNumber, tp_ident, tp_spectype, tp_defaulttype);
 					} else {
-						tp = new TemplateAliasParameter(loc(), tp_ident, spectype, spec, def);
+						tp = new TemplateAliasParameter(filename, lineNumber, tp_ident, spectype, spec, def);
 					}
 				} else if (t.value == TOKcolon || t.value == TOKassign
 						|| t.value == TOKcomma || t.value == TOKrparen) { // TypeParameter
@@ -2636,7 +2636,7 @@ public class Parser extends Lexer {
 						}
 					}
 					
-					tp = new TemplateTypeParameter(loc(), tp_ident, tp_spectype, tp_defaulttype);
+					tp = new TemplateTypeParameter(filename, lineNumber, tp_ident, tp_spectype, tp_defaulttype);
 				} else if (token.value == TOKidentifier
 						&& t.value == TOKdotdotdot) { // ident...
 					if (isvariadic) {
@@ -2650,7 +2650,7 @@ public class Parser extends Lexer {
 					nextToken();
 					nextToken();
 
-					tp = new TemplateTupleParameter(loc(), tp_ident);
+					tp = new TemplateTupleParameter(filename, lineNumber, tp_ident);
 				} else if (apiLevel >= D2 && token.value == TOKthis) { // ThisParameter
 					nextToken();
 					if (token.value != TOKidentifier) {
@@ -2670,7 +2670,7 @@ public class Parser extends Lexer {
 						nextToken();
 						tp_defaulttype = parseType();
 					}
-					tp = new TemplateThisParameter(loc, tp_ident, tp_spectype,
+					tp = new TemplateThisParameter(filename, lineNumber, tp_ident, tp_spectype,
 							tp_defaulttype);
 				} else {
 
@@ -2709,7 +2709,7 @@ public class Parser extends Lexer {
 						}
 					}
 
-					tp = new TemplateValueParameter(loc(), tp_ident,
+					tp = new TemplateValueParameter(filename, lineNumber, tp_ident,
 							tp_valtype, tp_specvalue, tp_defaultvalue, encoder);
 				}
 				tp.setSourceRange(firstTokenStart, prevToken.ptr
@@ -2746,7 +2746,7 @@ public class Parser extends Lexer {
 		int typeStart = token.ptr;
 		tqual = null;
 		if (token.value == TOKdot) {
-			id = new IdentifierExp(loc(), Id.empty); // Id.empty
+			id = new IdentifierExp(filename, lineNumber, Id.empty); // Id.empty
 		} else {
 			if (token.value == TOKtypeof) {
 				if (apiLevel >= D2) {
@@ -2758,7 +2758,7 @@ public class Parser extends Lexer {
 					check(TOKlparen);
 					exp = parseExpression();
 					check(TOKrparen);
-					tqual = new TypeTypeof(loc(), exp, encoder);
+					tqual = new TypeTypeof(filename, lineNumber, exp, encoder);
 					tqual.setSourceRange(typeStart, prevToken.ptr + prevToken.sourceLen - typeStart);
 					
 					check(TOKdot);
@@ -2768,7 +2768,7 @@ public class Parser extends Lexer {
 				parsingErrorDeleteToken(prevToken);
 				
 				// goto Lerr;
-				return newTemplateMixin(loc(), null, null, null, null);
+				return newTemplateMixin(filename, lineNumber, null, null, null, null);
 			}
 			id = newIdentifierExp();
 			nextToken();
@@ -2798,11 +2798,11 @@ public class Parser extends Lexer {
 			}
 			
 			if (tiargs != null) {
-				TemplateInstance tempinst = newTemplateInstance(loc(), id, encoder);
+				TemplateInstance tempinst = newTemplateInstance(filename, lineNumber, id, encoder);
 			    tempinst.tiargs(tiargs);
 			    tempinst.start = thisStart;
 			    tempinst.length = prevToken.ptr + prevToken.sourceLen - thisStart;
-			    id = new TemplateInstanceWrapper(loc(), tempinst); // "(PIdentifier *)tempinst;" cant work in Java 
+			    id = new TemplateInstanceWrapper(filename, lineNumber, tempinst); // "(PIdentifier *)tempinst;" cant work in Java 
 			    tiargs = null;
 			}
 			idents.add(id);
@@ -2826,7 +2826,7 @@ public class Parser extends Lexer {
 			id = null;
 		}
 		
-		tm = newTemplateMixin(loc(), id, tqual, idents, tiargs);
+		tm = newTemplateMixin(filename, lineNumber, id, tqual, idents, tiargs);
 		tm.setTypeSourceRange(typeStart, typeLength);
 		tm.setSourceRange(start, token.ptr + token.sourceLen - start);
 
@@ -2907,10 +2907,10 @@ public class Parser extends Lexer {
 										TypeIdentifier pt = (TypeIdentifier) param.type;
 										param.ident = pt.ident;
 										IdentifierExp id = uniqueId("__T");
-										param.type = new TypeIdentifier(pt.loc,
+										param.type = new TypeIdentifier(pt.filename, pt.lineNumber,
 												id);
 										TemplateParameter tp = new TemplateTypeParameter(
-												fd.loc, id, null, null);
+												fd.filename, fd.lineNumber, id, null, null);
 										if (null == tpl)
 											tpl = new TemplateParameters(3);
 										tpl.add(tp);
@@ -2922,7 +2922,7 @@ public class Parser extends Lexer {
 									Dsymbols decldefs = new Dsymbols(1);
 									decldefs.add(fd);
 									TemplateDeclaration tempdecl = new TemplateDeclaration(
-											fd.loc, fd.ident, tpl, null,
+											fd.filename, fd.lineNumber, fd.ident, tpl, null,
 											decldefs);
 									tempdecl.literal = true; // it's a template
 															// 'literal'
@@ -2962,7 +2962,7 @@ public class Parser extends Lexer {
 	    switch (token.value)
 	    {
 		case TOKidentifier:
-		    ta = new TypeIdentifier(loc, newIdentifierExp());
+		    ta = new TypeIdentifier(filename, lineNumber, newIdentifierExp());
 		    // goto LabelX;
 		    tiargs.add(ta);
 		    nextToken();
@@ -3056,7 +3056,7 @@ public class Parser extends Lexer {
 				if (token.value != TOKidentifier) {
 					
 					// Issue a creation of an empty import declaration
-					newImport(loc(), null, null, aliasid, isstatic);
+					newImport(filename, lineNumber, null, null, aliasid, isstatic);
 					
 					parsingErrorInsertTokenAfter(prevToken, "Identifier");
 					break;
@@ -3082,7 +3082,7 @@ public class Parser extends Lexer {
 					nextToken();
 					if (token.value != TOKidentifier) {
 						// Issue a creation of an empty import declaration
-						newImport(loc(), a, null, aliasid, isstatic);
+						newImport(filename, lineNumber, a, null, aliasid, isstatic);
 						
 						parsingErrorInsertTokenAfter(prevToken, "Identifier");
 						break;
@@ -3092,7 +3092,7 @@ public class Parser extends Lexer {
 				}
 
 				Import prev = s;
-				s = newImport(loc(), a, id, aliasid, isstatic);
+				s = newImport(filename, lineNumber, a, id, aliasid, isstatic);
 				this.setPreComments(s, lastComments);
 				s.first = prev == null;
 				//decldefs.add(s);
@@ -3270,11 +3270,11 @@ public class Parser extends Lexer {
 			if (token.value == TOKnot) {
 				if (apiLevel < D2) {
 					nextToken();
-					tempinst = newTemplateInstance(loc(), id, encoder);
+					tempinst = newTemplateInstance(filename, lineNumber, id, encoder);
 					tempinst.tiargs(parseTemplateArgumentList());
 				} else {
 				    // ident!(template_arguments)
-					tempinst = newTemplateInstance(loc, id, encoder);
+					tempinst = newTemplateInstance(filename, lineNumber, id, encoder);
 					nextToken();
 					if (token.value == TOKlparen) {
 					    // ident!(template_arguments)
@@ -3285,7 +3285,7 @@ public class Parser extends Lexer {
 					}
 				}
 				tempinst.setSourceRange(id.start, prevToken.ptr + prevToken.sourceLen - id.start);
-				tid = new TypeInstance(loc(), tempinst);
+				tid = new TypeInstance(filename, lineNumber, tempinst);
 				tid.setSourceRange(id.start, prevToken.ptr + prevToken.sourceLen - id.start);
 				// goto Lident2;
 				{
@@ -3304,7 +3304,7 @@ public class Parser extends Lexer {
 
 			}
 			// Lident:
-			tid = newTypeIdentifier(loc(), id);
+			tid = newTypeIdentifier(filename, lineNumber, id);
 			// Lident2:
 			{
 			Type[] p_t = { t };
@@ -3321,9 +3321,9 @@ public class Parser extends Lexer {
 			break;
 
 		case TOKdot:
-			id = new IdentifierExp(loc(), Id.empty);
+			id = new IdentifierExp(filename, lineNumber, Id.empty);
 			// goto Lident;
-			tid = newTypeIdentifier(loc(), id);
+			tid = newTypeIdentifier(filename, lineNumber, id);
 			{
 			Type[] p_t = { t };
 			IdentifierExp[] p_id = { id };
@@ -3351,7 +3351,7 @@ public class Parser extends Lexer {
 				exp = parseExpression();
 				check(TOKrparen);
 				
-				tid = new TypeTypeof(loc(), exp, encoder);
+				tid = new TypeTypeof(filename, lineNumber, exp, encoder);
 				tid.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 				((TypeTypeof) tid).setTypeofSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 			}
@@ -3448,12 +3448,12 @@ public class Parser extends Lexer {
 			if (token.value == TOKnot) {
 				if (apiLevel < D2) {
 					nextToken();
-					tempinst[0] = newTemplateInstance(loc(), id[0], encoder);
+					tempinst[0] = newTemplateInstance(filename, lineNumber, id[0], encoder);
 					tempinst[0].tiargs(parseTemplateArgumentList());
 					tempinst[0].setSourceRange(tempinstStart, prevToken.ptr + prevToken.sourceLen - tempinstStart);
 					
 				} else {
-				    tempinst[0] = newTemplateInstance(loc, id[0], encoder);
+				    tempinst[0] = newTemplateInstance(filename, lineNumber, id[0], encoder);
 					nextToken();
 					if (token.value == TOKlparen) {
 						// ident!(template_arguments)
@@ -3463,7 +3463,7 @@ public class Parser extends Lexer {
 						tempinst[0].tiargs(parseTemplateArgument());
 					}
 				}
-				tid[0].addIdent(new TemplateInstanceWrapper(loc(), tempinst[0]));
+				tid[0].addIdent(new TemplateInstanceWrapper(filename, lineNumber, tempinst[0]));
 			} else {
 				tid[0].addIdent(id[0]);
 			}
@@ -3814,7 +3814,7 @@ public class Parser extends Lexer {
 						    if (tf.postModifiers == null) {
 						    	tf.postModifiers = new ArrayList<Modifier>();
 						    }
-						    tf.postModifiers.add(new Modifier(token, linnum));
+						    tf.postModifiers.add(new Modifier(token, lineNumber));
 						    nextToken();
 						    continue;
 						}
@@ -3825,7 +3825,7 @@ public class Parser extends Lexer {
 						    if (tf.postModifiers == null) {
 						    	tf.postModifiers = new ArrayList<Modifier>();
 						    }
-						    tf.postModifiers.add(new Modifier(token, linnum));
+						    tf.postModifiers.add(new Modifier(token, lineNumber));
 						    nextToken();
 						    continue;
 						}
@@ -3898,7 +3898,7 @@ public class Parser extends Lexer {
 			nextToken();
 		    if (token.value == TOKidentifier && peek(token).value == TOKthis) {
 		    	// XXX comments for AliasThis
-				AliasThis s = newAliasThis(this.loc, newIdentifierExp());
+				AliasThis s = newAliasThis(this.filename, this.lineNumber, newIdentifierExp());
 				nextToken();
 				check(TOKthis);
 				check(TOKsemicolon);
@@ -4029,7 +4029,7 @@ public class Parser extends Lexer {
 				nextToken();
 				Initializer init = parseInitializer();
 	
-				VarDeclaration v = newVarDeclaration(loc(), null, ident, init);
+				VarDeclaration v = newVarDeclaration(filename, lineNumber, null, ident, init);
 				v.first = first;
 				first = false;
 				
@@ -4167,7 +4167,7 @@ public class Parser extends Lexer {
 				TypedefDeclaration td = null;
 				AliasDeclaration ad = null;
 				if (tok == TOKtypedef) {
-					td = newTypedefDeclaration(loc(), ident, t, init);
+					td = newTypedefDeclaration(filename, lineNumber, ident, t, init);
 					td.first = first;
 					v = td;
 					if (previousTypedef != null) {
@@ -4179,7 +4179,7 @@ public class Parser extends Lexer {
 						error(IProblem.AliasCannotHaveInitializer, assignTokenLine, assignTokenStart,  init.start + init.length - assignTokenStart);
 					}
 					
-					ad = newAliasDeclaration(loc(), ident, t);
+					ad = newAliasDeclaration(filename, lineNumber, ident, t);
 					ad.first = first;
 					v = ad;
 					if (previousAlias != null) {
@@ -4240,7 +4240,7 @@ public class Parser extends Lexer {
 				TypeFunction typeFunction = (TypeFunction) t;
 				Expression constraint = null;
 				
-				FuncDeclaration f = newFuncDeclaration(loc(), ident, storage_class, typeFunction);
+				FuncDeclaration f = newFuncDeclaration(filename, lineNumber, ident, storage_class, typeFunction);
 				
 				if (apiLevel >= 2) {
 					if (tpl != null) {
@@ -4272,7 +4272,7 @@ public class Parser extends Lexer {
 					// Wrap a template around the aggregate declaration
 					decldefs = new Dsymbols(1);
 					decldefs.add(s);
-					tempdecl = newTemplateDeclaration(loc(), s.ident, tpl, constraint, decldefs);
+					tempdecl = newTemplateDeclaration(filename, lineNumber, s.ident, tpl, constraint, decldefs);
 					tempdecl.setSourceRange(s.start, s.length);
 					tempdecl.wrapper = true;
 					s = tempdecl;
@@ -4289,7 +4289,7 @@ public class Parser extends Lexer {
 					init = parseInitializer();
 				}
 				
-				v = newVarDeclaration(loc(), t, ident, init);
+				v = newVarDeclaration(filename, lineNumber, t, ident, init);
 				v.first = first;
 				first = false;
 				
@@ -4355,9 +4355,9 @@ public class Parser extends Lexer {
 				Expression e;
 
 				if (token.value == TOKfile) {
-					e = new FileInitExp(loc);
+					e = new FileInitExp(filename, lineNumber);
 				} else {
-					e = new LineInitExp(loc);
+					e = new LineInitExp(filename, lineNumber);
 				}
 				nextToken();
 				return e;
@@ -4506,7 +4506,7 @@ public class Parser extends Lexer {
 				case TOKreturn:
 					// goto Lexpression;
 					e = parseAssignExp();
-					ie = new ExpInitializer(loc(), e);
+					ie = new ExpInitializer(filename, lineNumber, e);
 					return ie;
 
 				case TOKlcurly:
@@ -4526,7 +4526,7 @@ public class Parser extends Lexer {
 				break;
 			}
 			
-			is = new StructInitializer(loc());
+			is = new StructInitializer(filename, lineNumber);
 			nextToken();
 			comma = 0;
 			while (true) {
@@ -4597,7 +4597,7 @@ public class Parser extends Lexer {
 								&& t.value != TOKrcurly) {
 							// goto Lexpression;
 						    e = parseAssignExp();
-						    ie = new ExpInitializer(loc, e);
+						    ie = new ExpInitializer(filename, lineNumber, e);
 						    return ie;
 						}
 						break;
@@ -4613,7 +4613,7 @@ public class Parser extends Lexer {
 				break;
 			}
 			
-			ia = new ArrayInitializer(loc());
+			ia = new ArrayInitializer(filename, lineNumber);
 			nextToken();
 			comma = 0;
 			while (true) {
@@ -4633,7 +4633,7 @@ public class Parser extends Lexer {
 						nextToken();
 						value = parseInitializer();
 					} else {
-						value = new ExpInitializer(loc(), e);
+						value = new ExpInitializer(filename, lineNumber, e);
 						e = null;
 					}
 					ia.addInit(e, value);
@@ -4682,7 +4682,7 @@ public class Parser extends Lexer {
 			// Lexpression:
 			e = parseAssignExp();
 			e.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
-			ie = new ExpInitializer(loc(), e);
+			ie = new ExpInitializer(filename, lineNumber, e);
 			return ie;
 		}
 	}
@@ -4724,7 +4724,7 @@ public class Parser extends Lexer {
 				nextToken();
 				Statement body = parseStatement(PSsemi);
 				
-				s = newLabelStatement(loc(), ident, body);
+				s = newLabelStatement(filename, lineNumber, ident, body);
 				s.start = ident.start;
 				s.length = prevToken.ptr + prevToken.sourceLen - ident.start;
 				break;
@@ -4745,11 +4745,11 @@ public class Parser extends Lexer {
 				// Signal a new variable declaration if it's an identifier... this is nice
 				// to autocomplete Object | -. object
 				if (exp != null && exp.getNodeType() == ASTDmdNode.IDENTIFIER_EXP) {
-					newVarDeclaration(loc, new TypeIdentifier(loc, ((IdentifierExp) exp).ident), null, null);
+					newVarDeclaration(filename, lineNumber, new TypeIdentifier(filename, lineNumber, ((IdentifierExp) exp).ident), null, null);
 				}
 				
 				check(TOKsemicolon);
-				s = newExpStatement(loc(), exp);
+				s = newExpStatement(filename, lineNumber, exp);
 				break;
 			}
 			// break;
@@ -4794,7 +4794,7 @@ public class Parser extends Lexer {
 		{
 			Expression exp = parseExpression();
 			check(TOKsemicolon);
-			s = newExpStatement(loc(), exp);
+			s = newExpStatement(filename, lineNumber, exp);
 			s.setSourceRange(exp.start, prevToken.ptr + prevToken.sourceLen - exp.start);
 			break;
 		}
@@ -4823,7 +4823,7 @@ public class Parser extends Lexer {
 					elsebody = parseStatement(0 /*PSsemi*/);
 				}
 				
-				s = newConditionalStatement(loc(), staticIfCondition, ifbody, elsebody);
+				s = newConditionalStatement(filename, lineNumber, staticIfCondition, ifbody, elsebody);
 				break;
 			}
 			// goto Ldeclaration;
@@ -4889,7 +4889,7 @@ public class Parser extends Lexer {
 			if (d != null) {
 				d.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 				this.setPreComments(d, lastComments);
-				s = newDeclarationStatement(loc(), d);
+				s = newDeclarationStatement(filename, lineNumber, d);
 			}
 			break;
 		}
@@ -4927,7 +4927,7 @@ public class Parser extends Lexer {
 				if (d != null) {
 					d.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 					this.setPreComments(d, lastComments);
-					s = newDeclarationStatement(loc(), d);
+					s = newDeclarationStatement(filename, lineNumber, d);
 				}
 			}
 			break;
@@ -4945,15 +4945,15 @@ public class Parser extends Lexer {
 					Expression e = parseAssignExp();
 					check(TOKrparen);
 					check(TOKsemicolon);
-					s = newCompileStatement(loc(), e);
+					s = newCompileStatement(filename, lineNumber, e);
 		    	} else {
 		    		Expression e = parseAssignExp();
-			    	s = new ExpStatement(loc(), e);
+			    	s = new ExpStatement(filename, lineNumber, e);
 		    	}
 				break;
 		    } else {			
 		    	d = parseMixin();
-		    	s = newDeclarationStatement(loc(), d);
+		    	s = newDeclarationStatement(filename, lineNumber, d);
 		    	break;
 		    }
 		}
@@ -4984,7 +4984,7 @@ public class Parser extends Lexer {
 			s = newBlock(statements, start, token.ptr + token.sourceLen - start);
 			
 			if ((flags & (PSscope | PScurlyscope)) != 0) {
-				s = newScopeStatement(loc(), s);
+				s = newScopeStatement(filename, lineNumber, s);
 				s.setSourceRange(start, token.ptr + token.sourceLen - start);
 			}
 			
@@ -5004,7 +5004,7 @@ public class Parser extends Lexer {
 			
 			body = parseStatement(PSscope);
 			
-			s = newWhileStatement(loc(), condition2, body);
+			s = newWhileStatement(filename, lineNumber, condition2, body);
 			break;
 		}
 
@@ -5014,7 +5014,7 @@ public class Parser extends Lexer {
 			}
 			nextToken();
 			
-			s = newExpStatement(loc(), null);
+			s = newExpStatement(filename, lineNumber, null);
 			break;
 
 		case TOKdo: {
@@ -5031,7 +5031,7 @@ public class Parser extends Lexer {
 			check(TOKlparen);
 			condition2 = parseExpression();
 			check(TOKrparen);
-			s = newDoStatement(loc(), body, condition2);
+			s = newDoStatement(filename, lineNumber, body, condition2);
 			break;
 		}
 
@@ -5064,11 +5064,11 @@ public class Parser extends Lexer {
 				check(TOKrparen);
 			}
 			body = parseStatement(PSscope);
-			s = newForStatement(loc(), init, condition2, increment, body);
+			s = newForStatement(filename, lineNumber, init, condition2, increment, body);
 			if (init != null) {
 				s.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 				
-				s = newScopeStatement(loc(), s);
+				s = newScopeStatement(filename, lineNumber, s);
 				s.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 			}
 			break;
@@ -5166,7 +5166,7 @@ public class Parser extends Lexer {
 				check(TOKrparen);
 				body = parseStatement(0);
 				
-				s = newForeachStatement(loc(), op, arguments, aggr, body);
+				s = newForeachStatement(filename, lineNumber, op, arguments, aggr, body);
 			} else {
 			    if (token.value == TOKslice && arguments.size() == 1) {
 					Argument a = arguments.get(0);
@@ -5174,11 +5174,11 @@ public class Parser extends Lexer {
 					Expression upr = parseExpression();
 					check(TOKrparen);
 					body = parseStatement(0);
-					s = newForeachRangeStatement(loc(), op, a, aggr, upr, body);
+					s = newForeachRangeStatement(filename, lineNumber, op, a, aggr, upr, body);
 				} else {
 					check(TOKrparen);
 					body = parseStatement(0);
-					s = newForeachStatement(loc(), op, arguments, aggr, body);
+					s = newForeachStatement(filename, lineNumber, op, arguments, aggr, body);
 				}
 			}
 			break;
@@ -5285,7 +5285,7 @@ public class Parser extends Lexer {
 			} else {
 				elsebody2 = null;
 			}
-			s = newIfStatement(loc(), arg, condition2, ifbody2, elsebody2);
+			s = newIfStatement(filename, lineNumber, arg, condition2, ifbody2, elsebody2);
 			break;
 		}
 
@@ -5334,7 +5334,7 @@ public class Parser extends Lexer {
 				check(TOKrparen);
 				Statement st = parseStatement(PScurlyscope);
 				
-				s = newOnScopeStatement(loc(), t2, st);
+				s = newOnScopeStatement(filename, lineNumber, t2, st);
 				break;
 			}
 
@@ -5349,7 +5349,7 @@ public class Parser extends Lexer {
 			nextToken();
 			Statement st = parseStatement(PScurlyscope);
 			
-			s = newOnScopeStatement(loc(), t2, st);
+			s = newOnScopeStatement(filename, lineNumber, t2, st);
 			break;
 		}
 
@@ -5368,7 +5368,7 @@ public class Parser extends Lexer {
 				elsebody = parseStatement(0 /*PSsemi*/);
 			}
 			
-			s = newConditionalStatement(loc(), condition, ifbody, elsebody);
+			s = newConditionalStatement(filename, lineNumber, condition, ifbody, elsebody);
 			break;
 
 		case TOKversion:
@@ -5386,7 +5386,7 @@ public class Parser extends Lexer {
 				elsebody = parseStatement(0 /*PSsemi*/);
 			}
 			
-			s = newConditionalStatement(loc(), versionCondition, ifbody, elsebody);
+			s = newConditionalStatement(filename, lineNumber, versionCondition, ifbody, elsebody);
 			break;
 
 		case TOKiftype:
@@ -5402,7 +5402,7 @@ public class Parser extends Lexer {
 				elsebody = parseStatement(0 /*PSsemi*/);
 			}
 			
-			s = newConditionalStatement(loc(), iftypeCondition, ifbody, elsebody);
+			s = newConditionalStatement(filename, lineNumber, iftypeCondition, ifbody, elsebody);
 			break;
 
 		case TOKpragma: {
@@ -5441,7 +5441,7 @@ public class Parser extends Lexer {
 				body = parseStatement(PSsemi);
 			}
 			
-			s = newPragmaStatement(loc(), ident, args, body);
+			s = newPragmaStatement(filename, lineNumber, ident, args, body);
 			break;
 		}
 
@@ -5455,7 +5455,7 @@ public class Parser extends Lexer {
 			check(TOKrparen);
 			body = parseStatement(PSscope);
 			
-			s = newSwitchStatement(loc(), condition2, body);
+			s = newSwitchStatement(filename, lineNumber, condition2, body);
 			break;
 		}
 
@@ -5477,7 +5477,7 @@ public class Parser extends Lexer {
 				int expLength = token.sourceLen;
 				
 				exp = parseAssignExp();
-				caseStatements.add(newCaseStatement(loc(), exp, null, caseEnd, expStart, expLength));			
+				caseStatements.add(newCaseStatement(filename, lineNumber, exp, null, caseEnd, expStart, expLength));			
 				// cases.add(exp);
 				
 				if (token.value != TOKcomma) {
@@ -5499,7 +5499,7 @@ public class Parser extends Lexer {
 			
 			s = newBlock(statements, start, prevToken.ptr + prevToken.sourceLen - start);
 			
-			s = newScopeStatement(loc(), s);
+			s = newScopeStatement(filename, lineNumber, s);
 			s.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 
 			// Keep cases in order by building the case statements backwards
@@ -5526,10 +5526,10 @@ public class Parser extends Lexer {
 			
 			s = newBlock(statements, start, prevToken.ptr + prevToken.sourceLen - start);
 			
-			s = newScopeStatement(loc(), s);
+			s = newScopeStatement(filename, lineNumber, s);
 			s.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 			
-			s = newDefaultStatement(loc(), s);
+			s = newDefaultStatement(filename, lineNumber, s);
 			break;
 		}
 
@@ -5545,7 +5545,7 @@ public class Parser extends Lexer {
 			} else {
 				exp = parseExpression();
 			}
-			s = newReturnStatement(loc(), exp);
+			s = newReturnStatement(filename, lineNumber, exp);
 			
 			check(TOKsemicolon);
 			break;
@@ -5563,7 +5563,7 @@ public class Parser extends Lexer {
 			}
 			check(TOKsemicolon);
 			
-			s = newBreakStatement(loc(), ident);
+			s = newBreakStatement(filename, lineNumber, ident);
 			break;
 		}
 
@@ -5580,7 +5580,7 @@ public class Parser extends Lexer {
 			
 			check(TOKsemicolon);
 			
-			s = newContinueStatement(loc(), ident);
+			s = newContinueStatement(filename, lineNumber, ident);
 			break;
 		}
 
@@ -5590,7 +5590,7 @@ public class Parser extends Lexer {
 			nextToken();
 			if (token.value == TOKdefault) {
 				nextToken();
-				s = newGotoDefaultStatement(loc());
+				s = newGotoDefaultStatement(filename, lineNumber);
 			} else if (token.value == TOKcase) {
 				Expression exp = null;
 
@@ -5599,7 +5599,7 @@ public class Parser extends Lexer {
 					exp = parseExpression();
 				}
 				
-				s = newGotoCaseStatement(loc(), exp);
+				s = newGotoCaseStatement(filename, lineNumber, exp);
 			} else {
 				if (token.value != TOKidentifier) {
 					parsingErrorInsertTokenAfter(prevToken, "Identifier");
@@ -5609,7 +5609,7 @@ public class Parser extends Lexer {
 					nextToken();
 				}
 				
-				s = newGotoStatement(loc(), ident);
+				s = newGotoStatement(filename, lineNumber, ident);
 			}
 			check(TOKsemicolon);
 			break;
@@ -5629,7 +5629,7 @@ public class Parser extends Lexer {
 			}
 			body = parseStatement(PSscope);
 			
-			s = newSynchronizedStatement(loc(), exp, body);
+			s = newSynchronizedStatement(filename, lineNumber, exp, body);
 			break;
 		}
 
@@ -5644,7 +5644,7 @@ public class Parser extends Lexer {
 			
 			body = parseStatement(PSscope);
 			
-			s = newWithStatement(loc(), exp, body);
+			s = newWithStatement(filename, lineNumber, exp, body);
 			break;
 		}
 
@@ -5684,7 +5684,7 @@ public class Parser extends Lexer {
 				}
 				handler = parseStatement(0);
 				
-				c = new Catch(loc(), t2, id, handler);
+				c = new Catch(filename, lineNumber, t2, id, handler);
 				c.setSourceRange(firstTokenStart, prevToken.ptr + prevToken.sourceLen - firstTokenStart);
 				
 				if (catches == null) {
@@ -5705,13 +5705,13 @@ public class Parser extends Lexer {
 				parsingErrorInsertToComplete(prevToken, "Catch or finally", "TryStatement");
 			} else {
 				if (catches != null) {
-					s = newTryCatchStatement(loc(), body, catches);
+					s = newTryCatchStatement(filename, lineNumber, body, catches);
 				}
 				if (finalbody != null) {
 					if (catches != null) {
 						s.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 					}
-					s = newTryFinallyStatement(loc(), s, finalbody, catches != null);
+					s = newTryFinallyStatement(filename, lineNumber, s, finalbody, catches != null);
 				}
 			}
 			break;
@@ -5724,7 +5724,7 @@ public class Parser extends Lexer {
 			exp = parseExpression();
 			check(TOKsemicolon);
 			
-			s = newThrowStatement(loc(), exp);
+			s = newThrowStatement(filename, lineNumber, exp);
 			break;
 		}
 
@@ -5734,7 +5734,7 @@ public class Parser extends Lexer {
 			// TODO Descent parser use deprecated
 //		    if (!global.params.useDeprecated)
 //				error("volatile statements deprecated; used synchronized statements instead");
-			s = newVolatileStatement(loc(), s);
+			s = newVolatileStatement(filename, lineNumber, s);
 			break;
 
 		case TOKasm: {
@@ -5777,7 +5777,7 @@ public class Parser extends Lexer {
 
 				case TOKsemicolon:
 					// Create AsmStatement from list of tokens we've saved
-					s = new AsmStatement(loc(), toklist);
+					s = new AsmStatement(filename, lineNumber, toklist);
 					if (toklist.isEmpty()) {
 						s.setSourceRange(token.ptr, token.sourceLen);
 					} else {
@@ -5787,7 +5787,7 @@ public class Parser extends Lexer {
 					toklist = new ArrayList<Token>(6);
 					
 					if (label != null) {
-						s = newLabelStatement(loc(), label, s);
+						s = newLabelStatement(filename, lineNumber, label, s);
 						s.start = label.start;
 						s.length = token.ptr + token.sourceLen - label.start;
 						label = null;
@@ -5809,7 +5809,7 @@ public class Parser extends Lexer {
 				break;
 			}
 			
-			s = new AsmBlock(loc(), statements);;
+			s = new AsmBlock(filename, lineNumber, statements);;
 			
 			nextToken();
 			break;
@@ -5847,7 +5847,7 @@ public class Parser extends Lexer {
 			for (int i = 0; i < a.size(); i++) {
 				Dsymbol d = (Dsymbol) a.get(i);
 				this.setPreComments(d, lastComments);
-				s[0] = newDeclarationStatement(loc(), d);
+				s[0] = newDeclarationStatement(filename, lineNumber, d);
 				as.add(s[0]);
 			}
 			
@@ -5855,14 +5855,14 @@ public class Parser extends Lexer {
 		} else if (a.size() == 1) {
 			Dsymbol d = (Dsymbol) a.get(0);
 			this.setPreComments(d, lastComments);
-			s[0] = newDeclarationStatement(loc(), d);
+			s[0] = newDeclarationStatement(filename, lineNumber, d);
 		} else {
 			parsingErrorDeleteToken(token);
 			nextToken();
 			s[0] = null;
 		}
 		if ((flags & PSscope) != 0) {
-			s[0] = newScopeStatement(loc(), s[0]);
+			s[0] = newScopeStatement(filename, lineNumber, s[0]);
 		}
 	}	
 
@@ -6892,7 +6892,7 @@ public class Parser extends Lexer {
 		    {	// identifier!(template-argument-list)
 		    	TemplateInstance tempinst;
 		    	
-		    	tempinst = newTemplateInstance(loc(), id, encoder);		    	
+		    	tempinst = newTemplateInstance(filename, lineNumber, id, encoder);		    	
 		    	nextToken();
 		    	if (apiLevel < D2) {
 		    		tempinst.tiargs(parseTemplateArgumentList());
@@ -6906,7 +6906,7 @@ public class Parser extends Lexer {
 		    		}
 		    	}
 		    	tempinst.setSourceRange(id.start, prevToken.ptr + prevToken.sourceLen - id.start);
-				e = new ScopeExp(loc(), tempinst);
+				e = new ScopeExp(filename, lineNumber, tempinst);
 				e.setSourceRange(tempinst.start, tempinst.length);
 		    }
 		    else {
@@ -6918,72 +6918,72 @@ public class Parser extends Lexer {
 		    if (inBrackets == 0) {
 		    	error(IProblem.DollarInvalidOutsideBrackets, token);
 		    }
-		    e = new DollarExp(loc());
+		    e = new DollarExp(filename, lineNumber);
 		    e.setSourceRange(token.ptr, token.sourceLen);
 		    nextToken();
 		    break;
 
 		case TOKdot:
 		    // Signal global scope '.' operator with "" identifier
-			e = new IdentifierExp(loc(), Id.empty);
+			e = new IdentifierExp(filename, lineNumber, Id.empty);
 			e.start = token.ptr;
 			e.length = 0;
 		    break;
 
 		case TOKthis:
-		    e = newThisExp(loc());
+		    e = newThisExp(filename, lineNumber);
 		    e.setSourceRange(token.ptr, token.sourceLen);
 		    nextToken();
 		    break;
 
 		case TOKsuper:
-			e = newSuperExp(loc());
+			e = newSuperExp(filename, lineNumber);
 		    e.setSourceRange(token.ptr, token.sourceLen);
 		    nextToken();
 		    break;
 
-		case TOKint32v: e = new IntegerExp(loc(), token.sourceString, token.intValue, Type.tint32); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
-		case TOKuns32v: e = new IntegerExp(loc(), token.sourceString, token.intValue, Type.tuns32); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
-		case TOKint64v: e = new IntegerExp(loc(), token.sourceString, token.intValue, Type.tint64); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
-		case TOKuns64v: e = new IntegerExp(loc(), token.sourceString, token.intValue, Type.tuns64); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
-		case TOKfloat32v: e = new RealExp(loc(), token.sourceString, token.floatValue, Type.tfloat32); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
-		case TOKfloat64v: e = new RealExp(loc(), token.sourceString, token.floatValue, Type.tfloat64); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
-		case TOKfloat80v: e = new RealExp(loc(), token.sourceString, token.floatValue, Type.tfloat80); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
-		case TOKimaginary32v: e = new RealExp(loc(), token.sourceString, token.floatValue, Type.timaginary32); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
-		case TOKimaginary64v: e = new RealExp(loc(), token.sourceString, token.floatValue, Type.timaginary64); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
-		case TOKimaginary80v: e = new RealExp(loc(), token.sourceString, token.floatValue, Type.timaginary80); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
+		case TOKint32v: e = new IntegerExp(filename, lineNumber, token.sourceString, token.intValue, Type.tint32); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
+		case TOKuns32v: e = new IntegerExp(filename, lineNumber, token.sourceString, token.intValue, Type.tuns32); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
+		case TOKint64v: e = new IntegerExp(filename, lineNumber, token.sourceString, token.intValue, Type.tint64); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
+		case TOKuns64v: e = new IntegerExp(filename, lineNumber, token.sourceString, token.intValue, Type.tuns64); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
+		case TOKfloat32v: e = new RealExp(filename, lineNumber, token.sourceString, token.floatValue, Type.tfloat32); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
+		case TOKfloat64v: e = new RealExp(filename, lineNumber, token.sourceString, token.floatValue, Type.tfloat64); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
+		case TOKfloat80v: e = new RealExp(filename, lineNumber, token.sourceString, token.floatValue, Type.tfloat80); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
+		case TOKimaginary32v: e = new RealExp(filename, lineNumber, token.sourceString, token.floatValue, Type.timaginary32); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
+		case TOKimaginary64v: e = new RealExp(filename, lineNumber, token.sourceString, token.floatValue, Type.timaginary64); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
+		case TOKimaginary80v: e = new RealExp(filename, lineNumber, token.sourceString, token.floatValue, Type.timaginary80); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
 
 		case TOKnull:
-		    e = new NullExp(loc());
+		    e = new NullExp(filename, lineNumber);
 		    e.setSourceRange(token.ptr, token.sourceLen);
 		    nextToken();
 		    break;
 		    
 		case TOKfile: {
-			char[] s = loc.filename != null ? loc.filename : module.ident.ident;
-			e = new StringExp(loc, s, s.length, (char) 0);
+			char[] s = filename != null ? filename : module.ident.ident;
+			e = new StringExp(filename, lineNumber, s, s.length, (char) 0);
 			nextToken();
 			break;
 		}
 
 		case TOKline:
-			e = new IntegerExp(loc, loc.linnum, Type.tint32);
+			e = new IntegerExp(filename, lineNumber, filename, lineNumber, Type.tint32);
 			nextToken();
 			break;
 
 
 		case TOKtrue:
-			e = new IntegerExp(loc(), token.sourceString, 1, Type.tbool);
+			e = new IntegerExp(filename, lineNumber, token.sourceString, 1, Type.tbool);
 		    nextToken();
 		    break;
 		case TOKfalse:
-			e = new IntegerExp(loc(), token.sourceString, 0, Type.tbool);
+			e = new IntegerExp(filename, lineNumber, token.sourceString, 0, Type.tbool);
 		    nextToken();
 		    break;
 
-		case TOKcharv: e = new IntegerExp(loc(), token.sourceString, token.intValue, Type.tchar); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
-		case TOKwcharv:  e = new IntegerExp(loc(), token.sourceString, token.intValue, Type.twchar); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
-		case TOKdcharv:  e = new IntegerExp(loc(), token.sourceString, token.intValue, Type.tdchar); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
+		case TOKcharv: e = new IntegerExp(filename, lineNumber, token.sourceString, token.intValue, Type.tchar); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
+		case TOKwcharv:  e = new IntegerExp(filename, lineNumber, token.sourceString, token.intValue, Type.twchar); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
+		case TOKdcharv:  e = new IntegerExp(filename, lineNumber, token.sourceString, token.intValue, Type.tdchar); e.setSourceRange(token.ptr, token.sourceLen); nextToken(); break;
 
 		case TOKstring: {
 			int startLine = token.lineNumber;
@@ -7057,13 +7057,13 @@ public class Parser extends Lexer {
 			    	// goto Lerr;
 		    		// Anything for e, as long as it's not NULL
 			    	// Change from DMD
-					e = newTypeDotIdExp(loc(), t, new IdentifierExp(Id.empty));
-			    	//e = new IntegerExp(loc, Id.ZERO, 0, Type.tint32);
+					e = newTypeDotIdExp(filename, lineNumber, t, new IdentifierExp(Id.empty));
+			    	//e = new IntegerExp(filename, lineNumber, Id.ZERO, 0, Type.tint32);
 			    	e.setSourceRange(token.ptr, token.sourceLen);
 		    		nextToken();
 		    		break;
 			    }
-			    e = newTypeDotIdExp(loc(), t, newIdentifierExp());
+			    e = newTypeDotIdExp(filename, lineNumber, t, newIdentifierExp());
 			    e.setSourceRange(t.start, token.ptr + token.sourceLen - t.start);
 			    nextToken();
 			    break;
@@ -7081,7 +7081,7 @@ public class Parser extends Lexer {
 			    exp = parseExpression();
 			    check(TOKrparen);
 			    
-				t = new TypeTypeof(loc(), exp, encoder);
+				t = new TypeTypeof(filename, lineNumber, exp, encoder);
 				t.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 				((TypeTypeof) t).setTypeofSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 			}
@@ -7095,19 +7095,19 @@ public class Parser extends Lexer {
 					// goto Lerr;
 			    	// Anything for e, as long as it's not NULL
 			    	// Change from DMD
-					e = newTypeDotIdExp(loc(), t, new IdentifierExp(Id.empty));
-			    	//e = new IntegerExp(loc, Id.ZERO, 0, Type.tint32);
+					e = newTypeDotIdExp(filename, lineNumber, t, new IdentifierExp(Id.empty));
+			    	//e = new IntegerExp(filename, lineNumber, Id.ZERO, 0, Type.tint32);
 			    	e.setSourceRange(token.ptr, token.sourceLen);
 			    	nextToken();
 			    	break;
 			    }
-			    e = newTypeDotIdExp(loc(), t, newIdentifierExp());
+			    e = newTypeDotIdExp(filename, lineNumber, t, newIdentifierExp());
 			    e.setSourceRange(t.start, token.ptr + token.sourceLen - t.start);
 			    nextToken();
 			    break;
 		    }
 		    	
-		    e = new TypeExp(loc(), t);
+		    e = new TypeExp(filename, lineNumber, t);
 		    break;
 		}
 
@@ -7124,7 +7124,7 @@ public class Parser extends Lexer {
 		    	t2 = parseType();				// ( type 
 		    }
 		    check(TOKrparen);
-		    e = new TypeidExp(loc(), t2);
+		    e = new TypeidExp(filename, lineNumber, t2);
 		    e.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 		    break;
 		}
@@ -7145,7 +7145,7 @@ public class Parser extends Lexer {
 				parsingErrorInsertToComplete(prevToken, "__traits(identifier, args...) expected", "traits expression");
 				//goto Lerr;
 				// Anything for e, as long as it's not NULL
-				e = new IntegerExp(loc(), Id.ZERO, 0, Type.tint32);
+				e = new IntegerExp(filename, lineNumber, Id.ZERO, 0, Type.tint32);
 		    	e.setSourceRange(token.ptr, token.sourceLen);
 				nextToken();
 				break;
@@ -7158,7 +7158,7 @@ public class Parser extends Lexer {
 				check(TOKrparen); // __traits(identifier)
 			}
 
-			e = new TraitsExp(loc(), ident, args);
+			e = new TraitsExp(filename, lineNumber, ident, args);
 			break;
 		}
 
@@ -7170,7 +7170,7 @@ public class Parser extends Lexer {
 			TOK tok = TOKreserved;
 			TOK tok2 = TOKreserved;
 		    TemplateParameters tpl = null;
-		    Loc loc = this.loc;
+		    int lineNumber = this.lineNumber;
 
 			nextToken();
 			if (token.value == TOKlparen) {
@@ -7224,7 +7224,7 @@ public class Parser extends Lexer {
 						tpl = new TemplateParameters(1);
 						check(TOKrparen);
 					}
-					TemplateParameter tp = new TemplateTypeParameter(loc,
+					TemplateParameter tp = new TemplateTypeParameter(filename, lineNumber,
 							ident, null, null);
 					tpl.add(0, tp);
 				} else {
@@ -7234,15 +7234,15 @@ public class Parser extends Lexer {
 				parsingErrorInsertToComplete(prevToken, "(type identifier : specialization)", "IftypeDeclaration");
 				// goto Lerr;
 				// Anything for e, as long as it's not NULL
-				e = new IntegerExp(loc(), Id.ZERO, 0, Type.tint32);
+				e = new IntegerExp(filename, lineNumber, Id.ZERO, 0, Type.tint32);
 		    	e.setSourceRange(token.ptr, token.sourceLen);
 				nextToken();
 				break;
 			}
 			if (apiLevel >= D2) {
-				e = new IsExp(loc(), targ, ident, tok, tspec, tok2, tpl);
+				e = new IsExp(filename, lineNumber, targ, ident, tok, tspec, tok2, tpl);
 			} else {
-				e = new IsExp(loc(), targ, ident, tok, tspec, tok2);
+				e = new IsExp(filename, lineNumber, targ, ident, tok, tspec, tok2);
 			}
 			break;
 		}
@@ -7260,7 +7260,7 @@ public class Parser extends Lexer {
 			}
 			check(TOKrparen);
 			
-			e = new AssertExp(loc(), e, msg);
+			e = new AssertExp(filename, lineNumber, e, msg);
 			e.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 			break;
 		}
@@ -7272,7 +7272,7 @@ public class Parser extends Lexer {
 		    check(TOKlparen);
 		    e = parseAssignExp();
 		    check(TOKrparen);
-		    e = new CompileExp(loc(), e);
+		    e = new CompileExp(filename, lineNumber, e);
 		    e.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 		    break;
 		}
@@ -7284,7 +7284,7 @@ public class Parser extends Lexer {
 		    check(TOKlparen);
 		    e = parseAssignExp();
 		    check(TOKrparen);
-		    e = new FileExp(loc(), e);
+		    e = new FileExp(filename, lineNumber, e);
 		    e.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 		    break;
 		}
@@ -7352,9 +7352,9 @@ public class Parser extends Lexer {
 			check(TOKrbracket);
 
 			if (keys != null) {
-				e = new AssocArrayLiteralExp(loc(), keys, values);
+				e = new AssocArrayLiteralExp(filename, lineNumber, keys, values);
 			} else {
-				e = new ArrayLiteralExp(loc(), values);
+				e = new ArrayLiteralExp(filename, lineNumber, values);
 			}
 		    break;
 		}
@@ -7420,7 +7420,7 @@ public class Parser extends Lexer {
 						// identifier!(template-argument-list)
 						TemplateInstance tempinst;
 						
-						tempinst = newTemplateInstance(loc(), id, encoder);						
+						tempinst = newTemplateInstance(filename, lineNumber, id, encoder);						
 						nextToken();
 
 						if (apiLevel < D2) {
@@ -7435,9 +7435,9 @@ public class Parser extends Lexer {
 							}
 						}
 						tempinst.setSourceRange(id.start, prevToken.ptr + prevToken.sourceLen - id.start);
-						e = new DotTemplateInstanceExp(loc(), e, tempinst);
+						e = new DotTemplateInstanceExp(filename, lineNumber, e, tempinst);
 					} else {
-						e = newDotIdExp(loc(), e, id);
+						e = newDotIdExp(filename, lineNumber, e, id);
 						e.start = start;
 						e.length = id.start + id.length - start;
 					}
@@ -7452,7 +7452,7 @@ public class Parser extends Lexer {
 						fakeId.start = prevToken.ptr;
 						fakeId.length = prevToken.sourceLen;
 						
-						e = newDotIdExp(loc, ((NewExp) e).sourceThisexp, fakeId);
+						e = newDotIdExp(filename, lineNumber, ((NewExp) e).sourceThisexp, fakeId);
 					}
 					continue;
 				} else {
@@ -7461,7 +7461,7 @@ public class Parser extends Lexer {
 					fakeId.start = token.ptr;
 					fakeId.length = token.sourceLen;
 					
-					e = newDotIdExp(loc(), e, fakeId);
+					e = newDotIdExp(filename, lineNumber, e, fakeId);
 					
 					parsingErrorInsertTokenAfter(prevToken, "Identifier");
 				}
@@ -7469,12 +7469,12 @@ public class Parser extends Lexer {
 
 			case TOKplusplus:
 			case TOKminusminus:
-				e = new PostExp(loc(), token.value, e);
+				e = new PostExp(filename, lineNumber, token.value, e);
 				e.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 				break;
 
 			case TOKlparen:
-				e = newCallExp(loc(), e, parseArguments());
+				e = newCallExp(filename, lineNumber, e, parseArguments());
 				e.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 				continue;
 
@@ -7488,14 +7488,14 @@ public class Parser extends Lexer {
 				inBrackets++;
 				nextToken();
 				if (token.value == TOKrbracket) { // array[]
-					e = new SliceExp(loc(), e, null, null);
+					e = new SliceExp(filename, lineNumber, e, null, null);
 					nextToken();
 				} else {
 					index = parseAssignExp();
 					if (token.value == TOKslice) { // array[lwr .. upr]
 						nextToken();
 						upr = parseAssignExp();
-						e = new SliceExp(loc(), e, index, upr);
+						e = new SliceExp(filename, lineNumber, e, index, upr);
 					} else { // array[index, i2, i3, i4, ...]
 						Expressions arguments = new Expressions(2);
 						arguments.add(index);
@@ -7513,7 +7513,7 @@ public class Parser extends Lexer {
 							}
 						}
 						
-						e = new ArrayExp(loc(), e, arguments);
+						e = new ArrayExp(filename, lineNumber, e, arguments);
 					}
 					check(TOKrbracket);
 					inBrackets--;
@@ -7544,13 +7544,13 @@ public class Parser extends Lexer {
 		case TOKand:
 			nextToken();
 			e = parseUnaryExp();
-			e = newAddrExp(loc(), e);
+			e = newAddrExp(filename, lineNumber, e);
 			break;
 
 		case TOKplusplus:
 			nextToken();
 			e = parseUnaryExp();
-			AddAssignExp aae = new AddAssignExp(loc(), e, new IntegerExp(loc(), 1, Type.tint32));
+			AddAssignExp aae = new AddAssignExp(filename, lineNumber, e, new IntegerExp(filename, lineNumber, 1, Type.tint32));
 			aae.isPreIncrement = true;
 			e = aae;
 			break;
@@ -7558,7 +7558,7 @@ public class Parser extends Lexer {
 		case TOKminusminus:
 			nextToken();
 			e = parseUnaryExp();
-			MinAssignExp mae = new MinAssignExp(loc(), e, new IntegerExp(loc(), 1, Type.tint32));
+			MinAssignExp mae = new MinAssignExp(filename, lineNumber, e, new IntegerExp(filename, lineNumber, 1, Type.tint32));
 			mae.isPreDecrement = true;
 			e = mae;
 			break;
@@ -7566,37 +7566,37 @@ public class Parser extends Lexer {
 		case TOKmul:
 			nextToken();
 			e = parseUnaryExp();
-			e = new PtrExp(loc(), e);
+			e = new PtrExp(filename, lineNumber, e);
 			break;
 
 		case TOKmin:
 			nextToken();
 			e = parseUnaryExp();
-			e = new NegExp(loc(), e);
+			e = new NegExp(filename, lineNumber, e);
 			break;
 
 		case TOKadd:
 			nextToken();
 			e = parseUnaryExp();
-			e = new UAddExp(loc(), e);
+			e = new UAddExp(filename, lineNumber, e);
 			break;
 
 		case TOKnot:
 			nextToken();
 			e = parseUnaryExp();
-			e = new NotExp(loc(), e);
+			e = new NotExp(filename, lineNumber, e);
 			break;
 
 		case TOKtilde:
 			nextToken();
 			e = parseUnaryExp();
-			e = new ComExp(loc(), e);
+			e = new ComExp(filename, lineNumber, e);
 			break;
 
 		case TOKdelete:
 			nextToken();
 			e = parseUnaryExp();
-			e = new DeleteExp(loc(), e);
+			e = new DeleteExp(filename, lineNumber, e);
 			break;
 
 		case TOKnew:
@@ -7616,7 +7616,7 @@ public class Parser extends Lexer {
 				check(TOKrparen);
 	
 				e = parseUnaryExp();
-				e = new CastExp(loc(), e, t);
+				e = new CastExp(filename, lineNumber, e, t);
 			} else {				
 				int modifierStart = token.ptr;
 				TOK tok = token.value;
@@ -7631,14 +7631,14 @@ public class Parser extends Lexer {
 					// goto Lmod1;
 					nextToken();
 					e = parseUnaryExp();
-					e = new CastExp(loc, e, m, tok, modifierStart);
+					e = new CastExp(filename, lineNumber, e, m, tok, modifierStart);
 				} else if (token.value == TOKconst && peekNext() == TOKrparen) {
 					m = MODconst;
 					// goto Lmod2;
 					nextToken();
 					nextToken();
 					e = parseUnaryExp();
-					e = new CastExp(loc, e, m, tok, modifierStart);
+					e = new CastExp(filename, lineNumber, e, m, tok, modifierStart);
 				} else if ((token.value == TOKimmutable || token.value == TOKinvariant)
 						&& peekNext() == TOKrparen) {
 					m = MODinvariant;
@@ -7646,14 +7646,14 @@ public class Parser extends Lexer {
 					nextToken();
 					nextToken();
 					e = parseUnaryExp();
-					e = new CastExp(loc, e, m, tok, modifierStart);
+					e = new CastExp(filename, lineNumber, e, m, tok, modifierStart);
 				} else if (token.value == TOKshared && peekNext() == TOKrparen) {
 					m = MODshared;
 					// goto Lmod2;
 					nextToken();
 					nextToken();
 					e = parseUnaryExp();
-					e = new CastExp(loc, e, m, tok, modifierStart);
+					e = new CastExp(filename, lineNumber, e, m, tok, modifierStart);
 				} else if ((token.value == TOKconst && peekNext() == TOKshared
 						&& peekNext2() == TOKrparen) || (token.value == TOKshared
 						&& peekNext() == TOKconst && peekNext2() == TOKrparen)) {
@@ -7668,12 +7668,12 @@ public class Parser extends Lexer {
 					// Lmod1:
 					nextToken();
 					e = parseUnaryExp();
-					e = new CastExp(loc, e, m, tok, modifierStart, tok2, modifier2Start);
+					e = new CastExp(filename, lineNumber, e, m, tok, modifierStart, tok2, modifier2Start);
 				} else {
 					Type t2 = parseType(); // ( type )
 					check(TOKrparen);
 					e = parseUnaryExp();
-					e = new CastExp(loc, e, t2);
+					e = new CastExp(filename, lineNumber, e, t2);
 				}
 			}
 			break;
@@ -7775,17 +7775,17 @@ public class Parser extends Lexer {
 						if (token.value != TOKidentifier) {
 							parsingErrorInsertTokenAfter(prevToken, "Identifier");
 							// Change from DMD
-							e = newTypeDotIdExp(loc(), t, null);
+							e = newTypeDotIdExp(filename, lineNumber, t, null);
 							e.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 							return e;
 						}
-						e = newTypeDotIdExp(loc(), t, newIdentifierExp());
+						e = newTypeDotIdExp(filename, lineNumber, t, newIdentifierExp());
 						e.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 						nextToken();
 						e = parsePostExp(e);
 					} else {
 						e = parseUnaryExp();
-						e = new CastExp(loc(), e, t);
+						e = new CastExp(filename, lineNumber, e, t);
 						e.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 						error(IProblem.CStyleCastIllegal, firstTokenLine, firstTokenStart, prevToken.ptr + prevToken.sourceLen - firstTokenStart);
 					}
@@ -7861,10 +7861,10 @@ public class Parser extends Lexer {
 	    ((TypeFunction) t).ispure = ispure;
 	    ((TypeFunction) t).isnothrow = isnothrow;
 		
-		fd = new FuncLiteralDeclaration(loc(), t, save, null);
+		fd = new FuncLiteralDeclaration(filename, lineNumber, t, save, null);
 		
 		parseContracts(fd);
-		e[0] = new FuncExp(loc(), fd);
+		e[0] = new FuncExp(filename, lineNumber, fd);
 		((FuncExp) e[0]).isEmptySyntax = isEmptySyntax;
 	}
 	
@@ -7877,9 +7877,9 @@ public class Parser extends Lexer {
 	    {
 		switch (token.value)
 		{
-		    case TOKmul: nextToken(); e2 = parseUnaryExp(); e = newMulExp(loc(), e, e2); continue;
-		    case TOKdiv:   nextToken(); e2 = parseUnaryExp(); e = newDivExp(loc(), e, e2); continue;
-		    case TOKmod:  nextToken(); e2 = parseUnaryExp(); e = newModExp(loc(), e, e2); continue;
+		    case TOKmul: nextToken(); e2 = parseUnaryExp(); e = newMulExp(filename, lineNumber, e, e2); continue;
+		    case TOKdiv:   nextToken(); e2 = parseUnaryExp(); e = newDivExp(filename, lineNumber, e, e2); continue;
+		    case TOKmod:  nextToken(); e2 = parseUnaryExp(); e = newModExp(filename, lineNumber, e, e2); continue;
 
 		    default:
 			break;
@@ -7898,9 +7898,9 @@ public class Parser extends Lexer {
 	    {
 		switch (token.value)
 		{
-		    case TOKadd:    nextToken(); e2 = parseMulExp(); e = newAddExp(loc(), e, e2); continue;
-		    case TOKmin:    nextToken(); e2 = parseMulExp(); e = newMinExp(loc(), e, e2); continue;
-		    case TOKtilde:  nextToken(); e2 = parseMulExp(); e = newCatExp(loc(), e, e2); continue;
+		    case TOKadd:    nextToken(); e2 = parseMulExp(); e = newAddExp(filename, lineNumber, e, e2); continue;
+		    case TOKmin:    nextToken(); e2 = parseMulExp(); e = newMinExp(filename, lineNumber, e, e2); continue;
+		    case TOKtilde:  nextToken(); e2 = parseMulExp(); e = newCatExp(filename, lineNumber, e, e2); continue;
 
 		    default:
 			break;
@@ -7919,9 +7919,9 @@ public class Parser extends Lexer {
 	    {
 		switch (token.value)
 		{
-		    case TOKshl:  nextToken(); e2 = parseAddExp(); e = newShlExp(loc(), e, e2);  continue;
-		    case TOKshr:  nextToken(); e2 = parseAddExp(); e = newShrExp(loc(), e, e2);  continue;
-		    case TOKushr: nextToken(); e2 = parseAddExp(); e = newUshrExp(loc(), e, e2); continue;
+		    case TOKshl:  nextToken(); e2 = parseAddExp(); e = newShlExp(filename, lineNumber, e, e2);  continue;
+		    case TOKshr:  nextToken(); e2 = parseAddExp(); e = newShrExp(filename, lineNumber, e, e2);  continue;
+		    case TOKushr: nextToken(); e2 = parseAddExp(); e = newUshrExp(filename, lineNumber, e, e2); continue;
 
 		    default:
 			break;
@@ -7956,11 +7956,11 @@ public class Parser extends Lexer {
 		    	op = token.value;
 		    	nextToken(); 
 		    	e2 = parseShiftExp();
-		    	e = newCmpExp(loc(), op, e, e2); continue;
+		    	e = newCmpExp(filename, lineNumber, op, e, e2); continue;
 		    case TOKin: 
 		    	nextToken(); 
 		    	e2 = parseShiftExp(); 
-		    	e = newInExp(loc(), e, e2); 
+		    	e = newInExp(filename, lineNumber, e, e2); 
 		    	continue;
 
 		    default:
@@ -7986,7 +7986,7 @@ public class Parser extends Lexer {
 		    case TOKnotequal:
 		    	nextToken();
 				e2 = parseRelExp();
-				e = newEqualExp(loc(), value, e, e2);
+				e = newEqualExp(filename, lineNumber, value, e, e2);
 				continue;
 
 		    case TOKidentity:
@@ -7995,7 +7995,7 @@ public class Parser extends Lexer {
 			//goto L1;
 			nextToken();
 			e2 = parseRelExp();
-			e = newIdentityExp(loc(), value, e, e2);
+			e = newIdentityExp(filename, lineNumber, value, e, e2);
 			continue;
 
 		    case TOKnotidentity:
@@ -8004,7 +8004,7 @@ public class Parser extends Lexer {
 			//goto L1;
 			nextToken();
 			e2 = parseRelExp();
-			e = newIdentityExp(loc(), value, e, e2);
+			e = newIdentityExp(filename, lineNumber, value, e, e2);
 			continue;
 
 		    case TOKis:
@@ -8012,7 +8012,7 @@ public class Parser extends Lexer {
 			//goto L1;
 			nextToken();
 			e2 = parseRelExp();
-			e = newIdentityExp(loc(), value, e, e2);
+			e = newIdentityExp(filename, lineNumber, value, e, e2);
 			continue;
 
 		    case TOKnot:
@@ -8026,13 +8026,13 @@ public class Parser extends Lexer {
 			//goto L1;
 			nextToken();
 			e2 = parseRelExp();
-			e = newIdentityExp(loc(), value, e, e2);
+			e = newIdentityExp(filename, lineNumber, value, e, e2);
 			continue;
 
 		    // L1:
 			//nextToken();
 			//e2 = parseRelExp();
-			//e = new IdentityExp(value, loc, e, e2);
+			//e = new IdentityExp(value, filename, lineNumber, e, e2);
 			//continue;
 
 		    default:
@@ -8057,14 +8057,14 @@ public class Parser extends Lexer {
 		case TOKnotequal:
 			 nextToken();
 			    e2 = parseShiftExp();
-			    e = newEqualExp(loc(), op, e, e2);
+			    e = newEqualExp(filename, lineNumber, op, e, e2);
 			    break;
 
 		case TOKis:
 		    //op = TOKidentity;
 		    nextToken();
 		    e2 = parseShiftExp();
-		    e = newIdentityExp(loc(), op, e, e2);
+		    e = newIdentityExp(filename, lineNumber, op, e, e2);
 		    break;
 
 		case TOKnot:
@@ -8077,7 +8077,7 @@ public class Parser extends Lexer {
 		    op = TOKnotis;
 		    nextToken();
 		    e2 = parseShiftExp();
-		    e = newIdentityExp(loc(), op, e, e2);
+		    e = newIdentityExp(filename, lineNumber, op, e, e2);
 		    break;
 		    
 		case TOKlt:
@@ -8094,13 +8094,13 @@ public class Parser extends Lexer {
 	    case TOKue:
 	    	nextToken(); 
 	    	e2 = parseShiftExp(); 
-	    	e = newCmpExp(loc(), op, e, e2); 
+	    	e = newCmpExp(filename, lineNumber, op, e, e2); 
 	    	break;
 
 		case TOKin:
 		    nextToken();
 		    e2 = parseShiftExp();
-		    e = newInExp(loc(), e, e2);
+		    e = newInExp(filename, lineNumber, e, e2);
 		    break;
 
 		default:
@@ -8118,7 +8118,7 @@ public class Parser extends Lexer {
 			while (token.value == TOKand) {
 				nextToken();
 				e2 = parseEqualExp();
-				e = newAndExp(loc(), e, e2);
+				e = newAndExp(filename, lineNumber, e, e2);
 			}
 		} else {
 			e = parseCmpExp();
@@ -8126,7 +8126,7 @@ public class Parser extends Lexer {
 			{
 			    nextToken();
 			    e2 = parseCmpExp();
-			    e = newAndExp(loc(), e, e2);
+			    e = newAndExp(filename, lineNumber, e, e2);
 			}
 
 		}
@@ -8141,7 +8141,7 @@ public class Parser extends Lexer {
 		while (token.value == TOKxor) {
 			nextToken();
 			e2 = parseAndExp();
-			e = newXorExp(loc(), e, e2);
+			e = newXorExp(filename, lineNumber, e, e2);
 		}
 		return e;
 	}
@@ -8154,7 +8154,7 @@ public class Parser extends Lexer {
 		while (token.value == TOKor) {
 			nextToken();
 			e2 = parseXorExp();
-			e = newOrExp(loc(), e, e2);
+			e = newOrExp(filename, lineNumber, e, e2);
 		}
 		return e;
 	}
@@ -8167,7 +8167,7 @@ public class Parser extends Lexer {
 		while (token.value == TOKandand) {
 			nextToken();
 			e2 = parseOrExp();
-			e = newAndAndExp(loc(), e, e2);
+			e = newAndAndExp(filename, lineNumber, e, e2);
 		}
 		return e;
 	}
@@ -8180,7 +8180,7 @@ public class Parser extends Lexer {
 		while (token.value == TOKoror) {
 			nextToken();
 			e2 = parseAndAndExp();
-			e = newOrOrExp(loc(), e, e2);
+			e = newOrOrExp(filename, lineNumber, e, e2);
 		}
 		return e;
 	}
@@ -8196,7 +8196,7 @@ public class Parser extends Lexer {
 			e1 = parseExpression();
 			check(TOKcolon);
 			e2 = parseCondExp();
-			e = newCondExp(loc(), e, e1, e2);
+			e = newCondExp(filename, lineNumber, e, e1, e2);
 		}
 		return e;
 	}
@@ -8210,19 +8210,19 @@ public class Parser extends Lexer {
 	    {
 		switch (token.value)
 		{
-		case TOKassign:  nextToken(); e2 = parseAssignExp(); e = newAssignExp(loc(), e, e2); continue;
-		case TOKaddass:  nextToken(); e2 = parseAssignExp(); e = newAddAssignExp(loc(), e, e2); continue;
-		case TOKminass:  nextToken(); e2 = parseAssignExp(); e = newMinAssignExp(loc(), e, e2); continue;
-		case TOKmulass:  nextToken(); e2 = parseAssignExp(); e = newMulAssignExp(loc(), e, e2); continue;
-		case TOKdivass:  nextToken(); e2 = parseAssignExp(); e = newDivAssignExp(loc(), e, e2); continue;
-		case TOKmodass:  nextToken(); e2 = parseAssignExp(); e = newModAssignExp(loc(), e, e2); continue;
-		case TOKandass:  nextToken(); e2 = parseAssignExp(); e = newAndAssignExp(loc(), e, e2); continue;
-		case TOKorass:  nextToken(); e2 = parseAssignExp(); e = newOrAssignExp(loc(), e, e2); continue;
-		case TOKxorass:  nextToken(); e2 = parseAssignExp(); e = newXorAssignExp(loc(), e, e2); continue;
-		case TOKshlass:  nextToken(); e2 = parseAssignExp(); e = newShlAssignExp(loc(), e, e2); continue;
-		case TOKshrass:  nextToken(); e2 = parseAssignExp(); e = newShrAssignExp(loc(), e, e2); continue;
-		case TOKushrass:  nextToken(); e2 = parseAssignExp(); e = newUshrAssignExp(loc(), e, e2); continue;
-		case TOKcatass:  nextToken(); e2 = parseAssignExp(); e = newCatAssignExp(loc(), e, e2); continue;
+		case TOKassign:  nextToken(); e2 = parseAssignExp(); e = newAssignExp(filename, lineNumber, e, e2); continue;
+		case TOKaddass:  nextToken(); e2 = parseAssignExp(); e = newAddAssignExp(filename, lineNumber, e, e2); continue;
+		case TOKminass:  nextToken(); e2 = parseAssignExp(); e = newMinAssignExp(filename, lineNumber, e, e2); continue;
+		case TOKmulass:  nextToken(); e2 = parseAssignExp(); e = newMulAssignExp(filename, lineNumber, e, e2); continue;
+		case TOKdivass:  nextToken(); e2 = parseAssignExp(); e = newDivAssignExp(filename, lineNumber, e, e2); continue;
+		case TOKmodass:  nextToken(); e2 = parseAssignExp(); e = newModAssignExp(filename, lineNumber, e, e2); continue;
+		case TOKandass:  nextToken(); e2 = parseAssignExp(); e = newAndAssignExp(filename, lineNumber, e, e2); continue;
+		case TOKorass:  nextToken(); e2 = parseAssignExp(); e = newOrAssignExp(filename, lineNumber, e, e2); continue;
+		case TOKxorass:  nextToken(); e2 = parseAssignExp(); e = newXorAssignExp(filename, lineNumber, e, e2); continue;
+		case TOKshlass:  nextToken(); e2 = parseAssignExp(); e = newShlAssignExp(filename, lineNumber, e, e2); continue;
+		case TOKshrass:  nextToken(); e2 = parseAssignExp(); e = newShrAssignExp(filename, lineNumber, e, e2); continue;
+		case TOKushrass:  nextToken(); e2 = parseAssignExp(); e = newUshrAssignExp(filename, lineNumber, e, e2); continue;
+		case TOKcatass:  nextToken(); e2 = parseAssignExp(); e = newCatAssignExp(filename, lineNumber, e, e2); continue;
 	    default:
 			break;
 		}
@@ -8243,7 +8243,7 @@ public class Parser extends Lexer {
 		while (token.value == TOKcomma) {
 			nextToken();
 			e2 = parseAssignExp();
-			e = new CommaExp(loc(), e, e2);
+			e = new CommaExp(filename, lineNumber, e, e2);
 		}
 		return e;
 	}
@@ -8322,7 +8322,7 @@ public class Parser extends Lexer {
 			}
 
 			IdentifierExp id = null;
-			ClassDeclaration cd = newClassDeclaration(loc(), id, baseClasses);
+			ClassDeclaration cd = newClassDeclaration(filename, lineNumber, id, baseClasses);
 
 			if (token.value != TOKlcurly) {
 				parsingErrorInsertToComplete(prevToken, "{ members }", "AnnonymousClassDeclaration");
@@ -8341,7 +8341,7 @@ public class Parser extends Lexer {
 			cd.start = anonStart;
 			cd.length = prevToken.ptr + prevToken.sourceLen - anonStart;
 			
-			e = new NewAnonClassExp(loc(), thisexp, newargs, cd, arguments);
+			e = new NewAnonClassExp(filename, lineNumber, thisexp, newargs, cd, arguments);
 
 			return e;
 		}
@@ -8361,7 +8361,7 @@ public class Parser extends Lexer {
 					t = new TypeDArray(t.next);
 				} else {
 					error(IProblem.NeedSizeOfRightmostArray, lineNumber, index);
-					NullExp nullExp = new NullExp(loc());
+					NullExp nullExp = new NullExp(filename, lineNumber);
 					nullExp.setSourceRange(token.ptr, token.sourceLen);
 					return nullExp;
 				}
@@ -8387,19 +8387,19 @@ public class Parser extends Lexer {
 		 * t = new TypeDArray(t); } else if (token.value == TOKlparen) arguments =
 		 * parseArguments(); #endif
 		 */
-		e = newNewExp(loc(), thisexp, newargs, t, arguments, start);
+		e = newNewExp(filename, lineNumber, thisexp, newargs, t, arguments, start);
 		return e;
 	}
 
 	private StringExp newStringExpForCurrentToken() {
-		StringExp string = new StringExp(loc(), token.ustring, token.len, (char) token.postfix);
+		StringExp string = new StringExp(filename, lineNumber, token.ustring, token.len, (char) token.postfix);
 		string.sourceString = token.sourceString;
 		string.setSourceRange(token.ptr, token.sourceLen);
 		return string;
 	}
 	
 	private StringExp newStringExpForPreviousToken() {
-		StringExp string = new StringExp(loc(), prevToken.ustring, prevToken.len, (char) prevToken.postfix);
+		StringExp string = new StringExp(filename, lineNumber, prevToken.ustring, prevToken.len, (char) prevToken.postfix);
 		string.sourceString = prevToken.sourceString;
 		string.setSourceRange(prevToken.ptr, prevToken.sourceLen);
 		return string;
@@ -8412,22 +8412,22 @@ public class Parser extends Lexer {
 	}
 	
 	protected CompoundStatement newBlock(Statements statements, int start, int length) {
-		CompoundStatement cs = newCompoundStatement(loc(), statements);
+		CompoundStatement cs = newCompoundStatement(filename, lineNumber, statements);
 		cs.setSourceRange(start, length);
 		return cs;
 	}
 	
 	private CompoundStatement newManyVarsBlock(Statements statements) {
-		CompoundDeclarationStatement statement = newCompoundDeclarationStatement(loc(), statements);
+		CompoundDeclarationStatement statement = newCompoundDeclarationStatement(filename, lineNumber, statements);
 		statement.manyVars = true;
 		return statement;
 	}
 
 	private DebugSymbol newDebugAssignmentForCurrentToken() {
 		if (token.value == TOKint32v) {
-			return new DebugSymbol(loc(), token.intValue.longValue(), newVersionForCurrentToken());
+			return new DebugSymbol(filename, lineNumber, token.intValue.longValue(), newVersionForCurrentToken());
 		} else if (token.value == TOKidentifier) {
-			return newDebugSymbol(loc(), new IdentifierExp(loc(), token.sourceString), newVersionForCurrentToken());
+			return newDebugSymbol(filename, lineNumber, new IdentifierExp(filename, lineNumber, token.sourceString), newVersionForCurrentToken());
 		} else {
 			throw new RuntimeException("Can't happen");
 		}
@@ -8437,10 +8437,10 @@ public class Parser extends Lexer {
 		Version version;
 		
 		if (token.value == TOKint32v) {
-			version = newVersion(loc(), token.sourceString);
+			version = newVersion(filename, lineNumber, token.sourceString);
 			version.setSourceRange(token.ptr, token.sourceLen);
 		} else if (token.value == TOKidentifier) {
-			version = newVersion(loc(), token.sourceString);
+			version = newVersion(filename, lineNumber, token.sourceString);
 			version.setSourceRange(token.ptr, token.sourceLen);
 		} else {
 			throw new RuntimeException("Can't happen");
@@ -8451,16 +8451,16 @@ public class Parser extends Lexer {
 
 	private VersionSymbol newVersionAssignmentForCurrentToken() {
 		if (token.value == TOKint32v) {
-			return newVersionSymbol(loc(), token.intValue.longValue(), newVersionForCurrentToken());
+			return newVersionSymbol(filename, lineNumber, token.intValue.longValue(), newVersionForCurrentToken());
 		} else if (token.value == TOKidentifier) {
-			return newVersionSymbol(loc(), newIdentifierExp(), newVersionForCurrentToken());
+			return newVersionSymbol(filename, lineNumber, newIdentifierExp(), newVersionForCurrentToken());
 		} else {
 			throw new RuntimeException("Can't happen");
 		}
 	}	
 
 	private VoidInitializer newVoidInitializerForToken(Token token) {
-		VoidInitializer voidInitializer = new VoidInitializer(loc());
+		VoidInitializer voidInitializer = new VoidInitializer(filename, lineNumber);
 		voidInitializer.setSourceRange(token.ptr, token.sourceLen);
 		return voidInitializer;
 	}
@@ -8679,7 +8679,7 @@ public class Parser extends Lexer {
 	}
 	
 	protected IdentifierExp newIdentifierExp() {
-		return new IdentifierExp(loc(), token);
+		return new IdentifierExp(filename, lineNumber, token);
 	}
 	
 	private void attachCommentToCurrentToken(Comment comment) {
@@ -8700,10 +8700,6 @@ public class Parser extends Lexer {
 		}
 	}
 	
-	private Loc loc() {
-		return new Loc(filename, linnum);
-	}
-	
 	/**
 	 * Creates a ModuleDeclaration with the given packages and module name. The
 	 * current token is the token following the last token of the module declaration.
@@ -8714,244 +8710,244 @@ public class Parser extends Lexer {
 		return new ModuleDeclaration(packages, module, safe);
 	}
 	
-	protected Import newImport(Loc loc, Identifiers packages, IdentifierExp module, IdentifierExp aliasid, boolean isstatic) {
-		return new Import(loc, packages, module, aliasid, isstatic);
+	protected Import newImport(char[] filename, int lineNumber, Identifiers packages, IdentifierExp module, IdentifierExp aliasid, boolean isstatic) {
+		return new Import(filename, lineNumber, packages, module, aliasid, isstatic);
 	}
 	
 	protected Argument newArgument(int storageClass, Type at, IdentifierExp ai, Expression ae) {
 		return new Argument(storageClass, at, ai, ae);
 	}
 	
-	protected GotoStatement newGotoStatement(Loc loc, IdentifierExp ident) {
-		return new GotoStatement(loc, ident);
+	protected GotoStatement newGotoStatement(char[] filename, int lineNumber, IdentifierExp ident) {
+		return new GotoStatement(filename, lineNumber, ident);
 	}
 	
-	protected ContinueStatement newContinueStatement(Loc loc, IdentifierExp ident) {
-		return new ContinueStatement(loc, ident);
+	protected ContinueStatement newContinueStatement(char[] filename, int lineNumber, IdentifierExp ident) {
+		return new ContinueStatement(filename, lineNumber, ident);
 	}
 
-	protected BreakStatement newBreakStatement(Loc loc, IdentifierExp ident) {
-		return new BreakStatement(loc, ident);
+	protected BreakStatement newBreakStatement(char[] filename, int lineNumber, IdentifierExp ident) {
+		return new BreakStatement(filename, lineNumber, ident);
 	}
 	
-	protected VersionCondition newVersionCondition(Module module, Loc loc, long level, char[] id) {
-		return new VersionCondition(module, loc, level, id);
+	protected VersionCondition newVersionCondition(Module module, char[] filename, int lineNumber, long level, char[] id) {
+		return new VersionCondition(module, filename, lineNumber, level, id);
 	}
 	
-	protected VersionSymbol newVersionSymbol(Loc loc, IdentifierExp id, Version version) {
-		return new VersionSymbol(loc, id, version);
+	protected VersionSymbol newVersionSymbol(char[] filename, int lineNumber, IdentifierExp id, Version version) {
+		return new VersionSymbol(filename, lineNumber, id, version);
 	}
 	
-	protected VersionSymbol newVersionSymbol(Loc loc, long l, Version version) {
-		return new VersionSymbol(loc, l, version);
+	protected VersionSymbol newVersionSymbol(char[] filename, int lineNumber, long l, Version version) {
+		return new VersionSymbol(filename, lineNumber, l, version);
 	}
 	
-	protected DebugCondition newDebugCondition(Module module, Loc loc, long level, char[] id) {
-		return new DebugCondition(module, loc, level, id);
+	protected DebugCondition newDebugCondition(Module module, char[] filename, int lineNumber, long level, char[] id) {
+		return new DebugCondition(module, filename, lineNumber, level, id);
 	}
 	
-	protected DebugSymbol newDebugSymbol(Loc loc, IdentifierExp id, Version version) {
-		return new DebugSymbol(loc, id, version);
+	protected DebugSymbol newDebugSymbol(char[] filename, int lineNumber, IdentifierExp id, Version version) {
+		return new DebugSymbol(filename, lineNumber, id, version);
 	}
 	
-	protected CaseStatement newCaseStatement(Loc loc, Expression exp, Statement statement, int caseEnd, int expStart, int expLength) {
-		return new CaseStatement(loc, exp, statement);
+	protected CaseStatement newCaseStatement(char[] filename, int lineNumber, Expression exp, Statement statement, int caseEnd, int expStart, int expLength) {
+		return new CaseStatement(filename, lineNumber, exp, statement);
 	}
 	
-	private final DotIdExp newTypeDotIdExp(Loc loc, Type t, IdentifierExp exp) {
-		return newDotIdExp(loc, new TypeExp(loc, t), exp);
+	private final DotIdExp newTypeDotIdExp(char[] filename, int lineNumber, Type t, IdentifierExp exp) {
+		return newDotIdExp(filename, lineNumber, new TypeExp(filename, lineNumber, t), exp);
 	}
 	
-	protected DotIdExp newDotIdExp(Loc loc, Expression e, IdentifierExp id) {
-		return new DotIdExp(loc, e, id);
+	protected DotIdExp newDotIdExp(char[] filename, int lineNumber, Expression e, IdentifierExp id) {
+		return new DotIdExp(filename, lineNumber, e, id);
 	}
 	
-	protected TypeQualified newTypeIdentifier(Loc loc, IdentifierExp id) {
-		return new TypeIdentifier(loc, id);
+	protected TypeQualified newTypeIdentifier(char[] filename, int lineNumber, IdentifierExp id) {
+		return new TypeIdentifier(filename, lineNumber, id);
 	}
 	
-	protected ExpStatement newExpStatement(Loc loc, Expression exp) {
-		return new ExpStatement(loc, exp);
+	protected ExpStatement newExpStatement(char[] filename, int lineNumber, Expression exp) {
+		return new ExpStatement(filename, lineNumber, exp);
 	}
 	
-	protected SuperExp newSuperExp(Loc loc) {
-		return new SuperExp(loc);
+	protected SuperExp newSuperExp(char[] filename, int lineNumber) {
+		return new SuperExp(filename, lineNumber);
 	}
 
-	protected ThisExp newThisExp(Loc loc) {
-		return new ThisExp(loc);
+	protected ThisExp newThisExp(char[] filename, int lineNumber) {
+		return new ThisExp(filename, lineNumber);
 	}
 	
-	protected Expression newAssignExp(Loc loc, Expression e, Expression e2) {
-		return new AssignExp(loc, e, e2);
+	protected Expression newAssignExp(char[] filename, int lineNumber, Expression e, Expression e2) {
+		return new AssignExp(filename, lineNumber, e, e2);
 	}
 
-	protected Expression newAddAssignExp(Loc loc, Expression e, Expression e2) {
-		return new AddAssignExp(loc, e, e2);
+	protected Expression newAddAssignExp(char[] filename, int lineNumber, Expression e, Expression e2) {
+		return new AddAssignExp(filename, lineNumber, e, e2);
 	}
 
-	protected Expression newMinAssignExp(Loc loc, Expression e, Expression e2) {
-		return new MinAssignExp(loc, e, e2);
+	protected Expression newMinAssignExp(char[] filename, int lineNumber, Expression e, Expression e2) {
+		return new MinAssignExp(filename, lineNumber, e, e2);
 	}
 
-	protected Expression newMulAssignExp(Loc loc, Expression e, Expression e2) {
-		return new MulAssignExp(loc, e, e2);
+	protected Expression newMulAssignExp(char[] filename, int lineNumber, Expression e, Expression e2) {
+		return new MulAssignExp(filename, lineNumber, e, e2);
 	}
 
-	protected Expression newDivAssignExp(Loc loc, Expression e, Expression e2) {
-		return new DivAssignExp(loc, e, e2);
+	protected Expression newDivAssignExp(char[] filename, int lineNumber, Expression e, Expression e2) {
+		return new DivAssignExp(filename, lineNumber, e, e2);
 	}
 
-	protected Expression newModAssignExp(Loc loc, Expression e, Expression e2) {
-		return new ModAssignExp(loc, e, e2);
+	protected Expression newModAssignExp(char[] filename, int lineNumber, Expression e, Expression e2) {
+		return new ModAssignExp(filename, lineNumber, e, e2);
 	}
 
-	protected Expression newAndAssignExp(Loc loc, Expression e, Expression e2) {
-		return new AndAssignExp(loc, e, e2);
+	protected Expression newAndAssignExp(char[] filename, int lineNumber, Expression e, Expression e2) {
+		return new AndAssignExp(filename, lineNumber, e, e2);
 	}
 
-	protected Expression newOrAssignExp(Loc loc, Expression e, Expression e2) {
-		return new OrAssignExp(loc, e, e2);
+	protected Expression newOrAssignExp(char[] filename, int lineNumber, Expression e, Expression e2) {
+		return new OrAssignExp(filename, lineNumber, e, e2);
 	}
 
-	protected Expression newXorAssignExp(Loc loc, Expression e, Expression e2) {
-		return new XorAssignExp(loc, e, e2);
+	protected Expression newXorAssignExp(char[] filename, int lineNumber, Expression e, Expression e2) {
+		return new XorAssignExp(filename, lineNumber, e, e2);
 	}
 
-	protected Expression newShlAssignExp(Loc loc, Expression e, Expression e2) {
-		return new ShlAssignExp(loc, e, e2);
+	protected Expression newShlAssignExp(char[] filename, int lineNumber, Expression e, Expression e2) {
+		return new ShlAssignExp(filename, lineNumber, e, e2);
 	}
 
-	protected Expression newShrAssignExp(Loc loc, Expression e, Expression e2) {
-		return new ShrAssignExp(loc, e, e2);
+	protected Expression newShrAssignExp(char[] filename, int lineNumber, Expression e, Expression e2) {
+		return new ShrAssignExp(filename, lineNumber, e, e2);
 	}
 
-	protected Expression newUshrAssignExp(Loc loc, Expression e, Expression e2) {
-		return new UshrAssignExp(loc, e, e2);
+	protected Expression newUshrAssignExp(char[] filename, int lineNumber, Expression e, Expression e2) {
+		return new UshrAssignExp(filename, lineNumber, e, e2);
 	}
 
-	protected Expression newCatAssignExp(Loc loc, Expression e, Expression e2) {
-		return new CatAssignExp(loc, e, e2);
+	protected Expression newCatAssignExp(char[] filename, int lineNumber, Expression e, Expression e2) {
+		return new CatAssignExp(filename, lineNumber, e, e2);
 	}
 	
-	protected Expression newCondExp(Loc loc, Expression e, Expression e1, Expression e2) {
-		return new CondExp(loc, e, e1, e2);
+	protected Expression newCondExp(char[] filename, int lineNumber, Expression e, Expression e1, Expression e2) {
+		return new CondExp(filename, lineNumber, e, e1, e2);
 	}
 	
-	protected Expression newOrOrExp(Loc loc, Expression e, Expression e2) {
-		return new OrOrExp(loc, e, e2);
+	protected Expression newOrOrExp(char[] filename, int lineNumber, Expression e, Expression e2) {
+		return new OrOrExp(filename, lineNumber, e, e2);
 	}
 	
-	protected Expression newAndExp(Loc loc, Expression e, Expression e2) {
-		return new AndExp(loc(), e, e2);
+	protected Expression newAndExp(char[] filename, int lineNumber, Expression e, Expression e2) {
+		return new AndExp(filename, lineNumber, e, e2);
 	}
 	
-	protected Expression newOrExp(Loc loc, Expression e, Expression e2) {
-		return new OrExp(loc(), e, e2);
+	protected Expression newOrExp(char[] filename, int lineNumber, Expression e, Expression e2) {
+		return new OrExp(filename, lineNumber, e, e2);
 	}
 	
-	protected Expression newAndAndExp(Loc loc, Expression e, Expression e2) {
-		return new AndAndExp(loc(), e, e2);
+	protected Expression newAndAndExp(char[] filename, int lineNumber, Expression e, Expression e2) {
+		return new AndAndExp(filename, lineNumber, e, e2);
 	}
 	
-	protected Expression newXorExp(Loc loc, Expression e, Expression e2) {
-		return new XorExp(loc(), e, e2);
+	protected Expression newXorExp(char[] filename, int lineNumber, Expression e, Expression e2) {
+		return new XorExp(filename, lineNumber, e, e2);
 	}
 	
-	protected Expression newEqualExp(Loc loc, TOK op, Expression e, Expression e2) {
-		return new EqualExp(loc(), op, e, e2);
+	protected Expression newEqualExp(char[] filename, int lineNumber, TOK op, Expression e, Expression e2) {
+		return new EqualExp(filename, lineNumber, op, e, e2);
 	}
 	
-	protected Expression newIdentityExp(Loc loc, TOK op, Expression e, Expression e2) {
-		return new IdentityExp(loc(), op, e, e2);
+	protected Expression newIdentityExp(char[] filename, int lineNumber, TOK op, Expression e, Expression e2) {
+		return new IdentityExp(filename, lineNumber, op, e, e2);
 	}
 	
-	protected Expression newCmpExp(Loc loc, TOK op, Expression e, Expression e2) {
-		return new CmpExp(loc(), op, e, e2);
+	protected Expression newCmpExp(char[] filename, int lineNumber, TOK op, Expression e, Expression e2) {
+		return new CmpExp(filename, lineNumber, op, e, e2);
 	}
 	
-	protected Expression newInExp(Loc loc, Expression e, Expression e2) {
-		return new InExp(loc(), e, e2);
+	protected Expression newInExp(char[] filename, int lineNumber, Expression e, Expression e2) {
+		return new InExp(filename, lineNumber, e, e2);
 	}
 	
-	protected Expression newShlExp(Loc loc, Expression e, Expression e2) {
-		return new ShlExp(loc, e, e2);
+	protected Expression newShlExp(char[] filename, int lineNumber, Expression e, Expression e2) {
+		return new ShlExp(filename, lineNumber, e, e2);
 	}
 
-	protected Expression newShrExp(Loc loc, Expression e, Expression e2) {
-		return new ShrExp(loc, e, e2);
+	protected Expression newShrExp(char[] filename, int lineNumber, Expression e, Expression e2) {
+		return new ShrExp(filename, lineNumber, e, e2);
 	}
 
-	protected Expression newUshrExp(Loc loc, Expression e, Expression e2) {
-		return new UshrExp(loc, e, e2);
+	protected Expression newUshrExp(char[] filename, int lineNumber, Expression e, Expression e2) {
+		return new UshrExp(filename, lineNumber, e, e2);
 	}
 	
-	protected Expression newAddExp(Loc loc, Expression e, Expression e2) {
-		return new AddExp(loc, e, e2);
+	protected Expression newAddExp(char[] filename, int lineNumber, Expression e, Expression e2) {
+		return new AddExp(filename, lineNumber, e, e2);
 	}
 
-	protected Expression newMinExp(Loc loc, Expression e, Expression e2) {
-		return new MinExp(loc, e, e2);
+	protected Expression newMinExp(char[] filename, int lineNumber, Expression e, Expression e2) {
+		return new MinExp(filename, lineNumber, e, e2);
 	}
 
-	protected Expression newCatExp(Loc loc, Expression e, Expression e2) {
-		return new CatExp(loc, e, e2);
+	protected Expression newCatExp(char[] filename, int lineNumber, Expression e, Expression e2) {
+		return new CatExp(filename, lineNumber, e, e2);
 	}
 	
-	protected Expression newModExp(Loc loc, Expression e, Expression e2) {
-		return new ModExp(loc, e, e2);
+	protected Expression newModExp(char[] filename, int lineNumber, Expression e, Expression e2) {
+		return new ModExp(filename, lineNumber, e, e2);
 	}
 
-	protected Expression newDivExp(Loc loc, Expression e, Expression e2) {
-		return new DivExp(loc, e, e2);
+	protected Expression newDivExp(char[] filename, int lineNumber, Expression e, Expression e2) {
+		return new DivExp(filename, lineNumber, e, e2);
 	}
 
-	protected Expression newMulExp(Loc loc, Expression e, Expression e2) {
-		return new MulExp(loc, e, e2);
+	protected Expression newMulExp(char[] filename, int lineNumber, Expression e, Expression e2) {
+		return new MulExp(filename, lineNumber, e, e2);
 	}
 	
-	protected Expression newAddrExp(Loc loc, Expression e) {
-		return new AddrExp(loc, e);
+	protected Expression newAddrExp(char[] filename, int lineNumber, Expression e) {
+		return new AddrExp(filename, lineNumber, e);
 	}
 	
-	protected VarDeclaration newVarDeclaration(Loc loc, Type type, IdentifierExp ident, Initializer init) {
-		return new VarDeclaration(loc, type, ident, init);
+	protected VarDeclaration newVarDeclaration(char[] filename, int lineNumber, Type type, IdentifierExp ident, Initializer init) {
+		return new VarDeclaration(filename, lineNumber, type, ident, init);
 	}
 	
-	protected Expression newCallExp(Loc loc, Expression e, Expressions expressions) {
-		return new CallExp(loc, e, expressions);
+	protected Expression newCallExp(char[] filename, int lineNumber, Expression e, Expressions expressions) {
+		return new CallExp(filename, lineNumber, e, expressions);
 	}
 	
-	protected Expression newNewExp(Loc loc, Expression thisexp, Expressions newargs, Type t, Expressions arguments, int start) {
-		return new NewExp(loc, thisexp, newargs, t, arguments);
+	protected Expression newNewExp(char[] filename, int lineNumber, Expression thisexp, Expressions newargs, Type t, Expressions arguments, int start) {
+		return new NewExp(filename, lineNumber, thisexp, newargs, t, arguments);
 	}
 	
-	protected Statement newReturnStatement(Loc loc, Expression exp) {
-		return new ReturnStatement(loc, exp);
+	protected Statement newReturnStatement(char[] filename, int lineNumber, Expression exp) {
+		return new ReturnStatement(filename, lineNumber, exp);
 	}
 	
-	protected UnionDeclaration newUnionDeclaration(Loc loc, IdentifierExp id) {
-		return new UnionDeclaration(loc, id);
+	protected UnionDeclaration newUnionDeclaration(char[] filename, int lineNumber, IdentifierExp id) {
+		return new UnionDeclaration(filename, lineNumber, id);
 	}
 
-	protected StructDeclaration newStructDeclaration(Loc loc, IdentifierExp id) {
-		return new StructDeclaration(loc, id);
+	protected StructDeclaration newStructDeclaration(char[] filename, int lineNumber, IdentifierExp id) {
+		return new StructDeclaration(filename, lineNumber, id);
 	}
 
-	protected InterfaceDeclaration newInterfaceDeclaration(Loc loc, IdentifierExp id, BaseClasses baseClasses) {
-		return new InterfaceDeclaration(loc, id, baseClasses);
+	protected InterfaceDeclaration newInterfaceDeclaration(char[] filename, int lineNumber, IdentifierExp id, BaseClasses baseClasses) {
+		return new InterfaceDeclaration(filename, lineNumber, id, baseClasses);
 	}
 
-	protected ClassDeclaration newClassDeclaration(Loc loc, IdentifierExp id, BaseClasses baseClasses) {
-		return new ClassDeclaration(loc, id, baseClasses);
+	protected ClassDeclaration newClassDeclaration(char[] filename, int lineNumber, IdentifierExp id, BaseClasses baseClasses) {
+		return new ClassDeclaration(filename, lineNumber, id, baseClasses);
 	}
 	
-	protected TemplateMixin newTemplateMixin(Loc loc, IdentifierExp id, Type tqual, Identifiers idents, Objects tiargs) {
-		return new TemplateMixin(loc(), id, tqual, idents, tiargs, encoder);
+	protected TemplateMixin newTemplateMixin(char[] filename, int lineNumber, IdentifierExp id, Type tqual, Identifiers idents, Objects tiargs) {
+		return new TemplateMixin(filename, lineNumber, id, tqual, idents, tiargs, encoder);
 	}
 	
-	protected TemplateInstance newTemplateInstance(Loc loc, IdentifierExp id, ASTNodeEncoder encoder) {
-		return new TemplateInstance(loc, id, encoder);
+	protected TemplateInstance newTemplateInstance(char[] filename, int lineNumber, IdentifierExp id, ASTNodeEncoder encoder) {
+		return new TemplateInstance(filename, lineNumber, id, encoder);
 	}
 	
 	protected ConditionalDeclaration newConditionalDeclaration(Condition condition, Dsymbols a, Dsymbols aelse) {
@@ -8962,208 +8958,208 @@ public class Parser extends Lexer {
 		return new StaticIfDeclaration(condition, a, aelse);
 	}
 	
-	protected FuncDeclaration newFuncDeclaration(Loc loc, IdentifierExp ident, int storage_class, TypeFunction typeFunction) {
-		return new FuncDeclaration(loc, ident, storage_class, typeFunction);
+	protected FuncDeclaration newFuncDeclaration(char[] filename, int lineNumber, IdentifierExp ident, int storage_class, TypeFunction typeFunction) {
+		return new FuncDeclaration(filename, lineNumber, ident, storage_class, typeFunction);
 	}
 	
-	protected IfStatement newIfStatement(Loc loc, Argument arg, Expression condition, Statement ifbody, Statement elsebody) {
-		return new IfStatement(loc, arg, condition, ifbody, elsebody);
+	protected IfStatement newIfStatement(char[] filename, int lineNumber, Argument arg, Expression condition, Statement ifbody, Statement elsebody) {
+		return new IfStatement(filename, lineNumber, arg, condition, ifbody, elsebody);
 	}
 	
-	protected Statement newDeclarationStatement(Loc loc, Dsymbol d) {
-		return new DeclarationStatement(loc, d);
+	protected Statement newDeclarationStatement(char[] filename, int lineNumber, Dsymbol d) {
+		return new DeclarationStatement(filename, lineNumber, d);
 	}
 	
-	protected CompileStatement newCompileStatement(Loc loc, Expression e) {
-		return new CompileStatement(loc, e);
+	protected CompileStatement newCompileStatement(char[] filename, int lineNumber, Expression e) {
+		return new CompileStatement(filename, lineNumber, e);
 	}
 	
 	protected AggregateDeclaration endAggregateDeclaration(AggregateDeclaration a) {
 		return a;
 	}
 	
-	protected CompoundStatement newCompoundStatement(Loc loc, Statements statements) {
-		return new CompoundStatement(loc, statements);
+	protected CompoundStatement newCompoundStatement(char[] filename, int lineNumber, Statements statements) {
+		return new CompoundStatement(filename, lineNumber, statements);
 	}
 	
-	protected CompoundDeclarationStatement newCompoundDeclarationStatement(Loc loc, Statements statements) {
-		return new CompoundDeclarationStatement(loc, statements);
+	protected CompoundDeclarationStatement newCompoundDeclarationStatement(char[] filename, int lineNumber, Statements statements) {
+		return new CompoundDeclarationStatement(filename, lineNumber, statements);
 	}
 	
-	protected ConditionalStatement newConditionalStatement(Loc loc, Condition condition, Statement ifbody, Statement elsebody) {
-		return new ConditionalStatement(loc, condition, ifbody, elsebody);
+	protected ConditionalStatement newConditionalStatement(char[] filename, int lineNumber, Condition condition, Statement ifbody, Statement elsebody) {
+		return new ConditionalStatement(filename, lineNumber, condition, ifbody, elsebody);
 	}
 	
-	protected DefaultStatement newDefaultStatement(Loc loc, Statement s) {
-		return new DefaultStatement(loc, s);
+	protected DefaultStatement newDefaultStatement(char[] filename, int lineNumber, Statement s) {
+		return new DefaultStatement(filename, lineNumber, s);
 	}
 	
-	protected DoStatement newDoStatement(Loc loc, Statement body, Expression condition2) {
-		return new DoStatement(loc, body, condition2);
+	protected DoStatement newDoStatement(char[] filename, int lineNumber, Statement body, Expression condition2) {
+		return new DoStatement(filename, lineNumber, body, condition2);
 	}
 	
-	protected ForeachRangeStatement newForeachRangeStatement(Loc loc, TOK op, Argument a, Expression aggr, Expression upr, Statement body) {
-		return new ForeachRangeStatement(loc, op, a, aggr, upr, body);
+	protected ForeachRangeStatement newForeachRangeStatement(char[] filename, int lineNumber, TOK op, Argument a, Expression aggr, Expression upr, Statement body) {
+		return new ForeachRangeStatement(filename, lineNumber, op, a, aggr, upr, body);
 	}
 	
-	protected ForeachStatement newForeachStatement(Loc loc, TOK op, Arguments arguments, Expression aggr, Statement body) {
-		return new ForeachStatement(loc, op, arguments, aggr, body);
+	protected ForeachStatement newForeachStatement(char[] filename, int lineNumber, TOK op, Arguments arguments, Expression aggr, Statement body) {
+		return new ForeachStatement(filename, lineNumber, op, arguments, aggr, body);
 	}
 	
-	protected ForStatement newForStatement(Loc loc, Statement init, Expression condition2, Expression increment, Statement body) {
-		return new ForStatement(loc, init, condition2, increment, body);
+	protected ForStatement newForStatement(char[] filename, int lineNumber, Statement init, Expression condition2, Expression increment, Statement body) {
+		return new ForStatement(filename, lineNumber, init, condition2, increment, body);
 	}
 	
-	protected GotoCaseStatement newGotoCaseStatement(Loc loc, Expression exp) {
-		return new GotoCaseStatement(loc, exp);
+	protected GotoCaseStatement newGotoCaseStatement(char[] filename, int lineNumber, Expression exp) {
+		return new GotoCaseStatement(filename, lineNumber, exp);
 	}
 	
-	protected GotoDefaultStatement newGotoDefaultStatement(Loc loc) {
-		return new GotoDefaultStatement(loc);
+	protected GotoDefaultStatement newGotoDefaultStatement(char[] filename, int lineNumber) {
+		return new GotoDefaultStatement(filename, lineNumber);
 	}
 	
-	protected LabelStatement newLabelStatement(Loc loc, IdentifierExp label, Statement s) {
-		return new LabelStatement(loc, label, s);
+	protected LabelStatement newLabelStatement(char[] filename, int lineNumber, IdentifierExp label, Statement s) {
+		return new LabelStatement(filename, lineNumber, label, s);
 	}
 	
-	protected OnScopeStatement newOnScopeStatement(Loc loc, TOK t2, Statement st) {
-		return new OnScopeStatement(loc, t2, st);
+	protected OnScopeStatement newOnScopeStatement(char[] filename, int lineNumber, TOK t2, Statement st) {
+		return new OnScopeStatement(filename, lineNumber, t2, st);
 	}
 	
-	protected PragmaStatement newPragmaStatement(Loc loc, IdentifierExp ident, Expressions args, Statement body) {
-		return new PragmaStatement(loc, ident, args, body);
+	protected PragmaStatement newPragmaStatement(char[] filename, int lineNumber, IdentifierExp ident, Expressions args, Statement body) {
+		return new PragmaStatement(filename, lineNumber, ident, args, body);
 	}
 	
-	protected ScopeStatement newScopeStatement(Loc loc, Statement statement) {
-		return new ScopeStatement(loc, statement);
+	protected ScopeStatement newScopeStatement(char[] filename, int lineNumber, Statement statement) {
+		return new ScopeStatement(filename, lineNumber, statement);
 	}
 	
 	protected StaticAssertStatement newStaticAssertStatement(StaticAssert assert1) {
 		return new StaticAssertStatement(assert1);
 	}
 	
-	protected SwitchStatement newSwitchStatement(Loc loc, Expression condition2, Statement body) {
-		return new SwitchStatement(loc, condition2, body);
+	protected SwitchStatement newSwitchStatement(char[] filename, int lineNumber, Expression condition2, Statement body) {
+		return new SwitchStatement(filename, lineNumber, condition2, body);
 	}
 	
-	protected SynchronizedStatement newSynchronizedStatement(Loc loc, Expression exp, Statement body) {
-		return new SynchronizedStatement(loc, exp, body);
+	protected SynchronizedStatement newSynchronizedStatement(char[] filename, int lineNumber, Expression exp, Statement body) {
+		return new SynchronizedStatement(filename, lineNumber, exp, body);
 	}
 	
-	protected ThrowStatement newThrowStatement(Loc loc, Expression exp) {
-		return new ThrowStatement(loc, exp);
+	protected ThrowStatement newThrowStatement(char[] filename, int lineNumber, Expression exp) {
+		return new ThrowStatement(filename, lineNumber, exp);
 	}
 	
-	protected TryCatchStatement newTryCatchStatement(Loc loc, Statement body, Array catches) {
-		return new TryCatchStatement(loc, body, catches);
+	protected TryCatchStatement newTryCatchStatement(char[] filename, int lineNumber, Statement body, Array catches) {
+		return new TryCatchStatement(filename, lineNumber, body, catches);
 	}
 	
-	protected TryFinallyStatement newTryFinallyStatement(Loc loc, Statement s, Statement finalbody, boolean b) {
-		return new TryFinallyStatement(loc, s, finalbody, b);
+	protected TryFinallyStatement newTryFinallyStatement(char[] filename, int lineNumber, Statement s, Statement finalbody, boolean b) {
+		return new TryFinallyStatement(filename, lineNumber, s, finalbody, b);
 	}
 	
-	protected VolatileStatement newVolatileStatement(Loc loc, Statement s) {
-		return new VolatileStatement(loc, s);
+	protected VolatileStatement newVolatileStatement(char[] filename, int lineNumber, Statement s) {
+		return new VolatileStatement(filename, lineNumber, s);
 	}
 	
-	protected WhileStatement newWhileStatement(Loc loc, Expression condition2, Statement body) {
-		return new WhileStatement(loc, condition2, body);
+	protected WhileStatement newWhileStatement(char[] filename, int lineNumber, Expression condition2, Statement body) {
+		return new WhileStatement(filename, lineNumber, condition2, body);
 	}
 	
-	protected WithStatement newWithStatement(Loc loc, Expression exp, Statement body) {
-		return new WithStatement(loc, exp, body);
+	protected WithStatement newWithStatement(char[] filename, int lineNumber, Expression exp, Statement body) {
+		return new WithStatement(filename, lineNumber, exp, body);
 	}
 	
-	protected PragmaDeclaration newPragmaDeclaration(Loc loc, IdentifierExp ident, Expressions args, Dsymbols a) {
-		return new PragmaDeclaration(loc, ident, args, a);
+	protected PragmaDeclaration newPragmaDeclaration(char[] filename, int lineNumber, IdentifierExp ident, Expressions args, Dsymbols a) {
+		return new PragmaDeclaration(filename, lineNumber, ident, args, a);
 	}
 	
 	protected AlignDeclaration newAlignDeclaration(int i, Dsymbols a) {
 		return new AlignDeclaration(i, a);
 	}
 	
-	protected AnonDeclaration newAnonDeclaration(Loc loc, boolean b, Dsymbols decl) {
-		return new AnonDeclaration(loc, b, decl);
+	protected AnonDeclaration newAnonDeclaration(char[] filename, int lineNumber, boolean b, Dsymbols decl) {
+		return new AnonDeclaration(filename, lineNumber, b, decl);
 	}
 	
-	protected CompileDeclaration newCompileDeclaration(Loc loc, Expression e) {
-		return new CompileDeclaration(loc, e);
+	protected CompileDeclaration newCompileDeclaration(char[] filename, int lineNumber, Expression e) {
+		return new CompileDeclaration(filename, lineNumber, e);
 	}
 	
 	protected LinkDeclaration newLinkDeclaration(LINK link, Dsymbols ax) {
 		return new LinkDeclaration(link, ax);
 	}
 	
-	protected AliasDeclaration newAliasDeclaration(Loc loc, IdentifierExp ident, Type t) {
-		return new AliasDeclaration(loc, ident, t);
+	protected AliasDeclaration newAliasDeclaration(char[] filename, int lineNumber, IdentifierExp ident, Type t) {
+		return new AliasDeclaration(filename, lineNumber, ident, t);
 	}
 	
-	protected CtorDeclaration newCtorDeclaration(Loc loc, Arguments arguments, int i) {
-		return new CtorDeclaration(loc, arguments, i);
+	protected CtorDeclaration newCtorDeclaration(char[] filename, int lineNumber, Arguments arguments, int i) {
+		return new CtorDeclaration(filename, lineNumber, arguments, i);
 	}
 	
-	protected DeleteDeclaration newDeleteDeclaration(Loc loc, Arguments arguments) {
-		return new DeleteDeclaration(loc, arguments);
+	protected DeleteDeclaration newDeleteDeclaration(char[] filename, int lineNumber, Arguments arguments) {
+		return new DeleteDeclaration(filename, lineNumber, arguments);
 	}
 	
-	protected DtorDeclaration newDtorDeclaration(Loc loc) {
-		return new DtorDeclaration(loc);
+	protected DtorDeclaration newDtorDeclaration(char[] filename, int lineNumber) {
+		return new DtorDeclaration(filename, lineNumber);
 	}
 	
-	protected InvariantDeclaration newInvariantDeclaration(Loc loc) {
-		return new InvariantDeclaration(loc);
+	protected InvariantDeclaration newInvariantDeclaration(char[] filename, int lineNumber) {
+		return new InvariantDeclaration(filename, lineNumber);
 	}
 	
-	protected NewDeclaration newNewDeclaration(Loc loc, Arguments arguments, int i) {
-		return new NewDeclaration(loc, arguments, i);
+	protected NewDeclaration newNewDeclaration(char[] filename, int lineNumber, Arguments arguments, int i) {
+		return new NewDeclaration(filename, lineNumber, arguments, i);
 	}
 	
-	protected PostBlitDeclaration newPostBlitDeclaration(Loc loc) {
-		return new PostBlitDeclaration(loc);
+	protected PostBlitDeclaration newPostBlitDeclaration(char[] filename, int lineNumber) {
+		return new PostBlitDeclaration(filename, lineNumber);
 	}
 	
-	protected StaticCtorDeclaration newStaticCtorDeclaration(Loc loc) {
-		return new StaticCtorDeclaration(loc);
+	protected StaticCtorDeclaration newStaticCtorDeclaration(char[] filename, int lineNumber) {
+		return new StaticCtorDeclaration(filename, lineNumber);
 	}
 	
-	protected StaticDtorDeclaration newStaticDtorDeclaration(Loc loc) {
-		return new StaticDtorDeclaration(loc);
+	protected StaticDtorDeclaration newStaticDtorDeclaration(char[] filename, int lineNumber) {
+		return new StaticDtorDeclaration(filename, lineNumber);
 	}
 	
-	protected UnitTestDeclaration newUnitTestDeclaration(Loc loc) {
-		return new UnitTestDeclaration(loc);
+	protected UnitTestDeclaration newUnitTestDeclaration(char[] filename, int lineNumber) {
+		return new UnitTestDeclaration(filename, lineNumber);
 	}
 	
-	protected TypedefDeclaration newTypedefDeclaration(Loc loc, IdentifierExp ident, Type t, Initializer init) {
-		return new TypedefDeclaration(loc, ident, t, init);
+	protected TypedefDeclaration newTypedefDeclaration(char[] filename, int lineNumber, IdentifierExp ident, Type t, Initializer init) {
+		return new TypedefDeclaration(filename, lineNumber, ident, t, init);
 	}
 	
-	protected EnumMember newEnumMember(Loc loc, IdentifierExp ident, Expression value) {
-		return new EnumMember(loc, ident, value);
+	protected EnumMember newEnumMember(char[] filename, int lineNumber, IdentifierExp ident, Expression value) {
+		return new EnumMember(filename, lineNumber, ident, value);
 	}
 	
-	protected EnumMember newEnumMember(Loc loc, IdentifierExp exp, Expression value, Type type) {
-		return new EnumMember(loc, exp, value, type);
+	protected EnumMember newEnumMember(char[] filename, int lineNumber, IdentifierExp exp, Expression value, Type type) {
+		return new EnumMember(filename, lineNumber, exp, value, type);
 	}
 	
-	protected StaticAssert newStaticAssert(Loc loc, Expression exp, Expression msg) {
-		return new StaticAssert(loc, exp, msg);
+	protected StaticAssert newStaticAssert(char[] filename, int lineNumber, Expression exp, Expression msg) {
+		return new StaticAssert(filename, lineNumber, exp, msg);
 	}
 	
-	protected Version newVersion(Loc loc, char[] sourceString) {
-		return new Version(loc, sourceString);
+	protected Version newVersion(char[] filename, int lineNumber, char[] sourceString) {
+		return new Version(filename, lineNumber, sourceString);
 	}
 	
-	protected EnumDeclaration newEnumDeclaration(Loc loc, IdentifierExp id, Type t) {
-		return new EnumDeclaration(loc, id, t);
+	protected EnumDeclaration newEnumDeclaration(char[] filename, int lineNumber, IdentifierExp id, Type t) {
+		return new EnumDeclaration(filename, lineNumber, id, t);
 	}
 	
-	protected TemplateDeclaration newTemplateDeclaration(Loc loc, IdentifierExp ident, TemplateParameters tpl, Expression constraint, Dsymbols decldefs) {
-		return new TemplateDeclaration(loc, ident, tpl, constraint, decldefs);
+	protected TemplateDeclaration newTemplateDeclaration(char[] filename, int lineNumber, IdentifierExp ident, TemplateParameters tpl, Expression constraint, Dsymbols decldefs) {
+		return new TemplateDeclaration(filename, lineNumber, ident, tpl, constraint, decldefs);
 	}
 	
-	protected AliasThis newAliasThis(Loc loc, IdentifierExp id) {
-		return new AliasThis(loc, id);
+	protected AliasThis newAliasThis(char[] filename, int lineNumber, IdentifierExp id) {
+		return new AliasThis(filename, lineNumber, id);
 	}
 	
 	protected Import addImportAlias(Import s, IdentifierExp name, IdentifierExp alias) {

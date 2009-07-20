@@ -12,10 +12,11 @@ package descent.internal.core.search.matching;
 
 import java.io.IOException;
 
-import descent.core.compiler.*;
-import descent.core.search.*;
+import descent.core.compiler.CharOperation;
+import descent.core.search.SearchPattern;
+import descent.internal.core.index.EntryResult;
+import descent.internal.core.index.Index;
 import descent.internal.core.search.indexing.IIndexConstants;
-import descent.internal.core.index.*;
 
 public class SuperTypeReferencePattern extends JavaSearchPattern implements IIndexConstants {
 

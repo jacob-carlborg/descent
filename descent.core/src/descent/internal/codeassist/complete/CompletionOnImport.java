@@ -3,7 +3,6 @@ package descent.internal.codeassist.complete;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Identifiers;
 import descent.internal.compiler.parser.Import;
-import descent.internal.compiler.parser.Loc;
 
 /*
  * Completion node build by the parser in any case it was intending to
@@ -28,8 +27,8 @@ public class CompletionOnImport extends Import {
 	public boolean isSelective;
 	public IdentifierExp selectiveName;
 
-	public CompletionOnImport(Loc loc, Identifiers packages, IdentifierExp id, IdentifierExp aliasId, boolean isstatic, int completePosition) {
-		super(loc, packages, id, aliasId, isstatic);
+	public CompletionOnImport(char[] filename, int lineNumber, Identifiers packages, IdentifierExp id, IdentifierExp aliasId, boolean isstatic, int completePosition) {
+		super(filename, lineNumber, packages, id, aliasId, isstatic);
 		this.completePosition = completePosition;
 	}
 	

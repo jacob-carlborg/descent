@@ -24,9 +24,9 @@ public class TemplateValueParameter extends TemplateParameter {
 	// Descent: to improve performance, must be set by Parser or ModuleBuilder
 	public ASTNodeEncoder encoder;  
 
-	public TemplateValueParameter(Loc loc, IdentifierExp ident, Type valType,
+	public TemplateValueParameter(char[] filename, int lineNumber, IdentifierExp ident, Type valType,
 			Expression specValue, Expression defaultValue, ASTNodeEncoder encoder) {
-		super(loc, ident);
+		super(filename, lineNumber, ident);
 		this.valType = valType;
 		this.specValue = specValue;
 		this.defaultValue = defaultValue;
@@ -52,7 +52,7 @@ public class TemplateValueParameter extends TemplateParameter {
 
 	@Override
 	public void declareParameter(Scope sc, SemanticContext context) {
-		VarDeclaration v = new VarDeclaration(loc, valType, ident, null);
+		VarDeclaration v = new VarDeclaration(filename, lineNumber, valType, ident, null);
 		v.storage_class = STCtemplateparameter;
 		if (null == sc.insert(v)) {
 			if (context.acceptsErrors()) {
@@ -63,7 +63,7 @@ public class TemplateValueParameter extends TemplateParameter {
 	}
 
 	@Override
-	public ASTDmdNode defaultArg(Loc loc, Scope sc, SemanticContext context) {
+	public ASTDmdNode defaultArg(char[] filename, int lineNumber, Scope sc, SemanticContext context) {
 		Expression e;
 
 		e = defaultValue;
@@ -73,7 +73,7 @@ public class TemplateValueParameter extends TemplateParameter {
 			if (context.isD2()) {
 				if (e.op == TOKdefault) {
 					DefaultInitExp de = (DefaultInitExp) e;
-					e = de.resolve(loc, sc, context);
+					e = de.resolve(filename, lineNumber, sc, context);
 				}
 			}
 		}
@@ -118,7 +118,7 @@ public class TemplateValueParameter extends TemplateParameter {
 		if (i < tiargs.size()) {
 			oarg = tiargs.get(i);
 		} else { // Get default argument instead
-			oarg = defaultArg(loc, sc, context);
+			oarg = defaultArg(filename, lineNumber, sc, context);
 			if (null == oarg) {
 				if (!(i < dedtypes.size())) {
 					throw new IllegalStateException("assert(i < dedtypes.dim);");
@@ -179,7 +179,7 @@ public class TemplateValueParameter extends TemplateParameter {
 				return MATCHnomatch;
 			}
 		}
-		vt = valType.semantic(Loc.ZERO, sc, context);
+		vt = valType.semantic(null, 0, sc, context);
 		if (ei.type != null) {
 			m = ei.implicitConvTo(vt, context);
 			if (null == m) {
@@ -190,8 +190,8 @@ public class TemplateValueParameter extends TemplateParameter {
 		}
 		dedtypes.set(i, ei);
 
-		init = new ExpInitializer(loc, ei);
-		sparam = new VarDeclaration(loc, vt, ident, init);
+		init = new ExpInitializer(filename, lineNumber, ei);
+		sparam = new VarDeclaration(filename, lineNumber, vt, ident, init);
 		if (context.isD2()) {
 			sparam.storage_class = STCmanifest;
 		} else {
@@ -227,7 +227,7 @@ public class TemplateValueParameter extends TemplateParameter {
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
 		sparam.semantic(sc, context);
-		valType = valType.semantic(loc, sc, context);
+		valType = valType.semantic(filename, lineNumber, sc, context);
 		if (!(valType.isintegral() || valType.isfloating() || valType
 				.isString(context))
 				&& valType.ty != TY.Tident) {
@@ -258,7 +258,7 @@ public class TemplateValueParameter extends TemplateParameter {
 
 	@Override
 	public TemplateParameter syntaxCopy(SemanticContext context) {
-		TemplateValueParameter tp = new TemplateValueParameter(loc, ident,
+		TemplateValueParameter tp = new TemplateValueParameter(filename, lineNumber, ident,
 				valType, specValue, defaultValue, context.encoder);
 		tp.valType = valType.syntaxCopy(context);
 		if (specValue != null) {

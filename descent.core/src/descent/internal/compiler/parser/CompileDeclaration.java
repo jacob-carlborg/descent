@@ -1,5 +1,7 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.TOK.TOKeof;
+import static descent.internal.compiler.parser.TOK.TOKstring;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.IInitializer;
 import descent.core.IJavaElement;
@@ -7,8 +9,6 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.ASTNode;
 import descent.internal.compiler.parser.ast.AstVisitorAdapter;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.TOK.TOKeof;
-import static descent.internal.compiler.parser.TOK.TOKstring;
 
 
 public class CompileDeclaration extends AttribDeclaration {
@@ -19,9 +19,10 @@ public class CompileDeclaration extends AttribDeclaration {
 	
 	protected IInitializer javaElement;
 	
-	public CompileDeclaration(Loc loc, Expression exp) {
+	public CompileDeclaration(char[] filename, int lineNumber, Expression exp) {
 		super(null);
-		this.loc = loc;
+		this.filename = filename;
+		this.lineNumber = lineNumber;
 		this.exp = exp;
 		this.sourceExp = exp;
 	}
@@ -65,7 +66,8 @@ public class CompileDeclaration extends AttribDeclaration {
 			se = se.toUTF8(sc, context);
 			Parser p = context.newParser(context.Module_rootModule.apiLevel, se.string);
 			// p.nextToken();
-			p.loc = loc;
+			p.filename = filename;
+			p.lineNumber = lineNumber;
 			decl = p.parseModule();
 			
 			if (context.mustCopySourceRangeForMixins()) {
@@ -122,7 +124,7 @@ public class CompileDeclaration extends AttribDeclaration {
 
 	@Override
 	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
-		CompileDeclaration sc = context.newCompileDeclaration(loc, exp.syntaxCopy(context));
+		CompileDeclaration sc = context.newCompileDeclaration(filename, lineNumber, exp.syntaxCopy(context));
 		sc.copySourceRange(this);
 		return sc;
 	}

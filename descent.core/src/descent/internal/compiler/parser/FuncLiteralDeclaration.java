@@ -1,8 +1,8 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.TOK.TOKdelegate;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.TOK.TOKdelegate;
 
 
 public class FuncLiteralDeclaration extends FuncDeclaration {
@@ -20,9 +20,9 @@ public class FuncLiteralDeclaration extends FuncDeclaration {
 
 	public TOK tok; // TOKfunction or TOKdelegate	
 
-	public FuncLiteralDeclaration(Loc loc, Type type, TOK tok,
+	public FuncLiteralDeclaration(char[] filename, int lineNumber, Type type, TOK tok,
 			ForeachStatement fes) {
-		super(loc, null, STC.STCundefined, type);
+		super(filename, lineNumber, null, STC.STCundefined, type);
 		char[] id;
 
 		if (fes != null) {
@@ -83,7 +83,7 @@ public class FuncLiteralDeclaration extends FuncDeclaration {
 		if (s != null) {
 			f = (FuncLiteralDeclaration) s;
 		} else {
-			f = new FuncLiteralDeclaration(loc, type.syntaxCopy(context), tok, fes);
+			f = new FuncLiteralDeclaration(filename, lineNumber, type.syntaxCopy(context), tok, fes);
 		}
 		super.syntaxCopy(f, context);
 		return f;

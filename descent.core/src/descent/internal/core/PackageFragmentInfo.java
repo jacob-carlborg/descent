@@ -12,6 +12,7 @@ package descent.internal.core;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
+
 import descent.core.JavaModelException;
 
 /**

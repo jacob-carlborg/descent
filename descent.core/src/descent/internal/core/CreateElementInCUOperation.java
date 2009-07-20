@@ -13,6 +13,10 @@ package descent.internal.core;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.text.edits.TextEdit;
+
 import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
 import descent.core.IJavaModelStatus;
@@ -27,9 +31,6 @@ import descent.core.dom.StructuralPropertyDescriptor;
 import descent.core.dom.rewrite.ASTRewrite;
 import descent.core.dom.rewrite.ListRewrite;
 import descent.internal.core.util.Util;
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.IDocument;
-import org.eclipse.text.edits.TextEdit;
 
 /**
  * <p>This abstract class implements behavior common to <code>CreateElementInCUOperations</code>.

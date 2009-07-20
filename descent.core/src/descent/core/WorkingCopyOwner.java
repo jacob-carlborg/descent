@@ -13,8 +13,8 @@ package descent.core;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 
-import descent.internal.core.CompilationUnit;
 import descent.internal.core.BufferManager;
+import descent.internal.core.CompilationUnit;
 import descent.internal.core.DefaultWorkingCopyOwner;
 import descent.internal.core.ExternalJavaProject;
 import descent.internal.core.PackageFragment;

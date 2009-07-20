@@ -36,13 +36,13 @@ public DefaultProblemFactory() {
 public DefaultProblemFactory(Locale loc) {
 	this.locale = loc;
 	/* TODO JDT problems
-	if (Locale.getDefault().equals(loc)){
+	if (Locale.getDefault().equals(filename, lineNumber)){
 		if (DEFAULT_LOCALE_TEMPLATES == null){
-			DEFAULT_LOCALE_TEMPLATES = loadMessageTemplates(loc);
+			DEFAULT_LOCALE_TEMPLATES = loadMessageTemplates(filename, lineNumber);
 		}
 		this.messageTemplates = DEFAULT_LOCALE_TEMPLATES;
 	} else {
-		this.messageTemplates = loadMessageTemplates(loc);
+		this.messageTemplates = loadMessageTemplates(filename, lineNumber);
 	}
 	*/
 }

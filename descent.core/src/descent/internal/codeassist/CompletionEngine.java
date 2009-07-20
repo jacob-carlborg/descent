@@ -94,7 +94,6 @@ import descent.internal.compiler.parser.InterfaceDeclaration;
 import descent.internal.compiler.parser.InvariantDeclaration;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.LabelStatement;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.MATCH;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.NewExp;
@@ -1199,7 +1198,7 @@ public class CompletionEngine extends Engine
 		
 		if (func == null && !((ClassDeclaration) sym).isAbstract()) {
 			// Suggest default constructor
-			cd.ctor(new CtorDeclaration(Loc.ZERO, new Arguments(0), 0));
+			cd.ctor(new CtorDeclaration(null, 0, new Arguments(0), 0));
 			cd.ctor(context).type = new TypeFunction(new Arguments(0), cd.type, 0, LINK.LINKd);
 			cd.ctor(context).parent = cd;
 			
@@ -2247,9 +2246,9 @@ public class CompletionEngine extends Engine
 		}
 	}
 	
-	public final static Type tupleType = new TypeIdentifier(Loc.ZERO, "Tuple".toCharArray());
+	public final static Type tupleType = new TypeIdentifier(null, 0, "Tuple".toCharArray());
 	private void suggestTupleof(Type type) {
-		TypeExp exp = new TypeExp(Loc.ZERO, type);
+		TypeExp exp = new TypeExp(null, 0, type);
 		Expression e = type.dotExp(Scope.createGlobal(module, context), exp, new IdentifierExp(Id.tupleof), context);
 		if (e != null && e.type != null) {
 			suggestProperty(type.getSignature().toCharArray(), RelevanceConstants.R_INTERESTING_BUILTIN_PROPERTY, Id.tupleof, e.type);
@@ -2548,7 +2547,7 @@ public class CompletionEngine extends Engine
 				if (currentName.length == 0 || match(currentName, ident)) {
 					// If the type of the variable is a pointer to a function, suggest the call
 					if (!parser.isInAddrExp && isPointerToFunction(var.type)) {
-						FuncDeclaration func = new FuncDeclaration(Loc.ZERO, var.ident, 0, var.type.next);
+						FuncDeclaration func = new FuncDeclaration(null, 0, var.ident, 0, var.type.next);
 						func.parent = var.parent;
 						func.copySourceRange(var);
 						suggestMember(func, onlyStatics, flags, funcSignatures, includes);

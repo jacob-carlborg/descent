@@ -6,8 +6,8 @@ public abstract class DefaultInitExp extends Expression {
 
 	private final TOK subop;
 
-	public DefaultInitExp(Loc loc, TOK subop) {
-		super(loc, TOK.TOKdefault);
+	public DefaultInitExp(char[] filename, int lineNumber, TOK subop) {
+		super(filename, lineNumber, TOK.TOKdefault);
 		this.subop = subop;
 	}
 
@@ -22,7 +22,7 @@ public abstract class DefaultInitExp extends Expression {
 		visitor.endVisit(this);
 	}
 	
-	public abstract Expression resolve(Loc loc, Scope sc, SemanticContext context);
+	public abstract Expression resolve(char[] filename, int lineNumber, Scope sc, SemanticContext context);
 	
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {

@@ -8,8 +8,8 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class SuperExp extends ThisExp {
 
-	public SuperExp(Loc loc) {
-		super(loc);
+	public SuperExp(char[] filename, int lineNumber) {
+		super(filename, lineNumber);
 		op = TOK.TOKsuper;
 	}
 
@@ -108,7 +108,7 @@ public class SuperExp extends ThisExp {
 			type = cd.baseClass.type;
 		}
 
-		var.isVarDeclaration().checkNestedReference(sc, loc, context);
+		var.isVarDeclaration().checkNestedReference(sc, filename, lineNumber, context);
 		if (context.isD2()) {
 			sc.callSuper |= Scope.CSXsuper;
 		} else {

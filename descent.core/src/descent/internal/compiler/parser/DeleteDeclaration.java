@@ -13,8 +13,8 @@ public class DeleteDeclaration extends FuncDeclaration {
 	public Arguments arguments;
 	public int deleteStart; // where the "delete" keyword starts
 
-	public DeleteDeclaration(Loc loc, Arguments arguments) {
-		super(loc, new IdentifierExp(Id.classDelete),
+	public DeleteDeclaration(char[] filename, int lineNumber, Arguments arguments) {
+		super(filename, lineNumber, new IdentifierExp(Id.classDelete),
 				STC.STCundefined, null);
 		this.arguments = arguments;
 	}
@@ -84,7 +84,7 @@ public class DeleteDeclaration extends FuncDeclaration {
 		}
 		type = new TypeFunction(arguments, Type.tvoid, 0, LINK.LINKd);
 
-		type = type.semantic(loc, sc, context);
+		type = type.semantic(filename, lineNumber, sc, context);
 		Assert.isTrue(type.ty == TY.Tfunction);
 
 		// Check that there is only one argument of type void*
@@ -110,7 +110,7 @@ public class DeleteDeclaration extends FuncDeclaration {
 
 	@Override
 	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
-		DeleteDeclaration f = context.newDeleteDeclaration(loc, null);
+		DeleteDeclaration f = context.newDeleteDeclaration(filename, lineNumber, null);
 		super.syntaxCopy(f, context);
 		f.arguments = arraySyntaxCopy(arguments, context);
 		f.copySourceRange(this);

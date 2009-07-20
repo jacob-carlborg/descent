@@ -12,8 +12,8 @@ public class CompileStatement extends Statement {
 
 	public Expression exp, sourceExp;
 
-	public CompileStatement(Loc loc, Expression exp) {
-		super(loc);
+	public CompileStatement(char[] filename, int lineNumber, Expression exp) {
+		super(filename, lineNumber);
 		this.exp = this.sourceExp = exp;
 	}
 
@@ -46,7 +46,8 @@ public class CompileStatement extends Statement {
 		StringExp se = (StringExp) exp;
 		se = se.toUTF8(sc, context);
 		Parser p = context.newParser(context.Module_rootModule.apiLevel, se.string);
-		p.loc = loc;
+		p.filename = filename;
+		p.lineNumber = lineNumber;
 
 		Statements a = new Statements();
 		while (p.token.value != TOKeof) {
@@ -89,14 +90,14 @@ public class CompileStatement extends Statement {
 	    if (null == a) {
 	    	return null;
 	    }
-	    Statement s = context.newCompoundStatement(loc, a);
+	    Statement s = context.newCompoundStatement(filename, lineNumber, a);
 	    return s.semantic(sc, context);
 	}
 
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
 		Expression e = exp.syntaxCopy(context);
-		CompileStatement es = context.newCompileStatement(loc, e);
+		CompileStatement es = context.newCompileStatement(filename, lineNumber, e);
 		es.copySourceRange(this);
 		return es;
 	}

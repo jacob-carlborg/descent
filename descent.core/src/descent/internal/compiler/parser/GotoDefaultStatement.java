@@ -8,8 +8,8 @@ public class GotoDefaultStatement extends Statement {
 
 	public SwitchStatement sw;
 
-	public GotoDefaultStatement(Loc loc) {
-		super(loc);
+	public GotoDefaultStatement(char[] filename, int lineNumber) {
+		super(filename, lineNumber);
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public class GotoDefaultStatement extends Statement {
 
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
-		GotoDefaultStatement s = context.newGotoDefaultStatement(loc);
+		GotoDefaultStatement s = context.newGotoDefaultStatement(filename, lineNumber);
 		s.copySourceRange(this);
 		return s;
 	}

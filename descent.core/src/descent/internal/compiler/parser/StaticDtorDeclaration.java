@@ -10,8 +10,8 @@ public class StaticDtorDeclaration extends FuncDeclaration {
 	public int thisStart;
 	public VarDeclaration vgate;
 
-	public StaticDtorDeclaration(Loc loc) {
-		super(loc, new IdentifierExp(Id.staticDtor), STC.STCstatic,
+	public StaticDtorDeclaration(char[] filename, int lineNumber) {
+		super(filename, lineNumber, new IdentifierExp(Id.staticDtor), STC.STCstatic,
 				null);
 	}
 
@@ -72,22 +72,22 @@ public class StaticDtorDeclaration extends FuncDeclaration {
 			 * destruction.
 			 */
 			IdentifierExp id = context.uniqueId("__gate");
-			VarDeclaration v = new VarDeclaration(Loc.ZERO, Type.tint32, id,
+			VarDeclaration v = new VarDeclaration(null, 0, Type.tint32, id,
 					null);
 			v.storage_class = STC.STCstatic;
 			Statements sa = new Statements(1);
-			Statement s = new DeclarationStatement(Loc.ZERO, v);
+			Statement s = new DeclarationStatement(null, 0, v);
 			sa.add(s);
-			Expression e = new IdentifierExp(Loc.ZERO, id);
-			e = new AddAssignExp(Loc.ZERO, e, new IntegerExp(-1));
-			e = new EqualExp(Loc.ZERO, TOK.TOKnotequal, e, new IntegerExp(0));
-			s = new IfStatement(Loc.ZERO, null, e, new ReturnStatement(
-					Loc.ZERO, null), null);
+			Expression e = new IdentifierExp(null, 0, id);
+			e = new AddAssignExp(null, 0, e, new IntegerExp(-1));
+			e = new EqualExp(null, 0, TOK.TOKnotequal, e, new IntegerExp(0));
+			s = new IfStatement(null, 0, null, e, new ReturnStatement(
+					null, 0, null), null);
 			sa.add(s);
 			if (fbody != null) {
 				sa.add(fbody);
 			}
-			fbody = new CompoundStatement(Loc.ZERO, sa);
+			fbody = new CompoundStatement(null, 0, sa);
 			vgate = v;
 		}
 
@@ -109,7 +109,7 @@ public class StaticDtorDeclaration extends FuncDeclaration {
 			throw new IllegalStateException("assert(!s);");
 		}
 
-		StaticDtorDeclaration sdd = context.newStaticDtorDeclaration(loc);
+		StaticDtorDeclaration sdd = context.newStaticDtorDeclaration(filename, lineNumber);
 		sdd.copySourceRange(this);
 		return super.syntaxCopy(sdd, context);
 	}

@@ -1,11 +1,11 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.LINK.LINKd;
+import static descent.internal.compiler.parser.PROT.PROTpublic;
+
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.IProblem;
-
-import static descent.internal.compiler.parser.LINK.LINKd;
-import static descent.internal.compiler.parser.PROT.PROTpublic;
 
 
 public class Scope {
@@ -246,7 +246,7 @@ public class Scope {
 		return null;
 	}
 
-	public void mergeCallSuper(Loc loc, int cs, ASTDmdNode reference) {
+	public void mergeCallSuper(char[] filename, int lineNumber, int cs, ASTDmdNode reference) {
 		// This does a primitive flow analysis to support the restrictions
 		// regarding when and how constructors can appear.
 		// It merges the results of two paths.
@@ -296,7 +296,7 @@ public class Scope {
 		return s;
 	}
 
-	public Dsymbol search(Loc loc, IdentifierExp ident, Dsymbol[] pscopesym,
+	public Dsymbol search(char[] filename, int lineNumber, IdentifierExp ident, Dsymbol[] pscopesym,
 			SemanticContext context) {
 		Dsymbol s;
 		Scope sc;
@@ -321,13 +321,13 @@ public class Scope {
 		for (sc = this; sc != null; sc = sc.enclosing) {
 			assert (sc != sc.enclosing);
 			if (sc.scopesym != null) {
-				s = sc.scopesym.search(loc, ident, 0, context);
+				s = sc.scopesym.search(filename, lineNumber, ident, 0, context);
 				if (s != null) {
 					if ((context.global.params.warnings)
 							&& ASTDmdNode.equals(ident, Id.length)
 							&& sc.scopesym.isArrayScopeSymbol() != null
 							&& sc.enclosing != null
-							&& sc.enclosing.search(loc, ident, null, context) != null) {
+							&& sc.enclosing.search(filename, lineNumber, ident, null, context) != null) {
 						if (context.acceptsWarnings()) {
 							context.acceptProblem(Problem.newSemanticTypeWarning(IProblem.ArrayLengthHidesOtherLengthNameInOuterScope, ident));
 						}

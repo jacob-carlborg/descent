@@ -13,6 +13,7 @@ package descent.internal.core;
 import org.eclipse.core.resources.IResourceStatus;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
+
 import descent.core.IJavaModelStatus;
 import descent.core.JavaModelException;
 

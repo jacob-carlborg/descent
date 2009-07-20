@@ -10,8 +10,8 @@ public class ContinueStatement extends Statement {
 
 	public IdentifierExp ident;
 
-	public ContinueStatement(Loc loc, IdentifierExp ident) {
-		super(loc);
+	public ContinueStatement(char[] filename, int lineNumber, IdentifierExp ident) {
+		super(filename, lineNumber);
 		this.ident = ident;
 	}
 
@@ -69,7 +69,7 @@ public class ContinueStatement extends Statement {
 							if (ls != null && equals(ls.ident, ident)
 									&& ls.statement == sc.fes) {
 								// Replace continue ident; with return 0;
-								return new ReturnStatement(0, new IntegerExp(0));
+								return new ReturnStatement(null, 0, new IntegerExp(0));
 							}
 						}
 
@@ -82,7 +82,7 @@ public class ContinueStatement extends Statement {
 						 */
 						Statement s;
 						sc.fes.cases.add(this);
-						s = new ReturnStatement(0, new IntegerExp(sc.fes.cases
+						s = new ReturnStatement(null, 0, new IntegerExp(sc.fes.cases
 								.size() + 1));
 						return s;
 					}
@@ -116,7 +116,7 @@ public class ContinueStatement extends Statement {
 				Statement s;
 
 				// Replace continue; with return 0;
-				s = new ReturnStatement(0, new IntegerExp(0));
+				s = new ReturnStatement(null, 0, new IntegerExp(0));
 				return s;
 			}
 			if (context.acceptsErrors()) {
@@ -128,7 +128,7 @@ public class ContinueStatement extends Statement {
 
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
-		ContinueStatement s = context.newContinueStatement(loc, ident);
+		ContinueStatement s = context.newContinueStatement(filename, lineNumber, ident);
 		s.copySourceRange(this);
 		return s;
 	}

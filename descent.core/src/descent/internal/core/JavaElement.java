@@ -37,7 +37,6 @@ import descent.core.IClassFile;
 import descent.core.IClasspathAttribute;
 import descent.core.IClasspathEntry;
 import descent.core.ICompilationUnit;
-import descent.core.IField;
 import descent.core.IJavaElement;
 import descent.core.IJavaModel;
 import descent.core.IJavaModelStatus;

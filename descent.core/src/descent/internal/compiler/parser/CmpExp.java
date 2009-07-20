@@ -1,18 +1,17 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.Constfold.Cmp;
+import static descent.internal.compiler.parser.TOK.TOKnull;
+import static descent.internal.compiler.parser.TY.Tclass;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.Constfold.Cmp;
-
-import static descent.internal.compiler.parser.TOK.*;
-import static descent.internal.compiler.parser.TY.*;
 
 
 public class CmpExp extends BinExp {
 
-	public CmpExp(Loc loc, TOK op, Expression e1, Expression e2) {
-		super(loc, op, e1, e2);
+	public CmpExp(char[] filename, int lineNumber, TOK op, Expression e1, Expression e2) {
+		super(filename, lineNumber, op, e1, e2);
 	}
 
 	@Override
@@ -92,7 +91,7 @@ public class CmpExp extends BinExp {
 		    	}
 				e = new ErrorExp();
 			} else {
-				e = new CmpExp(loc, op, e, new IntegerExp(loc, 0, Type.tint32));
+				e = new CmpExp(filename, lineNumber, op, e, new IntegerExp(filename, lineNumber, 0, Type.tint32));
 				e.copySourceRange(this);
 				e = e.semantic(sc, context);
 			}
@@ -132,7 +131,7 @@ public class CmpExp extends BinExp {
 			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CompareNotDefinedForComplexOperands, this));
 			}
-			e = new IntegerExp(loc, 0);
+			e = new IntegerExp(filename, lineNumber, 0);
 		} else {
 			e = this;
 		}

@@ -9,8 +9,8 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class CompileExp extends UnaExp {
 
-	public CompileExp(Loc loc, Expression e) {
-		super(loc, TOK.TOKmixin, e);
+	public CompileExp(char[] filename, int lineNumber, Expression e) {
+		super(filename, lineNumber, TOK.TOKmixin, e);
 	}
 
 	@Override
@@ -43,7 +43,8 @@ public class CompileExp extends UnaExp {
 		StringExp se = (StringExp) e1;
 		se = se.toUTF8(sc, context);
 		Parser p = new Parser(context.Module_rootModule.apiLevel, se.string);
-		p.loc = loc;
+		p.filename = filename;
+		p.lineNumber = lineNumber;
 		Expression e = p.parseExpression();
 		
 		// TODO semantic do this better

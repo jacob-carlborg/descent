@@ -1,16 +1,20 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.BE.BEbreak;
+import static descent.internal.compiler.parser.BE.BEcontinue;
+import static descent.internal.compiler.parser.BE.BEfallthru;
+import static descent.internal.compiler.parser.BE.BEnone;
+import static descent.internal.compiler.parser.BE.BEthrow;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.BE.*;
 
 public class WhileStatement extends Statement {
 
 	public Expression condition;
 	public Statement body;
 
-	public WhileStatement(Loc loc, Expression c, Statement b) {
-		super(loc);
+	public WhileStatement(char[] filename, int lineNumber, Expression c, Statement b) {
+		super(filename, lineNumber);
 		this.condition = c;
 		this.body = b;
 	}
@@ -148,7 +152,7 @@ public class WhileStatement extends Statement {
 
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
-		WhileStatement s = context.newWhileStatement(loc, condition.syntaxCopy(context),
+		WhileStatement s = context.newWhileStatement(filename, lineNumber, condition.syntaxCopy(context),
 				body != null ? body.syntaxCopy(context) : null);
 		s.copySourceRange(this);
 		return s;

@@ -3,8 +3,6 @@ package descent.core.dom;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.text.html.ParagraphView;
-
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
 import descent.core.JavaModelException;
@@ -30,7 +28,6 @@ import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.NewExp;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.TemplateDeclaration;
-import descent.internal.compiler.parser.TemplateParameter;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeAArray;
 import descent.internal.compiler.parser.TypeBasic;

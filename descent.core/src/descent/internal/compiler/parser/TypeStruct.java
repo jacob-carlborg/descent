@@ -57,7 +57,7 @@ public class TypeStruct extends Type {
 
 		if (null != tparam && tparam.ty == Tinstance) {
 			if (null != ti && ti.toAlias(context) == sym) {
-				TypeInstance t = new TypeInstance(Loc.ZERO, ti);
+				TypeInstance t = new TypeInstance(null, 0, ti);
 				return t.deduceType(sc, tparam, parameters, dedtypes, context);
 			}
 
@@ -96,14 +96,14 @@ public class TypeStruct extends Type {
 	}
 
 	@Override
-	public Expression defaultInit(Loc loc, SemanticContext context) {
+	public Expression defaultInit(char[] filename, int lineNumber, SemanticContext context) {
 		 Symbol s;
 		 Declaration d;
 
 		 s = sym.toInitializer();
-		 d = new SymbolDeclaration(sym.loc, s, sym);
+		 d = new SymbolDeclaration(sym.filename, sym.lineNumber, s, sym);
 		 d.type = this;
-		 return new VarExp(sym.loc, d);
+		 return new VarExp(sym.filename, sym.lineNumber, d);
 	}
 
 	@Override
@@ -122,7 +122,7 @@ public class TypeStruct extends Type {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.StructIsForwardReferenced, this, new String[] { sym.toChars(context) }));
 			}
-			return new IntegerExp(e.loc, 0, Type.tint32);
+			return new IntegerExp(e.filename, e.lineNumber,  0, Type.tint32);
 		}
 
 		if (equals(ident, Id.tupleof)) {
@@ -135,10 +135,10 @@ public class TypeStruct extends Type {
 			
 			Expressions exps = new Expressions(sym.fields.size());
 			for (VarDeclaration v_ : sym.fields) {
-				Expression fe = new DotVarExp(e.loc, e, v_);
+				Expression fe = new DotVarExp(e.filename, e.lineNumber,  e, v_);
 				exps.add(fe);
 			}
-			e = new TupleExp(e.loc, exps);
+			e = new TupleExp(e.filename, e.lineNumber,  exps);
 			sc = sc.push();
 			sc.noaccesscheck = 1;
 			e = e.semantic(sc, context);
@@ -152,11 +152,11 @@ public class TypeStruct extends Type {
 			if (de_.e1.op == TOKimport) {
 				ScopeExp se = (ScopeExp) de_.e1;
 
-				s = se.sds.search(e.loc, ident, 0, context);
+				s = se.sds.search(e.filename, e.lineNumber,  ident, 0, context);
 				e = de_.e1;
 				//goto L1;
 			} else {
-				s = sym.search(e.loc, ident, 0, context);
+				s = sym.search(e.filename, e.lineNumber,  ident, 0, context);
 			}
 		} else {
 			// Ident may be null if completing (Foo*).|
@@ -164,7 +164,7 @@ public class TypeStruct extends Type {
 				return e;
 			}
 			
-			s = sym.search(e.loc, ident, 0, context);
+			s = sym.search(e.filename, e.lineNumber,  ident, 0, context);
 		}
 		
 		// Descent: for binding resolution
@@ -195,8 +195,8 @@ public class TypeStruct extends Type {
 			}
 	
 			if (null != s.getType(context)) {
-				//return new DotTypeExp(e.loc, e, s);
-				return new TypeExp(e.loc, s.getType(context));
+				//return new DotTypeExp(e.filename, e.lineNumber,  e, s);
+				return new TypeExp(e.filename, e.lineNumber,  s.getType(context));
 			}
 	
 			EnumMember em = s.isEnumMember();
@@ -209,14 +209,14 @@ public class TypeStruct extends Type {
 			if (null != tm) {
 				Expression de_;
 	
-				de_ = new DotExp(e.loc, e, new ScopeExp(e.loc, tm));
+				de_ = new DotExp(e.filename, e.lineNumber,  e, new ScopeExp(e.filename, e.lineNumber,  tm));
 				de_.type = e.type;
 				return de_;
 			}
 	
 			TemplateDeclaration td = s.isTemplateDeclaration();
 			if (null != td) {
-				e = new DotTemplateExp(e.loc, e, td);
+				e = new DotTemplateExp(e.filename, e.lineNumber,  e, td);
 				e.semantic(sc, context);
 				return e;
 			}
@@ -237,7 +237,7 @@ public class TypeStruct extends Type {
 					continueInL1 = true;
 					continue;
 				}
-				Expression de2 = new DotExp(e.loc, e, new ScopeExp(e.loc, ti));
+				Expression de2 = new DotExp(e.filename, e.lineNumber,  e, new ScopeExp(e.filename, e.lineNumber,  ti));
 				de2.type = e.type;
 				return de2;
 			}
@@ -245,7 +245,7 @@ public class TypeStruct extends Type {
 		
 	    Import timp = s.isImport();
 		if (timp != null) {
-			e = new DsymbolExp(e.loc, s);
+			e = new DsymbolExp(e.filename, e.lineNumber,  s);
 			e = e.semantic(sc, context);
 			return e;
 		}
@@ -260,16 +260,16 @@ public class TypeStruct extends Type {
 			FuncDeclaration fd = sc.func;
 
 			if (d.needThis() && null != fd && null != fd.vthis) {
-				e = new DotVarExp(e.loc, new ThisExp(e.loc), d);
+				e = new DotVarExp(e.filename, e.lineNumber,  new ThisExp(e.filename, e.lineNumber), d);
 				e = e.semantic(sc, context);
 				return e;
 			}
 			if (null != d.isTupleDeclaration()) {
-				e = new TupleExp(e.loc, d.isTupleDeclaration(), context);
+				e = new TupleExp(e.filename, e.lineNumber,  d.isTupleDeclaration(), context);
 				e = e.semantic(sc, context);
 				return e;
 			}
-			return new VarExp(e.loc, d);
+			return new VarExp(e.filename, e.lineNumber,  d);
 		}
 
 		if (d.isDataseg(context)) {
@@ -277,8 +277,8 @@ public class TypeStruct extends Type {
 			VarExp ve;
 
 			accessCheck(sc, e, d, context);
-			ve = new VarExp(e.loc, d);
-			e = new CommaExp(e.loc, e, ve);
+			ve = new VarExp(e.filename, e.lineNumber,  d);
+			e = new CommaExp(e.filename, e.lineNumber,  e, ve);
 			e.type = d.type;
 			return e;
 		}
@@ -293,17 +293,17 @@ public class TypeStruct extends Type {
 
 			// *(&e + offset)
 			accessCheck(sc, e, d, context);
-//			b = new AddrExp(e.loc, e);
+//			b = new AddrExp(e.filename, e.lineNumber,  e);
 //			b.type = e.type.pointerTo(context);
-//			b = new AddExp(e.loc, b, new IntegerExp(e.loc, v.offset(),
+//			b = new AddExp(e.filename, e.lineNumber,  b, new IntegerExp(e.filename, e.lineNumber,  v.offset(),
 //					Type.tint32));
 //			b.type = v.type.pointerTo(context);
-//			e = new PtrExp(e.loc, b);
+//			e = new PtrExp(e.filename, e.lineNumber,  b);
 //			e.type = v.type;
 //			return e;
 		}
 
-		de = new DotVarExp(e.loc, e, d);
+		de = new DotVarExp(e.filename, e.lineNumber,  e, d);
 		return de.semantic(sc, context);
 	}
 
@@ -333,7 +333,7 @@ public class TypeStruct extends Type {
 	}
 
 	@Override
-	public boolean isZeroInit(Loc loc, SemanticContext context) {
+	public boolean isZeroInit(char[] filename, int lineNumber, SemanticContext context) {
 		return sym.zeroInit;
 	}
 
@@ -344,12 +344,12 @@ public class TypeStruct extends Type {
 	}
 
 	@Override
-	public Type semantic(Loc loc, Scope sc, SemanticContext context) {
+	public Type semantic(char[] filename, int lineNumber, Scope sc, SemanticContext context) {
 		return merge(context);
 	}
 
 	@Override
-	public int size(Loc loc, SemanticContext context) {
+	public int size(char[] filename, int lineNumber, SemanticContext context) {
 		return sym.size(context);
 	}
 

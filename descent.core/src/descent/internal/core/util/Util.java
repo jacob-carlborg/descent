@@ -48,7 +48,6 @@ import descent.core.IPackageFragment;
 import descent.core.JavaConventions;
 import descent.core.JavaCore;
 import descent.core.JavaModelException;
-import descent.core.Signature;
 import descent.core.compiler.CharOperation;
 import descent.core.dom.AST;
 import descent.core.dom.ASTNode;

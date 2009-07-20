@@ -1,25 +1,23 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+import static descent.internal.compiler.parser.TY.Tident;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
-import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
-
-import static descent.internal.compiler.parser.TY.Tident;
 
 
 public class TypeIdentifier extends TypeQualified {
 
 	public IdentifierExp ident;
 
-	public TypeIdentifier(Loc loc, char[] ident) {
-		this(loc, new IdentifierExp(loc, ident));
+	public TypeIdentifier(char[] filename, int lineNumber, char[] ident) {
+		this(filename, lineNumber, new IdentifierExp(filename, lineNumber, ident));
 	}
 
-	public TypeIdentifier(Loc loc, IdentifierExp ident) {
-		super(loc, TY.Tident);
+	public TypeIdentifier(char[] filename, int lineNumber, IdentifierExp ident) {
+		super(filename, lineNumber, TY.Tident);
 		this.ident = ident;
 	}
 
@@ -64,17 +62,17 @@ public class TypeIdentifier extends TypeQualified {
 	}
 
 	@Override
-	public void resolve(Loc loc, Scope sc, Expression[] pe, Type[] pt,
+	public void resolve(char[] filename, int lineNumber, Scope sc, Expression[] pe, Type[] pt,
 			Dsymbol[] ps, SemanticContext context) {
 		Dsymbol s;
 		Dsymbol[] scopesym = { null };
 
-		s = sc.search(loc, ident, scopesym, context);
+		s = sc.search(filename, lineNumber, ident, scopesym, context);
 		
 		// Descent: for binding resolution
 		ident.setResolvedSymbol(s, context);
 		
-		resolveHelper(loc, sc, s, scopesym[0], pe, pt, ps, context);
+		resolveHelper(filename, lineNumber, sc, s, scopesym[0], pe, pt, ps, context);
 		
 		if (pt != null && pt.length > 0 && pt[0] != null && 
 				s != null 
@@ -93,12 +91,12 @@ public class TypeIdentifier extends TypeQualified {
 	}
 
 	@Override
-	public Type semantic(Loc loc, Scope sc, SemanticContext context) {
+	public Type semantic(char[] filename, int lineNumber, Scope sc, SemanticContext context) {
 		Type[] t = { null };
 		Expression[] e = { null };
 		Dsymbol[] s = { null };
 
-		resolve(loc, sc, e, t, s, context);
+		resolve(filename, lineNumber, sc, e, t, s, context);
 		
 		if (t[0] != null) {
 			if (t[0].ty == TY.Ttypedef) {
@@ -133,7 +131,7 @@ public class TypeIdentifier extends TypeQualified {
 	public Type syntaxCopy(SemanticContext context) {
 		TypeIdentifier t;
 
-		t = new TypeIdentifier(loc, ident);
+		t = new TypeIdentifier(filename, lineNumber, ident);
 		t.syntaxCopyHelper(this, context);
 		t.copySourceRange(this);
 		return t;
@@ -174,7 +172,7 @@ public class TypeIdentifier extends TypeQualified {
 		}
 
 		Dsymbol[] scopesym = { null };
-		Dsymbol s = sc.search(loc, ident, scopesym, context);
+		Dsymbol s = sc.search(filename, lineNumber, ident, scopesym, context);
 		
 		// Descent: for binding resolution
 		context.setResolvedSymbol(ident, s);
@@ -183,7 +181,7 @@ public class TypeIdentifier extends TypeQualified {
 			if (idents != null) {
 				for (int i = 0; i < idents.size(); i++) {
 					IdentifierExp id = idents.get(i);
-					s = s.searchX(loc, sc, id, context);
+					s = s.searchX(filename, lineNumber, sc, id, context);
 					if (null == s) // failed to find a symbol
 					{
 						break;
@@ -198,11 +196,11 @@ public class TypeIdentifier extends TypeQualified {
 
 	@Override
 	public Expression toExpression() {
-		Expression e = new IdentifierExp(loc, ident.ident);
+		Expression e = new IdentifierExp(filename, lineNumber, ident.ident);
 		e.setSourceRange(ident.start, ident.length);
 		if (idents != null) {
 			for (IdentifierExp id : idents) {
-				e = new DotIdExp(loc, e, id);
+				e = new DotIdExp(filename, lineNumber, e, id);
 				e.setSourceRange(ident.start, id.start + id.length
 						- ident.start);
 			}

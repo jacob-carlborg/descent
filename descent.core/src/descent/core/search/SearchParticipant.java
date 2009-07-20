@@ -13,7 +13,11 @@ package descent.core.search;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.*;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
+
 import descent.internal.core.JavaModel;
 import descent.internal.core.JavaModelManager;
 import descent.internal.core.search.indexing.IndexManager;

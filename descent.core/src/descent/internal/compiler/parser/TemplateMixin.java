@@ -1,11 +1,11 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.PROT.PROTpublic;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.ASTNode;
 import descent.internal.compiler.parser.ast.AstVisitorAdapter;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.PROT.PROTpublic;
 
 
 public class TemplateMixin extends TemplateInstance {
@@ -18,9 +18,9 @@ public class TemplateMixin extends TemplateInstance {
 	public int typeStart;
 	public int typeLength;
 
-	public TemplateMixin(Loc loc, IdentifierExp ident, Type tqual,
+	public TemplateMixin(char[] filename, int lineNumber, IdentifierExp ident, Type tqual,
 			Identifiers idents, Objects tiargs, ASTNodeEncoder encoder) {
-		super(loc, idents == null || idents.isEmpty() ? null : idents.get(idents.size() - 1), encoder);
+		super(filename, lineNumber, idents == null || idents.isEmpty() ? null : idents.get(idents.size() - 1), encoder);
 		this.ident = ident;
 		this.sourceIdent = ident;
 		this.tqual = tqual;
@@ -108,7 +108,7 @@ public class TemplateMixin extends TemplateInstance {
 				id = idents.get(0);
 				switch (id.dyncast()) {
 				case DYNCAST_IDENTIFIER:
-					s = sc.search(loc, id, null, context);
+					s = sc.search(filename, lineNumber, id, null, context);
 					break;
 
 				case DYNCAST_DSYMBOL: {
@@ -127,11 +127,11 @@ public class TemplateMixin extends TemplateInstance {
 					break;
 				}
 				id = idents.get(i);
-				s = s.searchX(loc, sc, id, context);
+				s = s.searchX(filename, lineNumber, sc, id, context);
 			}
 			if (null == s) {
 				if (context.acceptsErrors()) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolNotDefined, loc.linnum, typeStart, typeLength, new String[] { toChars(context) }));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolNotDefined, lineNumber, typeStart, typeLength, new String[] { toChars(context) }));
 				}
 				inst = this;
 				return;
@@ -139,7 +139,7 @@ public class TemplateMixin extends TemplateInstance {
 			tempdecl = s.toAlias(context).isTemplateDeclaration();
 			if (null == tempdecl) {
 				if (context.acceptsErrors()) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolNotATemplate, loc.linnum, typeStart, typeLength, new String[] { s.toChars(context) }));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolNotATemplate, lineNumber, typeStart, typeLength, new String[] { s.toChars(context) }));
 				}
 				inst = this;
 				return;
@@ -416,12 +416,12 @@ public class TemplateMixin extends TemplateInstance {
 				TemplateInstance ti = ((TemplateInstanceWrapper) id).tempinst;
 
 				ti = (TemplateInstance) ti.syntaxCopy(null, context);
-				id = new TemplateInstanceWrapper(Loc.ZERO, ti);
+				id = new TemplateInstanceWrapper(null, 0, ti);
 			}
 			ids.set(i, id);
 		}
 
-		tm = context.newTemplateMixin(loc, ident, (tqual != null ? tqual.syntaxCopy(context)
+		tm = context.newTemplateMixin(filename, lineNumber, ident, (tqual != null ? tqual.syntaxCopy(context)
 				: null), ids, tiargs);
 		tm.copySourceRange(this);
 		super.syntaxCopy(tm, context);

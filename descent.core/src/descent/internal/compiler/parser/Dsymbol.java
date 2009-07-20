@@ -63,7 +63,8 @@ public class Dsymbol extends ASTDmdNode {
 	public IdentifierExp ident;
 	public IdentifierExp c_ident;
 	public Dsymbol parent;
-	public Loc loc;
+	public int lineNumber;
+	public char[] filename;
 	public Dsymbol overprevious; // previous in overload list 
 
 	public Dsymbol() {
@@ -99,7 +100,7 @@ public class Dsymbol extends ASTDmdNode {
 
 				s2 = sd.symtab.lookup(ident); // SEMANTIC
 				if (!s2.overloadInsert(this, context)) {
-					ScopeDsymbol.multiplyDefined(Loc.ZERO, this, s2, context);
+					ScopeDsymbol.multiplyDefined(null, 0, this, s2, context);
 				}
 			}
 			if (sd.isAggregateDeclaration() != null
@@ -476,7 +477,7 @@ public class Dsymbol extends ASTDmdNode {
 		return PROT.PROTpublic;
 	}
 
-	public Dsymbol search(Loc loc, char[] ident, int flags,
+	public Dsymbol search(char[] filename, int lineNumber, char[] ident, int flags,
 			SemanticContext context) {
 		return null;
 	}
@@ -490,9 +491,9 @@ public class Dsymbol extends ASTDmdNode {
 	 * Returns:
 	 *	NULL if not found
 	 */
-	public final Dsymbol search(Loc loc, IdentifierExp ident, int flags,
+	public final Dsymbol search(char[] filename, int lineNumber, IdentifierExp ident, int flags,
 			SemanticContext context) {
-		return search(loc, ident.ident, flags, context);
+		return search(filename, lineNumber, ident.ident, flags, context);
 	}
 
 	/**
@@ -504,7 +505,7 @@ public class Dsymbol extends ASTDmdNode {
 	 * Returns:
 	 *	NULL if not found
 	 */
-	public Dsymbol searchX(Loc loc, Scope sc, IdentifierExp id,
+	public Dsymbol searchX(char[] filename, int lineNumber, Scope sc, IdentifierExp id,
 			SemanticContext context) {
 		Dsymbol s = this.toAlias(context);
 		
@@ -517,14 +518,14 @@ public class Dsymbol extends ASTDmdNode {
 
 		switch (id.dyncast()) {
 		case DYNCAST_IDENTIFIER:
-			sm = s.search(loc, id, 0, context);
+			sm = s.search(filename, lineNumber, id, 0, context);
 			break;
 
 		case DYNCAST_DSYMBOL: { // It's a template instance
 			Dsymbol st = ((TemplateInstanceWrapper) id).tempinst;
 			TemplateInstance ti = st.isTemplateInstance();
 			id = ti.name;
-			sm = s.search(loc, id, 0, context);
+			sm = s.search(filename, lineNumber, id, 0, context);
 			if (null == sm) {
 				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
@@ -624,12 +625,7 @@ public class Dsymbol extends ASTDmdNode {
 	}
 
 	public String locToChars(SemanticContext context) {
-//	    IModule m = getModule();
-//
-//	    if (m != null && m.srcfile != null) {
-//	    	loc.filename = m.srcfile.toString().toCharArray();
-//	    }
-	    return loc.toChars();
+	    return new String(filename);
 	}
 	
 	@Override
@@ -650,17 +646,11 @@ public class Dsymbol extends ASTDmdNode {
 	
 	@Override
 	public int getLineNumber() {
-		// TODO Descent semantic line number
-		if (loc == null) {
-			return 0;
-		}
-		return loc.linnum;
+		return lineNumber;
 	}
 	
 	public void setLineNumber(int lineNumber) {
-		if (loc != null) {
-			this.loc.linnum = lineNumber;
-		}
+		this.lineNumber = lineNumber;
 	}
 	
 	// For Descent, used to get the type of a symbol

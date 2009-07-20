@@ -3,14 +3,13 @@ package descent.internal.core.ctfe.dom;
 import descent.internal.compiler.parser.CaseStatement;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.InterState;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.Statement;
 
 public class CompileTimeCaseStatement extends CaseStatement {
 
-	public CompileTimeCaseStatement(Loc loc, Expression exp, Statement s) {
-		super(loc, exp, s);
+	public CompileTimeCaseStatement(char[] filename, int lineNumber, Expression exp, Statement s) {
+		super(filename, lineNumber, exp, s);
 	}
 	
 	@Override

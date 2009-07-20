@@ -5,8 +5,8 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class DotExp extends BinExp {
 
-	public DotExp(Loc loc, Expression e1, Expression e2) {
-		super(loc, TOK.TOKdotexp, e1, e2);
+	public DotExp(char[] filename, int lineNumber, Expression e1, Expression e2) {
+		super(filename, lineNumber, TOK.TOKdotexp, e1, e2);
 	}
 
 	@Override
@@ -29,7 +29,7 @@ public class DotExp extends BinExp {
 			ScopeExp se = (ScopeExp) e2;
 			TemplateDeclaration td = se.sds.isTemplateDeclaration();
 			if (null != td) {
-				Expression e = new DotTemplateExp(loc, e1, td);
+				Expression e = new DotTemplateExp(filename, lineNumber, e1, td);
 				e = e.semantic(sc, context);
 				return e;
 			}

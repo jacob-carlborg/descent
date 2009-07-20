@@ -1,6 +1,6 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.STC.*;
+import static descent.internal.compiler.parser.STC.STCconst;
 
 
 public class SymbolDeclaration extends Declaration {
@@ -8,9 +8,10 @@ public class SymbolDeclaration extends Declaration {
 	public Symbol sym;
 	public StructDeclaration dsym;
 
-	public SymbolDeclaration(Loc loc, Symbol s, StructDeclaration dsym) {
+	public SymbolDeclaration(char[] filename, int lineNumber, Symbol s, StructDeclaration dsym) {
 		super(new IdentifierExp(s.Sident));
-		this.loc = loc;
+		this.filename = filename;
+		this.lineNumber = lineNumber;
 		sym = s;
 		this.dsym = dsym;
 		storage_class |= STCconst;

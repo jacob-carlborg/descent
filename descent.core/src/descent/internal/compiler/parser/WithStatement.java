@@ -19,8 +19,8 @@ public class WithStatement extends Statement {
 	
 	public VarDeclaration wthis;
 
-	public WithStatement(Loc loc, Expression exp, Statement body) {
-		super(loc);
+	public WithStatement(char[] filename, int lineNumber, Expression exp, Statement body) {
+		super(filename, lineNumber);
 		this.exp = exp;
 		this.sourceExp = exp;
 		this.body = body;
@@ -87,16 +87,16 @@ public class WithStatement extends Statement {
 			}
 			t = t.toBasetype(context);
 			if (t.isClassHandle() != null) {
-				init = new ExpInitializer(loc, exp);
-				wthis = new VarDeclaration(loc, exp.type, Id.withSym, init);
+				init = new ExpInitializer(filename, lineNumber, exp);
+				wthis = new VarDeclaration(filename, lineNumber, exp.type, Id.withSym, init);
 				wthis.semantic(sc, context);
 
 				sym = new WithScopeSymbol(this);
 				sym.parent = sc.scopesym;
 			} else if (t.ty == Tstruct) {
 				Expression e = exp.addressOf(sc, context);
-				init = new ExpInitializer(loc, e);
-				wthis = new VarDeclaration(loc, e.type, Id.withSym, init);
+				init = new ExpInitializer(filename, lineNumber, e);
+				wthis = new VarDeclaration(filename, lineNumber, e.type, Id.withSym, init);
 				wthis.semantic(sc, context);
 				sym = new WithScopeSymbol(this);
 				sym.parent = sc.scopesym;
@@ -120,7 +120,7 @@ public class WithStatement extends Statement {
 
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
-		WithStatement s = context.newWithStatement(loc, exp.syntaxCopy(context),
+		WithStatement s = context.newWithStatement(filename, lineNumber, exp.syntaxCopy(context),
 				body != null ? body.syntaxCopy(context) : null);
 		s.copySourceRange(this);
 		return s;

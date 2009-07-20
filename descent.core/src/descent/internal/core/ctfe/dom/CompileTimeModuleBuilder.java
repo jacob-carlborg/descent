@@ -31,9 +31,7 @@ import descent.internal.compiler.parser.InterfaceDeclaration;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.Lexer;
 import descent.internal.compiler.parser.LinkDeclaration;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.NewDeclaration;
-import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.StaticIfCondition;
 import descent.internal.compiler.parser.StaticIfDeclaration;
 import descent.internal.compiler.parser.StructDeclaration;
@@ -59,13 +57,13 @@ public class CompileTimeModuleBuilder extends ModuleBuilder {
 	}
 	
 	@Override
-	protected FuncDeclaration newFuncDeclaration(Loc loc, IdentifierExp ident, int storageClass, Type type) {
-		return new CompileTimeFuncDeclaration(loc, ident, storageClass, type, true);
+	protected FuncDeclaration newFuncDeclaration(char[] filename, int lineNumber, IdentifierExp ident, int storageClass, Type type) {
+		return new CompileTimeFuncDeclaration(filename, lineNumber, ident, storageClass, type, true);
 	}
 	
 	@Override
-	protected AliasDeclaration newAliasDeclaration(Loc loc, IdentifierExp ident, Type type) {
-		return new CompileTimeAliasDeclaration(loc, ident, type);
+	protected AliasDeclaration newAliasDeclaration(char[] filename, int lineNumber, IdentifierExp ident, Type type) {
+		return new CompileTimeAliasDeclaration(filename, lineNumber, ident, type);
 	}
 	
 	@Override
@@ -74,18 +72,18 @@ public class CompileTimeModuleBuilder extends ModuleBuilder {
 	}
 	
 	@Override
-	protected AnonDeclaration newAnonDeclaration(Loc loc, boolean isUnion, Dsymbols symbols) {
-		return new CompileTimeAnonDeclaration(loc, isUnion, symbols);
+	protected AnonDeclaration newAnonDeclaration(char[] filename, int lineNumber, boolean isUnion, Dsymbols symbols) {
+		return new CompileTimeAnonDeclaration(filename, lineNumber, isUnion, symbols);
 	}
 	
 	@Override
-	protected ClassDeclaration newClassDeclaration(Loc loc, IdentifierExp ident, BaseClasses baseClasses) {
-		return new CompileTimeClassDeclaration(loc, ident, baseClasses);
+	protected ClassDeclaration newClassDeclaration(char[] filename, int lineNumber, IdentifierExp ident, BaseClasses baseClasses) {
+		return new CompileTimeClassDeclaration(filename, lineNumber, ident, baseClasses);
 	}
 	
 	@Override
-	protected CompileDeclaration newCompileDeclaration(Loc loc, Expression exp) {
-		return new CompileTimeCompileDeclaration(loc, exp);
+	protected CompileDeclaration newCompileDeclaration(char[] filename, int lineNumber, Expression exp) {
+		return new CompileTimeCompileDeclaration(filename, lineNumber, exp);
 	}
 	
 	@Override
@@ -94,43 +92,43 @@ public class CompileTimeModuleBuilder extends ModuleBuilder {
 	}
 	
 	@Override
-	protected CtorDeclaration newCtorDeclaration(Loc loc, Arguments arguments, int varargs) {
-		return new CompileTimeCtorDeclaration(loc, arguments, varargs);
+	protected CtorDeclaration newCtorDeclaration(char[] filename, int lineNumber, Arguments arguments, int varargs) {
+		return new CompileTimeCtorDeclaration(filename, lineNumber, arguments, varargs);
 	}
 	
 	@Override
-	protected DebugSymbol newDebugSymbol(Loc loc, IdentifierExp exp, Version version) {
-		return new CompileTimeDebugSymbol(loc, exp, version);
+	protected DebugSymbol newDebugSymbol(char[] filename, int lineNumber, IdentifierExp exp, Version version) {
+		return new CompileTimeDebugSymbol(filename, lineNumber, exp, version);
 	}
 	
 	@Override
-	protected DebugSymbol newDebugSymbol(Loc loc, long level, Version version) {
-		return new CompileTimeDebugSymbol(loc, level, version);
+	protected DebugSymbol newDebugSymbol(char[] filename, int lineNumber, long level, Version version) {
+		return new CompileTimeDebugSymbol(filename, lineNumber, level, version);
 	}
 	
 	@Override
-	protected DeleteDeclaration newDeleteDeclaration(Loc loc, Arguments arguments) {
-		return new CompileTimeDeleteDeclaration(loc, arguments);
+	protected DeleteDeclaration newDeleteDeclaration(char[] filename, int lineNumber, Arguments arguments) {
+		return new CompileTimeDeleteDeclaration(filename, lineNumber, arguments);
 	}
 	
 	@Override
-	protected DtorDeclaration newDtorDeclaration(Loc loc) {
-		return new CompileTimeDtorDeclaration(loc);
+	protected DtorDeclaration newDtorDeclaration(char[] filename, int lineNumber) {
+		return new CompileTimeDtorDeclaration(filename, lineNumber);
 	}
 	
 	@Override
-	protected EnumDeclaration newEnumDeclaration(Loc loc, IdentifierExp ident, Type type) {
-		return new CompileTimeEnumDeclaration(loc, ident, type);
+	protected EnumDeclaration newEnumDeclaration(char[] filename, int lineNumber, IdentifierExp ident, Type type) {
+		return new CompileTimeEnumDeclaration(filename, lineNumber, ident, type);
 	}
 	
 	@Override
-	protected EnumMember newEnumMember(Loc loc, IdentifierExp ident, Expression expression) {
-		return new CompileTimeEnumMember(loc, ident, expression);
+	protected EnumMember newEnumMember(char[] filename, int lineNumber, IdentifierExp ident, Expression expression) {
+		return new CompileTimeEnumMember(filename, lineNumber, ident, expression);
 	}
 	
 	@Override
-	protected InterfaceDeclaration newInterfaceDeclaration(Loc loc, IdentifierExp ident, BaseClasses baseClasses) {
-		return new CompileTimeInterfaceDeclaration(loc, ident, baseClasses);
+	protected InterfaceDeclaration newInterfaceDeclaration(char[] filename, int lineNumber, IdentifierExp ident, BaseClasses baseClasses) {
+		return new CompileTimeInterfaceDeclaration(filename, lineNumber, ident, baseClasses);
 	}
 	
 	@Override
@@ -139,8 +137,8 @@ public class CompileTimeModuleBuilder extends ModuleBuilder {
 	}
 	
 	@Override
-	protected NewDeclaration newNewDeclaration(Loc loc, Arguments arguments, int varargs) {
-		return new CompileTimeNewDeclaration(loc, arguments, varargs);
+	protected NewDeclaration newNewDeclaration(char[] filename, int lineNumber, Arguments arguments, int varargs) {
+		return new CompileTimeNewDeclaration(filename, lineNumber, arguments, varargs);
 	}
 	
 	@Override
@@ -149,39 +147,39 @@ public class CompileTimeModuleBuilder extends ModuleBuilder {
 	}
 	
 	@Override
-	protected StructDeclaration newStructDeclaration(Loc loc, IdentifierExp id) {
-		return new CompileTimeStructDeclaration(loc, id);
+	protected StructDeclaration newStructDeclaration(char[] filename, int lineNumber, IdentifierExp id) {
+		return new CompileTimeStructDeclaration(filename, lineNumber, id);
 	}
 	
 	@Override
-	protected TemplateDeclaration newTemplateDeclaration(Loc loc, IdentifierExp ident, TemplateParameters templateParameters, Expression constraint, Dsymbols symbols) {
-		return new CompileTimeTemplateDeclaration(loc, ident, templateParameters, constraint,
+	protected TemplateDeclaration newTemplateDeclaration(char[] filename, int lineNumber, IdentifierExp ident, TemplateParameters templateParameters, Expression constraint, Dsymbols symbols) {
+		return new CompileTimeTemplateDeclaration(filename, lineNumber, ident, templateParameters, constraint,
 				symbols, true);
 	}
 	
 	@Override
-	protected TypedefDeclaration newTypedefDeclaration(Loc loc, IdentifierExp ident, Type type, Initializer initializer) {
-		return new CompileTimeTypedefDeclaration(loc, ident, type, initializer);
+	protected TypedefDeclaration newTypedefDeclaration(char[] filename, int lineNumber, IdentifierExp ident, Type type, Initializer initializer) {
+		return new CompileTimeTypedefDeclaration(filename, lineNumber, ident, type, initializer);
 	}
 	
 	@Override
-	protected UnionDeclaration newUnionDeclaration(Loc loc, IdentifierExp id) {
-		return new CompileTimeUnionDeclaration(loc, id);
+	protected UnionDeclaration newUnionDeclaration(char[] filename, int lineNumber, IdentifierExp id) {
+		return new CompileTimeUnionDeclaration(filename, lineNumber, id);
 	}
 	
 	@Override
-	protected VarDeclaration newVarDeclaration(Loc loc, Type type, IdentifierExp ident, Initializer initializer) {
-		return new CompileTimeVarDeclaration(loc, type, ident, initializer);
+	protected VarDeclaration newVarDeclaration(char[] filename, int lineNumber, Type type, IdentifierExp ident, Initializer initializer) {
+		return new CompileTimeVarDeclaration(filename, lineNumber, type, ident, initializer);
 	}
 	
 	@Override
-	protected VersionSymbol newVersionSymbol(Loc loc, IdentifierExp exp, Version version) {
-		return new CompileTimeVersionSymbol(loc, exp, version);
+	protected VersionSymbol newVersionSymbol(char[] filename, int lineNumber, IdentifierExp exp, Version version) {
+		return new CompileTimeVersionSymbol(filename, lineNumber, exp, version);
 	}
 	
 	@Override
-	protected VersionSymbol newVersionSymbol(Loc loc, long level, Version version) {
-		return new CompileTimeVersionSymbol(loc, level, version);
+	protected VersionSymbol newVersionSymbol(char[] filename, int lineNumber, long level, Version version) {
+		return new CompileTimeVersionSymbol(filename, lineNumber, level, version);
 	}
 	
 	@Override

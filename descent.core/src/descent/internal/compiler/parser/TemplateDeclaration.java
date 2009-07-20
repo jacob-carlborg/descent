@@ -52,10 +52,11 @@ public class TemplateDeclaration extends ScopeDsymbol {
 	
 	private IJavaElement javaElement;
 	
-	public TemplateDeclaration(Loc loc, IdentifierExp id,
+	public TemplateDeclaration(char[] filename, int lineNumber, IdentifierExp id,
 			TemplateParameters parameters, Expression constraint, Dsymbols decldefs) {
 		super(id);
-		this.loc = loc;
+		this.filename = filename;
+		this.lineNumber = lineNumber;
 		this.parameters = parameters;
 		this.constraint = constraint;
 		this.members = decldefs;
@@ -88,7 +89,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		
 	    // See if tp.ident already exists with a matching definition
 	    Dsymbol[] scopesym = { null };
-	    s = sc.search(loc, tp.ident, scopesym, context);
+	    s = sc.search(filename, lineNumber, tp.ident, scopesym, context);
 	    if (s != null && scopesym[0] == sc.scopesym)
 	    {
 		TupleDeclaration td = s.isTupleDeclaration();
@@ -103,24 +104,24 @@ public class TemplateDeclaration extends ScopeDsymbol {
 	    }
 
 		if (targ != null) {
-			s = new AliasDeclaration(Loc.ZERO, tp.ident, targ);
+			s = new AliasDeclaration(null, 0, tp.ident, targ);
 			
 			// Descent
 			((AliasDeclaration) s).isTemplateParameter = true;
 		} else if (sa != null) {
-			s = new AliasDeclaration(Loc.ZERO, tp.ident, sa);
+			s = new AliasDeclaration(null, 0, tp.ident, sa);
 			
 			// Descent
 			((AliasDeclaration) s).isTemplateParameter = true;
 		} else if (ea != null) {
 			// tdtypes.data[i] always matches ea here
-			Initializer init = new ExpInitializer(loc, ea);
+			Initializer init = new ExpInitializer(filename, lineNumber, ea);
 			TemplateValueParameter tvp = tp.isTemplateValueParameter();
 			if (tvp == null) {
 				throw new IllegalStateException("assert(tvp);");
 			}
 
-			VarDeclaration v = new TemplateVarDeclaration(loc, tvp.valType,
+			VarDeclaration v = new TemplateVarDeclaration(filename, lineNumber, tvp.valType,
 					tp.ident, init);
 			if (context.isD2()) {
 				v.storage_class = STCmanifest;
@@ -129,7 +130,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			}
 			s = v;
 		} else if (va != null) {
-			s = new TupleDeclaration(loc, tp.ident, va.objects);
+			s = new TupleDeclaration(filename, lineNumber, tp.ident, va.objects);
 		} else {
 			throw new IllegalStateException("assert(0);");
 		}
@@ -143,11 +144,11 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		s.semantic(sc, context);
 	}
 	
-	public FuncDeclaration deduceFunctionTemplate(Scope sc, Loc loc, Objects targsi, Expression ethis, Expressions fargs, SemanticContext context) {
-		return deduceFunctionTemplate(sc, loc, targsi, ethis, fargs, 0, context);
+	public FuncDeclaration deduceFunctionTemplate(Scope sc, char[] filename, int lineNumber, Objects targsi, Expression ethis, Expressions fargs, SemanticContext context) {
+		return deduceFunctionTemplate(sc, filename, lineNumber, targsi, ethis, fargs, 0, context);
 	}
 
-	public FuncDeclaration deduceFunctionTemplate(Scope sc, Loc loc, Objects targsi, Expression ethis, Expressions fargs, int flags, SemanticContext context) {
+	public FuncDeclaration deduceFunctionTemplate(Scope sc, char[] filename, int lineNumber, Objects targsi, Expression ethis, Expressions fargs, int flags, SemanticContext context) {
 
 		MATCH m_best = MATCH.MATCHnomatch;
 		TemplateDeclaration td_ambig = null;
@@ -179,7 +180,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			MATCH m;
 
 			Objects dedargs = new Objects();
-			m = td.deduceFunctionTemplateMatch(loc, targsi, ethis, fargs, dedargs, context);
+			m = td.deduceFunctionTemplateMatch(filename, lineNumber, targsi, ethis, fargs, dedargs, context);
 
 			if (m == MATCH.MATCHnomatch) {
 				continue;
@@ -250,7 +251,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		 * The best match is td_best with arguments tdargs. Now instantiate the
 		 * template.
 		 */
-		ti = new TemplateInstance(loc, td_best, tdargs, context.encoder);
+		ti = new TemplateInstance(filename, lineNumber, td_best, tdargs, context.encoder);
 		ti.semantic(sc, context);
 		fd = ti.toAlias(context).isFuncDeclaration();
 		if (null == fd) {
@@ -259,7 +260,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		return fd;
 	}
 	
-	public MATCH deduceFunctionTemplateMatch(Loc loc, 
+	public MATCH deduceFunctionTemplateMatch(char[] filename, int lineNumber, 
 			Objects targsi,
 			Expression ethis,
 			Expressions fargs,
@@ -433,7 +434,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 					if (ttp != null) {
 						MATCH m;
 
-						Type t = new TypeIdentifier(Loc.ZERO, ttp.ident);
+						Type t = new TypeIdentifier(null, 0, ttp.ident);
 						m = ethis.type.deduceType(scope, t, parameters,
 								dedtypes, context);
 						if (m == MATCHnomatch) {
@@ -492,9 +493,9 @@ public class TemplateDeclaration extends ScopeDsymbol {
 								&& fparam.type.toBasetype(context).ty == Tsarray) {
 							argtype = new TypeSArray(
 									argtype.nextOf(),
-									new IntegerExp(se.loc, se.len, Type.tindex),
+									new IntegerExp(se.filename, se.lineNumber, se.len, Type.tindex),
 									context.encoder);
-							argtype = argtype.semantic(se.loc, null, context);
+							argtype = argtype.semantic(se.filename, se.lineNumber, null, context);
 							argtype = argtype.invariantOf(context);
 						}
 					}
@@ -640,7 +641,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 					    }
 					}
 				} else {
-					oded = tp.defaultArg(loc, paramscope, context);
+					oded = tp.defaultArg(filename, lineNumber, paramscope, context);
 					if (null == oded) {
 						// goto Lnomatch;
 						return deduceFunctionTemplateMatch_Lnomatch(paramscope);
@@ -718,7 +719,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		 * as td2.
 		 */
 
-		TemplateInstance ti = new TemplateInstance(Loc.ZERO, ident, context.encoder); // create
+		TemplateInstance ti = new TemplateInstance(null, 0, ident, context.encoder); // create
 		// dummy
 		// template
 		// instance
@@ -1082,7 +1083,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		}
 		
 		d = Dsymbol.arraySyntaxCopy(members, context);
-		td = context.newTemplateDeclaration(loc, ident, p, c, d);
+		td = context.newTemplateDeclaration(filename, lineNumber, ident, p, c, d);
 		td.copySourceRange(this);
 		td.javaElement = javaElement;
 		td.wrapper = wrapper;

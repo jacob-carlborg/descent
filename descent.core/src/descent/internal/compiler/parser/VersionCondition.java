@@ -39,7 +39,7 @@ public class VersionCondition extends DVCondition {
 		{ 'a', 'l', 'l' },
 		{ 'n', 'o', 'n', 'e' }, };
 
-	public static void checkPredefined(Loc loc, IdentifierExp ident,
+	public static void checkPredefined(char[] filename, int lineNumber, IdentifierExp ident,
 			SemanticContext context) {
 		final char[][] thoseReserved = context.isD1() ? resevered : resevered2;
 		
@@ -66,8 +66,8 @@ public class VersionCondition extends DVCondition {
 		}
 	}
 
-	public VersionCondition(Module mod, Loc loc, long level, char[] id) {
-		super(mod, loc, level, id);
+	public VersionCondition(Module mod, char[] filename, int lineNumber, long level, char[] id) {
+		super(mod, filename, lineNumber, level, id);
 	}
 
 	@Override
@@ -79,7 +79,7 @@ public class VersionCondition extends DVCondition {
 	}
 
 	public void addGlobalIdent(IdentifierExp ident, SemanticContext context) {
-		checkPredefined(Loc.ZERO, ident, context);
+		checkPredefined(null, 0, ident, context);
 		addPredefinedGlobalIdent(ident, context);
 	}
 

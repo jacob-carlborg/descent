@@ -15,8 +15,8 @@ public class TypeTypeof extends TypeQualified {
 	// Descent: to improve performance, must be set by Parser or ModuleBuilder
 	public ASTNodeEncoder encoder;  
 
-	public TypeTypeof(Loc loc, Expression exp, ASTNodeEncoder encoder) {
-		super(loc, TY.Ttypeof);
+	public TypeTypeof(char[] filename, int lineNumber, Expression exp, ASTNodeEncoder encoder) {
+		super(filename, lineNumber, TY.Ttypeof);
 		this.exp = this.sourceExp = exp;
 		this.encoder = encoder;
 	}
@@ -36,7 +36,7 @@ public class TypeTypeof extends TypeQualified {
 	}
 
 	@Override
-	public Type semantic(Loc loc, Scope sc, SemanticContext context) {
+	public Type semantic(char[] filename, int lineNumber, Scope sc, SemanticContext context) {
 		Type t;
 
 		{
@@ -64,7 +64,7 @@ public class TypeTypeof extends TypeQualified {
 					break;
 				}
 				IdentifierExp id = idents.get(i);
-				s = s.searchX(loc, sc, id, context);
+				s = s.searchX(filename, lineNumber, sc, id, context);
 			}
 			if (s != null) {
 				t = s.getType(context);
@@ -91,17 +91,17 @@ public class TypeTypeof extends TypeQualified {
 	}
 
 	@Override
-	public int size(Loc loc, SemanticContext context) {
+	public int size(char[] filename, int lineNumber, SemanticContext context) {
 		if (exp.type != null) {
-			return exp.type.size(loc, context);
+			return exp.type.size(filename, lineNumber, context);
 		} else {
-			return super.size(loc, context);
+			return super.size(filename, lineNumber, context);
 		}
 	}
 
 	@Override
 	public Type syntaxCopy(SemanticContext context) {
-		TypeTypeof t = new TypeTypeof(loc, exp.syntaxCopy(context), encoder);
+		TypeTypeof t = new TypeTypeof(filename, lineNumber, exp.syntaxCopy(context), encoder);
 		t.syntaxCopyHelper(this, context);
 		t.copySourceRange(this);
 		return t;
@@ -121,7 +121,7 @@ public class TypeTypeof extends TypeQualified {
 
 	@Override
 	public Dsymbol toDsymbol(Scope sc, SemanticContext context) {
-		Type t = semantic(loc, sc, context);
+		Type t = semantic(filename, lineNumber, sc, context);
 		if (same(t, this, context)) {
 			return null;
 		}

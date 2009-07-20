@@ -13,6 +13,7 @@ package descent.internal.core.search.matching;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+
 import descent.core.IJavaElement;
 import descent.core.IMember;
 import descent.core.IMethod;

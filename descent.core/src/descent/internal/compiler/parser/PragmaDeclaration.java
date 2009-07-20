@@ -1,21 +1,22 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.TOK.TOKstring;
 import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.TOK.TOKstring;
 
 public class PragmaDeclaration extends AttribDeclaration {
 
 	public Expressions args, sourceArgs;
 
-	public PragmaDeclaration(Loc loc, IdentifierExp ident, Expressions args,
+	public PragmaDeclaration(char[] filename, int lineNumber, IdentifierExp ident, Expressions args,
 			Dsymbols decl) {
 		super(decl);
-		this.loc = loc;
+		this.filename = filename;
+		this.lineNumber = lineNumber;
 		this.ident = ident;
 		this.args = args;
 		if (args != null) {
@@ -152,7 +153,7 @@ public class PragmaDeclaration extends AttribDeclaration {
 		PragmaDeclaration pd;
 
 		Assert.isTrue(s == null);
-		pd = context.newPragmaDeclaration(loc, ident, Expression.arraySyntaxCopy(args,
+		pd = context.newPragmaDeclaration(filename, lineNumber, ident, Expression.arraySyntaxCopy(args,
 				context), arraySyntaxCopy(decl, context));
 		pd.copySourceRange(this);
 		return pd;

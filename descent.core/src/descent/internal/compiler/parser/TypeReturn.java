@@ -6,13 +6,13 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class TypeReturn extends TypeQualified {
 
-	public TypeReturn(Loc loc) {
-		super(loc, TY.Treturn);
+	public TypeReturn(char[] filename, int lineNumber) {
+		super(filename, lineNumber, TY.Treturn);
 	}
 	
 	@Override
 	public Type syntaxCopy(SemanticContext context) {
-		TypeReturn t = new TypeReturn(loc);
+		TypeReturn t = new TypeReturn(filename, lineNumber);
 	    t.syntaxCopyHelper(this, context);
 	    t.mod = mod;
 	    t.copySourceRange(this);
@@ -21,7 +21,7 @@ public class TypeReturn extends TypeQualified {
 	
 	@Override
 	public Dsymbol toDsymbol(Scope sc, SemanticContext context) {
-		Type t = semantic(Loc.ZERO, sc, context);
+		Type t = semantic(null, 0, sc, context);
 		if (same(t, this, context)) {
 			return null;
 		}
@@ -29,7 +29,7 @@ public class TypeReturn extends TypeQualified {
 	}
 	
 	@Override
-	public Type semantic(Loc loc, Scope sc, SemanticContext context) {
+	public Type semantic(char[] filename, int lineNumber, Scope sc, SemanticContext context) {
 		Type t;
 		if (null == sc.func) {
 			if (context.acceptsErrors()) {
@@ -52,7 +52,7 @@ public class TypeReturn extends TypeQualified {
 				if (null == s)
 					break;
 				IdentifierExp id = (IdentifierExp) idents.get(i);
-				s = s.searchX(loc, sc, id, context);
+				s = s.searchX(filename, lineNumber, sc, id, context);
 			}
 			if (s != null) {
 				t = s.getType(context);

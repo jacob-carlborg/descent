@@ -14,12 +14,35 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.eclipse.core.resources.*;
-import org.eclipse.core.runtime.*;
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceStatus;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRunnable;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
-import descent.core.*;
-import descent.internal.core.util.Messages;
 import org.eclipse.jface.text.IDocument;
+
+import descent.core.IBuffer;
+import descent.core.IClasspathEntry;
+import descent.core.ICompilationUnit;
+import descent.core.IJavaElement;
+import descent.core.IJavaElementDelta;
+import descent.core.IJavaModel;
+import descent.core.IJavaModelStatus;
+import descent.core.IJavaModelStatusConstants;
+import descent.core.IPackageFragment;
+import descent.core.IPackageFragmentRoot;
+import descent.core.JavaModelException;
+import descent.internal.core.util.Messages;
 
 /**
  * Defines behavior common to all Java Model operations

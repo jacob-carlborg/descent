@@ -7,7 +7,7 @@ public class OverExp extends Expression {
 	public OverloadSet vars;
 
 	public OverExp(OverloadSet s) {
-		super(Loc.ZERO, TOK.TOKoverloadset);
+		super(null, 0, TOK.TOKoverloadset);
 		this.vars = s;
 	}
 

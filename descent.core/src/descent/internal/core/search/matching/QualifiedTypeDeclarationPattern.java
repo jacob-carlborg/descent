@@ -11,7 +11,7 @@
 package descent.internal.core.search.matching;
 
 import descent.core.compiler.CharOperation;
-import descent.core.search.*;
+import descent.core.search.SearchPattern;
 import descent.internal.core.search.indexing.IIndexConstants;
 
 public class QualifiedTypeDeclarationPattern extends TypeDeclarationPattern implements IIndexConstants {

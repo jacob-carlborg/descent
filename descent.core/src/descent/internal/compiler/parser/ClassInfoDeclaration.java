@@ -8,12 +8,12 @@ public class ClassInfoDeclaration extends VarDeclaration {
 	public ClassDeclaration cd;
 
 	public ClassInfoDeclaration(ClassDeclaration cd, SemanticContext context) {
-		this(Loc.ZERO, cd, context);
+		this(null, 0, cd, context);
 	}
 
-	public ClassInfoDeclaration(Loc loc, ClassDeclaration cd,
+	public ClassInfoDeclaration(char[] filename, int lineNumber, ClassDeclaration cd,
 			SemanticContext context) {
-		super(loc, context.ClassDeclaration_classinfo.type, cd.ident, null);
+		super(filename, lineNumber, context.ClassDeclaration_classinfo.type, cd.ident, null);
 		this.cd = cd;
 	}
 	

@@ -11,8 +11,8 @@ public class FuncExp extends Expression {
 	// Descent: in case neither function nor delegate was present in the source file
 	public boolean isEmptySyntax; 
 
-	public FuncExp(Loc loc, FuncLiteralDeclaration fd) {
-		super(loc, TOK.TOKfunction);
+	public FuncExp(char[] filename, int lineNumber, FuncLiteralDeclaration fd) {
+		super(filename, lineNumber, TOK.TOKfunction);
 		this.fd = this.sourceFd = fd;
 	}
 
@@ -56,7 +56,7 @@ public class FuncExp extends Expression {
 			// Type is a "delegate to" or "pointer to" the function literal
 			if (fd.isNested()) {
 				type = new TypeDelegate(fd.type);
-				type = type.semantic(loc, sc, context);
+				type = type.semantic(filename, lineNumber, sc, context);
 			} else {
 				type = fd.type.pointerTo(context);
 			}
@@ -69,7 +69,7 @@ public class FuncExp extends Expression {
 
 	@Override
 	public Expression syntaxCopy(SemanticContext context) {
-		return new FuncExp(loc, (FuncLiteralDeclaration) fd.syntaxCopy(null, context));
+		return new FuncExp(filename, lineNumber, (FuncLiteralDeclaration) fd.syntaxCopy(null, context));
 	}
 
 	@Override

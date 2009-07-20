@@ -2,9 +2,8 @@ package descent.internal.codeassist.impl;
 
 import java.util.Map;
 
-import descent.internal.core.SearchableEnvironment;
-
 import descent.internal.compiler.impl.CompilerOptions;
+import descent.internal.core.SearchableEnvironment;
 
 public abstract class Engine {
 	

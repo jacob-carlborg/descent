@@ -2,6 +2,7 @@ package descent.internal.core;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+
 import descent.core.IClasspathContainer;
 import descent.core.IClasspathEntry;
 import descent.core.JavaCore;

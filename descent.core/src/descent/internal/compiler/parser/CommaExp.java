@@ -1,15 +1,15 @@
 package descent.internal.compiler.parser;
 
-import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.TOK.TOKfloat64;
 import static descent.internal.compiler.parser.TOK.TOKint64;
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
 public class CommaExp extends BinExp {
 
-	public CommaExp(Loc loc, Expression e1, Expression e2) {
-		super(loc, TOK.TOKcomma, e1, e2);
+	public CommaExp(char[] filename, int lineNumber, Expression e1, Expression e2) {
+		super(filename, lineNumber, TOK.TOKcomma, e1, e2);
 	}
 
 	@Override

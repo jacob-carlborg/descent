@@ -13,7 +13,6 @@ package descent.core;
 import java.util.Map;
 
 import descent.core.compiler.IScanner;
-import descent.core.dom.AST;
 import descent.core.dom.PublicScanner;
 import descent.core.formatter.CodeFormatter;
 import descent.internal.compiler.parser.Parser;

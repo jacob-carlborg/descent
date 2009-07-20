@@ -13,9 +13,10 @@ package descent.internal.core.dom.rewrite;
 import java.util.ArrayList;
 import java.util.List;
 
-import descent.core.formatter.IndentManipulation;
 import org.eclipse.text.edits.ISourceModifier;
 import org.eclipse.text.edits.ReplaceEdit;
+
+import descent.core.formatter.IndentManipulation;
 
 
 public class SourceModifier implements ISourceModifier {

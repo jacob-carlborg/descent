@@ -12,8 +12,8 @@ public class OnScopeStatement extends Statement {
 
 	public Statement statement;
 
-	public OnScopeStatement(Loc loc, TOK tok, Statement statement) {
-		super(loc);
+	public OnScopeStatement(char[] filename, int lineNumber, TOK tok, Statement statement) {
+		super(filename, lineNumber);
 		this.tok = tok;
 		this.statement = statement;
 	}
@@ -61,17 +61,17 @@ public class OnScopeStatement extends Statement {
 			 */
 			IdentifierExp id = context.uniqueId("__osf", ++num);
 
-			ExpInitializer ie = new ExpInitializer(loc, new IntegerExp(0));
-			VarDeclaration v = new VarDeclaration(loc, Type.tint32, id, ie);
-			sentry[0] = new DeclarationStatement(loc, v);
+			ExpInitializer ie = new ExpInitializer(filename, lineNumber, new IntegerExp(0));
+			VarDeclaration v = new VarDeclaration(filename, lineNumber, Type.tint32, id, ie);
+			sentry[0] = new DeclarationStatement(filename, lineNumber, v);
 
 			Expression e = new IntegerExp(1);
-			e = new AssignExp(Loc.ZERO, new VarExp(Loc.ZERO, v), e);
-			sexception[0] = new ExpStatement(Loc.ZERO, e);
+			e = new AssignExp(null, 0, new VarExp(null, 0, v), e);
+			sexception[0] = new ExpStatement(null, 0, e);
 
-			e = new VarExp(Loc.ZERO, v);
-			e = new NotExp(Loc.ZERO, e);
-			sfinally[0] = new IfStatement(Loc.ZERO, null, e, statement, null);
+			e = new VarExp(null, 0, v);
+			e = new NotExp(null, 0, e);
+			sfinally[0] = new IfStatement(null, 0, null, e, statement, null);
 
 			break;
 		}
@@ -89,7 +89,7 @@ public class OnScopeStatement extends Statement {
 
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
-		OnScopeStatement s = context.newOnScopeStatement(loc, tok, statement
+		OnScopeStatement s = context.newOnScopeStatement(filename, lineNumber, tok, statement
 				.syntaxCopy(context));
 		s.copySourceRange(this);
 		return s;

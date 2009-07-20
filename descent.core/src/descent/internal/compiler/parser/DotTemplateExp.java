@@ -7,8 +7,8 @@ public class DotTemplateExp extends UnaExp {
 
 	public TemplateDeclaration td;
 
-	public DotTemplateExp(Loc loc, Expression e1, TemplateDeclaration td) {
-		super(loc, TOK.TOKdottd, e1);
+	public DotTemplateExp(char[] filename, int lineNumber, Expression e1, TemplateDeclaration td) {
+		super(filename, lineNumber, TOK.TOKdottd, e1);
 		this.td = td;
 	}
 

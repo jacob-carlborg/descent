@@ -4,7 +4,6 @@ import descent.internal.compiler.parser.Dsymbols;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.Expressions;
 import descent.internal.compiler.parser.IdentifierExp;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.PragmaDeclaration;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.ScopeDsymbol;
@@ -14,8 +13,8 @@ public class CompileTimePragmaDeclaration extends PragmaDeclaration {
 	
 	private Expression fMessage;
 
-	public CompileTimePragmaDeclaration(Loc loc, IdentifierExp ident, Expressions args, Dsymbols decl) {
-		super(loc, ident, args, decl);
+	public CompileTimePragmaDeclaration(char[] filename, int lineNumber, IdentifierExp ident, Expressions args, Dsymbols decl) {
+		super(filename, lineNumber, ident, args, decl);
 	}
 	
 	@Override

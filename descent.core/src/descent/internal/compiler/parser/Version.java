@@ -7,8 +7,9 @@ public class Version extends Dsymbol {
 	
 	public char[] value;
 	
-	public Version(Loc loc, char[] value) {
-		this.loc = loc;
+	public Version(char[] filename, int lineNumber, char[] value) {
+		this.filename = filename;
+		this.lineNumber = lineNumber;
 		this.value = value;
 	}
 	

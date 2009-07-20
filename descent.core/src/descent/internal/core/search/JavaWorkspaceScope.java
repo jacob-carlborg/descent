@@ -13,13 +13,14 @@ package descent.internal.core.search;
 import java.util.HashSet;
 
 import org.eclipse.core.runtime.IPath;
+
 import descent.core.IJavaElement;
 import descent.core.IJavaElementDelta;
+import descent.core.IJavaProject;
 import descent.core.JavaModelException;
 import descent.internal.compiler.env.AccessRuleSet;
 import descent.internal.core.JavaModelManager;
 import descent.internal.core.JavaProject;
-import descent.core.IJavaProject;
 
 /**
  * A Java-specific scope for searching the entire workspace.

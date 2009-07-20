@@ -1,15 +1,13 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.MATCH.MATCHexact;
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+import static descent.internal.compiler.parser.TOK.TOKcolon;
+import static descent.internal.compiler.parser.TOK.TOKequal;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.core.dom.IftypeDeclaration;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
-import static descent.internal.compiler.parser.MATCH.MATCHexact;
-import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
-
-import static descent.internal.compiler.parser.TOK.TOKcolon;
-import static descent.internal.compiler.parser.TOK.TOKequal;
 
 
 public class IftypeCondition extends Condition {
@@ -19,9 +17,9 @@ public class IftypeCondition extends Condition {
 	public TOK tok;
 	public Type tspec;
 
-	public IftypeCondition(Loc loc, Type targ, IdentifierExp ident, TOK tok,
+	public IftypeCondition(char[] filename, int lineNumber, Type targ, IdentifierExp ident, TOK tok,
 			Type tspec) {
-		super(loc);
+		super(filename, lineNumber);
 		this.targ = targ;
 		this.id = ident;
 		this.tok = tok;
@@ -71,12 +69,12 @@ public class IftypeCondition extends Condition {
 			if (context.isD1()) {
 				errors = context.global.errors;
 				context.global.gag++; // suppress printing of error messages
-				targ = targ.semantic(loc, sc, context);
+				targ = targ.semantic(filename, lineNumber, sc, context);
 				context.global.gag--;
 				
 				condition = errors != context.global.errors;
 			} else {
-				Type t = targ.trySemantic(loc, sc, context);
+				Type t = targ.trySemantic(filename, lineNumber, sc, context);
 				if (t != null)
 				    targ = t;
 				else
@@ -97,7 +95,7 @@ public class IftypeCondition extends Condition {
 				 */
 
 				MATCH m;
-				TemplateTypeParameter tp = new TemplateTypeParameter(loc, id,
+				TemplateTypeParameter tp = new TemplateTypeParameter(filename, lineNumber, id,
 						null, null);
 
 				TemplateParameters parameters = new TemplateParameters(1);
@@ -114,7 +112,7 @@ public class IftypeCondition extends Condition {
 					if (null == tded) {
 						tded = targ;
 					}
-					Dsymbol s = new AliasDeclaration(loc, id, tded);
+					Dsymbol s = new AliasDeclaration(filename, lineNumber, id, tded);
 					s.semantic(sc, context);
 					sc.insert(s);
 					if (sd != null) {
@@ -124,7 +122,7 @@ public class IftypeCondition extends Condition {
 			} else if (id != null) {
 				/* Declare id as an alias for type targ. Evaluate to TRUE
 				 */
-				Dsymbol s = new AliasDeclaration(loc, id, targ);
+				Dsymbol s = new AliasDeclaration(filename, lineNumber, id, targ);
 				s.semantic(sc, context);
 				sc.insert(s);
 				if (sd != null) {
@@ -134,7 +132,7 @@ public class IftypeCondition extends Condition {
 			} else if (tspec != null) {
 				/* Evaluate to TRUE if targ matches tspec
 				 */
-				tspec = tspec.semantic(loc, sc, context);
+				tspec = tspec.semantic(filename, lineNumber, sc, context);
 				if (tok == TOKcolon) {
 					if (targ.implicitConvTo(tspec, context) != MATCHnomatch) {
 						inc = 1;
@@ -158,7 +156,7 @@ public class IftypeCondition extends Condition {
 
 	@Override
 	public Condition syntaxCopy(SemanticContext context) {
-		return new IftypeCondition(loc, targ.syntaxCopy(context), id, tok,
+		return new IftypeCondition(filename, lineNumber, targ.syntaxCopy(context), id, tok,
 				tspec != null ? tspec.syntaxCopy(context) : null);
 	}
 

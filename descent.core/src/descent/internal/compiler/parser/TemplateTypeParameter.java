@@ -1,13 +1,12 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.MATCH.MATCHconvert;
+import static descent.internal.compiler.parser.MATCH.MATCHexact;
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
-import static descent.internal.compiler.parser.MATCH.MATCHconvert;
-import static descent.internal.compiler.parser.MATCH.MATCHexact;
-import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 
 
 public class TemplateTypeParameter extends TemplateParameter {
@@ -15,9 +14,9 @@ public class TemplateTypeParameter extends TemplateParameter {
 	public Type specType, sourceSpecType;
 	public Type defaultType, sourceDefaultType;
 
-	public TemplateTypeParameter(Loc loc, IdentifierExp ident, Type specType,
+	public TemplateTypeParameter(char[] filename, int lineNumber, IdentifierExp ident, Type specType,
 			Type defaultType) {
-		super(loc, ident);
+		super(filename, lineNumber, ident);
 		this.specType = this.sourceSpecType = specType;
 		this.defaultType = this.sourceDefaultType = defaultType;
 	}
@@ -35,8 +34,8 @@ public class TemplateTypeParameter extends TemplateParameter {
 
 	@Override
 	public void declareParameter(Scope sc, SemanticContext context) {
-		TypeIdentifier ti = new TypeIdentifier(loc, ident);
-		sparam = new AliasDeclaration(loc, ident, ti);
+		TypeIdentifier ti = new TypeIdentifier(filename, lineNumber, ident);
+		sparam = new AliasDeclaration(filename, lineNumber, ident, ti);
 		
 		// Descent
 		((AliasDeclaration) sparam).isTemplateParameter = true;
@@ -49,13 +48,13 @@ public class TemplateTypeParameter extends TemplateParameter {
 	}
 
 	@Override
-	public ASTDmdNode defaultArg(Loc loc, Scope sc, SemanticContext context) {
+	public ASTDmdNode defaultArg(char[] filename, int lineNumber, Scope sc, SemanticContext context) {
 		Type t;
 
 		t = defaultType;
 		if (t != null) {
 			t = t.syntaxCopy(context);
-			t = t.semantic(loc, sc, context);
+			t = t.semantic(filename, lineNumber, sc, context);
 		}
 		return t;
 	}
@@ -68,7 +67,7 @@ public class TemplateTypeParameter extends TemplateParameter {
 			t = specType;
 		} else {
 			// Use this for alias-parameter's too (?)
-			t = new TypeIdentifier(loc, ident);
+			t = new TypeIdentifier(filename, lineNumber, ident);
 		}
 		return t;
 	}
@@ -96,7 +95,7 @@ public class TemplateTypeParameter extends TemplateParameter {
 			oarg = tiargs.get(i);
 		} else { 
 			// Get default argument instead
-			oarg = defaultArg(loc, sc, context);
+			oarg = defaultArg(filename, lineNumber, sc, context);
 			if (null == oarg) {
 				assert (i < dedtypes.size());
 				// It might have already been deduced
@@ -151,7 +150,7 @@ public class TemplateTypeParameter extends TemplateParameter {
 			dedtypes.set(i, ta);
 			t = ta;
 		}
-		psparam[0] = new AliasDeclaration(loc, ident, t);
+		psparam[0] = new AliasDeclaration(filename, lineNumber, ident, t);
 		
 		// Descent
 		((AliasDeclaration) psparam[0]).isTemplateParameter = true;
@@ -181,7 +180,7 @@ public class TemplateTypeParameter extends TemplateParameter {
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
 		if (specType != null) {
-			specType = specType.semantic(loc, sc, context);
+			specType = specType.semantic(filename, lineNumber, sc, context);
 		}
 	}
 
@@ -192,7 +191,7 @@ public class TemplateTypeParameter extends TemplateParameter {
 
 	@Override
 	public TemplateParameter syntaxCopy(SemanticContext context) {
-		TemplateTypeParameter tp = new TemplateTypeParameter(loc, ident,
+		TemplateTypeParameter tp = new TemplateTypeParameter(filename, lineNumber, ident,
 				specType, defaultType);
 		if (tp.specType != null) {
 			tp.specType = specType.syntaxCopy(context);

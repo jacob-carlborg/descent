@@ -10,9 +10,10 @@ public class AliasThis extends Dsymbol {
 	public IdentifierExp ident;
 	private IField javaElement;
 
-	public AliasThis(Loc loc, IdentifierExp ident) {
+	public AliasThis(char[] filename, int lineNumber, IdentifierExp ident) {
 		super(null); // it's anonymous (no identifier)
-		this.loc = loc;
+		this.filename = filename;
+		this.lineNumber = lineNumber;
 		this.ident = ident;
 	}
 	
@@ -56,7 +57,7 @@ public class AliasThis extends Dsymbol {
 				}
 			}
 			assert (size(ad.members) != 0);
-			Dsymbol s = ad.search(loc, ident, 0, context);
+			Dsymbol s = ad.search(filename, lineNumber, ident, 0, context);
 			context.setResolvedSymbol(ident, s);
 			ad.aliasthis = s;
 		} else {

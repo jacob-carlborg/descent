@@ -15,7 +15,10 @@ import java.io.IOException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
-import descent.core.search.*;
+
+import descent.core.search.IJavaSearchScope;
+import descent.core.search.SearchParticipant;
+import descent.core.search.SearchPattern;
 import descent.internal.core.JavaModelManager;
 import descent.internal.core.index.Index;
 import descent.internal.core.search.indexing.IndexManager;

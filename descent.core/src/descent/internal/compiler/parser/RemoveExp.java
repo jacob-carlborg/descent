@@ -5,8 +5,8 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class RemoveExp extends BinExp {
 
-	public RemoveExp(Loc loc, Expression e1, Expression e2) {
-		super(loc, TOK.TOKremove, e1, e2);
+	public RemoveExp(char[] filename, int lineNumber, Expression e1, Expression e2) {
+		super(filename, lineNumber, TOK.TOKremove, e1, e2);
 	}
 
 	@Override

@@ -4,7 +4,6 @@ import descent.internal.compiler.parser.ArrayLiteralExp;
 import descent.internal.compiler.parser.ComplexExp;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.IntegerExp;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.NullExp;
 import descent.internal.compiler.parser.RealExp;
 import descent.internal.compiler.parser.StructLiteralExp;
@@ -50,24 +49,24 @@ public class Utils {
 		case Tuns32:
 		case Tuns64:
 		case Tuns8:
-			return new IntegerExp(Loc.ZERO, 0, type);
+			return new IntegerExp(null, 0, 0, type);
 		case Tfloat32:
 		case Tfloat64:
 		case Tfloat80:
-			return new RealExp(Loc.ZERO, real_t.ZERO, type);
+			return new RealExp(null, 0, real_t.ZERO, type);
 		case Tcomplex32:
 		case Tcomplex64:
 		case Tcomplex80:
 		case Timaginary32:
 		case Timaginary64:
 		case Timaginary80:
-			return new ComplexExp(Loc.ZERO, complex_t.ZERO, type);
+			return new ComplexExp(null, 0, complex_t.ZERO, type);
 		case Tarray:
 		case Taarray:
 		case Tsarray:
-			return new NullExp(Loc.ZERO);
+			return new NullExp(null, 0);
 		}
-		return new IntegerExp(Loc.ZERO, 0, type);
+		return new IntegerExp(null, 0, 0, type);
 	}
 	
 	public static void appendDetail(Expression expression, StringBuilder sb, int ident) {

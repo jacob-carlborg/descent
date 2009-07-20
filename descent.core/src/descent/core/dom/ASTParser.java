@@ -25,7 +25,6 @@ import descent.core.WorkingCopyOwner;
 import descent.core.compiler.CharOperation;
 import descent.core.dom.CompilationUnitResolver.ParseResult;
 import descent.internal.compiler.parser.IdentifierExp;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Module;
 import descent.internal.core.BasicCompilationUnit;
 import descent.internal.core.DefaultWorkingCopyOwner;
@@ -940,22 +939,22 @@ public class ASTParser {
 			switch(this.astKind) {
 			case K_INITIALIZER :
 				parser = new descent.internal.compiler.parser.Parser(apiLevel, rawSource, sourceOffset, sourceLength);
-				parser.module = new Module("", new IdentifierExp(Loc.ZERO));
+				parser.module = new Module("", new IdentifierExp(null, 0));
 				result = CompilationUnitResolver.convert(ast, parser.module, parser.parseInitializer());
 				return rootNodeToAst(ast, result);
 			case K_EXPRESSION :
 				parser = new descent.internal.compiler.parser.Parser(apiLevel, rawSource, sourceOffset, sourceLength);
-				parser.module = new Module("", new IdentifierExp(Loc.ZERO));
+				parser.module = new Module("", new IdentifierExp(null, 0));
 				result = CompilationUnitResolver.convert(ast, parser.module, parser.parseExpression());
 				return rootNodeToAst(ast, result);
 			case K_STATEMENT :
 				parser = new descent.internal.compiler.parser.Parser(apiLevel, rawSource, sourceOffset, sourceLength);
-				parser.module = new Module("", new IdentifierExp(Loc.ZERO));
+				parser.module = new Module("", new IdentifierExp(null, 0));
 				result = CompilationUnitResolver.convert(ast, parser.module, parser.parseStatement(0));
 				return rootNodeToAst(ast, result);
 			case K_STATEMENTS:
 				parser = new descent.internal.compiler.parser.Parser(apiLevel, rawSource, sourceOffset, sourceLength);
-				parser.module = new Module("", new IdentifierExp(Loc.ZERO));
+				parser.module = new Module("", new IdentifierExp(null, 0));
 				result = CompilationUnitResolver.convert(ast, parser.module, parser.parseStatement(0));
 				for(Statement statement : ((Block) result).statements()) {
 					statement.accept(new GenericVisitor() {

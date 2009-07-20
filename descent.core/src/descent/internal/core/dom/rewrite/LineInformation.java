@@ -11,9 +11,10 @@
 
 package descent.internal.core.dom.rewrite;
 
-import descent.core.dom.CompilationUnit;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
+
+import descent.core.dom.CompilationUnit;
 
 /**
  * 

@@ -57,34 +57,34 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		return a;
 	}
 
-	public static Expression build_overload(Loc loc, Scope sc,
+	public static Expression build_overload(char[] filename, int lineNumber, Scope sc,
 			Expression ethis, Expression earg, IdentifierExp id,
 			SemanticContext context) {
 		Expression e;
 
-		e = new DotIdExp(loc, ethis, id);
+		e = new DotIdExp(filename, lineNumber, ethis, id);
 
 		if (earg != null) {
-			e = new CallExp(loc, e, earg);
+			e = new CallExp(filename, lineNumber, e, earg);
 		} else {
-			e = new CallExp(loc, e);
+			e = new CallExp(filename, lineNumber, e);
 		}
 
 		e = e.semantic(sc, context);
 		return e;
 	}
 
-	public static Expression build_overload(Loc loc, Scope sc,
+	public static Expression build_overload(char[] filename, int lineNumber, Scope sc,
 			Expression ethis, Expression earg, char[] id,
 			SemanticContext context) {
-		return build_overload(loc, sc, ethis, earg, new IdentifierExp(id),
+		return build_overload(filename, lineNumber, sc, ethis, earg, new IdentifierExp(id),
 				context);
 	}
 
 	public static Expression combine(Expression e1, Expression e2) {
 		if (e1 != null) {
 			if (e2 != null) {
-				e1 = new CommaExp(e1.loc, e1, e2);
+				e1 = new CommaExp(e1.filename, e1.lineNumber, e1, e2);
 				e1.type = e2.type;
 			}
 		} else {
@@ -93,13 +93,15 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		return e1;
 	}
 
-	public Loc loc;
+	public int lineNumber;
+	public char[] filename;
 	public TOK op;
 	public Type type, sourceType;
 	public List<Parenthesis> parenthesis;
 
-	public Expression(Loc loc, TOK op) {
-		this.loc = loc;
+	public Expression(char[] filename, int lineNumber, TOK op) {
+		this.lineNumber = lineNumber;
+		this.filename = filename;
 		this.op = op;
 		this.type = null;
 	}
@@ -115,7 +117,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		Expression e;
 
 		e = toLvalue(sc, null, context);
-		e = new AddrExp(loc, e);
+		e = new AddrExp(filename, lineNumber, e);
 		e.type = type.pointerTo(context);
 		return e;
 	}
@@ -143,10 +145,10 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		if (!same(tb, typeb, context)) {
 			// Do (type *) cast of (type [dim])
 			if (tb.ty == Tpointer && typeb.ty == Tsarray) {
-				if (typeb.size(loc, context) == 0) {
-					e = new NullExp(loc);
+				if (typeb.size(filename, lineNumber, context) == 0) {
+					e = new NullExp(filename, lineNumber);
 				} else {
-					e = new AddrExp(loc, e);
+					e = new AddrExp(filename, lineNumber, e);
 				}
 			} else {
 				if (!context.isD1()) {
@@ -158,9 +160,9 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 							 * Forward the cast to our alias this member,
 							 * rewrite to: cast(to)e1.aliasthis
 							 */
-							Expression e1 = new DotIdExp(loc, this,
+							Expression e1 = new DotIdExp(filename, lineNumber, this,
 									ts.sym.aliasthis.ident);
-							e = new CastExp(loc, e1, tb);
+							e = new CastExp(filename, lineNumber, e1, tb);
 							e = e.semantic(sc, context);
 							return e;
 						}
@@ -171,15 +173,15 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 							 * Forward the cast to our alias this member,
 							 * rewrite to: cast(to)e1.aliasthis
 							 */
-							Expression e1 = new DotIdExp(loc, this,
+							Expression e1 = new DotIdExp(filename, lineNumber, this,
 									ts.sym.aliasthis.ident);
-							e = new CastExp(loc, e1, tb);
+							e = new CastExp(filename, lineNumber, e1, tb);
 							e = e.semantic(sc, context);
 							return e;
 						}
 					}
 				}
-				e = new CastExp(loc, e, tb);
+				e = new CastExp(filename, lineNumber, e, tb);
 			}
 		} else {
 			e = e.copy(); // because of COW for assignment to e.type
@@ -220,7 +222,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 						IProblem.SymbolIsNotOfIntegralType, this, new String[] {
 								toChars(context), type.toChars(context) }));
 			}
-			return new IntegerExp(loc, 0);
+			return new IntegerExp(filename, lineNumber, 0);
 		}
 		return this;
 	}
@@ -287,10 +289,10 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		tb = type.toBasetype(context);
 		if (tb.ty == Tsarray) {
 			TypeSArray ts = (TypeSArray) tb;
-			if (ts.size(loc, context) == 0) {
-				e = new NullExp(loc);
+			if (ts.size(filename, lineNumber, context) == 0) {
+				e = new NullExp(filename, lineNumber);
 			} else {
-				e = new AddrExp(loc, this);
+				e = new AddrExp(filename, lineNumber, this);
 			}
 			e.type = ts.next.pointerTo(context);
 		}
@@ -316,7 +318,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		if (type.ty == Treference) {
 			Expression e;
 
-			e = new PtrExp(loc, this);
+			e = new PtrExp(filename, lineNumber, this);
 			e.type = type.next;
 			return e;
 		}
@@ -544,7 +546,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 
 	public Expression semantic(Scope sc, SemanticContext context) {
 		if (type != null) {
-			type = type.semantic(loc, sc, context);
+			type = type.semantic(filename, lineNumber, sc, context);
 		} else {
 			type = Type.tvoid;
 		}
@@ -579,7 +581,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 
 	public Expression toDelegate(Scope sc, Type t, SemanticContext context) {
 		TypeFunction tf = new TypeFunction(null, t, 0, LINKd);
-		FuncLiteralDeclaration fld = new FuncLiteralDeclaration(loc, tf,
+		FuncLiteralDeclaration fld = new FuncLiteralDeclaration(filename, lineNumber, tf,
 				TOKdelegate, null);
 		Expression e;
 		sc = sc.push();
@@ -587,9 +589,9 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		e = this;
 		e.scanForNestedRef(sc, context);
 		sc = sc.pop();
-		Statement s = new ReturnStatement(loc, e);
+		Statement s = new ReturnStatement(filename, lineNumber, e);
 		fld.fbody = s;
-		e = new FuncExp(loc, fld);
+		e = new FuncExp(filename, lineNumber, fld);
 		e = e.semantic(sc, context);
 		return e;
 	}
@@ -614,8 +616,9 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	public Expression toLvalue(Scope sc, Expression e, SemanticContext context) {
 		if (e == null) {
 			e = this;
-		} else if (loc.filename == null) {
-			loc = e.loc;
+		} else if (filename == null) {
+			filename = e.filename;
+			lineNumber = e.lineNumber;
 		}
 		if (context.acceptsErrors()) {
 			context.acceptProblem(Problem.newSemanticTypeError(
@@ -697,20 +700,17 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		IdentifierExp id = context.generateId("c", size(fparams));
 		Argument param = new Argument(0, type, id, null);
 		fparams.shift(param);
-		Expression e = new IdentifierExp(Loc.ZERO, id);
+		Expression e = new IdentifierExp(null, 0, id);
 		return e;
 	}
 
 	@Override
 	public int getLineNumber() {
-		if (loc == null) {
-			return 0;
-		}
-		return loc.linnum;
+		return lineNumber;
 	}
 
 	public void setLineNumber(int lineNumber) {
-		loc.linnum = lineNumber;
+		this.lineNumber = lineNumber;
 	}
 	
 	@Override

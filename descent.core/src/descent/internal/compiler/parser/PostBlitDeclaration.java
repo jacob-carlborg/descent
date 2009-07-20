@@ -8,17 +8,17 @@ public class PostBlitDeclaration extends FuncDeclaration {
 	
 	public int thisStart; // where the "this" keyword starts
 
-	public PostBlitDeclaration(Loc loc) {
-		this(loc, new IdentifierExp(Id._postblit));
+	public PostBlitDeclaration(char[] filename, int lineNumber) {
+		this(filename, lineNumber, new IdentifierExp(Id._postblit));
 	}
 	
-	public PostBlitDeclaration(Loc loc, IdentifierExp id) {
-		super(loc, id, STC.STCundefined, null);
+	public PostBlitDeclaration(char[] filename, int lineNumber, IdentifierExp id) {
+		super(filename, lineNumber, id, STC.STCundefined, null);
 	}
 	
 	@Override
 	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
-		PostBlitDeclaration dd = context.newPostBlitDeclaration(loc, ident);
+		PostBlitDeclaration dd = context.newPostBlitDeclaration(filename, lineNumber, ident);
 		dd.copySourceRange(this);
 	    return super.syntaxCopy(dd, context);
 	}

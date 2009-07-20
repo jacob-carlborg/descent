@@ -1,7 +1,6 @@
 package descent.internal.codeassist.complete;
 
 import descent.internal.compiler.parser.Expression;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.ReturnStatement;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.SemanticContext;
@@ -11,8 +10,8 @@ public class CompletionOnReturnStatement extends ReturnStatement {
 	
 	public Scope scope;
 
-	public CompletionOnReturnStatement(Loc loc, Expression exp) {
-		super(loc, exp);
+	public CompletionOnReturnStatement(char[] filename, int lineNumber, Expression exp) {
+		super(filename, lineNumber, exp);
 	}
 	
 	@Override

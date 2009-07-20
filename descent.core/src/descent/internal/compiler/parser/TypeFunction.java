@@ -250,7 +250,7 @@ public class TypeFunction extends Type implements Cloneable {
 	}
 
 	@Override
-	public Type semantic(Loc loc, Scope sc, SemanticContext context) {
+	public Type semantic(char[] filename, int lineNumber, Scope sc, SemanticContext context) {
 		if (deco != null) { // if semantic() already run
 			return this;
 		}
@@ -267,16 +267,11 @@ public class TypeFunction extends Type implements Cloneable {
 		if (null == tf.next) {
 			tf.next = tvoid;
 		}
-		tf.next = tf.next.semantic(loc, sc, context);
+		tf.next = tf.next.semantic(filename, lineNumber, sc, context);
 		if (tf.next.toBasetype(context).ty == Tsarray) {
 			if (context.acceptsErrors()) {
-				if (loc instanceof LocWithNode) {
-					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.FunctionsCannotReturnStaticArrays, ((LocWithNode)loc).node));
-				} else {
-					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.FunctionsCannotReturnStaticArrays, this));
-				}
+				context.acceptProblem(Problem.newSemanticTypeError(
+						IProblem.FunctionsCannotReturnStaticArrays, this));
 			}
 			tf.next = Type.terror;
 		}
@@ -306,7 +301,7 @@ public class TypeFunction extends Type implements Cloneable {
 				Type t;
 
 				tf.inuse++;
-				arg.type = arg.type.semantic(loc, sc, context);
+				arg.type = arg.type.semantic(filename, lineNumber, sc, context);
 				if (tf.inuse == 1) {
 					tf.inuse--;
 				}

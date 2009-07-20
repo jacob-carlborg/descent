@@ -25,9 +25,9 @@ public class TypeDelegate extends Type {
 	}
 
 	@Override
-	public Expression defaultInit(Loc loc, SemanticContext context) {
+	public Expression defaultInit(char[] filename, int lineNumber, SemanticContext context) {
 		Expression e;
-		e = new NullExp(loc);
+		e = new NullExp(filename, lineNumber);
 		e.type = this;
 		return e;
 	}
@@ -41,9 +41,9 @@ public class TypeDelegate extends Type {
 		} else if (equals(ident, Id.funcptr)) {
 			e = e.addressOf(sc, context);
 			e.type = context.Type_tvoidptr;
-			e = new AddExp(e.loc, e, new IntegerExp(PTRSIZE));
+			e = new AddExp(e.filename, e.lineNumber,  e, new IntegerExp(PTRSIZE));
 			e.type = context.Type_tvoidptr;
-			e = new PtrExp(e.loc, e);
+			e = new PtrExp(e.filename, e.lineNumber,  e);
 			e.type = next.pointerTo(context);
 			return e;
 		} else {
@@ -68,21 +68,21 @@ public class TypeDelegate extends Type {
 	}
 
 	@Override
-	public boolean isZeroInit(Loc loc, SemanticContext context) {
+	public boolean isZeroInit(char[] filename, int lineNumber, SemanticContext context) {
 		return true;
 	}
 
 	@Override
-	public Type semantic(Loc loc, Scope sc, SemanticContext context) {
+	public Type semantic(char[] filename, int lineNumber, Scope sc, SemanticContext context) {
 		if (deco != null) { // if semantic() already run
 			return this;
 		}
-		next = next.semantic(loc, sc, context);
+		next = next.semantic(filename, lineNumber, sc, context);
 		return merge(context);
 	}
 
 	@Override
-	public int size(Loc loc, SemanticContext context) {
+	public int size(char[] filename, int lineNumber, SemanticContext context) {
 		return PTRSIZE * 2;
 	}
 

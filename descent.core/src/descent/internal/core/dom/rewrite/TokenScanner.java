@@ -13,6 +13,7 @@ package descent.internal.core.dom.rewrite;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+
 import descent.core.JavaCore;
 import descent.core.compiler.IScanner;
 import descent.core.compiler.ITerminalSymbols;

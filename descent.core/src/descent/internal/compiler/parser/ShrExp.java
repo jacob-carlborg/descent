@@ -1,14 +1,14 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.Constfold.Shr;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.Constfold.Shr;
 
 
 public class ShrExp extends BinExp {
 
-	public ShrExp(Loc loc, Expression e1, Expression e2) {
-		super(loc, TOK.TOKshr, e1, e2);
+	public ShrExp(char[] filename, int lineNumber, Expression e1, Expression e2) {
+		super(filename, lineNumber, TOK.TOKshr, e1, e2);
 	}
 
 	@Override

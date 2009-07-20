@@ -21,9 +21,10 @@ public class AnonDeclaration extends AttribDeclaration {
 	
 	private IType javaElement;
 
-	public AnonDeclaration(Loc loc, boolean isunion, Dsymbols decl) {
+	public AnonDeclaration(char[] filename, int lineNumber, boolean isunion, Dsymbols decl) {
 		super(decl);
-		this.loc = loc;
+		this.filename = filename;
+		this.lineNumber = lineNumber;
 		this.isunion = isunion;
 	}
 
@@ -76,7 +77,7 @@ public class AnonDeclaration extends AttribDeclaration {
 
 		if (decl != null) {
 			AnonymousAggregateDeclaration aad = new AnonymousAggregateDeclaration(
-					loc);
+					filename, lineNumber);
 			boolean adisunion;
 
 			if (sc.anonAgg != null) {
@@ -169,7 +170,7 @@ public class AnonDeclaration extends AttribDeclaration {
 		AnonDeclaration ad;
 
 		Assert.isTrue(s == null);
-		ad = context.newAnonDeclaration(loc, isunion, Dsymbol.arraySyntaxCopy(decl, context));
+		ad = context.newAnonDeclaration(filename, lineNumber, isunion, Dsymbol.arraySyntaxCopy(decl, context));
 		ad.javaElement = javaElement;
 		return ad;
 	}
@@ -203,7 +204,7 @@ public class AnonDeclaration extends AttribDeclaration {
 
 	@Override
 	public int getLineNumber() {
-		return loc.linnum;
+		return lineNumber;
 	}
 	
 	@Override

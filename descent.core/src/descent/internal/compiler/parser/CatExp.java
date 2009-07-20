@@ -1,15 +1,15 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.Constfold.Cat;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.Constfold.Cat;
 
 
 public class CatExp extends BinExp {
 
-	public CatExp(Loc loc, Expression e1, Expression e2) {
-		super(loc, TOK.TOKtilde, e1, e2);
+	public CatExp(char[] filename, int lineNumber, Expression e1, Expression e2) {
+		super(filename, lineNumber, TOK.TOKtilde, e1, e2);
 	}
 
 	@Override
@@ -100,7 +100,7 @@ public class CatExp extends BinExp {
 				// Make e2 into [e2]
 				Expressions elements = new Expressions(1);
 				elements.add(e2);
-				e2 = new ArrayLiteralExp(e2.loc, elements);
+				e2 = new ArrayLiteralExp(e2.filename, e2.lineNumber, elements);
 				e2.type = type;
 			}
 			return this;
@@ -113,7 +113,7 @@ public class CatExp extends BinExp {
 				// Make e1 into [e1]
 				Expressions elements = new Expressions(1);
 				elements.add(e1);
-				e1 = new ArrayLiteralExp(e1.loc, elements);
+				e1 = new ArrayLiteralExp(e1.filename, e1.lineNumber, elements);
 				e1.type = type;
 			}
 			return this;
@@ -140,7 +140,7 @@ public class CatExp extends BinExp {
 			type = Type.tint32;
 			e = this;
 		}
-		e.type = e.type.semantic(loc, sc, context);
+		e.type = e.type.semantic(filename, lineNumber, sc, context);
 		return e;
 	}
 }

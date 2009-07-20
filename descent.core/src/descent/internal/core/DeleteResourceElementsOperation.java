@@ -10,11 +10,12 @@
  *******************************************************************************/
 package descent.internal.core;
 
-import org.eclipse.core.resources.*;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+
 import descent.core.IJavaElement;
 import descent.core.IJavaModelStatusConstants;
 import descent.core.IOpenable;

@@ -15,8 +15,8 @@ public class SliceExp extends UnaExp {
 	public Expression upr, sourceUpr;
 	public VarDeclaration lengthVar;
 
-	public SliceExp(Loc loc, Expression e1, Expression lwr, Expression upr) {
-		super(loc, TOK.TOKslice, e1);
+	public SliceExp(char[] filename, int lineNumber, Expression e1, Expression lwr, Expression upr) {
+		super(filename, lineNumber, TOK.TOKslice, e1);
 		this.lwr = this.sourceLwr = lwr;
 		this.upr = this.sourceUpr = upr;
 		this.lengthVar = null;
@@ -175,13 +175,13 @@ public class SliceExp extends UnaExp {
 
 			if (null != search_function(ad, Id.slice, context)) {
 				// Rewrite as e1.slice(lwr, upr)
-				e = new DotIdExp(loc, e1, Id.slice);
+				e = new DotIdExp(filename, lineNumber, e1, Id.slice);
 				if (null != lwr) {
 					assert (null != upr);
-					e = new CallExp(loc, e, lwr, upr);
+					e = new CallExp(filename, lineNumber, e, lwr, upr);
 				} else {
 					assert (null == upr);
-					e = new CallExp(loc, e);
+					e = new CallExp(filename, lineNumber, e);
 				}
 
 				e = e.semantic(sc, context);
@@ -205,7 +205,8 @@ public class SliceExp extends UnaExp {
 
 		if (t.ty == TY.Tsarray || t.ty == TY.Tarray || t.ty == TY.Ttuple) {
 			sym = new ArrayScopeSymbol(sc, this);
-			sym.loc = loc;
+			sym.filename = filename;
+			sym.lineNumber = lineNumber;
 			sym.parent = sc.scopesym;
 			sc = sc.push(sym);
 		}
@@ -257,14 +258,14 @@ public class SliceExp extends UnaExp {
 						Expression tmp = (Expression) te.exps.get(i1 + i);
 						exps.set(i, tmp);
 					}
-					e = new TupleExp(loc, exps);
+					e = new TupleExp(filename, lineNumber, exps);
 				} else {
 					Arguments args = new Arguments(i2 - i1);
 					for (int i = i1; i < i2; i++) {
 						Argument arg = tup.arguments.get(i);
 						args.add(arg);
 					}
-					e = new TypeExp(e1.loc, TypeTuple.newArguments(args));
+					e = new TypeExp(e1.filename, e1.lineNumber, TypeTuple.newArguments(args));
 				}
 				e = e.semantic(sc, context);
 			} else {
@@ -296,7 +297,7 @@ public class SliceExp extends UnaExp {
 			upr = this.upr.syntaxCopy(context);
 		}
 
-		return new SliceExp(loc, e1.syntaxCopy(context), lwr, upr);
+		return new SliceExp(filename, lineNumber, e1.syntaxCopy(context), lwr, upr);
 	}
 
 	@Override
@@ -354,11 +355,11 @@ public class SliceExp extends UnaExp {
 		IdentifierExp id = context.generateId("p", size(fparams));
 	    Argument param = new Argument(STCconst, type, id, null);
 	    fparams.shift(param);
-	    Expression e = new IdentifierExp(Loc.ZERO, id);
+	    Expression e = new IdentifierExp(null, 0, id);
 	    Expressions arguments = new Expressions(1);
-	    Expression index = new IdentifierExp(Loc.ZERO, Id.p);
+	    Expression index = new IdentifierExp(null, 0, Id.p);
 	    arguments.add(index);
-	    e = new ArrayExp(Loc.ZERO, e, arguments);
+	    e = new ArrayExp(null, 0, e, arguments);
 	    return e;
 	}
 

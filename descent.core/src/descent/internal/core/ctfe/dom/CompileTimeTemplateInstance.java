@@ -2,7 +2,6 @@ package descent.internal.core.ctfe.dom;
 
 import descent.internal.compiler.parser.ASTNodeEncoder;
 import descent.internal.compiler.parser.IdentifierExp;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.TemplateInstance;
@@ -11,9 +10,9 @@ public class CompileTimeTemplateInstance extends TemplateInstance {
 	
 	private boolean fSemanticRun;
 
-	public CompileTimeTemplateInstance(Loc loc, IdentifierExp id,
+	public CompileTimeTemplateInstance(char[] filename, int lineNumber, IdentifierExp id,
 			ASTNodeEncoder encoder) {
-		super(loc, id, encoder);
+		super(filename, lineNumber, id, encoder);
 	}
 	
 	@Override

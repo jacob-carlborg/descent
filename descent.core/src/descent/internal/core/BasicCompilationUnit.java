@@ -16,6 +16,7 @@ import java.io.IOException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
 import descent.core.compiler.CharOperation;

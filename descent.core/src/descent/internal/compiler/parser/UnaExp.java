@@ -3,7 +3,7 @@ package descent.internal.compiler.parser;
 import static descent.internal.compiler.parser.TOK.TOKarray;
 import static descent.internal.compiler.parser.TY.Tclass;
 import static descent.internal.compiler.parser.TY.Tstruct;
-import static descent.internal.compiler.parser.Constfold.*;
+import descent.internal.compiler.parser.Constfold.UnaExp_fp;
 
 
 public abstract class UnaExp extends Expression {
@@ -11,8 +11,8 @@ public abstract class UnaExp extends Expression {
 	public Expression e1;
 	public Expression sourceE1;
 
-	public UnaExp(Loc loc, TOK op, Expression e1) {
-		super(loc, op);
+	public UnaExp(char[] filename, int lineNumber, TOK op, Expression e1) {
+		super(filename, lineNumber, op);
 		this.e1 = e1;
 		this.sourceE1 = e1;
 	}
@@ -63,13 +63,13 @@ public abstract class UnaExp extends Expression {
 				Expression e;
 				ArrayExp ae = (ArrayExp) this;
 
-				e = new DotIdExp(loc, e1, fd.ident);
-				e = new CallExp(loc, e, ae.arguments);
+				e = new DotIdExp(filename, lineNumber, e1, fd.ident);
+				e = new CallExp(filename, lineNumber, e, ae.arguments);
 				e = e.semantic(sc, context);
 				return e;
 			} else {
 				// Rewrite +e1 as e1.add()
-				return build_overload(loc, sc, e1, null, fd.ident, context);
+				return build_overload(filename, lineNumber, sc, e1, null, fd.ident, context);
 			}
 		}
 		return null;

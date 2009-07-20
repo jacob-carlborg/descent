@@ -13,7 +13,13 @@ package descent.internal.core;
 import java.util.ArrayList;
 import java.util.List;
 
-import descent.core.*;
+import descent.core.IBuffer;
+import descent.core.ICompilationUnit;
+import descent.core.IJavaElement;
+import descent.core.IPackageDeclaration;
+import descent.core.ISourceRange;
+import descent.core.JavaModelException;
+import descent.core.ToolFactory;
 import descent.core.compiler.IScanner;
 import descent.core.compiler.ITerminalSymbols;
 import descent.core.compiler.InvalidInputException;

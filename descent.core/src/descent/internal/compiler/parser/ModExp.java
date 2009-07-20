@@ -8,8 +8,8 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class ModExp extends BinExp {
 
-	public ModExp(Loc loc, Expression e1, Expression e2) {
-		super(loc, TOK.TOKmod, e1, e2);
+	public ModExp(char[] filename, int lineNumber, Expression e1, Expression e2) {
+		super(filename, lineNumber, TOK.TOKmod, e1, e2);
 	}
 
 	@Override
@@ -83,7 +83,7 @@ public class ModExp extends BinExp {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.CannotPerformModuloComplexArithmetic, this));
 				}
-				return new IntegerExp(Loc.ZERO, 0);
+				return new IntegerExp(null, 0, 0);
 			}
 		}
 		
@@ -105,7 +105,7 @@ public class ModExp extends BinExp {
 	     */
 	    Expression ex1 = e1.buildArrayLoop(fparams, context);
 	    Expression ex2 = e2.buildArrayLoop(fparams, context);
-	    Expression e = new ModExp(Loc.ZERO, ex1, ex2);
+	    Expression e = new ModExp(null, 0, ex1, ex2);
 	    return e;
 	}
 

@@ -3,7 +3,8 @@ package descent.internal.compiler.parser;
 import static descent.internal.compiler.parser.STC.STCfield;
 import static descent.internal.compiler.parser.TOK.TOKdsymbol;
 import static descent.internal.compiler.parser.TOK.TOKstructliteral;
-import static descent.internal.compiler.parser.TOK.*;
+import static descent.internal.compiler.parser.TOK.TOKthis;
+import static descent.internal.compiler.parser.TOK.TOKvar;
 
 import org.eclipse.core.runtime.Assert;
 
@@ -17,12 +18,12 @@ public class DotVarExp extends UnaExp {
 	public boolean hasOverloads;
 	public IdentifierExp ident; // Descent: for better error reporting
 	
-	public DotVarExp(Loc loc, Expression e, Declaration var) {
-		this(loc, e, var, false);
+	public DotVarExp(char[] filename, int lineNumber, Expression e, Declaration var) {
+		this(filename, lineNumber, e, var, false);
 	}
 
-	public DotVarExp(Loc loc, Expression e, Declaration var, boolean hasOverloads) {
-		super(loc, TOK.TOKdotvar, e);
+	public DotVarExp(char[] filename, int lineNumber, Expression e, Declaration var, boolean hasOverloads) {
+		super(filename, lineNumber, TOK.TOKdotvar, e);
 		this.var = var;
 		this.hasOverloads = hasOverloads;
 	}
@@ -142,12 +143,12 @@ public class DotVarExp extends UnaExp {
 						} else {
 							DsymbolExp ve = (DsymbolExp) e;
 
-							e = new DotVarExp(loc, e1, ve.s.isDeclaration());
+							e = new DotVarExp(filename, lineNumber, e1, ve.s.isDeclaration());
 							exps.set(i, e);
 						}
 					}
 				}
-				Expression e = new TupleExp(loc, exps);
+				Expression e = new TupleExp(filename, lineNumber, exps);
 				e = e.semantic(sc, context);
 				return e;
 			}
@@ -156,7 +157,7 @@ public class DotVarExp extends UnaExp {
 			
 			type = var.type;
 			if (type == null && context.global.errors > 0) { // var is goofed up, just return 0
-				return new IntegerExp(loc, 0);
+				return new IntegerExp(filename, lineNumber, 0);
 			}
 			Assert.isNotNull(type);
 
@@ -198,7 +199,7 @@ public class DotVarExp extends UnaExp {
 								if (tcd != null && tcd.isNested()) {
 									// Try again with outer scope
 	
-									e1 = new DotVarExp(loc, e1, tcd.vthis);
+									e1 = new DotVarExp(filename, lineNumber, e1, tcd.vthis);
 									e1 = e1.semantic(sc, context);
 	
 									// Skip over nested functions, and get the
@@ -209,7 +210,7 @@ public class DotVarExp extends UnaExp {
 											&& s.isFuncDeclaration() != null) {
 										FuncDeclaration f = s.isFuncDeclaration();
 										if (f.vthis != null) {
-											e1 = new VarExp(loc, f.vthis);
+											e1 = new VarExp(filename, lineNumber, f.vthis);
 										}
 										s = s.toParent();
 									}
@@ -229,7 +230,7 @@ public class DotVarExp extends UnaExp {
 						}
 					}
 				} else {
-					e1 = getRightThis(loc, sc, ad, e1, var, context);
+					e1 = getRightThis(filename, lineNumber, sc, ad, e1, var, context);
 				}
 			    if (0 == sc.noaccesscheck) {
 			    	accessCheck(sc, e1, var, context, ident);

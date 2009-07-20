@@ -59,16 +59,17 @@ public class VarDeclaration extends Declaration {
 	
 	private IField javaElement;
 	
-	public VarDeclaration(Loc loc, Type type, char[] ident, Initializer init) {
-		this(loc, type, new IdentifierExp(ident), init);
+	public VarDeclaration(char[] filename, int lineNumber, Type type, char[] ident, Initializer init) {
+		this(filename, lineNumber, type, new IdentifierExp(ident), init);
 	}
 
-	public VarDeclaration(Loc loc, Type type, IdentifierExp id, Initializer init) {
+	public VarDeclaration(char[] filename, int lineNumber, Type type, IdentifierExp id, Initializer init) {
 		super(id);
 
 //		Assert.isTrue(type != null || init != null);
 
-		this.loc = loc;
+		this.filename = filename;
+		this.lineNumber = lineNumber;
 		this.type = type;
 		this.sourceType = type;
 		this.init = init;
@@ -110,8 +111,8 @@ public class VarDeclaration extends Declaration {
 					// delete this;
 					Expression ec;
 
-					ec = new VarExp(loc, this);
-					e = new DeleteExp(loc, ec);
+					ec = new VarExp(filename, lineNumber, this);
+					e = new DeleteExp(filename, lineNumber, ec);
 					e.type = Type.tvoid;
 					break;
 				}
@@ -130,14 +131,14 @@ public class VarDeclaration extends Declaration {
 		}
 	}
 
-	public void checkNestedReference(Scope sc, Loc loc, SemanticContext context) {
+	public void checkNestedReference(Scope sc, char[] filename, int lineNumber, SemanticContext context) {
 		if (parent != null && !this.isDataseg(context) && this.parent != sc.parent) {
 			FuncDeclaration fdv = this.toParent().isFuncDeclaration();
 			FuncDeclaration fdthis = (FuncDeclaration) sc.parent.isFuncDeclaration();
 
 			if (fdv != null && fdthis != null) {
-				if (loc != null && loc.filename != null)
-					fdthis.getLevel(loc, fdv, context);
+				if (filename != null)
+					fdthis.getLevel(filename, lineNumber, fdv, context);
 				this.nestedref(1);
 				fdv.nestedFrameRef(true);
 			}
@@ -150,9 +151,9 @@ public class VarDeclaration extends Declaration {
 		if (this.init != null) {
 			ei = this.init().isExpInitializer();
 		} else {
-			Expression e = this.type.defaultInit(loc, context);
+			Expression e = this.type.defaultInit(filename, lineNumber, context);
 			if (e != null) {
-				ei = new ExpInitializer(this.loc, e);
+				ei = new ExpInitializer(this.filename, this.lineNumber, e);
 			} else {
 				ei = null;
 			}
@@ -263,7 +264,7 @@ public class VarDeclaration extends Declaration {
 			if (null == originalType) {
 				originalType = type;
 			}
-			type = type.semantic(loc, sc, context);
+			type = type.semantic(filename, lineNumber, sc, context);
 		}
 		
 		// Added for Descent: case "auto foo = new"
@@ -271,7 +272,7 @@ public class VarDeclaration extends Declaration {
 			return;
 		}
 
-		type.checkDeprecated(loc, sc, context);
+		type.checkDeprecated(filename, lineNumber, sc, context);
 		linkage = sc.linkage;
 		this.parent = sc.parent;
 		protection = sc.protection;
@@ -336,7 +337,7 @@ public class VarDeclaration extends Declaration {
 				buf.data.append("_").append(ident.ident).append("_field_")
 						.append(i);
 				String name = buf.extractData();
-				IdentifierExp id = new IdentifierExp(loc, name.toCharArray());
+				IdentifierExp id = new IdentifierExp(filename, lineNumber, name.toCharArray());
 
 			    Expression einit = ie;
 				if (ie != null && ie.op == TOK.TOKtuple) {
@@ -344,10 +345,10 @@ public class VarDeclaration extends Declaration {
 				}
 				Initializer ti = init;
 				if (einit != null) {
-					ti = new ExpInitializer(einit.loc, einit);
+					ti = new ExpInitializer(einit.filename, einit.lineNumber, einit);
 				}
 
-				VarDeclaration v = new VarDeclaration(loc, arg.type, id, ti);
+				VarDeclaration v = new VarDeclaration(filename, lineNumber, arg.type, id, ti);
 				v.semantic(sc, context);
 
 				if (sc.scopesym != null) {
@@ -356,10 +357,10 @@ public class VarDeclaration extends Declaration {
 					}
 				}
 
-				Expression e = new DsymbolExp(loc, v);
+				Expression e = new DsymbolExp(filename, lineNumber, v);
 				exps.set(i, e);
 			}
-			TupleDeclaration v2 = new TupleDeclaration(loc, ident, exps);
+			TupleDeclaration v2 = new TupleDeclaration(filename, lineNumber, ident, exps);
 			v2.isexp = true;
 			aliassym = v2;
 			return;
@@ -465,12 +466,12 @@ public class VarDeclaration extends Declaration {
 			     * a memset() to initialize the struct.
 			     * Must do same check in interpreter.
 			     */				
-				Expression e = new IntegerExp(loc, Id.ZERO, 0, Type.tint32);
+				Expression e = new IntegerExp(filename, lineNumber, Id.ZERO, 0, Type.tint32);
 				Expression e1;
-				e1 = new VarExp(loc, this);
-				e = new AssignExp(loc, e1, e);
+				e1 = new VarExp(filename, lineNumber, this);
+				e = new AssignExp(filename, lineNumber, e1, e);
 				e.type = e1.type;
-				init = new ExpInitializer(loc, e/* .type.defaultInit() */);
+				init = new ExpInitializer(filename, lineNumber, e/* .type.defaultInit() */);
 				return;
 			} else if (type.ty == TY.Ttypedef) {
 				TypeTypedef td = (TypeTypedef) type;
@@ -479,7 +480,7 @@ public class VarDeclaration extends Declaration {
 					ExpInitializer ie = init.isExpInitializer();
 					if (ie != null) {
 						// Make copy so we can modify it
-						init = new ExpInitializer(ie.loc(), ie.exp);
+						init = new ExpInitializer(ie.filename, ie.lineNumber, ie.exp);
 					}
 				} else {
 					init = getExpInitializer(context);
@@ -507,7 +508,7 @@ public class VarDeclaration extends Declaration {
 				if (!(ne.newargs != null && ne.newargs.size() > 0)) {
 					ne.onstack = true;
 					onstack = 1;
-					if (type.isBaseOf(ne.newtype.semantic(loc, sc, context),
+					if (type.isBaseOf(ne.newtype.semantic(filename, lineNumber, sc, context),
 							null, context)) {
 						onstack = 2;
 					}
@@ -536,11 +537,11 @@ public class VarDeclaration extends Declaration {
 								return;
 							}
 						}
-						ei = new ExpInitializer(init.loc(), e);
+						ei = new ExpInitializer(init.filename, init.lineNumber, e);
 						init = ei;
 					}
 
-					e1 = new VarExp(loc, this);
+					e1 = new VarExp(filename, lineNumber, this);
 
 					t = type.toBasetype(context);
 					if (t.ty == TY.Tsarray) {
@@ -558,18 +559,18 @@ public class VarDeclaration extends Declaration {
 								dim *= ((TypeSArray) t).dim.toInteger(
 										context).intValue();
 								e1.type = new TypeSArray(t.nextOf(),
-										new IntegerExp(loc, Id.ZERO, dim,
+										new IntegerExp(filename, lineNumber, Id.ZERO, dim,
 												Type.tindex), context.encoder);
 							}
 						}
-						e1 = new SliceExp(loc, e1, null, null);
+						e1 = new SliceExp(filename, lineNumber, e1, null, null);
 					} else if (t.ty == TY.Tstruct) {
 						ei.exp = ei.exp.semantic(sc, context);
 						if (ei.exp.implicitConvTo(type, context) == MATCH.MATCHnomatch) {
-							ei.exp = new CastExp(loc, ei.exp, type);
+							ei.exp = new CastExp(filename, lineNumber, ei.exp, type);
 						}
 					}
-					ei.exp = new AssignExp(loc, e1, ei.exp);
+					ei.exp = new AssignExp(filename, lineNumber, e1, ei.exp);
 					ei.exp.op = TOKconstruct;
 					canassign++;
 					ei.exp = ei.exp.semantic(sc, context);
@@ -664,7 +665,7 @@ public class VarDeclaration extends Declaration {
 				// init.isExpInitializer().exp.dump(0);
 			}
 
-			sv = context.newVarDeclaration(loc, type != null ? type.syntaxCopy(context)
+			sv = context.newVarDeclaration(filename, lineNumber, type != null ? type.syntaxCopy(context)
 					: null, ident.syntaxCopy(context), init);
 			sv.storage_class = storage_class;
 		}
@@ -719,11 +720,11 @@ public class VarDeclaration extends Declaration {
 	
 	@Override
 	public int getLineNumber() {
-		return loc.linnum;
+		return lineNumber;
 	}
 	
 	public void setLineNumber(int lineNumber) {
-		this.loc.linnum = lineNumber;
+		this.lineNumber = lineNumber;
 	}
 	
 	public int inuse() {

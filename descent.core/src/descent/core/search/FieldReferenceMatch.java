@@ -1,6 +1,7 @@
 package descent.core.search;
 
 import org.eclipse.core.resources.IResource;
+
 import descent.core.IJavaElement;
 
 /**

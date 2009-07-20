@@ -10,8 +10,8 @@ public class ExpInitializer extends Initializer {
 	public Expression exp;
 	public Expression sourceExp;
 
-	public ExpInitializer(Loc loc, Expression exp) {
-		super(loc);
+	public ExpInitializer(char[] filename, int lineNumber, Expression exp) {
+		super(filename, lineNumber);
 		this.exp = exp;
 		this.sourceExp = exp;
 		this.start = exp.start;
@@ -115,7 +115,7 @@ public class ExpInitializer extends Initializer {
 
 	@Override
 	public Initializer syntaxCopy(SemanticContext context) {
-		return new ExpInitializer(loc, exp.syntaxCopy(context));
+		return new ExpInitializer(filename, lineNumber, exp.syntaxCopy(context));
 	}
 
 	@Override

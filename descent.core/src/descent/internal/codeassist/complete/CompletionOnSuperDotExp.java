@@ -1,12 +1,11 @@
 package descent.internal.codeassist.complete;
 
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.SuperExp;
 
 public class CompletionOnSuperDotExp extends SuperExp {
 
-	public CompletionOnSuperDotExp(Loc loc) {
-		super(loc);
+	public CompletionOnSuperDotExp(char[] filename, int lineNumber) {
+		super(filename, lineNumber);
 	}
 
 }

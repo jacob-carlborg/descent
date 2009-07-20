@@ -72,9 +72,9 @@ public class ForeachStatement extends Statement {
 
 	public List gotos; // forward referenced goto's go here
 
-	public ForeachStatement(Loc loc, TOK op, Arguments arguments,
+	public ForeachStatement(char[] filename, int lineNumber, TOK op, Arguments arguments,
 			Expression aggr, Statement body) {
-		super(loc);
+		super(filename, lineNumber);
 		this.op = op;
 		this.arguments = arguments;
 		this.aggr = this.sourceAggr = aggr;
@@ -164,7 +164,7 @@ public class ForeachStatement extends Statement {
 		if (op == TOKforeach) {
 			for (index = integer_t.ZERO; index.compareTo(d) < 0; index = index
 					.add(1)) {
-				Expression ekey = new IntegerExp(loc, index, Type.tsize_t);
+				Expression ekey = new IntegerExp(filename, lineNumber, index, Type.tsize_t);
 				if (key != null) {
 					key.value = ekey;
 				}
@@ -191,7 +191,7 @@ public class ForeachStatement extends Statement {
 		} else // TOKforeach_reverse
 		{
 			for (index = d; !(index = index.subtract(1)).equals(0);) {
-				Expression ekey = new IntegerExp(loc, index, Type.tsize_t);
+				Expression ekey = new IntegerExp(filename, lineNumber, index, Type.tsize_t);
 				if (key != null) {
 					key.value = ekey;
 				}
@@ -324,9 +324,9 @@ public class ForeachStatement extends Statement {
 							}
 						}
 					}
-					Initializer ie = new ExpInitializer(loc, new IntegerExp(
-							loc, k));
-					VarDeclaration var = new VarDeclaration(loc, arg.type,
+					Initializer ie = new ExpInitializer(filename, lineNumber, new IntegerExp(
+							filename, lineNumber, k));
+					VarDeclaration var = new VarDeclaration(filename, lineNumber, arg.type,
 							arg.ident, ie);
 					
 					// Descent: for binding resolution
@@ -341,8 +341,8 @@ public class ForeachStatement extends Statement {
 						var.storage_class |= STCconst;
 					}
 					
-					DeclarationExp de = new DeclarationExp(loc, var);
-					st.add(new ExpStatement(loc, de));
+					DeclarationExp de = new DeclarationExp(filename, lineNumber, var);
+					st.add(new ExpStatement(filename, lineNumber, de));
 					arg = arguments.get(1); // value
 				}
 				// Declare value
@@ -364,11 +364,11 @@ public class ForeachStatement extends Statement {
 					
 					if (condition) {
 						VarExp ve = (VarExp) e;
-						var = new AliasDeclaration(loc, arg.ident, ve.var);
+						var = new AliasDeclaration(filename, lineNumber, arg.ident, ve.var);
 					} else {
 						arg.type = e.type;
-						Initializer ie = new ExpInitializer(Loc.ZERO, e);
-						VarDeclaration v = new VarDeclaration(loc, arg.type,
+						Initializer ie = new ExpInitializer(null, 0, e);
+						VarDeclaration v = new VarDeclaration(filename, lineNumber, arg.type,
 								arg.ident, ie);
 						if (e.isConst()) {
 							v.storage_class |= STCconst;
@@ -378,7 +378,7 @@ public class ForeachStatement extends Statement {
 						var = v;
 					}
 				} else {
-					var = new AliasDeclaration(loc, arg.ident, t);
+					var = new AliasDeclaration(filename, lineNumber, arg.ident, t);
 				}
 				
 				// Descent: for binding resolution
@@ -387,16 +387,16 @@ public class ForeachStatement extends Statement {
 				}
 				arg.var = var;
 				
-				DeclarationExp de = new DeclarationExp(loc, var);
-				st.add(new ExpStatement(loc, de));
+				DeclarationExp de = new DeclarationExp(filename, lineNumber, var);
+				st.add(new ExpStatement(filename, lineNumber, de));
 
 				st.add(body.syntaxCopy(context));
-				s = new CompoundStatement(loc, st);
-				s = new ScopeStatement(loc, s);
+				s = new CompoundStatement(filename, lineNumber, st);
+				s = new ScopeStatement(filename, lineNumber, s);
 				statements.add(s);
 			}
 
-			s = new UnrolledLoopStatement(loc, statements);
+			s = new UnrolledLoopStatement(filename, lineNumber, statements);
 			s = s.semantic(sc, context);
 			return s;
 		}
@@ -437,7 +437,7 @@ public class ForeachStatement extends Statement {
 
 				i = (dim == 1) ? 0 : 1; // index of value
 				arg = arguments.get(i);
-				arg.type = arg.type.semantic(loc, sc, context);
+				arg.type = arg.type.semantic(filename, lineNumber, sc, context);
 				tnv = arg.type.toBasetype(context);
 				if (tnv.ty != tn.ty
 						&& (tnv.ty == Tchar || tnv.ty == Twchar || tnv.ty == Tdchar)) {
@@ -466,7 +466,7 @@ public class ForeachStatement extends Statement {
 				Argument arg = arguments.get(i);
 				VarDeclaration var;
 
-				var = new VarDeclaration(loc, arg.type, arg.ident, null);
+				var = new VarDeclaration(filename, lineNumber, arg.type, arg.ident, null);
 				var.copySourceRange(arg);
 				var.storage_class |= STCforeach;
 				
@@ -489,7 +489,7 @@ public class ForeachStatement extends Statement {
 				}
 				arg.var = var;
 				
-				DeclarationExp de = new DeclarationExp(loc, var);
+				DeclarationExp de = new DeclarationExp(filename, lineNumber, var);
 				de.semantic(sc, context);
 				
 				if (!context.isD2()) {
@@ -600,39 +600,39 @@ public class ForeachStatement extends Statement {
 				 * aggregate.
 				 */
 				IdentifierExp id = context.generateId("__r");
-				VarDeclaration r = new VarDeclaration(loc, null, id,
-						new ExpInitializer(loc, aggr));
+				VarDeclaration r = new VarDeclaration(filename, lineNumber, null, id,
+						new ExpInitializer(filename, lineNumber, aggr));
 				r.semantic(sc, context);
-				Statement init = new DeclarationStatement(loc, r);
+				Statement init = new DeclarationStatement(filename, lineNumber, r);
 
 				// !__r.empty
-				Expression e = new VarExp(loc, r);
-				e = new DotIdExp(loc, e, Id.Fempty);
-				Expression condition2 = new NotExp(loc, e);
+				Expression e = new VarExp(filename, lineNumber, r);
+				e = new DotIdExp(filename, lineNumber, e, Id.Fempty);
+				Expression condition2 = new NotExp(filename, lineNumber, e);
 
 				// __r.next
-				e = new VarExp(loc, r);
-				Expression increment = new DotIdExp(loc, e, idnext);
+				e = new VarExp(filename, lineNumber, r);
+				Expression increment = new DotIdExp(filename, lineNumber, e, idnext);
 
 				/*
 				 * Declaration statement for e: auto e = __r.idhead;
 				 */
-				e = new VarExp(loc, r);
-				Expression einit = new DotIdExp(loc, e, idhead);
+				e = new VarExp(filename, lineNumber, r);
+				Expression einit = new DotIdExp(filename, lineNumber, e, idhead);
 				einit = einit.semantic(sc, context);
 				Argument arg = (Argument) arguments.get(0);
-				VarDeclaration ve = new VarDeclaration(loc, arg.type,
-						arg.ident, new ExpInitializer(loc, einit));
+				VarDeclaration ve = new VarDeclaration(filename, lineNumber, arg.type,
+						arg.ident, new ExpInitializer(filename, lineNumber, einit));
 				ve.storage_class |= STCforeach;
 				ve.storage_class |= arg.storageClass
 						& (STCin | STCout | STCref | STCconst | STCinvariant);
 
-				DeclarationExp de = new DeclarationExp(loc, ve);
+				DeclarationExp de = new DeclarationExp(filename, lineNumber, ve);
 
-				Statement body = new CompoundStatement(loc,
-						new DeclarationStatement(loc, de), this.body);
+				Statement body = new CompoundStatement(filename, lineNumber,
+						new DeclarationStatement(filename, lineNumber, de), this.body);
 
-				s = new ForStatement(loc, init, condition2, increment, body);
+				s = new ForStatement(filename, lineNumber, init, condition2, increment, body);
 				s = s.semantic(sc, context);
 				break;
 			}
@@ -674,7 +674,7 @@ public class ForeachStatement extends Statement {
 		if (sc.func.vresult == null && tret != null && !same(tret, Type.tvoid, context)) {
 			VarDeclaration v;
 
-			v = new VarDeclaration(loc, tret, Id.result, null);
+			v = new VarDeclaration(filename, lineNumber, tret, Id.result, null);
 			v.noauto = true;
 			v.semantic(sc, context);
 			if (sc.insert(v) == null) {
@@ -692,7 +692,7 @@ public class ForeachStatement extends Statement {
 		for (i = 0; i < dim; i++) {
 			Argument arg = arguments.get(i);
 
-			arg.type = arg.type.semantic(loc, sc, context);
+			arg.type = arg.type.semantic(filename, lineNumber, sc, context);
 			if ((arg.storageClass & STCref) != 0) {
 				id = arg.ident;
 			} else { // Make a copy of the inout argument so it isn't
@@ -701,8 +701,8 @@ public class ForeachStatement extends Statement {
 				Initializer ie;
 				id = context.uniqueId("__applyArg", i);
 
-				ie = new ExpInitializer(loc, id);
-				v = new VarDeclaration(loc, arg.type, arg.ident, ie);
+				ie = new ExpInitializer(filename, lineNumber, id);
+				v = new VarDeclaration(filename, lineNumber, arg.type, arg.ident, ie);
 				
 				// Descent: for binding resolution
 				if (arg.ident != null) {
@@ -710,16 +710,16 @@ public class ForeachStatement extends Statement {
 				}
 				arg.var = v;
 				
-				s[0] = new DeclarationStatement(loc, v);
-				body = new CompoundStatement(loc, s[0], body);
+				s[0] = new DeclarationStatement(filename, lineNumber, v);
+				body = new CompoundStatement(filename, lineNumber, s[0], body);
 			}
 			a = new Argument(STCref, arg.type, id, null);
 			args.add(a);
 		}
 		t = new TypeFunction(args, Type.tint32, 0, LINK.LINKd);
-		fld = new FuncLiteralDeclaration(loc, t, TOKdelegate, this);
+		fld = new FuncLiteralDeclaration(filename, lineNumber, t, TOKdelegate, this);
 		fld.fbody = body;
-		flde = new FuncExp(loc, fld);
+		flde = new FuncExp(filename, lineNumber, fld);
 		flde = flde.semantic(sc, context);
 		
 		if (context.isD2()) {
@@ -734,7 +734,7 @@ public class ForeachStatement extends Statement {
 
 				if (gs.label.statement == null) { // 'Promote' it to this scope, and replace with a return
 					cases.add(gs);
-					s[0] = new ReturnStatement(loc, new IntegerExp(loc, cases
+					s[0] = new ReturnStatement(filename, lineNumber, new IntegerExp(filename, lineNumber, cases
 							.size() + 1));
 					cs.statements.set(0, s[0]);
 				}
@@ -774,20 +774,20 @@ public class ForeachStatement extends Statement {
 			} else {
 				fdapply = context.genCfunc(Type.tindex, _aaApply);
 			}
-			ec = new VarExp(loc, fdapply);
+			ec = new VarExp(filename, lineNumber, fdapply);
 			Expressions exps = new Expressions(3);
 			exps.add(aggr);
 			int keysize;
 			
 			if (context.isD2()) {
-				keysize = taa.index.size(loc, context);
+				keysize = taa.index.size(filename, lineNumber, context);
 			} else {
-				keysize = taa.key.size(loc, context);
+				keysize = taa.key.size(filename, lineNumber, context);
 			}
 			keysize = (keysize + Type.PTRSIZE - 1) & ~(Type.PTRSIZE - 1);
-			exps.add(new IntegerExp(loc, keysize, Type.tsize_t));
+			exps.add(new IntegerExp(filename, lineNumber, keysize, Type.tsize_t));
 			exps.add(flde);
-			e = new CallExp(loc, ec, exps);
+			e = new CallExp(filename, lineNumber, ec, exps);
 			e.type = Type.tindex; // don't run semantic() on e
 		} else if (tab.ty == Tarray || tab.ty == Tsarray) {
 			/*
@@ -827,14 +827,14 @@ public class ForeachStatement extends Statement {
 
 			fdapply = context.genCfunc(Type.tindex, fdname.toCharArray());
 
-			ec = new VarExp(loc, fdapply);
+			ec = new VarExp(filename, lineNumber, fdapply);
 			Expressions exps = new Expressions(2);
 			if (tab.ty == Tsarray) {
 				aggr = aggr.castTo(sc, tn.arrayOf(context), context);
 			}
 			exps.add(aggr);
 			exps.add(flde);
-			e = new CallExp(loc, ec, exps);
+			e = new CallExp(filename, lineNumber, ec, exps);
 			e.type = Type.tindex; // don't run semantic() on e
 		} else if (tab.ty == Tdelegate) {
 			/*
@@ -842,7 +842,7 @@ public class ForeachStatement extends Statement {
 			 */
 			Expressions exps = new Expressions(2);
 			exps.add(flde);
-			e = new CallExp(loc, aggr, exps);
+			e = new CallExp(filename, lineNumber, aggr, exps);
 			e = e.semantic(sc, context);
 			if (e.type.singleton != Type.tint32) {
 				if (context.acceptsErrors()) {
@@ -854,7 +854,7 @@ public class ForeachStatement extends Statement {
 			/*
 			 * Call: aggr.apply(flde)
 			 */
-			ec = new DotIdExp(loc, aggr, (op == TOKforeach_reverse) ? Id.applyReverse : Id.apply);
+			ec = new DotIdExp(filename, lineNumber, aggr, (op == TOKforeach_reverse) ? Id.applyReverse : Id.apply);
 			Expressions exps = new Expressions(1);
 			exps.add(flde);
 			
@@ -862,7 +862,7 @@ public class ForeachStatement extends Statement {
 			int oldSourceAggrStart = sourceAggr.start;
 			int oldSourceAggrLength = sourceAggr.length;
 			
-			e = new CallExp(loc, ec, exps);
+			e = new CallExp(filename, lineNumber, ec, exps);
 			e = e.semantic(sc, context);
 			
 			sourceAggr.start = oldSourceAggrStart;
@@ -878,25 +878,25 @@ public class ForeachStatement extends Statement {
 
 		if (size(cases) == 0) {
 			// Easy case, a clean exit from the loop
-			s[0] = new ExpStatement(loc, e);
+			s[0] = new ExpStatement(filename, lineNumber, e);
 		} else { // Construct a switch statement around the return value
 			// of the apply function.
 			Statements a2 = new Statements(cases.size() + 1);
 
 			// default: break; takes care of cases 0 and 1
-			s[0] = new BreakStatement(loc, null);
-			s[0] = new DefaultStatement(loc, s[0]);
+			s[0] = new BreakStatement(filename, lineNumber, null);
+			s[0] = new DefaultStatement(filename, lineNumber, s[0]);
 			a2.add(s[0]);
 
 			// cases 2...
 			for (int j = 0; j < cases.size(); j++) {
 				s[0] = (Statement) cases.get(j);
-				s[0] = new CaseStatement(loc, new IntegerExp(loc, j + 2), s[0]);
+				s[0] = new CaseStatement(filename, lineNumber, new IntegerExp(filename, lineNumber, j + 2), s[0]);
 				a2.add(s[0]);
 			}
 
-			s[0] = new CompoundStatement(loc, a2);
-			s[0] = new SwitchStatement(loc, e, s[0]);
+			s[0] = new CompoundStatement(filename, lineNumber, a2);
+			s[0] = new SwitchStatement(filename, lineNumber, e, s[0]);
 			s[0] = s[0].semantic(sc, context);
 		}
 	}
@@ -905,7 +905,7 @@ public class ForeachStatement extends Statement {
 	public Statement syntaxCopy(SemanticContext context) {
 		Arguments args = Argument.arraySyntaxCopy(arguments, context);
 		Expression exp = aggr.syntaxCopy(context);
-		ForeachStatement s = context.newForeachStatement(loc, op, args, exp,
+		ForeachStatement s = context.newForeachStatement(filename, lineNumber, op, args, exp,
 				body != null ? body.syntaxCopy(context) : null);
 		s.copySourceRange(this);
 		return s;

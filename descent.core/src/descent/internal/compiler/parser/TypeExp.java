@@ -6,8 +6,8 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class TypeExp extends Expression {
 
-	public TypeExp(Loc loc, Type type) {
-		super(loc, TOK.TOKtype);
+	public TypeExp(char[] filename, int lineNumber, Type type) {
+		super(filename, lineNumber, TOK.TOKtype);
 		this.type = type;
 		this.sourceType = type;
 	}
@@ -34,7 +34,7 @@ public class TypeExp extends Expression {
 	
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
-		type = type.semantic(loc, sc, context);
+		type = type.semantic(filename, lineNumber, sc, context);
 	    return this;
 	}
 	

@@ -3,7 +3,6 @@ package descent.internal.core.ctfe.dom;
 import descent.internal.compiler.parser.CallExp;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.Expressions;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.SemanticContext;
 
@@ -11,21 +10,21 @@ public class CompileTimeCallExp extends CallExp {
 	
 	private Scope fScope;
 	
-	public CompileTimeCallExp(Loc loc, Expression e, Expression earg1,
+	public CompileTimeCallExp(char[] filename, int lineNumber, Expression e, Expression earg1,
 			Expression earg2) {
-		super(loc, e, earg1, earg2);
+		super(filename, lineNumber, e, earg1, earg2);
 	}
 
-	public CompileTimeCallExp(Loc loc, Expression e, Expression earg1) {
-		super(loc, e, earg1);
+	public CompileTimeCallExp(char[] filename, int lineNumber, Expression e, Expression earg1) {
+		super(filename, lineNumber, e, earg1);
 	}
 
-	public CompileTimeCallExp(Loc loc, Expression e, Expressions exps) {
-		super(loc, e, exps);
+	public CompileTimeCallExp(char[] filename, int lineNumber, Expression e, Expressions exps) {
+		super(filename, lineNumber, e, exps);
 	}
 
-	public CompileTimeCallExp(Loc loc, Expression e) {
-		super(loc, e);	
+	public CompileTimeCallExp(char[] filename, int lineNumber, Expression e) {
+		super(filename, lineNumber, e);	
 	}
 	
 	@Override

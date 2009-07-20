@@ -1,14 +1,17 @@
 package descent.internal.compiler.parser;
 
-import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.PREC.*;
-import static descent.internal.compiler.parser.TOK.*;
 import static descent.internal.compiler.parser.Constfold.ArrayLength;
+import static descent.internal.compiler.parser.PREC.PREC_primary;
+import static descent.internal.compiler.parser.TOK.TOKarrayliteral;
+import static descent.internal.compiler.parser.TOK.TOKassocarrayliteral;
+import static descent.internal.compiler.parser.TOK.TOKnull;
+import static descent.internal.compiler.parser.TOK.TOKstring;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class ArrayLengthExp extends UnaExp {
 
-	public ArrayLengthExp(Loc loc, Expression e1) {
-		super(loc, TOK.TOKarraylength, e1);
+	public ArrayLengthExp(char[] filename, int lineNumber, Expression e1) {
+		super(filename, lineNumber, TOK.TOKarraylength, e1);
 	}
 
 	@Override
@@ -52,7 +55,7 @@ public class ArrayLengthExp extends UnaExp {
 				|| e1.op == TOKassocarrayliteral) {
 			e = ArrayLength.call(type, e1, context);
 		} else if (e1.op == TOKnull) {
-			e = new IntegerExp(loc, 0, type);
+			e = new IntegerExp(filename, lineNumber, 0, type);
 		} else {
 			return EXP_CANT_INTERPRET;
 		}

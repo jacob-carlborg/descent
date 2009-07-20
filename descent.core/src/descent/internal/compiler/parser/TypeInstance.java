@@ -14,8 +14,8 @@ public class TypeInstance extends TypeQualified {
 
 	public TemplateInstance tempinst;
 
-	public TypeInstance(Loc loc, TemplateInstance tempinst) {
-		super(loc, TY.Tinstance);
+	public TypeInstance(char[] filename, int lineNumber, TemplateInstance tempinst) {
+		super(filename, lineNumber, TY.Tinstance);
 		this.tempinst = tempinst;
 	}
 
@@ -48,7 +48,7 @@ public class TypeInstance extends TypeQualified {
 					if (i == -1) { /* Didn't find it as a parameter identifier. Try looking
 					 * it up and seeing if is an alias. See Bugzilla 1454
 					 */
-						Dsymbol s = tempinst.tempdecl.scope.search(Loc.ZERO,
+						Dsymbol s = tempinst.tempdecl.scope.search(null, 0,
 								tp.tempinst.name, null, context);
 						if (s != null) {
 							s = s.toAlias(context);
@@ -238,7 +238,7 @@ public class TypeInstance extends TypeQualified {
 				return MATCHnomatch;
 			}
 		} else {
-			Type vt = tv.valType.semantic(Loc.ZERO, sc, context);
+			Type vt = tv.valType.semantic(null, 0, sc, context);
 			MATCH m = e1.implicitConvTo(vt, context);
 			if (m == MATCHnomatch) {
 				return MATCHnomatch;
@@ -254,7 +254,7 @@ public class TypeInstance extends TypeQualified {
 	}
 
 	@Override
-	public void resolve(Loc loc, Scope sc, Expression[] pe, Type[] pt,
+	public void resolve(char[] filename, int lineNumber, Scope sc, Expression[] pe, Type[] pt,
 			Dsymbol[] ps, SemanticContext context) {
 		// Note close similarity to TypeIdentifier::resolve()
 
@@ -268,11 +268,11 @@ public class TypeInstance extends TypeQualified {
 		if (s != null) {
 			s.semantic(sc, context);
 		}
-		resolveHelper(loc, sc, s, null, pe, pt, ps, context);
+		resolveHelper(filename, lineNumber, sc, s, null, pe, pt, ps, context);
 	}
 
 	@Override
-	public Type semantic(Loc loc, Scope sc, SemanticContext context) {
+	public Type semantic(char[] filename, int lineNumber, Scope sc, SemanticContext context) {
 		Type[] t = { null };
 		Expression[] e = { null };
 		Dsymbol[] s = { null };
@@ -281,7 +281,7 @@ public class TypeInstance extends TypeQualified {
 			int errors = context.global.errors;
 			context.global.gag++;
 
-			resolve(loc, sc, e, t, s, context);
+			resolve(filename, lineNumber, sc, e, t, s, context);
 
 			context.global.gag--;
 			if (errors != context.global.errors) {
@@ -291,7 +291,7 @@ public class TypeInstance extends TypeQualified {
 				return this;
 			}
 		} else {
-			resolve(loc, sc, e, t, s, context);
+			resolve(filename, lineNumber, sc, e, t, s, context);
 		}
 
 		if (null == t[0]) {
@@ -307,7 +307,7 @@ public class TypeInstance extends TypeQualified {
 	public Type syntaxCopy(SemanticContext context) {
 		TypeInstance t;
 
-		t = new TypeInstance(loc, (TemplateInstance) tempinst.syntaxCopy(null, context));
+		t = new TypeInstance(filename, lineNumber, (TemplateInstance) tempinst.syntaxCopy(null, context));
 		t.syntaxCopyHelper(this, context);
 		t.copySourceRange(this);
 		return t;
@@ -333,7 +333,7 @@ public class TypeInstance extends TypeQualified {
 			int errors = context.global.errors;
 			context.global.gag++;
 
-			resolve(loc, sc, e, t, s, context);
+			resolve(filename, lineNumber, sc, e, t, s, context);
 
 			context.global.gag--;
 			if (errors != context.global.errors) {
@@ -342,7 +342,7 @@ public class TypeInstance extends TypeQualified {
 				return null;
 			}
 		} else {
-			resolve(loc, sc, e, t, s, context);
+			resolve(filename, lineNumber, sc, e, t, s, context);
 		}
 
 		return s[0];

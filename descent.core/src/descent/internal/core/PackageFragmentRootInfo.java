@@ -10,14 +10,14 @@
  *******************************************************************************/
 package descent.internal.core;
 
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 
-import descent.core.*;
-import descent.core.IPackageFragmentRoot;
+import descent.core.IClasspathEntry;
 import descent.core.IJavaProject;
+import descent.core.IPackageFragmentRoot;
 import descent.core.JavaModelException;
 import descent.internal.core.util.Util;
 

@@ -5,6 +5,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+
 import descent.internal.compiler.env.NameEnvironmentAnswer;
 import descent.internal.compiler.util.SimpleLookupTable;
 import descent.internal.core.builder.ClasspathLocation;

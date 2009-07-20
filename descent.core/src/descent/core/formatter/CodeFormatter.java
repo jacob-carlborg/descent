@@ -10,8 +10,9 @@
  *******************************************************************************/
 package descent.core.formatter;
 
-import descent.internal.compiler.util.Util;
 import org.eclipse.text.edits.TextEdit;
+
+import descent.internal.compiler.util.Util;
 
 /**
  * Specification for a generic source code formatter.

@@ -5,8 +5,8 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class ThisDeclaration extends VarDeclaration {
 
-	public ThisDeclaration(Loc loc, Type type) {
-		super(loc, type, Id.This, null);
+	public ThisDeclaration(char[] filename, int lineNumber, Type type) {
+		super(filename, lineNumber, type, Id.This, null);
 	}
 	
 	public ThisDeclaration isThisDeclaration() {

@@ -24,7 +24,6 @@ import org.eclipse.text.edits.TextEdit;
 import descent.core.ICompilationUnit;
 import descent.core.IImportDeclaration;
 import descent.core.JavaModelException;
-import descent.core.Signature;
 import descent.core.dom.AST;
 import descent.core.dom.ASTParser;
 import descent.core.dom.CompilationUnit;

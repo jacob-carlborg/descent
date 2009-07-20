@@ -12,6 +12,7 @@ package descent.internal.core.search.indexing;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+
 import descent.internal.core.index.Index;
 
 class RemoveFromIndex extends IndexRequest {

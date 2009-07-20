@@ -12,6 +12,7 @@ package descent.internal.core;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+
 import descent.core.IAccessRule;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.env.AccessRule;

@@ -14,8 +14,8 @@ public class ExpStatement extends Statement {
 
 	public Expression exp, sourceExp;
 
-	public ExpStatement(Loc loc, Expression exp) {
-		super(loc);
+	public ExpStatement(char[] filename, int lineNumber, Expression exp) {
+		super(filename, lineNumber);
 		this.exp = exp;
 		this.sourceExp = exp;
 	}
@@ -86,7 +86,7 @@ public class ExpStatement extends Statement {
 			exp = exp.optimize(0, context);
 			if (exp.op == TOKdeclaration && null == isDeclarationStatement())
 			{   
-				Statement s = new DeclarationStatement(loc, exp);
+				Statement s = new DeclarationStatement(filename, lineNumber, exp);
 			    return s;
 			}
 		}
@@ -97,7 +97,7 @@ public class ExpStatement extends Statement {
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
 		Expression e = exp != null ? exp.syntaxCopy(context) : null;
-		ExpStatement es = context.newExpStatement(loc, e);
+		ExpStatement es = context.newExpStatement(filename, lineNumber, e);
 		es.copySourceRange(this);
 		return es;
 	}

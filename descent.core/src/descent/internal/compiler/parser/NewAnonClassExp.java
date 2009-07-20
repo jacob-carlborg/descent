@@ -11,9 +11,9 @@ public class NewAnonClassExp extends Expression {
 	public ClassDeclaration cd;
 	public Expressions arguments;
 
-	public NewAnonClassExp(Loc loc, Expression thisexp, Expressions newargs,
+	public NewAnonClassExp(char[] filename, int lineNumber, Expression thisexp, Expressions newargs,
 			ClassDeclaration cd, Expressions arguments) {
-		super(loc, TOK.TOKnewanonclass);
+		super(filename, lineNumber, TOK.TOKnewanonclass);
 		this.thisexp = thisexp;
 		this.newargs = newargs;
 		this.cd = cd;
@@ -53,18 +53,18 @@ public class NewAnonClassExp extends Expression {
 
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
-		Expression d = new DeclarationExp(loc, cd);
+		Expression d = new DeclarationExp(filename, lineNumber, cd);
 		d = d.semantic(sc, context);
 
-		Expression n = new NewExp(loc, thisexp, newargs, cd.type, arguments);
+		Expression n = new NewExp(filename, lineNumber, thisexp, newargs, cd.type, arguments);
 
-		Expression c = new CommaExp(loc, d, n);
+		Expression c = new CommaExp(filename, lineNumber, d, n);
 		return c.semantic(sc, context);
 	}
 
 	@Override
 	public Expression syntaxCopy(SemanticContext context) {
-		return new NewAnonClassExp(loc, thisexp != null ? thisexp.syntaxCopy(context)
+		return new NewAnonClassExp(filename, lineNumber, thisexp != null ? thisexp.syntaxCopy(context)
 				: null, arraySyntaxCopy(newargs, context), (ClassDeclaration) cd
 				.syntaxCopy(null, context), arraySyntaxCopy(arguments, context));
 	}

@@ -8,8 +8,8 @@ public class DeclarationExp extends Expression {
 
 	public Dsymbol declaration, sourceDeclaration;
 
-	public DeclarationExp(Loc loc, Dsymbol declaration) {
-		super(loc, TOK.TOKdeclaration);
+	public DeclarationExp(char[] filename, int lineNumber, Dsymbol declaration) {
+		super(filename, lineNumber, TOK.TOKdeclaration);
 		this.declaration = declaration;
 		this.sourceDeclaration = declaration;
 	}
@@ -166,7 +166,7 @@ public class DeclarationExp extends Expression {
 
 	@Override
 	public Expression syntaxCopy(SemanticContext context) {
-		return new DeclarationExp(loc, declaration.syntaxCopy(null, context));
+		return new DeclarationExp(filename, lineNumber, declaration.syntaxCopy(null, context));
 	}
 
 	@Override

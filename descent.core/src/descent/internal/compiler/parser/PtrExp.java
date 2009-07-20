@@ -1,27 +1,27 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.Constfold.Ptr;
+import static descent.internal.compiler.parser.TOK.TOKadd;
+import static descent.internal.compiler.parser.TOK.TOKaddress;
+import static descent.internal.compiler.parser.TOK.TOKint64;
+import static descent.internal.compiler.parser.TOK.TOKstructliteral;
+import static descent.internal.compiler.parser.TOK.TOKsymoff;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.TOK.TOKsymoff;
-import static descent.internal.compiler.parser.TOK.TOKstructliteral;
-import static descent.internal.compiler.parser.TOK.TOKint64;
-import static descent.internal.compiler.parser.TOK.TOKaddress;
-import static descent.internal.compiler.parser.TOK.TOKadd;
-import static descent.internal.compiler.parser.Constfold.Ptr;
 
 
 public class PtrExp extends UnaExp {
 
-	public PtrExp(Loc loc, Expression e) {
-		super(loc, TOK.TOKstar, e);
+	public PtrExp(char[] filename, int lineNumber, Expression e) {
+		super(filename, lineNumber, TOK.TOKstar, e);
 		if (e.type != null) {
 			type = e.type.next;
 		}
 	}
 
-	public PtrExp(Loc loc, Expression e, Type t) {
-		super(loc, TOK.TOKstar, e);
+	public PtrExp(char[] filename, int lineNumber, Expression e, Type t) {
+		super(filename, lineNumber, TOK.TOKstar, e);
 		this.type = t;
 	}
 
@@ -74,7 +74,7 @@ public class PtrExp extends UnaExp {
 			VarDeclaration v = soe.var.isVarDeclaration();
 			if(null != v)
 			{
-				Expression ev = getVarExp(loc, istate, v, context);
+				Expression ev = getVarExp(filename, lineNumber, istate, v, context);
 				if(ev != EXP_CANT_INTERPRET && ev.op == TOKstructliteral)
 				{
 					StructLiteralExp se = (StructLiteralExp) ev;
@@ -97,7 +97,7 @@ public class PtrExp extends UnaExp {
 			SemanticContext context) {
 	    if (e1.op == TOKsymoff) {
 			SymOffExp se = (SymOffExp) e1;
-			se.var.checkModify(loc, sc, type, context);
+			se.var.checkModify(filename, lineNumber, sc, type, context);
 			// return toLvalue(sc, e);
 		}
 
@@ -176,7 +176,7 @@ public class PtrExp extends UnaExp {
 				Expression e;
 
 				// Rewrite *p as p[0]
-				e = new IndexExp(loc, e1, new IntegerExp(loc, 0));
+				e = new IndexExp(filename, lineNumber, e1, new IntegerExp(filename, lineNumber, 0));
 				return e.semantic(sc, context);
 			}
 			break;

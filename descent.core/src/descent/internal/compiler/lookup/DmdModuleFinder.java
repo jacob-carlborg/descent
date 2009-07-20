@@ -8,7 +8,6 @@ import descent.internal.compiler.env.IModuleFinder;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.Global;
 import descent.internal.compiler.parser.IdentifierExp;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.SemanticContext;
@@ -30,7 +29,6 @@ public class DmdModuleFinder implements IModuleFinder {
 		IdentifierExp ident = new IdentifierExp(compoundName[compoundName.length - 1]);
 
 		m = new Module(filename, ident);
-		m.loc = new Loc(filename.toCharArray(), 0);
 		m.moduleName = filename;
 
 		/* Search along global.path for .di file, then .d file.

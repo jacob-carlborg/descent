@@ -8,8 +8,8 @@ public class TemplateExp extends Expression {
 	
 	public TemplateDeclaration td;
 
-    public TemplateExp(Loc loc, TemplateDeclaration td) {
-    	super(loc, TOK.TOKtemplate);
+    public TemplateExp(char[] filename, int lineNumber, TemplateDeclaration td) {
+    	super(filename, lineNumber, TOK.TOKtemplate);
 		this.td = td;    	
     }
     

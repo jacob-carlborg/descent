@@ -4,19 +4,18 @@ import descent.internal.compiler.parser.AliasDeclaration;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.IdentifierExp;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.Type;
 
 public class CompileTimeAliasDeclaration extends AliasDeclaration {
 
-	public CompileTimeAliasDeclaration(Loc loc, IdentifierExp id, Dsymbol s) {
-		super(loc, id, s);
+	public CompileTimeAliasDeclaration(char[] filename, int lineNumber, IdentifierExp id, Dsymbol s) {
+		super(filename, lineNumber, id, s);
 	}
 
-	public CompileTimeAliasDeclaration(Loc loc, IdentifierExp id, Type type) {
-		super(loc, id, type);
+	public CompileTimeAliasDeclaration(char[] filename, int lineNumber, IdentifierExp id, Type type) {
+		super(filename, lineNumber, id, type);
 	}
 	
 	@Override

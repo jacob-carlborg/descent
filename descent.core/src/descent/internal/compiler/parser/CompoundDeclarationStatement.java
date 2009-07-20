@@ -2,8 +2,8 @@ package descent.internal.compiler.parser;
 
 public class CompoundDeclarationStatement extends CompoundStatement {
 
-	public CompoundDeclarationStatement(Loc loc, Statements statements) {
-		super(loc, statements);
+	public CompoundDeclarationStatement(char[] filename, int lineNumber, Statements statements) {
+		super(filename, lineNumber, statements);
 	}
 
 	@Override
@@ -17,7 +17,7 @@ public class CompoundDeclarationStatement extends CompoundStatement {
 			a.set(i, s);
 		}
 		CompoundDeclarationStatement cs = context
-				.newCompoundDeclarationStatement(loc, a);
+				.newCompoundDeclarationStatement(filename, lineNumber, a);
 		return cs;
 	}
 

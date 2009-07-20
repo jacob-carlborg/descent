@@ -11,6 +11,7 @@
 package descent.internal.core.search.indexing;
 
 import org.eclipse.core.runtime.IPath;
+
 import descent.internal.core.search.processing.IJob;
 
 public abstract class IndexRequest implements IJob {

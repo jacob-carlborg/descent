@@ -13,8 +13,8 @@ public class UnitTestDeclaration extends FuncDeclaration {
 		return ("__unittest" + ++unitTestId).toCharArray();
 	}
 
-	public UnitTestDeclaration(Loc loc) {
-		super(loc, new IdentifierExp(unitTestId()), STC.STCundefined,
+	public UnitTestDeclaration(char[] filename, int lineNumber) {
+		super(filename, lineNumber, new IdentifierExp(unitTestId()), STC.STCundefined,
 				null);
 	}
 
@@ -85,7 +85,7 @@ public class UnitTestDeclaration extends FuncDeclaration {
 		if (s != null) {
 			throw new IllegalStateException("assert(!s);");
 		}
-		UnitTestDeclaration utd = context.newUnitTestDeclaration(loc);
+		UnitTestDeclaration utd = context.newUnitTestDeclaration(filename, lineNumber);
 		utd.copySourceRange(this);
 		return super.syntaxCopy(utd, context);
 	}

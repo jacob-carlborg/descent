@@ -131,14 +131,14 @@ public class FuncDeclaration extends Declaration {
 	private int startSkip;
 	private int endSkip;
 
-	public FuncDeclaration(Loc loc, IdentifierExp ident, int storage_class,
+	public FuncDeclaration(char[] filename, int lineNumber, IdentifierExp ident, int storage_class,
 			Type type) {
 		super(ident);
-		this.loc = loc;
+		this.filename = filename;
+		this.lineNumber = lineNumber;
 		this.storage_class = storage_class;
 		this.type = type;
 		this.sourceType = type;
-		this.loc = loc;
 		this.vtblIndex = -1;
 		
 	    /* The type given for "infer the return type" is a TypeFunction with
@@ -261,7 +261,7 @@ public class FuncDeclaration extends Declaration {
 	public void appendExp(Expression e) {
 		Statement s;
 
-		s = new ExpStatement(Loc.ZERO, e);
+		s = new ExpStatement(null, 0, e);
 		appendState(s);
 	}
 
@@ -272,7 +272,7 @@ public class FuncDeclaration extends Declaration {
 			Statements a;
 
 			a = new Statements(0);
-			fbody = new CompoundStatement(Loc.ZERO, a);
+			fbody = new CompoundStatement(null, 0, a);
 		}
 		cs = fbody.isCompoundStatement();
 		cs.statements.add(s);
@@ -321,7 +321,7 @@ public class FuncDeclaration extends Declaration {
 		}
 	}
 
-	public int getLevel(Loc loc, FuncDeclaration fd, SemanticContext context) {
+	public int getLevel(char[] filename, int lineNumber, FuncDeclaration fd, SemanticContext context) {
 		int level;
 		Dsymbol s;
 		Dsymbol fdparent;
@@ -508,7 +508,7 @@ public class FuncDeclaration extends Declaration {
 						earg = v2.value();
 					}
 
-					v.value = new VarExp(earg.loc, v2);
+					v.value = new VarExp(earg.filename, earg.lineNumber, v2);
 
 					/* Don't restore the value of v2 upon function return
 					 */
@@ -893,13 +893,13 @@ public class FuncDeclaration extends Declaration {
 	    return MATCHnomatch;
 	}
 	
-	public FuncDeclaration overloadResolve(Loc loc, Expression ethis, Expressions arguments,
+	public FuncDeclaration overloadResolve(char[] filename, int lineNumber, Expression ethis, Expressions arguments,
 			SemanticContext context, ASTDmdNode caller) {
-		return overloadResolve(loc, ethis, arguments, 0, context, caller);
+		return overloadResolve(filename, lineNumber, ethis, arguments, 0, context, caller);
 	}
 
 	// Modified to add the caller's start and length, to signal a better error
-	public FuncDeclaration overloadResolve(Loc loc, Expression ethis, Expressions arguments,
+	public FuncDeclaration overloadResolve(char[] filename, int lineNumber, Expression ethis, Expressions arguments,
 			int flags, SemanticContext context, ASTDmdNode caller) {
 		TypeFunction tf;
 		Match m = new Match();
@@ -1030,7 +1030,7 @@ public class FuncDeclaration extends Declaration {
 
 		if (!context.isD2()) {
 			if (type.nextOf() != null) {
-				type = type.semantic(loc, sc, context);
+				type = type.semantic(filename, lineNumber, sc, context);
 			}
 	
 			if (type.ty != Tfunction) {
@@ -1062,7 +1062,7 @@ public class FuncDeclaration extends Declaration {
 				/*
 				 * Apply const and invariant storage class to the function type
 				 */
-				type = type.semantic(loc, sc, context);
+				type = type.semantic(filename, lineNumber, sc, context);
 				if ((storage_class & STCinvariant) != 0) { // Don't use
 															// toInvariant(), as
 															// that will do a
@@ -1248,7 +1248,7 @@ public class FuncDeclaration extends Declaration {
 				 */
 				// Verify this doesn't override previous final function
 				if (cd.baseClass != null) {
-					Dsymbol s = cd.baseClass.search(loc, ident, 0, context);
+					Dsymbol s = cd.baseClass.search(filename, lineNumber, ident, 0, context);
 					if (s != null) {
 						FuncDeclaration f_ = s.isFuncDeclaration();
 						f_ = f_.overloadExactMatch(type, context);
@@ -1636,7 +1636,7 @@ public class FuncDeclaration extends Declaration {
 		 * for (i = 0; i < fthrows.dim; i++) { Type *t = (Type
 		 * *)fthrows.data[i];
 		 * 
-		 * t = t.semantic(loc, sc); if (!t.isClassHandle()) error("can only
+		 * t = t.semantic(filename, lineNumber, sc); if (!t.isClassHandle()) error("can only
 		 * throw classes, not %s", t.toChars()); } }
 		 */
 
@@ -1708,10 +1708,10 @@ public class FuncDeclaration extends Declaration {
 						thandle = thandle.nextOf().invariantOf(context).pointerTo(context);
 					    }
 					}
-					v = new ThisDeclaration(loc, thandle);
+					v = new ThisDeclaration(filename, lineNumber, thandle);
 					v.storage_class |= STCparameter;
 				} else {
-					v = new ThisDeclaration(loc, ad.handle);
+					v = new ThisDeclaration(filename, lineNumber, ad.handle);
 					v.storage_class |= STCparameter | STCin;
 				}
 				v.semantic(sc2, context);
@@ -1726,7 +1726,7 @@ public class FuncDeclaration extends Declaration {
 		     * enclosing function's stack frame.
 		     * Note that nested functions and member functions are disjoint.
 		     */
-			VarDeclaration v = new ThisDeclaration(loc, Type.tvoid.pointerTo(context));
+			VarDeclaration v = new ThisDeclaration(filename, lineNumber, Type.tvoid.pointerTo(context));
 			if (context.isD2()) {
 				v.storage_class |= STCparameter;
 			} else {
@@ -1746,7 +1746,7 @@ public class FuncDeclaration extends Declaration {
 
 			if (f.linkage == LINK.LINKd) { // Declare _arguments[]
 				if (context.BREAKABI) {
-					v_arguments = new VarDeclaration(loc,
+					v_arguments = new VarDeclaration(filename, lineNumber,
 							context.Type_typeinfotypelist.type,
 							Id._arguments_typeinfo, null);
 					if (context.isD2()) {
@@ -1759,13 +1759,13 @@ public class FuncDeclaration extends Declaration {
 					v_arguments.parent = this;
 
 					t = context.Type_typeinfo.type.arrayOf(context);
-					_arguments = new VarDeclaration(loc, t, Id._arguments, null);
+					_arguments = new VarDeclaration(filename, lineNumber, t, Id._arguments, null);
 					_arguments.semantic(sc2, context);
 					sc2.insert(_arguments);
 					_arguments.parent = this;
 				} else {
 					t = context.Type_typeinfo.type.arrayOf(context);
-					v_arguments = new VarDeclaration(loc, t, Id._arguments,
+					v_arguments = new VarDeclaration(filename, lineNumber, t, Id._arguments,
 							null);
 					v_arguments.storage_class = STCparameter | STCin;
 					v_arguments.semantic(sc2, context);
@@ -1777,7 +1777,7 @@ public class FuncDeclaration extends Declaration {
 					|| (parameters != null && parameters.size() > 0)) { // Declare
 				// _argptr
 				t = Type.tvoid.pointerTo(context);
-				argptr = new VarDeclaration(loc, t, Id._argptr, null);
+				argptr = new VarDeclaration(filename, lineNumber, t, Id._argptr, null);
 				argptr.semantic(sc2, context);
 				sc2.insert(argptr);
 				argptr.parent = this;
@@ -1820,7 +1820,7 @@ public class FuncDeclaration extends Declaration {
 				     */
 				    arg.ident = id = context.generateId("_param_", i);
 				}
-				VarDeclaration v = new VarDeclaration(loc, arg.type, id, null);
+				VarDeclaration v = new VarDeclaration(filename, lineNumber, arg.type, id, null);
 				v.copySourceRange(arg);
 
 				// Descent: for binding resolution
@@ -1886,14 +1886,14 @@ public class FuncDeclaration extends Declaration {
 						Argument narg = Argument
 								.getNth(t.arguments, j, context);
 						Assert.isNotNull(narg.ident);
-						VarDeclaration v = sc2.search(loc, narg.ident, null,
+						VarDeclaration v = sc2.search(filename, lineNumber, narg.ident, null,
 								context).isVarDeclaration();
 						Assert.isNotNull(v);
-						Expression e = new VarExp(v.loc, v);
+						Expression e = new VarExp(v.filename, v.lineNumber, v);
 						exps.set(j, e);
 					}
 					Assert.isNotNull(arg.ident);
-					TupleDeclaration v = new TupleDeclaration(loc, arg.ident,
+					TupleDeclaration v = new TupleDeclaration(filename, lineNumber, arg.ident,
 							exps);
 					v.isexp = true;
 					if (sc2.insert(v) == null) {
@@ -1941,20 +1941,22 @@ public class FuncDeclaration extends Declaration {
 				}
 			} else {
 				if (outId == null) {
-					outId = new IdentifierExp(loc, Id.result); // provide a
+					outId = new IdentifierExp(filename, lineNumber, Id.result); // provide a
 					// default
 				}
 			}
 
 			if (outId != null) { // Declare result variable
 				VarDeclaration v;
-				Loc loc = this.loc;
+				char[] filename = this.filename;
+				int lineNumber = this.lineNumber;
 
 				if (fensure != null) {
-					fensure.loc = loc;
+					fensure.filename = filename;
+					fensure.lineNumber = lineNumber;
 				}
 
-				v = new VarDeclaration(loc, type.nextOf(), outId, null);
+				v = new VarDeclaration(filename, lineNumber, type.nextOf(), outId, null);
 				v.noauto = true;
 				sc2.incontract--;
 				v.semantic(sc2, context);
@@ -2005,19 +2007,19 @@ public class FuncDeclaration extends Declaration {
 						inv = cd.inv;
 					}
 					if (inv != null) {
-						e = new DsymbolExp(loc, inv);
-						e = new CallExp(loc, e);
+						e = new DsymbolExp(filename, lineNumber, inv);
+						e = new CallExp(filename, lineNumber, e);
 						e = e.semantic(sc2, context);
 					}
 				} else { // Call invariant virtually
-					ThisExp v = new ThisExp(loc);
+					ThisExp v = new ThisExp(filename, lineNumber);
 					v.type = vthis.type;
-					e = new AssertExp(loc, v);
+					e = new AssertExp(filename, lineNumber, v);
 				}
 				if (e != null) {
-					ExpStatement s = new ExpStatement(loc, e);
+					ExpStatement s = new ExpStatement(filename, lineNumber, e);
 					if (fensure != null) {
-						fensure = new CompoundStatement(loc, s, fensure);
+						fensure = new CompoundStatement(filename, lineNumber, s, fensure);
 					} else {
 						fensure = s;
 					}
@@ -2026,8 +2028,8 @@ public class FuncDeclaration extends Declaration {
 
 			if (fensure != null) {
 				returnLabel = new LabelDsymbol(Id.returnLabel);
-				LabelStatement ls = new LabelStatement(loc, new IdentifierExp(
-						loc, Id.returnLabel), fensure);
+				LabelStatement ls = new LabelStatement(filename, lineNumber, new IdentifierExp(
+						filename, lineNumber, Id.returnLabel), fensure);
 				ls.isReturnLabel = true;
 				returnLabel.statement = ls;
 			}
@@ -2056,7 +2058,7 @@ public class FuncDeclaration extends Declaration {
 				// infer a void
 				if (type.nextOf() == null) {
 					type.next = Type.tvoid;
-					type = type.semantic(loc, sc, context);
+					type = type.semantic(filename, lineNumber, sc, context);
 				}
 				f = (TypeFunction) type;
 			}
@@ -2116,8 +2118,8 @@ public class FuncDeclaration extends Declaration {
 					sc2.callSuper = 0;
 
 					// Insert implicit super() at start of fbody
-					Expression e1 = new SuperExp(loc);
-					Expression e = new CallExp(loc, e1);
+					Expression e1 = new SuperExp(filename, lineNumber);
+					Expression e = new CallExp(filename, lineNumber, e1);
 
 					int errors = context.global.errors;
 					context.global.gag++;
@@ -2134,14 +2136,14 @@ public class FuncDeclaration extends Declaration {
 						}
 					}
 
-					Statement s = new ExpStatement(loc, e);
-					fbody = new CompoundStatement(loc, s, fbody);
+					Statement s = new ExpStatement(filename, lineNumber, e);
+					fbody = new CompoundStatement(filename, lineNumber, s, fbody);
 				}
 			} else if (fes != null) {
 				// For foreach(){} body, append a return 0;
-				Expression e = new IntegerExp(loc, 0);
-				Statement s = new ReturnStatement(loc, e);
-				fbody = new CompoundStatement(loc, fbody, s);
+				Expression e = new IntegerExp(filename, lineNumber, 0);
+				Statement s = new ReturnStatement(filename, lineNumber, e);
+				fbody = new CompoundStatement(filename, lineNumber, fbody, s);
 				Assert.isTrue(returnLabel == null);
 			} else if (hasReturnExp == 0 && type.nextOf().ty != Tvoid) {
 				if (context.acceptsErrors()) {
@@ -2154,9 +2156,9 @@ public class FuncDeclaration extends Declaration {
 				
 				if (type.nextOf().ty == Tvoid) {
 					if (offend && isMain()) { // Add a return 0; statement
-						Statement s = new ReturnStatement(loc, new IntegerExp(
-								loc, 0));
-						fbody = new CompoundStatement(loc, fbody, s);
+						Statement s = new ReturnStatement(filename, lineNumber, new IntegerExp(
+								filename, lineNumber, 0));
+						fbody = new CompoundStatement(filename, lineNumber, fbody, s);
 					}
 				} else {
 					if (offend) {
@@ -2188,25 +2190,25 @@ public class FuncDeclaration extends Declaration {
 						 * should
 						 * be.
 						 */
-							e = new AssertExp(loc, new IntegerExp(loc, 0),
-									new StringExp(loc,
+							e = new AssertExp(filename, lineNumber, new IntegerExp(filename, lineNumber, 0),
+									new StringExp(filename, lineNumber,
 											missing_return_expression,
 											missing_return_expression.length));
 						} else {
-							e = new HaltExp(loc);
+							e = new HaltExp(filename, lineNumber);
 						}
-						e = new CommaExp(loc, e, type.nextOf().defaultInit(
+						e = new CommaExp(filename, lineNumber, e, type.nextOf().defaultInit(
 								context));
 						e = e.semantic(sc2, context);
-						Statement s = new ExpStatement(loc, e);
-						fbody = new CompoundStatement(loc, fbody, s);
+						Statement s = new ExpStatement(filename, lineNumber, e);
+						fbody = new CompoundStatement(filename, lineNumber, fbody, s);
 					}
 				}
 			}
 		}
 
 		{
-			Statements a = new Statements(parameters.size());
+			Statements a = new Statements(size(parameters));
 
 			// Merge in initialization of 'out' parameters
 			if (parameters != null) {
@@ -2218,7 +2220,7 @@ public class FuncDeclaration extends Declaration {
 						Assert.isNotNull(v.init);
 						ExpInitializer ie = v.init.isExpInitializer();
 						Assert.isNotNull(ie);
-						ExpStatement es = new ExpStatement(loc, ie.exp);
+						ExpStatement es = new ExpStatement(filename, lineNumber, ie.exp);
 						a.add(es);
 					}
 				}
@@ -2232,18 +2234,18 @@ public class FuncDeclaration extends Declaration {
 				VarDeclaration p;
 				int offset;
 
-				e1 = new VarExp(loc, argptr);
+				e1 = new VarExp(filename, lineNumber, argptr);
 				if (parameters != null && parameters.size() > 0) {
 					p = (VarDeclaration) parameters.get(parameters.size() - 1);
 				} else {
 					p = v_arguments; // last parameter is _arguments[]
 				}
-				offset = p.type.size(loc, context);
+				offset = p.type.size(filename, lineNumber, context);
 				offset = (offset + 3) & ~3; // assume stack aligns on 4
-				e = new SymOffExp(loc, p, offset, context);
-				e = new AssignExp(loc, e1, e);
+				e = new SymOffExp(filename, lineNumber, p, offset, context);
+				e = new AssignExp(filename, lineNumber, e1, e);
 				e.type = t;
-				ExpStatement es = new ExpStatement(loc, e);
+				ExpStatement es = new ExpStatement(filename, lineNumber, e);
 				a.add(es);
 			}
 
@@ -2252,15 +2254,15 @@ public class FuncDeclaration extends Declaration {
 				 * Advance to elements[] member of TypeInfo_Tuple with:
 				 * _arguments = v_arguments.elements;
 				 */
-				Expression e = new VarExp(loc, v_arguments);
-				e = new DotIdExp(loc, e, Id.elements);
-				Expression e1 = new VarExp(loc, _arguments);
-				e = new AssignExp(loc, e1, e);
+				Expression e = new VarExp(filename, lineNumber, v_arguments);
+				e = new DotIdExp(filename, lineNumber, e, Id.elements);
+				Expression e1 = new VarExp(filename, lineNumber, _arguments);
+				e = new AssignExp(filename, lineNumber, e1, e);
 				if (context.isD2()) {
 					e.op = TOKconstruct;
 				}
 				e = e.semantic(sc, context);
-				ExpStatement es = new ExpStatement(loc, e);
+				ExpStatement es = new ExpStatement(filename, lineNumber, e);
 				a.add(es);
 			}
 
@@ -2294,21 +2296,21 @@ public class FuncDeclaration extends Declaration {
 						inv = cd.inv;
 					}
 					if (inv != null) {
-						e = new DsymbolExp(loc, inv);
-						e = new CallExp(loc, e);
+						e = new DsymbolExp(filename, lineNumber, inv);
+						e = new CallExp(filename, lineNumber, e);
 						e = e.semantic(sc2, context);
 					}
 				} else { // Call invariant virtually
-					ThisExp v = new ThisExp(loc);
+					ThisExp v = new ThisExp(filename, lineNumber);
 					v.type = vthis.type;
-					Expression se = new StringExp(loc, null_this,
+					Expression se = new StringExp(filename, lineNumber, null_this,
 							null_this.length);
 					se = se.semantic(sc, context);
 					se.type = Type.tchar.arrayOf(context);
-					e = new AssertExp(loc, v, se);
+					e = new AssertExp(filename, lineNumber, v, se);
 				}
 				if (e != null) {
-					ExpStatement s = new ExpStatement(loc, e);
+					ExpStatement s = new ExpStatement(filename, lineNumber, e);
 					a.add(s);
 				}
 			}
@@ -2323,18 +2325,18 @@ public class FuncDeclaration extends Declaration {
 				if (type.nextOf().ty != Tvoid) {
 					// Create: return vresult;
 					Assert.isNotNull(vresult);
-					Expression e = new VarExp(loc, vresult);
+					Expression e = new VarExp(filename, lineNumber, vresult);
 					if (tintro != null) {
 						e = e.implicitCastTo(sc, tintro.nextOf(), context);
 						e = e.semantic(sc, context);
 					}
-					ReturnStatement s = new ReturnStatement(loc, e);
+					ReturnStatement s = new ReturnStatement(filename, lineNumber, e);
 					a.add(s);
 				}
 			}
 			
 			Statement oldFbody = fbody;
-			fbody = context.newCompoundStatement(loc, a);
+			fbody = context.newCompoundStatement(filename, lineNumber, a);
 			if (oldFbody != null) {
 				fbody.copySourceRange(oldFbody);
 			}
@@ -2361,12 +2363,12 @@ public class FuncDeclaration extends Declaration {
 
 				    Expression e = v.callAutoDtor(sc);
 				    if (e != null)
-				    {	Statement s = new ExpStatement(Loc.ZERO, e);
+				    {	Statement s = new ExpStatement(null, 0, e);
 					s = s.semantic(sc, context);
 					if (fbody.blockExit(context) == BEfallthru)
-					    fbody = new CompoundStatement(Loc.ZERO, fbody, s);
+					    fbody = new CompoundStatement(null, 0, fbody, s);
 					else
-					    fbody = new TryFinallyStatement(Loc.ZERO, fbody, s);
+					    fbody = new TryFinallyStatement(null, 0, fbody, s);
 				    }
 				}
 			    }
@@ -2401,7 +2403,7 @@ public class FuncDeclaration extends Declaration {
 		if (s != null) {
 			f = (FuncDeclaration) s;
 		} else {
-			f = context.newFuncDeclaration(loc, ident, storage_class, type
+			f = context.newFuncDeclaration(filename, lineNumber, ident, storage_class, type
 					.syntaxCopy(context));
 		}
 
@@ -2543,7 +2545,7 @@ public class FuncDeclaration extends Declaration {
 
 	@Override
 	public int getLineNumber() {
-		return loc.linnum;
+		return lineNumber;
 	}
 
 	public VarDeclaration vthis() {

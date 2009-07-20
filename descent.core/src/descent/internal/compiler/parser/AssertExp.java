@@ -8,12 +8,12 @@ public class AssertExp extends UnaExp {
 
 	public Expression msg;
 
-	public AssertExp(Loc loc, Expression e) {
-		this(loc, e, null);
+	public AssertExp(char[] filename, int lineNumber, Expression e) {
+		this(filename, lineNumber, e, null);
 	}
 
-	public AssertExp(Loc loc, Expression e, Expression msg) {
-		super(loc, TOK.TOKassert, e);
+	public AssertExp(char[] filename, int lineNumber, Expression e, Expression msg) {
+		super(filename, lineNumber, TOK.TOKassert, e);
 		this.msg = msg;
 	}
 	
@@ -106,7 +106,7 @@ public class AssertExp extends UnaExp {
 			fd.hasReturnExp |= 4;
 
 			if (!context.global.params.useAssert) {
-				Expression e = new HaltExp(loc);
+				Expression e = new HaltExp(filename, lineNumber);
 				e = e.semantic(sc, context);
 				return e;
 			}
@@ -117,7 +117,7 @@ public class AssertExp extends UnaExp {
 
 	@Override
 	public Expression syntaxCopy(SemanticContext context) {
-		AssertExp ae = new AssertExp(loc, e1.syntaxCopy(context), msg != null ? msg
+		AssertExp ae = new AssertExp(filename, lineNumber, e1.syntaxCopy(context), msg != null ? msg
 				.syntaxCopy(context) : null);
 		return ae;
 	}

@@ -1,15 +1,14 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.LINK.LINKd;
+import static descent.internal.compiler.parser.TOK.TOKdelegate;
+import static descent.internal.compiler.parser.TY.Tdelegate;
+import static descent.internal.compiler.parser.TY.Tstruct;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.lookup.LazyStructDeclaration;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.LINK.LINKd;
-import static descent.internal.compiler.parser.TOK.TOKdelegate;
-
-import static descent.internal.compiler.parser.TY.Tdelegate;
-import static descent.internal.compiler.parser.TY.Tstruct;
 
 
 public class StructInitializer extends Initializer {
@@ -20,8 +19,8 @@ public class StructInitializer extends Initializer {
 	public Array<VarDeclaration> vars; // parallel array of VarDeclaration *'s
 	public AggregateDeclaration ad; // which aggregate this is for
 
-	public StructInitializer(Loc loc) {
-		super(loc);
+	public StructInitializer(char[] filename, int lineNumber) {
+		super(filename, lineNumber);
 	}
 
 	@Override
@@ -98,7 +97,7 @@ public class StructInitializer extends Initializer {
 					}
 				} else {
 					//s = ad.symtab.lookup(id);
-					s = ad.search(loc, id, 0, context);
+					s = ad.search(filename, lineNumber, id, 0, context);
 					if (null == s) {
 						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeError(
@@ -142,12 +141,12 @@ public class StructInitializer extends Initializer {
 		} else if (t.ty == Tdelegate && value.size() == 0) { //  Rewrite as empty delegate literal { }
 			Arguments arguments = new Arguments(0);
 			Type tf = new TypeFunction(arguments, null, 0, LINKd);
-			FuncLiteralDeclaration fd = new FuncLiteralDeclaration(loc, tf,
+			FuncLiteralDeclaration fd = new FuncLiteralDeclaration(filename, lineNumber, tf,
 					TOKdelegate, null);
-			fd.fbody = new CompoundStatement(loc, new Statements(0));
+			fd.fbody = new CompoundStatement(filename, lineNumber, new Statements(0));
 			// fd.endloc = loc; // this was removed from DMD (in case a bug exists in Descent)
-			Expression e = new FuncExp(loc, fd);
-			ExpInitializer ie = new ExpInitializer(loc, e);
+			Expression e = new FuncExp(filename, lineNumber, fd);
+			ExpInitializer ie = new ExpInitializer(filename, lineNumber, e);
 			return ie.semantic(sc, t, context);
 		} else {
 			if (context.acceptsErrors()) {
@@ -174,7 +173,7 @@ public class StructInitializer extends Initializer {
 
 	@Override
 	public Initializer syntaxCopy(SemanticContext context) {
-		StructInitializer ai = new StructInitializer(loc);
+		StructInitializer ai = new StructInitializer(filename, lineNumber);
 
 		if (size(field) != size(value)) {
 			throw new IllegalStateException("assert(field.dim == value.dim);");
@@ -240,7 +239,7 @@ public class StructInitializer extends Initializer {
 			}
 			elements.add(ex);
 		}
-		e = new StructLiteralExp(loc, sd, elements);
+		e = new StructLiteralExp(filename, lineNumber, sd, elements);
 		e.type = sd.type;
 		return e;
 	}
@@ -270,7 +269,7 @@ public class StructInitializer extends Initializer {
 //		    if ((VarDeclaration) ad.fields.get(j) == v)
 //		    {
 //			if (dts.get(j) != null)
-//			    error(loc, "field %s of %s already initialized", v.toChars(), ad.toChars());
+//			    error(filename, lineNumber, "field %s of %s already initialized", v.toChars(), ad.toChars());
 //			dts.set(j, val.toDt(context));
 //			break;
 //		    }
@@ -318,7 +317,7 @@ public class StructInitializer extends Initializer {
 //		if (d)
 //		{
 //		    if (v.offset < offset)
-//			error(loc, "duplicate union initialization for %s", v.toChars());
+//			error(filename, lineNumber, "duplicate union initialization for %s", v.toChars());
 //		    else
 //		    {	int sz = dt_size(d);
 //			int vsz = v.type.size();

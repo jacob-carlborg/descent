@@ -13,7 +13,10 @@ package descent.internal.core.search.matching;
 import java.io.IOException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import descent.core.search.*;
+
+import descent.core.search.IJavaSearchScope;
+import descent.core.search.SearchParticipant;
+import descent.core.search.SearchPattern;
 import descent.internal.core.index.Index;
 import descent.internal.core.search.IndexQueryRequestor;
 import descent.internal.core.search.indexing.IIndexConstants;

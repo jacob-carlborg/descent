@@ -5,8 +5,8 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class HaltExp extends Expression {
 
-	public HaltExp(Loc loc) {
-		super(loc, TOK.TOKhalt);
+	public HaltExp(char[] filename, int lineNumber) {
+		super(filename, lineNumber, TOK.TOKhalt);
 	}
 
 	@Override

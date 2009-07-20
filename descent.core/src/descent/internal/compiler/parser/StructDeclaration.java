@@ -34,8 +34,8 @@ public class StructDeclaration extends AggregateDeclaration {
 	public FuncDeclarations postblits;	// Array of postblit functions
 	public FuncDeclaration postblit;	// aggregate postblit
 
-	public StructDeclaration(Loc loc, IdentifierExp id) {
-		super(loc, id);
+	public StructDeclaration(char[] filename, int lineNumber, IdentifierExp id) {
+		super(filename, lineNumber, id);
 		this.type = new TypeStruct(this);
 	}
 
@@ -189,12 +189,12 @@ public class StructDeclaration extends AggregateDeclaration {
 		TypeFunction tfeqptr;
 		{
 			Arguments arguments = new Arguments(1);
-			Argument arg = new Argument(STCin, handle, new IdentifierExp(loc,
+			Argument arg = new Argument(STCin, handle, new IdentifierExp(filename, lineNumber,
 					Id.p), null);
 
 			arguments.add(arg);
 			tfeqptr = new TypeFunction(arguments, Type.tint32, 0, LINK.LINKd);
-			tfeqptr = (TypeFunction) tfeqptr.semantic(loc, sc, context);
+			tfeqptr = (TypeFunction) tfeqptr.semantic(filename, lineNumber, sc, context);
 		}
 
 		TypeFunction tfeq;
@@ -204,7 +204,7 @@ public class StructDeclaration extends AggregateDeclaration {
 
 			arguments.add(arg);
 			tfeq = new TypeFunction(arguments, Type.tint32, 0, LINK.LINKd);
-			tfeq = (TypeFunction) tfeq.semantic(loc, sc, context);
+			tfeq = (TypeFunction) tfeq.semantic(filename, lineNumber, sc, context);
 		}
 
 		char[] id = Id.eq;
@@ -216,15 +216,15 @@ public class StructDeclaration extends AggregateDeclaration {
 				if (fd == null) {
 					fd = fdx.overloadExactMatch(tfeq, context);
 					if (fd != null) { // Create the thunk, fdptr
-						FuncDeclaration fdptr = new FuncDeclaration(loc, 
+						FuncDeclaration fdptr = new FuncDeclaration(filename, lineNumber, 
 								fdx.ident, STC.STCundefined, tfeqptr);
-						Expression e = new IdentifierExp(loc, Id.p);
-						e = new PtrExp(loc, e);
+						Expression e = new IdentifierExp(filename, lineNumber, Id.p);
+						e = new PtrExp(filename, lineNumber, e);
 						Expressions args = new Expressions(1);
 						args.add(e);
-						e = new IdentifierExp(loc, id);
-						e = new CallExp(loc, e, args);
-						fdptr.fbody = new ReturnStatement(loc, e);
+						e = new IdentifierExp(filename, lineNumber, id);
+						e = new CallExp(filename, lineNumber, e, args);
+						fdptr.fbody = new ReturnStatement(filename, lineNumber, e);
 						ScopeDsymbol s2 = fdx.parent.isScopeDsymbol();
 						Assert.isNotNull(s2);
 						s2.members.add(fdptr);
@@ -285,7 +285,7 @@ public class StructDeclaration extends AggregateDeclaration {
 					zeroInit = true;
 					break;
 				} else {
-					if (!vd.type.isZeroInit(loc, context)) {
+					if (!vd.type.isZeroInit(filename, lineNumber, context)) {
 						zeroInit = false;
 						break;
 					}
@@ -296,11 +296,11 @@ public class StructDeclaration extends AggregateDeclaration {
 		/* Look for special member functions.
 		 */
 		if (context.isD2()) {
-		    ctor = (CtorDeclaration)search(Loc.ZERO, Id.ctor, 0, context);
+		    ctor = (CtorDeclaration)search(null, 0, Id.ctor, 0, context);
 		}
-		inv = (InvariantDeclaration) search(loc, Id.classInvariant, 0, context);
-		aggNew((NewDeclaration) search(loc, Id.classNew, 0, context));
-		aggDelete((DeleteDeclaration) search(loc, Id.classDelete, 0, context));
+		inv = (InvariantDeclaration) search(filename, lineNumber, Id.classInvariant, 0, context);
+		aggNew((NewDeclaration) search(filename, lineNumber, Id.classNew, 0, context));
+		aggDelete((DeleteDeclaration) search(filename, lineNumber, Id.classDelete, 0, context));
 
 		if (sc.func != null) {
 			semantic2(sc, context);
@@ -330,22 +330,22 @@ public class StructDeclaration extends AggregateDeclaration {
 					Expression ex;
 
 					// this.v
-					ex = new ThisExp(Loc.ZERO);
-					ex = new DotVarExp(Loc.ZERO, ex, v, false);
+					ex = new ThisExp(null, 0);
+					ex = new DotVarExp(null, 0, ex, v, false);
 
 					if (dim == 1) { // this.v.dtor()
-						ex = new DotVarExp(Loc.ZERO, ex, sd.postblit, false);
-						ex = new CallExp(Loc.ZERO, ex);
+						ex = new DotVarExp(null, 0, ex, sd.postblit, false);
+						ex = new CallExp(null, 0, ex);
 					} else {
 						// Typeinfo.postblit(cast(void*)&this.v);
-						Expression ea = new AddrExp(Loc.ZERO, ex);
-						ea = new CastExp(Loc.ZERO, ea, Type.tvoid
+						Expression ea = new AddrExp(null, 0, ex);
+						ea = new CastExp(null, 0, ea, Type.tvoid
 								.pointerTo(context));
 
 						Expression et = v.type.getTypeInfo(sc, context);
-						et = new DotIdExp(Loc.ZERO, et, Id.postblit);
+						et = new DotIdExp(null, 0, et, Id.postblit);
 
-						ex = new CallExp(Loc.ZERO, et, ea);
+						ex = new CallExp(null, 0, et, ea);
 					}
 					e = Expression.combine(e, ex); // combine in forward order
 				}
@@ -356,9 +356,9 @@ public class StructDeclaration extends AggregateDeclaration {
 		 * Build our own "postblit" which executes e
 		 */
 		if (e != null) {
-			PostBlitDeclaration dd = new PostBlitDeclaration(Loc.ZERO,
+			PostBlitDeclaration dd = new PostBlitDeclaration(null, 0,
 					new IdentifierExp(Id.__fieldPostBlit));
-			dd.fbody = new ExpStatement(Loc.ZERO, e);
+			dd.fbody = new ExpStatement(null, 0, e);
 			if (dtors == null) {
 				dtors = new FuncDeclarations(1);
 			}
@@ -381,14 +381,14 @@ public class StructDeclaration extends AggregateDeclaration {
 			e = null;
 			for (int i = 0; i < size(postblits); i++) {
 				FuncDeclaration fd = (FuncDeclaration) postblits.get(i);
-				Expression ex = new ThisExp(Loc.ZERO);
-				ex = new DotVarExp(Loc.ZERO, ex, fd, false);
-				ex = new CallExp(Loc.ZERO, ex);
+				Expression ex = new ThisExp(null, 0);
+				ex = new DotVarExp(null, 0, ex, fd, false);
+				ex = new CallExp(null, 0, ex);
 				e = Expression.combine(e, ex);
 			}
-			PostBlitDeclaration dd = new PostBlitDeclaration(Loc.ZERO,
+			PostBlitDeclaration dd = new PostBlitDeclaration(null, 0,
 					new IdentifierExp(Id.__aggrPostBlit));
-			dd.fbody = new ExpStatement(Loc.ZERO, e);
+			dd.fbody = new ExpStatement(null, 0, e);
 			if (members == null) {
 				members = new Dsymbols(1);
 			}
@@ -412,23 +412,23 @@ public class StructDeclaration extends AggregateDeclaration {
 			fparams.add(param);
 			Type ftype = new TypeFunction(fparams, Type.tvoid, 0, LINKd);
 
-			fcp = new FuncDeclaration(Loc.ZERO, new IdentifierExp(Id.cpctor), STCundefined, ftype);
+			fcp = new FuncDeclaration(null, 0, new IdentifierExp(Id.cpctor), STCundefined, ftype);
 
 			// Build *this = p;
-			Expression e = new ThisExp(Loc.ZERO);
+			Expression e = new ThisExp(null, 0);
 			if (!context.STRUCTTHISREF()) {
-				e = new PtrExp(Loc.ZERO, e);
+				e = new PtrExp(null, 0, e);
 			}
-			AssignExp ea = new AssignExp(Loc.ZERO, e, new IdentifierExp(Id.p));
+			AssignExp ea = new AssignExp(null, 0, e, new IdentifierExp(Id.p));
 			ea.op = TOKblit;
-			Statement s = new ExpStatement(Loc.ZERO, ea);
+			Statement s = new ExpStatement(null, 0, ea);
 
 			// Build postBlit();
-			e = new VarExp(Loc.ZERO, postblit, false);
-			e = new CallExp(Loc.ZERO, e);
+			e = new VarExp(null, 0, postblit, false);
+			e = new CallExp(null, 0, e);
 
-			s = new CompoundStatement(Loc.ZERO, s,
-					new ExpStatement(Loc.ZERO, e));
+			s = new CompoundStatement(null, 0, s,
+					new ExpStatement(null, 0, e));
 			fcp.fbody = s;
 
 			if (members == null) {
@@ -461,7 +461,7 @@ public class StructDeclaration extends AggregateDeclaration {
 		fparams.add(param);
 		Type ftype = new TypeFunction(fparams, handle, 0, LINKd);
 
-		fop = new FuncDeclaration(Loc.ZERO, new IdentifierExp(Id.assign),
+		fop = new FuncDeclaration(null, 0, new IdentifierExp(Id.assign),
 				STCundefined, ftype);
 
 		Expression e = null;
@@ -473,21 +473,21 @@ public class StructDeclaration extends AggregateDeclaration {
 			VarDeclaration tmp = null;
 			AssignExp ec = null;
 			if (dtor != null) {
-				tmp = new VarDeclaration(Loc.ZERO, type, idtmp,
-						new VoidInitializer(Loc.ZERO));
+				tmp = new VarDeclaration(null, 0, type, idtmp,
+						new VoidInitializer(null, 0));
 				tmp.noauto = true;
-				e = new DeclarationExp(Loc.ZERO, tmp);
-				ec = new AssignExp(Loc.ZERO, new VarExp(Loc.ZERO, tmp),
+				e = new DeclarationExp(null, 0, tmp);
+				ec = new AssignExp(null, 0, new VarExp(null, 0, tmp),
 						context.STRUCTTHISREF() ?
-							new ThisExp(Loc.ZERO) :
-							new PtrExp(Loc.ZERO, new ThisExp(Loc.ZERO)));
+							new ThisExp(null, 0) :
+							new PtrExp(null, 0, new ThisExp(null, 0)));
 				ec.op = TOKblit;
 				e = Expression.combine(e, ec);
 			}
-			ec = new AssignExp(Loc.ZERO, 
+			ec = new AssignExp(null, 0, 
 					context.STRUCTTHISREF() ?
-						new ThisExp(Loc.ZERO) :
-						new PtrExp(Loc.ZERO, new ThisExp(Loc.ZERO)), 
+						new ThisExp(null, 0) :
+						new PtrExp(null, 0, new ThisExp(null, 0)), 
 					new IdentifierExp(Id.p));
 			ec.op = TOKblit;
 			e = Expression.combine(e, ec);
@@ -496,9 +496,9 @@ public class StructDeclaration extends AggregateDeclaration {
 				 * Instead of running the destructor on s, run it on tmp. This
 				 * avoids needing to copy tmp back in to s.
 				 */
-				Expression ec2 = new DotVarExp(Loc.ZERO, new VarExp(Loc.ZERO,
+				Expression ec2 = new DotVarExp(null, 0, new VarExp(null, 0,
 						tmp), dtor, false);
-				ec2 = new CallExp(Loc.ZERO, ec2);
+				ec2 = new CallExp(null, 0, ec2);
 				e = Expression.combine(e, ec2);
 			}
 		} else {
@@ -509,22 +509,22 @@ public class StructDeclaration extends AggregateDeclaration {
 				Dsymbol s = (Dsymbol) fields.get(i);
 				VarDeclaration v = s.isVarDeclaration();
 				// this.v = s.v;
-				AssignExp ec = new AssignExp(Loc.ZERO, new DotVarExp(Loc.ZERO,
-						new ThisExp(Loc.ZERO), v, false), new DotVarExp(Loc.ZERO,
+				AssignExp ec = new AssignExp(null, 0, new DotVarExp(null, 0,
+						new ThisExp(null, 0), v, false), new DotVarExp(null, 0,
 						new IdentifierExp(Id.p), v, false));
 				ec.op = TOKblit;
 				e = Expression.combine(e, ec);
 			}
 		}
-		Statement s1 = new ExpStatement(Loc.ZERO, e);
+		Statement s1 = new ExpStatement(null, 0, e);
 
 		/*
 		 * Add: return this;
 		 */
-		e = new ThisExp(Loc.ZERO);
-		Statement s2 = new ReturnStatement(Loc.ZERO, e);
+		e = new ThisExp(null, 0);
+		Statement s2 = new ReturnStatement(null, 0, e);
 
-		fop.fbody = new CompoundStatement(Loc.ZERO, s1, s2);
+		fop.fbody = new CompoundStatement(null, 0, s1, s2);
 
 		if (members == null) {
 			members = new Dsymbols(1);
@@ -590,7 +590,7 @@ public class StructDeclaration extends AggregateDeclaration {
 		if (s != null) {
 			sd = (StructDeclaration) s;
 		} else {
-			sd = context.newStructDeclaration(loc, ident);
+			sd = context.newStructDeclaration(filename, lineNumber, ident);
 		}
 		super.syntaxCopy(sd, context);
 		

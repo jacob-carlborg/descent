@@ -1,10 +1,10 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.STC.STCin;
+
 import org.eclipse.core.runtime.Assert;
 
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
-import static descent.internal.compiler.parser.STC.STCin;
 
 
 public class TupleDeclaration extends Declaration {
@@ -13,9 +13,10 @@ public class TupleDeclaration extends Declaration {
 	public boolean isexp; // true: expression tuple
 	public TypeTuple tupletype; // !=NULL if this is a type tuple
 
-	public TupleDeclaration(Loc loc, IdentifierExp ident, Objects objects) {
+	public TupleDeclaration(char[] filename, int lineNumber, IdentifierExp ident, Objects objects) {
 		super(ident);
-		this.loc = loc;
+		this.filename = filename;
+		this.lineNumber = lineNumber;
 		this.type = null;
 		this.objects = objects;
 		this.isexp = false;

@@ -7,8 +7,8 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class DivAssignExp extends BinExp {
 
-	public DivAssignExp(Loc loc, Expression e1, Expression e2) {
-		super(loc, TOK.TOKdivass, e1, e2);
+	public DivAssignExp(char[] filename, int lineNumber, Expression e1, Expression e2) {
+		super(filename, lineNumber, TOK.TOKdivass, e1, e2);
 	}
 
 	@Override
@@ -70,10 +70,10 @@ public class DivAssignExp extends BinExp {
 			if (t1.isreal()) {
 				// x/iv = i(-x/v)
 				// Therefore, the result is 0
-				e2 = new CommaExp(loc, e2, new RealExp(loc, new char[0],
+				e2 = new CommaExp(filename, lineNumber, e2, new RealExp(filename, lineNumber, new char[0],
 						real_t.ZERO, t1));
 				e2.type = t1;
-				e = new AssignExp(loc, e1, e2);
+				e = new AssignExp(filename, lineNumber, e1, e2);
 				e.type = t1;
 				return e;
 			} else if (t1.isimaginary()) {
@@ -91,7 +91,7 @@ public class DivAssignExp extends BinExp {
 					assert (false);
 				}
 				e2 = e2.castTo(sc, t2, context);
-				e = new AssignExp(loc, e1, e2);
+				e = new AssignExp(filename, lineNumber, e1, e2);
 				e.type = t1;
 				return e;
 			}
@@ -118,7 +118,7 @@ public class DivAssignExp extends BinExp {
 	    Expression ex1 = e1.buildArrayLoop(fparams, context);
 	    Argument param = (Argument) fparams.get(0);
 	    param.storageClass = 0;
-	    Expression e = new DivAssignExp(Loc.ZERO, ex1, ex2);
+	    Expression e = new DivAssignExp(null, 0, ex1, ex2);
 	    return e;	
 	}
 

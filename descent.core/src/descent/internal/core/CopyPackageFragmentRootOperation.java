@@ -10,11 +10,24 @@
  *******************************************************************************/
 package descent.internal.core;
 
-import org.eclipse.core.resources.*;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceProxy;
+import org.eclipse.core.resources.IResourceProxyVisitor;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.AssertionFailedException;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import descent.core.*;
+
+import descent.core.IClasspathEntry;
+import descent.core.IJavaModelStatus;
+import descent.core.IJavaModelStatusConstants;
+import descent.core.IJavaProject;
+import descent.core.IPackageFragmentRoot;
+import descent.core.JavaCore;
+import descent.core.JavaModelException;
 import descent.internal.core.util.Messages;
 
 public class CopyPackageFragmentRootOperation extends JavaModelOperation {

@@ -9,12 +9,12 @@ public class DtorDeclaration extends FuncDeclaration {
 
 	public int thisStart;
 
-	public DtorDeclaration(Loc loc) {
-		this(loc, new IdentifierExp(Id.dtor));
+	public DtorDeclaration(char[] filename, int lineNumber) {
+		this(filename, lineNumber, new IdentifierExp(Id.dtor));
 	}
 	
-	public DtorDeclaration(Loc loc, IdentifierExp id) {
-		super(loc, id, STC.STCundefined, null);
+	public DtorDeclaration(char[] filename, int lineNumber, IdentifierExp id) {
+		super(filename, lineNumber, id, STC.STCundefined, null);
 	}
 
 	@Override
@@ -100,7 +100,7 @@ public class DtorDeclaration extends FuncDeclaration {
 			throw new IllegalStateException("assert(!s);");
 		}
 
-		DtorDeclaration dd = context.newDtorDeclaration(loc, ident);
+		DtorDeclaration dd = context.newDtorDeclaration(filename, lineNumber, ident);
 		dd.javaElement = javaElement;
 		dd.copySourceRange(this);
 		return super.syntaxCopy(dd, context);

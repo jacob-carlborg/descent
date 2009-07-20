@@ -1,10 +1,9 @@
 package descent.internal.compiler.parser;
 
-import descent.core.compiler.IProblem;
-import descent.internal.compiler.parser.ast.IASTVisitor;
-
 import static descent.internal.compiler.parser.TY.Tdelegate;
 import static descent.internal.compiler.parser.TY.Tfunction;
+import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
 public class DelegateExp extends UnaExp {
@@ -12,12 +11,12 @@ public class DelegateExp extends UnaExp {
 	public FuncDeclaration func;
 	public boolean hasOverloads;
 
-	public DelegateExp(Loc loc, Expression e, FuncDeclaration f) {
-		this(loc, e, f, false);
+	public DelegateExp(char[] filename, int lineNumber, Expression e, FuncDeclaration f) {
+		this(filename, lineNumber, e, f, false);
 	}
 	
-	public DelegateExp(Loc loc, Expression e, FuncDeclaration f, boolean hasOverloads) {
-		super(loc, TOK.TOKdelegate, e);
+	public DelegateExp(char[] filename, int lineNumber, Expression e, FuncDeclaration f, boolean hasOverloads) {
+		super(filename, lineNumber, TOK.TOKdelegate, e);
 		this.func = f;
 		this.hasOverloads = hasOverloads;
 	}
@@ -71,7 +70,7 @@ public class DelegateExp extends UnaExp {
 						if (!context.isD1()) {
 							f.tookAddressOf++;
 						}
-						e = new DelegateExp(loc, e1, f);
+						e = new DelegateExp(filename, lineNumber, e1, f);
 						e.type = t;
 						return e;
 					}
@@ -145,7 +144,7 @@ public class DelegateExp extends UnaExp {
 		if (type == null) {
 			e1 = e1.semantic(sc, context);
 			type = new TypeDelegate(func.type);
-			type = type.semantic(loc, sc, context);
+			type = type.semantic(filename, lineNumber, sc, context);
 			AggregateDeclaration ad = func.toParent().isAggregateDeclaration();
 			if (context.isD2()) {
 				// L10:
@@ -168,7 +167,7 @@ public class DelegateExp extends UnaExp {
 										context))) {
 							if (tcd != null && tcd.isNested()) { 
 								// Try again with outer scope
-								e1 = new DotVarExp(loc, e1, tcd.vthis);
+								e1 = new DotVarExp(filename, lineNumber, e1, tcd.vthis);
 								e1 = e1.semantic(sc, context);
 								// goto L10;
 								repeat = true;
@@ -189,7 +188,7 @@ public class DelegateExp extends UnaExp {
 				}
 			} else {
 				if (func.needThis()) {
-				    e1 = getRightThis(loc, sc, ad, e1, func, context);
+				    e1 = getRightThis(filename, lineNumber, sc, ad, e1, func, context);
 				}
 			}
 		}

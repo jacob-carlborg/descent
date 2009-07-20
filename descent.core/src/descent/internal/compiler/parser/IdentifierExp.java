@@ -23,28 +23,28 @@ public class IdentifierExp extends Expression {
 
 	public char[] ident;
 
-	public IdentifierExp(Loc loc) {
-		super(loc, TOK.TOKidentifier);
+	public IdentifierExp(char[] filename, int lineNumber) {
+		super(filename, lineNumber, TOK.TOKidentifier);
 	}
 	
 	public IdentifierExp(char[] ident) {
-		this(Loc.ZERO, ident);
+		this(null, 0, ident);
 	}
 
-	public IdentifierExp(Loc loc, char[] ident) {
-		this(loc);
+	public IdentifierExp(char[] filename, int lineNumber, char[] ident) {
+		this(filename, lineNumber);
 		this.ident = ident;
 	}
 
-	public IdentifierExp(Loc loc, IdentifierExp ident) {
-		this(loc);
+	public IdentifierExp(char[] filename, int lineNumber, IdentifierExp ident) {
+		this(filename, lineNumber);
 		this.ident = ident.ident;
 		this.start = ident.start;
 		this.length = ident.length;
 	}
 
-	public IdentifierExp(Loc loc, Token token) {
-		this(loc);
+	public IdentifierExp(char[] filename, int lineNumber, Token token) {
+		this(filename, lineNumber);
 		this.ident = token.sourceString;
 		this.start = token.ptr;
 		this.length = token.sourceLen;
@@ -90,7 +90,7 @@ public class IdentifierExp extends Expression {
 		Dsymbol s;
 		Dsymbol[] scopesym = { null };
 		
-		s = sc.search(loc, this, scopesym, context);
+		s = sc.search(filename, lineNumber, this, scopesym, context);
 		
 		// Descent: for binding resolution
 		context.setResolvedSymbol(this, s);
@@ -107,14 +107,14 @@ public class IdentifierExp extends Expression {
 
 				// Same as wthis.ident
 				if (s.needThis() || s.isTemplateDeclaration() != null) {
-					e = new VarExp(loc, withsym.withstate.wthis);
-					e = new DotIdExp(loc, e, this);
+					e = new VarExp(filename, lineNumber, withsym.withstate.wthis);
+					e = new DotIdExp(filename, lineNumber, e, this);
 				} else {
 					Type t = withsym.withstate.wthis.type;
 					if (t.ty == TY.Tpointer) {
 						t = ((TypePointer) t).next;
 					}
-					e = context.newTypeDotIdExp(loc, t, this);
+					e = context.newTypeDotIdExp(filename, lineNumber, t, this);
 				}
 			} else {
 				if (context.isD2()) {
@@ -151,16 +151,16 @@ public class IdentifierExp extends Expression {
 							tempdecl = tempdecl.overroot; // then get the
 							// start
 						}
-						e = new TemplateExp(loc, tempdecl);
+						e = new TemplateExp(filename, lineNumber, tempdecl);
 						e = e.semantic(sc, context);
 						return e;
 					}
 				}
 				if (context.isD2()) {
 					// Haven't done overload resolution yet, so pass 1
-					e = new DsymbolExp(loc, s, true);
+					e = new DsymbolExp(filename, lineNumber, s, true);
 				} else {
-					e = new DsymbolExp(loc, s);
+					e = new DsymbolExp(filename, lineNumber, s);
 				}
 				e.copySourceRange(this);
 			}

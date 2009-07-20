@@ -5,8 +5,8 @@ public abstract class SymbolExp extends Expression {
 	public Declaration var;
 	public boolean hasOverloads;
 
-	public SymbolExp(Loc loc, TOK op, Declaration var, boolean hasOverloads) {
-		super(loc, op);
+	public SymbolExp(char[] filename, int lineNumber, TOK op, Declaration var, boolean hasOverloads) {
+		super(filename, lineNumber, op);
 		
 		this.var = var;
 		this.hasOverloads = hasOverloads;

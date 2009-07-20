@@ -1,7 +1,10 @@
 package descent.internal.core.search;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import descent.core.search.*;
+
+import descent.core.search.IJavaSearchScope;
+import descent.core.search.SearchParticipant;
+import descent.core.search.SearchPattern;
 import descent.internal.compiler.util.SimpleSet;
 import descent.internal.core.index.Index;
 

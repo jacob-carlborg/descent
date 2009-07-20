@@ -12,8 +12,8 @@ public class TraitsExp extends Expression {
 	public IdentifierExp ident;
 	public Objects args;
 
-	public TraitsExp(Loc loc, IdentifierExp ident, Objects args) {
-		super(loc, TOK.TOKtraits);
+	public TraitsExp(char[] filename, int lineNumber, IdentifierExp ident, Objects args) {
+		super(filename, lineNumber, TOK.TOKtraits);
 		this.ident = ident;
 		this.args = args;
 	}
@@ -36,7 +36,7 @@ public class TraitsExp extends Expression {
 	@Override
 	public Expression semantic(final Scope sc, final SemanticContext context) {
 		if (!equals(ident, Id.compiles) && !equals(ident, Id.isSame)) {
-			TemplateInstance.semanticTiargs(loc, sc, args, 1, context);
+			TemplateInstance.semanticTiargs(filename, lineNumber, sc, args, 1, context);
 		}
 		
 	    int dim = args != null ? args.size() : 0;
@@ -165,7 +165,7 @@ public class TraitsExp extends Expression {
 							IProblem.WrongNumberOfArguments, this,
 							new String[] { String.valueOf(dim) }));
 				}
-				return new IntegerExp(loc, 0, Type.tbool);
+				return new IntegerExp(filename, lineNumber, 0, Type.tbool);
 			}
 
 			ASTDmdNode o = args.get(0);
@@ -175,7 +175,7 @@ public class TraitsExp extends Expression {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.StringExpectedAsSecondArgument, this));
 				}
-				return new IntegerExp(loc, 0, Type.tbool);
+				return new IntegerExp(filename, lineNumber, 0, Type.tbool);
 			}
 
 			e = e.optimize(WANTvalue | WANTinterpret, context);
@@ -184,7 +184,7 @@ public class TraitsExp extends Expression {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.StringExpectedAsSecondArgument, this));
 				}
-				return new IntegerExp(loc, 0, Type.tbool);
+				return new IntegerExp(filename, lineNumber, 0, Type.tbool);
 			}
 
 			StringExp se = (StringExp) e;
@@ -194,7 +194,7 @@ public class TraitsExp extends Expression {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.StringMustBeChars, this));
 				}
-				return new IntegerExp(loc, 0, Type.tbool);
+				return new IntegerExp(filename, lineNumber, 0, Type.tbool);
 			}
 
 			IdentifierExp id = context.uniqueId(new String(se.string));
@@ -202,18 +202,18 @@ public class TraitsExp extends Expression {
 			e = isExpression(o);
 			Dsymbol s = isDsymbol(o);
 			if (null != t)
-				e = context.newTypeDotIdExp(loc, t, id);
+				e = context.newTypeDotIdExp(filename, lineNumber, t, id);
 			else if (null != e)
-				e = new DotIdExp(loc, e, id);
+				e = new DotIdExp(filename, lineNumber, e, id);
 			else if (null != s) {
-				e = new DsymbolExp(loc, s);
-				e = new DotIdExp(loc, e, id);
+				e = new DsymbolExp(filename, lineNumber, s);
+				e = new DotIdExp(filename, lineNumber, e, id);
 			} else {
 				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.InvalidFirstArgument, this));
 				}
-				return new IntegerExp(loc, 0, Type.tbool);
+				return new IntegerExp(filename, lineNumber, 0, Type.tbool);
 			}
 
 			if (equals(ident, Id.hasMember)) {
@@ -228,17 +228,17 @@ public class TraitsExp extends Expression {
 					if (errors != context.global.errors) {
 						if (context.global.gag == 0)
 							context.global.errors = errors;
-						return new IntegerExp(loc, 0, Type.tbool);
+						return new IntegerExp(filename, lineNumber, 0, Type.tbool);
 					} else
-						return new IntegerExp(loc, 1, Type.tbool);
+						return new IntegerExp(filename, lineNumber, 1, Type.tbool);
 				} else {
 					e = e.trySemantic(sc, context);
 					if (null == e) {
 						if (context.global.gag != 0)
 							context.global.errors++;
-						return new IntegerExp(loc, 0, Type.tbool);
+						return new IntegerExp(filename, lineNumber, 0, Type.tbool);
 					} else
-						return new IntegerExp(loc, 1, Type.tbool);
+						return new IntegerExp(filename, lineNumber, 1, Type.tbool);
 				}
 			} else if (equals(ident, Id.getMember)) {
 				e = e.semantic(sc, context);
@@ -273,7 +273,7 @@ public class TraitsExp extends Expression {
 				p.e1 = e;
 				overloadApply(f, p, p, context);
 
-				TupleExp tup = new TupleExp(loc, exps);
+				TupleExp tup = new TupleExp(filename, lineNumber, exps);
 				return tup.semantic(sc, context);
 			} else {
 				throw new IllegalStateException();
@@ -287,7 +287,7 @@ public class TraitsExp extends Expression {
 							IProblem.WrongNumberOfArguments, this,
 							new String[] { String.valueOf(dim) }));
 				}
-				return new IntegerExp(loc, 0, Type.tbool);
+				return new IntegerExp(filename, lineNumber, 0, Type.tbool);
 			}
 
 			ASTDmdNode o = args.get(0);
@@ -297,7 +297,7 @@ public class TraitsExp extends Expression {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.FirstArgumentIsNotAClass, this));
 				}
-				return new IntegerExp(loc, 0, Type.tbool);
+				return new IntegerExp(filename, lineNumber, 0, Type.tbool);
 			}
 
 			ClassDeclaration cd = s.isClassDeclaration();
@@ -306,9 +306,9 @@ public class TraitsExp extends Expression {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.FirstArgumentIsNotAClass, this));
 				}
-				return new IntegerExp(loc, 0, Type.tbool);
+				return new IntegerExp(filename, lineNumber, 0, Type.tbool);
 			}
-			return new IntegerExp(loc, cd.structsize, Type.tsize_t);
+			return new IntegerExp(filename, lineNumber, cd.structsize, Type.tsize_t);
 		}
 
 		else if (equals(ident, Id.allMembers)
@@ -319,7 +319,7 @@ public class TraitsExp extends Expression {
 							IProblem.WrongNumberOfArguments, this,
 							new String[] { String.valueOf(dim) }));
 				}
-				return new IntegerExp(loc, 0, Type.tbool);
+				return new IntegerExp(filename, lineNumber, 0, Type.tbool);
 			}
 
 			ASTDmdNode o = args.get(0);
@@ -329,7 +329,7 @@ public class TraitsExp extends Expression {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.ArgumentHasNoMembers, this));
 				}
-				return new IntegerExp(loc, 0, Type.tbool);
+				return new IntegerExp(filename, lineNumber, 0, Type.tbool);
 			}
 
 			ScopeDsymbol sd = s.isScopeDsymbol();
@@ -339,7 +339,7 @@ public class TraitsExp extends Expression {
 							IProblem.KindSymbolHasNoMembers, this,
 							new String[] { s.kind(), s.toChars(context) }));
 				}
-				return new IntegerExp(loc, 0, Type.tbool);
+				return new IntegerExp(filename, lineNumber, 0, Type.tbool);
 			}
 
 			Expressions exps = new Expressions(3);
@@ -358,7 +358,7 @@ public class TraitsExp extends Expression {
 								continue Linner;
 						}
 
-						StringExp se = new StringExp(loc, str, str.length);
+						StringExp se = new StringExp(filename, lineNumber, str, str.length);
 						exps.add(se);
 					}
 				}
@@ -370,7 +370,7 @@ public class TraitsExp extends Expression {
 					break Louter;
 			}
 
-			Expression e = new ArrayLiteralExp(loc, exps);
+			Expression e = new ArrayLiteralExp(filename, lineNumber, exps);
 			e = e.semantic(sc, context);
 			return e;
 		} else if (equals(ident, Id.compiles)) {
@@ -379,7 +379,7 @@ public class TraitsExp extends Expression {
 			 * compile without error
 			 */
 			if (0 == dim) {
-				return new IntegerExp(loc, 0, Type.tbool);
+				return new IntegerExp(filename, lineNumber, 0, Type.tbool);
 			}
 
 			for (int i = 0; i < dim; i++) {
@@ -393,9 +393,9 @@ public class TraitsExp extends Expression {
 				Type[] t = { isType(o) };
 				if (t[0] != null) {
 					Dsymbol[] s = { null };
-					t[0].resolve(loc, sc, e, t, s, context);
+					t[0].resolve(filename, lineNumber, sc, e, t, s, context);
 					if (t[0] != null) {
-						t[0].semantic(loc, sc, context);
+						t[0].semantic(filename, lineNumber, sc, context);
 					} else if (e[0] != null) {
 						e[0].semantic(sc, context);
 					}
@@ -410,10 +410,10 @@ public class TraitsExp extends Expression {
 				if (errors != context.global.errors) {
 					if (context.global.gag == 0)
 						context.global.errors = errors;
-					return new IntegerExp(loc, 0, Type.tbool);
+					return new IntegerExp(filename, lineNumber, 0, Type.tbool);
 				}
 			}
-			return new IntegerExp(loc, 1, Type.tbool);
+			return new IntegerExp(filename, lineNumber, 1, Type.tbool);
 		} else if (equals(ident, Id.isSame)) {
 			/*
 			 * Determine if two symbols are the same
@@ -424,9 +424,9 @@ public class TraitsExp extends Expression {
 							IProblem.WrongNumberOfArguments, this,
 							new String[] { String.valueOf(dim) }));
 				}
-				return new IntegerExp(loc, 0, Type.tbool);
+				return new IntegerExp(filename, lineNumber, 0, Type.tbool);
 			}
-			TemplateInstance.semanticTiargs(loc, sc, args, 0, context);
+			TemplateInstance.semanticTiargs(filename, lineNumber, sc, args, 0, context);
 			ASTDmdNode o1 = (ASTDmdNode) args.get(0);
 			ASTDmdNode o2 = (ASTDmdNode) args.get(1);
 			Dsymbol s1 = getDsymbol(o1, context);
@@ -436,21 +436,21 @@ public class TraitsExp extends Expression {
 				Expression ea1 = isExpression(o1);
 				Expression ea2 = isExpression(o2);
 				if (ea1 != null && ea2 != null && ea1.equals(ea2)) {
-					return new IntegerExp(loc, 1, Type.tbool);
+					return new IntegerExp(filename, lineNumber, 1, Type.tbool);
 				}
 			}
 
 			if (null == s1 || null == s2) {
-				return new IntegerExp(loc, 0, Type.tbool);
+				return new IntegerExp(filename, lineNumber, 0, Type.tbool);
 			}
 
 			s1 = s1.toAlias(context);
 			s2 = s2.toAlias(context);
 
 			if (s1 == s2) {
-				return new IntegerExp(loc, 1, Type.tbool);
+				return new IntegerExp(filename, lineNumber, 1, Type.tbool);
 			} else {
-				return new IntegerExp(loc, 0, Type.tbool);
+				return new IntegerExp(filename, lineNumber, 0, Type.tbool);
 			}
 		} else {
 			if (context.acceptsErrors()) {
@@ -458,7 +458,7 @@ public class TraitsExp extends Expression {
 						IProblem.UnrecongnizedTrait, this.ident, ident
 								.toString()));
 			}
-			return new IntegerExp(loc, 0, Type.tbool);
+			return new IntegerExp(filename, lineNumber, 0, Type.tbool);
 		}
 	}
 
@@ -476,15 +476,15 @@ public class TraitsExp extends Expression {
 		for (int i = 0; i < dim; i++) {
 			Type t = null; /* TODO semantic getType((Object)args.get(i)); */
 			if (null == t)
-				return new IntegerExp(loc, 0, Type.tbool);
+				return new IntegerExp(filename, lineNumber, 0, Type.tbool);
 			if (!cond.check(t))
-				return new IntegerExp(loc, 0, Type.tbool);
+				return new IntegerExp(filename, lineNumber, 0, Type.tbool);
 		}
 
 		if (0 == dim)
-			return new IntegerExp(loc, 0, Type.tbool);
+			return new IntegerExp(filename, lineNumber, 0, Type.tbool);
 
-		return new IntegerExp(loc, 1, Type.tbool);
+		return new IntegerExp(filename, lineNumber, 1, Type.tbool);
 	}
 
 	/*
@@ -501,19 +501,19 @@ public class TraitsExp extends Expression {
 		for (int i = 0; i < dim; i++) {
 			Dsymbol s = null; /* TODO semantic getDsymbol((Object) args.data[i]); */
 			if (null == s)
-				return new IntegerExp(loc, 0, Type.tbool);
+				return new IntegerExp(filename, lineNumber, 0, Type.tbool);
 			if (!cond.check(s))
-				return new IntegerExp(loc, 0, Type.tbool);
+				return new IntegerExp(filename, lineNumber, 0, Type.tbool);
 		}
 		if (0 == dim)
-			return new IntegerExp(loc, 0, Type.tbool);
+			return new IntegerExp(filename, lineNumber, 0, Type.tbool);
 
-		return new IntegerExp(loc, 1, Type.tbool);
+		return new IntegerExp(filename, lineNumber, 1, Type.tbool);
 	}
 
 	@Override
 	public Expression syntaxCopy(SemanticContext context) {
-		return new TraitsExp(loc, ident, TemplateInstance.arraySyntaxCopy(args,
+		return new TraitsExp(filename, lineNumber, ident, TemplateInstance.arraySyntaxCopy(args,
 				context));
 	}
 

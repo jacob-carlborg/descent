@@ -1,7 +1,5 @@
 package descent.internal.compiler;
 
-import java.util.Arrays;
-
 import descent.core.dom.AST;
 import descent.core.dom.ASTParser;
 import descent.core.dom.CompilationUnit;

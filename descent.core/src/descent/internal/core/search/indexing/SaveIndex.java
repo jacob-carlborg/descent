@@ -14,6 +14,7 @@ import java.io.IOException;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+
 import descent.internal.core.index.Index;
 import descent.internal.core.search.processing.JobManager;
 import descent.internal.core.util.Util;

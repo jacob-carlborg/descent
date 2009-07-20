@@ -2,11 +2,13 @@ package descent.internal.compiler.parser;
 
 public abstract class Statement extends ASTDmdNode {
 
-	public Loc loc;
+	public int lineNumber;
+	public char[] filename;
 	public boolean incontract;
 
-	public Statement(Loc loc) {
-		this.loc = loc;
+	public Statement(char[] filename, int lineNumber) {
+		this.filename = filename;
+		this.lineNumber = lineNumber;
 	}
 	
 	public int blockExit(SemanticContext context) {
@@ -127,11 +129,11 @@ public abstract class Statement extends ASTDmdNode {
 	
 	@Override
 	public int getLineNumber() {
-		return loc.linnum;
+		return lineNumber;
 	}
 	
 	public void setLineNumber(int lineNumber) {
-		this.loc.linnum = lineNumber;
+		this.lineNumber = lineNumber;
 	}	
 
 }

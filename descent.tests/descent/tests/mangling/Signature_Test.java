@@ -4,7 +4,6 @@ import descent.core.Signature;
 import descent.core.dom.AST;
 import descent.internal.compiler.parser.ASTNodeEncoder;
 import descent.internal.compiler.parser.IntegerExp;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.TypeAArray;
 import descent.internal.compiler.parser.TypeBasic;
 import descent.internal.compiler.parser.TypeDArray;
@@ -61,12 +60,12 @@ public class Signature_Test extends AbstractSignatureTest implements ISignatureT
 	}
 	
 	public void testTypeof() {
-		assertEquals(new TypeTypeof(Loc.ZERO, new IntegerExp(3), new ASTNodeEncoder(AST.D1)).getSignature(), 
+		assertEquals(new TypeTypeof(null, 0, new IntegerExp(3), new ASTNodeEncoder(AST.D1)).getSignature(), 
 			Signature.createTypeofSignature("3"));
 	}
 	
 	public void testTypeof2() {
-		assertEquals(new TypeTypeof(Loc.ZERO, new IntegerExp(3), new ASTNodeEncoder(AST.D1)).getSignature(), 
+		assertEquals(new TypeTypeof(null, 0, new IntegerExp(3), new ASTNodeEncoder(AST.D1)).getSignature(), 
 			new String(Signature.createTypeofSignature("3".toCharArray())));
 	}
 	

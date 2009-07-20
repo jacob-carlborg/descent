@@ -1,14 +1,12 @@
 package descent.internal.compiler.parser;
 
-import descent.core.IJavaElement;
-import descent.core.compiler.IProblem;
-import descent.internal.compiler.parser.ast.IASTVisitor;
-
 import static descent.internal.compiler.parser.MATCH.MATCHconvert;
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
-
 import static descent.internal.compiler.parser.TY.Tenum;
+import descent.core.IJavaElement;
+import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
 public class TypeEnum extends Type {
@@ -54,13 +52,13 @@ public class TypeEnum extends Type {
 	}
 
 	@Override
-	public Expression defaultInit(Loc loc, SemanticContext context) {
+	public Expression defaultInit(char[] filename, int lineNumber, SemanticContext context) {
 		// Initialize to first member of enum
 		Expression e;
 		if (context.isD2()) {
 			e = (Expression) sym.defaultval;
 		} else {
-			e = new IntegerExp(loc, (integer_t) sym.defaultval, this);
+			e = new IntegerExp(filename, lineNumber, (integer_t) sym.defaultval, this);
 		}
 		return e;
 	}
@@ -77,7 +75,7 @@ public class TypeEnum extends Type {
 	    	if (context.acceptsErrors()) {
 	    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForwardReferenceOfEnumSymbolDotSymbol, e, ident, new String[] { toChars(context), ident.toChars() }));
 	    	}
-	        return new IntegerExp(Loc.ZERO, 0, Type.terror);
+	        return new IntegerExp(null, 0, 0, Type.terror);
 	    }
 
 		s = sym.symtab.lookup(ident);
@@ -89,13 +87,14 @@ public class TypeEnum extends Type {
 			if (equals(ident, Id.max) || equals(ident, Id.min)
 					|| equals(ident, Id.init) || equals(ident, Id.stringof)
 					|| null == sym.memtype) {
-				return getProperty(e.loc, ident, context);
+				return getProperty(e.filename, e.lineNumber,  ident, context);
 			}
 			return sym.memtype.dotExp(sc, e, ident, context);
 		}
 		m = s.isEnumMember();
 		em = m.value().copy();
-		em.loc = e.loc;
+		em.filename = e.filename;
+		em.lineNumber = e.lineNumber;
 		return em;
 	}
 
@@ -105,7 +104,7 @@ public class TypeEnum extends Type {
 	}
 
 	@Override
-	public Expression getProperty(Loc loc, char[] ident, int lineNumber, int start, int length,
+	public Expression getProperty(char[] filename, int lineNumber, char[] ident, int start, int length,
 			SemanticContext context) {
 		Expression e;
 
@@ -114,23 +113,23 @@ public class TypeEnum extends Type {
 				// goto Lfwd;
 				return getProperty_Lfwd(ident, context);
 			}
-			e = new IntegerExp(Loc.ZERO, (integer_t) sym.maxval, this);
+			e = new IntegerExp(null, 0, (integer_t) sym.maxval, this);
 		} else if (equals(ident, Id.min)) {
 			if (null == sym.symtab) {
 				// goto Lfwd;
 				return getProperty_Lfwd(ident, context);
 			}
-			e = new IntegerExp(Loc.ZERO, (integer_t) sym.minval, this);
+			e = new IntegerExp(null, 0, (integer_t) sym.minval, this);
 		} else if (equals(ident, Id.init)) {
 			if (null == sym.symtab) {
 				// goto Lfwd;
 				return getProperty_Lfwd(ident, context);
 			}
-			e = defaultInit(loc, context);
+			e = defaultInit(filename, lineNumber, context);
 		}
 	    else if (equals(ident, Id.stringof)) {
 			String s = toChars(context);
-			e = new StringExp(loc, s.toCharArray(), s.length(), 'c');
+			e = new StringExp(filename, lineNumber, s.toCharArray(), s.length(), 'c');
 			Scope sc = new Scope();
 			e = e.semantic(sc, context);
 		} else {
@@ -138,7 +137,7 @@ public class TypeEnum extends Type {
 				// goto Lfwd;
 				return getProperty_Lfwd(ident, context);
 			}
-			e = sym.memtype.getProperty(loc, ident, lineNumber, start, length, context);
+			e = sym.memtype.getProperty(filename, lineNumber, ident, start, length, context);
 		}
 		return e;
 	}
@@ -150,7 +149,7 @@ public class TypeEnum extends Type {
 					new String[] { toChars(context),
 							new String(ident) }));
 		}
-		return new IntegerExp(Loc.ZERO, 0, this);
+		return new IntegerExp(null, 0, 0, this);
 	}
 
 	@Override
@@ -198,7 +197,7 @@ public class TypeEnum extends Type {
 	}
 
 	@Override
-	public boolean isZeroInit(Loc loc, SemanticContext context) {
+	public boolean isZeroInit(char[] filename, int lineNumber, SemanticContext context) {
 		if (context.isD2()) {
 			return (((Expression)sym.defaultval)).equals(new IntegerExp(0), context);
 		} else {
@@ -207,13 +206,13 @@ public class TypeEnum extends Type {
 	}
 
 	@Override
-	public Type semantic(Loc loc, Scope sc, SemanticContext context) {
+	public Type semantic(char[] filename, int lineNumber, Scope sc, SemanticContext context) {
 		sym.semantic(sc, context);
 		return merge(context);
 	}
 
 	@Override
-	public int size(Loc loc, SemanticContext context) {
+	public int size(char[] filename, int lineNumber, SemanticContext context) {
 		if (null == sym.memtype) {
 			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
@@ -221,7 +220,7 @@ public class TypeEnum extends Type {
 			}
 			return 4;
 		}
-		return sym.memtype.size(loc, context);
+		return sym.memtype.size(filename, lineNumber, context);
 	}
 
 	@Override

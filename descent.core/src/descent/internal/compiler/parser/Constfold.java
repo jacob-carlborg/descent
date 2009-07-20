@@ -48,16 +48,17 @@ public class Constfold {
 	public static final UnaExp_fp Neg = new UnaExp_fp() {
 		public Expression call(Type type, Expression e1, SemanticContext context) {
 			Expression e;
-			Loc loc = e1.loc;
+			char[] filename = e1.filename;
+			int lineNumber = e1.lineNumber;
 
 			if (e1.type.isreal()) {
-				e = new RealExp(loc, e1.toReal(context).negate(), type);
+				e = new RealExp(filename, lineNumber, e1.toReal(context).negate(), type);
 			} else if (e1.type.isimaginary()) {
-				e = new RealExp(loc, e1.toImaginary(context).negate(), type);
+				e = new RealExp(filename, lineNumber, e1.toImaginary(context).negate(), type);
 			} else if (e1.type.iscomplex()) {
-				e = new ComplexExp(loc, e1.toComplex(context).negate(), type);
+				e = new ComplexExp(filename, lineNumber, e1.toComplex(context).negate(), type);
 			} else {
-				e = new IntegerExp(loc, e1.toInteger(context).negate(), type);
+				e = new IntegerExp(filename, lineNumber, e1.toInteger(context).negate(), type);
 			}
 
 			e.copySourceRange(e1);
@@ -68,9 +69,10 @@ public class Constfold {
 	public static final UnaExp_fp Com = new UnaExp_fp() {
 		public Expression call(Type type, Expression e1, SemanticContext context) {
 			Expression e;
-			Loc loc = e1.loc;
+			char[] filename = e1.filename;
+			int lineNumber = e1.lineNumber;
 
-			e = new IntegerExp(loc, e1.toInteger(context).complement(), type);
+			e = new IntegerExp(filename, lineNumber, e1.toInteger(context).complement(), type);
 			e.copySourceRange(e1);
 			return e;
 		}
@@ -79,10 +81,10 @@ public class Constfold {
 	public static final UnaExp_fp Not = new UnaExp_fp() {
 		public Expression call(Type type, Expression e1, SemanticContext context) {
 			Expression e;
-			Loc loc = e1.loc;
-
+			char[] filename = e1.filename;
+			int lineNumber = e1.lineNumber;
 			// And, for the crowd's amusement, we now have a triple-negative!
-			e = new IntegerExp(loc, e1.isBool(false) ? 1 : 0, type);
+			e = new IntegerExp(filename, lineNumber, e1.isBool(false) ? 1 : 0, type);
 			e.copySourceRange(e1);
 			return e;
 		}
@@ -113,9 +115,10 @@ public class Constfold {
 	public static final UnaExp_fp Bool = new UnaExp_fp() {
 		public Expression call(Type type, Expression e1, SemanticContext context) {
 			Expression e;
-			Loc loc = e1.loc;
+			char[] filename = e1.filename;
+			int lineNumber = e1.lineNumber;
 
-			e = new IntegerExp(loc, e1.isBool(true) ? 1 : 0, type);
+			e = new IntegerExp(filename, lineNumber, e1.isBool(true) ? 1 : 0, type);
 			e.copySourceRange(e1);
 			return e;
 		}
@@ -124,23 +127,24 @@ public class Constfold {
 	public static final UnaExp_fp ArrayLength = new UnaExp_fp() {
 		public Expression call(Type type, Expression e1, SemanticContext context) {
 			Expression e;
-			Loc loc = e1.loc;
+			char[] filename = e1.filename;
+			int lineNumber = e1.lineNumber;
 			
 			if (e1.op == TOKstring) {
 				StringExp es1 = (StringExp) e1;
 
-				e = new IntegerExp(loc, es1.len, type);
+				e = new IntegerExp(filename, lineNumber, es1.len, type);
 			} else if (e1.op == TOKarrayliteral) {
 				ArrayLiteralExp ale = (ArrayLiteralExp) e1;
 				int dim;
 
 				dim = null != ale.elements ? ale.elements.size() : 0;
-				e = new IntegerExp(loc, dim, type);
+				e = new IntegerExp(filename, lineNumber, dim, type);
 			} else if (e1.op == TOKassocarrayliteral) {
 				AssocArrayLiteralExp ale = (AssocArrayLiteralExp) e1;
 				int dim = ale.keys.size();
 
-				e = new IntegerExp(loc, dim, type);
+				e = new IntegerExp(filename, lineNumber, dim, type);
 			} else {
 				e = EXP_CANT_INTERPRET;
 			}
@@ -169,13 +173,14 @@ public class Constfold {
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context) {
 			Expression e;
-			Loc loc = e1.loc;
+			char[] filename = e1.filename;
+			int lineNumber = e1.lineNumber;
 
 			if (type.isreal()) {
-				e = new RealExp(loc,
+				e = new RealExp(filename, lineNumber,
 						e1.toReal(context).add(e2.toReal(context)), type);
 			} else if (type.isimaginary()) {
-				e = new RealExp(loc, e1.toImaginary(context).add(
+				e = new RealExp(filename, lineNumber, e1.toImaginary(context).add(
 						e2.toImaginary(context)), type);
 			} else if (type.iscomplex()) {
 				// This rigamarole is necessary so that -0.0 doesn't get
@@ -243,19 +248,19 @@ public class Constfold {
 				default:
 					throw new IllegalStateException("assert(0);");
 				}
-				e = new ComplexExp(loc, v, type);
+				e = new ComplexExp(filename, lineNumber, v, type);
 			} else if (e1.op == TOKsymoff) {
 				SymOffExp soe = (SymOffExp) e1;
-				e = new SymOffExp(loc, soe.var, soe.offset.add(e2
+				e = new SymOffExp(filename, lineNumber, soe.var, soe.offset.add(e2
 						.toInteger(context)), context);
 				e.type = type;
 			} else if (e2.op == TOKsymoff) {
 				SymOffExp soe = (SymOffExp) e2;
-				e = new SymOffExp(loc, soe.var, soe.offset.add(e1
+				e = new SymOffExp(filename, lineNumber, soe.var, soe.offset.add(e1
 						.toInteger(context)), context);
 				e.type = type;
 			} else {
-				e = new IntegerExp(loc, e1.toInteger(context).add(
+				e = new IntegerExp(filename, lineNumber, e1.toInteger(context).add(
 						e2.toInteger(context)), type);
 			}
 			e.copySourceRange(e1, e2);
@@ -267,13 +272,14 @@ public class Constfold {
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context) {
 			Expression e;
-			Loc loc = e1.loc;
+			char[] filename = e1.filename;
+			int lineNumber = e1.lineNumber;
 
 			if (type.isreal()) {
-				e = new RealExp(loc, e1.toReal(context).subtract(
+				e = new RealExp(filename, lineNumber, e1.toReal(context).subtract(
 						e2.toReal(context)), type);
 			} else if (type.isimaginary()) {
-				e = new RealExp(loc, e1.toImaginary(context).subtract(
+				e = new RealExp(filename, lineNumber, e1.toImaginary(context).subtract(
 						e2.toImaginary(context)), type);
 			} else if (type.iscomplex()) {
 				// This rigamarole is necessary so that -0.0 doesn't get
@@ -345,14 +351,14 @@ public class Constfold {
 				default:
 					throw new IllegalStateException("assert(0);");
 				}
-				e = new ComplexExp(loc, v, type);
+				e = new ComplexExp(filename, lineNumber, v, type);
 			} else if (e1.op == TOKsymoff) {
 				SymOffExp soe = (SymOffExp) e1;
-				e = new SymOffExp(loc, soe.var, soe.offset.subtract(e2
+				e = new SymOffExp(filename, lineNumber, soe.var, soe.offset.subtract(e2
 						.toInteger(context)), context);
 				e.type = type;
 			} else {
-				e = new IntegerExp(loc, e1.toInteger(context).subtract(
+				e = new IntegerExp(filename, lineNumber, e1.toInteger(context).subtract(
 						e2.toInteger(context)), type);
 			}
 			e.copySourceRange(e1, e2);
@@ -364,7 +370,8 @@ public class Constfold {
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context) {
 			Expression e;
-			Loc loc = e1.loc;
+			char[] filename = e1.filename;
+			int lineNumber = e1.lineNumber;
 
 			if (type.isfloating()) {
 				complex_t c;
@@ -393,17 +400,17 @@ public class Constfold {
 				}
 
 				if (type.isreal()) {
-					e = new RealExp(loc, c.re, type);
+					e = new RealExp(filename, lineNumber, c.re, type);
 				} else if (type.isimaginary()) {
-					e = new RealExp(loc, c.im, type);
+					e = new RealExp(filename, lineNumber, c.im, type);
 				} else if (type.iscomplex()) {
-					e = new ComplexExp(loc, c, type);
+					e = new ComplexExp(filename, lineNumber, c, type);
 				} else {
 					assert (false);
 					e = null;
 				}
 			} else {
-				e = new IntegerExp(loc, e1.toInteger(context).multiply(
+				e = new IntegerExp(filename, lineNumber, e1.toInteger(context).multiply(
 						e2.toInteger(context)), type);
 			}
 			e.copySourceRange(e1, e2);
@@ -415,7 +422,8 @@ public class Constfold {
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context) {
 			Expression e;
-			Loc loc = e1.loc;
+			char[] filename = e1.filename;
+			int lineNumber = e1.lineNumber;
 
 			if (type.isfloating()) {
 				complex_t c;
@@ -425,7 +433,7 @@ public class Constfold {
 				// e2.type.print();
 				if (e2.type.isreal()) {
 					if (e1.type.isreal()) {
-						e = new RealExp(loc, e1.toReal(context).divide(
+						e = new RealExp(filename, lineNumber, e1.toReal(context).divide(
 								e2.toReal(context)), type);
 						return e;
 					}
@@ -441,11 +449,11 @@ public class Constfold {
 				}
 
 				if (type.isreal()) {
-					e = new RealExp(loc, c.re, type);
+					e = new RealExp(filename, lineNumber, c.re, type);
 				} else if (type.isimaginary()) {
-					e = new RealExp(loc, c.im, type);
+					e = new RealExp(filename, lineNumber, c.im, type);
 				} else if (type.iscomplex()) {
-					e = new ComplexExp(loc, c, type);
+					e = new ComplexExp(filename, lineNumber, c, type);
 				} else {
 					assert (false);
 					e = null;
@@ -462,7 +470,7 @@ public class Constfold {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.DivisionByZero, e1, e2));
 					}
-					e2 = new IntegerExp(loc, integer_t.ONE, e2.type);
+					e2 = new IntegerExp(filename, lineNumber, integer_t.ONE, e2.type);
 					n2 = integer_t.ONE;
 				}
 				if (e1.type.isunsigned() || e2.type.isunsigned()) {
@@ -470,7 +478,7 @@ public class Constfold {
 				} else {
 					n = n1.divide(n2);
 				}
-				e = new IntegerExp(loc, n, type);
+				e = new IntegerExp(filename, lineNumber, n, type);
 			}
 			e.copySourceRange(e1, e2);
 			return e;
@@ -481,7 +489,8 @@ public class Constfold {
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context) {
 			Expression e;
-			Loc loc = e1.loc;
+			char[] filename = e1.filename;
+			int lineNumber = e1.lineNumber;
 
 			if (type.isfloating()) {
 				complex_t c;
@@ -500,11 +509,11 @@ public class Constfold {
 				}
 
 				if (type.isreal()) {
-					e = new RealExp(loc, c.re, type);
+					e = new RealExp(filename, lineNumber, c.re, type);
 				} else if (type.isimaginary()) {
-					e = new RealExp(loc, c.im, type);
+					e = new RealExp(filename, lineNumber, c.im, type);
 				} else if (type.iscomplex()) {
-					e = new ComplexExp(loc, c, type);
+					e = new ComplexExp(filename, lineNumber, c, type);
 				} else {
 					assert (false);
 					e = null;
@@ -519,7 +528,7 @@ public class Constfold {
 				if (n2.equals(0)) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.DivisionByZero, e1, e2));
-					e2 = new IntegerExp(loc, integer_t.ONE, e2.type);
+					e2 = new IntegerExp(filename, lineNumber, integer_t.ONE, e2.type);
 					n2 = integer_t.ONE;
 				}
 				if (e1.type.isunsigned() || e2.type.isunsigned()) {
@@ -527,7 +536,7 @@ public class Constfold {
 				} else {
 					n = n1.mod(n2);
 				}
-				e = new IntegerExp(loc, n, type);
+				e = new IntegerExp(filename, lineNumber, n, type);
 			}
 			e.copySourceRange(e1, e2);
 			return e;
@@ -538,9 +547,10 @@ public class Constfold {
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context) {
 			Expression e;
-			Loc loc = e1.loc;
+			char[] filename = e1.filename;
+			int lineNumber = e1.lineNumber;
 
-			e = new IntegerExp(loc, e1.toInteger(context).shiftLeft(
+			e = new IntegerExp(filename, lineNumber, e1.toInteger(context).shiftLeft(
 					e2.toInteger(context)), type);
 			e.start = e1.start;
 			e.length = e2.start + e2.length - e1.start;
@@ -552,7 +562,8 @@ public class Constfold {
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context) {
 			Expression e;
-			Loc loc = e1.loc;
+			char[] filename = e1.filename;
+			int lineNumber = e1.lineNumber;
 			int count;
 			integer_t value;
 
@@ -586,7 +597,7 @@ public class Constfold {
 			default:
 				throw new IllegalStateException("assert(0);");
 			}
-			e = new IntegerExp(loc, value, type);
+			e = new IntegerExp(filename, lineNumber, value, type);
 			e.copySourceRange(e1, e2);
 			return e;
 		}
@@ -596,7 +607,8 @@ public class Constfold {
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context) {
 			Expression e;
-			Loc loc = e1.loc;
+			char[] filename = e1.filename;
+			int lineNumber = e1.lineNumber;
 			int count;
 			integer_t value;
 
@@ -624,7 +636,7 @@ public class Constfold {
 			default:
 				throw new IllegalStateException("assert(0);");
 			}
-			e = new IntegerExp(loc, value, type);
+			e = new IntegerExp(filename, lineNumber, value, type);
 			e.copySourceRange(e1, e2);
 			return e;
 		}
@@ -635,7 +647,7 @@ public class Constfold {
 				SemanticContext context) {
 			Expression e;
 
-			e = new IntegerExp(e1.loc, e1.toInteger(context).and(
+			e = new IntegerExp(e1.filename, e1.lineNumber, e1.toInteger(context).and(
 					e2.toInteger(context)), type);
 			e.start = e1.start;
 			e.length = e2.start + e2.length - e1.start;
@@ -648,7 +660,7 @@ public class Constfold {
 				SemanticContext context) {
 			Expression e;
 
-			e = new IntegerExp(e1.loc, e1.toInteger(context).or(
+			e = new IntegerExp(e1.filename, e1.lineNumber, e1.toInteger(context).or(
 					e2.toInteger(context)), type);
 			e.copySourceRange(e1, e2);
 			return e;
@@ -660,7 +672,7 @@ public class Constfold {
 				SemanticContext context) {
 			Expression e;
 
-			e = new IntegerExp(e1.loc, e1.toInteger(context).xor(
+			e = new IntegerExp(e1.filename, e1.lineNumber, e1.toInteger(context).xor(
 					e2.toInteger(context)), type);
 			e.copySourceRange(e1, e2);
 			return e;
@@ -671,7 +683,8 @@ public class Constfold {
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context) {
 			Expression e = EXP_CANT_INTERPRET;
-			Loc loc = e1.loc;
+			char[] filename = e1.filename;
+			int lineNumber = e1.lineNumber;
 
 			assert (null != e1.type);
 			if (e1.op == TOKstring && e2.op == TOKint64) {
@@ -684,7 +697,7 @@ public class Constfold {
 					}
 				} else {
 					int value = es1.charAt(i.intValue());
-					e = new IntegerExp(loc, value, type);
+					e = new IntegerExp(filename, lineNumber, value, type);
 				}
 			} else if (e1.type.toBasetype(context).ty == Tsarray
 					&& e2.op == TOKint64) {
@@ -750,7 +763,8 @@ public class Constfold {
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context) {
 			Expression e = EXP_CANT_INTERPRET;
-			Loc loc = e1.loc;
+			char[] filename = e1.filename;
+			int lineNumber = e1.lineNumber;
 			Type t;
 		    Type t1 = e1.type.toBasetype(context);
 		    Type t2 = e2.type.toBasetype(context);
@@ -774,7 +788,7 @@ public class Constfold {
 
 					s[0] = (char) v.intValue();
 
-					es = new StringExp(loc, s, len);
+					es = new StringExp(filename, lineNumber, s, len);
 					es.sz = sz;
 					es.committed = true;
 					e = es;
@@ -782,7 +796,7 @@ public class Constfold {
 					// Create an ArrayLiteralExp
 					Expressions elements = new Expressions(1);
 					elements.add(e);
-					e = new ArrayLiteralExp(e.loc, elements);
+					e = new ArrayLiteralExp(e.filename, e.lineNumber,  elements);
 				}
 
 				e.type = type;
@@ -794,7 +808,7 @@ public class Constfold {
 				StringExp es1 = (StringExp) e1;
 				StringExp es2 = (StringExp) e2;
 				// TODO implement this correctly
-				StringExp es = new StringExp(loc, CharOperation.concat(
+				StringExp es = new StringExp(filename, lineNumber, CharOperation.concat(
 						es1.string, es2.string), es1.len + es2.len);
 
 				int sz = es1.sz;
@@ -834,7 +848,7 @@ public class Constfold {
 				char[] v = new char[] { (char) e2.toInteger(context).intValue() };
 
 				// TODO implement this correctly
-				es = new StringExp(loc, CharOperation.concat(es1.string, v),
+				es = new StringExp(filename, lineNumber, CharOperation.concat(es1.string, v),
 						es1.len + v.length);
 				es.sz = sz;
 				es.committed = es1.committed;
@@ -850,7 +864,7 @@ public class Constfold {
 				int sz = es2.sz;
 				char[] v = new char[] { (char) e1.toInteger(context).intValue() };
 
-				es = new StringExp(loc, CharOperation.concat(v, es2.string),
+				es = new StringExp(filename, lineNumber, CharOperation.concat(v, es2.string),
 						v.length + es2.len);
 				es.sz = sz;
 				es.committed = es2.committed;
@@ -868,7 +882,7 @@ public class Constfold {
 				ArrayLiteralExp es1 = (ArrayLiteralExp) e1;
 				ArrayLiteralExp es2 = (ArrayLiteralExp) e2;
 
-				ArrayLiteralExp ale = new ArrayLiteralExp(es1.loc,
+				ArrayLiteralExp ale = new ArrayLiteralExp(es1.filename, es1.lineNumber,
 						new Expressions(es1.elements.size()
 								+ es2.elements.size()));
 				ale.elements.addAll(es1.elements);
@@ -878,14 +892,14 @@ public class Constfold {
 				if (type.toBasetype(context).ty == Tsarray) {
 					if (context.isD1()) {
 						e.type = new TypeSArray(e1.type.toBasetype(context).next,
-								new IntegerExp(Loc.ZERO, es1.elements.size(),
+								new IntegerExp(null, 0, es1.elements.size(),
 										Type.tindex), context.encoder);
 					} else {
 						e.type = new TypeSArray(t1.nextOf(),
-								new IntegerExp(loc, es1.elements.size(),
+								new IntegerExp(filename, lineNumber, es1.elements.size(),
 										Type.tindex), context.encoder);
 					}
-					e.type = e.type.semantic(loc, null, context);
+					e.type = e.type.semantic(filename, lineNumber, null, context);
 				} else {
 					e.type = type;
 				}
@@ -904,15 +918,15 @@ public class Constfold {
 				// Concatenate the array with null
 				ArrayLiteralExp es = (ArrayLiteralExp) e;
 
-				es = new ArrayLiteralExp(es.loc, (Expressions) es.elements
+				es = new ArrayLiteralExp(es.filename, es.lineNumber, (Expressions) es.elements
 						.copy());
 				e = es;
 
 				if (type.toBasetype(context).ty == Tsarray) {
-					e.type = new TypeSArray(t1.nextOf(), new IntegerExp(loc,
+					e.type = new TypeSArray(t1.nextOf(), new IntegerExp(filename, lineNumber,
 							ASTDmdNode.size(es.elements), Type.tindex),
 							context.encoder);
-					e.type = e.type.semantic(loc, null, context);
+					e.type = e.type.semantic(filename, lineNumber, null, context);
 				} else {
 					e.type = type;
 				}
@@ -922,17 +936,17 @@ public class Constfold {
 				ArrayLiteralExp es1;
 				if (e1.op == TOKarrayliteral) {
 					es1 = (ArrayLiteralExp) e1;
-					es1 = new ArrayLiteralExp(es1.loc, es1.elements.copy());
+					es1 = new ArrayLiteralExp(es1.filename, es1.lineNumber, es1.elements.copy());
 					es1.elements.add(e2);
 				} else {
-					 es1 = new ArrayLiteralExp(e1.loc, e2);
+					 es1 = new ArrayLiteralExp(e1.filename, e1.lineNumber, e2);
 				}
 				e = es1;
 
 				if (type.toBasetype(context).ty == Tsarray) {
-					e.type = new TypeSArray(e2.type, new IntegerExp(loc,
+					e.type = new TypeSArray(e2.type, new IntegerExp(filename, lineNumber,
 							es1.elements.size(), Type.tindex), context.encoder);
-					e.type = e.type.semantic(loc, null, context);
+					e.type = e.type.semantic(filename, lineNumber, null, context);
 				} else {
 					e.type = type;
 				}
@@ -942,16 +956,16 @@ public class Constfold {
 					&& e2.type.toBasetype(context).nextOf().equals(e1.type)) {
 				ArrayLiteralExp es2 = (ArrayLiteralExp) e2;
 
-				ArrayLiteralExp ale = new ArrayLiteralExp(es2.loc,
+				ArrayLiteralExp ale = new ArrayLiteralExp(es2.filename, es2.lineNumber,
 						new Expressions(es2.elements.size() + 1));
 				ale.elements.add(e1);
 				ale.elements.addAll(es2.elements);
 				e = ale;
 
 				if (type.toBasetype(context).ty == Tsarray) {
-					e.type = new TypeSArray(e1.type, new IntegerExp(loc,
+					e.type = new TypeSArray(e1.type, new IntegerExp(filename, lineNumber,
 							es2.elements.size(), Type.tindex), context.encoder);
-					e.type = e.type.semantic(loc, null, context);
+					e.type = e.type.semantic(filename, lineNumber, null, context);
 				} else {
 					e.type = type;
 				}
@@ -970,7 +984,7 @@ public class Constfold {
 				if (tb.ty == Tarray && tb.nextOf().equals(e.type)) {
 					Expressions expressions = new Expressions(1);
 					expressions.add(e);
-					e = new ArrayLiteralExp(loc, expressions);
+					e = new ArrayLiteralExp(filename, lineNumber, expressions);
 					e.type = t;
 				}
 				if (!e.type.equals(type)) {
@@ -993,7 +1007,8 @@ public class Constfold {
 		public Expression call(TOK op, Type type, Expression e1, Expression e2,
 				SemanticContext context) {
 			Expression e;
-			Loc loc = e1.loc;
+			char[] filename = e1.filename;
+			int lineNumber = e1.lineNumber;
 			boolean cmp = false;
 			real_t r1;
 			real_t r2;
@@ -1157,7 +1172,7 @@ public class Constfold {
 			if (op == TOKnotequal) {
 				cmp ^= true;
 			}
-			e = new IntegerExp(loc, cmp ? 1 : 0, type);
+			e = new IntegerExp(filename, lineNumber, cmp ? 1 : 0, type);
 			e.copySourceRange(e1, e2);
 			return e;
 		}
@@ -1167,7 +1182,8 @@ public class Constfold {
 		public Expression call(TOK op, Type type, Expression e1, Expression e2,
 				SemanticContext context) {
 			Expression e;
-			Loc loc = e1.loc;
+			char[] filename = e1.filename;
+			int lineNumber = e1.lineNumber;
 			int n = 0; // Just to keep Java from complaining, the default
 			// should never be used.
 			real_t r1;
@@ -1411,7 +1427,7 @@ public class Constfold {
 					}
 				}
 			}
-			e = new IntegerExp(loc, n, type);
+			e = new IntegerExp(filename, lineNumber, n, type);
 			e.copySourceRange(e1, e2);
 			return e;
 		}
@@ -1420,7 +1436,8 @@ public class Constfold {
 	public static final BinExp_fp2 Identity = new BinExp_fp2() {
 		public Expression call(TOK op, Type type, Expression e1, Expression e2,
 				SemanticContext context) {
-			Loc loc = e1.loc;
+			char[] filename = e1.filename;
+			int lineNumber = e1.lineNumber;
 			boolean cmp;
 
 		    if (e1.op == TOKnull && e2.op == TOKnull) {
@@ -1442,7 +1459,7 @@ public class Constfold {
 				cmp = !cmp;
 			}
 
-			Expression e = new IntegerExp(loc, cmp ? 1 : 0, type);
+			Expression e = new IntegerExp(filename, lineNumber, cmp ? 1 : 0, type);
 			e.copySourceRange(e1, e2);
 			return e;
 		}
@@ -1452,7 +1469,8 @@ public class Constfold {
 	public static final Expression Slice(Type type, Expression e1,
 			Expression lwr, Expression upr, SemanticContext context) {
 		Expression e = EXP_CANT_INTERPRET;
-		Loc loc = e1.loc;
+		char[] filename = e1.filename;
+		int lineNumber = e1.lineNumber;
 
 		if (e1.op == TOKstring && lwr.op == TOKint64 && upr.op == TOKint64) {
 			StringExp es1 = (StringExp) e1;
@@ -1467,7 +1485,7 @@ public class Constfold {
 				StringExp es;
 				char[] s = new char[len];
 				System.arraycopy(es1.string, ilwr, s, 0, len);
-				es = new StringExp(loc, s, es1.postfix);
+				es = new StringExp(filename, lineNumber, s, es1.postfix);
 				es.sz = sz;
 				es.committed = true;
 				es.type = type;
@@ -1491,7 +1509,7 @@ public class Constfold {
 				for (int i = ilwr; i < iupr; i++) {
 					elements.set(i - ilwr, es1.elements.get(i));
 				}
-				e = new ArrayLiteralExp(e1.loc, elements);
+				e = new ArrayLiteralExp(e1.filename, e1.lineNumber, elements);
 				e.type = type;
 			}
 		}
@@ -1501,7 +1519,8 @@ public class Constfold {
 	public final static Expression Cast(Type type, Type to, Expression e1,
 			SemanticContext context) {
 		Expression e = EXP_CANT_INTERPRET;
-		Loc loc = e1.loc;
+		char[] filename = e1.filename;
+		int lineNumber = e1.lineNumber;
 		
 		Type typeb = null;
 		if (context.isD1()) {
@@ -1539,7 +1558,7 @@ public class Constfold {
 
 		Type tb = to.toBasetype(context);
 		if (tb.ty == Tbool) {
-			e = new IntegerExp(loc, e1.toInteger(context).equals(0) ? 0 : 1,
+			e = new IntegerExp(filename, lineNumber, e1.toInteger(context).equals(0) ? 0 : 1,
 					type);
 		} else if (type.isintegral()) {
 			if (e1.type.isfloating()) {
@@ -1578,26 +1597,26 @@ public class Constfold {
 					throw new IllegalStateException("assert(0);");
 				}
 
-				e = new IntegerExp(loc, result, type);
+				e = new IntegerExp(filename, lineNumber, result, type);
 			} else if (type.isunsigned()) {
-				e = new IntegerExp(loc, e1.toUInteger(context), type);
+				e = new IntegerExp(filename, lineNumber, e1.toUInteger(context), type);
 			} else {
-				e = new IntegerExp(loc, e1.toInteger(context), type);
+				e = new IntegerExp(filename, lineNumber, e1.toInteger(context), type);
 			}
 		} else if (tb.isreal()) {
 			real_t value = e1.toReal(context);
 
-			e = new RealExp(loc, value, type);
+			e = new RealExp(filename, lineNumber, value, type);
 		} else if (tb.isimaginary()) {
 			real_t value = e1.toImaginary(context);
 
-			e = new RealExp(loc, value, type);
+			e = new RealExp(filename, lineNumber, value, type);
 		} else if (tb.iscomplex()) {
 			complex_t value = e1.toComplex(context);
 
-			e = new ComplexExp(loc, value, type);
+			e = new ComplexExp(filename, lineNumber, value, type);
 		} else if (tb.isscalar(context)) {
-			e = new IntegerExp(loc, e1.toInteger(context), type);
+			e = new IntegerExp(filename, lineNumber, e1.toInteger(context), type);
 		} else if (tb.ty == Tvoid) {
 			e = EXP_CANT_INTERPRET;
 		} else if (tb.ty == Tstruct && e1.op == TOKint64) { // Struct = 0;
@@ -1626,7 +1645,7 @@ public class Constfold {
 				}
 				elements.add(exp);
 			}
-			e = new StructLiteralExp(loc, sd, elements);
+			e = new StructLiteralExp(filename, lineNumber, sd, elements);
 			e.type = type;
 		} else {
 			if (context.acceptsErrors()) {
@@ -1634,7 +1653,7 @@ public class Constfold {
 						IProblem.CannotCastSymbolToSymbol, e1, e1.type.toChars(context),
 						        type.toChars(context)));
 			}
-			e = new IntegerExp(loc, 0, Type.tint32);
+			e = new IntegerExp(filename, lineNumber, 0, Type.tint32);
 		}
 		e.copySourceRange(e1);
 		return e;

@@ -39,21 +39,21 @@ public class CallExp extends UnaExp {
 
 	public Expressions arguments, sourceArguments;
 
-	public CallExp(Loc loc, Expression e) {
-		super(loc, TOK.TOKcall, e);
+	public CallExp(char[] filename, int lineNumber, Expression e) {
+		super(filename, lineNumber, TOK.TOKcall, e);
 		this.arguments = null;
 	}
 
-	public CallExp(Loc loc, Expression e, Expression earg1) {
-		super(loc, TOK.TOKcall, e);
+	public CallExp(char[] filename, int lineNumber, Expression e, Expression earg1) {
+		super(filename, lineNumber, TOK.TOKcall, e);
 		this.arguments = new Expressions(1);
 		this.arguments.add(earg1);
 		this.sourceArguments = new Expressions(1);
 		this.sourceArguments.add(earg1);
 	}
 
-	public CallExp(Loc loc, Expression e, Expression earg1, Expression earg2) {
-		super(loc, TOK.TOKcall, e);
+	public CallExp(char[] filename, int lineNumber, Expression e, Expression earg1, Expression earg2) {
+		super(filename, lineNumber, TOK.TOKcall, e);
 		this.arguments = new Expressions(2);
 		this.arguments.add(earg1);
 		this.arguments.add(earg2);
@@ -62,8 +62,8 @@ public class CallExp extends UnaExp {
 		this.sourceArguments.add(earg2);
 	}
 
-	public CallExp(Loc loc, Expression e, Expressions exps) {
-		super(loc, TOK.TOKcall, e);
+	public CallExp(char[] filename, int lineNumber, Expression e, Expressions exps) {
+		super(filename, lineNumber, TOK.TOKcall, e);
 		this.arguments = exps;
 		if (exps != null) {
 			this.sourceArguments = new Expressions(arguments);
@@ -302,7 +302,7 @@ public class CallExp extends UnaExp {
 		if (e1.op == TOKdelegate) {
 			DelegateExp de = (DelegateExp) e1;
 
-			e1 = new DotVarExp(de.loc, de.e1, de.func);
+			e1 = new DotVarExp(de.filename, de.lineNumber, de.e1, de.func);
 			return semantic(sc, context);
 		}
 
@@ -340,7 +340,7 @@ public class CallExp extends UnaExp {
 								.toBasetype(context);
 						key = key.implicitCastTo(sc, taa.index, context);
 						key = key.implicitCastTo(sc, taa.key, context);
-						return new RemoveExp(loc, dotid.e1, key);
+						return new RemoveExp(filename, lineNumber, dotid.e1, key);
 					}
 				} else if (e1ty == Tarray || e1ty == Tsarray || e1ty == Taarray) {
 					if (arguments == null) {
@@ -348,9 +348,9 @@ public class CallExp extends UnaExp {
 					}
 					arguments.shift(dotid.e1);
 					if (context.isD2()) {
-						e1 = new DotIdExp(dotid.loc, new IdentifierExp(dotid.loc, Id.empty), dotid.ident);
+						e1 = new DotIdExp(dotid.filename, dotid.lineNumber, new IdentifierExp(dotid.filename, dotid.lineNumber, Id.empty), dotid.ident);
 					} else {
-						e1 = new IdentifierExp(dotid.loc, dotid.ident);
+						e1 = new IdentifierExp(dotid.filename, dotid.lineNumber, dotid.ident);
 					}
 				}
 			}
@@ -374,7 +374,7 @@ public class CallExp extends UnaExp {
 				if (errors != context.global.errors) {
 					context.global.errors = errors;
 					targsi = ti.tiargs;
-					e1 = new IdentifierExp(loc, ti.name);
+					e1 = new IdentifierExp(filename, lineNumber, ti.name);
 				}
 			}
 		}
@@ -398,7 +398,7 @@ public class CallExp extends UnaExp {
 				if (errors != context.global.errors) {
 					context.global.errors = errors;
 					targsi = ti.tiargs;
-					e1 = new DotIdExp(loc, se.e1, ti.name);
+					e1 = new DotIdExp(filename, lineNumber, se.e1, ti.name);
 				} else
 					e1 = etmp;
 			}
@@ -425,13 +425,13 @@ public class CallExp extends UnaExp {
 					if ((ve.var.storage_class & STClazy) != 0) {
 						tf = new TypeFunction(null, ve.var.type, 0, LINKd);
 						TypeDelegate t = new TypeDelegate(tf);
-						ve.type = t.semantic(loc, sc, context);
+						ve.type = t.semantic(filename, lineNumber, sc, context);
 					}
 				}
 
 				if (e1.op == TOKimport) { // Perhaps this should be moved to ScopeExp.semantic()
 					ScopeExp se = (ScopeExp) e1;
-					e1 = new DsymbolExp(loc, se.sds);
+					e1 = new DsymbolExp(filename, lineNumber, se.sds);
 					e1 = e1.semantic(sc, context);
 				}
 				// patch for #540 by Oskar Linde
@@ -440,13 +440,13 @@ public class CallExp extends UnaExp {
 
 					if (de.e2.op == TOKimport) { // This should *really* be moved to ScopeExp::semantic()
 						ScopeExp se = (ScopeExp) de.e2;
-						de.e2 = new DsymbolExp(loc, se.sds);
+						de.e2 = new DsymbolExp(filename, lineNumber, se.sds);
 						de.e2 = de.e2.semantic(sc, context);
 					}
 
 					if (de.e2.op == TOKtemplate) {
 						TemplateExp te = (TemplateExp) de.e2;
-						e1 = new DotTemplateExp(loc, de.e1, te.td);
+						e1 = new DotTemplateExp(filename, lineNumber, de.e1, te.td);
 					}
 				}
 
@@ -491,7 +491,7 @@ public class CallExp extends UnaExp {
 					
 					/* It's a struct literal
 					 */
-					Expression e = new StructLiteralExp(loc,
+					Expression e = new StructLiteralExp(filename, lineNumber,
 							(StructDeclaration) ad, arguments);
 					e.copySourceRange(this);
 					e = e.semantic(sc, context);
@@ -506,7 +506,7 @@ public class CallExp extends UnaExp {
 			}
 
 			arrayExpressionSemantic(arguments, sc, context);
-			preFunctionArguments(loc, sc, arguments, context);
+			preFunctionArguments(filename, lineNumber, sc, arguments, context);
 
 			if (e1.op == TOKdotvar && t1.ty == Tfunction || e1.op == TOKdottd) {
 				DotVarExp dve = null;
@@ -520,7 +520,7 @@ public class CallExp extends UnaExp {
 					f = dve.var.isFuncDeclaration();
 					Assert.isNotNull(f);
 					
-					f = f.overloadResolve(loc, ue.e1, arguments, context, this);
+					f = f.overloadResolve(filename, lineNumber, ue.e1, arguments, context, this);
 					
 					// Descent: for binding resolution
 					if (this.sourceE1 != null) {
@@ -536,7 +536,7 @@ public class CallExp extends UnaExp {
 						// Should fix deduce() so it works on null argument
 						arguments = new Expressions(0);
 					}
-					f = td.deduceFunctionTemplate(sc, loc, targsi, ue.e1, arguments, context);
+					f = td.deduceFunctionTemplate(sc, filename, lineNumber, targsi, ue.e1, arguments, context);
 					if (f == null) {
 						type = Type.terror;
 						return this;
@@ -571,7 +571,7 @@ public class CallExp extends UnaExp {
 											context))) {
 								if (tcd != null && tcd.isNested()) { 
 									// Try again with outer scope
-									ue.e1 = new DotVarExp(loc, ue.e1, tcd.vthis);
+									ue.e1 = new DotVarExp(filename, lineNumber, ue.e1, tcd.vthis);
 									ue.e1 = ue.e1.semantic(sc, context);
 									// goto L10;
 									repeat = true;
@@ -592,7 +592,7 @@ public class CallExp extends UnaExp {
 					}
 				} else {
 					if (f.needThis()) {
-					    ue.e1 = getRightThis(loc, sc, ad, ue.e1, f, context);
+					    ue.e1 = getRightThis(filename, lineNumber, sc, ad, ue.e1, f, context);
 					}
 					
 					/* Cannot call public functions from inside invariant
@@ -614,14 +614,14 @@ public class CallExp extends UnaExp {
 				}
 				accessCheck(sc, ue.e1, f, context);
 				if (!f.needThis()) {
-					VarExp ve = new VarExp(loc, f);
-					e1 = new CommaExp(loc, ue.e1, ve);
+					VarExp ve = new VarExp(filename, lineNumber, f);
+					e1 = new CommaExp(filename, lineNumber, ue.e1, ve);
 					e1.type = f.type;
 				} else {
 					if (e1.op == TOKdotvar) {
 						dve.var = f;
 					} else {
-						e1 = new DotVarExp(loc, dte.e1, f);
+						e1 = new DotVarExp(filename, lineNumber, dte.e1, f);
 					}
 					e1.type = f.type;
 					
@@ -667,7 +667,7 @@ public class CallExp extends UnaExp {
 					if (ad != null && cd != null
 							&& ad.isClassDeclaration() != null && ad != cd
 							&& ue.e1.op != TOKsuper) {
-						ue.e1 = ue.e1.castTo(sc, ad.type, context); //new CastExp(loc, ue.e1, ad.type);
+						ue.e1 = ue.e1.castTo(sc, ad.type, context); //new CastExp(filename, lineNumber, ue.e1, ad.type);
 						ue.e1 = ue.e1.semantic(sc, context);
 					}
 				}
@@ -709,7 +709,7 @@ public class CallExp extends UnaExp {
 							sc.callSuper |= CSXany_ctor | CSXsuper_ctor;
 						}
 
-						f = f.overloadResolve(loc, null, arguments, context, this);
+						f = f.overloadResolve(filename, lineNumber, null, arguments, context, this);
 						
 						// Descent: for binding resolution
 						if (this.sourceE1 != null) {
@@ -722,7 +722,7 @@ public class CallExp extends UnaExp {
 							checkPurity(sc, f, context);
 						}
 						
-						e1 = new DotVarExp(e1.loc, e1, f);
+						e1 = new DotVarExp(e1.filename, e1.lineNumber, e1, f);
 						e1 = e1.semantic(sc, context);
 						t1 = e1.type;
 					}
@@ -757,7 +757,7 @@ public class CallExp extends UnaExp {
 				    }
 
 					f = cd.ctor(context);
-					f = f.overloadResolve(loc, null, arguments, context, this);
+					f = f.overloadResolve(filename, lineNumber, null, arguments, context, this);
 					
 					// Descent: for binding resolution
 					if (this.sourceE1 != null) {
@@ -770,7 +770,7 @@ public class CallExp extends UnaExp {
 						checkPurity(sc, f, context);
 					}
 					
-					e1 = new DotVarExp(e1.loc, e1, f);
+					e1 = new DotVarExp(e1.filename, e1.lineNumber, e1, f);
 					e1 = e1.semantic(sc, context);
 					t1 = e1.type;
 
@@ -799,7 +799,7 @@ public class CallExp extends UnaExp {
 				} else if (t1.ty == Tpointer && ((TypePointer)t1).next.ty == Tfunction) {
 					Expression e;
 
-					e = new PtrExp(loc, e1);
+					e = new PtrExp(filename, lineNumber, e1);
 					t1 = ((TypePointer)t1).next;
 					e.type = t1;
 					e1 = e;
@@ -810,7 +810,7 @@ public class CallExp extends UnaExp {
 					// appear inside templates, but always on the invocation site
 					context.startTemplateEvaluation(te.td, sc);
 					try {
-						f = te.td.deduceFunctionTemplate(sc, loc, targsi, null, arguments, context);
+						f = te.td.deduceFunctionTemplate(sc, filename, lineNumber, targsi, null, arguments, context);
 					} finally {
 						context.endTemplateEvaluation(te.td, sc);
 					}
@@ -822,14 +822,14 @@ public class CallExp extends UnaExp {
 						// Supply an implicit 'this', as in
 						//	  this.ident
 
-						e1 = new DotTemplateExp(loc, (new ThisExp(loc))
+						e1 = new DotTemplateExp(filename, lineNumber, (new ThisExp(filename, lineNumber))
 								.semantic(sc, context), te.td);
 						// goto Lagain;
 						loopLagain = true;
 						continue Lagain;
 					}
 
-					e1 = new VarExp(loc, f);
+					e1 = new VarExp(filename, lineNumber, f);
 					// goto Lagain;
 					loopLagain = true;
 					continue Lagain;
@@ -861,7 +861,7 @@ public class CallExp extends UnaExp {
 						if (tempdecl.overroot != null) {
 							tempdecl = tempdecl.overroot; // then get the start
 						}
-						e1 = new TemplateExp(loc, tempdecl);
+						e1 = new TemplateExp(filename, lineNumber, tempdecl);
 						istemp = 1;
 						// goto Lagain;
 						loopLagain = true;
@@ -869,7 +869,7 @@ public class CallExp extends UnaExp {
 					}
 				}
 
-				f = f.overloadResolve(loc, null, arguments, context, this);
+				f = f.overloadResolve(filename, lineNumber, null, arguments, context, this);
 				
 				// Descent: for binding resolution
 				if (this.sourceE1 != null) {
@@ -886,7 +886,7 @@ public class CallExp extends UnaExp {
 					// Supply an implicit 'this', as in
 					//	  this.ident
 
-					e1 = new DotVarExp(loc, new ThisExp(loc), f);
+					e1 = new DotVarExp(filename, lineNumber, new ThisExp(filename, lineNumber), f);
 					// goto Lagain;
 					loopLagain = true;
 					continue Lagain;
@@ -910,8 +910,8 @@ public class CallExp extends UnaExp {
 	private Expression semantic_L1(Scope sc, SemanticContext context) {
 		// overload of opCall, therefore it's a call
 		// Rewrite as e1.call(arguments)
-		Expression e = new DotIdExp(loc, e1, Id.call);
-		e = new CallExp(loc, e, arguments);
+		Expression e = new DotIdExp(filename, lineNumber, e1, Id.call);
+		e = new CallExp(filename, lineNumber, e, arguments);
 		e.copySourceRange(this);
 		e = e.semantic(sc, context);
 		return e;
@@ -925,7 +925,7 @@ public class CallExp extends UnaExp {
 		if (arguments == null) {
 			arguments = new Expressions(0);
 		}
-		functionArguments(loc, sc, tf, arguments, context);
+		functionArguments(filename, lineNumber, sc, tf, arguments, context);
 
 		Assert.isNotNull(type);
 
@@ -945,7 +945,7 @@ public class CallExp extends UnaExp {
 
 	@Override
 	public Expression syntaxCopy(SemanticContext context) {
-		Expression e = context.newCallExp(loc, e1.syntaxCopy(context), arraySyntaxCopy(arguments, context));
+		Expression e = context.newCallExp(filename, lineNumber, e1.syntaxCopy(context), arraySyntaxCopy(arguments, context));
 		e.copySourceRange(this);
 		return e;
 	}

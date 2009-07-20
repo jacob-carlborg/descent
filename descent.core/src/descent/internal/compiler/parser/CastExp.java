@@ -31,23 +31,23 @@ public class CastExp extends UnaExp {
 	public int modifierStart, modifier2Start;
 	public int mod;
 
-	public CastExp(Loc loc, Expression e1, TOK tok, int modifierStart) {
-		super(loc, TOK.TOKcast, e1);
+	public CastExp(char[] filename, int lineNumber, Expression e1, TOK tok, int modifierStart) {
+		super(filename, lineNumber, TOK.TOKcast, e1);
 		this.modifierStart = modifierStart;
 		this.to = null;
 		this.tok = tok;
 	}
 	
-	public CastExp(Loc loc, Expression e1, int mod, TOK tok, int modifierStart) {
-		super(loc, TOK.TOKcast, e1);
+	public CastExp(char[] filename, int lineNumber, Expression e1, int mod, TOK tok, int modifierStart) {
+		super(filename, lineNumber, TOK.TOKcast, e1);
 		this.modifierStart = modifierStart;
 		this.to = null;
 		this.tok = tok;
 		this.mod = mod;
 	}
 	
-	public CastExp(Loc loc, Expression e1, int mod, TOK tok, int modifierStart, TOK tok2, int modifier2Start) {
-		super(loc, TOK.TOKcast, e1);
+	public CastExp(char[] filename, int lineNumber, Expression e1, int mod, TOK tok, int modifierStart, TOK tok2, int modifier2Start) {
+		super(filename, lineNumber, TOK.TOKcast, e1);
 		this.modifierStart = modifierStart;
 		this.to = null;
 		this.tok = tok;
@@ -56,8 +56,8 @@ public class CastExp extends UnaExp {
 		this.modifier2Start = modifier2Start;
 	}
 
-	public CastExp(Loc loc, Expression e1, Type t) {
-		super(loc, TOK.TOKcast, e1);
+	public CastExp(char[] filename, int lineNumber, Expression e1, Type t) {
+		super(filename, lineNumber, TOK.TOKcast, e1);
 		this.to = this.sourceTo = t;
 		this.tok = null;
 	}
@@ -219,7 +219,7 @@ public class CastExp extends UnaExp {
 					throw new IllegalStateException("assert(0);");
 				}
 			} else {
-				to = to.semantic(loc, sc, context);
+				to = to.semantic(filename, lineNumber, sc, context);
 			}
 
 			e = op_overload(sc, context);
@@ -230,7 +230,7 @@ public class CastExp extends UnaExp {
 			Type tob = to.toBasetype(context);
 			if (tob.ty == Tstruct && 
 				!tob.equals(e1.type.toBasetype(context)) &&
-			    null == ((TypeStruct)to).sym.search(Loc.ZERO, Id.call, 0, context)
+			    null == ((TypeStruct)to).sym.search(null, 0, Id.call, 0, context)
 			    ) 
 			{
 				/* Look to replace:
@@ -240,9 +240,9 @@ public class CastExp extends UnaExp {
 				 */
 
 				// Rewrite as to.call(e1)
-				e = new TypeExp(loc, to);
-				e = new DotIdExp(loc, e, Id.call);
-				e = new CallExp(loc, e, e1);
+				e = new TypeExp(filename, lineNumber, to);
+				e = new DotIdExp(filename, lineNumber, e, Id.call);
+				e = new CallExp(filename, lineNumber, e, e1);
 				e = e.semantic(sc, context);
 				return e;
 			}
@@ -253,7 +253,7 @@ public class CastExp extends UnaExp {
 
 	@Override
 	public Expression syntaxCopy(SemanticContext context) {
-		return new CastExp(loc, e1.syntaxCopy(context), to.syntaxCopy(context));
+		return new CastExp(filename, lineNumber, e1.syntaxCopy(context), to.syntaxCopy(context));
 	}
 
 	@Override

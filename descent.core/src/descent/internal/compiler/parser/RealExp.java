@@ -10,8 +10,8 @@ public class RealExp extends Expression {
 	public char[] str;
 	public real_t value;
 
-	public RealExp(Loc loc, char[] str, real_t value, Type type) {
-		super(loc, TOK.TOKfloat64);
+	public RealExp(char[] filename, int lineNumber, char[] str, real_t value, Type type) {
+		super(filename, lineNumber, TOK.TOKfloat64);
 		this.str = str;
 		if (value == null) {
 			throw new IllegalStateException("assert(value)");
@@ -20,12 +20,12 @@ public class RealExp extends Expression {
 		this.type = type;
 	}
 
-	public RealExp(Loc loc, real_t value, Type type) {
-		this(loc, null, value, type);
+	public RealExp(char[] filename, int lineNumber, real_t value, Type type) {
+		this(filename, lineNumber, null, value, type);
 	}
 
-	public RealExp(Loc loc, double d, Type type) {
-		this(loc, new real_t(BigDecimal.valueOf(d)), type);
+	public RealExp(char[] filename, int lineNumber, double d, Type type) {
+		this(filename, lineNumber, new real_t(BigDecimal.valueOf(d)), type);
 	}
 
 	@Override
@@ -92,7 +92,7 @@ public class RealExp extends Expression {
 		if (type == null) {
 			type = Type.tfloat64;
 		} else {
-			type = type.semantic(loc, sc, context);
+			type = type.semantic(filename, lineNumber, sc, context);
 		}
 		return this;
 	}

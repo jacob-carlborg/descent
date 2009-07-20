@@ -10,11 +10,11 @@
  *******************************************************************************/
 package descent.internal.core.index;
 
-import descent.core.search.*;
-import descent.internal.core.util.*;
+import descent.core.search.SearchPattern;
 import descent.internal.compiler.util.HashtableOfObject;
 import descent.internal.compiler.util.SimpleLookupTable;
 import descent.internal.compiler.util.SimpleSet;
+import descent.internal.core.util.SimpleWordSet;
 
 public class MemoryIndex {
 

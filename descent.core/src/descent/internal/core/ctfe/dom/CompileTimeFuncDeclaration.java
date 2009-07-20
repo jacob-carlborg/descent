@@ -5,7 +5,6 @@ import descent.internal.compiler.parser.Expressions;
 import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.InterState;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.Type;
@@ -15,14 +14,14 @@ public class CompileTimeFuncDeclaration extends FuncDeclaration {
 	private final boolean fIgnoreFirstSemanticAnalysis;
 	private boolean fDoneSemanticAnalysis;
 
-	public CompileTimeFuncDeclaration(Loc loc, IdentifierExp ident,
+	public CompileTimeFuncDeclaration(char[] filename, int lineNumber, IdentifierExp ident,
 			int storage_class, Type type) {
-		this(loc, ident, storage_class, type, false);
+		this(filename, lineNumber, ident, storage_class, type, false);
 	}
 	
-	public CompileTimeFuncDeclaration(Loc loc, IdentifierExp ident,
+	public CompileTimeFuncDeclaration(char[] filename, int lineNumber, IdentifierExp ident,
 			int storage_class, Type type, boolean ignoreFirstSemanticAnalysis) {
-		super(loc, ident, storage_class, type);
+		super(filename, lineNumber, ident, storage_class, type);
 		
 		this.fIgnoreFirstSemanticAnalysis = ignoreFirstSemanticAnalysis;
 	}

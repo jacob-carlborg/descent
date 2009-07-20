@@ -9,8 +9,8 @@ public class MinAssignExp extends BinExp {
 	
 	public boolean isPreDecrement;
 
-	public MinAssignExp(Loc loc, Expression e1, Expression e2) {
-		super(loc, TOK.TOKminass, e1, e2);
+	public MinAssignExp(char[] filename, int lineNumber, Expression e1, Expression e2) {
+		super(filename, lineNumber, TOK.TOKminass, e1, e2);
 	}
 
 	@Override
@@ -99,7 +99,7 @@ public class MinAssignExp extends BinExp {
 	    Expression ex1 = e1.buildArrayLoop(fparams, context);
 	    Argument param = (Argument) fparams.get(0);
 	    param.storageClass = 0;
-	    Expression e = new MinAssignExp(Loc.ZERO, ex1, ex2);
+	    Expression e = new MinAssignExp(null, 0, ex1, ex2);
 	    return e;	
 	}
 

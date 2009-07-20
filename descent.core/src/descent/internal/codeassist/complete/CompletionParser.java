@@ -32,7 +32,6 @@ import descent.internal.compiler.parser.Identifiers;
 import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.Initializer;
 import descent.internal.compiler.parser.InterfaceDeclaration;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.ModuleDeclaration;
 import descent.internal.compiler.parser.Objects;
@@ -204,16 +203,16 @@ public class CompletionParser extends Parser {
 	}
 	
 	@Override
-	protected Import newImport(Loc loc, Identifiers packages, IdentifierExp module, IdentifierExp aliasid, boolean isstatic) { 
+	protected Import newImport(char[] filename, int lineNumber, Identifiers packages, IdentifierExp module, IdentifierExp aliasid, boolean isstatic) { 
 		int start = CompletionUtils.getFqnStart(packages, module, cursorLocation);
 		int end = CompletionUtils.getFqnEnd(packages, module, cursorLocation);
 	
 		if (start <= cursorLocation && cursorLocation <= end) {
-			assistNode = new CompletionOnImport(loc, packages, module, aliasid, isstatic, cursorLocation);
+			assistNode = new CompletionOnImport(filename, lineNumber, packages, module, aliasid, isstatic, cursorLocation);
 			wantKeywords = false;
 			return (Import) assistNode;
 		} else {
-			return super.newImport(loc, packages, module, aliasid, isstatic);
+			return super.newImport(filename, lineNumber, packages, module, aliasid, isstatic);
 		}
 	}
 	
@@ -228,7 +227,7 @@ public class CompletionParser extends Parser {
 		}
 		
 		if (prevToken.ptr <= cursorLocation && cursorLocation <= token.ptr) {
-			CompletionOnImport coi = new CompletionOnImport(s.loc, s.packages, s.id, s.aliasId, s.isstatic, cursorLocation);
+			CompletionOnImport coi = new CompletionOnImport(s.filename, s.lineNumber, s.packages, s.id, s.aliasId, s.isstatic, cursorLocation);
 			if (name != null && name.start <= cursorLocation && cursorLocation <= name.start + name.length) {
 				coi.selectiveName = name;
 			}
@@ -252,38 +251,38 @@ public class CompletionParser extends Parser {
 	}
 	
 	@Override
-	protected GotoStatement newGotoStatement(Loc loc, IdentifierExp ident) {
+	protected GotoStatement newGotoStatement(char[] filename, int lineNumber, IdentifierExp ident) {
 		if (inCompletion() && (prevToken.value != TOK.TOKgoto || prevToken.ptr + prevToken.sourceLen < cursorLocation)) {
 			wantKeywords = false;
 			
-			assistNode = new CompletionOnGotoStatement(loc, ident);
+			assistNode = new CompletionOnGotoStatement(filename, lineNumber, ident);
 			return (GotoStatement) assistNode;
 		} else {			
-			return super.newGotoStatement(loc, ident);
+			return super.newGotoStatement(filename, lineNumber, ident);
 		}
 	}
 	
 	@Override
-	protected BreakStatement newBreakStatement(Loc loc, IdentifierExp ident) {
+	protected BreakStatement newBreakStatement(char[] filename, int lineNumber, IdentifierExp ident) {
 		if (inCompletion() && (prevToken.value != TOK.TOKbreak || prevToken.ptr + prevToken.sourceLen < cursorLocation)) {
 			wantKeywords = false;
 			
-			assistNode = new CompletionOnBreakStatement(loc, ident);
+			assistNode = new CompletionOnBreakStatement(filename, lineNumber, ident);
 			return (BreakStatement) assistNode;
 		} else {			
-			return super.newBreakStatement(loc, ident);
+			return super.newBreakStatement(filename, lineNumber, ident);
 		}
 	}
 	
 	@Override
-	protected ContinueStatement newContinueStatement(Loc loc, IdentifierExp ident) {
+	protected ContinueStatement newContinueStatement(char[] filename, int lineNumber, IdentifierExp ident) {
 		if (inCompletion() && (prevToken.value != TOK.TOKcontinue || prevToken.ptr + prevToken.sourceLen < cursorLocation)) {
 			wantKeywords = false;
 			
-			assistNode = new CompletionOnContinueStatement(loc, ident);
+			assistNode = new CompletionOnContinueStatement(filename, lineNumber, ident);
 			return (ContinueStatement) assistNode;
 		} else {			
-			return super.newContinueStatement(loc, ident);
+			return super.newContinueStatement(filename, lineNumber, ident);
 		}
 	}
 	
@@ -296,7 +295,7 @@ public class CompletionParser extends Parser {
 			
 			isCallFollowing = peek(token).value == TOK.TOKlparen;
 			
-			assistNode = new CompletionOnIdentifierExp(loc, token);
+			assistNode = new CompletionOnIdentifierExp(filename, lineNumber, token);
 			return (IdentifierExp) assistNode;
 		} else {
 			// It may be ident.| someOtherIdent
@@ -304,7 +303,7 @@ public class CompletionParser extends Parser {
 			// if it's a dot
 			Token next = peek(token);
 			if (next != null && next.value == TOK.TOKdot && next.ptr + next.sourceLen == cursorLocation) {
-				assistNode = new CompletionOnIdentifierExp(loc, token, next.ptr + next.sourceLen);
+				assistNode = new CompletionOnIdentifierExp(filename, lineNumber, token, next.ptr + next.sourceLen);
 				
 				isCallFollowing = next.value == TOK.TOKlparen;
 				
@@ -316,63 +315,63 @@ public class CompletionParser extends Parser {
 	}
 	
 	@Override
-	protected TypeQualified newTypeIdentifier(Loc loc, IdentifierExp id) {
+	protected TypeQualified newTypeIdentifier(char[] filename, int lineNumber, IdentifierExp id) {
 		if (id.start <= cursorLocation && cursorLocation <= id.start + id.length) {
-			assistNode = new CompletionOnTypeIdentifier(loc, id);
+			assistNode = new CompletionOnTypeIdentifier(filename, lineNumber, id);
 			return (TypeQualified) assistNode;
 		} else {
 			// It may be ident.| someOtherIdent
 			// So let's see if the cursor is right before the next token,
 			// if it's a dot (the next token is already consumed)
 			if (token.value == TOK.TOKdot && token.ptr + token.sourceLen == cursorLocation) {
-				assistNode = new CompletionOnTypeIdentifier(loc, id, token.ptr + token.sourceLen);
+				assistNode = new CompletionOnTypeIdentifier(filename, lineNumber, id, token.ptr + token.sourceLen);
 				return (TypeQualified) assistNode;
 			} else {
-				return super.newTypeIdentifier(loc, id);
+				return super.newTypeIdentifier(filename, lineNumber, id);
 			}
 		}
 	}
 	
 	@Override
-	protected ThisExp newThisExp(Loc loc) {
+	protected ThisExp newThisExp(char[] filename, int lineNumber) {
 		// It may be this.| someOtherIdent
 		// So let's see if the cursor is right before the next token,
 		// if it's a dot
 		Token next = peek(token);
 		if (next != null && next.value == TOK.TOKdot && next.ptr + next.sourceLen == cursorLocation) {
-			assistNode = new CompletionOnThisDotExp(loc);
+			assistNode = new CompletionOnThisDotExp(filename, lineNumber);
 			return (ThisExp) assistNode;
 		} else {
-			return super.newThisExp(loc);
+			return super.newThisExp(filename, lineNumber);
 		}
 	}
 	
 	@Override
-	protected SuperExp newSuperExp(Loc loc) {
+	protected SuperExp newSuperExp(char[] filename, int lineNumber) {
 		// It may be this.| someOtherIdent
 		// So let's see if the cursor is right before the next token,
 		// if it's a dot
 		Token next = peek(token);
 		if (next != null && next.value == TOK.TOKdot && next.ptr + next.sourceLen == cursorLocation) {
-			assistNode = new CompletionOnSuperDotExp(loc);
+			assistNode = new CompletionOnSuperDotExp(filename, lineNumber);
 			return (SuperExp) assistNode;
 		} else {
-			return super.newSuperExp(loc);
+			return super.newSuperExp(filename, lineNumber);
 		}
 	}
 	
 	@Override
-	protected ExpStatement newExpStatement(Loc loc, Expression exp) {
+	protected ExpStatement newExpStatement(char[] filename, int lineNumber, Expression exp) {
 		if (exp instanceof IdentifierExp && !wantNames) {
 			IdentifierExp id = (IdentifierExp) exp;			
 			if (id.start + id.length == cursorLocation) {
-				assistNode = new CompletionOnExpStatement(loc, exp);
+				assistNode = new CompletionOnExpStatement(filename, lineNumber, exp);
 				return (ExpStatement) assistNode;
 			} else {
-				return super.newExpStatement(loc, exp);	
+				return super.newExpStatement(filename, lineNumber, exp);	
 			}
 		} else {
-			return super.newExpStatement(loc, exp);	
+			return super.newExpStatement(filename, lineNumber, exp);	
 		}
 	}
 	
@@ -416,7 +415,7 @@ public class CompletionParser extends Parser {
 	}
 	
 	@Override
-	protected VersionCondition newVersionCondition(Module module, Loc loc, long level, char[] id) {
+	protected VersionCondition newVersionCondition(Module module, char[] filename, int lineNumber, long level, char[] id) {
 		boolean isId = level == 1 && !(id != null && id.length == 1 && id[0] == '1');
 		if (isId && id != null) {
 			if (versions == null) {
@@ -426,26 +425,26 @@ public class CompletionParser extends Parser {
 		}
 		
 		if (inCompletion() && prevToken.ptr + prevToken.sourceLen < cursorLocation && isId) {
-			assistNode = new CompletionOnVersionCondition(module, loc, level, id);
+			assistNode = new CompletionOnVersionCondition(module, filename, lineNumber, level, id);
 			return (VersionCondition) assistNode;
 		} else {
-			return super.newVersionCondition(module, loc, level, id);
+			return super.newVersionCondition(module, filename, lineNumber, level, id);
 		}
 	}
 	
 	@Override
-	protected VersionSymbol newVersionSymbol(Loc loc, IdentifierExp id, Version version) {
+	protected VersionSymbol newVersionSymbol(char[] filename, int lineNumber, IdentifierExp id, Version version) {
 		if (id != null && id.ident != null) {
 			if (versions == null) {
 				versions = new HashtableOfCharArrayAndObject();
 			}
 			versions.put(id.ident, this);
 		}
-		return super.newVersionSymbol(loc, id, version);
+		return super.newVersionSymbol(filename, lineNumber, id, version);
 	}
 	
 	@Override
-	protected DebugCondition newDebugCondition(Module module, Loc loc, long level, char[] id) {
+	protected DebugCondition newDebugCondition(Module module, char[] filename, int lineNumber, long level, char[] id) {
 		boolean isId = level == 1 && !(id != null && id.length == 1 && id[0] == '1');
 		if (isId && id != null) {
 			if (debugs == null) {
@@ -455,54 +454,54 @@ public class CompletionParser extends Parser {
 		}
 		
 		if (inCompletion() && prevToken.ptr + prevToken.sourceLen < cursorLocation && isId) {
-			assistNode = new CompletionOnDebugCondition(module, loc, level, id);
+			assistNode = new CompletionOnDebugCondition(module, filename, lineNumber, level, id);
 			return (DebugCondition) assistNode;
 		} else {
-			return super.newDebugCondition(module, loc, level, id);
+			return super.newDebugCondition(module, filename, lineNumber, level, id);
 		}
 	}
 	
 	@Override
-	protected DebugSymbol newDebugSymbol(Loc loc, IdentifierExp id, Version version) {
+	protected DebugSymbol newDebugSymbol(char[] filename, int lineNumber, IdentifierExp id, Version version) {
 		if (id != null && id.ident != null) {
 			if (debugs == null) {
 				debugs = new HashtableOfCharArrayAndObject();
 			}
 			debugs.put(id.ident, this);
 		}
-		return super.newDebugSymbol(loc, id, version);
+		return super.newDebugSymbol(filename, lineNumber, id, version);
 	}
 	
 	@Override
-	protected CaseStatement newCaseStatement(Loc loc, Expression exp, Statement statement, int caseEnd, int expStart, int expLength) {
+	protected CaseStatement newCaseStatement(char[] filename, int lineNumber, Expression exp, Statement statement, int caseEnd, int expStart, int expLength) {
 		// exp.start is -1 if it's an error expression
 		if (caseEnd < cursorLocation && cursorLocation <= expStart + expLength && exp != null && (exp instanceof ErrorExp || 
 				(exp.getNodeType() == ASTDmdNode.IDENTIFIER_EXP))) {
 			wantKeywords = false;
 			
-			assistNode = new CompletionOnCaseStatement(loc, exp, statement);
+			assistNode = new CompletionOnCaseStatement(filename, lineNumber, exp, statement);
 			return (CaseStatement) assistNode;
 		} else {
-			return super.newCaseStatement(loc, exp, statement, caseEnd, expStart, expLength);
+			return super.newCaseStatement(filename, lineNumber, exp, statement, caseEnd, expStart, expLength);
 		}
 	}
 	
 	@Override
-	protected DotIdExp newDotIdExp(Loc loc, Expression e, IdentifierExp id) {
+	protected DotIdExp newDotIdExp(char[] filename, int lineNumber, Expression e, IdentifierExp id) {
 		Token pivot;
 		if (prevToken.ptr <= cursorLocation && cursorLocation <= prevToken.ptr + prevToken.sourceLen) {
 			pivot = prevToken;
 		} else if (token.ptr <= cursorLocation && cursorLocation <= token.ptr + token.sourceLen) {
 			pivot = token;
 		} else if (e.start + e.length < cursorLocation && cursorLocation < id.start) {
-			assistNode = new CompletionOnDotIdExp(loc, e, new IdentifierExp(CharOperation.NO_CHAR));
+			assistNode = new CompletionOnDotIdExp(filename, lineNumber, e, new IdentifierExp(CharOperation.NO_CHAR));
 			return (DotIdExp) assistNode;
 		} else {
-			return super.newDotIdExp(loc, e, id);
+			return super.newDotIdExp(filename, lineNumber, e, id);
 		}
 		
 		if (cursorLocation <= id.start) {
-			assistNode = new CompletionOnDotIdExp(loc, e, new IdentifierExp(CharOperation.NO_CHAR));
+			assistNode = new CompletionOnDotIdExp(filename, lineNumber, e, new IdentifierExp(CharOperation.NO_CHAR));
 			return (DotIdExp) assistNode;
 		} else {
 			if (pivot.value == TOK.TOKdot) {
@@ -515,7 +514,7 @@ public class CompletionParser extends Parser {
 				completionToken = CharOperation.subarray(input, completionTokenStart, cursorLocation);
 			}
 			
-			assistNode = new CompletionOnDotIdExp(loc, e, id);
+			assistNode = new CompletionOnDotIdExp(filename, lineNumber, e, id);
 			return (DotIdExp) assistNode;
 		}
 	}
@@ -526,27 +525,27 @@ public class CompletionParser extends Parser {
 		if (token.ptr + token.sourceLen == cursorLocation) {
 			IdentifierExp identifierExp = new IdentifierExp(typeBasic.toCharArray());
 			identifierExp.copySourceRange(typeBasic);
-			typeBasic = new CompletionOnTypeIdentifier(loc, identifierExp);
+			typeBasic = new CompletionOnTypeIdentifier(filename, lineNumber, identifierExp);
 			assistNode = typeBasic;
 		}
 		return typeBasic;
 	}
 	
 	@Override
-	protected TemplateMixin newTemplateMixin(Loc loc, IdentifierExp id, Type tqual, Identifiers idents, Objects tiargs) {
+	protected TemplateMixin newTemplateMixin(char[] filename, int lineNumber, IdentifierExp id, Type tqual, Identifiers idents, Objects tiargs) {
 		if (prevToken.ptr + prevToken.sourceLen <= cursorLocation && cursorLocation <= token.ptr) {
 			wantKeywords = false;
 			
-			assistNode = new CompletionOnTemplateMixin(loc, id, tqual, idents, tiargs, encoder);
+			assistNode = new CompletionOnTemplateMixin(filename, lineNumber, id, tqual, idents, tiargs, encoder);
 			return (CompletionOnTemplateMixin) assistNode;
 		}
-		return super.newTemplateMixin(loc, id, tqual, idents, tiargs);
+		return super.newTemplateMixin(filename, lineNumber, id, tqual, idents, tiargs);
 	}
 	
 	@Override
 	protected CompoundStatement newBlock(Statements statements, int start, int length) {
 		if (assistNode == null && start <= cursorLocation && cursorLocation <= start + length) {
-			CompoundStatement cs = new CompletionOnCompoundStatement(loc, statements);
+			CompoundStatement cs = new CompletionOnCompoundStatement(filename, lineNumber, statements);
 			cs.setSourceRange(start, length);
 			return (CompoundStatement) (assistNode = cs);
 		} else {
@@ -555,223 +554,223 @@ public class CompletionParser extends Parser {
 	}
 	
 	@Override
-	protected Expression newAssignExp(Loc loc, Expression e, Expression e2) {
+	protected Expression newAssignExp(char[] filename, int lineNumber, Expression e, Expression e2) {
 		analyzeBinExp(e, e2);
-		return super.newAssignExp(loc, e, e2);
+		return super.newAssignExp(filename, lineNumber, e, e2);
 	}
 	
 	@Override
-	protected Expression newAddAssignExp(Loc loc, Expression e, Expression e2) {
+	protected Expression newAddAssignExp(char[] filename, int lineNumber, Expression e, Expression e2) {
 		analyzeBinExp(e, e2);
-		return super.newAddAssignExp(loc, e, e2);
+		return super.newAddAssignExp(filename, lineNumber, e, e2);
 	}
 	
 	@Override
-	protected Expression newAndAssignExp(Loc loc, Expression e, Expression e2) {
+	protected Expression newAndAssignExp(char[] filename, int lineNumber, Expression e, Expression e2) {
 		analyzeBinExp(e, e2);
-		return super.newAndAssignExp(loc, e, e2);
+		return super.newAndAssignExp(filename, lineNumber, e, e2);
 	}
 	
 	@Override
-	protected Expression newCatAssignExp(Loc loc, Expression e, Expression e2) {
+	protected Expression newCatAssignExp(char[] filename, int lineNumber, Expression e, Expression e2) {
 		boolean result = analyzeBinExp(e, e2);
 		if (result) {
 			inCatExp = true;
 		}
 		
-		return super.newCatAssignExp(loc, e, e2);
+		return super.newCatAssignExp(filename, lineNumber, e, e2);
 	}
 	
 	@Override
-	protected Expression newDivAssignExp(Loc loc, Expression e, Expression e2) {
+	protected Expression newDivAssignExp(char[] filename, int lineNumber, Expression e, Expression e2) {
 		analyzeBinExp(e, e2);
-		return super.newDivAssignExp(loc, e, e2);
+		return super.newDivAssignExp(filename, lineNumber, e, e2);
 	}
 	
 	@Override
-	protected Expression newMinAssignExp(Loc loc, Expression e, Expression e2) {
+	protected Expression newMinAssignExp(char[] filename, int lineNumber, Expression e, Expression e2) {
 		analyzeBinExp(e, e2);
-		return super.newMinAssignExp(loc, e, e2);
+		return super.newMinAssignExp(filename, lineNumber, e, e2);
 	}
 	
 	@Override
-	protected Expression newModAssignExp(Loc loc, Expression e, Expression e2) {
+	protected Expression newModAssignExp(char[] filename, int lineNumber, Expression e, Expression e2) {
 		analyzeBinExp(e, e2);
-		return super.newModAssignExp(loc, e, e2);
+		return super.newModAssignExp(filename, lineNumber, e, e2);
 	}
 	
 	@Override
-	protected Expression newMulAssignExp(Loc loc, Expression e, Expression e2) {
+	protected Expression newMulAssignExp(char[] filename, int lineNumber, Expression e, Expression e2) {
 		analyzeBinExp(e, e2);
-		return super.newMulAssignExp(loc, e, e2);
+		return super.newMulAssignExp(filename, lineNumber, e, e2);
 	}
 	
 	@Override
-	protected Expression newOrAssignExp(Loc loc, Expression e, Expression e2) {
+	protected Expression newOrAssignExp(char[] filename, int lineNumber, Expression e, Expression e2) {
 		analyzeBinExp(e, e2);
-		return super.newOrAssignExp(loc, e, e2);
+		return super.newOrAssignExp(filename, lineNumber, e, e2);
 	}
 	
 	@Override
-	protected Expression newShlAssignExp(Loc loc, Expression e, Expression e2) {
+	protected Expression newShlAssignExp(char[] filename, int lineNumber, Expression e, Expression e2) {
 		analyzeBinExp(e, e2);
-		return super.newShlAssignExp(loc, e, e2);
+		return super.newShlAssignExp(filename, lineNumber, e, e2);
 	}
 	
 	@Override
-	protected Expression newShrAssignExp(Loc loc, Expression e, Expression e2) {
+	protected Expression newShrAssignExp(char[] filename, int lineNumber, Expression e, Expression e2) {
 		analyzeBinExp(e, e2);
-		return super.newShrAssignExp(loc, e, e2);
+		return super.newShrAssignExp(filename, lineNumber, e, e2);
 	}
 	
 	@Override
-	protected Expression newUshrAssignExp(Loc loc, Expression e, Expression e2) {
+	protected Expression newUshrAssignExp(char[] filename, int lineNumber, Expression e, Expression e2) {
 		analyzeBinExp(e, e2);
-		return super.newUshrAssignExp(loc, e, e2);
+		return super.newUshrAssignExp(filename, lineNumber, e, e2);
 	}
 	
 	@Override
-	protected Expression newXorAssignExp(Loc loc, Expression e, Expression e2) {
+	protected Expression newXorAssignExp(char[] filename, int lineNumber, Expression e, Expression e2) {
 		analyzeBinExp(e, e2);
-		return super.newXorAssignExp(loc, e, e2);
+		return super.newXorAssignExp(filename, lineNumber, e, e2);
 	}
 	
 	@Override
-	protected Expression newAddExp(Loc loc, Expression e, Expression e2) {
+	protected Expression newAddExp(char[] filename, int lineNumber, Expression e, Expression e2) {
 		analyzeBinExp(e, e2);
-		return super.newAddExp(loc, e, e2);
+		return super.newAddExp(filename, lineNumber, e, e2);
 	}
 	
 	@Override
-	protected Expression newAndAndExp(Loc loc, Expression e, Expression e2) {
+	protected Expression newAndAndExp(char[] filename, int lineNumber, Expression e, Expression e2) {
 		analyzeBinExp(e, e2);
-		return super.newAndAndExp(loc, e, e2);
+		return super.newAndAndExp(filename, lineNumber, e, e2);
 	}
 	
 	@Override
-	protected Expression newAndExp(Loc loc, Expression e, Expression e2) {
+	protected Expression newAndExp(char[] filename, int lineNumber, Expression e, Expression e2) {
 		analyzeBinExp(e, e2);
-		return super.newAndExp(loc, e, e2);
+		return super.newAndExp(filename, lineNumber, e, e2);
 	}
 	
 	@Override
-	protected Expression newCatExp(Loc loc, Expression e, Expression e2) {
+	protected Expression newCatExp(char[] filename, int lineNumber, Expression e, Expression e2) {
 		boolean result = analyzeBinExp(e, e2);
 		if (result) {
 			inCatExp = true;
 		}
 		
-		return super.newCatExp(loc, e, e2);
+		return super.newCatExp(filename, lineNumber, e, e2);
 	}
 	
 	@Override
-	protected Expression newCmpExp(Loc loc, TOK op, Expression e, Expression e2) {
+	protected Expression newCmpExp(char[] filename, int lineNumber, TOK op, Expression e, Expression e2) {
 		analyzeBinExp(e, e2);
-		return super.newCmpExp(loc, op, e, e2);
+		return super.newCmpExp(filename, lineNumber, op, e, e2);
 	}
 	
 	@Override
-	protected Expression newDivExp(Loc loc, Expression e, Expression e2) {
+	protected Expression newDivExp(char[] filename, int lineNumber, Expression e, Expression e2) {
 		analyzeBinExp(e, e2);
-		return super.newDivExp(loc, e, e2);
+		return super.newDivExp(filename, lineNumber, e, e2);
 	}
 	
 	@Override
-	protected Expression newEqualExp(Loc loc, TOK op, Expression e, Expression e2) {
+	protected Expression newEqualExp(char[] filename, int lineNumber, TOK op, Expression e, Expression e2) {
 		analyzeBinExp(e, e2);
-		return super.newEqualExp(loc, op, e, e2);
+		return super.newEqualExp(filename, lineNumber, op, e, e2);
 	}
 	
 	@Override
-	protected Expression newIdentityExp(Loc loc, TOK op, Expression e, Expression e2) {
+	protected Expression newIdentityExp(char[] filename, int lineNumber, TOK op, Expression e, Expression e2) {
 		analyzeBinExp(e, e2);
-		return super.newIdentityExp(loc, op, e, e2);
+		return super.newIdentityExp(filename, lineNumber, op, e, e2);
 	}
 	
 	@Override
-	protected Expression newInExp(Loc loc, Expression e, Expression e2) {
+	protected Expression newInExp(char[] filename, int lineNumber, Expression e, Expression e2) {
 		boolean match = analyzeBinExp(e, e2);
 		if (match) {
 			isInExp = true;
 		}
 		
-		return super.newInExp(loc, e, e2);
+		return super.newInExp(filename, lineNumber, e, e2);
 	}
 	
 	@Override
-	protected Expression newMinExp(Loc loc, Expression e, Expression e2) {
+	protected Expression newMinExp(char[] filename, int lineNumber, Expression e, Expression e2) {
 		analyzeBinExp(e, e2);
-		return super.newMinExp(loc, e, e2);
+		return super.newMinExp(filename, lineNumber, e, e2);
 	}
 	
 	@Override
-	protected Expression newModExp(Loc loc, Expression e, Expression e2) {
+	protected Expression newModExp(char[] filename, int lineNumber, Expression e, Expression e2) {
 		analyzeBinExp(e, e2);
-		return super.newModExp(loc, e, e2);
+		return super.newModExp(filename, lineNumber, e, e2);
 	}
 	
 	@Override
-	protected Expression newMulExp(Loc loc, Expression e, Expression e2) {
+	protected Expression newMulExp(char[] filename, int lineNumber, Expression e, Expression e2) {
 		analyzeBinExp(e, e2);
-		return super.newMulExp(loc, e, e2);
+		return super.newMulExp(filename, lineNumber, e, e2);
 	}
 	
 	@Override
-	protected Expression newOrExp(Loc loc, Expression e, Expression e2) {
+	protected Expression newOrExp(char[] filename, int lineNumber, Expression e, Expression e2) {
 		analyzeBinExp(e, e2);
-		return super.newOrExp(loc, e, e2);
+		return super.newOrExp(filename, lineNumber, e, e2);
 	}
 	
 	@Override
-	protected Expression newOrOrExp(Loc loc, Expression e, Expression e2) {
+	protected Expression newOrOrExp(char[] filename, int lineNumber, Expression e, Expression e2) {
 		analyzeBinExp(e, e2);
-		return super.newOrOrExp(loc, e, e2);
+		return super.newOrOrExp(filename, lineNumber, e, e2);
 	}
 	
 	@Override
-	protected Expression newShlExp(Loc loc, Expression e, Expression e2) {
+	protected Expression newShlExp(char[] filename, int lineNumber, Expression e, Expression e2) {
 		analyzeBinExp(e, e2);
-		return super.newShlExp(loc, e, e2);
+		return super.newShlExp(filename, lineNumber, e, e2);
 	}
 	
 	@Override
-	protected Expression newShrExp(Loc loc, Expression e, Expression e2) {
+	protected Expression newShrExp(char[] filename, int lineNumber, Expression e, Expression e2) {
 		analyzeBinExp(e, e2);
-		return super.newShrExp(loc, e, e2);
+		return super.newShrExp(filename, lineNumber, e, e2);
 	}
 	
 	@Override
-	protected Expression newUshrExp(Loc loc, Expression e, Expression e2) {
+	protected Expression newUshrExp(char[] filename, int lineNumber, Expression e, Expression e2) {
 		analyzeBinExp(e, e2);
-		return super.newUshrExp(loc, e, e2);
+		return super.newUshrExp(filename, lineNumber, e, e2);
 	}
 	
 	@Override
-	protected Expression newXorExp(Loc loc, Expression e, Expression e2) {
+	protected Expression newXorExp(char[] filename, int lineNumber, Expression e, Expression e2) {
 		analyzeBinExp(e, e2);
-		return super.newXorExp(loc, e, e2);
+		return super.newXorExp(filename, lineNumber, e, e2);
 	}
 	
 	@Override
-	protected Expression newCondExp(Loc loc, Expression e, Expression e1, Expression e2) {
+	protected Expression newCondExp(char[] filename, int lineNumber, Expression e, Expression e1, Expression e2) {
 		if (e1.start + e1.length <= cursorLocation && 
 				cursorLocation <= e2.start + e2.length) {
 			expectedTypeNode = e1;
 		}
-		return super.newCondExp(loc, e, e1, e2);
+		return super.newCondExp(filename, lineNumber, e, e1, e2);
 	}
 	
 	@Override
-	protected Expression newAddrExp(Loc loc, Expression e) {
+	protected Expression newAddrExp(char[] filename, int lineNumber, Expression e) {
 		if (e == assistNode) {
 			isInAddrExp = true;
 		}
-		return super.newAddrExp(loc, e);
+		return super.newAddrExp(filename, lineNumber, e);
 	}
 	
 	@Override
-	protected VarDeclaration newVarDeclaration(Loc loc, Type type, IdentifierExp ident, Initializer init) {
-		VarDeclaration var = super.newVarDeclaration(loc, type, ident, init);
+	protected VarDeclaration newVarDeclaration(char[] filename, int lineNumber, Type type, IdentifierExp ident, Initializer init) {
+		VarDeclaration var = super.newVarDeclaration(filename, lineNumber, type, ident, init);
 		if (init instanceof ExpInitializer) {
 			Expression exp = ((ExpInitializer) init).exp;
 			if (isMatch(ident, exp)) {
@@ -789,9 +788,9 @@ public class CompletionParser extends Parser {
 				wantNames = true;
 				assistNode = var;
 			} else {
-				CompletionOnIdentifierExp comp = new CompletionOnIdentifierExp(loc, new IdentifierExp(CharOperation.NO_CHAR));
+				CompletionOnIdentifierExp comp = new CompletionOnIdentifierExp(filename, lineNumber, new IdentifierExp(CharOperation.NO_CHAR));
 				assistNode = comp;			
-				var.init = new ExpInitializer(loc, comp);
+				var.init = new ExpInitializer(filename, lineNumber, comp);
 			}
 		}
 		
@@ -800,7 +799,7 @@ public class CompletionParser extends Parser {
 			assistNode = var;
 		} else if (ident == null && token.value == TOK.TOKidentifier && cursorLocation == token.ptr + token.sourceLen) {
 			wantNames = true;
-			var = new VarDeclaration(loc, type, new IdentifierExp(token.sourceString), init);
+			var = new VarDeclaration(filename, lineNumber, type, new IdentifierExp(token.sourceString), init);
 			assistNode = var;
 		}
 		
@@ -808,14 +807,14 @@ public class CompletionParser extends Parser {
 	}
 	
 	@Override
-	protected Expression newCallExp(Loc loc, Expression e, Expressions expressions) {
-		Expression callExp = super.newCallExp(loc, e, expressions);
+	protected Expression newCallExp(char[] filename, int lineNumber, Expression e, Expressions expressions) {
+		Expression callExp = super.newCallExp(filename, lineNumber, e, expressions);
 		
 		if (expressions != null) {
 			if (expressions.isEmpty()) {
 				if (e.start + e.length <= cursorLocation && cursorLocation <= token.ptr
 						&& prevToken.value == TOK.TOKrparen) {
-					assistNode = new CompletionOnCallExp(loc, e, expressions);
+					assistNode = new CompletionOnCallExp(filename, lineNumber, e, expressions);
 					return (Expression) assistNode;
 				}
 			} else {
@@ -826,7 +825,7 @@ public class CompletionParser extends Parser {
 						expectedArgumentIndex = i;
 						
 						if (cursorLocation == exp.start) {
-							assistNode = new CompletionOnCallExp(loc, e, expressions);
+							assistNode = new CompletionOnCallExp(filename, lineNumber, e, expressions);
 							return (Expression) assistNode;
 						}
 					}
@@ -835,7 +834,7 @@ public class CompletionParser extends Parser {
 		}
 		
 		if (prevToken.ptr + prevToken.sourceLen <= cursorLocation && cursorLocation <= token.ptr) {
-			assistNode = new CompletionOnCallExp(loc, e, expressions);
+			assistNode = new CompletionOnCallExp(filename, lineNumber, e, expressions);
 			return (Expression) assistNode;
 		}
 		
@@ -843,8 +842,8 @@ public class CompletionParser extends Parser {
 	}
 	
 	@Override
-	protected Expression newNewExp(Loc loc, Expression thisexp, Expressions newargs, Type t, Expressions arguments, int start) {
-		Expression newExp = super.newNewExp(loc, thisexp, newargs, t, arguments, start);
+	protected Expression newNewExp(char[] filename, int lineNumber, Expression thisexp, Expressions newargs, Type t, Expressions arguments, int start) {
+		Expression newExp = super.newNewExp(filename, lineNumber, thisexp, newargs, t, arguments, start);
 		
 		if ((t != null && isMatch(t)) || (thisexp != null && isMatch(thisexp))
 			|| (prevToken.ptr + prevToken.sourceLen < cursorLocation && cursorLocation <= token.ptr)
@@ -869,7 +868,7 @@ public class CompletionParser extends Parser {
 				if (((thisexp != null && thisexp.start + thisexp.length <= cursorLocation) || 
 					(t != null && t.start + t.length <= cursorLocation)) && cursorLocation <= token.ptr
 						&& prevToken.value == TOK.TOKrparen) {
-					assistNode = new CompletionOnNewExp(loc, thisexp, newargs, t, arguments);
+					assistNode = new CompletionOnNewExp(filename, lineNumber, thisexp, newargs, t, arguments);
 					return (Expression) assistNode;
 				}
 			} else {
@@ -880,7 +879,7 @@ public class CompletionParser extends Parser {
 						expectedArgumentIndex = i + newArgsSize;
 						
 						if (cursorLocation == exp.start) {
-							assistNode = new CompletionOnNewExp(loc, thisexp, newargs, t, arguments);
+							assistNode = new CompletionOnNewExp(filename, lineNumber, thisexp, newargs, t, arguments);
 							return (Expression) assistNode;
 						}
 					}
@@ -892,25 +891,25 @@ public class CompletionParser extends Parser {
 	}
 	
 	@Override
-	protected Statement newReturnStatement(Loc loc, Expression exp) {
+	protected Statement newReturnStatement(char[] filename, int lineNumber, Expression exp) {
 		if (isMatch(exp) || 0 <= cursorLocation - prevToken.ptr && cursorLocation - prevToken.ptr <= 3) {
-			CompletionOnReturnStatement ret = new CompletionOnReturnStatement(loc, exp);
+			CompletionOnReturnStatement ret = new CompletionOnReturnStatement(filename, lineNumber, exp);
 			expectedTypeNode = ret;
 			return ret;
 		} else {
-			return super.newReturnStatement(loc, exp);
+			return super.newReturnStatement(filename, lineNumber, exp);
 		}
 	}
 	
 	@Override
-	protected ClassDeclaration newClassDeclaration(Loc loc, IdentifierExp id, BaseClasses baseClasses) {
+	protected ClassDeclaration newClassDeclaration(char[] filename, int lineNumber, IdentifierExp id, BaseClasses baseClasses) {
 		// We don't want assist for an aggregate's name, but we do want it
 		// for base classes
 		if (prevToken.ptr + prevToken.sourceLen <= cursorLocation && cursorLocation <= token.ptr && 
 				(prevToken.value == TOK.TOKcolon || prevToken.value == TOK.TOKcomma)) {
 			wantOnlyType = true;
 			
-			assistNode = new CompletionOnClassDeclaration(loc, id, baseClasses);
+			assistNode = new CompletionOnClassDeclaration(filename, lineNumber, id, baseClasses);
 			return (ClassDeclaration) assistNode;
 		}
 		
@@ -919,7 +918,7 @@ public class CompletionParser extends Parser {
 		if (prevToken.value == TOK.TOKclass && token.value != TOK.TOKidentifier
 				&& cursorLocation > prevToken.ptr + prevToken.sourceLen) {
 			this.wantAssist = false;
-			return super.newClassDeclaration(loc, id, baseClasses);
+			return super.newClassDeclaration(filename, lineNumber, id, baseClasses);
 		}
 		
 		if (baseClasses != null) {
@@ -928,7 +927,7 @@ public class CompletionParser extends Parser {
 				if (bc.type != null && bc.type.start <= cursorLocation && cursorLocation <= bc.type.start + bc.type.length) {
 					wantOnlyType = true;
 					
-					assistNode = new CompletionOnClassDeclaration(loc, id, baseClasses);
+					assistNode = new CompletionOnClassDeclaration(filename, lineNumber, id, baseClasses);
 					((CompletionOnClassDeclaration) assistNode).baseClassIndex = i;
 					return (ClassDeclaration) assistNode;
 				}
@@ -936,7 +935,7 @@ public class CompletionParser extends Parser {
 			}
 		}
 		
-		return super.newClassDeclaration(loc, id, baseClasses);
+		return super.newClassDeclaration(filename, lineNumber, id, baseClasses);
 	}
 	
 	@Override
@@ -955,14 +954,14 @@ public class CompletionParser extends Parser {
 	}
 	
 	@Override
-	protected InterfaceDeclaration newInterfaceDeclaration(Loc loc, IdentifierExp id, BaseClasses baseClasses) {
+	protected InterfaceDeclaration newInterfaceDeclaration(char[] filename, int lineNumber, IdentifierExp id, BaseClasses baseClasses) {
 		// We don't want assist for an aggregate's name, but we do want it
 		// for base classes
 		if (prevToken.ptr + prevToken.sourceLen <= cursorLocation && cursorLocation <= token.ptr && 
 				(prevToken.value == TOK.TOKcolon || prevToken.value == TOK.TOKcomma)) {
 			wantOnlyType = true;
 			
-			assistNode = new CompletionOnInterfaceDeclaration(loc, id, baseClasses);
+			assistNode = new CompletionOnInterfaceDeclaration(filename, lineNumber, id, baseClasses);
 			return (InterfaceDeclaration) assistNode;
 		}
 		
@@ -971,7 +970,7 @@ public class CompletionParser extends Parser {
 		if (prevToken.value == TOK.TOKinterface && token.value != TOK.TOKidentifier
 				&& cursorLocation > prevToken.ptr + prevToken.sourceLen) {
 			this.wantAssist = false;
-			return super.newInterfaceDeclaration(loc, id, baseClasses);
+			return super.newInterfaceDeclaration(filename, lineNumber, id, baseClasses);
 		}
 		
 		if (baseClasses != null) {
@@ -980,7 +979,7 @@ public class CompletionParser extends Parser {
 				if (bc.type != null && bc.type.start <= cursorLocation && cursorLocation <= bc.type.start + bc.type.length) {
 					wantOnlyType = true;
 					
-					assistNode = new CompletionOnInterfaceDeclaration(loc, id, baseClasses);
+					assistNode = new CompletionOnInterfaceDeclaration(filename, lineNumber, id, baseClasses);
 					((CompletionOnInterfaceDeclaration) assistNode).baseClassIndex = i;
 					return (InterfaceDeclaration) assistNode;
 				}
@@ -988,27 +987,27 @@ public class CompletionParser extends Parser {
 			}
 		}
 		
-		return super.newInterfaceDeclaration(loc, id, baseClasses);
+		return super.newInterfaceDeclaration(filename, lineNumber, id, baseClasses);
 	}
 	
 	@Override
-	protected StructDeclaration newStructDeclaration(Loc loc, IdentifierExp id) {
+	protected StructDeclaration newStructDeclaration(char[] filename, int lineNumber, IdentifierExp id) {
 		// We don't want assist for an aggregate's name
 		if (prevToken.ptr + prevToken.sourceLen < cursorLocation && cursorLocation <= token.ptr) {
 			wantAssist = false;
 		}
 		
-		return super.newStructDeclaration(loc, id);
+		return super.newStructDeclaration(filename, lineNumber, id);
 	}
 	
 	@Override
-	protected UnionDeclaration newUnionDeclaration(Loc loc, IdentifierExp id) {
+	protected UnionDeclaration newUnionDeclaration(char[] filename, int lineNumber, IdentifierExp id) {
 		// We don't want assist for an aggregate's name
 		if (prevToken.ptr + prevToken.sourceLen < cursorLocation && cursorLocation <= token.ptr) {
 			wantAssist = false;
 		}
 		
-		return super.newUnionDeclaration(loc, id);
+		return super.newUnionDeclaration(filename, lineNumber, id);
 	}
 	
 	@Override

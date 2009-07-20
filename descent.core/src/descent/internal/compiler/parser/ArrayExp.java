@@ -9,8 +9,8 @@ public class ArrayExp extends UnaExp {
 
 	public Expressions arguments, sourceArguments;
 
-	public ArrayExp(Loc loc, Expression e, Expressions arguments) {
-		super(loc, TOK.TOKarray, e);
+	public ArrayExp(char[] filename, int lineNumber, Expression e, Expressions arguments) {
+		super(filename, lineNumber, TOK.TOKarray, e);
 		this.arguments = arguments;
 		if (arguments != null) {
 			this.sourceArguments = new Expressions(arguments);
@@ -72,7 +72,7 @@ public class ArrayExp extends UnaExp {
 							IProblem.OnlyOneIndexAllowedToIndex, this, t1.toChars(context)));
 				}
 			}
-			e = new IndexExp(loc, e1, arguments.get(0));
+			e = new IndexExp(filename, lineNumber, e1, arguments.get(0));
 			e.copySourceRange(this);
 			return e.semantic(sc, context);
 		}
@@ -106,7 +106,7 @@ public class ArrayExp extends UnaExp {
 
 	@Override
 	public Expression syntaxCopy(SemanticContext context) {
-		return new ArrayExp(loc, e1.syntaxCopy(context), arraySyntaxCopy(arguments, context));
+		return new ArrayExp(filename, lineNumber, e1.syntaxCopy(context), arraySyntaxCopy(arguments, context));
 	}
 
 	@Override

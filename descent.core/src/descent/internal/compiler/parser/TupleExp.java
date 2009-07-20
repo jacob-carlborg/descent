@@ -1,24 +1,24 @@
 package descent.internal.compiler.parser;
 
-import descent.core.compiler.IProblem;
-import descent.internal.compiler.parser.ast.IASTVisitor;
 import static descent.internal.compiler.parser.DYNCAST.DYNCAST_DSYMBOL;
 import static descent.internal.compiler.parser.DYNCAST.DYNCAST_EXPRESSION;
 import static descent.internal.compiler.parser.DYNCAST.DYNCAST_TYPE;
+import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
 public class TupleExp extends Expression {
 
 	public Expressions exps;
 
-	public TupleExp(Loc loc, Expressions exps) {
-		super(loc, TOK.TOKtuple);
+	public TupleExp(char[] filename, int lineNumber, Expressions exps) {
+		super(filename, lineNumber, TOK.TOKtuple);
 		this.exps = exps;
 		this.type = null;
 	}
 
-	public TupleExp(Loc loc, TupleDeclaration tup, SemanticContext context) {
-		super(loc, TOK.TOKtuple);
+	public TupleExp(char[] filename, int lineNumber, TupleDeclaration tup, SemanticContext context) {
+		super(filename, lineNumber, TOK.TOKtuple);
 		exps = new Expressions(tup.objects.size());
 		type = null;
 
@@ -30,11 +30,11 @@ public class TupleExp extends Expression {
 				exps.add(e);
 			} else if (o.dyncast() == DYNCAST_DSYMBOL) {
 				Dsymbol s = (Dsymbol) o;
-				Expression e = new DsymbolExp(loc, s);
+				Expression e = new DsymbolExp(filename, lineNumber, s);
 				exps.add(e);
 			} else if (o.dyncast() == DYNCAST_TYPE) {
 				Type t = (Type) o;
-				Expression e = new TypeExp(loc, t);
+				Expression e = new TypeExp(filename, lineNumber, t);
 				exps.add(e);
 			} else {
 				if (context.acceptsWarnings()) {
@@ -153,7 +153,7 @@ public class TupleExp extends Expression {
 			}
 		}
 		if (expsx != null) {
-			TupleExp te = new TupleExp(loc, expsx);
+			TupleExp te = new TupleExp(filename, lineNumber, expsx);
 			expandTuples(te.exps, context);
 			te.type = new TypeTuple(te.exps, context);
 			return te;
@@ -208,7 +208,7 @@ public class TupleExp extends Expression {
 
 	@Override
 	public Expression syntaxCopy(SemanticContext context) {
-		return new TupleExp(loc, arraySyntaxCopy(exps, context));
+		return new TupleExp(filename, lineNumber, arraySyntaxCopy(exps, context));
 	}
 
 	@Override

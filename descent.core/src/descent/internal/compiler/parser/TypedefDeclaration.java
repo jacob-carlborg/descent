@@ -27,10 +27,11 @@ public class TypedefDeclaration extends Declaration {
 	
 	private IField javaElement;
 
-	public TypedefDeclaration(Loc loc, IdentifierExp id, Type basetype,
+	public TypedefDeclaration(char[] filename, int lineNumber, IdentifierExp id, Type basetype,
 			Initializer init) {
 		super(id);
-		this.loc = loc;
+		this.filename = filename;
+		this.lineNumber = lineNumber;
 		this.type = new TypeTypedef(this);
 		this.basetype = basetype;
 		this.sourceBasetype = basetype;
@@ -82,9 +83,9 @@ public class TypedefDeclaration extends Declaration {
 	public void semantic(Scope sc, SemanticContext context) {
 		if (sem == 0) {
 			sem = 1;
-			basetype = basetype.semantic(loc, sc, context);
+			basetype = basetype.semantic(filename, lineNumber, sc, context);
 			sem = 2;
-			type = type.semantic(loc, sc, context);
+			type = type.semantic(filename, lineNumber, sc, context);
 			if (sc.parent.isFuncDeclaration() != null && init != null) {
 				semantic2(sc, context);
 			}
@@ -125,7 +126,7 @@ public class TypedefDeclaration extends Declaration {
 
 		Assert.isTrue(s == null);
 		TypedefDeclaration st;
-		st = context.newTypedefDeclaration(loc, ident, basetype, init);
+		st = context.newTypedefDeclaration(filename, lineNumber, ident, basetype, init);
 		// Syntax copy for header file
 		if (htype == null) // Don't overwrite original
 		{

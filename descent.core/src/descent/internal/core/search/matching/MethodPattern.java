@@ -12,10 +12,14 @@ package descent.internal.core.search.matching;
 
 import java.io.IOException;
 
-import descent.core.*;
+import descent.core.Flags;
+import descent.core.IMethod;
+import descent.core.IType;
+import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
 import descent.core.search.SearchPattern;
-import descent.internal.core.index.*;
+import descent.internal.core.index.EntryResult;
+import descent.internal.core.index.Index;
 import descent.internal.core.search.indexing.IIndexConstants;
 import descent.internal.core.util.Util;
 

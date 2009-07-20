@@ -10,15 +10,26 @@
  *******************************************************************************/
 package descent.internal.core.index;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 
 import descent.core.compiler.CharOperation;
-import descent.core.search.*;
-import descent.internal.core.util.*;
+import descent.core.search.SearchPattern;
 import descent.internal.compiler.util.HashtableOfIntValues;
 import descent.internal.compiler.util.HashtableOfObject;
 import descent.internal.compiler.util.SimpleLookupTable;
 import descent.internal.compiler.util.SimpleSet;
+import descent.internal.core.util.Messages;
+import descent.internal.core.util.SimpleWordSet;
+import descent.internal.core.util.Util;
 
 public class DiskIndex {
 

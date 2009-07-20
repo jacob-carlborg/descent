@@ -10,6 +10,8 @@
  *******************************************************************************/
 package descent.internal.core;
 
+import org.eclipse.jface.text.IDocument;
+
 import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
 import descent.core.IJavaModelStatusConstants;
@@ -19,7 +21,6 @@ import descent.core.dom.ASTNode;
 import descent.core.dom.SimpleName;
 import descent.core.dom.rewrite.ASTRewrite;
 import descent.internal.core.util.Messages;
-import org.eclipse.jface.text.IDocument;
 
 /**
  * <p>This operation creates a initializer in a type.

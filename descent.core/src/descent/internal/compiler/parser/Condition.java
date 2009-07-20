@@ -10,22 +10,24 @@ public abstract class Condition extends ASTRangeLessNode {
 	public final static int STATIC_IF = 3;
 	public final static int VERSION = 4;
 
-	public Loc loc;
+	public int lineNumber;
+	public char[] filename;
 	public int inc;
 
-	public Condition(Loc loc) {
-		this.loc = loc;
+	public Condition(char[] filename, int lineNumber) {
+		this.filename = filename;
+		this.lineNumber = lineNumber;
 	}
 
 	public abstract int getConditionType();
 	
 	@Override
 	public int getLineNumber() {
-		return loc.linnum;
+		return lineNumber;
 	}
 	
 	public void setLineNumber(int lineNumber) {
-		this.loc.linnum = lineNumber;
+		this.lineNumber = lineNumber;
 	}
 
 	@Override

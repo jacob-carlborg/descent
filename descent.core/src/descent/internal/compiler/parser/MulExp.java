@@ -7,8 +7,8 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class MulExp extends BinExp {
 
-	public MulExp(Loc loc, Expression e1, Expression e2) {
-		super(loc, TOK.TOKmul, e1, e2);
+	public MulExp(char[] filename, int lineNumber, Expression e1, Expression e2) {
+		super(filename, lineNumber, TOK.TOKmul, e1, e2);
 	}
 
 	@Override
@@ -108,7 +108,7 @@ public class MulExp extends BinExp {
 					// iy * iv = -yv
 					e1.type = type;
 					e2.type = type;
-					e = new NegExp(loc, this);
+					e = new NegExp(filename, lineNumber, this);
 					e = e.semantic(sc, context);
 					return e;
 				} else {
@@ -137,7 +137,7 @@ public class MulExp extends BinExp {
 	     */
 	    Expression ex1 = e1.buildArrayLoop(fparams, context);
 	    Expression ex2 = e2.buildArrayLoop(fparams, context);
-	    Expression e = new MulExp(Loc.ZERO, ex1, ex2);
+	    Expression e = new MulExp(null, 0, ex1, ex2);
 	    return e;
 	}
 

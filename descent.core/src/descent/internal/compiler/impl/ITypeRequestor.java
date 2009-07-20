@@ -1,10 +1,7 @@
 package descent.internal.compiler.impl;
 
 import descent.internal.compiler.env.AccessRestriction;
-//import descent.internal.compiler.env.IBinaryType;
 import descent.internal.compiler.env.ICompilationUnit;
-import descent.internal.compiler.env.ISourceType;
-//import descent.internal.compiler.lookup.PackageBinding;
 
 public interface ITypeRequestor {
 	

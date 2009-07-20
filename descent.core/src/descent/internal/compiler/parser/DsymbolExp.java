@@ -1,10 +1,9 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.TOK.TOKstring;
+import static descent.internal.compiler.parser.TY.Tsarray;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.TOK.TOKstring;
-
-import static descent.internal.compiler.parser.TY.Tsarray;
 
 
 public class DsymbolExp extends Expression {
@@ -12,12 +11,12 @@ public class DsymbolExp extends Expression {
 	public Dsymbol s;
 	public boolean hasOverloads;
 	
-	public DsymbolExp(Loc loc, Dsymbol s) {
-		this(loc, s, false);
+	public DsymbolExp(char[] filename, int lineNumber, Dsymbol s) {
+		this(filename, lineNumber, s, false);
 	}
 
-	public DsymbolExp(Loc loc, Dsymbol s, boolean hasOverloads) {
-		super(loc, TOK.TOKdsymbol);
+	public DsymbolExp(char[] filename, int lineNumber, Dsymbol s, boolean hasOverloads) {
+		super(filename, lineNumber, TOK.TOKdsymbol);
 		this.s = s;
 		this.hasOverloads = hasOverloads;
 	}
@@ -99,7 +98,7 @@ public class DsymbolExp extends Expression {
 
 					DotVarExp de;
 
-					de = new DotVarExp(loc, new ThisExp(loc), s.isDeclaration());
+					de = new DotVarExp(filename, lineNumber, new ThisExp(filename, lineNumber), s.isDeclaration());
 					return de.semantic(sc, context);
 				}
 			}
@@ -143,17 +142,19 @@ public class DsymbolExp extends Expression {
 								e = e.semantic(sc, context);
 							}
 							e = e.implicitCastTo(sc, type, context);
-							e.loc = loc;
+							e.filename = filename;
+							e.lineNumber = lineNumber;
 							e.copySourceRange(this);
 							return e;
 						}
 					} else {
 						e = type.defaultInit(context);
-						e.loc = loc;
+						e.filename = filename;
+						e.lineNumber = lineNumber;
 						return e;
 					}
 				}
-				e = new VarExp(loc, v);
+				e = new VarExp(filename, lineNumber, v);
 				e.copySourceRange(this);
 				e.type = type;
 				e = e.semantic(sc, context);
@@ -161,16 +162,16 @@ public class DsymbolExp extends Expression {
 			}
 			fld = s.isFuncLiteralDeclaration();
 			if (fld != null) {
-				e = new FuncExp(loc, fld);
+				e = new FuncExp(filename, lineNumber, fld);
 				return e.semantic(sc, context);
 			}
 			f = s.isFuncDeclaration();
 			if (f != null) {
 				VarExp ve;
 				if (context.isD2()) {
-					ve = new VarExp(loc, f, hasOverloads);
+					ve = new VarExp(filename, lineNumber, f, hasOverloads);
 				} else {
-					ve = new VarExp(loc, f);
+					ve = new VarExp(filename, lineNumber, f);
 				}
 				ve.copySourceRange(this);
 				return ve;
@@ -187,7 +188,7 @@ public class DsymbolExp extends Expression {
 				// We need to add an implicit 'this' if cd is this class or a base class.
 				DotTypeExp dte;
 
-				dte = new DotTypeExp(loc, new ThisExp(loc), s, context);
+				dte = new DotTypeExp(filename, lineNumber, new ThisExp(filename, lineNumber), s, context);
 				return dte.semantic(sc, context);
 			}
 			imp = s.isImport();
@@ -200,7 +201,7 @@ public class DsymbolExp extends Expression {
 				    return this;
 				}
 				
-				ScopeExp ie = new ScopeExp(loc, imp.pkg);
+				ScopeExp ie = new ScopeExp(filename, lineNumber, imp.pkg);
 				ie.copySourceRange(this);
 				return ie.semantic(sc, context);
 			}
@@ -208,7 +209,7 @@ public class DsymbolExp extends Expression {
 			if (pkg != null) {
 				ScopeExp ie;
 
-				ie = new ScopeExp(loc, pkg);
+				ie = new ScopeExp(filename, lineNumber, pkg);
 				ie.copySourceRange(this);
 				return ie.semantic(sc, context);
 			}
@@ -216,13 +217,13 @@ public class DsymbolExp extends Expression {
 			if (mod != null) {
 				ScopeExp ie;
 
-				ie = new ScopeExp(loc, mod);
+				ie = new ScopeExp(filename, lineNumber, mod);
 				return ie.semantic(sc, context);
 			}
 
 			t = s.getType(context);
 			if (t != null) {
-				return new TypeExp(loc, t);
+				return new TypeExp(filename, lineNumber, t);
 			}
 
 			TupleDeclaration tup = s.isTupleDeclaration();
@@ -241,7 +242,7 @@ public class DsymbolExp extends Expression {
 						exps.add(e2);
 					}
 				}
-				e = new TupleExp(loc, exps);
+				e = new TupleExp(filename, lineNumber, exps);
 				e = e.semantic(sc, context);
 				return e;
 			}
@@ -257,14 +258,14 @@ public class DsymbolExp extends Expression {
 					loop = true;
 					continue Lagain;
 				}
-				e = new ScopeExp(loc, ti);
+				e = new ScopeExp(filename, lineNumber, ti);
 				e = e.semantic(sc, context);
 				return e;
 			}
 
 			TemplateDeclaration td = s.isTemplateDeclaration();
 			if (td != null) {
-				e = new TemplateExp(loc, td);
+				e = new TemplateExp(filename, lineNumber, td);
 				e = e.semantic(sc, context);
 				return e;
 			}

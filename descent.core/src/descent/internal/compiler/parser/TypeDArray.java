@@ -1,19 +1,16 @@
 package descent.internal.compiler.parser;
 
-import melnorme.miscutil.tree.TreeVisitor;
-import descent.core.compiler.IProblem;
-import descent.internal.compiler.parser.ast.IASTVisitor;
-
 import static descent.internal.compiler.parser.MATCH.MATCHconvert;
-
 import static descent.internal.compiler.parser.TOK.TOKstring;
-
 import static descent.internal.compiler.parser.TY.Tarray;
 import static descent.internal.compiler.parser.TY.Tchar;
 import static descent.internal.compiler.parser.TY.Tdchar;
 import static descent.internal.compiler.parser.TY.Tpointer;
 import static descent.internal.compiler.parser.TY.Tvoid;
 import static descent.internal.compiler.parser.TY.Twchar;
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
 public class TypeDArray extends TypeArray {
@@ -51,9 +48,9 @@ public class TypeDArray extends TypeArray {
 	}
 
 	@Override
-	public Expression defaultInit(Loc loc, SemanticContext context) {
+	public Expression defaultInit(char[] filename, int lineNumber, SemanticContext context) {
 		Expression e;
-		e = new NullExp(loc);
+		e = new NullExp(filename, lineNumber);
 		e.type = this;
 		return e;
 	}
@@ -66,9 +63,9 @@ public class TypeDArray extends TypeArray {
 		if (equals(ident, Id.length)) {
 			if (e.op == TOKstring) {
 				StringExp se = (StringExp) e;
-				e = new IntegerExp(se.loc, se.len, Type.tindex);
+				e = new IntegerExp(se.filename, se.lineNumber, se.len, Type.tindex);
 			} else {
-				e = new ArrayLengthExp(e.loc, e);
+				e = new ArrayLengthExp(e.filename, e.lineNumber,  e);
 				e.type = Type.tsize_t;
 			}
 		} else if (equals(ident, Id.ptr)) {
@@ -123,15 +120,15 @@ public class TypeDArray extends TypeArray {
 	}
 
 	@Override
-	public boolean isZeroInit(Loc loc, SemanticContext context) {
+	public boolean isZeroInit(char[] filename, int lineNumber, SemanticContext context) {
 		return true;
 	}
 
 	@Override
-	public Type semantic(Loc loc, Scope sc, SemanticContext context) {
+	public Type semantic(char[] filename, int lineNumber, Scope sc, SemanticContext context) {
 		Type tn = next;
 
-		tn = next.semantic(loc, sc, context);
+		tn = next.semantic(filename, lineNumber, sc, context);
 		Type tbn = tn.toBasetype(context);
 		switch (tbn.ty) {
 		case Tfunction:
@@ -157,7 +154,7 @@ public class TypeDArray extends TypeArray {
 	}
 
 	@Override
-	public int size(Loc loc, SemanticContext context) {
+	public int size(char[] filename, int lineNumber, SemanticContext context) {
 		return PTRSIZE * 2;
 	}
 

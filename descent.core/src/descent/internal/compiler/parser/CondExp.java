@@ -1,17 +1,17 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.TOK.TOKstring;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.TOK.TOKstring;
 
 
 public class CondExp extends BinExp {
 
 	public Expression econd, sourceEcond;
 
-	public CondExp(Loc loc, Expression econd, Expression e1, Expression e2) {
-		super(loc, TOK.TOKquestion, e1, e2);
+	public CondExp(char[] filename, int lineNumber, Expression econd, Expression e1, Expression e2) {
+		super(filename, lineNumber, TOK.TOKquestion, e1, e2);
 		this.econd = econd;
 		this.sourceEcond = econd;
 	}
@@ -38,7 +38,7 @@ public class CondExp extends BinExp {
 
 		if (!same(type, t, context)) {
 			if (true || e1.op == TOKstring || e2.op == TOKstring) {
-				e = new CondExp(loc, econd, e1.castTo(sc, t, context), e2
+				e = new CondExp(filename, lineNumber, econd, e1.castTo(sc, t, context), e2
 						.castTo(sc, t, context));
 				e.type = t;
 			} else {
@@ -166,7 +166,7 @@ public class CondExp extends BinExp {
 		sc.callSuper = cs0;
 		e2 = e2.semantic(sc, context);
 		e2 = resolveProperties(sc, e2, context);
-		sc.mergeCallSuper(loc, cs1, this);
+		sc.mergeCallSuper(filename, lineNumber, cs1, this);
 
 		t1 = e1.type;
 		t2 = e2.type;
@@ -205,7 +205,7 @@ public class CondExp extends BinExp {
 
 	@Override
 	public Expression syntaxCopy(SemanticContext context) {
-		return new CondExp(loc, econd.syntaxCopy(context), e1.syntaxCopy(context), e2
+		return new CondExp(filename, lineNumber, econd.syntaxCopy(context), e1.syntaxCopy(context), e2
 				.syntaxCopy(context));
 	}
 
@@ -224,7 +224,7 @@ public class CondExp extends BinExp {
 		PtrExp pe;
 
 		// convert (econd ? e1 : e2) to *(econd ? &e1 : &e2)
-		pe = new PtrExp(loc, this, type);
+		pe = new PtrExp(filename, lineNumber, this, type);
 
 		e1 = e1.addressOf(sc, context);
 		e2 = e2.addressOf(sc, context);

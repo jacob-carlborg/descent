@@ -13,6 +13,7 @@
 package descent.core.compiler;
 
 import org.eclipse.core.resources.IFile;
+
 import descent.internal.core.builder.CompilationParticipantResult;
 import descent.internal.core.builder.SourceFile;
 

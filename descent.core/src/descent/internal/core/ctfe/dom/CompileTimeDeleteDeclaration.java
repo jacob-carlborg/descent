@@ -2,14 +2,13 @@ package descent.internal.core.ctfe.dom;
 
 import descent.internal.compiler.parser.Arguments;
 import descent.internal.compiler.parser.DeleteDeclaration;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.SemanticContext;
 
 public class CompileTimeDeleteDeclaration extends DeleteDeclaration {
 
-	public CompileTimeDeleteDeclaration(Loc loc, Arguments arguments) {
-		super(loc, arguments);
+	public CompileTimeDeleteDeclaration(char[] filename, int lineNumber, Arguments arguments) {
+		super(filename, lineNumber, arguments);
 	}
 	
 	@Override

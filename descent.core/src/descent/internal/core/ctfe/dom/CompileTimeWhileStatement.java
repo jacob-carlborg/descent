@@ -2,15 +2,14 @@ package descent.internal.core.ctfe.dom;
 
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.InterState;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.Statement;
 import descent.internal.compiler.parser.WhileStatement;
 
 public class CompileTimeWhileStatement extends WhileStatement {
 
-	public CompileTimeWhileStatement(Loc loc, Expression c, Statement b) {
-		super(loc, c, b);
+	public CompileTimeWhileStatement(char[] filename, int lineNumber, Expression c, Statement b) {
+		super(filename, lineNumber, c, b);
 	}
 	
 	@Override

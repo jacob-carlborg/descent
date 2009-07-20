@@ -19,10 +19,10 @@ public class Pvirtuals implements OverloadApply_fp
 			if (p.e1.op == TOK.TOKdotvar)
 			{
 				DotVarExp dve = (DotVarExp) p.e1;
-			    e = new DotVarExp(Loc.ZERO, dve.e1, f);
+			    e = new DotVarExp(null, 0, dve.e1, f);
 			}
 			else
-			    e = new DsymbolExp(Loc.ZERO, f);
+			    e = new DsymbolExp(null, 0, f);
 			p.exps.add(e);
 	    }
 

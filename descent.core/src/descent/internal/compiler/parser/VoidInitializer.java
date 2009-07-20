@@ -8,8 +8,8 @@ public class VoidInitializer extends Initializer {
 
 	public Type type;
 
-	public VoidInitializer(Loc loc) {
-		super(loc);
+	public VoidInitializer(char[] filename, int lineNumber) {
+		super(filename, lineNumber);
 	}
 
 	@Override
@@ -36,7 +36,7 @@ public class VoidInitializer extends Initializer {
 
 	@Override
 	public Initializer syntaxCopy(SemanticContext context) {
-		return new VoidInitializer(loc);
+		return new VoidInitializer(filename, lineNumber);
 	}
 
 	@Override
@@ -50,7 +50,7 @@ public class VoidInitializer extends Initializer {
 		if (context.acceptsErrors()) {
 			context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolHasNoValue, this, new String[] { "void initializer" }));
 		}
-		return new IntegerExp(loc, 0, Type.tint32);
+		return new IntegerExp(filename, lineNumber, 0, Type.tint32);
 	}
 
 //	@Override

@@ -4,6 +4,7 @@ import java.net.URI;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.batch.CompilationUnit;
 

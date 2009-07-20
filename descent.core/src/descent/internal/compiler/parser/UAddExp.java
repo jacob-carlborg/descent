@@ -9,8 +9,8 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class UAddExp extends UnaExp {
 
-	public UAddExp(Loc loc, Expression e1) {
-		super(loc, TOK.TOKuadd, e1);
+	public UAddExp(char[] filename, int lineNumber, Expression e1) {
+		super(filename, lineNumber, TOK.TOKuadd, e1);
 	}
 
 	@Override

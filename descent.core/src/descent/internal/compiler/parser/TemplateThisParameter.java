@@ -5,9 +5,9 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class TemplateThisParameter extends TemplateTypeParameter {
 
-	public TemplateThisParameter(Loc loc, IdentifierExp ident, Type specType,
+	public TemplateThisParameter(char[] filename, int lineNumber, IdentifierExp ident, Type specType,
 			Type defaultType) {
-		super(loc, ident, specType, defaultType);
+		super(filename, lineNumber, ident, specType, defaultType);
 	}
 	
 	@Override
@@ -22,7 +22,7 @@ public class TemplateThisParameter extends TemplateTypeParameter {
 
 	@Override
 	public TemplateParameter syntaxCopy(SemanticContext context) {
-		TemplateThisParameter tp = new TemplateThisParameter(loc, ident,
+		TemplateThisParameter tp = new TemplateThisParameter(filename, lineNumber, ident,
 				specType, defaultType);
 		if (tp.specType != null)
 			tp.specType = specType.syntaxCopy(context);

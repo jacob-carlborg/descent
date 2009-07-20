@@ -3,8 +3,8 @@ package descent.core.formatter;
 import java.util.Map;
 
 import descent.core.JavaCore;
-import descent.internal.formatter.DefaultCodeFormatterOptions;
 import descent.internal.formatter.Alignment;
+import descent.internal.formatter.DefaultCodeFormatterOptions;
 
 /**
  * Constants used to set up the options of the code formatter.

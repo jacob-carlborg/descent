@@ -11,8 +11,8 @@ public class NewDeclaration extends FuncDeclaration {
 	public int varargs;
 	public int newStart;
 
-	public NewDeclaration(Loc loc, Arguments arguments, int varargs) {
-		super(loc, new IdentifierExp(Id.classNew), STC.STCstatic,
+	public NewDeclaration(char[] filename, int lineNumber, Arguments arguments, int varargs) {
+		super(filename, lineNumber, new IdentifierExp(Id.classNew), STC.STCstatic,
 				null);
 		this.arguments = arguments;
 		this.varargs = varargs;
@@ -77,7 +77,7 @@ public class NewDeclaration extends FuncDeclaration {
 		tret = Type.tvoid.pointerTo(context);
 		type = new TypeFunction(arguments, tret, varargs, LINK.LINKd);
 
-		type = type.semantic(loc, sc, context);
+		type = type.semantic(filename, lineNumber, sc, context);
 		assert (type.ty == TY.Tfunction);
 
 		// Check that there is at least one argument of type uint
@@ -105,7 +105,7 @@ public class NewDeclaration extends FuncDeclaration {
 	public Dsymbol syntaxCopy(Dsymbol s, SemanticContext context) {
 		NewDeclaration f;
 
-		f = context.newNewDeclaration(loc, null, varargs);
+		f = context.newNewDeclaration(filename, lineNumber, null, varargs);
 
 		super.syntaxCopy(f, context);
 

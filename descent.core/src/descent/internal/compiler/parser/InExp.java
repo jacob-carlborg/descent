@@ -7,8 +7,8 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class InExp extends BinExp {
 
-	public InExp(Loc loc, Expression e1, Expression e2) {
-		super(loc, TOK.TOKin, e1, e2);
+	public InExp(char[] filename, int lineNumber, Expression e1, Expression e2) {
+		super(filename, lineNumber, TOK.TOKin, e1, e2);
 	}
 
 	@Override

@@ -11,14 +11,16 @@ import static descent.internal.compiler.parser.TY.Tbit;
 import static descent.internal.compiler.parser.TY.Tbool;
 import static descent.internal.compiler.parser.TY.Tchar;
 import static descent.internal.compiler.parser.TY.Tclass;
-import static descent.internal.compiler.parser.TY.*;
+import static descent.internal.compiler.parser.TY.Tcomplex32;
 import static descent.internal.compiler.parser.TY.Tcomplex64;
 import static descent.internal.compiler.parser.TY.Tcomplex80;
 import static descent.internal.compiler.parser.TY.Tdchar;
+import static descent.internal.compiler.parser.TY.Tdelegate;
 import static descent.internal.compiler.parser.TY.Terror;
 import static descent.internal.compiler.parser.TY.Tfloat32;
 import static descent.internal.compiler.parser.TY.Tfloat64;
 import static descent.internal.compiler.parser.TY.Tfloat80;
+import static descent.internal.compiler.parser.TY.Tfunction;
 import static descent.internal.compiler.parser.TY.Tident;
 import static descent.internal.compiler.parser.TY.Timaginary32;
 import static descent.internal.compiler.parser.TY.Timaginary64;
@@ -574,17 +576,17 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		return null;
 	}
 
-	public Type semantic(Loc loc, Scope sc, SemanticContext context) {
+	public Type semantic(char[] filename, int lineNumber, Scope sc, SemanticContext context) {
 		if (next != null) {
-			next = next.semantic(loc, sc, context);
+			next = next.semantic(filename, lineNumber, sc, context);
 		}
 		return merge(context);
 	}
 	
-	public Type trySemantic(Loc loc, Scope sc, SemanticContext context) {
+	public Type trySemantic(char[] filename, int lineNumber, Scope sc, SemanticContext context) {
 		int errors = context.global.errors;
 		context.global.gag++; // suppress printing of error messages
-		Type t = semantic(loc, sc, context);
+		Type t = semantic(filename, lineNumber, sc, context);
 		context.global.gag--;
 		if (errors != context.global.errors) // if any errors happened
 		{
@@ -651,11 +653,11 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		}
 	}
 
-	public void resolve(Loc loc, Scope sc, Expression[] pe, Type[] pt,
+	public void resolve(char[] filename, int lineNumber, Scope sc, Expression[] pe, Type[] pt,
 			Dsymbol[] ps, SemanticContext context) {
 		Type t;
 
-		t = semantic(loc, sc, context);
+		t = semantic(filename, lineNumber, sc, context);
 		pt[0] = t;
 		pe[0] = null;
 		ps[0] = null;
@@ -1046,33 +1048,33 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	}
 
 	public final Expression defaultInit(SemanticContext context) {
-		return defaultInit(Loc.ZERO, context);
+		return defaultInit(null, 0, context);
 	}
 	
-	public Expression defaultInit(Loc loc, SemanticContext context) {
+	public Expression defaultInit(char[] filename, int lineNumber, SemanticContext context) {
 		return null;
 	}
 
-	public final Expression getProperty(Loc loc, IdentifierExp ident,
+	public final Expression getProperty(char[] filename, int lineNumber, IdentifierExp ident,
 			SemanticContext context) {
-		return getProperty(loc, ident.ident, ident.getLineNumber(), ident.start, ident.length, context);
+		return getProperty(filename, ident.getLineNumber(), ident.ident, ident.start, ident.length, context);
 	}
 
-	public Expression getProperty(Loc loc, char[] ident, int lineNumber, int start, int length,
+	public Expression getProperty(char[] filename, int lineNumber, char[] ident, int start, int length,
 			SemanticContext context) {
 		Expression e = null;
 
 		if (equals(ident, Id.__sizeof)) {
-			e = new IntegerExp(loc, size(loc, context), Type.tsize_t);
+			e = new IntegerExp(filename, lineNumber, size(filename, lineNumber, context), Type.tsize_t);
 		} else if (equals(ident, Id.size)) {
 			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.DeprecatedProperty, lineNumber, start, length,
 						new String[] { ".size", ".sizeof" }));
 			}
-			e = new IntegerExp(loc, size(loc, context), Type.tsize_t);
+			e = new IntegerExp(filename, lineNumber, size(filename, lineNumber, context), Type.tsize_t);
 		} else if (equals(ident, Id.alignof)) {
-			e = new IntegerExp(loc, alignsize(context), Type.tsize_t);
+			e = new IntegerExp(filename, lineNumber, alignsize(context), Type.tsize_t);
 		} else if (equals(ident, Id.typeinfo)) {
 			if (!context.global.params.useDeprecated) {
 				if (context.acceptsErrors()) {
@@ -1088,7 +1090,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.VoidDoesNotHaveAnInitializer, lineNumber, start, length));
 				}
 			}
-			e = defaultInit(loc, context);
+			e = defaultInit(filename, lineNumber, context);
 		} else if (equals(ident, Id.mangleof)) {
 		    	String s;
 			if (null == deco)
@@ -1100,12 +1102,12 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 			else {
 			    s = deco;
 			}
-			e = new StringExp(loc, s.toCharArray(), s.length(), 'c');
+			e = new StringExp(filename, lineNumber, s.toCharArray(), s.length(), 'c');
 			Scope sc = new Scope(context);
 			e = e.semantic(sc, context);
 		} else if (equals(ident, Id.stringof)) {
 			char[] s = toChars(context).toCharArray();
-			e = new StringExp(loc, s, s.length, 'c');
+			e = new StringExp(filename, lineNumber, s, s.length, 'c');
 			Scope sc = new Scope(context);
 			e = e.semantic(sc, context);
 		} else {
@@ -1114,7 +1116,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 						IProblem.UndefinedProperty, lineNumber, start, length, new String[] {
 								new String(ident), toChars(context) }));
 			}
-			e = new IntegerExp(loc, Id.ONE, 1, Type.tint32);
+			e = new IntegerExp(filename, lineNumber, Id.ONE, 1, Type.tint32);
 		}
 		return e;
 	}
@@ -1127,7 +1129,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		}
 	}
 
-	public void checkDeprecated(Loc loc, Scope sc, SemanticContext context) {
+	public void checkDeprecated(char[] filename, int lineNumber, Scope sc, SemanticContext context) {
 		Type t;
 		Dsymbol s;
 
@@ -1180,17 +1182,17 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 				}
 				//goto Loffset;
 				if (0 != (v.storage_class & STCfield)) {
-					e = new IntegerExp(e.loc, v.offset(), Type.tsize_t);
+					e = new IntegerExp(e.filename, e.lineNumber,  v.offset(), Type.tsize_t);
 					return e;
 				}
 			} else if (equals(ident, Id.offsetof)) {
 				//Loffset:
 				if (0 != (v.storage_class & STCfield)) {
-					e = new IntegerExp(e.loc, v.offset(), Type.tsize_t);
+					e = new IntegerExp(e.filename, e.lineNumber,  v.offset(), Type.tsize_t);
 					return e;
 				}
 			} else if (equals(ident, Id.init)) {
-			    Expression ex = defaultInit(e.loc, context);
+			    Expression ex = defaultInit(e.filename, e.lineNumber, context);
 			    return ex;
 			}
 		}
@@ -1209,16 +1211,16 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 
 		if (equals(ident, Id.stringof)) {
 			char[] s = e.toChars(context).toCharArray();
-			e = new StringExp(e.loc, s, 'c');
+			e = new StringExp(e.filename, e.lineNumber,  s, 'c');
 			Scope _sc = new Scope(context);
 			e = e.semantic(_sc, context);
 			return e;
 		}
 
-		return getProperty(e.loc, ident, context);
+		return getProperty(e.filename, e.lineNumber,  ident, context);
 	}
 
-	public int size(Loc loc, SemanticContext context) {
+	public int size(char[] filename, int lineNumber, SemanticContext context) {
 		if (context.acceptsErrors()) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.NoSizeForType, this, new String[] { toChars(context) }));
@@ -1227,11 +1229,11 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	}
 
 	public final int size(SemanticContext context) {
-		return size(Loc.ZERO, context);
+		return size(null, 0, context);
 	}
 
 	public int alignsize(SemanticContext context) {
-		return size(null, context);
+		return size(null, 0, context);
 	}
 
 	public int memalign(int salign, SemanticContext context) {
@@ -1385,7 +1387,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		return false;
 	}
 
-	public boolean isZeroInit(Loc loc, SemanticContext context) {
+	public boolean isZeroInit(char[] filename, int lineNumber, SemanticContext context) {
 		return false;
 	}
 
@@ -1554,17 +1556,19 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 				
 				 /* Need a loc to go with the semantic routine.
 			     */
-			    Loc loc = Loc.ZERO;
+			    char[] filename = null;
+			    int lineNumber = 0;
 				if (parameters != null && parameters.size() != 0) {
 					TemplateParameter tp = (TemplateParameter) parameters
 							.get(0);
-					loc = tp.loc;
+					filename = tp.filename;
+					lineNumber = tp.lineNumber;
 				}
 				
 				/* BUG: what if tparam is a template instance, that
 				 * has as an argument another Tident?
 				 */
-				tparam = tparam.semantic(loc, sc, context);
+				tparam = tparam.semantic(filename, lineNumber, sc, context);
 				if (tparam.ty == Tident) {
 					throw new IllegalStateException(
 							"assert(tparam.ty != Tident);");
@@ -1688,7 +1692,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 			
 			context.setTypeInfo(t, vtinfo);
 		}
-		e = new VarExp(Loc.ZERO, vtinfo);
+		e = new VarExp(null, 0, vtinfo);
 		e = e.addressOf(sc, context);
 		e.type = vtinfo.type; // do this so we don't get redundant dereference
 		return e;
@@ -1745,7 +1749,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 			tid = new TypeInfoDeclaration(t, 1, context);
 			context.Type_internalTI[t.ty.ordinal()] = tid;
 		}
-		Expression e = new VarExp(Loc.ZERO, tid);
+		Expression e = new VarExp(null, 0, tid);
 		e = e.addressOf(sc, context);
 		e.type = tid.type; // do this so we don't get redundant dereference
 		return e;

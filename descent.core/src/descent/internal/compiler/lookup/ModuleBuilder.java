@@ -57,7 +57,6 @@ import descent.internal.compiler.parser.Initializer;
 import descent.internal.compiler.parser.InterfaceDeclaration;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.LinkDeclaration;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.ModuleDeclaration;
 import descent.internal.compiler.parser.NewDeclaration;
@@ -255,7 +254,7 @@ public class ModuleBuilder {
 			fill(module, elseDecls, cond.getElseChildren(), state);
 			
 			Expression exp = decodeExpression(cond.getElementName().toCharArray(), cond);
-			StaticIfCondition condition = new StaticIfCondition(getLoc(module, cond), exp);
+			StaticIfCondition condition = new StaticIfCondition(module.moduleName.toCharArray(), 0, exp);
 			
 			StaticIfDeclaration member = newStaticIfDeclaration(condition, thenDecls, elseDecls);
 			copySourceRange(member, cond);
@@ -329,8 +328,8 @@ public class ModuleBuilder {
 		fill(module, elseDecls, cond.getElseChildren(), state);
 		
 		Condition condition = debug ? 
-				new DebugCondition(module, Loc.ZERO, value, idC) : 
-				new VersionCondition(module, Loc.ZERO, value, idC);
+				new DebugCondition(module, null, 0, value, idC) : 
+				new VersionCondition(module, null, 0, value, idC);
 		ConditionalDeclaration member = newConditionalDeclaration(condition, thenDecls, elseDecls);
 		copySourceRange(member, cond);
 		member.setJavaElement(cond);
@@ -352,7 +351,7 @@ public class ModuleBuilder {
 			fillVersionAssignment(module, members, init, state);
 		} else if (init.isMixin()) {
 			Expression exp = decodeExpression(init.getElementName().toCharArray(), init);
-			CompileDeclaration member = newCompileDeclaration(getLoc(module, init), exp);
+			CompileDeclaration member = newCompileDeclaration(module.moduleName.toCharArray(), 0, exp);
 			copySourceRange(member, init);
 			member.setJavaElement(init);
 			members.add(member);
@@ -373,13 +372,13 @@ public class ModuleBuilder {
 			state.debugs.put(ident, this);
 		}
 		
-		Version version = new Version(getLoc(module, init), ident);
+		Version version = new Version(module.moduleName.toCharArray(), 0, ident);
 		DebugSymbol member;
 		try {
 			long level = Long.parseLong(init.getElementName());
-			member = newDebugSymbol(getLoc(module, init), level, version);
+			member = newDebugSymbol(module.moduleName.toCharArray(), 0, level, version);
 		} catch(NumberFormatException e) {
-			member = newDebugSymbol(getLoc(module, init), new IdentifierExp(ident), version);
+			member = newDebugSymbol(module.moduleName.toCharArray(), 0, new IdentifierExp(ident), version);
 		}
 		copySourceRange(member, init);
 		members.add(member);
@@ -393,13 +392,13 @@ public class ModuleBuilder {
 			state.versions.put(ident, this);
 		}
 		
-		Version version = new Version(getLoc(module, init), ident);
+		Version version = new Version(module.moduleName.toCharArray(), 0, ident);
 		VersionSymbol member;
 		try {
 			long level = Long.parseLong(init.getElementName());
-			member = newVersionSymbol(getLoc(module, init), level, version);
+			member = newVersionSymbol(module.moduleName.toCharArray(), 0, level, version);
 		} catch(NumberFormatException e) {
-			member = newVersionSymbol(getLoc(module, init), new IdentifierExp(ident), version);
+			member = newVersionSymbol(module.moduleName.toCharArray(), 0, new IdentifierExp(ident), version);
 		}
 		copySourceRange(member, init);
 		members.add(member);
@@ -408,27 +407,27 @@ public class ModuleBuilder {
 
 	private void fillMethod(Module module, Dsymbols members, final IMethod method) throws JavaModelException {
 		if (method.isConstructor()) {
-			CtorDeclaration member = newCtorDeclaration(getLoc(module, method), getArguments(method), getVarargs(method));
+			CtorDeclaration member = newCtorDeclaration(module.moduleName.toCharArray(), 0, getArguments(method), getVarargs(method));
 			copySourceRange(member, method);
 			member.setJavaElement(method);
 			members.add(wrapWithTemplate(module, member, method));
 		} else if (method.isDestructor()) {
-			DtorDeclaration member = newDtorDeclaration(getLoc(module, method));
+			DtorDeclaration member = newDtorDeclaration(module.moduleName.toCharArray(), 0);
 			copySourceRange(member, method);
 			member.setJavaElement(method);
 			members.add(wrap(member, method));
 		} else if (method.isNew()) {
-			NewDeclaration member = newNewDeclaration(getLoc(module, method), getArguments(method), getVarargs(method));
+			NewDeclaration member = newNewDeclaration(module.moduleName.toCharArray(), 0, getArguments(method), getVarargs(method));
 			copySourceRange(member, method);
 			member.setJavaElement(method);
 			members.add(wrap(member, method));
 		} else if (method.isDelete()) {
-			DeleteDeclaration member = newDeleteDeclaration(getLoc(module, method), getArguments(method));
+			DeleteDeclaration member = newDeleteDeclaration(module.moduleName.toCharArray(), 0, getArguments(method));
 			copySourceRange(member, method);
 			member.setJavaElement(method);
 			members.add(wrap(member, method));	
 		} else { 
-			FuncDeclaration member = newFuncDeclaration(getLoc(module, method), getIdent(method), getStorageClass(method), getType(method));
+			FuncDeclaration member = newFuncDeclaration(module.moduleName.toCharArray(), 0, getIdent(method), getStorageClass(method), getType(method));
 			copySourceRange(member, method);
 			member.setJavaElement(method);		
 			members.add(wrapWithTemplate(module, member, method));
@@ -438,7 +437,7 @@ public class ModuleBuilder {
 	public void fillType(final Module module, Dsymbols members, final IType type, 
 			final State state) throws JavaModelException {
 		if (type.isClass()) {
-			ClassDeclaration member = newClassDeclaration(getLoc(module, type), getIdent(type), getBaseClasses(type));
+			ClassDeclaration member = newClassDeclaration(module.moduleName.toCharArray(), 0, getIdent(type), getBaseClasses(type));
 			if (!type.isForwardDeclaration()) {
 				member.members = new Dsymbols();
 				fill(module, member.members, type.getChildren(), state);
@@ -448,7 +447,7 @@ public class ModuleBuilder {
 			member.setJavaElement(type);			
 			members.add(wrapWithTemplate(module, member, type));
 		} else if (type.isInterface()) {
-			InterfaceDeclaration member = newInterfaceDeclaration(getLoc(module, type), getIdent(type), getBaseClasses(type));
+			InterfaceDeclaration member = newInterfaceDeclaration(module.moduleName.toCharArray(), 0, getIdent(type), getBaseClasses(type));
 			if (!type.isForwardDeclaration()) {
 				member.members = new Dsymbols();
 				fill(module, member.members, type.getChildren(), state);
@@ -462,7 +461,7 @@ public class ModuleBuilder {
 			if (id == null) {
 				fillAnon(module, members, type, false /* is not union, is struct */, state);
 			} else {
-				StructDeclaration member = newStructDeclaration(getLoc(module, type), id);
+				StructDeclaration member = newStructDeclaration(module.moduleName.toCharArray(), 0, id);
 				if (!type.isForwardDeclaration()) {
 					member.members = new Dsymbols();
 					fill(module, member.members, type.getChildren(), state);
@@ -477,7 +476,7 @@ public class ModuleBuilder {
 			if (id == null) {
 				fillAnon(module, members, type, true /* is union */, state);
 			} else {
-				UnionDeclaration member = newUnionDeclaration(getLoc(module, type), id);
+				UnionDeclaration member = newUnionDeclaration(module.moduleName.toCharArray(), 0, id);
 				if (!type.isForwardDeclaration()) {
 					member.members = new Dsymbols();
 					fill(module, member.members, type.getChildren(), state);
@@ -494,7 +493,7 @@ public class ModuleBuilder {
 			fill(module, symbols, type.getChildren(), state);
 				
 			TemplateDeclaration member = newTemplateDeclaration(
-					getLoc(module, type), 
+					module.moduleName.toCharArray(), 0, 
 					getIdent(type), 
 					getTemplateParameters(type),
 					null, // XXX Template Constraints
@@ -509,13 +508,13 @@ public class ModuleBuilder {
 		IdentifierExp ident = getIdent(type);
 		
 		BaseClasses baseClasses = getBaseClasses(type);
-		EnumDeclaration member = newEnumDeclaration(getLoc(module, type), ident, baseClasses.isEmpty() ? Type.tint32 : baseClasses.get(0).type);
+		EnumDeclaration member = newEnumDeclaration(module.moduleName.toCharArray(), 0, ident, baseClasses.isEmpty() ? Type.tint32 : baseClasses.get(0).type);
 		
 		if (!type.isForwardDeclaration()) {
 			member.members = new Dsymbols();
 			for(IJavaElement sub : type.getChildren()) {
 				IField field = (IField) sub;
-				EnumMember enumMember = newEnumMember(getLoc(module, field), getIdent(field), getExpression(field));
+				EnumMember enumMember = newEnumMember(module.moduleName.toCharArray(), 0, getIdent(field), getExpression(field));
 				copySourceRange(enumMember, field);
 				enumMember.setJavaElement(field);
 				member.members.add(enumMember);
@@ -534,7 +533,7 @@ public class ModuleBuilder {
 			boolean isUnion, State state) throws JavaModelException {
 		Dsymbols symbols = new Dsymbols();
 		fill(module, symbols, type.getChildren(), state);
-		AnonDeclaration member = newAnonDeclaration(getLoc(module, type), isUnion, symbols);
+		AnonDeclaration member = newAnonDeclaration(module.moduleName.toCharArray(), 0, isUnion, symbols);
 		copySourceRange(member, type);
 		member.setJavaElement(type);
 		members.add(wrap(member, type));
@@ -542,31 +541,31 @@ public class ModuleBuilder {
 
 	public void fillField(Module module, Dsymbols members, final IField field) throws JavaModelException {
 		if (field.isVariable() || field.isEnumConstant()) { // enum constant for D2, like "enum int foo = 2;"
-			VarDeclaration member = newVarDeclaration(getLoc(module, field), getType(field), getIdent(field), getInitializer(field));
+			VarDeclaration member = newVarDeclaration(module.moduleName.toCharArray(), 0, getType(field), getIdent(field), getInitializer(field));
 			copySourceRange(member, field);
 			member.setJavaElement(field);
 			members.add(wrap(member, field));
 		} else if (field.isAlias()) {
 			if (field.getTypeSignature() == null) {
-				AliasThis member = newAliasThis(getLoc(module, field), getIdent(field));
+				AliasThis member = newAliasThis(module.moduleName.toCharArray(), 0, getIdent(field));
 				copySourceRange(member, field);
 				member.setJavaElement(field);
 				members.add(wrap(member, field));
 			} else {
-				AliasDeclaration member = newAliasDeclaration(getLoc(module, field), getIdent(field), getType(field));
+				AliasDeclaration member = newAliasDeclaration(module.moduleName.toCharArray(), 0, getIdent(field), getType(field));
 				copySourceRange(member, field);
 				member.setJavaElement(field);
 				members.add(wrap(member, field));
 			}
 		} else if (field.isTypedef()) {
-			TypedefDeclaration member = newTypedefDeclaration(getLoc(module, field), getIdent(field), getType(field), getInitializer(field));
+			TypedefDeclaration member = newTypedefDeclaration(module.moduleName.toCharArray(), 0, getIdent(field), getType(field), getInitializer(field));
 			copySourceRange(member, field);
 			member.setJavaElement(field);
 			members.add(wrap(member, field));
 		} else if (field.isTemplateMixin()) {
 			TemplateMixin member = encoder.decodeTemplateMixin(field.getTypeSignature(), field.getElementName());
 			copySourceRange(member, field);
-			member.loc = getLoc(module, field);
+			member.filename = module.moduleName.toCharArray();
 			members.add(wrap(member, field));
 		}
 	}	
@@ -579,7 +578,7 @@ public class ModuleBuilder {
 		
 		long flags = impDecl.getFlags();
 		
-		Import imp = new Import(getLoc(module, impDecl), packages, name, alias, (flags & Flags.AccStatic) != 0);
+		Import imp = new Import(module.moduleName.toCharArray(), 0, packages, name, alias, (flags & Flags.AccStatic) != 0);
 		
 		String[] names = impDecl.getSelectiveImportsNames();
 		String[] aliases = impDecl.getSelectiveImportsAliases();
@@ -634,8 +633,7 @@ public class ModuleBuilder {
 	private Dsymbol wrapWithTemplate(Module module, Dsymbol symbol, final ITemplated templated) throws JavaModelException {
 		if (templated.isTemplate()) {
 			TemplateDeclaration temp = newTemplateDeclaration(
-					getLoc(module, 
-							(ISourceReference) templated), 
+					module.moduleName.toCharArray(), 0, 
 							getIdent((IJavaElement) templated), 
 							getTemplateParameters(templated),
 							null, // XXX Template Constraint
@@ -878,12 +876,6 @@ public class ModuleBuilder {
 		}
 	}
 	
-	public Loc getLoc(Module module, ISourceReference source) {
-		// TODO line number
-		Loc loc = new Loc(module.moduleName.toCharArray(), 0);
-		return loc;
-	}
-	
 	public static class FillResult {
 		public boolean hasAnonEnum;
 		public boolean hasStaticIf;
@@ -1123,8 +1115,8 @@ public class ModuleBuilder {
 		return exp;
 	}
 	
-	protected FuncDeclaration newFuncDeclaration(Loc loc, IdentifierExp ident, int storageClass, Type type) {
-		return new FuncDeclaration(loc, ident, storageClass, type);
+	protected FuncDeclaration newFuncDeclaration(char[] filename, int lineNumber, IdentifierExp ident, int storageClass, Type type) {
+		return new FuncDeclaration(filename, lineNumber, ident, storageClass, type);
 	}
 	
 	protected StaticIfDeclaration newStaticIfDeclaration(StaticIfCondition condition, Dsymbols thenDecls, Dsymbols elseDecls) {
@@ -1139,92 +1131,92 @@ public class ModuleBuilder {
 		return new LinkDeclaration(link, symbols);
 	}
 
-	protected CompileDeclaration newCompileDeclaration(Loc loc, Expression exp) {
-		return new CompileDeclaration(loc, exp);
+	protected CompileDeclaration newCompileDeclaration(char[] filename, int lineNumber, Expression exp) {
+		return new CompileDeclaration(filename, lineNumber, exp);
 	}
 
 	protected AlignDeclaration newAlignDeclaration(int i, Dsymbols sub) {
 		return new AlignDeclaration(i, sub);
 	}
 	
-	protected DebugSymbol newDebugSymbol(Loc loc, IdentifierExp exp, Version version) {
-		return new DebugSymbol(loc, exp, version);
+	protected DebugSymbol newDebugSymbol(char[] filename, int lineNumber, IdentifierExp exp, Version version) {
+		return new DebugSymbol(filename, lineNumber, exp, version);
 	}
 
-	protected DebugSymbol newDebugSymbol(Loc loc, long level, Version version) {
-		return new DebugSymbol(loc, level, version);
+	protected DebugSymbol newDebugSymbol(char[] filename, int lineNumber, long level, Version version) {
+		return new DebugSymbol(filename, lineNumber, level, version);
 	}
 	
-	protected VersionSymbol newVersionSymbol(Loc loc, IdentifierExp exp, Version version) {
-		return new VersionSymbol(loc, exp, version);
+	protected VersionSymbol newVersionSymbol(char[] filename, int lineNumber, IdentifierExp exp, Version version) {
+		return new VersionSymbol(filename, lineNumber, exp, version);
 	}
 
-	protected VersionSymbol newVersionSymbol(Loc loc, long level, Version version) {
-		return new VersionSymbol(loc, level, version);
+	protected VersionSymbol newVersionSymbol(char[] filename, int lineNumber, long level, Version version) {
+		return new VersionSymbol(filename, lineNumber, level, version);
 	}
 	
-	protected DeleteDeclaration newDeleteDeclaration(Loc loc, Arguments arguments) {
-		return new DeleteDeclaration(loc, arguments);
+	protected DeleteDeclaration newDeleteDeclaration(char[] filename, int lineNumber, Arguments arguments) {
+		return new DeleteDeclaration(filename, lineNumber, arguments);
 	}
 
-	protected NewDeclaration newNewDeclaration(Loc loc, Arguments arguments, int varargs) {
-		return new NewDeclaration(loc, arguments, varargs);
+	protected NewDeclaration newNewDeclaration(char[] filename, int lineNumber, Arguments arguments, int varargs) {
+		return new NewDeclaration(filename, lineNumber, arguments, varargs);
 	}
 
-	protected DtorDeclaration newDtorDeclaration(Loc loc) {
-		return new DtorDeclaration(loc);
+	protected DtorDeclaration newDtorDeclaration(char[] filename, int lineNumber) {
+		return new DtorDeclaration(filename, lineNumber);
 	}
 
-	protected CtorDeclaration newCtorDeclaration(Loc loc, Arguments arguments, int varargs) {
-		return new CtorDeclaration(loc, arguments, varargs);
+	protected CtorDeclaration newCtorDeclaration(char[] filename, int lineNumber, Arguments arguments, int varargs) {
+		return new CtorDeclaration(filename, lineNumber, arguments, varargs);
 	}
 	
-	protected TemplateDeclaration newTemplateDeclaration(Loc loc, IdentifierExp ident, TemplateParameters templateParameters, Expression constraint, Dsymbols symbols) {
-		return new TemplateDeclaration(loc, ident, templateParameters, constraint, symbols);
+	protected TemplateDeclaration newTemplateDeclaration(char[] filename, int lineNumber, IdentifierExp ident, TemplateParameters templateParameters, Expression constraint, Dsymbols symbols) {
+		return new TemplateDeclaration(filename, lineNumber, ident, templateParameters, constraint, symbols);
 	}
 
-	protected UnionDeclaration newUnionDeclaration(Loc loc, IdentifierExp id) {
-		return new UnionDeclaration(loc, id);
+	protected UnionDeclaration newUnionDeclaration(char[] filename, int lineNumber, IdentifierExp id) {
+		return new UnionDeclaration(filename, lineNumber, id);
 	}
 
-	protected StructDeclaration newStructDeclaration(Loc loc, IdentifierExp id) {
-		return new StructDeclaration(loc, id);
+	protected StructDeclaration newStructDeclaration(char[] filename, int lineNumber, IdentifierExp id) {
+		return new StructDeclaration(filename, lineNumber, id);
 	}
 
-	protected InterfaceDeclaration newInterfaceDeclaration(Loc loc, IdentifierExp ident, BaseClasses baseClasses) {
-		return new InterfaceDeclaration(loc, ident, baseClasses);
+	protected InterfaceDeclaration newInterfaceDeclaration(char[] filename, int lineNumber, IdentifierExp ident, BaseClasses baseClasses) {
+		return new InterfaceDeclaration(filename, lineNumber, ident, baseClasses);
 	}
 
-	protected ClassDeclaration newClassDeclaration(Loc loc, IdentifierExp ident, BaseClasses baseClasses) {
-		return new ClassDeclaration(loc, ident, baseClasses);
+	protected ClassDeclaration newClassDeclaration(char[] filename, int lineNumber, IdentifierExp ident, BaseClasses baseClasses) {
+		return new ClassDeclaration(filename, lineNumber, ident, baseClasses);
 	}
 	
-	protected EnumMember newEnumMember(Loc loc, IdentifierExp ident, Expression expression) {
-		return new EnumMember(loc, ident, expression);
+	protected EnumMember newEnumMember(char[] filename, int lineNumber, IdentifierExp ident, Expression expression) {
+		return new EnumMember(filename, lineNumber, ident, expression);
 	}
 
-	protected EnumDeclaration newEnumDeclaration(Loc loc, IdentifierExp ident, Type type) {
-		return new EnumDeclaration(loc, ident, type);
+	protected EnumDeclaration newEnumDeclaration(char[] filename, int lineNumber, IdentifierExp ident, Type type) {
+		return new EnumDeclaration(filename, lineNumber, ident, type);
 	}
 	
-	protected AnonDeclaration newAnonDeclaration(Loc loc, boolean isUnion, Dsymbols symbols) {
-		return new AnonDeclaration(loc, isUnion, symbols);
+	protected AnonDeclaration newAnonDeclaration(char[] filename, int lineNumber, boolean isUnion, Dsymbols symbols) {
+		return new AnonDeclaration(filename, lineNumber, isUnion, symbols);
 	}
 	
-	protected TypedefDeclaration newTypedefDeclaration(Loc loc, IdentifierExp ident, Type type, Initializer initializer) {
-		return new TypedefDeclaration(loc, ident, type, initializer);
+	protected TypedefDeclaration newTypedefDeclaration(char[] filename, int lineNumber, IdentifierExp ident, Type type, Initializer initializer) {
+		return new TypedefDeclaration(filename, lineNumber, ident, type, initializer);
 	}
 
-	protected AliasDeclaration newAliasDeclaration(Loc loc, IdentifierExp ident, Type type) {
-		return new AliasDeclaration(loc, ident, type);
+	protected AliasDeclaration newAliasDeclaration(char[] filename, int lineNumber, IdentifierExp ident, Type type) {
+		return new AliasDeclaration(filename, lineNumber, ident, type);
 	}
 	
-	protected AliasThis newAliasThis(Loc loc, IdentifierExp ident) {
-		return new AliasThis(loc, ident);
+	protected AliasThis newAliasThis(char[] filename, int lineNumber, IdentifierExp ident) {
+		return new AliasThis(filename, lineNumber, ident);
 	}
 
-	protected VarDeclaration newVarDeclaration(Loc loc, Type type, IdentifierExp ident, Initializer initializer) {
-		return new VarDeclaration(loc, type, ident, initializer);
+	protected VarDeclaration newVarDeclaration(char[] filename, int lineNumber, Type type, IdentifierExp ident, Initializer initializer) {
+		return new VarDeclaration(filename, lineNumber, type, ident, initializer);
 	}
 
 }

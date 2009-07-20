@@ -10,14 +10,16 @@ public class VersionSymbol extends Dsymbol {
 	public long level;
 	public Version version;
 
-	public VersionSymbol(Loc loc, IdentifierExp ident, Version version) {
+	public VersionSymbol(char[] filename, int lineNumber, IdentifierExp ident, Version version) {
 		super(ident);
-		this.loc = loc;
+		this.filename = filename;
+		this.lineNumber = lineNumber;
 		this.version = version;
 	}
 
-	public VersionSymbol(Loc loc, long level, Version version) {
-		this.loc = loc;
+	public VersionSymbol(char[] filename, int lineNumber, long level, Version version) {
+		this.filename = filename;
+		this.lineNumber = lineNumber;
 		this.level = level;
 		this.version = version;
 	}
@@ -40,7 +42,7 @@ public class VersionSymbol extends Dsymbol {
 		// just make sure subsequent debug declarations work.
 		m = sd.isModule();
 		if (ident != null) {
-			VersionCondition.checkPredefined(loc, ident, context);
+			VersionCondition.checkPredefined(filename, lineNumber, ident, context);
 			if (m == null) {
 				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.VersionDeclarationMustBeAtModuleLevel, this));
@@ -88,7 +90,7 @@ public class VersionSymbol extends Dsymbol {
 		if (s != null) {
 			throw new IllegalStateException("assert(!s)");
 		}
-		VersionSymbol ds = context.newVersionSymbol(loc, ident, version);
+		VersionSymbol ds = context.newVersionSymbol(filename, lineNumber, ident, version);
 		ds.level = level;
 		ds.copySourceRange(this);
 		return ds;

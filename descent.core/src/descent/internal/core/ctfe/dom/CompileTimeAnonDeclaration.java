@@ -2,14 +2,13 @@ package descent.internal.core.ctfe.dom;
 
 import descent.internal.compiler.parser.AnonDeclaration;
 import descent.internal.compiler.parser.Dsymbols;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.SemanticContext;
 
 public class CompileTimeAnonDeclaration extends AnonDeclaration {
 
-	public CompileTimeAnonDeclaration(Loc loc, boolean isunion, Dsymbols decl) {
-		super(loc, isunion, decl);
+	public CompileTimeAnonDeclaration(char[] filename, int lineNumber, boolean isunion, Dsymbols decl) {
+		super(filename, lineNumber, isunion, decl);
 	}
 	
 	@Override

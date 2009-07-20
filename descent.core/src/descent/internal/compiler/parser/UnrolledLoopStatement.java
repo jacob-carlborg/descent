@@ -1,15 +1,17 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.BE.BEbreak;
+import static descent.internal.compiler.parser.BE.BEcontinue;
+import static descent.internal.compiler.parser.BE.BEfallthru;
 import melnorme.miscutil.Assert;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import static descent.internal.compiler.parser.BE.*;
 
 public class UnrolledLoopStatement extends Statement {
 
 	public Statements statements;
 
-	public UnrolledLoopStatement(Loc loc, Statements statements) {
-		super(loc);
+	public UnrolledLoopStatement(char[] filename, int lineNumber, Statements statements) {
+		super(filename, lineNumber);
 		this.statements = statements;
 	}
 
@@ -124,7 +126,7 @@ public class UnrolledLoopStatement extends Statement {
 			}
 			a.set(i, s);
 		}
-		UnrolledLoopStatement cs = new UnrolledLoopStatement(loc, a);
+		UnrolledLoopStatement cs = new UnrolledLoopStatement(filename, lineNumber, a);
 		return cs;
 	}
 

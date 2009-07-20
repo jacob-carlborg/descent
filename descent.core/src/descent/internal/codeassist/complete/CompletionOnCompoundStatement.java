@@ -1,7 +1,6 @@
 package descent.internal.codeassist.complete;
 
 import descent.internal.compiler.parser.CompoundStatement;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.Scope;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.Statement;
@@ -11,8 +10,8 @@ public class CompletionOnCompoundStatement extends CompoundStatement {
 	
 	public Scope scope;
 
-	public CompletionOnCompoundStatement(Loc loc, Statements statements) {
-		super(loc, statements);
+	public CompletionOnCompoundStatement(char[] filename, int lineNumber, Statements statements) {
+		super(filename, lineNumber, statements);
 	}
 	
 	@Override

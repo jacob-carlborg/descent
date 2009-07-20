@@ -10,8 +10,8 @@ public class SynchronizedStatement extends Statement {
 	public Expression exp, sourceExp;
 	public Statement body, sourceBody;
 
-	public SynchronizedStatement(Loc loc, Expression exp, Statement body) {
-		super(loc);
+	public SynchronizedStatement(char[] filename, int lineNumber, Expression exp, Statement body) {
+		super(filename, lineNumber);
 		this.exp = this.sourceExp = exp;
 		this.body = this.sourceBody = body;
 	}
@@ -59,11 +59,11 @@ public class SynchronizedStatement extends Statement {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CanOnlySynchronizeOnClassObjects, exp, new String[] { exp.type.toChars(context) }));
 				}
 			} else if (cd.isInterfaceDeclaration() != null) {
-				Type t = new TypeIdentifier(Loc.ZERO, new IdentifierExp(
+				Type t = new TypeIdentifier(null, 0, new IdentifierExp(
 						Id.Object));
 
-				t = t.semantic(Loc.ZERO, sc, context);
-				exp = new CastExp(loc, exp, t);
+				t = t.semantic(null, 0, sc, context);
+				exp = new CastExp(filename, lineNumber, exp, t);
 				exp = exp.semantic(sc, context);
 			}
 		}
@@ -76,7 +76,7 @@ public class SynchronizedStatement extends Statement {
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
 		Expression e = exp != null ? exp.syntaxCopy(context) : null;
-		SynchronizedStatement s = context.newSynchronizedStatement(loc, e,
+		SynchronizedStatement s = context.newSynchronizedStatement(filename, lineNumber, e,
 				body != null ? body.syntaxCopy(context) : null);
 		s.copySourceRange(this);
 		return s;
