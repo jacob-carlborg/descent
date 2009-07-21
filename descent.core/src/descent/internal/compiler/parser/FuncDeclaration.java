@@ -2509,6 +2509,10 @@ public class FuncDeclaration extends Declaration {
 	 */
 	public int findVtblIndex(List vtbl, int dim, SemanticContext context) {
 		for (int vi = 0; vi < dim; vi++) {
+			if (vi >= vtbl.size()) {
+				return -1;
+			}
+			
 			FuncDeclaration fdv = ((Dsymbol) vtbl.get(vi)).isFuncDeclaration();
 			if (fdv != null && equals(fdv.ident, ident)) {
 				int cov = type.covariant(fdv.type, context);
