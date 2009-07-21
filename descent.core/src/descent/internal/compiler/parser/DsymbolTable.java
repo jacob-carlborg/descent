@@ -4,13 +4,14 @@ package descent.internal.compiler.parser;
 
 public class DsymbolTable {
 	
-	private HashtableOfCharArrayAndObject map = new HashtableOfCharArrayAndObject();
+	private final HashtableOfCharArrayAndObject map;
 	
 	public DsymbolTable() {
+		map = new HashtableOfCharArrayAndObject();
 	}
 	
 	public DsymbolTable(DsymbolTable table) {
-		this.map = new HashtableOfCharArrayAndObject(map);
+		this.map = new HashtableOfCharArrayAndObject(table.map);
 	}
 
 	public Dsymbol insert(Dsymbol dsymbol) {

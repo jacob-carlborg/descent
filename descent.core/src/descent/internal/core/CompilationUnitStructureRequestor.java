@@ -344,9 +344,9 @@ public void enterInitializer(
 }
 
 public void enterConditional(int declarationSourceStart, long modifiers, char[] displayString) {
-	if (topLevelNesting == 0 && (modifiers & Flags.AccStaticIfDeclaration) != 0) {
-		hasTopLevelCompileTimeDifficulties = true;
-	}
+//	if (topLevelNesting == 0 && (modifiers & Flags.AccStaticIfDeclaration) != 0) {
+//		hasTopLevelCompileTimeDifficulties = true;
+//	}
 	
 	JavaElementInfo parentInfo = (JavaElementInfo) this.infoStack.peek();
 	JavaElement parentHandle= (JavaElement) this.handleStack.peek();

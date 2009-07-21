@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Descent Metrics Plug-in
 Bundle-SymbolicName: descent.ui.metrics; singleton:=true
-Bundle-Version: 0.5.6.20090720
+Bundle-Version: 0.5.6.20090722
 Bundle-Localization: plugin
 Bundle-Activator: descent.ui.metrics.MetricsPlugin
 Require-Bundle: org.eclipse.ui.ide,

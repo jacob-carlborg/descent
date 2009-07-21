@@ -132,7 +132,7 @@ public class LazyModule extends Module implements ILazy {
 			if (javaElementMembersCache == null) {
 				Object target = topLevelIdentifiers.get(ident);
 				
-				target = filter(target);
+				target = filter(target, context);
 				
 				if (target != null) {
 					if (target instanceof IJavaElement) {
@@ -235,19 +235,19 @@ public class LazyModule extends Module implements ILazy {
 	}
 
 	// Remove element that are under false conditionals
-	private Object filter(Object target) {
+	private Object filter(Object target, SemanticContext context) {
 		if (target == null) {
 			return null;
 		}
 		
 		if (target instanceof IJavaElement) {
 			IJavaElement element = (IJavaElement) target;
-			return isActive(element) ? element : null;
+			return isActive(element, context) ? element : null;
 		} else if (target instanceof List) {
 			List<IJavaElement> elements = (List<IJavaElement>) target;
 			List<IJavaElement> filteredElements = new ArrayList<IJavaElement>(elements.size());
 			for(IJavaElement element : elements) {
-				if (isActive(element)) {
+				if (isActive(element, context)) {
 					filteredElements.add(element);
 				}
 			}
@@ -263,7 +263,7 @@ public class LazyModule extends Module implements ILazy {
 		return target;
 	}
 
-	private boolean isActive(IJavaElement element) {
+	private boolean isActive(IJavaElement element, SemanticContext context) {
 		switch(element.getParent().getElementType()) {
 		case IJavaElement.COMPILATION_UNIT:
 			return true;
@@ -271,9 +271,9 @@ public class LazyModule extends Module implements ILazy {
 			IInitializer init = (IInitializer) element.getParent();
 			try {
 				if (init.isThen()) {
-					return builder.isThenActive((IConditional) init.getParent(), this);
+					return builder.isThenActive((IConditional) init.getParent(), this, context);
 				} else if (init.isElse()) {
-					return !builder.isThenActive((IConditional) init.getParent(), this);
+					return !builder.isThenActive((IConditional) init.getParent(), this, context);
 				} else {
 					return true;
 				}
@@ -284,7 +284,7 @@ public class LazyModule extends Module implements ILazy {
 		case IJavaElement.CONDITIONAL:
 			IConditional cond = (IConditional) element.getParent();
 			try {
-				return builder.isThenActive(cond, this);
+				return builder.isThenActive(cond, this, context);
 			} catch (JavaModelException e) {
 				Util.log(e);
 				return true;
@@ -298,6 +298,8 @@ public class LazyModule extends Module implements ILazy {
 		case IJavaElement.COMPILATION_UNIT:
 			return true;
 		case IJavaElement.CONDITIONAL:
+			return isEasy(element.getParent());
+		case IJavaElement.INITIALIZER:
 			return isEasy(element.getParent());
 		default:
 			return false;

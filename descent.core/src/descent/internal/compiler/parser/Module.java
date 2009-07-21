@@ -178,11 +178,13 @@ public class Module extends Package {
 		if (!imObject) {
 			// The first symbol should be "import object";
 			// If some error happened, singal a fatal error
+			int errors = context.global.errors;
+			
 			Dsymbol s = members.get(i);
 			s.semantic(sc, context);
 			runDeferredSemantic(context);
 			
-			if (context.global.errors > 0) {
+			if (context.global.errors > errors) {
 				context.fatalWasSignaled = true;
 				return;
 			}

@@ -506,6 +506,10 @@ public class SemanticContext {
 		return new DescentModuleFinder(env, config, encoder);
 	}
 	
+	public Parser newParser(char[] source) {
+		return newParser(apiLevel, source);
+	}
+	
 	protected Parser newParser(int apiLevel, char[] source) {
 		return new Parser(apiLevel, source);
 	}

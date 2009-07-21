@@ -33,6 +33,9 @@ public final class HashtableOfCharArrayAndObject implements Cloneable {
 		
 		System.arraycopy(other.keyTable, 0, this.keyTable, 0, this.keyTable.length);
 		System.arraycopy(other.valueTable, 0, this.valueTable, 0, this.valueTable.length);
+		
+		this.elementSize = keyTable.length;
+		this.threshold = keyTable.length;
 	}
 	
 	public void clear() {
@@ -161,8 +164,9 @@ public final class HashtableOfCharArrayAndObject implements Cloneable {
 		Object[] result = new Object[size()];
 		int j = 0;
 		for (int i = 0; i < keyTableLength; i++) {
-			if (keyTable[i] != null)
+			if (keyTable[i] != null) {
 				result[j++] = valueTable[i];
+			}
 		}
 		return result;
 	}

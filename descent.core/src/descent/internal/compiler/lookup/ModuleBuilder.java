@@ -61,6 +61,7 @@ import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.ModuleDeclaration;
 import descent.internal.compiler.parser.NewDeclaration;
 import descent.internal.compiler.parser.PROT;
+import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.ProtDeclaration;
 import descent.internal.compiler.parser.STC;
 import descent.internal.compiler.parser.SemanticContext;
@@ -920,7 +921,7 @@ public class ModuleBuilder {
 					if (cond.isStaticIfDeclaration()) {
 						result.hasStaticIf = true;
 					} else if (cond.isVersionDeclaration() || cond.isDebugDeclaration()) {
-						if (isThenActive(cond, lazy)) {
+						if (isThenActive(cond, lazy, context)) {
 							internalFillJavaElementMembersCache(lazy, cond.getThenChildren(), symbols, context, result);
 						} else {
 							internalFillJavaElementMembersCache(lazy, cond.getElseChildren(), symbols, context, result);
@@ -1010,7 +1011,7 @@ public class ModuleBuilder {
 		}
 	}
 	
-	public boolean isThenActive(IConditional cond, ILazy lazy) throws JavaModelException {
+	public boolean isThenActive(IConditional cond, ILazy lazy, SemanticContext context) throws JavaModelException {
 		if (cond.isVersionDeclaration()) {
 			String name = cond.getElementName();
 			char[] nameC = name.toCharArray();
@@ -1029,6 +1030,14 @@ public class ModuleBuilder {
 			} catch(NumberFormatException e) {
 				return config.isDebugEnabled(nameC) || (lazy.getModule().debugids != null && lazy.getModule().debugids.containsKey(nameC));
 			}
+		} else if (cond.isStaticIfDeclaration()) {
+			System.out.println(123456);
+			char[] exp = cond.getElementName().toCharArray();
+			Parser parser = context.newParser(exp);
+			Expression expression = parser.parseExpression();
+			Expression result = expression.semantic(lazy.getSemanticScope(), context);
+			result = result.optimize(ASTDmdNode.WANTvalue | ASTDmdNode.WANTinterpret, context);
+			return result.isBool(true);
 		} else {
 			throw new IllegalStateException("Can't happen");
 		}
@@ -1064,7 +1073,7 @@ public class ModuleBuilder {
 					if (cond.isStaticIfDeclaration()) {
 						
 					} else if (cond.isVersionDeclaration() || cond.isDebugDeclaration()) {
-						if (isThenActive(cond, lazy)) {
+						if (isThenActive(cond, lazy, context)) {
 							fillImports(lazy, cond.getThenChildren(), privateImports, publicImports, context, lastImportLocation);
 						} else {
 							fillImports(lazy, cond.getElseChildren(), privateImports, publicImports, context, lastImportLocation);
