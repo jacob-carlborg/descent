@@ -65,6 +65,7 @@ public class CompileDeclaration extends AttribDeclaration {
 	    	StringExp se = (StringExp) exp;
 			se = se.toUTF8(sc, context);
 			Parser p = context.newParser(context.Module_rootModule.apiLevel, se.string);
+			p.module = sc.module;
 			// p.nextToken();
 			p.filename = filename;
 			p.lineNumber = lineNumber;

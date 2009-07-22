@@ -5838,9 +5838,10 @@ public class Lexer implements IProblemRequestor {
 		if (recordLineSeparator && lineNumber == maxLinnum) {
 			final int INCREMENT = 250;
 			int length = this.lineEnds.length;
-			if (this.lineNumber - 1 >= length) {
+			while (this.lineNumber - 1 >= length) {
 				System.arraycopy(this.lineEnds, 0,
 						this.lineEnds = new int[length + INCREMENT], 0, length);
+				length = this.lineEnds.length;
 			}
 			this.lineEnds[this.lineNumber - 1] = p;
 		}

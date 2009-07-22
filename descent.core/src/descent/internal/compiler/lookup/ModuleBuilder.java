@@ -1031,7 +1031,6 @@ public class ModuleBuilder {
 				return config.isDebugEnabled(nameC) || (lazy.getModule().debugids != null && lazy.getModule().debugids.containsKey(nameC));
 			}
 		} else if (cond.isStaticIfDeclaration()) {
-			System.out.println(123456);
 			char[] exp = cond.getElementName().toCharArray();
 			Parser parser = context.newParser(exp);
 			Expression expression = parser.parseExpression();

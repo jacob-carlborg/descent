@@ -10,6 +10,10 @@ public class TypeExp extends Expression {
 		super(filename, lineNumber, TOK.TOKtype);
 		this.type = type;
 		this.sourceType = type;
+		if (type != null) {
+			this.start = type.start;
+			this.length = type.length;
+		}
 	}
 	
 	@Override
