@@ -16,7 +16,6 @@ Remaining from DMD 2.030 vs. 1.045
 ------------------------------
  * declaration.c (up to but excluding VarDeclaration::semantic)
  * declaration.h
- * delegatize.c
  * enum.c
  * enum.h
  * expression.c
@@ -27,12 +26,8 @@ Remaining from DMD 2.030 vs. 1.045
  * mtype.h
  * opover.c
  * optimize.c
- * scope.c
- * scope.h
  * statement.c
  * statement.h
- * staticassert.c
- * staticassert.h
  * template.c
  * template.h
  * StringExp::length()
