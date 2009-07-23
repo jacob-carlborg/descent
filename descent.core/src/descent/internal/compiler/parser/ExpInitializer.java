@@ -72,6 +72,7 @@ public class ExpInitializer extends Initializer {
 		exp = exp.semantic(sc, context);
 		
 		if (context.isD2()) {
+		    exp = resolveProperties(sc, exp, context);
 			exp = exp.optimize(WANTvalue | WANTinterpret, context);
 		}
 		
