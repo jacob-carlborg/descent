@@ -3473,6 +3473,9 @@ public class Parser extends Lexer {
 	}
 
 	private Type parseBasicType2(Type t) {
+		if (t == null)
+			return null;
+		
 		Type ts;
 		Type ta;
 		Type subType;
