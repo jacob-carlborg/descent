@@ -68,6 +68,9 @@ public class VersionCondition extends DVCondition {
 
 	public VersionCondition(Module mod, char[] filename, int lineNumber, long level, char[] id) {
 		super(mod, filename, lineNumber, level, id);
+		if (mod == null) {
+			System.out.println(123456);
+		}
 	}
 
 	@Override

@@ -14,9 +14,37 @@ func.c  --> missing StaticCtorDeclaration::StaticCtorDeclaration
             
 Remaining from DMD 2.030 vs. 1.045
 ------------------------------
- * From start: ported up to declaration.c but excluding VarDeclaration::semantic
- * From end: ported up and including to traits.c
- * Ported lexer.c, lexer.h, parser.c and parser.h
+ * declaration.c (up to but excluding VarDeclaration::semantic)
+ * declaration.h
+ * delegatize.c
+ * dsymbol.c
+ * dsymbol.h
+ * enum.c
+ * enum.h
+ * expression.c
+ * expression.h
+ * func.c
+ * identifier.c
+ * identifier.h
+ * import.c
+ * import.h
+ * init.c
+ * init.h
+ * interpret.c
+ * module.c
+ * module.h
+ * mtype.c
+ * mtype.h
+ * opover.c
+ * optimize.c
+ * scope.c
+ * scope.h
+ * statement.c
+ * statement.h
+ * staticassert.c
+ * staticassert.h
+ * template.c
+ * template.h
  * StringExp::length()
  * Parser::parseBaseClasses what's the difference?
             

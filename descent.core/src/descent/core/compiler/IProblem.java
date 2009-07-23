@@ -717,5 +717,6 @@ public interface IProblem {
 	int DelimiterCannotBeWhitespace = 506;
 	int ArrayEqualityComparisonTypeMismatch = 507;
 	int GsharedNotAllowedInSafeMode = 508;
+	int InnerStructCannotBeAField = 509;
 
 }

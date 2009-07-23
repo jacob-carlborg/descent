@@ -2,11 +2,14 @@ package descent.internal.compiler.parser;
 
 import static descent.internal.compiler.parser.LINK.LINKd;
 import static descent.internal.compiler.parser.PROT.PROTnone;
+import static descent.internal.compiler.parser.STC.STC_TYPECTOR;
 import static descent.internal.compiler.parser.STC.STCconst;
+import static descent.internal.compiler.parser.STC.STCimmutable;
 import static descent.internal.compiler.parser.STC.STCin;
-import static descent.internal.compiler.parser.STC.STCinvariant;
 import static descent.internal.compiler.parser.STC.STCnodtor;
 import static descent.internal.compiler.parser.STC.STCref;
+import static descent.internal.compiler.parser.STC.STCshared;
+import static descent.internal.compiler.parser.STC.STCstatic;
 import static descent.internal.compiler.parser.STC.STCundefined;
 import static descent.internal.compiler.parser.TOK.TOKblit;
 import static descent.internal.compiler.parser.TY.Tsarray;
@@ -29,7 +32,7 @@ public class StructDeclaration extends AggregateDeclaration {
 	public boolean zeroInit; // !=0 if initialize with 0 fill
 	public int hasIdentityAssign;	// !=0 if has identity opAssign
 	public FuncDeclaration cpctor;	// generated copy-constructor, if any
-	public CtorDeclaration ctor;
+	public Dsymbol ctor;
 
 	public FuncDeclarations postblits;	// Array of postblit functions
 	public FuncDeclaration postblit;	// aggregate postblit
@@ -141,23 +144,66 @@ public class StructDeclaration extends AggregateDeclaration {
 		}
 		
 		if (context.isD2()) {
-			if ((storage_class & STCinvariant) != 0) {
+			if ((storage_class & STCimmutable) != 0) {
 		        type = type.invariantOf(context);
 			} else if ((storage_class & STCconst) != 0) {
 		        type = type.constOf(context);
+			} else if ((storage_class & STCshared) != 0) {
+		        type = type.sharedOf(context);
 			}
 		}
 
 		if (sizeok == 0) { // if not already done the addMember step
+			boolean hasfunctions = false;
 			for (Dsymbol s : members) {
 				s.addMember(sc, this, 1, context);
+			    if (s.isFuncDeclaration() != null) {
+					hasfunctions = true;
+			    }
+			}
+			
+			if (!context.isD1()) {
+				// If nested struct, add in hidden 'this' pointer to outer scope
+				if (hasfunctions && 0 == (storage_class & STCstatic)) {
+					Dsymbol s = toParent2();
+					if (s != null) {
+						AggregateDeclaration ad = s.isAggregateDeclaration();
+						FuncDeclaration fd = s.isFuncDeclaration();
+
+						TemplateInstance ti;
+						if (ad != null
+								&& (ti = ad.parent.isTemplateInstance()) != null
+								&& ti.isnested != null || fd != null) {
+							isnested = true;
+							Type t;
+							if (ad != null)
+								t = ad.handle;
+							else if (fd != null) {
+								AggregateDeclaration ad2 = fd.isMember2();
+								if (ad2 != null)
+									t = ad2.handle;
+								else
+									t = context.Type_tvoidptr;
+							} else {
+								throw new IllegalStateException("assert(0);");
+							}
+							if (t.ty == Tstruct)
+								t = context.Type_tvoidptr; // t should not be a
+															// ref type
+							assert (null == vthis);
+							vthis = new ThisDeclaration(filename, lineNumber, t);
+							// vthis.storage_class |= STCref;
+							members.add(vthis);
+						}
+					}
+				}
 			}
 		}
 
 		sizeok = 0;
 		sc2 = sc.push(this);
 		if (context.isD2()) {
-			sc2.stc &= storage_class & (STCconst | STCinvariant);
+			sc2.stc &= storage_class & STC_TYPECTOR;
 		} else {
 			sc2.stc = 0;
 		}
@@ -176,6 +222,20 @@ public class StructDeclaration extends AggregateDeclaration {
 			s.semantic(sc2, context);
 			if (isUnionDeclaration() != null) {
 				sc2.offset = 0;
+			}
+			
+			if (!context.isD1()) {
+				Type t;
+				if (s.isDeclaration() != null
+						&& (t = s.isDeclaration().type) != null
+						&& t.toBasetype(context).ty == Tstruct) {
+					StructDeclaration sd = (StructDeclaration) t.toDsymbol(sc, context);
+					if (sd.isnested) {
+						if (context.acceptsErrors()) {
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.InnerStructCannotBeAField, this, sd.toChars(context)));
+						}
+					}
+				}
 			}
 		}
 
@@ -296,7 +356,7 @@ public class StructDeclaration extends AggregateDeclaration {
 		/* Look for special member functions.
 		 */
 		if (context.isD2()) {
-		    ctor = (CtorDeclaration)search(null, 0, Id.ctor, 0, context);
+		    ctor = search(null, 0, Id.ctor, 0, context);
 		}
 		inv = (InvariantDeclaration) search(filename, lineNumber, Id.classInvariant, 0, context);
 		aggNew((NewDeclaration) search(filename, lineNumber, Id.classNew, 0, context));

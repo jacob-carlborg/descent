@@ -31,6 +31,8 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 	public boolean isauto; // !=0 if this is an auto class
 	public boolean isabstract; // !=0 if abstract class
 	public Scope scope; // !=NULL means context to use
+	public boolean isnested;
+	public VarDeclaration vthis;	// 'this' parameter if this aggregate is nested
     public FuncDeclarations dtors;	// Array of destructors
     public FuncDeclaration dtor;	// aggregate destructor
 
@@ -112,6 +114,14 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 
 		// Check for forward referenced types which will fail the size() call
 		Type t = v.type.toBasetype(context);
+		
+		if (!context.isD1()) {
+			if ((v.storage_class & STCref) != 0) {
+				// References are the size of a pointer
+				t = context.Type_tvoidptr;
+			}
+		}
+		
 		if (t.ty == TY.Tstruct /* && isStructDeclaration() */) {
 			TypeStruct ts = (TypeStruct) t;
 			
@@ -133,9 +143,15 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 			return;
 		}
 
-		memsize = v.type().size(filename, lineNumber, context);
-		memalignsize = v.type().alignsize(context);
-		xalign = v.type().memalign(sc.structalign, context);
+		if (context.isD1()) {
+			memsize = v.type().size(filename, lineNumber, context);
+			memalignsize = v.type().alignsize(context);
+			xalign = v.type().memalign(sc.structalign, context);
+		} else {
+			memsize = t.size(filename, lineNumber, context);
+			memalignsize = t.alignsize(context);
+			xalign = t.memalign(sc.structalign, context);
+		}
 
 		int[] sc_offset_pointer = { sc.offset };
 		alignmember(xalign, memalignsize, sc_offset_pointer);
@@ -341,6 +357,10 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 		}
 
 		return false;
+	}
+	
+	public boolean isNested() {
+		return isnested;
 	}
 
 	@Override

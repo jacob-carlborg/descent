@@ -1522,7 +1522,11 @@ ArrayEqualityComparisonTypeMismatch
 GsharedNotAllowedInSafeMode
 	formatString=__gshared not allowed in safe mode; use shared
 	numArgs=0	
+InnerStructCannotBeAField
+	formatString=inner struct %1$s cannot be a field
+	numArgs=1
 	
+		
 	
 	
 	
