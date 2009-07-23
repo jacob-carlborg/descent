@@ -426,8 +426,9 @@ public class CompletionEngine extends Engine
 								
 								if (!(cd instanceof InterfaceDeclaration) && cd.ident != null && cd.ident.ident != null) {
 									wantConstructorsAndOpCall = true;
-									currentName = cd.ident.ident;
-									
+									// Use the name of the expected type, might be an alias to a class
+									// currentName = cd.ident.ident;
+									currentName = Signature.toCharArray(expectedTypeSignature, false);									
 									suggestConstructors(cd);
 								}
 							}
