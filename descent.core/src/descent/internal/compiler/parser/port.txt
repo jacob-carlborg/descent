@@ -17,18 +17,12 @@ Remaining from DMD 2.030 vs. 1.045
  * declaration.c (up to but excluding VarDeclaration::semantic)
  * declaration.h
  * delegatize.c
- * dsymbol.c
- * dsymbol.h
  * enum.c
  * enum.h
  * expression.c
  * expression.h
  * func.c
- * import.c
- * import.h
  * interpret.c
- * module.c
- * module.h
  * mtype.c
  * mtype.h
  * opover.c

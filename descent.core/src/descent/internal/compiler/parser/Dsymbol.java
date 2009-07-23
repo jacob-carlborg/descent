@@ -378,6 +378,10 @@ public class Dsymbol extends ASTDmdNode {
 	public AggregateDeclaration isThis() {
 		return null;
 	}
+	
+	public ThisDeclaration isThisDeclaration() {
+		return null;
+	}
 
 	public TupleDeclaration isTupleDeclaration() {
 		return null;

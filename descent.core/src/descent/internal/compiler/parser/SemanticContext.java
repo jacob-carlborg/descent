@@ -244,6 +244,7 @@ public class SemanticContext {
 
 		if (module.md != null) {
 			module.ident = module.md.id();
+			module.safe = module.md.safe;
 			Dsymbol[] pparent = { module.parent };
 			dst = Package.resolve(module.md.packages(), pparent, null, this);
 			module.parent = pparent[0];
