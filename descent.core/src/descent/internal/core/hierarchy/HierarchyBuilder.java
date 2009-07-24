@@ -8,6 +8,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 
+import descent.core.Flags;
 import descent.core.IType;
 import descent.core.JavaModelException;
 import descent.internal.compiler.env.ICompilationUnit;
@@ -144,21 +145,16 @@ public abstract class HierarchyBuilder {
 			}
 		}
 		// now do the caching
-		// TODO JDT Type Hierarchy DO IT!
-//		switch (TypeDeclaration.kind(type.getModifiers())) {
-//			case TypeDeclaration.CLASS_DECL :
-//			case TypeDeclaration.ENUM_DECL :
-//				if (superclassHandle == null) {
-//					this.hierarchy.addRootClass(typeHandle);
-//				} else {
-//					this.hierarchy.cacheSuperclass(typeHandle, superclassHandle);
-//				}
-//				break;
-//			case TypeDeclaration.INTERFACE_DECL :
-//			case TypeDeclaration.ANNOTATION_TYPE_DECL :
-//				this.hierarchy.addInterface(typeHandle);
-//				break;
-//		}		
+		long modifiers = type.getModifiers();
+		if (Flags.isClass(modifiers)) {
+			if (superclassHandle == null) {
+				this.hierarchy.addRootClass(typeHandle);
+			} else {
+				this.hierarchy.cacheSuperclass(typeHandle, superclassHandle);
+			}
+		} else if (Flags.isInterface(modifiers)) {
+			this.hierarchy.addInterface(typeHandle);
+		}
 		if (superinterfaceHandles == null) {
 			superinterfaceHandles = TypeHierarchy.NO_TYPE;
 		}

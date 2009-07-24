@@ -357,7 +357,7 @@ public void exitType(int declarationEnd) {
  * Returns the unqualified name without parameters from the given type name.
  */
 private char[] getSimpleName(char[] typeName) {
-	return Signature.toCharArray(typeName, false);
+	return Signature.toSimpleNameCharArray(typeName);
 //	int lastDot = -1, lastGenericStart = -1;
 //	int depthCount = 0;
 //	int length = typeName.length;

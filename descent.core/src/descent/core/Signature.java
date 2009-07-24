@@ -1666,6 +1666,18 @@ public static char[] toCharArray(char[] signature, boolean fqn) throws IllegalAr
  *   correct
  */
 public static String toString(String signature, final boolean fqn) throws IllegalArgumentException {
+	return toString(signature, fqn, true);
+}
+
+public static char[] toSimpleNameCharArray(char[] signature) throws IllegalArgumentException {
+	return toSimpleName(new String(signature)).toCharArray();
+}
+
+public static String toSimpleName(String signature) throws IllegalArgumentException {
+	return toString(signature, false, false);
+}
+
+public static String toString(final String signature, final boolean fqn, final boolean wantTemplateParameters) throws IllegalArgumentException {
 	final Stack<Stack<StringBuilder>> stack = new Stack<Stack<StringBuilder>>();
 	stack.push(new Stack<StringBuilder>());
 	
@@ -1859,19 +1871,27 @@ public static String toString(String signature, final boolean fqn) throws Illega
 			}
 			
 			private void appendTemplateParameters(StringBuilder sb) {
-				sb.append('!');
-				sb.append('(');
+				if (wantTemplateParameters) { 
+					sb.append('!');
+					sb.append('(');
+				}
 				
 				Stack<StringBuilder> tps = templateParameters.pop();				
 				for (int i = 0; i < tps.size(); i++) {
 					if (i != 0) {
-						sb.append(',');
-						sb.append(' ');
+						if (wantTemplateParameters) { 
+							sb.append(',');
+							sb.append(' ');
+						}
 					}
-					sb.append(tps.get(i));
+					if (wantTemplateParameters) { 
+						sb.append(tps.get(i));
+					}
 				}
 				
-				sb.append(')');
+				if (wantTemplateParameters) { 
+					sb.append(')');
+				}
 			}
 			
 			@Override
@@ -1900,6 +1920,8 @@ public static String toString(String signature, final boolean fqn) throws Illega
 			}
 			@Override
 			public void acceptArgumentModifier(int stc) {
+				if (modifiers.isEmpty())
+					return;
 				switch(stc) {
 				case STC.STCin: 
 					modifiers.peek().push(CharOperation.NO_CHAR);
@@ -2057,20 +2079,28 @@ public static String toString(String signature, final boolean fqn) throws Illega
 				if (sb.length() != 0 && sb.charAt(sb.length() - 1) == ')') {
 					sb.setLength(indexOfMatchingParen(sb) + 1);
 				} else {
-					sb.append('!');
-					sb.append('(');
+					if (wantTemplateParameters) {
+						sb.append('!');
+						sb.append('(');
+					}
 				}
 				
 				Stack<StringBuilder> tp = templateInstances.pop();
 				for (int i = 0; i < tp.size(); i++) {
 					if (i != 0) {
-						sb.append(',');
-						sb.append(' ');
+						if (wantTemplateParameters) {
+							sb.append(',');
+							sb.append(' ');
+						}
 					}
-					sb.append(tp.get(i));
+					if (wantTemplateParameters) {
+						sb.append(tp.get(i));
+					}
 				}
 				
-				sb.append(')');
+				if (wantTemplateParameters) {
+					sb.append(')');
+				}
 			}
 			private int indexOfMatchingParen(StringBuilder sb) {
 				int parenCount = 0;
