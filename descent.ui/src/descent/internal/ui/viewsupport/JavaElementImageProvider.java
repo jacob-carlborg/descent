@@ -544,7 +544,7 @@ public class JavaElementImageProvider {
 				return getInnerUnionImageDescriptor(isInInterfaceOrAnnotation, flags);
 			}
 			return getUnionImageDescriptor(flags);
-		}  else if (Flags.isTemplate(flags)) {
+		}  else if (Flags.isTemplate(flags) && !Flags.isClass(flags)) {
 			if (useLightIcons) {
 				return JavaPluginImages.DESC_OBJS_TEMPLATE_ELEMENTALT;
 			}
