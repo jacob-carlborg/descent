@@ -37,6 +37,7 @@ import descent.internal.compiler.parser.BaseClass;
 import descent.internal.compiler.parser.BaseClasses;
 import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.Dsymbol;
+import descent.internal.compiler.parser.ISignatureOptions;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.SemanticContext;
@@ -137,7 +138,7 @@ public class HierarchyResolver {
 			if (clazz != null) {
 				if (focus.equals(getJavaElement(clazz, cu))) {
 					focusType = getTypeClass(clazz.type);
-					focusTypeSignature = focusType.getSignature();
+					focusTypeSignature = focusType.getSignature(ISignatureOptions.None);
 					return;
 				}
 			}
@@ -233,7 +234,7 @@ public class HierarchyResolver {
 
 	private boolean subTypeOfType(TypeClass subType, TypeClass typeBinding, String typeBindingSignature) {
 		if (typeBinding == null || subType == null) return false;
-		if (subType == typeBinding || subType.getSignature().equals(typeBindingSignature)) return true;
+		if (subType == typeBinding || subType.getSignature(ISignatureOptions.None).equals(typeBindingSignature)) return true;
 		BaseClasses baseclasses = subType.sym.baseclasses;
 		if (baseclasses != null) {
 			for (int i = 0, length = baseclasses.size(); i < length; i++) {
