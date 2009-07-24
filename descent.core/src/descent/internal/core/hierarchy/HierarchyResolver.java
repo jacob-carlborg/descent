@@ -13,7 +13,6 @@ package descent.internal.core.hierarchy;
  * implements I & J?
  */
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -50,7 +49,6 @@ import descent.internal.core.BasicCompilationUnit;
 import descent.internal.core.InternalSignature;
 import descent.internal.core.JavaElement;
 import descent.internal.core.Openable;
-import descent.internal.core.SourceType;
 import descent.internal.core.util.Util;
 
 //TODO JDT Type Hierarchy NOW!
@@ -135,8 +133,8 @@ public class HierarchyResolver {
 				continue;
 			
 			Dsymbol sym = (Dsymbol) value;
-			if (sym.getNodeType() == ASTDmdNode.CLASS_DECLARATION) {
-				ClassDeclaration clazz = (ClassDeclaration) sym;
+			ClassDeclaration clazz = getClassDeclaration(sym);
+			if (clazz != null) {
 				if (focus.equals(getJavaElement(clazz, cu))) {
 					focusType = getTypeClass(clazz.type);
 					focusTypeSignature = focusType.getSignature();
@@ -161,14 +159,8 @@ public class HierarchyResolver {
 				continue;
 			
 			Dsymbol sym = (Dsymbol) value;
-			if (sym.getNodeType() == ASTDmdNode.TEMPLATE_DECLARATION) {
-				TemplateDeclaration temp = (TemplateDeclaration) sym;
-				if (temp.wrapper) {
-					sym = temp.members.get(0);
-				}
-			}
-			if (sym.getNodeType() == ASTDmdNode.CLASS_DECLARATION || sym.getNodeType() == ASTDmdNode.INTERFACE_DECLARATION) {
-				ClassDeclaration clazz = (ClassDeclaration) sym;
+			ClassDeclaration clazz = getClassDeclaration(sym);
+			if (clazz != null) {
 				TypeClass typeClass = getTypeClass(clazz.type);
 				connect(typeClass, cu);
 			}
@@ -251,6 +243,20 @@ public class HierarchyResolver {
 			} 
 		}
 		return false;
+	}
+	
+	private ClassDeclaration getClassDeclaration(Dsymbol sym) {
+		if (sym.getNodeType() == ASTDmdNode.TEMPLATE_DECLARATION) {
+			TemplateDeclaration temp = (TemplateDeclaration) sym;
+			if (temp.wrapper) {
+				sym = temp.members.get(0);
+			}
+		}
+		if (sym.getNodeType() == ASTDmdNode.CLASS_DECLARATION || sym.getNodeType() == ASTDmdNode.INTERFACE_DECLARATION) {
+			ClassDeclaration clazz = (ClassDeclaration) sym;
+			return clazz;
+		}
+		return null;
 	}
 	
 	private TypeClass getTypeClass(Type type) {
