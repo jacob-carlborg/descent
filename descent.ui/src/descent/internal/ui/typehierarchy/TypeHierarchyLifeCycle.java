@@ -222,18 +222,13 @@ public class TypeHierarchyLifeCycle implements ITypeHierarchyChangedListener, IE
 				}
 				break;
 			case IJavaElement.CLASS_FILE:	
-				// TODO JDT Type Hierarchy NOW!
-//				if (delta.getKind() == IJavaElementDelta.CHANGED) {
-//					try {
-//						IType type= ((IClassFile) element).getType();
-//						processTypeDelta(type, changedTypes);
-//					} catch (JavaModelException e) {
-//						JavaPlugin.log(e);
-//					}
-//				} else {
-//					processChildrenDelta(delta, changedTypes);
-//				}
-//				break;				
+				if (delta.getKind() == IJavaElementDelta.CHANGED) {
+					IType type= ((IClassFile) element).findPrimaryType();
+					processTypeDelta(type, changedTypes);
+				} else {
+					processChildrenDelta(delta, changedTypes);
+				}
+				break;				
 		}
 	}
 	

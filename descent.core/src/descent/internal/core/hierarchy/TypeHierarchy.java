@@ -972,37 +972,36 @@ protected boolean isAffectedByOpenable(IJavaElementDelta delta, IJavaElement ele
 			return collector.needsRefresh();
 		}
 	} else if (element instanceof ClassFile) {
-		// TODO JDT Type Hierarchy
-//		switch (delta.getKind()) {
-//			case IJavaElementDelta.REMOVED:
-//				return this.files.get(element) != null;
-//			case IJavaElementDelta.ADDED:
-//				IType type = ((ClassFile)element).getType();
-//				String typeName = type.getElementName();
-//				if (hasSupertype(typeName) 
-//					|| subtypesIncludeSupertypeOf(type)
-//					|| this.missingTypes.contains(typeName)) {
-//						
-//					return true;
-//				}
-//				break;
-//			case IJavaElementDelta.CHANGED:
-//				IJavaElementDelta[] children = delta.getAffectedChildren();
-//				for (int i = 0, length = children.length; i < length; i++) {
-//					IJavaElementDelta child = children[i];
-//					IJavaElement childElement = child.getElement();
-//					if (childElement instanceof IType) {
-//						type = (IType)childElement;
-//						boolean hasVisibilityChange = (delta.getFlags() & IJavaElementDelta.F_MODIFIERS) > 0;
-//						boolean hasSupertypeChange = (delta.getFlags() & IJavaElementDelta.F_SUPER_TYPES) > 0;
-//						if ((hasVisibilityChange && hasSupertype(type.getElementName()))
-//								|| (hasSupertypeChange && includesTypeOrSupertype(type))) {
-//							return true;
-//						}
-//					}
-//				}
-//				break;
-//		}
+		switch (delta.getKind()) {
+			case IJavaElementDelta.REMOVED:
+				return this.files.get(element) != null;
+			case IJavaElementDelta.ADDED:
+				IType type = ((ClassFile)element).findPrimaryType();
+				String typeName = type.getElementName();
+				if (hasSupertype(typeName) 
+					|| subtypesIncludeSupertypeOf(type)
+					|| this.missingTypes.contains(typeName)) {
+						
+					return true;
+				}
+				break;
+			case IJavaElementDelta.CHANGED:
+				IJavaElementDelta[] children = delta.getAffectedChildren();
+				for (int i = 0, length = children.length; i < length; i++) {
+					IJavaElementDelta child = children[i];
+					IJavaElement childElement = child.getElement();
+					if (childElement instanceof IType) {
+						type = (IType)childElement;
+						boolean hasVisibilityChange = (delta.getFlags() & IJavaElementDelta.F_MODIFIERS) > 0;
+						boolean hasSupertypeChange = (delta.getFlags() & IJavaElementDelta.F_SUPER_TYPES) > 0;
+						if ((hasVisibilityChange && hasSupertype(type.getElementName()))
+								|| (hasSupertypeChange && includesTypeOrSupertype(type))) {
+							return true;
+						}
+					}
+				}
+				break;
+		}
 	}
 	return false;
 }

@@ -52,7 +52,6 @@ import descent.internal.core.JavaElement;
 import descent.internal.core.Openable;
 import descent.internal.core.util.Util;
 
-//TODO JDT Type Hierarchy NOW!
 public class HierarchyResolver {
 
 	private final INameEnvironment nameEnvironment;
@@ -72,7 +71,6 @@ public class HierarchyResolver {
 	}
 
 	public void resolve(IGenericType type) {
-		// TODO JDT Type Hierarchy NOW!
 	}
 
 	public void resolve(Openable[] openables, HashSet localTypes, IProgressMonitor monitor) {
