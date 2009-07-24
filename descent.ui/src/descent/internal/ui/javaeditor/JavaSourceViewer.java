@@ -218,11 +218,9 @@ public class JavaSourceViewer extends ProjectionViewer implements IPropertyChang
 			if (fStructurePresenter != null)
 				fStructurePresenter.install(this);
 
-			/* TODO JDT type hierarchy
 			fHierarchyPresenter= javaSVCconfiguration.getHierarchyPresenter(this, true);
 			if (fHierarchyPresenter != null)
 				fHierarchyPresenter.install(this);
-			*/
 
 		}
 

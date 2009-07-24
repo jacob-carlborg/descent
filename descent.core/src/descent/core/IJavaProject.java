@@ -655,10 +655,8 @@ public interface IJavaProject extends IParent, IJavaElement, IOpenable {
 	 * @return a type hierarchy for all types in the given
 	 * region, considering subtypes within that region
 	 */
-	/* TODO JDT type hierarchy
 	ITypeHierarchy newTypeHierarchy(IRegion region, IProgressMonitor monitor)
 		throws JavaModelException;
-	*/
 
 	/**
 	 * Creates and returns a type hierarchy for all types in the given
@@ -681,11 +679,9 @@ public interface IJavaProject extends IParent, IJavaElement, IOpenable {
 	 * region, considering subtypes within that region
 	 * @since 3.0
 	 */
-	/* TODO JDT type hierarchy
 	ITypeHierarchy newTypeHierarchy(IRegion region, WorkingCopyOwner owner, IProgressMonitor monitor)
 		throws JavaModelException;
-	*/
-
+	
 	/**
 	 * Creates and returns a type hierarchy for the given type considering
 	 * subtypes in the specified region.
@@ -701,13 +697,11 @@ public interface IJavaProject extends IParent, IJavaElement, IOpenable {
 	 * @return a type hierarchy for the given type considering
 	 * subtypes in the specified region
 	 */
-	/* TODO JDT type hierarchy
 	ITypeHierarchy newTypeHierarchy(
 		IType type,
 		IRegion region,
 		IProgressMonitor monitor)
 		throws JavaModelException;
-	*/
 
 	/**
 	 * Creates and returns a type hierarchy for the given type considering
@@ -733,14 +727,12 @@ public interface IJavaProject extends IParent, IJavaElement, IOpenable {
 	 * subtypes in the specified region
 	 * @since 3.0
 	 */
-	/* TODO JDT type hierarchy
 	ITypeHierarchy newTypeHierarchy(
 		IType type,
 		IRegion region,
 		WorkingCopyOwner owner,
 		IProgressMonitor monitor)
 		throws JavaModelException;
-	*/
 
 	/**
 	 * Returns the default output location for the project as defined by its <code>.classpath</code> file from disk, or <code>null</code>

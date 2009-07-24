@@ -10,6 +10,7 @@
  *******************************************************************************/
 package descent.internal.core;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -22,15 +23,20 @@ import descent.core.IConditional;
 import descent.core.IField;
 import descent.core.IInitializer;
 import descent.core.IJavaElement;
+import descent.core.IJavaProject;
 import descent.core.IMember;
 import descent.core.IMethod;
 import descent.core.IPackageFragment;
 import descent.core.IType;
+import descent.core.ITypeHierarchy;
 import descent.core.ITypeParameter;
+import descent.core.IWorkingCopy;
 import descent.core.JavaModelException;
 import descent.core.Signature;
 import descent.core.WorkingCopyOwner;
 import descent.core.compiler.CharOperation;
+import descent.core.search.SearchEngine;
+import descent.internal.core.hierarchy.TypeHierarchy;
 import descent.internal.core.util.MementoTokenizer;
 import descent.internal.core.util.Messages;
 
@@ -633,11 +639,9 @@ public boolean isResolved() {
 /**
  * @see IType
  */
-/* TODO JDT type hierarchy
 public ITypeHierarchy loadTypeHierachy(InputStream input, IProgressMonitor monitor) throws JavaModelException {
 	return loadTypeHierachy(input, DefaultWorkingCopyOwner.PRIMARY, monitor);
 }
-*/
 /**
  * NOTE: This method is not part of the API has it is not clear clients would easily use it: they would need to
  * first make sure all working copies for the given owner exist before calling it. This is especially har at startup 
@@ -668,24 +672,19 @@ public ITypeHierarchy loadTypeHierachy(InputStream input, IProgressMonitor monit
  * @see ITypeHierarchy#store(java.io.OutputStream, IProgressMonitor)
  * @since 3.0
  */
-/* TODO JDT type hierarchy
 public ITypeHierarchy loadTypeHierachy(InputStream input, WorkingCopyOwner owner, IProgressMonitor monitor) throws JavaModelException {
 	// TODO monitor should be passed to TypeHierarchy.load(...)
 	return TypeHierarchy.load(this, input, owner);
 }
-*/
 /**
  * @see IType
  */
-/* TODO JDT type hierarchy
 public ITypeHierarchy newSupertypeHierarchy(IProgressMonitor monitor) throws JavaModelException {
 	return this.newSupertypeHierarchy(DefaultWorkingCopyOwner.PRIMARY, monitor);
 }
-*/
 /*
  * @see IType#newSupertypeHierarchy(ICompilationUnit[], IProgressMonitor)
  */
-/* TODO JDT type hierarchy
 public ITypeHierarchy newSupertypeHierarchy(
 	ICompilationUnit[] workingCopies,
 	IProgressMonitor monitor)
@@ -695,7 +694,6 @@ public ITypeHierarchy newSupertypeHierarchy(
 	op.runOperation(monitor);
 	return op.getResult();
 }
-*/
 /**
  * @param workingCopies the working copies that take precedence over their original compilation units
  * @param monitor the given progress monitor
@@ -706,7 +704,6 @@ public ITypeHierarchy newSupertypeHierarchy(
  * @see IType#newSupertypeHierarchy(IWorkingCopy[], IProgressMonitor)
  * @deprecated
  */
-/* TODO JDT type hierarchy
 public ITypeHierarchy newSupertypeHierarchy(
 	IWorkingCopy[] workingCopies,
 	IProgressMonitor monitor)
@@ -721,11 +718,9 @@ public ITypeHierarchy newSupertypeHierarchy(
 	}
 	return newSupertypeHierarchy(copies, monitor);
 }
-*/
 /**
  * @see IType#newSupertypeHierarchy(WorkingCopyOwner, IProgressMonitor)
  */
-/* TODO JDT type hierarchy
 public ITypeHierarchy newSupertypeHierarchy(
 	WorkingCopyOwner owner,
 	IProgressMonitor monitor)
@@ -736,19 +731,15 @@ public ITypeHierarchy newSupertypeHierarchy(
 	op.runOperation(monitor);
 	return op.getResult();
 }
-*/
 /**
  * @see IType
  */
-/* TODO JDT type hierarchy
 public ITypeHierarchy newTypeHierarchy(IJavaProject project, IProgressMonitor monitor) throws JavaModelException {
 	return newTypeHierarchy(project, DefaultWorkingCopyOwner.PRIMARY, monitor);
 }
-*/
 /**
  * @see IType#newTypeHierarchy(IJavaProject, WorkingCopyOwner, IProgressMonitor)
  */
-/* TODO JDT type hierarchy
 public ITypeHierarchy newTypeHierarchy(IJavaProject project, WorkingCopyOwner owner, IProgressMonitor monitor) throws JavaModelException {
 	if (project == null) {
 		throw new IllegalArgumentException(Messages.hierarchy_nullProject); 
@@ -777,21 +768,17 @@ public ITypeHierarchy newTypeHierarchy(IJavaProject project, WorkingCopyOwner ow
 	op.runOperation(monitor);
 	return op.getResult();
 }
-*/
 /**
  * @see IType
  */
-/* TODO JDT type hiearchy
 public ITypeHierarchy newTypeHierarchy(IProgressMonitor monitor) throws JavaModelException {
 	CreateTypeHierarchyOperation op= new CreateTypeHierarchyOperation(this, null, SearchEngine.createWorkspaceScope(), true);
 	op.runOperation(monitor);
 	return op.getResult();
 }
-*/
 /*
  * @see IType#newTypeHierarchy(ICompilationUnit[], IProgressMonitor)
  */
-/* TODO JDT type hierarchy
 public ITypeHierarchy newTypeHierarchy(
 	ICompilationUnit[] workingCopies,
 	IProgressMonitor monitor)
@@ -801,12 +788,10 @@ public ITypeHierarchy newTypeHierarchy(
 	op.runOperation(monitor);
 	return op.getResult();
 }
-*/
 /**
  * @see IType#newTypeHierarchy(IWorkingCopy[], IProgressMonitor)
  * @deprecated
  */
-/* TODO JDT type hiearchy
 public ITypeHierarchy newTypeHierarchy(
 	IWorkingCopy[] workingCopies,
 	IProgressMonitor monitor)
@@ -821,11 +806,9 @@ public ITypeHierarchy newTypeHierarchy(
 	}
 	return newTypeHierarchy(copies, monitor);
 }
-*/
 /**
  * @see IType#newTypeHierarchy(WorkingCopyOwner, IProgressMonitor)
  */
-/* TODO JDT type hiearchy
 public ITypeHierarchy newTypeHierarchy(
 	WorkingCopyOwner owner,
 	IProgressMonitor monitor)
@@ -836,12 +819,13 @@ public ITypeHierarchy newTypeHierarchy(
 	op.runOperation(monitor);
 	return op.getResult();	
 }
-*()
+/*
 public JavaElement resolved(Binding binding) {
 	SourceRefElement resolvedHandle = new ResolvedSourceType(this.parent, this.name, new String(binding.computeUniqueKey()));
 	resolvedHandle.occurrenceCount = this.occurrenceCount;
 	return resolvedHandle;
 }
+*/
 /**
  * @see IType#resolveType(String)
  */

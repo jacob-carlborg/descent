@@ -70,7 +70,9 @@ import descent.core.IJavaModelStatusConstants;
 import descent.core.IJavaProject;
 import descent.core.IPackageFragment;
 import descent.core.IPackageFragmentRoot;
+import descent.core.IRegion;
 import descent.core.IType;
+import descent.core.ITypeHierarchy;
 import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
@@ -2588,7 +2590,6 @@ public class JavaProject
 	/**
 	 * @see IJavaProject
 	 */
-	/* TODO JDT type hierarchy
 	public ITypeHierarchy newTypeHierarchy(
 		IRegion region,
 		IProgressMonitor monitor)
@@ -2596,12 +2597,10 @@ public class JavaProject
 			
 		return newTypeHierarchy(region, DefaultWorkingCopyOwner.PRIMARY, monitor);
 	}
-	*/
 
 	/**
 	 * @see IJavaProject
 	 */
-	/* TODO JDT type hierarchy
 	public ITypeHierarchy newTypeHierarchy(
 		IRegion region,
 		WorkingCopyOwner owner,
@@ -2617,12 +2616,10 @@ public class JavaProject
 		op.runOperation(monitor);
 		return op.getResult();
 	}
-	*/
 
 	/**
 	 * @see IJavaProject
 	 */
-	/* TODO JDT type hierarchy
 	public ITypeHierarchy newTypeHierarchy(
 		IType type,
 		IRegion region,
@@ -2631,12 +2628,10 @@ public class JavaProject
 			
 		return newTypeHierarchy(type, region, DefaultWorkingCopyOwner.PRIMARY, monitor);
 	}
-	*/
 
 	/**
 	 * @see IJavaProject
 	 */
-	/* TODO JDT type hierarchy
 	public ITypeHierarchy newTypeHierarchy(
 		IType type,
 		IRegion region,
@@ -2656,7 +2651,6 @@ public class JavaProject
 		op.runOperation(monitor);
 		return op.getResult();
 	}
-	*/
 
 	public String[] projectPrerequisites(IClasspathEntry[] entries)
 		throws JavaModelException {

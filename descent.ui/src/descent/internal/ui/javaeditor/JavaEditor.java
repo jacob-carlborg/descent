@@ -2476,7 +2476,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 			jsg= new JavaSearchActionGroup(this)
 			*/
 		});
-		fContextMenuGroup= new CompositeActionGroup(new ActionGroup[] {oeg, /* TODO JDT UI ovg, jsg */ });
+		fContextMenuGroup= new CompositeActionGroup(new ActionGroup[] {oeg, ovg, /* jsg */ });
 
 		fFoldingGroup= new FoldingActionGroup(this, getViewer());
 

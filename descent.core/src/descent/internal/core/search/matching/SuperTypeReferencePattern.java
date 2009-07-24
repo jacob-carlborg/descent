@@ -234,9 +234,10 @@ public boolean matchesDecodedKey(SearchPattern decodedPattern) {
 	SuperTypeReferencePattern pattern = (SuperTypeReferencePattern) decodedPattern;
 	if (this.superRefKind == ONLY_SUPER_CLASSES && pattern.enclosingTypeName != IIndexConstants.ONE_ZERO/*not an anonymous*/) 
 		// consider enumerations as classes, reject interfaces and annotations
-		if (pattern.superClassOrInterface == IIndexConstants.INTERFACE_SUFFIX 
-			|| pattern.superClassOrInterface == IIndexConstants.ANNOTATION_TYPE_SUFFIX) 
-			return false;
+		// TODO Type Hierarchy is ok to comment this?
+//		if (pattern.superClassOrInterface == IIndexConstants.INTERFACE_SUFFIX 
+//			|| pattern.superClassOrInterface == IIndexConstants.ANNOTATION_TYPE_SUFFIX) 
+//			return false;
 
 	if (pattern.superQualification != null)
 		if (!matchesName(this.superQualification, pattern.superQualification)) return false;

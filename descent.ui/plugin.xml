@@ -938,6 +938,7 @@
 				optional="false"
 				typeId="descent.ui.commands.javaElementReference"/>
 		</command>		
+		-->
 		<command
 			categoryId="org.eclipse.ui.category.navigate"
 			defaultHandler="descent.internal.ui.commands.ShowElementInTypeHierarchyViewHandler"
@@ -950,7 +951,6 @@
 				optional="false"
 				typeId="descent.ui.commands.javaElementReference"/>
 		</command>
-		-->
 	</extension>
 	
 	<extension
@@ -3209,6 +3209,7 @@
             class="descent.internal.ui.packageview.PackageExplorerPart"
             id="descent.ui.PackageExplorer">
       </view>
+      -->
       <view
             name="%hierarchyViewName"
             icon="$nl$/icons/full/eview16/class_hi.gif"
@@ -3216,7 +3217,6 @@
             class="descent.internal.ui.typehierarchy.TypeHierarchyViewPart"
             id="descent.ui.TypeHierarchy">
       </view>
-      -->
       <view
             name="%JavaSourceView"
             icon="$nl$/icons/full/eview16/source.gif"
@@ -3246,7 +3246,6 @@
             description="%JavaActionSet.description"
             visible="false"
             id="descent.ui.JavaActionSet">
-         <!--
          <action
                definitionId="descent.ui.navigate.open.type.in.hierarchy"
                label="%OpenTypeInHierarchyAction.label"
@@ -3256,7 +3255,6 @@
                menubarPath="navigate/open.ext2"
                id="openTypeInHierarchy">
          </action>
-         -->
          <action
                id="openType"
                toolbarPath="org.eclipse.search.searchActionSet/Search"

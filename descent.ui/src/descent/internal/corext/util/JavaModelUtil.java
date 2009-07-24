@@ -55,6 +55,7 @@ import descent.core.IPackageFragmentRoot;
 import descent.core.IParent;
 import descent.core.ISourceReference;
 import descent.core.IType;
+import descent.core.ITypeHierarchy;
 import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.core.Signature;
@@ -630,7 +631,6 @@ public final class JavaModelUtil {
 		return false;		
 	}
 
-	/* TODO JDT UI type hiearchy
 	public static IType[] getAllSuperTypes(IType type, IProgressMonitor pm) throws JavaModelException {
 		// workaround for 23656
 		IType[] superTypes= SuperTypeHierarchyCache.getTypeHierarchy(type).getAllSupertypes(type);
@@ -663,7 +663,6 @@ public final class JavaModelUtil {
 		}
 		return false;
 	}
-	*/
 	
 	public static boolean isExcludedPath(IPath resourcePath, IPath[] exclusionPatterns) {
 		char[] path = resourcePath.toString().toCharArray();

@@ -145,7 +145,7 @@ IType[] getAllTypes();
  * @see Flags
  * @since 2.0
  */
-int getCachedFlags(IType type);
+long getCachedFlags(IType type);
 
 /**
  * Returns all interfaces resolved to extend the given interface,

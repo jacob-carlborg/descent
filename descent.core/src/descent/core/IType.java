@@ -11,6 +11,8 @@
  *******************************************************************************/
 package descent.core;
 
+import java.io.InputStream;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 
 /**
@@ -804,9 +806,7 @@ public interface IType extends IMember, ITemplated {
 	 * @see ITypeHierarchy#store(java.io.OutputStream, IProgressMonitor)
 	 * @since 2.1
 	 */
-	/* TODO JDT type hierarchy
 	ITypeHierarchy loadTypeHierachy(InputStream input, IProgressMonitor monitor) throws JavaModelException;
-	*/
 	/**
 	 * Creates and returns a type hierarchy for this type containing
 	 * this type and all of its supertypes.
@@ -816,9 +816,7 @@ public interface IType extends IMember, ITemplated {
 	 *		exception occurs while accessing its corresponding resource.
 	 * @return a type hierarchy for this type containing this type and all of its supertypes
 	 */
-	/* TODO JDT type hierarchy
 	ITypeHierarchy newSupertypeHierarchy(IProgressMonitor monitor) throws JavaModelException;
-	*/
 	
 	/**
 	 * Creates and returns a type hierarchy for this type containing
@@ -837,10 +835,8 @@ public interface IType extends IMember, ITemplated {
 	 *		exception occurs while accessing its corresponding resource.
 	 * @since 3.0
 	 */
-	/* TODO JDT type hierarchy
 	ITypeHierarchy newSupertypeHierarchy(ICompilationUnit[] workingCopies, IProgressMonitor monitor)
 		throws JavaModelException;
-	*/
 		
 	/**
 	 * Creates and returns a type hierarchy for this type containing
@@ -860,10 +856,8 @@ public interface IType extends IMember, ITemplated {
 	 * @since 2.0
 	 * @deprecated use #newSupertypeHierarchy(ICompilationUnit[], IProgressMonitor) instead
 	 */
-	/* TODO JDT type hierarchy
 	ITypeHierarchy newSupertypeHierarchy(IWorkingCopy[] workingCopies, IProgressMonitor monitor)
 		throws JavaModelException;
-	*/
 		
 	/**
 	 * Creates and returns a type hierarchy for this type containing
@@ -883,10 +877,8 @@ public interface IType extends IMember, ITemplated {
 	 *		exception occurs while accessing its corresponding resource.
 	 * @since 3.0
 	 */
-	/* TODO JDT type hierarchy
 	ITypeHierarchy newSupertypeHierarchy(WorkingCopyOwner owner, IProgressMonitor monitor)
 		throws JavaModelException;
-	*/
 
 	/**
 	 * Creates and returns a type hierarchy for this type containing
@@ -901,9 +893,7 @@ public interface IType extends IMember, ITemplated {
 	 * this type, all of its supertypes, and all its subtypes 
 	 * in the context of the given project
 	 */
-	/* TODO JDT type hierarchy
 	ITypeHierarchy newTypeHierarchy(IJavaProject project, IProgressMonitor monitor) throws JavaModelException;
-	*/
 	
 	/**
 	 * Creates and returns a type hierarchy for this type containing
@@ -927,9 +917,7 @@ public interface IType extends IMember, ITemplated {
 	 * in the context of the given project
 	 * @since 3.0
 	 */
-	/* TODO JDT type hierarchy
 	ITypeHierarchy newTypeHierarchy(IJavaProject project, WorkingCopyOwner owner, IProgressMonitor monitor) throws JavaModelException;
-	*/
 
 	/**
 	 * Creates and returns a type hierarchy for this type containing
@@ -941,9 +929,7 @@ public interface IType extends IMember, ITemplated {
 	 * @return a type hierarchy for this type containing
 	 * this type, all of its supertypes, and all its subtypes in the workspace
 	 */
-	/* TODO JDT type hierarchy
 	ITypeHierarchy newTypeHierarchy(IProgressMonitor monitor) throws JavaModelException;
-	*/
 	
 	/**
 	 * Creates and returns a type hierarchy for this type containing
@@ -962,9 +948,7 @@ public interface IType extends IMember, ITemplated {
 	 *		exception occurs while accessing its corresponding resource.
 	 * @since 3.0
 	 */
-	/* TODO JDT type hierarchy
 	ITypeHierarchy newTypeHierarchy(ICompilationUnit[] workingCopies, IProgressMonitor monitor) throws JavaModelException;
-	*/
 	
 	/**
 	 * Creates and returns a type hierarchy for this type containing
@@ -984,9 +968,7 @@ public interface IType extends IMember, ITemplated {
 	 * @since 2.0
 	 * @deprecated use #newTypeHierarchy(ICompilationUnit[], IProgressMonitor) instead
 	 */
-	/* TODO JDT type hierarchy
 	ITypeHierarchy newTypeHierarchy(IWorkingCopy[] workingCopies, IProgressMonitor monitor) throws JavaModelException;
-	*/
 	
 	/**
 	 * Creates and returns a type hierarchy for this type containing
@@ -1007,9 +989,7 @@ public interface IType extends IMember, ITemplated {
 	 *		exception occurs while accessing its corresponding resource.
 	 * @since 3.0
 	 */
-	/* TODO JDT type hierarchy
 	ITypeHierarchy newTypeHierarchy(WorkingCopyOwner owner, IProgressMonitor monitor) throws JavaModelException;
-	*/
 	
 	/**
 	 * Resolves the given type name within the context of this type (depending on the type hierarchy 

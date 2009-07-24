@@ -90,6 +90,8 @@ import descent.internal.ui.text.java.hover.JavaInformationProvider;
 import descent.internal.ui.text.javadoc.JavaDocAutoIndentStrategy;
 import descent.internal.ui.text.javadoc.JavaDocScanner;
 import descent.internal.ui.text.javadoc.JavadocCompletionProcessor;
+import descent.internal.ui.typehierarchy.HierarchyInformationControl;
+import descent.ui.JavaUI;
 import descent.ui.PreferenceConstants;
 import descent.ui.actions.IJavaEditorActionDefinitionIds;
 
@@ -769,7 +771,6 @@ public class JavaSourceViewerConfiguration extends TextSourceViewerConfiguration
 		};
 	}
 
-	/* TODO JDT UI type hierarchy
 	private IInformationControlCreator getHierarchyPresenterControlCreator(ISourceViewer sourceViewer) {
 		return new IInformationControlCreator() {
 			public IInformationControl createInformationControl(Shell parent) {
@@ -779,7 +780,6 @@ public class JavaSourceViewerConfiguration extends TextSourceViewerConfiguration
 			}
 		};
 	}
-	*/
 
 	/*
 	 * @see SourceViewerConfiguration#getInformationPresenter(ISourceViewer)
@@ -855,7 +855,6 @@ public class JavaSourceViewerConfiguration extends TextSourceViewerConfiguration
 	 * @return an information presenter
 	 * @since 3.0
 	 */
-	/* TODO JDT UI type hierarchy
 	public IInformationPresenter getHierarchyPresenter(ISourceViewer sourceViewer, boolean doCodeResolve) {
 		
 		// Do not create hierarchy presenter if there's no CU.
@@ -875,7 +874,6 @@ public class JavaSourceViewerConfiguration extends TextSourceViewerConfiguration
 		presenter.setSizeConstraints(50, 20, true, false);
 		return presenter;
 	}
-	*/
 
 	/**
 	 * Determines whether the preference change encoded by the given event

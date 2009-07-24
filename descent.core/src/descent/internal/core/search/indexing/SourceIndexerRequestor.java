@@ -13,6 +13,7 @@ package descent.internal.core.search.indexing;
 import java.util.Stack;
 
 import descent.core.Flags;
+import descent.core.Signature;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.ISourceElementRequestor;
@@ -356,33 +357,34 @@ public void exitType(int declarationEnd) {
  * Returns the unqualified name without parameters from the given type name.
  */
 private char[] getSimpleName(char[] typeName) {
-	int lastDot = -1, lastGenericStart = -1;
-	int depthCount = 0;
-	int length = typeName.length;
-	lastDotLookup: for (int i = length -1; i >= 0; i--) {
-		switch (typeName[i]) {
-			case '.':
-				if (depthCount == 0) {
-					lastDot = i;
-					break lastDotLookup;
-				}
-				break;
-			case '<':
-				depthCount--;
-				if (depthCount == 0) lastGenericStart = i;
-				break;
-			case '>':
-				depthCount++;
-				break;
-		}
-	}
-	if (lastGenericStart < 0) {
-		if (lastDot < 0) {
-			return typeName;
-		}
-		return  CharOperation.subarray(typeName, lastDot + 1, length);
-	}
-	return  CharOperation.subarray(typeName, lastDot + 1, lastGenericStart);
+	return Signature.toCharArray(typeName, false);
+//	int lastDot = -1, lastGenericStart = -1;
+//	int depthCount = 0;
+//	int length = typeName.length;
+//	lastDotLookup: for (int i = length -1; i >= 0; i--) {
+//		switch (typeName[i]) {
+//			case '.':
+//				if (depthCount == 0) {
+//					lastDot = i;
+//					break lastDotLookup;
+//				}
+//				break;
+//			case '<':
+//				depthCount--;
+//				if (depthCount == 0) lastGenericStart = i;
+//				break;
+//			case '>':
+//				depthCount++;
+//				break;
+//		}
+//	}
+//	if (lastGenericStart < 0) {
+//		if (lastDot < 0) {
+//			return typeName;
+//		}
+//		return  CharOperation.subarray(typeName, lastDot + 1, length);
+//	}
+//	return  CharOperation.subarray(typeName, lastDot + 1, lastGenericStart);
 }
 public void popTypeName() {
 	if (depth > 0) {

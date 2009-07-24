@@ -56,6 +56,7 @@ import descent.core.dom.QualifiedType;
 import descent.core.dom.SimpleType;
 import descent.core.dom.Type;
 import descent.internal.compiler.util.SuffixConstants;
+import descent.internal.core.JavaElement;
 import descent.internal.core.PackageFragmentRoot;
 
 /**
@@ -2070,6 +2071,98 @@ public class Util {
 			return AST.D0;
 		} else {
 			return AST.D2;
+		}
+	}
+	
+	/**
+	 * Sorts an array of Comparable objects, returning a new array
+	 * with the sorted items.  The original array is left untouched.
+	 */
+	public static Comparable[] sortCopy(Comparable[] objects) {
+		int len = objects.length;
+		Comparable[] copy = new Comparable[len];
+		System.arraycopy(objects, 0, copy, 0, len);
+		sort(copy);
+		return copy;
+	}
+
+	/**
+	 * Sorts an array of Java elements based on their toStringWithAncestors(), 
+	 * returning a new array with the sorted items. 
+	 * The original array is left untouched.
+	 */
+	public static IJavaElement[] sortCopy(IJavaElement[] elements) {
+		int len = elements.length;
+		IJavaElement[] copy = new IJavaElement[len];
+		System.arraycopy(elements, 0, copy, 0, len);
+		sort(copy, new Comparer() {
+			public int compare(Object a, Object b) {
+				return ((JavaElement) a).toStringWithAncestors().compareTo(((JavaElement) b).toStringWithAncestors());
+			}
+		});
+		return copy;
+	}
+	
+	/**
+	 * Sorts an array of Strings, returning a new array
+	 * with the sorted items.  The original array is left untouched.
+	 */
+	public static Object[] sortCopy(Object[] objects, Comparer comparer) {
+		int len = objects.length;
+		Object[] copy = new Object[len];
+		System.arraycopy(objects, 0, copy, 0, len);
+		sort(copy, comparer);
+		return copy;
+	}
+
+	/**
+	 * Sorts an array of Strings, returning a new array
+	 * with the sorted items.  The original array is left untouched.
+	 */
+	public static String[] sortCopy(String[] objects) {
+		int len = objects.length;
+		String[] copy = new String[len];
+		System.arraycopy(objects, 0, copy, 0, len);
+		sort(copy);
+		return copy;
+	}
+	
+	/**
+	 * Sorts an array of strings in place using quicksort
+	 * in reverse alphabetical order.
+	 */
+	public static void sortReverseOrder(String[] strings) {
+		if (strings.length > 1)
+			quickSortReverse(strings, 0, strings.length - 1);
+	}
+	
+	/**
+	 * Sort the strings in the given collection in reverse alphabetical order.
+	 */
+	private static void quickSortReverse(String[] sortedCollection, int left, int right) {
+		int original_left = left;
+		int original_right = right;
+		String mid = sortedCollection[ (left + right) / 2];
+		do {
+			while (sortedCollection[left].compareTo(mid) > 0) {
+				left++;
+			}
+			while (mid.compareTo(sortedCollection[right]) > 0) {
+				right--;
+			}
+			if (left <= right) {
+				String tmp = sortedCollection[left];
+				sortedCollection[left] = sortedCollection[right];
+				sortedCollection[right] = tmp;
+				left++;
+				right--;
+			}
+		} while (left <= right);
+		if (original_left < right) {
+			quickSortReverse(sortedCollection, original_left, right);
+		}
+		if (left < original_right) {
+			quickSortReverse(sortedCollection, left, original_right);
 		}
 	}
 	

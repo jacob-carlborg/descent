@@ -10,10 +10,14 @@
  *******************************************************************************/
 package descent.internal.ui.text;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
@@ -45,13 +49,18 @@ import descent.core.IClassFile;
 import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
 import descent.core.IMember;
+import descent.core.IMethod;
 import descent.core.IType;
+import descent.core.ITypeHierarchy;
 import descent.core.JavaModelException;
 import descent.internal.corext.util.Messages;
+import descent.internal.corext.util.MethodOverrideTester;
+import descent.internal.corext.util.SuperTypeHierarchyCache;
 import descent.internal.ui.IJavaHelpContextIds;
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.JavaPluginImages;
 import descent.internal.ui.JavaUIMessages;
+import descent.internal.ui.typehierarchy.AbstractHierarchyViewerSorter;
 import descent.internal.ui.util.StringMatcher;
 import descent.internal.ui.viewsupport.AppearanceAwareLabelProvider;
 import descent.internal.ui.viewsupport.MemberFilter;
@@ -154,7 +163,6 @@ public class JavaOutlineInformationControl extends AbstractInformationControl {
 			if (kind != IJavaElement.METHOD) {
 				return declaringType;
 			}
-			/* TODO JDT UI type hierarchy
 			ITypeHierarchy hierarchy= getSuperTypeHierarchy(declaringType);
 			if (hierarchy == null) {
 				return declaringType;
@@ -166,8 +174,6 @@ public class JavaOutlineInformationControl extends AbstractInformationControl {
 				return declaringType;
 			}
 			return res.getDeclaringType();
-			*/
-			return null;
 		}
 	}
 
@@ -279,7 +285,6 @@ public class JavaOutlineInformationControl extends AbstractInformationControl {
 					return NO_CHILDREN;
 			}
 
-			/* TODO JDT UI type hierarchy
 			if (fShowInheritedMembers && element instanceof IType) {
 				IType type= (IType)element;
 				if (type.getDeclaringType() == null) {
@@ -294,7 +299,6 @@ public class JavaOutlineInformationControl extends AbstractInformationControl {
 					}
 				}
 			}
-			*/
 			return super.getChildren(element);
 		}
 
@@ -373,7 +377,6 @@ public class JavaOutlineInformationControl extends AbstractInformationControl {
 		}
 	}
 
-	/* TODO JDT UI type hierarchy
 	private class OutlineSorter extends AbstractHierarchyViewerSorter {
 
 		protected ITypeHierarchy getHierarchy(IType type) {
@@ -388,7 +391,6 @@ public class JavaOutlineInformationControl extends AbstractInformationControl {
 			return fLexicalSortingAction.isChecked();
 		}
 	}
-	*/
 
 
 	private class LexicalSortingAction extends Action {
@@ -701,7 +703,6 @@ public class JavaOutlineInformationControl extends AbstractInformationControl {
 			if (!(p instanceof IType))
 				return new IJavaElement[] {fInput};
 			
-			/* TODO JDT UI type hierarchy
 			ITypeHierarchy hierarchy= getSuperTypeHierarchy((IType)p);
 			if (hierarchy == null)
 				return new IJavaElement[] {fInput};
@@ -711,14 +712,11 @@ public class JavaOutlineInformationControl extends AbstractInformationControl {
 			result[0]= fInput;
 			System.arraycopy(supertypes, 0, result, 1, supertypes.length);
 			return result;
-			*/
-			return null;
 		} else {
 			return new IJavaElement[] {fInput};
 		}
 	}
 	
-	/* TODO JDT UI type hierarchy
 	private ITypeHierarchy getSuperTypeHierarchy(IType type) {
 		ITypeHierarchy th= (ITypeHierarchy)fTypeHierarchies.get(type);
 		if (th == null) {
@@ -733,7 +731,6 @@ public class JavaOutlineInformationControl extends AbstractInformationControl {
 		}
 		return th;
 	}
-	*/
 
 	private IProgressMonitor getProgressMonitor() {
 		IWorkbenchPage wbPage= JavaPlugin.getActivePage();
