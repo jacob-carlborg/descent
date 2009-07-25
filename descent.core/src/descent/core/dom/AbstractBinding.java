@@ -66,7 +66,7 @@ public abstract class AbstractBinding implements IBinding {
 		if (sd.symtab != null) {
 			for(Object value : sd.symtab.values()) {
 				if (value instanceof VarDeclaration || value instanceof EnumMember) {
-					IBinding binding = bindingResolver.resolveDsymbol((Dsymbol) value);
+					IBinding binding = bindingResolver.resolveDsymbol((Dsymbol) value, null);
 					if (binding instanceof IVariableBinding) {
 						vars.add((IVariableBinding) binding);
 					}
@@ -105,7 +105,7 @@ public abstract class AbstractBinding implements IBinding {
 					continue;
 				}
 				
-				IBinding binding = bindingResolver.resolveDsymbol(toResolve);
+				IBinding binding = bindingResolver.resolveDsymbol(toResolve, null);
 				if (binding != null && binding instanceof IMethodBinding) {
 					methods.add((IMethodBinding) binding);
 				}
@@ -153,7 +153,7 @@ public abstract class AbstractBinding implements IBinding {
 					continue;
 				}
 				
-				IBinding binding = bindingResolver .resolveDsymbol(toResolve);
+				IBinding binding = bindingResolver .resolveDsymbol(toResolve, null);
 				if (binding instanceof ITypeBinding) {
 					types.add((ITypeBinding) binding);
 				}

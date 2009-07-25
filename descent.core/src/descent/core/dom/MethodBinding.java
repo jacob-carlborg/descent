@@ -13,13 +13,16 @@ public class MethodBinding extends JavaElementBasedBinding implements IMethodBin
 		this.signature = signature;		
 	}
 
-	public IBinding getDeclaringSymbol() {
-		return bindingResolver.resolveDsymbol(node.parent);
+	public ITypeBinding getDeclaringSymbol() {
+		IBinding binding = bindingResolver.resolveDsymbol(node.parent, null);
+		if (!(binding instanceof ITypeBinding)) {
+			return null;
+		}
+		return (ITypeBinding) binding;
 	}
 
 	public IMethodBinding getMethodDeclaration() {
-		// TODO Auto-generated method stub
-		return null;
+		return this;
 	}
 
 	public ITypeBinding[] getParameterTypes() {
@@ -31,7 +34,7 @@ public class MethodBinding extends JavaElementBasedBinding implements IMethodBin
 		}
 		ITypeBinding[] params = new ITypeBinding[typeFunction.parameters.size()];
 		for (int i = 0; i < params.length; i++) {
-			params[i] = bindingResolver.resolveType(typeFunction.parameters.get(i).type);
+			params[i] = bindingResolver.resolveType(typeFunction.parameters.get(i).type, null);
 		}
 		return params;
 	}
@@ -43,7 +46,7 @@ public class MethodBinding extends JavaElementBasedBinding implements IMethodBin
 			System.out.println(123456);
 			return null;
 		}
-		return bindingResolver.resolveType(typeFunction.next);
+		return bindingResolver.resolveType(typeFunction.next, null);
 	}
 
 	public ITypeBinding[] getTypeArguments() {

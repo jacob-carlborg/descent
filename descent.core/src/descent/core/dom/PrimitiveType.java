@@ -250,7 +250,11 @@ public class PrimitiveType extends Type {
 	 * @return the primitive type code, or <code>null</code> if none
 	 */
 	public static PrimitiveType.Code toCode(String token) {
-		return (PrimitiveType.Code) Code.valueOf(token);
+		try {
+			return (PrimitiveType.Code) Code.valueOf(token.toUpperCase());
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	/* (omit javadoc for this method)

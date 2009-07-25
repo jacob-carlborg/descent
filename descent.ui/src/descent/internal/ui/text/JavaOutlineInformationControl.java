@@ -65,6 +65,7 @@ import descent.internal.ui.util.StringMatcher;
 import descent.internal.ui.viewsupport.AppearanceAwareLabelProvider;
 import descent.internal.ui.viewsupport.MemberFilter;
 import descent.ui.JavaElementLabels;
+import descent.ui.OverrideIndicatorLabelDecorator;
 import descent.ui.ProblemsLabelDecorator;
 import descent.ui.StandardJavaElementContentProvider;
 
@@ -544,10 +545,8 @@ public class JavaOutlineInformationControl extends AbstractInformationControl {
 		fInnerLabelProvider.addLabelDecorator(new ProblemsLabelDecorator(null));
 		IDecoratorManager decoratorMgr= PlatformUI.getWorkbench().getDecoratorManager();
 		
-		/* TODO JDT UI override indicator
 		if (decoratorMgr.getEnabled("descent.ui.override.decorator")) //$NON-NLS-1$
 			fInnerLabelProvider.addLabelDecorator(new OverrideIndicatorLabelDecorator(null));
-		*/
 
 		treeViewer.setLabelProvider(fInnerLabelProvider);
 

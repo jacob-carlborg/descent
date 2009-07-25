@@ -1478,6 +1478,11 @@ public static String[] getParameterTypes(String methodSignature) throws IllegalA
 			}
 			private void replace(String sig) {
 				if (functionCount == 1 && templateInstanceCount == 0 && !foundArgumentBreak) {
+					if (parameters.isEmpty()) {
+						// TODO hack
+						parameters.add(sig);
+						return;
+					}
 					parameters.set(parameters.size() - 1, sig);
 				}
 			}

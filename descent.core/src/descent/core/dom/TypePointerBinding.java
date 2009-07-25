@@ -55,7 +55,7 @@ public class TypePointerBinding extends PrimitiveTypeBinding implements ITypeBin
 	}
 
 	public ITypeBinding getComponentType() {
-		return bindingResolver.resolveType(type.next);
+		return bindingResolver.resolveType(type.next, null);
 	}
 
 	public int getDimension() {

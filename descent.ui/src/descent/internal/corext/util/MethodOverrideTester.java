@@ -411,7 +411,6 @@ public class MethodOverrideTester {
 	}
 	
 	private String getTypeParameterErasure(ITypeParameter typeParameter, IType context) throws JavaModelException {
-		// TODO JDT Type Hierarchy NOW
 //		String[] bounds= typeParameter.getBounds();
 //		if (bounds.length > 0) {
 //			return getSubstitutedTypeName(Signature.createTypeSignature(bounds[0], false), context);

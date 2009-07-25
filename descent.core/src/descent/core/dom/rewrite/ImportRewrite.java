@@ -23,17 +23,24 @@ import org.eclipse.text.edits.TextEdit;
 
 import descent.core.ICompilationUnit;
 import descent.core.IImportDeclaration;
+import descent.core.IJavaElement;
 import descent.core.JavaModelException;
 import descent.core.dom.AST;
 import descent.core.dom.ASTParser;
+import descent.core.dom.Argument;
+import descent.core.dom.AssociativeArrayType;
 import descent.core.dom.CompilationUnit;
+import descent.core.dom.DelegateType;
+import descent.core.dom.DynamicArrayType;
 import descent.core.dom.IBinding;
 import descent.core.dom.IMethodBinding;
 import descent.core.dom.ITypeBinding;
 import descent.core.dom.IVariableBinding;
 import descent.core.dom.Import;
 import descent.core.dom.Modifier;
+import descent.core.dom.PointerType;
 import descent.core.dom.PrimitiveType;
+import descent.core.dom.StaticArrayType;
 import descent.core.dom.Type;
 import descent.internal.core.dom.rewrite.ImportRewriteAnalyzer;
 import descent.internal.core.util.Messages;
@@ -677,52 +684,59 @@ public final class ImportRewrite {
 			return ast.newSimpleType(ast.newSimpleName("invalid")); //$NON-NLS-1$
 		}
 		
-		// TODO JDT import rewrite
-//		if (normalizedBinding.isTypeVariable()) {
-//			// no import
-//			return ast.newSimpleType(ast.newSimpleName(binding.getName()));
-//		}
+		if (normalizedBinding.isPointer() && !(normalizedBinding.getComponentType().isFunction())) {
+			PointerType type = ast.newPointerType();
+			type.setComponentType(addImport(normalizedBinding.getComponentType(), ast, context));
+			return type;
+		}
 		
-		/*
-		if (normalizedBinding.isWildcardType()) {
-			WildcardType wcType= ast.newWildcardType();
-			ITypeBinding bound= normalizedBinding.getBound();
-			if (bound != null && !bound.isWildcardType() && !bound.isCapture()) { // bug 96942
-				Type boundType= addImport(bound, ast, context);
-				wcType.setBound(boundType, normalizedBinding.isUpperbound());
+		if (normalizedBinding.isStaticArray()) {
+			StaticArrayType type = ast.newStaticArrayType();
+			type.setComponentType(addImport(normalizedBinding.getComponentType(), ast, context));
+			return type;
+		}
+		
+		if (normalizedBinding.isDynamicArray()) {
+			DynamicArrayType type = ast.newDynamicArrayType();
+			type.setComponentType(addImport(normalizedBinding.getComponentType(), ast, context));
+			return type;
+		}
+		
+		if (normalizedBinding.isAssociativeArray()) {
+			AssociativeArrayType type = ast.newAssociativeArrayType();
+			type.setKeyType(addImport(normalizedBinding.getKeyType(), ast, context));
+			type.setComponentType(addImport(normalizedBinding.getValueType(), ast, context));
+			return type;
+		}
+		
+		if (normalizedBinding.isDelegate() || (normalizedBinding.isPointer() && normalizedBinding.getComponentType().isFunction())) {
+			if (normalizedBinding.isPointer()) {
+				normalizedBinding = normalizedBinding.getComponentType();
 			}
-			return wcType;
-		}
-		
-		if (normalizedBinding.isArray()) {
-			Type elementType= addImport(normalizedBinding.getElementType(), ast, context);
-			return ast.newArrayType(elementType, normalizedBinding.getDimensions());
-		}
-		
-		String qualifiedName= getRawQualifiedName(normalizedBinding);
-		if (qualifiedName.length() > 0) {
-			String res= internalAddImport(qualifiedName, context);
 			
-			ITypeBinding[] typeArguments= normalizedBinding.getTypeArguments();
-			if (typeArguments.length > 0) {
-				Type erasureType= ast.newSimpleType(ast.newName(res));
-				ParameterizedType paramType= ast.newParameterizedType(erasureType);
-				List arguments= paramType.typeArguments();
-				for (int i= 0; i < typeArguments.length; i++) {
-					ITypeBinding curr= typeArguments[i];
-					if (containsNestedCapture(curr, false)) { // see bug 103044
-						arguments.add(ast.newWildcardType());
-					} else {
-						arguments.add(addImport(curr, ast, context));
-					}
-				}
-				return paramType;
+			DelegateType type = ast.newDelegateType();
+			type.setFunctionPointer(normalizedBinding.isFunction());
+			type.setReturnType(addImport(normalizedBinding.getReturnType(), ast, context));
+			ITypeBinding[] parameterTypes = normalizedBinding.getParametersTypes();
+			for (int i = 0; i < parameterTypes.length; i++) {
+				Argument argument = ast.newArgument();
+				argument.setType(addImport(parameterTypes[i], ast, context));
 			}
-			return ast.newSimpleType(ast.newName(res));
+			return type;
 		}
-		*/
-		return null;
-		//return ast.newSimpleType(ast.newName(getRawName(normalizedBinding)));
+		
+		IJavaElement element = normalizedBinding.getJavaElement();
+		if (element != null) {
+			ICompilationUnit unit = (ICompilationUnit) element.getAncestor(IJavaElement.COMPILATION_UNIT);
+			if (unit == null) {
+				unit = (ICompilationUnit) element.getAncestor(IJavaElement.CLASS_FILE);
+			}
+			if (unit != null) {
+				internalAddImport(unit.getFullyQualifiedName(), context);
+			}
+		}
+		
+		return ast.newSimpleType(ast.newSimpleName(binding.getName()));
 	}
 
 	
@@ -889,6 +903,9 @@ public final class ImportRewrite {
 	}
 	
 	private String internalAddImport(String fullTypeName, ImportRewriteContext context) {
+		if ("object".equals(fullTypeName))
+			return "Object";
+		
 		int idx= fullTypeName.lastIndexOf('.');	
 		String typeContainerName, typeName;
 		if (idx != -1) {

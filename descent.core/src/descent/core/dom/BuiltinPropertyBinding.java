@@ -24,7 +24,7 @@ public class BuiltinPropertyBinding implements IVariableBinding {
 	}
 
 	public IBinding getDeclaringSymbol() {
-		return (IBinding) bindingResolver.resolveType(parentType);
+		return (IBinding) bindingResolver.resolveType(parentType, null);
 	}
 
 	public String getName() {
@@ -32,7 +32,7 @@ public class BuiltinPropertyBinding implements IVariableBinding {
 	}
 
 	public ITypeBinding getType() {
-		return bindingResolver.resolveType(type);
+		return bindingResolver.resolveType(type, null);
 	}
 
 	public IVariableBinding getVariableDeclaration() {

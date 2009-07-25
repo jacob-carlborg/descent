@@ -307,7 +307,7 @@
 	${line_selection}${cursor}
 }</template>
 
-<template name="opCmp" description="%Templates.opCmp" id="descent.ui.templates.opCmp" context="d" enabled="true" autoinsert="false">int opCmp(${Object} ${other}) {
+<template name="opCmp" description="%Templates.opCmp" id="descent.ui.templates.opCmp" context="d" enabled="true" autoinsert="false">override int opCmp(${Object} ${other}) {
 	${line_selection}${cursor}
 }</template>
 

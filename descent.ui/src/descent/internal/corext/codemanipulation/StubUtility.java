@@ -1,6 +1,7 @@
 package descent.internal.corext.codemanipulation;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -48,7 +49,6 @@ import descent.core.dom.CompilationUnit;
 import descent.core.dom.FunctionDeclaration;
 import descent.core.dom.IBinding;
 import descent.core.dom.IMethodBinding;
-import descent.core.dom.ITypeBinding;
 import descent.core.dom.TemplateParameter;
 import descent.core.dom.rewrite.ImportRewrite;
 import descent.internal.corext.dom.ASTNodes;
@@ -810,6 +810,43 @@ public class StubUtility {
 			}
 		}
 		return newNames;
+	}
+	
+	public static String[] suggestArgumentNames(IJavaProject project, IMethodBinding binding) {
+		int nParams= binding.getParameterTypes().length;
+
+		if (nParams > 0) {
+			try {
+				IMethod method= (IMethod) binding.getMethodDeclaration().getJavaElement();
+				if (method != null) {
+					String[] paramNames= method.getParameterNames();
+					if (paramNames.length == nParams) {
+						String[] namesArray= new String[0];
+						ArrayList newNames= new ArrayList(paramNames.length);
+						// Ensure that the code generation preferences are respected
+						for (int i= 0; i < paramNames.length; i++) {
+							String curr= paramNames[i];
+							String baseName= NamingConventions.removePrefixAndSuffixForArgumentName(project, curr);
+							if (!curr.equals(baseName)) {
+								// make the existing name the favourite
+								newNames.add(curr);
+							} else {
+								newNames.add(suggestArgumentName(project, curr, namesArray));
+							}
+							namesArray= (String[]) newNames.toArray(new String[newNames.size()]);
+						}
+						return namesArray;
+					}
+				}
+			} catch (JavaModelException e) {
+				// ignore
+			}
+		}
+		String[] names= new String[nParams];
+		for (int i= 0; i < names.length; i++) {
+			names[i]= "arg" + i; //$NON-NLS-1$
+		}
+		return names;
 	}
 	
 	/*

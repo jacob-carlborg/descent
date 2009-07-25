@@ -192,7 +192,7 @@ public abstract class NamedMember extends Member {
 		if (packageName.equals(IPackageFragment.DEFAULT_PACKAGE_NAME)) {
 			return initial + moduleName + '.' + getTypeQualifiedName(enclosingTypeSeparator, showParameters);
 		}
-		return initial + moduleName + '.' + packageName + '.' + getTypeQualifiedName(enclosingTypeSeparator, showParameters);
+		return initial + packageName + '.' + moduleName + '.' + getTypeQualifiedName(enclosingTypeSeparator, showParameters);
 	}
 
 	public String getTypeQualifiedName(char enclosingTypeSeparator, boolean showParameters) throws JavaModelException {

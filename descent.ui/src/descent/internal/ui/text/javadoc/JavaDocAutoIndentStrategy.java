@@ -13,7 +13,6 @@ package descent.internal.ui.text.javadoc;
 
 
 import org.eclipse.core.runtime.CoreException;
-
 import org.eclipse.jface.text.Assert;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DefaultIndentLineAutoEditStrategy;
@@ -23,7 +22,6 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITypedRegion;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.TextUtilities;
-
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -38,16 +36,15 @@ import descent.core.IMethod;
 import descent.core.ISourceRange;
 import descent.core.IType;
 import descent.core.JavaModelException;
-
 import descent.internal.corext.codemanipulation.StubUtility;
 import descent.internal.corext.util.JavaModelUtil;
+import descent.internal.corext.util.MethodOverrideTester;
 import descent.internal.corext.util.Strings;
-
+import descent.internal.corext.util.SuperTypeHierarchyCache;
+import descent.internal.ui.JavaPlugin;
 import descent.ui.CodeGeneration;
 import descent.ui.IWorkingCopyManager;
 import descent.ui.PreferenceConstants;
-
-import descent.internal.ui.JavaPlugin;
 
 
 /**
@@ -408,12 +405,9 @@ public class JavaDocAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy
 	 * @throws JavaModelException if accessing the java model fails
 	 */
 	private static IMethod getInheritedMethod(IMethod method) throws JavaModelException {
-		return null;
-		/* TODO JDT inheritance
 		IType declaringType= method.getDeclaringType();
 		MethodOverrideTester tester= SuperTypeHierarchyCache.getMethodOverrideTester(declaringType);
 		return tester.findOverriddenMethod(method, true);
-		*/
 	}
 
 	/**

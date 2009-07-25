@@ -22,7 +22,7 @@ public class TypeAArrayBinding extends PrimitiveTypeBinding implements ITypeBind
 	}
 	
 	public ITypeBinding getKeyType() {
-		return bindingResolver.resolveType(type.index);
+		return bindingResolver.resolveType(type.index, null);
 	}
 	
 	public String getName() {
@@ -39,7 +39,7 @@ public class TypeAArrayBinding extends PrimitiveTypeBinding implements ITypeBind
 	}
 
 	public ITypeBinding getValueType() {
-		return bindingResolver.resolveType(type.next);
+		return bindingResolver.resolveType(type.next, null);
 	}
 	
 	public boolean isAssignmentCompatible(ITypeBinding variableType) {

@@ -16,7 +16,12 @@
  *******************************************************************************/
 package descent.internal.corext.dom;
 
+import java.util.Map;
+
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.Document;
+import org.eclipse.text.edits.TextEdit;
 
 import descent.core.compiler.IProblem;
 import descent.core.dom.ASTNode;
@@ -26,6 +31,8 @@ import descent.core.dom.Name;
 import descent.core.dom.QualifiedName;
 import descent.core.dom.QualifiedType;
 import descent.core.dom.SimpleType;
+import descent.internal.corext.util.CodeFormatterUtil;
+import descent.internal.ui.JavaPlugin;
 
 // TODO JDT UI stub
 public class ASTNodes {
@@ -141,6 +148,21 @@ public class ASTNodes {
 			result= (Name)result.getParent();
 		}
 		return result;
+	}
+	
+	public static String asFormattedString(ASTNode node, int indent, String lineDelim, Map options) {
+		String unformatted= asString(node);
+		TextEdit edit= CodeFormatterUtil.format2(node, unformatted, indent, lineDelim, options);
+		if (edit != null) {
+			Document document= new Document(unformatted);
+			try {
+				edit.apply(document, TextEdit.NONE);
+			} catch (BadLocationException e) {
+				JavaPlugin.log(e);
+			}
+			return document.get();
+		}
+		return unformatted; // unknown node
 	}
 	
 }

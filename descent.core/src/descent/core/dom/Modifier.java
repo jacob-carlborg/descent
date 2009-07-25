@@ -743,6 +743,50 @@ public class Modifier extends ASTNode {
 	}
 	
 	/**
+	 * Returns whether the given flags includes the "invariant" modifier.
+	 * 
+	 * @param flags the modifier flags
+	 * @return <code>true</code> if the <code>INVARIANT</code> bit is
+	 *   set, and <code>false</code> otherwise
+	 */
+	public static boolean isInvariant(long flags) {
+		return (flags & INVARIANT) != 0;
+	}
+	
+	/**
+	 * Returns whether the given flags includes the "in" modifier.
+	 * 
+	 * @param flags the modifier flags
+	 * @return <code>true</code> if the <code>IN</code> bit is
+	 *   set, and <code>false</code> otherwise
+	 */
+	public static boolean isIn(long flags) {
+		return (flags & IN) != 0;
+	}
+	
+	/**
+	 * Returns whether the given flags includes the "out" modifier.
+	 * 
+	 * @param flags the modifier flags
+	 * @return <code>true</code> if the <code>OUT</code> bit is
+	 *   set, and <code>false</code> otherwise
+	 */
+	public static boolean isOut(long flags) {
+		return (flags & OUT) != 0;
+	}
+	
+	/**
+	 * Returns whether the given flags includes the "inout" modifier.
+	 * 
+	 * @param flags the modifier flags
+	 * @return <code>true</code> if the <code>INOUT</code> bit is
+	 *   set, and <code>false</code> otherwise
+	 */
+	public static boolean isInOut(long flags) {
+		return (flags & INOUT) != 0;
+	}
+	
+	/**
 	 * Returns whether the given flags includes the "enum" modifier.
 	 * 
 	 * @param flags the modifier flags
@@ -751,6 +795,94 @@ public class Modifier extends ASTNode {
 	 */
 	public static boolean isEnum(long flags) {
 		return (flags & ENUM) != 0;
+	}
+	
+	/**
+	 * Returns whether the given flags includes the "lazy" modifier.
+	 * 
+	 * @param flags the modifier flags
+	 * @return <code>true</code> if the <code>LAZY</code> bit is
+	 *   set, and <code>false</code> otherwise
+	 */
+	public static boolean isLazy(long flags) {
+		return (flags & LAZY) != 0;
+	}
+	
+	/**
+	 * Returns whether the given flags includes the "ref" modifier.
+	 * 
+	 * @param flags the modifier flags
+	 * @return <code>true</code> if the <code>REF</code> bit is
+	 *   set, and <code>false</code> otherwise
+	 */
+	public static boolean isRef(long flags) {
+		return (flags & REF) != 0;
+	}
+	
+	/**
+	 * Returns whether the given flags includes the "pure" modifier.
+	 * 
+	 * @param flags the modifier flags
+	 * @return <code>true</code> if the <code>PURE</code> bit is
+	 *   set, and <code>false</code> otherwise
+	 */
+	public static boolean isPure(long flags) {
+		return (flags & PURE) != 0;
+	}
+	
+	/**
+	 * Returns whether the given flags includes the "nothrow" modifier.
+	 * 
+	 * @param flags the modifier flags
+	 * @return <code>true</code> if the <code>NOTHROW</code> bit is
+	 *   set, and <code>false</code> otherwise
+	 */
+	public static boolean isNothrow(long flags) {
+		return (flags & NOTHROW) != 0;
+	}
+	
+	/**
+	 * Returns whether the given flags includes the "thread" modifier.
+	 * 
+	 * @param flags the modifier flags
+	 * @return <code>true</code> if the <code>THREAD</code> bit is
+	 *   set, and <code>false</code> otherwise
+	 */
+	public static boolean isThread(long flags) {
+		return (flags & THREAD) != 0;
+	}
+	
+	/**
+	 * Returns whether the given flags includes the "shared" modifier.
+	 * 
+	 * @param flags the modifier flags
+	 * @return <code>true</code> if the <code>SHARED</code> bit is
+	 *   set, and <code>false</code> otherwise
+	 */
+	public static boolean isShared(long flags) {
+		return (flags & SHARED) != 0;
+	}
+	
+	/**
+	 * Returns whether the given flags includes the "gshared" modifier.
+	 * 
+	 * @param flags the modifier flags
+	 * @return <code>true</code> if the <code>GSHARED</code> bit is
+	 *   set, and <code>false</code> otherwise
+	 */
+	public static boolean isGshared(long flags) {
+		return (flags & GSHARED) != 0;
+	}
+	
+	/**
+	 * Returns whether the given flags includes the "immutable" modifier.
+	 * 
+	 * @param flags the modifier flags
+	 * @return <code>true</code> if the <code>IMMUTABLE</code> bit is
+	 *   set, and <code>false</code> otherwise
+	 */
+	public static boolean isImmutable(long flags) {
+		return (flags & IMMUTABLE) != 0;
 	}
 
 }

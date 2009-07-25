@@ -100,6 +100,8 @@ public class ConditionalDeclaration extends AttribDeclaration {
 	
 	@Override
 	public String getSignature(int options) {
+		if (parent == null)
+			return null;
 		return parent.getSignature(options);
 	}
 

@@ -12,6 +12,7 @@ import org.eclipse.jface.text.ITextOperationTarget;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.IAnnotationAccessExtension;
+import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRulerInfo;
 
@@ -19,6 +20,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.texteditor.AbstractMarkerAnnotationModel;
 import org.eclipse.ui.texteditor.AnnotationPreference;
 import org.eclipse.ui.texteditor.AnnotationPreferenceLookup;
+import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.ITextEditorExtension;
 import org.eclipse.ui.texteditor.SelectMarkerRulerAction;
@@ -115,7 +117,8 @@ public class JavaSelectAnnotationRulerAction extends SelectMarkerRulerAction {
 		fAnnotation= null;
 		fHasCorrection= false;
 
-		AbstractMarkerAnnotationModel model= getAnnotationModel();
+		IDocumentProvider provider= fTextEditor.getDocumentProvider();
+		IAnnotationModel model= provider.getAnnotationModel(fTextEditor.getEditorInput());
 		IAnnotationAccessExtension annotationAccess= getAnnotationAccessExtension();
 
 		IDocument document= getDocument();

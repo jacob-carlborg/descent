@@ -35,13 +35,13 @@ public class TypeFunctionOrDelegateBinding extends PrimitiveTypeBinding implemen
 	public ITypeBinding[] getParametersTypes() {
 		ITypeBinding[] params = new ITypeBinding[type.parameters.size()];
 		for (int i = 0; i < params.length; i++) {
-			params[i] = bindingResolver.resolveType(type.parameters.get(i).type);
+			params[i] = bindingResolver.resolveType(type.parameters.get(i).type, null);
 		}
 		return params;
 	}
 	
 	public ITypeBinding getReturnType() {
-		return bindingResolver.resolveType(type.next);
+		return bindingResolver.resolveType(type.next, null);
 	}
 	
 	public ITypeBinding getValueType() {

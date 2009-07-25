@@ -1491,49 +1491,52 @@ public class CompletionEngine extends Engine
 				completeScope(rootScope, INCLUDE_ALL);
 				includesFilter = 0;
 				
-				wantOverrides = false;
 				if (wantOverrides) {
-					List<FuncDeclaration> funcs = new ArrayList<FuncDeclaration>();
-					
-					// Suggest override of the function if its virtual
-					// and it's not from this class
-					for(Object obj : node.vtbl) {
-						if (obj instanceof FuncDeclaration) {
-							FuncDeclaration fd = (FuncDeclaration) obj;
-							if (fd.parent != node) {
-								suggestOverride(fd);
-							}
-							
-							funcs.add(fd);
-						}
-					}
-					
-					// Also suggest interfaces methods, but only if these
-					// are not already present in this class
-					for(BaseClass bc : node.vtblInterfaces) {
-						TypeClass tc = (TypeClass) bc.type;
-					loop:
-						for(Dsymbol member : tc.sym.unlazy(context).members) {
-							if (member instanceof FuncDeclaration) {
-								FuncDeclaration fd = (FuncDeclaration) member;
-								for(FuncDeclaration old : funcs) {
-									if (ASTDmdNode.equals(fd.ident, old.ident)) {
-										int cov = fd.type.covariant(old.type, context);
-										if(cov == 1) {
-											continue loop;
-										}
-									}
-								}
-									
-								suggestOverride(fd);
-							}
-						}
-					}
+					suggestOverrides(node);
 				}
 			} else {
 				includesFilter = INCLUDE_VARIABLES;
 				completeNode(node.sourceBaseclasses.get(baseClassIndex).sourceType);
 				includesFilter = 0;
+			}
+		}
+	}
+
+	private void suggestOverrides(ClassDeclaration node) {
+		List<FuncDeclaration> funcs = new ArrayList<FuncDeclaration>();
+		
+		// Suggest override of the function if its virtual
+		// and it's not from this class
+		for(Object obj : node.vtbl) {
+			if (obj instanceof FuncDeclaration) {
+				FuncDeclaration fd = (FuncDeclaration) obj;
+				if (fd.parent != node) {
+					suggestOverride(fd);
+				}
+				
+				funcs.add(fd);
+			}
+		}
+		
+		// Also suggest interfaces methods, but only if these
+		// are not already present in this class
+		for(BaseClass bc : node.vtblInterfaces) {
+			TypeClass tc = (TypeClass) bc.type;
+		loop:
+			for(Dsymbol member : tc.sym.unlazy(context).members) {
+				if (member instanceof FuncDeclaration) {
+					FuncDeclaration fd = (FuncDeclaration) member;
+					for(FuncDeclaration old : funcs) {
+						if (ASTDmdNode.equals(fd.ident, old.ident)) {
+							int cov = fd.type.covariant(old.type, context);
+							if(cov == 1) {
+								continue loop;
+							}
+						}
+					}
+						
+					suggestOverride(fd);
+				}
 			}
 		}
 	}
@@ -1594,6 +1597,11 @@ public class CompletionEngine extends Engine
 			suggestProperty(scope.func.getSignature().toCharArray(), 
 					RelevanceConstants.R_LOCAL_VAR, 
 					Id._argptr, context.Type_tvoidptr);
+		}
+		
+		// If inside a class declaration, suggest overrides
+		if (scope.parent instanceof ClassDeclaration) {
+			suggestOverrides((ClassDeclaration) scope.parent);
 		}
 		
 		wantProperties = true;
@@ -2351,6 +2359,9 @@ public class CompletionEngine extends Engine
 	}
 	
 	private void suggestOverride(FuncDeclaration fd) {
+		if (fd.ident == null || fd.ident.ident == null || !match(this.currentName, fd.ident.ident))
+			return;
+		
 		CompletionProposal proposal = createProposal(CompletionProposal.METHOD_DECLARATION, this.actualCompletionPosition, fd);
 		
 		int relevance = computeBaseRelevance();

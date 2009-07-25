@@ -23,6 +23,7 @@ public class ScopeCopy {
 		Scope b = new Scope(context);
 		b.scopesym = new ScopeDsymbol();
 		b.func = a.func;
+		b.parent = a.parent;
 		
 		if (b.scopesym != null) {
 			Dsymbols dsymbols = new Dsymbols(1);

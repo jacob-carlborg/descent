@@ -21,23 +21,23 @@ public class VariableBinding extends JavaElementBasedBinding implements IVariabl
 	}
 
 	public IBinding getDeclaringSymbol() {
-		return bindingResolver.resolveDsymbol(node.parent);
+		return bindingResolver.resolveDsymbol(node.parent, null);
 	}
 
 	public ITypeBinding getType() {
 		if (node instanceof VarDeclaration) {
 			VarDeclaration var = (VarDeclaration) node;
-			return bindingResolver.resolveType(var.type);
+			return bindingResolver.resolveType(var.type, null);
 		} else if (node instanceof EnumMember) {
 			EnumMember em = (EnumMember) node;
 			if (em.sourceType != null) {
-				return bindingResolver.resolveType(em.type);
+				return bindingResolver.resolveType(em.type, null);
 			} else {
 				if (!(em.parent instanceof EnumDeclaration)) {
 					return null;
 				}
 				EnumDeclaration parent = (EnumDeclaration) em.parent;
-				return bindingResolver.resolveType(parent.type);
+				return bindingResolver.resolveType(parent.type, null);
 			}
 		}
 		

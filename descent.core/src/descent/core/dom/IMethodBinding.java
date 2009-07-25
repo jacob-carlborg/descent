@@ -85,7 +85,7 @@ public interface IMethodBinding extends IBinding {
 	 * @return the binding of the symbol that declares this method
 	 *    or constructor
 	 */
-	public IBinding getDeclaringSymbol();
+	public ITypeBinding getDeclaringSymbol();
 
 	/**
 	 * Returns a list of type bindings representing the formal parameter types,

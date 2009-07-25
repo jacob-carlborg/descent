@@ -26,6 +26,7 @@ import descent.core.dom.ITypeBinding;
 import descent.core.dom.SimpleName;
 import descent.internal.corext.dom.Bindings;
 import descent.internal.corext.util.JdtFlags;
+import descent.internal.corext.util.Messages;
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.actions.OpenActionUtil;
 import descent.internal.ui.text.java.IJavaReconcilingListener;
@@ -172,12 +173,10 @@ class OverrideIndicatorManager implements IJavaReconcilingListener {
 
 						boolean isImplements= JdtFlags.isAbstract(definingMethod);
 						String text = null;
-						/* TODO JDT UI override indicator
 						if (isImplements)
 							text= Messages.format(JavaEditorMessages.OverrideIndicatorManager_implements, qualifiedMethodName);
 						else
 							text= Messages.format(JavaEditorMessages.OverrideIndicatorManager_overrides, qualifiedMethodName);
-							*/
 
 						SimpleName name= node.getName();
 						Position position= new Position(name.getStartPosition(), name.getLength());

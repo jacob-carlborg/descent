@@ -30,6 +30,9 @@ import descent.core.JavaCore;
 import descent.core.ToolFactory;
 import descent.core.dom.ASTNode;
 import descent.core.dom.Block;
+import descent.core.dom.Declaration;
+import descent.core.dom.Expression;
+import descent.core.dom.Statement;
 import descent.core.formatter.CodeFormatter;
 import descent.core.formatter.DefaultCodeFormatterConstants;
 import descent.core.formatter.IndentManipulation;
@@ -282,7 +285,6 @@ import descent.core.formatter.IndentManipulation;
 	 *  IllegalArgumentException is thrown.
 	 */
 	private static TextEdit formatNode(ASTNode node, String str, int indentationLevel, String lineSeparator, Map options) {
-		/* TODO JDT format
 		int code;
 		String prefix= ""; //$NON-NLS-1$
 		String suffix= ""; //$NON-NLS-1$
@@ -293,81 +295,83 @@ import descent.core.formatter.IndentManipulation;
 				suffix= "}"; //$NON-NLS-1$
 				code= CodeFormatter.K_STATEMENTS;
 			}
-		} else if (node instanceof Expression && node.getNodeType() != ASTNode.VARIABLE_DECLARATION_EXPRESSION) {
+		} else if (node instanceof Expression /* && node.getNodeType() != ASTNode.VARIABLE_DECLARATION_EXPRESSION */) {
 			code= CodeFormatter.K_EXPRESSION;
-		} else if (node instanceof BodyDeclaration) {
+		} else if (node instanceof Declaration) {
 			code= CodeFormatter.K_CLASS_BODY_DECLARATIONS;
 		} else {
-			switch (node.getNodeType()) {
-				case ASTNode.ARRAY_TYPE:
-				case ASTNode.PARAMETERIZED_TYPE:
-				case ASTNode.PRIMITIVE_TYPE:
-				case ASTNode.QUALIFIED_TYPE:
-				case ASTNode.SIMPLE_TYPE:
-					suffix= " x;"; //$NON-NLS-1$
-					code= CodeFormatter.K_CLASS_BODY_DECLARATIONS;
-					break;
-				case ASTNode.WILDCARD_TYPE:
-					prefix= "A<"; //$NON-NLS-1$
-					suffix= "> x;"; //$NON-NLS-1$
-					code= CodeFormatter.K_CLASS_BODY_DECLARATIONS;
-					break;
-				case ASTNode.COMPILATION_UNIT:
-					code= CodeFormatter.K_COMPILATION_UNIT;
-					break;
-				case ASTNode.VARIABLE_DECLARATION_EXPRESSION:
-				case ASTNode.SINGLE_VARIABLE_DECLARATION:
-					suffix= ";"; //$NON-NLS-1$
-					code= CodeFormatter.K_STATEMENTS;
-					break;
-				case ASTNode.VARIABLE_DECLARATION_FRAGMENT:
-					prefix= "A "; //$NON-NLS-1$
-					suffix= ";"; //$NON-NLS-1$
-					code= CodeFormatter.K_STATEMENTS;
-					break;			
-				case ASTNode.PACKAGE_DECLARATION:
-				case ASTNode.IMPORT_DECLARATION:
-					suffix= "\nclass A {}"; //$NON-NLS-1$
-					code= CodeFormatter.K_COMPILATION_UNIT;
-					break;
-				case ASTNode.JAVADOC:
-					suffix= "\nclass A {}"; //$NON-NLS-1$
-					code= CodeFormatter.K_COMPILATION_UNIT;
-					break;
-				case ASTNode.CATCH_CLAUSE:
-					prefix= "try {}"; //$NON-NLS-1$
-					code= CodeFormatter.K_STATEMENTS;
-					break;
-				case ASTNode.ANONYMOUS_CLASS_DECLARATION:
-					prefix= "new A()"; //$NON-NLS-1$
-					suffix= ";"; //$NON-NLS-1$
-					code= CodeFormatter.K_STATEMENTS;
-					break;
-				case ASTNode.MEMBER_VALUE_PAIR:
-					prefix= "@Author("; //$NON-NLS-1$
-					suffix= ") class x {}"; //$NON-NLS-1$
-					code= CodeFormatter.K_COMPILATION_UNIT;
-					break;
-				case ASTNode.MODIFIER:
-					suffix= " class x {}"; //$NON-NLS-1$
-					code= CodeFormatter.K_COMPILATION_UNIT;				
-					break;
-				case ASTNode.TYPE_PARAMETER:
-					prefix= "class X<"; //$NON-NLS-1$
-					suffix= "> {}"; //$NON-NLS-1$
-					code= CodeFormatter.K_COMPILATION_UNIT;
-					break;
-				case ASTNode.MEMBER_REF:
-				case ASTNode.METHOD_REF:
-				case ASTNode.METHOD_REF_PARAMETER:
-				case ASTNode.TAG_ELEMENT:
-				case ASTNode.TEXT_ELEMENT:
-					// javadoc formatting disabled due to bug 93644
-					return null; 
-				default:
-					//Assert.isTrue(false, "Node type not covered: " + node.getClass().getName());
-					return null;
-			}
+			code= CodeFormatter.K_CLASS_BODY_DECLARATIONS;
+			// TODO JDT formatter
+//			switch (node.getNodeType()) {
+//				case ASTNode.ARRAY_TYPE:
+//				case ASTNode.PARAMETERIZED_TYPE:
+//				case ASTNode.PRIMITIVE_TYPE:
+//				case ASTNode.QUALIFIED_TYPE:
+//				case ASTNode.SIMPLE_TYPE:
+//					suffix= " x;"; //$NON-NLS-1$
+//					code= CodeFormatter.K_CLASS_BODY_DECLARATIONS;
+//					break;
+//				case ASTNode.WILDCARD_TYPE:
+//					prefix= "A<"; //$NON-NLS-1$
+//					suffix= "> x;"; //$NON-NLS-1$
+//					code= CodeFormatter.K_CLASS_BODY_DECLARATIONS;
+//					break;
+//				case ASTNode.COMPILATION_UNIT:
+//					code= CodeFormatter.K_COMPILATION_UNIT;
+//					break;
+//				case ASTNode.VARIABLE_DECLARATION_EXPRESSION:
+//				case ASTNode.SINGLE_VARIABLE_DECLARATION:
+//					suffix= ";"; //$NON-NLS-1$
+//					code= CodeFormatter.K_STATEMENTS;
+//					break;
+//				case ASTNode.VARIABLE_DECLARATION_FRAGMENT:
+//					prefix= "A "; //$NON-NLS-1$
+//					suffix= ";"; //$NON-NLS-1$
+//					code= CodeFormatter.K_STATEMENTS;
+//					break;			
+//				case ASTNode.PACKAGE_DECLARATION:
+//				case ASTNode.IMPORT_DECLARATION:
+//					suffix= "\nclass A {}"; //$NON-NLS-1$
+//					code= CodeFormatter.K_COMPILATION_UNIT;
+//					break;
+//				case ASTNode.JAVADOC:
+//					suffix= "\nclass A {}"; //$NON-NLS-1$
+//					code= CodeFormatter.K_COMPILATION_UNIT;
+//					break;
+//				case ASTNode.CATCH_CLAUSE:
+//					prefix= "try {}"; //$NON-NLS-1$
+//					code= CodeFormatter.K_STATEMENTS;
+//					break;
+//				case ASTNode.ANONYMOUS_CLASS_DECLARATION:
+//					prefix= "new A()"; //$NON-NLS-1$
+//					suffix= ";"; //$NON-NLS-1$
+//					code= CodeFormatter.K_STATEMENTS;
+//					break;
+//				case ASTNode.MEMBER_VALUE_PAIR:
+//					prefix= "@Author("; //$NON-NLS-1$
+//					suffix= ") class x {}"; //$NON-NLS-1$
+//					code= CodeFormatter.K_COMPILATION_UNIT;
+//					break;
+//				case ASTNode.MODIFIER:
+//					suffix= " class x {}"; //$NON-NLS-1$
+//					code= CodeFormatter.K_COMPILATION_UNIT;				
+//					break;
+//				case ASTNode.TYPE_PARAMETER:
+//					prefix= "class X<"; //$NON-NLS-1$
+//					suffix= "> {}"; //$NON-NLS-1$
+//					code= CodeFormatter.K_COMPILATION_UNIT;
+//					break;
+//				case ASTNode.MEMBER_REF:
+//				case ASTNode.METHOD_REF:
+//				case ASTNode.METHOD_REF_PARAMETER:
+//				case ASTNode.TAG_ELEMENT:
+//				case ASTNode.TEXT_ELEMENT:
+//					// javadoc formatting disabled due to bug 93644
+//					return null; 
+//				default:
+//					//Assert.isTrue(false, "Node type not covered: " + node.getClass().getName());
+//					return null;
+//			}
 		}
 		
 		String concatStr= prefix + str + suffix;
@@ -377,8 +381,6 @@ import descent.core.formatter.IndentManipulation;
 			edit= shifEdit(edit, prefix.length());
 		}		
 		return edit;
-		*/
-		return null;
 	}	
 			
 	private static TextEdit shifEdit(TextEdit oldEdit, int diff) {

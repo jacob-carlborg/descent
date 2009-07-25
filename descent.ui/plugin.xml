@@ -3437,6 +3437,53 @@
       </objectContribution>
    </extension>
    <extension
+         point="org.eclipse.ui.editorActions">
+      <editorContribution
+            targetID="descent.ui.CompilationUnitEditor"
+            id="org.eclipse.ui.texteditor.ruler.actions">
+         <action
+               label="%BookmarkRulerAction.label"
+               helpContextId="org.eclipse.ui.bookmark_action_context"
+               class="org.eclipse.ui.texteditor.BookmarkRulerAction"
+               actionID="RulerDoubleClick"
+               id="descent.internal.ui.javaeditor.BookmarkRulerAction">
+         </action>
+         <action
+               label="%JavaSelectRulerAction.label"
+               class="descent.internal.ui.javaeditor.JavaSelectRulerAction"
+               actionID="RulerClick"
+               id="descent.internal.ui.javaeditor.JavaSelectRulerAction">
+         </action>
+      </editorContribution>
+      <editorContribution
+            targetID="descent.ui.ClassFileEditor"
+            id="org.eclipse.ui.texteditor.ruler.actions">
+         <action
+               label="%JavaSelectRulerAction.label"
+               class="descent.internal.ui.javaeditor.JavaSelectRulerAction"
+               actionID="RulerClick"
+               id="descent.internal.ui.javaeditor.JavaSelectRulerAction">
+         </action>
+      </editorContribution>
+      <editorContribution
+            targetID="descent.ui.PropertiesFileEditor"
+            id="org.eclipse.ui.texteditor.ruler.actions">
+         <action
+               label="%BookmarkRulerAction.label"
+               helpContextId="org.eclipse.ui.bookmark_action_context"
+               class="org.eclipse.ui.texteditor.BookmarkRulerAction"
+               actionID="RulerDoubleClick"
+               id="descent.internal.ui.propertiesfileeditor.BookmarkRulerAction">
+         </action>
+         <action
+               label="%JavaSelectRulerAction.label"
+               class="org.eclipse.ui.texteditor.SelectRulerAction"
+               actionID="RulerClick"
+               id="descent.internal.ui.propertiesfileeditor.SelectRulerAction">
+         </action>
+      </editorContribution>
+   </extension>
+   <extension
          point="org.eclipse.compare.structureCreators">
        <!--
       <structureCreator

@@ -30,7 +30,7 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 		
 		AliasDeclaration alias = (AliasDeclaration) node;
 		if (alias.aliassym == null) {
-			return bindingResolver.resolveType(alias.type);
+			return bindingResolver.resolveType(alias.type, null);
 		}
 		return null;
 	}
@@ -41,7 +41,7 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 		
 		AliasDeclaration alias = (AliasDeclaration) node;
 		if (alias.aliassym != null) {
-			return bindingResolver.resolveDsymbol(alias.aliassym);
+			return bindingResolver.resolveDsymbol(alias.aliassym, null);
 		}
 		return null;
 	}
@@ -52,7 +52,7 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 		
 		TypedefDeclaration typedef = (TypedefDeclaration) node;
 		if (typedef.basetype != null) {
-			return bindingResolver.resolveType(typedef.basetype);
+			return bindingResolver.resolveType(typedef.basetype, null);
 		}
 		return null;
 	}
@@ -96,7 +96,7 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 		
 		ITypeBinding[] types = new ITypeBinding[c.interfaces.size()];
 		for (int i = 0; i < types.length; i++) {
-			types[i] = (ITypeBinding) bindingResolver.resolveDsymbol(c.interfaces.get(i).base);
+			types[i] = (ITypeBinding) bindingResolver.resolveDsymbol(c.interfaces.get(i).base, null);
 		}
 		return types;
 	}
@@ -132,10 +132,10 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	public ITypeBinding getSuperclass() {
 		if (node instanceof ClassDeclaration) {
 			ClassDeclaration c = (ClassDeclaration) node;
-			return (ITypeBinding) bindingResolver.resolveDsymbol(c.baseClass);
+			return (ITypeBinding) bindingResolver.resolveDsymbol(c.baseClass, null);
 		} else if (node instanceof EnumDeclaration) {
 			EnumDeclaration e = (EnumDeclaration) node;
-			return bindingResolver.resolveType(e.memtype);
+			return bindingResolver.resolveType(e.memtype, null);
 		} else {
 			return null;
 		}

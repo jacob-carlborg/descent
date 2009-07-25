@@ -50,7 +50,7 @@ public class CompilationUnitBinding extends AbstractBinding implements ICompilat
 			if (prot == PROT.PROTpublic) {
 				ScopeDsymbol maybeMod = module.imports.get(i);
 				if (maybeMod instanceof Module) {
-					imps.add(bindingResolver.resolveModule((Module) maybeMod));
+					imps.add(bindingResolver.resolveModule((Module) maybeMod, null));
 				}
 			}
 		}

@@ -13,7 +13,6 @@ import descent.core.ISourceRange;
 import descent.core.JavaModelException;
 import descent.internal.core.util.Util;
 
-// TODO JDT finish implementations
 class Conditional extends Member implements IConditional {
 	
 	private String displayString;
