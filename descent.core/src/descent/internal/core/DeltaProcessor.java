@@ -49,6 +49,7 @@ import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.SourceElementParser;
 import descent.internal.core.builder.OriginalJavaBuilder;
+import descent.internal.core.hierarchy.TypeHierarchy;
 import descent.internal.core.search.AbstractSearchScope;
 import descent.internal.core.search.JavaWorkspaceScope;
 import descent.internal.core.search.indexing.IndexManager;
@@ -1491,7 +1492,6 @@ public class DeltaProcessor {
 		}
 	}
 	
-	/* TODO JDT type hierarchy
 	private void notifyTypeHierarchies(IElementChangedListener[] listeners, int listenerCount) {
 		for (int i= 0; i < listenerCount; i++) {
 			final IElementChangedListener listener = listeners[i];
@@ -1513,7 +1513,6 @@ public class DeltaProcessor {
 			});
 		}
 	}
-	*/
 	
 	/*
 	 * Generic processing for elements with changed contents:<ul>
@@ -1850,7 +1849,6 @@ public class DeltaProcessor {
 							this.sourceElementParserCache = null; // don't hold onto parser longer than necessary
 							startDeltas();
 						}
-						/* TODO JDT type hierarchy
 						IElementChangedListener[] listeners;
 						int listenerCount;
 						synchronized (this.state) {
@@ -1858,7 +1856,6 @@ public class DeltaProcessor {
 							listenerCount = this.state.elementChangedListenerCount;
 						}
 						notifyTypeHierarchies(listeners, listenerCount);
-						*/
 						fire(null, ElementChangedEvent.POST_CHANGE);
 					} finally {
 						// workaround for bug 15168 circular errors not reported 

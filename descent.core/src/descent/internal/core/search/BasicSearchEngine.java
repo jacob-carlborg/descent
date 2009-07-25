@@ -118,20 +118,16 @@ public class BasicSearchEngine {
 	/**
 	 * @see SearchEngine#createHierarchyScope(IType) for detailed comment.
 	 */
-	/* TODO JDT hierarchy
 	public static IJavaSearchScope createHierarchyScope(IType type) throws JavaModelException {
 		return createHierarchyScope(type, DefaultWorkingCopyOwner.PRIMARY);
 	}
-	*/
 	
 	/**
 	 * @see SearchEngine#createHierarchyScope(IType,WorkingCopyOwner) for detailed comment.
 	 */
-	/* TODO JDT hierarchy
 	public static IJavaSearchScope createHierarchyScope(IType type, WorkingCopyOwner owner) throws JavaModelException {
 		return new HierarchyScope(type, owner);
 	}
-	*/
 
 	/**
 	 * @see SearchEngine#createJavaSearchScope(IJavaElement[]) for detailed comment.

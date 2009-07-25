@@ -113,6 +113,7 @@ import descent.internal.core.BufferManager;
 import descent.internal.core.ClasspathAccessRule;
 import descent.internal.core.ClasspathAttribute;
 import descent.internal.core.ClasspathEntry;
+import descent.internal.core.CreateTypeHierarchyOperation;
 import descent.internal.core.DefaultWorkingCopyOwner;
 import descent.internal.core.JavaCorePreferenceInitializer;
 import descent.internal.core.JavaModel;
@@ -3324,7 +3325,6 @@ public final class JavaCore extends AbstractUIPlugin {
 	 * region, considering subtypes within that region
 	 * @since 3.1
 	 */
-	/* TODO JDT type hierarchy
 	public static ITypeHierarchy newTypeHierarchy(IRegion region, WorkingCopyOwner owner, IProgressMonitor monitor) throws JavaModelException {
 		if (region == null) {
 			throw new IllegalArgumentException(Messages.hierarchy_nullRegion);
@@ -3335,7 +3335,6 @@ public final class JavaCore extends AbstractUIPlugin {
 		op.runOperation(monitor);
 		return op.getResult();
 	}
-	 */
 	
 	/**
 	 * Creates and returns a new non-exported classpath entry of kind <code>CPE_LIBRARY</code> for the 

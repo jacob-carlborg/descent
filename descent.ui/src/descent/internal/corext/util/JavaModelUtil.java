@@ -407,7 +407,6 @@ public final class JavaModelUtil {
 	 * @param isConstructor If the method is a constructor
 	 * @return The first found method or <code>null</code>, if nothing found
 	 */
-	/* TODO JDT UI type hierarchy
 	public static IMethod findMethodInHierarchy(ITypeHierarchy hierarchy, IType type, String name, String[] paramTypes, boolean isConstructor) throws JavaModelException {
 		IMethod method= findMethod(name, paramTypes, isConstructor, type);
 		if (method != null) {
@@ -431,7 +430,6 @@ public final class JavaModelUtil {
 		}
 		return method;		
 	}
-	*/
 		
 	
 	/**

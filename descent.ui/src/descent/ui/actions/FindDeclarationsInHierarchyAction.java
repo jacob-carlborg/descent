@@ -72,10 +72,7 @@ public class FindDeclarationsInHierarchyAction extends FindDeclarationsAction {
 			return super.createQuery(element);
 		}
 		
-		/* TODO JDT type hierarchy
 		IJavaSearchScope scope= SearchEngine.createHierarchyScope(type);
-		*/
-		IJavaSearchScope scope = SearchEngine.createWorkspaceScope();
 		
 		String description= factory.getHierarchyScopeDescription(type);
 		return new ElementQuerySpecification(element, getLimitTo(), scope, description);

@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
+import descent.core.IType;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
 import descent.internal.core.search.BasicSearchEngine;
@@ -84,11 +85,9 @@ public class SearchEngine {
 	 * @return a new hierarchy scope
 	 * @exception JavaModelException if the hierarchy could not be computed on the given type
 	 */
-	/* TODO JDT hierarchy
 	public static IJavaSearchScope createHierarchyScope(IType type) throws JavaModelException {
 		return BasicSearchEngine.createHierarchyScope(type);
 	}
-	*/
 	
 	/**
 	 * Returns a Java search scope limited to the hierarchy of the given type.
@@ -103,11 +102,9 @@ public class SearchEngine {
 	 * @exception JavaModelException if the hierarchy could not be computed on the given type
 	 * @since 3.0
 	 */
-	/* TODO JDT hierarchy
 	public static IJavaSearchScope createHierarchyScope(IType type, WorkingCopyOwner owner) throws JavaModelException {
 		return BasicSearchEngine.createHierarchyScope(type, owner);
 	}
-	*/
 
 	/**
 	 * Returns a Java search scope limited to the given Java elements.

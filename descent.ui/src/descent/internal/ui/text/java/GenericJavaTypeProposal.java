@@ -1,6 +1,8 @@
 package descent.internal.ui.text.java;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
@@ -26,9 +28,9 @@ import org.eclipse.ui.texteditor.link.EditorLinkedModeUI;
 
 import descent.core.CompletionProposal;
 import descent.core.IType;
+import descent.core.ITypeHierarchy;
 import descent.core.ITypeParameter;
 import descent.core.JavaModelException;
-import descent.core.Signature;
 import descent.core.dom.AST;
 import descent.core.dom.ASTParser;
 import descent.core.dom.ITypeBinding;
@@ -412,8 +414,6 @@ public final class GenericJavaTypeProposal extends LazyJavaTypeCompletionProposa
 		if (superType.equals(subType))
 			return new IType[] { subType };
 
-		return new IType[] { subType };
-		/* TODO JDT type hierarchy
 		ITypeHierarchy hierarchy= subType.newSupertypeHierarchy(getProgressMonitor());
 		if (!hierarchy.contains(superType))
 			return null; // no path
@@ -427,7 +427,6 @@ public final class GenericJavaTypeProposal extends LazyJavaTypeCompletionProposa
 		} while (!superType.equals(subType)); // since the equality case is handled above, we can spare one check
 
 		return (IType[]) path.toArray(new IType[path.size()]);
-		*/
 	}
 
 	private NullProgressMonitor getProgressMonitor() {

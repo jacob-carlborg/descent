@@ -50,6 +50,7 @@ import org.xml.sax.SAXException;
 
 import descent.core.Flags;
 import descent.core.IType;
+import descent.core.ITypeHierarchy;
 import descent.core.JavaModelException;
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.JavaUIException;
@@ -366,7 +367,6 @@ public final class ContentAssistHistory {
 		try {
 			if (!isCacheableRHS(rhs))
 				return;
-			/* TODO JDT UI type hierarchy
 			ITypeHierarchy hierarchy= rhs.newSupertypeHierarchy(getProgressMonitor());
 			if (hierarchy.contains(lhs)) {
 				// TODO remember for every member of the LHS hierarchy or not? Yes for now.
@@ -375,7 +375,6 @@ public final class ContentAssistHistory {
 					rememberInternal(allLHSides[i], rhs);
 				rememberInternal(lhs, rhs);
 			}
-			*/
 		} catch (JavaModelException x) {
 			JavaPlugin.log(x);
 		}
