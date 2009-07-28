@@ -2948,7 +2948,7 @@ public final class JavaCore extends AbstractUIPlugin {
 					scope, 
 					new TypeNameRequestor() {
 						@Override
-						public void acceptType(long modifiers, char[] packageName, char[] simpleTypeName, char[][] enclosingTypeNames, String path) {
+						public void acceptType(long modifiers, int kind, char[] packageName, char[] simpleTypeName, char[][] enclosingTypeNames, String path) {
 							// no type to accept
 						}
 					},

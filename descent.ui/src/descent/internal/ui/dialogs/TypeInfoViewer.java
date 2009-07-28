@@ -113,12 +113,12 @@ public class TypeInfoViewer {
 		public void setHistory(Set history) {
 			fHistory= history;
 		}
-		public void acceptType(long modifiers, char[] packageName, char[] simpleTypeName, char[][] enclosingTypeNames, String path) {
+		public void acceptType(long modifiers, int kind, char[] packageName, char[] simpleTypeName, char[][] enclosingTypeNames, String path) {
 			if (fStop)
 				return;
 			if (TypeFilter.isFiltered(packageName, simpleTypeName))
 				return;
-			TypeInfo type= fFactory.create(packageName, simpleTypeName, enclosingTypeNames, modifiers, path);
+			TypeInfo type= fFactory.create(packageName, simpleTypeName, enclosingTypeNames, modifiers, kind, path);
 			if (fHistory.contains(type))
 				return;
 			if (fFilter.matchesFilterExtension(type))
@@ -349,8 +349,8 @@ public class TypeInfoViewer {
 				if (descriptor != null) 
 					return descriptor;
 			}
-			return JavaElementImageProvider.getTypeImageDescriptor(
-				type.isInnerType(), false, type.getModifiers(), false);
+			return JavaElementImageProvider.getDeclarationImageDescriptor(
+				type.isInnerType(), false, type.getModifiers(), type.getKind(), false);
 		}
 		
 		private String getTypeContainerName(TypeInfo info) {
@@ -636,7 +636,7 @@ public class TypeInfoViewer {
 			SearchEngine engine= new SearchEngine((WorkingCopyOwner)null);
 			String packPattern= fFilter.getPackagePattern();
 			monitor.setTaskName(JavaUIMessages.TypeInfoViewer_searchJob_taskName);
-			engine.searchAllTypeNames(
+			engine.searchAllDeclarationName(
 				packPattern == null ? null : packPattern.toCharArray(), 
 				fFilter.getNamePattern().toCharArray(), 
 				fFilter.getSearchFlags(), 
@@ -690,7 +690,7 @@ public class TypeInfoViewer {
 		protected IStatus doRun(ProgressMonitor monitor) {
 			try {
 				monitor.setTaskName(JavaUIMessages.TypeInfoViewer_syncJob_taskName);
-				new SearchEngine().searchAllTypeNames(
+				new SearchEngine().searchAllDeclarationName(
 					null, 
 					// make sure we search a concrete name. This is faster according to Kent  
 					"_______________".toCharArray(), //$NON-NLS-1$
@@ -820,7 +820,7 @@ public class TypeInfoViewer {
 	
 	private static final TypeInfo[] EMTPY_TYPE_INFO_ARRAY= new TypeInfo[0];
 	// only needed when in virtual table mode
-	private static final TypeInfo DASH_LINE= new UnresolvableTypeInfo(null, null, null, 0, null);
+	private static final TypeInfo DASH_LINE= new UnresolvableTypeInfo(null, null, null, 0, TypeNameRequestor.KindType, null);
 
 	public TypeInfoViewer(Composite parent, int flags, Label progressLabel, 
 			IJavaSearchScope scope, int elementKind, String initialFilter,

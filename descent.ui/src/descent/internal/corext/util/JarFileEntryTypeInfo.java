@@ -33,8 +33,8 @@ public class JarFileEntryTypeInfo extends TypeInfo {
 	private final String fFileName;
 	private final String fExtension;
 	
-	public JarFileEntryTypeInfo(String pkg, String name, char[][] enclosingTypes, long modifiers, String jar, String fileName, String extension) {
-		super(pkg, name, enclosingTypes, modifiers);
+	public JarFileEntryTypeInfo(String pkg, String name, char[][] enclosingTypes, long modifiers, int kind, String jar, String fileName, String extension) {
+		super(pkg, name, enclosingTypes, modifiers, kind);
 		fJar= jar;
 		fFileName= fileName;
 		fExtension= extension;

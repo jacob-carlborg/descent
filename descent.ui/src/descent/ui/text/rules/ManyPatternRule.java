@@ -231,6 +231,9 @@ public class ManyPatternRule implements IPredicateRule {
 		while ((c= scanner.read()) != ICharacterScanner.EOF) {
 			if (c == fEscapeCharacter[lastIndex]) {
 				// Skip escaped character(s)
+				if (fEscapeContinuesLine == null) {
+					System.out.println(123456);
+				}
 				if (fEscapeContinuesLine[lastIndex]) {
 					c= scanner.read();
 					for (int i= 0; i < fSortedLineDelimiters.length; i++) {

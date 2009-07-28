@@ -18,7 +18,9 @@ import descent.core.IJavaElement;
 import descent.core.IType;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
+import descent.internal.compiler.env.AccessRestriction;
 import descent.internal.core.search.BasicSearchEngine;
+import descent.internal.core.search.IRestrictedAccessDeclarationRequestor;
 import descent.internal.core.search.TypeNameRequestorWrapper;
 
 /**
@@ -290,6 +292,48 @@ public class SearchEngine {
 		TypeNameRequestorWrapper requestorWrapper = new TypeNameRequestorWrapper(nameRequestor);
 		this.basicEngine.searchAllTypeNames(packageName, typeName, matchRule, searchFor, scope, requestorWrapper, waitingPolicy, progressMonitor);
 	}
+	
+	public void searchAllDeclarationName(
+			final char[] packageName, 
+			final char[] typeName,
+			final int matchRule, 
+			int searchFor, 
+			IJavaSearchScope scope, 
+			final TypeNameRequestor nameRequestor,
+			int waitingPolicy,
+			IProgressMonitor progressMonitor)  throws JavaModelException {
+		
+			final IRestrictedAccessDeclarationRequestor requestorWrapper = new IRestrictedAccessDeclarationRequestor() {
+				public void acceptField(long modifiers, char[] packageName,
+						char[] name, char[] typeName,
+						char[][] enclosingTypeNames, String path,
+						int declarationStart, AccessRestriction access) {
+					if (enclosingTypeNames == null || enclosingTypeNames.length == 0) {
+						nameRequestor.acceptType(modifiers, TypeNameRequestor.KindVariable, packageName, name, enclosingTypeNames, path);
+					}
+				}
+
+				public void acceptMethod(long modifiers, char[] packageName,
+						char[] name, char[][] enclosingTypeNames,
+						char[] signature, char[] templateParametersSignature,
+						String path, int declarationStart,
+						AccessRestriction access) {
+					if (enclosingTypeNames == null || enclosingTypeNames.length == 0) {
+						nameRequestor.acceptType(modifiers, TypeNameRequestor.KindFunction, packageName, name, enclosingTypeNames, path);
+					}
+				}
+
+				public void acceptType(long modifiers, char[] packageName,
+						char[] simpleTypeName,
+						char[] templateParametersSignature,
+						char[][] enclosingTypeNames, String path,
+						int declarationStart, AccessRestriction access) {
+					nameRequestor.acceptType(modifiers, TypeNameRequestor.KindType, packageName, simpleTypeName, enclosingTypeNames, path);
+				}
+			};
+			
+			this.basicEngine.searchAllDeclarations(packageName, typeName, matchRule, searchFor, scope, requestorWrapper, waitingPolicy, progressMonitor);
+		}
 
 	/**
 	 * Searches for all top-level types and member types in the given scope matching any of the given qualifications

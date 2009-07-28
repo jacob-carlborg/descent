@@ -14,6 +14,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
 
+import descent.core.IMember;
 import descent.core.IType;
 import descent.core.search.IJavaSearchConstants;
 
@@ -50,7 +51,7 @@ public class OpenTypeAction extends Action implements IWorkbenchWindowActionDele
 		
 		Object[] types= dialog.getResult();
 		if (types != null && types.length > 0) {
-			IType type= (IType)types[0];
+			IMember type= (IMember)types[0];
 			try {
 				IEditorPart part= EditorUtility.openInEditor(type, true);
 				EditorUtility.revealInEditor(part, type);

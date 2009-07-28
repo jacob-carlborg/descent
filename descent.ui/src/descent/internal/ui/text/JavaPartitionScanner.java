@@ -147,7 +147,8 @@ public class JavaPartitionScanner extends RuleBasedPartitionScanner implements I
 			string,
 			new char[] { (char)0, (char)0, (char)0, '\\', (char)0 },
 			new boolean[] { false, false, false, false, false },
-			new boolean[] { true, true, true, true, true }
+			new boolean[] { true, true, true, true, true },
+			new boolean[] { false, false, false, false, false }
 				));
 		
 		rules.add(new DEscapeRule(string));

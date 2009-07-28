@@ -198,8 +198,8 @@ public final class JavaModelUtil {
 	 * @param typeQualifiedName the type qualified name (type name with enclosing type names (separated by dots))
 	 * @return the type found, or null if not existing
 	 */		
-	public static IType findTypeInCompilationUnit(ICompilationUnit cu, String typeQualifiedName) throws JavaModelException {
-		IType[] types= cu.getAllTypes();
+	public static IMember findTypeInCompilationUnit(ICompilationUnit cu, String typeQualifiedName) throws JavaModelException {
+		IMember[] types= cu.getAllMembers();
 		for (int i= 0; i < types.length; i++) {
 			String currName= getTypeQualifiedName(types[i]);
 			if (typeQualifiedName.equals(currName)) {
@@ -243,6 +243,10 @@ public final class JavaModelUtil {
 		} catch (JavaModelException e) {
 			// ignore
 		}	
+		return type.getTypeQualifiedName('.');
+	}
+	
+	public static String getTypeQualifiedName(IMember type) {
 		return type.getTypeQualifiedName('.');
 	}
 	

@@ -738,7 +738,7 @@ public final class ImportRewriteAnalyzer {
 				return buf.toString();
 			}
 			
-			public void acceptType(int modifiers, char[] packageName, char[] simpleTypeName, char[][] enclosingTypeNames, String path) {
+			public void acceptType(int modifiers, int kind, char[] packageName, char[] simpleTypeName, char[][] enclosingTypeNames, String path) {
 				String name= new String(simpleTypeName);
 				String containerName= getTypeContainerName(packageName, enclosingTypeNames);
 				

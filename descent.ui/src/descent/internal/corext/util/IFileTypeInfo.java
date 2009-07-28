@@ -32,8 +32,8 @@ public class IFileTypeInfo extends TypeInfo {
 	private final String fExtension;
 	private final String fPath;
 	
-	public IFileTypeInfo(String pkg, String name, char[][] enclosingTypes, long modifiers, String project, String sourceFolder, String file, String extension, String path) {
-		super(pkg, name, enclosingTypes, modifiers);
+	public IFileTypeInfo(String pkg, String name, char[][] enclosingTypes, long modifiers, int kind, String project, String sourceFolder, String file, String extension, String path) {
+		super(pkg, name, enclosingTypes, modifiers, kind);
 		fProject= project;
 		fFolder= sourceFolder;
 		fFile= file;

@@ -130,4 +130,14 @@ class Conditional extends Member implements IConditional {
 	protected void appendElementSignature(StringBuilder sb) {
 		
 	}
+	
+	public String getTypeQualifiedName() {
+		// TODO
+		return "";
+	}
+	
+	public String getTypeQualifiedName(char enclosingTypeSeparator) {
+		// TODO
+		return "";
+	}
 }

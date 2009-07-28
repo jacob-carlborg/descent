@@ -40,6 +40,6 @@ public class TypeNameRequestorWrapper implements IRestrictedAccessTypeRequestor 
 		this.requestor = requestor;
 	}
 	public void acceptType(long modifiers, char[] packageName, char[] simpleTypeName, char[] templateParametersSignature, char[][] enclosingTypeNames, String path, int declarationStart, AccessRestriction access) {
-		this.requestor.acceptType(modifiers, packageName, simpleTypeName, enclosingTypeNames, path);
+		this.requestor.acceptType(modifiers, TypeNameRequestor.KindType, packageName, simpleTypeName, enclosingTypeNames, path);
 	}
 }

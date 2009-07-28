@@ -18,8 +18,8 @@ public class TypeInfoFactory {
 	private TypeInfo fLast;
 	private char[] fBuffer;
 
-	private static final String CLASS= "class"; //$NON-NLS-1$
-	private static final String JAVA= "java"; //$NON-NLS-1$
+	private static final String CLASS= "di"; //$NON-NLS-1$
+	private static final String JAVA= "d"; //$NON-NLS-1$
 	
 	public TypeInfoFactory() {
 		super();
@@ -28,21 +28,21 @@ public class TypeInfoFactory {
 		fBuffer= new char[512];
 	}
 
-	public TypeInfo create(char[] packageName, char[] typeName, char[][] enclosingName, long modifiers, String path) {
+	public TypeInfo create(char[] packageName, char[] typeName, char[][] enclosingName, long modifiers, int kind, String path) {
 		String pn= getPackageName(packageName);
 		String tn= new String(typeName);
 		TypeInfo result= null;
 		int index= path.indexOf(IJavaSearchScope.JAR_FILE_ENTRY_SEPARATOR);
 		if (index != -1) {
-			result= createJarFileEntryTypeInfo(pn, tn, enclosingName, modifiers, path, getJarFileEntryTypeInfo(fLast), index);
+			result= createJarFileEntryTypeInfo(pn, tn, enclosingName, modifiers, kind, path, getJarFileEntryTypeInfo(fLast), index);
 		} else {
 			String project= getProject(path);
 			if (project != null) {
-				result= createIFileTypeInfo(pn, tn, enclosingName, modifiers, path, getIFileTypeInfo(fLast), project);
+				result= createIFileTypeInfo(pn, tn, enclosingName, modifiers, kind, path, getIFileTypeInfo(fLast), project);
 			}
 		}
 		if (result == null) {
-			result= new UnresolvableTypeInfo(pn, tn, enclosingName, modifiers, path);
+			result= new UnresolvableTypeInfo(pn, tn, enclosingName, modifiers, kind, path);
 		} else {
 			fLast= result;
 		}
@@ -61,7 +61,7 @@ public class TypeInfoFactory {
 		return (IFileTypeInfo)info;
 	}
 	
-	private TypeInfo createJarFileEntryTypeInfo(String packageName, String typeName, char[][] enclosingName, long modifiers, String path, JarFileEntryTypeInfo last, int index) {
+	private TypeInfo createJarFileEntryTypeInfo(String packageName, String typeName, char[][] enclosingName, long modifiers, int kind, String path, JarFileEntryTypeInfo last, int index) {
 		String jar= path.substring(0, index);
 		String rest= path.substring(index + 1);
 //		index= rest.lastIndexOf(TypeInfo.SEPARATOR);
@@ -98,10 +98,10 @@ public class TypeInfoFactory {
 			extension= JAVA;
 		else
 			extension= createString(extension);
-		return new JarFileEntryTypeInfo(packageName, typeName, enclosingName, modifiers, jar, file, extension);
+		return new JarFileEntryTypeInfo(packageName, typeName, enclosingName, modifiers, kind, jar, file, extension);
 	}
 	
-	private TypeInfo createIFileTypeInfo(String packageName, String typeName, char[][] enclosingName, long modifiers, String path, IFileTypeInfo last, String project) {
+	private TypeInfo createIFileTypeInfo(String packageName, String typeName, char[][] enclosingName, long modifiers, int kind, String path, IFileTypeInfo last, String project) {
 		String rest= path.substring(project.length() + 1); // the first slashes.
 		int index= rest.lastIndexOf(TypeInfo.SEPARATOR);
 		if (index == -1)
@@ -141,7 +141,7 @@ public class TypeInfoFactory {
 		else
 			extension= createString(extension);
 		
-		return new IFileTypeInfo(packageName, typeName, enclosingName, modifiers, project, src, file, extension, path);
+		return new IFileTypeInfo(packageName, typeName, enclosingName, modifiers, kind, project, src, file, extension, path);
 	}
 	
 	private String getPackageName(char[] packageName) {

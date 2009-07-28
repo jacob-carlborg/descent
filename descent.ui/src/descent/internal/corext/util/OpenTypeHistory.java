@@ -9,31 +9,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-
-import org.eclipse.core.resources.IResource;
+import org.w3c.dom.Element;
 
 import descent.core.ElementChangedEvent;
 import descent.core.ICompilationUnit;
 import descent.core.IElementChangedListener;
 import descent.core.IJavaElement;
 import descent.core.IJavaElementDelta;
-import descent.core.IType;
+import descent.core.IMember;
 import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.core.search.IJavaSearchScope;
 import descent.core.search.SearchEngine;
-
+import descent.core.search.TypeNameRequestor;
 import descent.internal.corext.CorextMessages;
-
 import descent.internal.ui.JavaPlugin;
-
-import org.w3c.dom.Element;
 
 /**
  * History for the open type dialog. Object and keys are both {@link TypeInfo}s.
@@ -158,6 +155,7 @@ public class OpenTypeHistory extends History {
 	private static final String NODE_ENCLOSING_NAMES= "enclosingTypes"; //$NON-NLS-1$
 	private static final String NODE_PATH= "path"; //$NON-NLS-1$
 	private static final String NODE_MODIFIERS= "modifiers";  //$NON-NLS-1$
+	private static final String NODE_KIND= "kind";  //$NON-NLS-1$
 	private static final String NODE_TIMESTAMP= "timestamp"; //$NON-NLS-1$
 	private static final char[][] EMPTY_ENCLOSING_NAMES= new char[0][0];
 	
@@ -284,7 +282,7 @@ public class OpenTypeHistory extends History {
 			if (lastTested != null && currentTimestamp != IResource.NULL_STAMP && currentTimestamp == lastTested.longValue() && !type.isContainerDirty())
 				continue;
 			try {
-				IType jType= type.resolveType(scope);
+				IMember jType= type.resolveType(scope);
 				if (jType == null || !jType.exists()) {
 					remove(type);
 				} else {
@@ -313,14 +311,20 @@ public class OpenTypeHistory extends History {
 		String pack= type.getAttribute(NODE_PACKAGE);
 		char[][] enclosingNames= getEnclosingNames(type);
 		String path= type.getAttribute(NODE_PATH);
-		int modifiers= 0;
+		long modifiers= 0;
 		try {
-			modifiers= Integer.parseInt(type.getAttribute(NODE_MODIFIERS));
+			modifiers= Long.parseLong(type.getAttribute(NODE_MODIFIERS));
+		} catch (NumberFormatException e) {
+			// take zero
+		}
+		int kind= TypeNameRequestor.KindType;
+		try {
+			kind= Integer.parseInt(type.getAttribute(NODE_KIND));
 		} catch (NumberFormatException e) {
 			// take zero
 		}
 		TypeInfo info= fTypeInfoFactory.create(
-			pack.toCharArray(), name.toCharArray(), enclosingNames, modifiers, path);
+			pack.toCharArray(), name.toCharArray(), enclosingNames, modifiers, kind, path);
 		long timestamp= IResource.NULL_STAMP;
 		String timestampValue= type.getAttribute(NODE_TIMESTAMP);
 		if (timestampValue != null && timestampValue.length() > 0) {
@@ -343,6 +347,7 @@ public class OpenTypeHistory extends History {
 		typeElement.setAttribute(NODE_ENCLOSING_NAMES, type.getEnclosingName());
 		typeElement.setAttribute(NODE_PATH, type.getPath());
 		typeElement.setAttribute(NODE_MODIFIERS, Long.toString(type.getModifiers()));
+		typeElement.setAttribute(NODE_KIND, Integer.toString(type.getKind()));
 		Long timestamp= (Long) fTimestampMapping.get(type);
 		if (timestamp == null) {
 			typeElement.setAttribute(NODE_TIMESTAMP, Long.toString(IResource.NULL_STAMP));			

@@ -189,4 +189,13 @@ protected void toStringInfo(int tab, StringBuffer buffer, Object info, boolean s
 protected void appendElementSignature(StringBuilder sb) throws JavaModelException {
 	// Nothing
 }
+public String getTypeQualifiedName() {
+	// TODO
+	return "";
+}
+
+public String getTypeQualifiedName(char enclosingTypeSeparator) {
+	// TODO
+	return "";
+}
 }

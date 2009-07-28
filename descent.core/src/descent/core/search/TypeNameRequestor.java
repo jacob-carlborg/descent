@@ -21,6 +21,11 @@ package descent.core.search;
  * @since 3.1
  */
 public abstract class TypeNameRequestor {
+	
+	public final static int KindType = 1;
+	public final static int KindFunction = 2;
+	public final static int KindVariable = 3;
+	
 	/**
 	 * Accepts a top-level or a member type.
 	 * <p>
@@ -49,7 +54,7 @@ public abstract class TypeNameRequestor {
 	 *			 or the workspace relative <code>IPath</code> to the archive (if it is an internal archive), 
 	 * 		 the second path is the path to the resource inside the archive.
 	 */
-	public void acceptType(long modifiers, char[] packageName, char[] simpleTypeName, char[][] enclosingTypeNames, String path) {
+	public void acceptType(long modifiers, int kind, char[] packageName, char[] simpleTypeName, char[][] enclosingTypeNames, String path) {
 		// do nothing
 	}
 }

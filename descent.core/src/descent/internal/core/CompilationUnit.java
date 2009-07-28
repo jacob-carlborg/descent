@@ -563,6 +563,55 @@ public IType[] getAllTypes() throws JavaModelException {
 	return arrayOfAllTypes;
 }
 /**
+ * @see ICompilationUnit#getAllTypes()
+ */
+public IMember[] getAllMembers() throws JavaModelException {
+	IJavaElement[] members = getChildren();
+	int i;
+	ArrayList allMembers = new ArrayList(members.length);
+	ArrayList membersToTraverse = new ArrayList(members.length);
+	for (i = 0; i < members.length; i++) {
+		membersToTraverse.add(members[i]);
+	}
+	while (!membersToTraverse.isEmpty()) {
+		IJavaElement member = (IJavaElement) membersToTraverse.get(0);
+		membersToTraverse.remove(member);
+		
+		if (!(member instanceof IMember))
+			continue;
+		
+		if (member.getElementType() == TYPE) {
+			IType type = (IType)member;
+			if (type.isEnum()) {
+				if (!type.isAnonymous()) {
+					allMembers.add(member);	
+				}
+			} else {
+				allMembers.add(member);
+			}
+		} else if(member.getElementType() == FIELD ||
+			member.getElementType() == METHOD) {
+			allMembers.add(member);
+		}
+		if (member.getElementType() == TYPE) {
+			IType type = (IType)member;
+			if (type.isEnum()) {
+				members = ((IMember) member).getChildren();
+			} else {
+				members = type.getTypes();
+			}
+		} else {
+			members = ((IMember) member).getChildren();
+		}
+		for (i = 0; i < members.length; i++) {
+			membersToTraverse.add(members[i]);
+		}
+	}
+	IMember[] arrayOfAllMembers = new IMember[allMembers.size()];
+	allMembers.toArray(arrayOfAllMembers);
+	return arrayOfAllMembers;
+}
+/**
  * @see IMember#getCompilationUnit()
  */
 @Override

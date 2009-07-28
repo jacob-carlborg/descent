@@ -515,24 +515,6 @@ public ITypeParameter getTypeParameter(String typeParameterName) {
 	return new TypeParameter(this, typeParameterName);
 }
 /**
- * @see IType#getTypeQualifiedName()
- */
-public String getTypeQualifiedName() {
-	return this.getTypeQualifiedName('$');
-}
-/**
- * @see IType#getTypeQualifiedName(char)
- */
-public String getTypeQualifiedName(char enclosingTypeSeparator) {
-	try {
-		return getTypeQualifiedName(enclosingTypeSeparator, false/*don't show parameters*/);
-	} catch (JavaModelException e) {
-		// exception thrown only when showing parameters
-		return null;
-	}
-}
-
-/**
  * @see IType
  */
 public IType[] getTypes() throws JavaModelException {

@@ -10,7 +10,12 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.IJobManager;
-
+import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.operation.IRunnableContext;
+import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.text.ITextSelection;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -18,21 +23,13 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
-
-import org.eclipse.jface.dialogs.ErrorDialog;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.operation.IRunnableContext;
-import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.jface.viewers.ISelection;
-
-import org.eclipse.jface.text.ITextSelection;
-
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 import org.eclipse.ui.dialogs.SelectionStatusDialog;
 
-import descent.core.IType;
+import descent.core.IJavaElement;
+import descent.core.IMember;
 import descent.core.JavaConventions;
 import descent.core.JavaModelException;
 import descent.core.search.IJavaSearchConstants;
@@ -40,18 +37,15 @@ import descent.core.search.IJavaSearchScope;
 import descent.core.search.SearchEngine;
 import descent.core.search.SearchPattern;
 import descent.core.search.TypeNameRequestor;
-
 import descent.internal.corext.util.Messages;
-import descent.internal.corext.util.TypeInfo;
 import descent.internal.corext.util.OpenTypeHistory;
-
-import descent.ui.JavaUI;
-import descent.ui.dialogs.TypeSelectionExtension;
-
+import descent.internal.corext.util.TypeInfo;
 import descent.internal.ui.IJavaHelpContextIds;
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.JavaUIMessages;
 import descent.internal.ui.util.ExceptionHandler;
+import descent.ui.JavaUI;
+import descent.ui.dialogs.TypeSelectionExtension;
 
 public class TypeSelectionDialog2 extends SelectionStatusDialog {
 
@@ -169,7 +163,7 @@ public class TypeSelectionDialog2 extends SelectionStatusDialog {
 				if (fValidator != null) {
 					List jElements= new ArrayList();
 					for (int i= 0; i < selection.length; i++) {
-						IType type= selection[i].resolveType(fScope);
+						IMember type= selection[i].resolveType(fScope);
 						if (type != null) {
 							jElements.add(type);
 						} else {
@@ -256,7 +250,7 @@ public class TypeSelectionDialog2 extends SelectionStatusDialog {
 		for (int i= 0; i < selected.length; i++) {
 			try {
 				TypeInfo typeInfo= selected[i];
-				IType type= typeInfo.resolveType(fScope);
+				IJavaElement type= typeInfo.resolveType(fScope);
 				if (type == null) {
 					String title= JavaUIMessages.TypeSelectionDialog_errorTitle; 
 					String message= Messages.format(JavaUIMessages.TypeSelectionDialog_dialogMessage, typeInfo.getPath()); 
@@ -307,7 +301,7 @@ public class TypeSelectionDialog2 extends SelectionStatusDialog {
 			}
 			private void refreshSearchIndices(IProgressMonitor monitor) throws InvocationTargetException {
 				try {
-					new SearchEngine().searchAllTypeNames(
+					new SearchEngine().searchAllDeclarationName(
 						null, 
 						// make sure we search a concrete name. This is faster according to Kent  
 						"_______________".toCharArray(), //$NON-NLS-1$

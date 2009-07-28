@@ -307,6 +307,17 @@ ICompilationUnit findWorkingCopy(WorkingCopyOwner owner);
  */
 IType[] getAllTypes() throws JavaModelException;
 /**
+ * Returns all members declared in this compilation unit in the order
+ * in which they appear in the source. 
+ * This includes all top-level members and nested members.
+ * It does NOT include local types (types defined in methods).
+ *
+ * @return the array of top-level members defined in a compilation unit, in declaration order.
+ * @throws JavaModelException if this element does not exist or if an
+ *		exception occurs while accessing its corresponding resource
+ */
+IMember[] getAllMembers() throws JavaModelException;
+/**
  * Returns the smallest element within this compilation unit that 
  * includes the given source position (that is, a method, field, etc.), or
  * <code>null</code> if there is no element other than the compilation

@@ -5,10 +5,12 @@ import org.eclipse.core.runtime.IPath;
 import descent.core.Flags;
 import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
+import descent.core.IMember;
 import descent.core.IType;
 import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
 import descent.core.search.IJavaSearchScope;
+import descent.core.search.TypeNameRequestor;
 import descent.ui.dialogs.ITypeInfoRequestor;
 
 public abstract class TypeInfo {
@@ -37,6 +39,7 @@ public abstract class TypeInfo {
 	final char[][] fEnclosingNames;
 	
 	long fModifiers;
+	int fKind;
 	
 	public static final int UNRESOLVABLE_TYPE_INFO= 1;
 	public static final int JAR_FILE_ENTRY_TYPE_INFO= 2;
@@ -48,10 +51,11 @@ public abstract class TypeInfo {
 	
 	static final String EMPTY_STRING= ""; //$NON-NLS-1$
 	
-	protected TypeInfo(String pkg, String name, char[][] enclosingTypes, long modifiers) {
+	protected TypeInfo(String pkg, String name, char[][] enclosingTypes, long modifiers, int kind) {
 		fPackage= pkg;
 		fName= name;
 		fModifiers= modifiers;
+		fKind = kind;
 		fEnclosingNames= enclosingTypes;
 	}
 	
@@ -105,6 +109,10 @@ public abstract class TypeInfo {
 		return fModifiers;
 	}
 	
+	public int getKind() {
+		return fKind;
+	}
+	
 	/**
 	 * Sets the modifiers to the given value.
 	 * 
@@ -131,12 +139,75 @@ public abstract class TypeInfo {
 	public String getPackageName() {
 		return fPackage;
 	}
+	
+	/**
+	 * Returns true iff the type info describes a class.
+	 */	
+	public boolean isClass() {
+		return fKind == TypeNameRequestor.KindType && Flags.isClass(fModifiers);
+	}
 
 	/**
 	 * Returns true iff the type info describes an interface.
 	 */	
 	public boolean isInterface() {
-		return Flags.isInterface(fModifiers);
+		return fKind == TypeNameRequestor.KindType && Flags.isInterface(fModifiers);
+	}
+	
+	/**
+	 * Returns true iff the type info describes a struct.
+	 */	
+	public boolean isStruct() {
+		return fKind == TypeNameRequestor.KindType && Flags.isStruct(fModifiers);
+	}
+	
+	/**
+	 * Returns true iff the type info describes a union.
+	 */	
+	public boolean isUnion() {
+		return fKind == TypeNameRequestor.KindType && Flags.isUnion(fModifiers);
+	}
+	
+	/**
+	 * Returns true iff the type info describes an enum.
+	 */	
+	public boolean isEnum() {
+		return fKind == TypeNameRequestor.KindType && Flags.isEnum(fModifiers);
+	}
+	
+	/**
+	 * Returns true iff the type info describes a template.
+	 */	
+	public boolean isTemplate() {
+		return Flags.isTemplate(fModifiers);
+	}
+	
+	/**
+	 * Returns true iff the type info describes a variable.
+	 */	
+	public boolean isVariable() {
+		return fKind == TypeNameRequestor.KindVariable && !isAlias() && !isTypedef();
+	}
+	
+	/**
+	 * Returns true iff the type info describes an alias.
+	 */	
+	public boolean isAlias() {
+		return fKind == TypeNameRequestor.KindVariable && Flags.isAlias(fModifiers);
+	}
+	
+	/**
+	 * Returns true iff the type info describes an alias.
+	 */	
+	public boolean isTypedef() {
+		return fKind == TypeNameRequestor.KindVariable && Flags.isTypedef(fModifiers);
+	}
+	
+	/**
+	 * Returns true iff the type info describes a function.
+	 */	
+	public boolean isFunction() {
+		return fKind == TypeNameRequestor.KindFunction;
 	}
 	
 	/**
@@ -230,7 +301,7 @@ public abstract class TypeInfo {
 	 * The parent project of JAR files is the first project found in scope.
 	 * Returns null if the type could not be resolved
 	 */	
-	public IType resolveType(IJavaSearchScope scope) throws JavaModelException {
+	public IMember resolveType(IJavaSearchScope scope) throws JavaModelException {
 		IJavaElement elem = getContainer(scope);
 		if (elem instanceof ICompilationUnit)
 			return JavaModelUtil.findTypeInCompilationUnit((ICompilationUnit)elem, getTypeQualifiedName());

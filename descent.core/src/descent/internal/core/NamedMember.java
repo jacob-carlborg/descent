@@ -194,6 +194,24 @@ public abstract class NamedMember extends Member {
 		}
 		return initial + packageName + '.' + moduleName + '.' + getTypeQualifiedName(enclosingTypeSeparator, showParameters);
 	}
+	
+	/**
+	 * @see IType#getTypeQualifiedName()
+	 */
+	public String getTypeQualifiedName() {
+		return this.getTypeQualifiedName('$');
+	}
+	/**
+	 * @see IType#getTypeQualifiedName(char)
+	 */
+	public String getTypeQualifiedName(char enclosingTypeSeparator) {
+		try {
+			return getTypeQualifiedName(enclosingTypeSeparator, false/*don't show parameters*/);
+		} catch (JavaModelException e) {
+			// exception thrown only when showing parameters
+			return null;
+		}
+	}
 
 	public String getTypeQualifiedName(char enclosingTypeSeparator, boolean showParameters) throws JavaModelException {
 		NamedMember declaringType;
@@ -235,11 +253,14 @@ public abstract class NamedMember extends Member {
 		
 		StringBuffer buffer = new StringBuffer();
 		if (declaringType != null) {
-			buffer.append(declaringType.getTypeQualifiedName(enclosingTypeSeparator, showParameters));
-		}		
+			String typeQualifiedName = declaringType.getTypeQualifiedName(enclosingTypeSeparator, showParameters);
+			if (typeQualifiedName != null && typeQualifiedName.length() > 0) {
+				buffer.append(typeQualifiedName);
+				buffer.append(enclosingTypeSeparator);
+			}
+		}
 		
-		buffer.append(enclosingTypeSeparator);
-		String simpleName = this.name.length() == 0 ? Integer.toString(this.occurrenceCount) : this.name;
+		String simpleName = this.name.length() == 0 ? "" /* Integer.toString(this.occurrenceCount) */ : this.name;
 		buffer.append(simpleName);
 		if (showParameters) {
 			appendTypeParameters(buffer);

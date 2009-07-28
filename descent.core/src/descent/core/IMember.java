@@ -130,4 +130,8 @@ IType getType(String name, int occurrenceCount);
  *   from a compilation unit
  */
 boolean isBinary();
+
+String getTypeQualifiedName();
+
+String getTypeQualifiedName(char enclosingTypeSeparator);
 }

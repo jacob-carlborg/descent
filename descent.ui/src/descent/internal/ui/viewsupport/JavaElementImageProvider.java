@@ -37,6 +37,7 @@ import descent.core.IPackageFragmentRoot;
 import descent.core.IType;
 import descent.core.JavaCore;
 import descent.core.JavaModelException;
+import descent.core.search.TypeNameRequestor;
 import descent.internal.corext.util.JavaModelUtil;
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.JavaPluginImages;
@@ -502,64 +503,87 @@ public class JavaElementImageProvider {
 	*/
 	
 	public static ImageDescriptor getTypeImageDescriptor(boolean isInner, boolean isInInterfaceOrAnnotation, long flags, boolean useLightIcons) {
-		if (Flags.isEnum(flags)) {
+		return getDeclarationImageDescriptor(isInner, isInInterfaceOrAnnotation, flags, TypeNameRequestor.KindType, useLightIcons);
+	}
+	
+	public static ImageDescriptor getDeclarationImageDescriptor(boolean isInner, boolean isInInterfaceOrAnnotation, long flags, int kind, boolean useLightIcons) {
+		switch(kind) {
+		case TypeNameRequestor.KindType:
+			if (Flags.isEnum(flags)) {
+				if (useLightIcons) {
+					return JavaPluginImages.DESC_OBJS_ENUM_ALT;
+				}
+				if (isInner) {
+					return getInnerEnumImageDescriptor(isInInterfaceOrAnnotation, flags);
+				}
+				return getEnumImageDescriptor(flags);
+			} else if (Flags.isClass(flags)) {
+				if (useLightIcons) {
+					return JavaPluginImages.DESC_OBJS_CLASSALT;
+				}
+				if (isInner) {
+					return getInnerClassImageDescriptor(isInInterfaceOrAnnotation, flags);
+				}
+				return getClassImageDescriptor(flags);
+			}  else if (Flags.isInterface(flags)) {
+				if (useLightIcons) {
+					return JavaPluginImages.DESC_OBJS_INTERFACEALT;
+				}
+				if (isInner) {
+					return getInnerInterfaceImageDescriptor(isInInterfaceOrAnnotation, flags);
+				}
+				return getInterfaceImageDescriptor(flags);
+			}  else if (Flags.isStruct(flags)) {
+				if (useLightIcons) {
+					return JavaPluginImages.DESC_OBJS_STRUCTALT;
+				}
+				if (isInner) {
+					return getInnerStructImageDescriptor(isInInterfaceOrAnnotation, flags);
+				}
+				return getStructImageDescriptor(flags);
+			}  else if (Flags.isUnion(flags)) {
+				if (useLightIcons) {
+					return JavaPluginImages.DESC_OBJS_UNIONALT;
+				}
+				if (isInner) {
+					return getInnerUnionImageDescriptor(isInInterfaceOrAnnotation, flags);
+				}
+				return getUnionImageDescriptor(flags);
+			}  else if (Flags.isTemplate(flags)) {
+				if (useLightIcons) {
+					return JavaPluginImages.DESC_OBJS_TEMPLATE_ELEMENTALT;
+				}
+				if (isInner) {
+					return getInnerTemplateImageDescriptor(isInInterfaceOrAnnotation, flags);
+				}
+				return getTemplateImageDescriptor(flags);
+			} else {
+				throw new IllegalStateException();
+			}
+		case TypeNameRequestor.KindVariable:
+			if (Flags.isAlias(flags)) {
+				 if (useLightIcons) {
+					return JavaPluginImages.DESC_ALIAS_DEFAULT;
+				}
+				return getAliasImageDescriptor(flags);
+			} else if (Flags.isTypedef(flags)) {
+				if (useLightIcons) {
+					return JavaPluginImages.DESC_TYPEDEF_DEFAULT;
+				}
+				return getTypedefImageDescriptor(flags);
+			} else {
+				if (useLightIcons) {
+					return JavaPluginImages.DESC_FIELD_DEFAULT;
+				}
+				return getFieldImageDescriptor(false, flags);
+			}
+		case TypeNameRequestor.KindFunction:
 			if (useLightIcons) {
-				return JavaPluginImages.DESC_OBJS_ENUM_ALT;
+				return JavaPluginImages.DESC_MISC_DEFAULT;
 			}
-			if (isInner) {
-				return getInnerEnumImageDescriptor(isInInterfaceOrAnnotation, flags);
-			}
-			return getEnumImageDescriptor(flags);
-		/* TODO JDT UI images
-		} else if (Flags.isAnnotation(flags)) {
-			if (useLightIcons) {
-				return JavaPluginImages.DESC_OBJS_ANNOTATION_ALT;
-			}
-			if (isInner) {
-				return getInnerAnnotationImageDescriptor(isInInterfaceOrAnnotation, flags);
-			}
-			return getAnnotationImageDescriptor(flags);
-		*/
-		}  else if (Flags.isInterface(flags)) {
-			if (useLightIcons) {
-				return JavaPluginImages.DESC_OBJS_INTERFACEALT;
-			}
-			if (isInner) {
-				return getInnerInterfaceImageDescriptor(isInInterfaceOrAnnotation, flags);
-			}
-			return getInterfaceImageDescriptor(flags);
-		}  else if (Flags.isStruct(flags)) {
-			if (useLightIcons) {
-				return JavaPluginImages.DESC_OBJS_STRUCTALT;
-			}
-			if (isInner) {
-				return getInnerStructImageDescriptor(isInInterfaceOrAnnotation, flags);
-			}
-			return getStructImageDescriptor(flags);
-		}  else if (Flags.isUnion(flags)) {
-			if (useLightIcons) {
-				return JavaPluginImages.DESC_OBJS_UNIONALT;
-			}
-			if (isInner) {
-				return getInnerUnionImageDescriptor(isInInterfaceOrAnnotation, flags);
-			}
-			return getUnionImageDescriptor(flags);
-		}  else if (Flags.isTemplate(flags) && !Flags.isClass(flags)) {
-			if (useLightIcons) {
-				return JavaPluginImages.DESC_OBJS_TEMPLATE_ELEMENTALT;
-			}
-			if (isInner) {
-				return getInnerTemplateImageDescriptor(isInInterfaceOrAnnotation, flags);
-			}
-			return getTemplateImageDescriptor(flags);
-		} else {
-			if (useLightIcons) {
-				return JavaPluginImages.DESC_OBJS_CLASSALT;
-			}
-			if (isInner) {
-				return getInnerClassImageDescriptor(isInInterfaceOrAnnotation, flags);
-			}
-			return getClassImageDescriptor(flags);
+			return getMethodImageDescriptor(false, flags);
+		default:
+			throw new IllegalStateException();
 		}
 	}
 	
