@@ -30,6 +30,7 @@ import descent.core.JavaCore;
 import descent.ui.text.IJavaPartitions;
 import descent.ui.text.rules.DEscapeRule;
 import descent.ui.text.rules.DStringRule;
+import descent.ui.text.rules.ManyPatternRule;
 import descent.ui.text.rules.NestedCommentRule;
 
 
@@ -140,11 +141,14 @@ public class JavaPartitionScanner extends RuleBasedPartitionScanner implements I
 		rules.add(new EndOfLineRule("///", singleLineDocComment)); //$NON-NLS-1$ 
 		rules.add(new EndOfLineRule("//", singleLineComment)); //$NON-NLS-1$
 		
-		rules.add(new DStringRule("x\"", "\"", string, (char) 0)); //$NON-NLS-1$ //$NON-NLS-2$
-		rules.add(new DStringRule("r\"", "\"", string, (char) 0)); //$NON-NLS-1$ //$NON-NLS-2$
-		rules.add(new DStringRule("`", "`", string, (char) 0)); //$NON-NLS-1$ //$NON-NLS-2$
-		rules.add(new DStringRule("\"", "\"", string, '\\')); //$NON-NLS-1$ //$NON-NLS-2$
-		rules.add(new DStringRule("q\"", "\"", string, (char) 0)); //$NON-NLS-1$ //$NON-NLS-2$
+		rules.add(new ManyPatternRule(
+			new String[] { String.valueOf((char)96), "x\"", "r\"", "\"", "q\"" },
+			new String[] { String.valueOf((char)96), "\"", "\"", "\"", "\"" },
+			string,
+			new char[] { (char)0, (char)0, (char)0, '\\', (char)0 },
+			new boolean[] { false, false, false, false, false },
+			new boolean[] { true, true, true, true, true }
+				));
 		
 		rules.add(new DEscapeRule(string));
 		

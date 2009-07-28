@@ -3,7 +3,6 @@ package descent.ui.text.rules;
 import org.eclipse.jface.text.rules.ICharacterScanner;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.MultiLineRule;
-import org.eclipse.jface.text.rules.SingleLineRule;
 
 /**
  * Extends a SingleLineRule in order to match D strings.
