@@ -558,7 +558,13 @@ public class JavaElementImageProvider {
 				}
 				return getTemplateImageDescriptor(flags);
 			} else {
-				throw new IllegalStateException();
+				if (useLightIcons) {
+					return JavaPluginImages.DESC_OBJS_CLASSALT;
+				}
+				if (isInner) {
+					return getInnerClassImageDescriptor(isInInterfaceOrAnnotation, flags);
+				}
+				return getClassImageDescriptor(flags);
 			}
 		case TypeNameRequestor.KindVariable:
 			if (Flags.isAlias(flags)) {

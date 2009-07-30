@@ -1764,7 +1764,7 @@ public class CompletionEngine extends Engine
 				currentName = computePrefixAndSourceRange(ident);
 				suggestMembers((((Module) se.sds)).unlazy(context).members, 
 						false /* not only statics */, 
-						new HashtableOfCharArrayAndObject(), INCLUDE_ALL);
+						new HashtableOfCharArrayAndObject(), INCLUDE_ALL & ~INCLUDE_IMPORTS);
 			} else if (se.sds instanceof ClassDeclaration) {
 				currentName = computePrefixAndSourceRange(ident);
 				suggestMembers((((ClassDeclaration) se.sds)).unlazy(context).members, 

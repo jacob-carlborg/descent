@@ -411,6 +411,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		info.modifiers |= flags;
 		if (templateDeclaration != null) {
 			info.modifiers |= Flags.AccTemplate;
+			info.modifiers |= getFlags(templateDeclaration, module.getModifiers(templateDeclaration));
 		}
 		
 		if (node.ident != null) {
@@ -493,7 +494,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 	@Override
 	public boolean visit(TemplateDeclaration node) {
 		if (node.wrapper) {
-			Dsymbol wrappedSymbol = node.members.get(0); // SEMANTIC
+			Dsymbol wrappedSymbol = node.members.get(0);
 			if ((wrappedSymbol.getNodeType() == ASTDmdNode.FUNC_DECLARATION) ||
 				(wrappedSymbol.getNodeType() == ASTDmdNode.CTOR_DECLARATION)) {
 				visit((FuncDeclaration) wrappedSymbol, node);
@@ -565,6 +566,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		info.modifiers |= flags;
 		if (templateDeclaration != null) {
 			info.modifiers |= Flags.AccTemplate;
+			info.modifiers |= getFlags(templateDeclaration, module.getModifiers(templateDeclaration));
 		}
 		info.name = name;
 		if (node.ident != null) {

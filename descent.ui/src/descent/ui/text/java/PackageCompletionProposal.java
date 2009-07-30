@@ -42,8 +42,10 @@ public class PackageCompletionProposal extends JavaCompletionProposal {
 					int indexOfNextDot = buffer.indexOf(".", bufferOffset);
 					if (indexOfNextDot != -1) {
 						buffer.setLength(indexOfNextDot + 1);
-						setCursorPosition(buffer.length());
+					} else {
+						buffer.append('.');
 					}
+					setCursorPosition(buffer.length());
 				} else if (trigger == ';') {
 					buffer.append(';');
 					setCursorPosition(buffer.length());
