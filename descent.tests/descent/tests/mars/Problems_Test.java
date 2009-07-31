@@ -432,8 +432,8 @@ public class Problems_Test extends Parser_Test {
 	}
 
 	public void test_PRAGMA_CHECK_SINGLE_PARAMETER_NOT_RPAREN_OUT_OF_MEMORY_BUG() {
-		IProblem p = getProblem("pragma(msg,;");
-		assertError(p, IProblem.ParsingErrorInsertTokenAfter, 10, 1);
+		IProblem[] p = getProblems("pragma(msg,;", 2);
+		assertError(p[0], IProblem.ParsingErrorInsertTokenAfter, 10, 1);
 	}
 
 	public void test_ENUM_DECLARATION_IS_INVALID() {

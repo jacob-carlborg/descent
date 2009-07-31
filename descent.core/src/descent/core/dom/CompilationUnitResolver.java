@@ -232,7 +232,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			boolean statementsRecovery,
 			boolean resolveTemplates,
 			IProgressMonitor monitor) throws JavaModelException {
-		return resolve(apiLevel, sourceUnit, javaProject, options, owner, recordLineSeparator, statementsRecovery, resolveTemplates, null, monitor);
+		return resolve(apiLevel, sourceUnit, javaProject, options, owner, recordLineSeparator, statementsRecovery, resolveTemplates, false, null, monitor);
 	}
 	
 	public static ParseResult resolve(
@@ -245,7 +245,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			boolean statementsRecovery,
 			IDebugger debugger,
 			IProgressMonitor monitor) throws JavaModelException {
-		return resolve(apiLevel, sourceUnit, javaProject, options, owner, recordLineSeparator, statementsRecovery, true, debugger, monitor);
+		return resolve(apiLevel, sourceUnit, javaProject, options, owner, recordLineSeparator, statementsRecovery, true, false, debugger, monitor);
 	}
 	
 	public static ParseResult resolve(
@@ -257,10 +257,11 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			boolean recordLineSeparator,
 			boolean statementsRecovery,
 			boolean analyzeTemplates,
+			boolean diet,
 			IDebugger debugger,
 			IProgressMonitor monitor) throws JavaModelException {
 		
-		ParseResult result = parse(apiLevel, sourceUnit, options, recordLineSeparator, statementsRecovery, false, debugger != null);
+		ParseResult result = parse(apiLevel, sourceUnit, options, recordLineSeparator, statementsRecovery, diet, debugger != null);
 		result.module.moduleName = sourceUnit.getFullyQualifiedName();
 		result.context = resolve(result.module, javaProject, owner, result.encoder, analyzeTemplates, debugger);
 		return result;

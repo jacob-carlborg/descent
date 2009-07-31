@@ -40,7 +40,6 @@ import descent.core.IType;
 import descent.core.JavaConventions;
 import descent.core.JavaCore;
 import descent.core.JavaModelException;
-import descent.core.Signature;
 import descent.core.dom.ASTNode;
 import descent.core.dom.Expression;
 import descent.core.dom.IBinding;

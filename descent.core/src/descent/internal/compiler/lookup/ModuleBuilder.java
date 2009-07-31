@@ -1033,6 +1033,7 @@ public class ModuleBuilder {
 		} else if (cond.isStaticIfDeclaration()) {
 			char[] exp = cond.getElementName().toCharArray();
 			Parser parser = context.newParser(exp);
+			parser.nextToken();
 			Expression expression = parser.parseExpression();
 			Expression result = expression.semantic(lazy.getSemanticScope(), context);
 			result = result.optimize(ASTDmdNode.WANTvalue | ASTDmdNode.WANTinterpret, context);

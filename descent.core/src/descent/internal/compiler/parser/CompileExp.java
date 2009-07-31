@@ -45,6 +45,7 @@ public class CompileExp extends UnaExp {
 		Parser p = new Parser(context.Module_rootModule.apiLevel, se.string);
 		p.filename = filename;
 		p.lineNumber = lineNumber;
+		p.nextToken();
 		Expression e = p.parseExpression();
 		
 		// TODO semantic do this better

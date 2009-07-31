@@ -143,7 +143,7 @@ public class ASTParser {
 	/**
 	 * Request for a partial AST. Defaults to <code>false</code>.
      */
-	//private boolean partial = false;
+	private boolean partial = false;
 
 	/**
 	 * Request for a statements recovery. Defaults to <code>false</code>.
@@ -154,7 +154,7 @@ public class ASTParser {
 	 * The focal point for a partial AST request.
      * Only used when <code>partial</code> is <code>true</code>.
      */
-	//private int focalPointPosition;
+	private int focalPointPosition;
 
     /**
      * Source string. 
@@ -201,9 +201,6 @@ public class ASTParser {
 	 * <code>null</code> if none. Defaults to none.
      */
 	private String unitName = null; 
-	
-	// TODO see how this can be hidden for public usage
-	private boolean surfaceDeclarations;
 
  	/**
 	 * Creates a new AST parser for the given API level.
@@ -371,12 +368,10 @@ public class ASTParser {
 	 * 
 	 * @param position a position into the corresponding body declaration
 	 */
-	/*
 	public void setFocalPosition(int position) {
 		this.partial = true;
 		this.focalPointPosition = position;
 	}
-	*/
 	
 	/**
 	 * Sets the kind of constructs to be parsed from the source.
@@ -632,10 +627,6 @@ public class ASTParser {
 		}
 	}
 	
-	public void setSurfaceDeclarations(boolean surfaceDeclarations) {
-		this.surfaceDeclarations = surfaceDeclarations;
-	}
-	
 	/**
      * Creates an abstract syntax tree.
      * <p>
@@ -876,6 +867,9 @@ public class ASTParser {
 							this.workingCopyOwner,
 							true,
 							this.statementsRecovery,
+							true,
+							true,
+							null,
 							monitor);
 				} catch (JavaModelException e) {
 					result = CompilationUnitResolver.parse(
@@ -884,7 +878,7 @@ public class ASTParser {
 							this.compilerOptions,
 							true,
 							this.statementsRecovery,
-							false);
+							this.partial);
 					needToResolveBindings = false;
 				}
 			} else {
@@ -895,7 +889,7 @@ public class ASTParser {
 							this.compilerOptions,
 							true,
 							this.statementsRecovery,
-							false);
+							this.partial);
 					needToResolveBindings = false;
 				} catch (IllegalArgumentException e) {
 					throw e;
@@ -940,21 +934,25 @@ public class ASTParser {
 			case K_INITIALIZER :
 				parser = new descent.internal.compiler.parser.Parser(apiLevel, rawSource, sourceOffset, sourceLength);
 				parser.module = new Module("", new IdentifierExp(null, 0));
+				parser.nextToken();
 				result = CompilationUnitResolver.convert(ast, parser.module, parser.parseInitializer());
 				return rootNodeToAst(ast, result);
 			case K_EXPRESSION :
 				parser = new descent.internal.compiler.parser.Parser(apiLevel, rawSource, sourceOffset, sourceLength);
 				parser.module = new Module("", new IdentifierExp(null, 0));
+				parser.nextToken();
 				result = CompilationUnitResolver.convert(ast, parser.module, parser.parseExpression());
 				return rootNodeToAst(ast, result);
 			case K_STATEMENT :
 				parser = new descent.internal.compiler.parser.Parser(apiLevel, rawSource, sourceOffset, sourceLength);
 				parser.module = new Module("", new IdentifierExp(null, 0));
+				parser.nextToken();
 				result = CompilationUnitResolver.convert(ast, parser.module, parser.parseStatement(0));
 				return rootNodeToAst(ast, result);
 			case K_STATEMENTS:
 				parser = new descent.internal.compiler.parser.Parser(apiLevel, rawSource, sourceOffset, sourceLength);
 				parser.module = new Module("", new IdentifierExp(null, 0));
+				parser.nextToken();
 				result = CompilationUnitResolver.convert(ast, parser.module, parser.parseStatement(0));
 				for(Statement statement : ((Block) result).statements()) {
 					statement.accept(new GenericVisitor() {

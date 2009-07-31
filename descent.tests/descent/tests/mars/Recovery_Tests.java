@@ -28,7 +28,7 @@ public class Recovery_Tests extends Parser_Test {
 	}
 	
 	public void testStaticAlone() {
-		assertParsingErrorDeleteToken_NoDeclarations(" static", 1, 6);
+		assertParsingErrorInsertToComplete_OneDeclaration(" static", 1, 6);
 	}
 	
 	public void testModuleAlone() {

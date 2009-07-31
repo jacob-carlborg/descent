@@ -8235,10 +8235,6 @@ public class Parser extends Lexer {
 	}
 
 	public Expression parseExpression() {
-		if (token.value == null) {
-			nextToken();
-		}
-		
 		Expression e;
 		Expression e2;
 

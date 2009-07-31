@@ -30,6 +30,7 @@ import descent.core.dom.Modifier;
 import descent.core.dom.Name;
 import descent.core.dom.QualifiedName;
 import descent.core.dom.QualifiedType;
+import descent.core.dom.SimpleName;
 import descent.core.dom.SimpleType;
 import descent.internal.corext.util.CodeFormatterUtil;
 import descent.internal.ui.JavaPlugin;
@@ -163,6 +164,14 @@ public class ASTNodes {
 			return document.get();
 		}
 		return unformatted; // unknown node
+	}
+	
+	public static String getSimpleNameIdentifier(Name name) {
+		if (name.isQualifiedName()) {
+			return ((QualifiedName) name).getName().getIdentifier();
+		} else {
+			return ((SimpleName) name).getIdentifier();
+		}
 	}
 	
 }

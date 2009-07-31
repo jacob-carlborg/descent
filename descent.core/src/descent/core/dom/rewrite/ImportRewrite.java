@@ -1035,7 +1035,7 @@ public final class ImportRewrite {
 			if (usedAstRoot == null) {
 				ASTParser parser= ASTParser.newParser(Util.getApiLevel(compilationUnit));
 				parser.setSource(this.compilationUnit);
-				//parser.setFocalPosition(0); // reduced AST
+				parser.setFocalPosition(0); // reduced AST
 				parser.setResolveBindings(false);
 				usedAstRoot= (CompilationUnit) parser.createAST(new SubProgressMonitor(monitor, 1));
 			}
@@ -1077,19 +1077,6 @@ public final class ImportRewrite {
 	 */
 	public String[] getCreatedImports() {
 		return this.createdImports;
-	}
-	
-	/**
-	 * Returns all new static imports created by the last invocation of {@link #rewriteImports(IProgressMonitor)}
-	 * or <code>null</code> if these methods have not been called yet.
-	 * <p>
-	 * Note that this list doesn't need to be the same as the added static imports ({@link #getAddedStaticImports()}) as
-	 * implicit imports are not created and some imports are represented by on-demand imports instead.
-	 * </p
-	 * @return the created imports
-	 */
-	public String[] getCreatedStaticImports() {
-		return this.createdStaticImports;
 	}
 	
 	/**

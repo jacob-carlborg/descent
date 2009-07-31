@@ -3,7 +3,6 @@ package descent.tests.mars;
 import java.util.List;
 
 import junit.framework.TestCase;
-import descent.core.IProblemRequestor;
 import descent.core.compiler.IProblem;
 import descent.core.dom.AST;
 import descent.core.dom.ASTNode;
@@ -18,12 +17,9 @@ import descent.core.dom.Initializer;
 import descent.core.dom.ModuleDeclaration;
 import descent.core.dom.Statement;
 import descent.core.dom.CompilationUnitResolver.ParseResult;
-import descent.internal.compiler.lookup.DmdModuleFinder;
-import descent.internal.compiler.parser.ASTNodeEncoder;
 import descent.internal.compiler.parser.Global;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.SemanticContext;
-import descent.internal.core.CompilerConfiguration;
 
 public abstract class Parser_Test extends TestCase {
 	

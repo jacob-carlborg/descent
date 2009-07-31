@@ -49,6 +49,7 @@ public class CompileStatement extends Statement {
 		p.module = sc.module;
 		p.filename = filename;
 		p.lineNumber = lineNumber;
+		p.nextToken();
 
 		Statements a = new Statements();
 		while (p.token.value != TOKeof) {
