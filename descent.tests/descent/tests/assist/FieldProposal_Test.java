@@ -27,13 +27,13 @@ public class FieldProposal_Test extends AbstractCompletionTest  {
 	}
 	
 	public void testVarWithBasicTypeInFunctionSome() throws Exception {
-		String s = "int wxyz; void foo() { w }";
+		String s = "int zxyz; void foo() { z }";
 		
-		int pos = s.lastIndexOf("w ") + 1; 
+		int pos = s.lastIndexOf("z ") + 1; 
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.FIELD_REF,
 				new int[] { SIGNATURE, TYPE_SIGNATURE, DECLARATION_SIGNATURE, LABEL }, 
-				"wxyz", pos - 1, pos, "@4testB4wxyz", "i", "@4test", "wxyz    int - test");
+				"zxyz", pos - 1, pos, "@4testB4zxyz", "i", "@4test", "zxyz    int - test");
 	}
 	
 	public void testVarWithClassTypeInFunction() throws Exception {
@@ -54,6 +54,7 @@ public class FieldProposal_Test extends AbstractCompletionTest  {
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.FIELD_REF,
 				new int[] { TYPE_SIGNATURE, DECLARATION_SIGNATURE, LABEL },
 				"alignof", pos, pos, "i", "@4testC9SomeClass", "alignof    int - SomeClass",
+				"classinfo", pos, pos, "@6objectC9ClassInfo", "@4testC9SomeClass", "classinfo    TypeInfo - SomeClass",
 				"init", pos, pos, "@4testC9SomeClass", "@4testC9SomeClass", "init    SomeClass - SomeClass",
 				"mangleof", pos, pos, "Aa", "@4testC9SomeClass", "mangleof    char[] - SomeClass",
 				"sizeof", pos, pos, "i", "@4testC9SomeClass", "sizeof    int - SomeClass",
@@ -122,7 +123,7 @@ public class FieldProposal_Test extends AbstractCompletionTest  {
 	public void testVarWithBasicTypeInModuleScope() throws Exception {
 		String s = "int wxyz; int wxya = ";
 		
-		int pos = s.length(); 
+		int pos = s.length();
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.FIELD_REF,
 				"wxya", pos, pos,

@@ -48,8 +48,9 @@ public abstract class AbstractModelTest extends TestCase {
 		javaProject.setRawClasspath(newEntries, null);
 	}
 	
-	protected String getPhobosPath() {
-		return "C:\\ary\\programacion\\d\\1.045-mini";
+	private String getPhobosPath() {
+		return "C:\\ary\\programacion\\d\\1.045\\src\\phobos"; 
+//		return "C:\\ary\\programacion\\d\\1.045-mini";
 //		return "/home/asterite/programming/d/dmd.1.030/dmd/src/phobos";
 	}
 	
