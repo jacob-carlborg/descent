@@ -240,7 +240,8 @@ public class TypeBinding extends JavaElementBasedBinding implements ITypeBinding
 	}
 	
 	public boolean isTemplate() {
-		return node instanceof TemplateDeclaration;
+		return node instanceof TemplateDeclaration ||
+			node.templated();
 	}
 
 	public boolean isTopLevel() {

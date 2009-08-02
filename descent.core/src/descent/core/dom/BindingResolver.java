@@ -131,7 +131,7 @@ class BindingResolver {
 	 * @return the binding for the type of the given expression, or 
 	 *    <code>null</code> if no binding is available
 	 */
-	IBinding resolveExpressionType(Expression expression) {
+	ITypeBinding resolveExpressionType(Expression expression) {
 		return null;
 	}
 	

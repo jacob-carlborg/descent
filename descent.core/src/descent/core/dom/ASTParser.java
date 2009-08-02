@@ -868,7 +868,7 @@ public class ASTParser {
 							true,
 							this.statementsRecovery,
 							true,
-							true,
+							this.partial,
 							null,
 							monitor);
 				} catch (JavaModelException e) {

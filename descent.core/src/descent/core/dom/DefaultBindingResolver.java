@@ -715,7 +715,9 @@ class DefaultBindingResolver extends BindingResolver {
 				|| !(resolvedSymbol instanceof FuncDeclaration)) {
 			if ((resolvedExp = context.getResolvedExp(exp.sourceE1)) == null
 					|| !(resolvedExp instanceof VarExp)) {
-				return null;
+				if ((resolvedExp = exp.e1) == null || !(resolvedExp instanceof VarExp)) {
+					return null;
+				}
 			}
 
 			VarExp varExp = (VarExp) resolvedExp;
@@ -892,7 +894,7 @@ class DefaultBindingResolver extends BindingResolver {
 	}
 
 	@Override
-	IBinding resolveExpressionType(descent.core.dom.Expression expression) {
+	ITypeBinding resolveExpressionType(descent.core.dom.Expression expression) {
 		ASTDmdNode old = newAstToOldAst.get(expression);
 		if (!(old instanceof descent.internal.compiler.parser.Expression)) {
 			return null;
@@ -904,7 +906,7 @@ class DefaultBindingResolver extends BindingResolver {
 			IBinding binding = resolveName((Name) expression);
 			if (binding != null) {
 				if (binding instanceof ITypeBinding) {
-					return binding;
+					return (ITypeBinding) binding;
 				} else if (binding instanceof IVariableBinding) {
 					return ((IVariableBinding) binding).getType();
 				}
