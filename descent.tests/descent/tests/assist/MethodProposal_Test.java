@@ -11,7 +11,10 @@ public class MethodProposal_Test extends AbstractCompletionTest {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.METHOD_REF,
 				new int[] { SIGNATURE, TYPE_SIGNATURE, DECLARATION_SIGNATURE, LABEL }, 
-				"foo()", pos, pos, "@4test[3fooFZi", "FZi", "@4test", "foo()  int - test");
+				"foo()", pos, pos, "@4test[3fooFZi", "FZi", "@4test", "foo()  int - test",
+				"printf()", pos, pos, "@6object[6printfFPaYi", "FPaYi", "@6object", "printf(char* arg1, ...)  int - object",
+				"trace_term()", pos, pos, "@6object[10trace_termFZv", "FZv", "@6object", "trace_term()  void - object"
+				);
 	}
 	
 	public void testInVarAssignmentFQN() throws Exception {
@@ -23,13 +26,14 @@ public class MethodProposal_Test extends AbstractCompletionTest {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.METHOD_REF,
 				new int[] { LABEL }, 
-				"foo()", pos, pos, "foo()  int - one.two.test");
+				"foo()", pos, pos, "foo()  int - one.two.test",
+				"printf()", pos, pos, "printf(char* arg1, ...)  int - object",
+				"trace_term()", pos, pos, "trace_term()  void - object"
+				);
 	}
 	
 	public void testInVarAssignmentSome() throws Exception {
 		String s = "int foo() { return 1; } int x = f";
-		
-		
 		
 		int pos = s.length(); 
 		
@@ -51,7 +55,7 @@ public class MethodProposal_Test extends AbstractCompletionTest {
 //				"opCmp()", pos, pos, "opCmp(Object o)  int - Object",
 //				"opEquals()", pos, pos, "opEquals(Object o)  int - Object",
 				"print()", pos, pos, "print()  void - Object",
-				"toHash()", pos, pos, "toHash()  int - Object",
+				"toHash()", pos, pos, "toHash()  hash_t - Object",
 				"toString()", pos, pos, "toString()  char[] - Object"
 				);
 	}

@@ -79,6 +79,7 @@ public class CompletionOnDotIdExp_Test extends AbstractCompletionTest {
 				"mangleof", s.length(), s.length(),
 				"sizeof", s.length(), s.length(),
 				"stringof", s.length(), s.length(),
+				"tupleof", s.length(), s.length(),
 				"x", s.length(), s.length(),
 				"y", s.length(), s.length()
 				);
@@ -97,6 +98,7 @@ public class CompletionOnDotIdExp_Test extends AbstractCompletionTest {
 				"mangleof", s.length(), s.length(),
 				"sizeof", s.length(), s.length(),
 				"stringof", s.length(), s.length(),
+				"tupleof", s.length(), s.length(),
 				"x", s.length(), s.length(),
 				"y", s.length(), s.length()
 				);
@@ -123,6 +125,7 @@ public class CompletionOnDotIdExp_Test extends AbstractCompletionTest {
 				"mangleof", s.length(), s.length(),
 				"sizeof", s.length(), s.length(),
 				"stringof", s.length(), s.length(),
+				"tupleof", s.length(), s.length(),
 				"x", s.length(), s.length(),
 				"y", s.length(), s.length()
 				);
@@ -150,6 +153,7 @@ public class CompletionOnDotIdExp_Test extends AbstractCompletionTest {
 				"mangleof", s.length(), s.length(),
 				"sizeof", s.length(), s.length(),
 				"stringof", s.length(), s.length(),
+				"tupleof", s.length(), s.length(),
 				"x", s.length(), s.length(),
 				"y", s.length(), s.length()
 				);

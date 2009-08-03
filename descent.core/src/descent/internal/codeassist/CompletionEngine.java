@@ -1079,7 +1079,10 @@ public class CompletionEngine extends Engine
 				CaseStatement caseStatement = (CaseStatement) caseObject;
 				Expression exp = caseStatement.sourceExp;
 				if (exp != null) {
-					excludedNames.put(exp.toCharArray(), this);
+					char[] fqn = exp.toCharArray();
+					fqn = CharOperation.remove(fqn, '(');
+					fqn = CharOperation.remove(fqn, ')');
+					excludedNames.put(fqn, this);
 				}
 			}
 		}
