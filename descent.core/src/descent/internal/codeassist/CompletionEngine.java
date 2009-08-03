@@ -281,6 +281,7 @@ public class CompletionEngine extends Engine
 	
 	Scope rootScope;
 	int includesFilter;
+	boolean wantBaseType;
 	
 	private final static int INCLUDE_TYPES = 1;
 	private final static int INCLUDE_VARIABLES = 2;
@@ -1487,17 +1488,16 @@ public class CompletionEngine extends Engine
 				startPosition = actualCompletionPosition;
 				endPosition = actualCompletionPosition;
 				
-				includesFilter = INCLUDE_VARIABLES;
-				completeScope(rootScope, INCLUDE_ALL);
-				includesFilter = 0;
-				
 				if (wantOverrides) {
 					suggestOverrides(node);
 				}
+				return;
 			} else {
+				wantBaseType = true;
 				includesFilter = INCLUDE_VARIABLES;
 				completeNode(node.sourceBaseclasses.get(baseClassIndex).sourceType);
 				includesFilter = 0;
+				wantBaseType = false;
 			}
 		}
 	}
@@ -1576,7 +1576,11 @@ public class CompletionEngine extends Engine
 			currentName = CharOperation.NO_CHAR;
 			completeType(type, false /* not only statics */);
 		} else if (sym instanceof ScopeDsymbol) {
-			completeScopeDsymbol((ScopeDsymbol) sym, true /* only statics */, INCLUDE_ALL);
+			int flags = INCLUDE_ALL;
+			if (currentName.length == 0) {
+				flags &= ~INCLUDE_TYPES;
+			}
+			completeScopeDsymbol((ScopeDsymbol) sym, true /* only statics */, flags);
 		}
 	}
 	
@@ -2262,7 +2266,7 @@ public class CompletionEngine extends Engine
 		suggestTupleof(type);
 		
 		// Also suggest classinfo
-		suggestClassInfo();
+		suggestClassInfo(type);
 		
 		// And outer, if available
 		if (!onlyStatics) {
@@ -2306,9 +2310,9 @@ public class CompletionEngine extends Engine
 	public final static char[][] classInfoProperty = { Id.classinfo };
 	public final static char[][] outerProperty = { Id.outer };
 	
-	private void suggestClassInfo() {
+	private void suggestClassInfo(Type type) {
 		suggestProperties(
-				context.ClassDeclaration_classinfo.getSignature().toCharArray(),
+				type.getSignature().toCharArray(),
 				classInfoProperty,
 				new Type[] { context.ClassDeclaration_classinfo.type },
 				R_BUILTIN_PROPERTY);
@@ -2657,20 +2661,6 @@ public class CompletionEngine extends Engine
 		if ((includes & INCLUDE_TYPES) != 0) {
 			if (alias != null) {
 				if (currentName.length == 0 || match(currentName, ident)) {
-					int relevance = computeBaseRelevance();
-					relevance += computeRelevanceForInterestingProposal();
-					relevance += computeRelevanceForCaseMatching(currentName, ident);
-					relevance += R_ALIAS;
-					
-					boolean isLocal = alias.parent instanceof FuncDeclaration;
-					
-					CompletionProposal proposal = this.createProposal(isLocal ? CompletionProposal.LOCAL_VARIABLE_REF : CompletionProposal.FIELD_REF, this.actualCompletionPosition, alias);
-					proposal.setName(ident);
-					proposal.setCompletion(ident);
-					String signature = alias.getSignature();
-					if (signature != null) {
-						proposal.setSignature(signature.toCharArray());
-					}
 					Type type = alias.type();
 					if (type == null) {
 						Dsymbol sym = alias.toAlias(context);
@@ -2685,6 +2675,25 @@ public class CompletionEngine extends Engine
 						} else {
 							return;
 						}
+					}
+					
+					if (wantBaseType && !canLeadToClassType(type)) {
+						return;
+					}
+					
+					int relevance = computeBaseRelevance();
+					relevance += computeRelevanceForInterestingProposal();
+					relevance += computeRelevanceForCaseMatching(currentName, ident);
+					relevance += R_ALIAS;
+					
+					boolean isLocal = alias.parent instanceof FuncDeclaration;
+					
+					CompletionProposal proposal = this.createProposal(isLocal ? CompletionProposal.LOCAL_VARIABLE_REF : CompletionProposal.FIELD_REF, this.actualCompletionPosition, alias);
+					proposal.setName(ident);
+					proposal.setCompletion(ident);
+					String signature = alias.getSignature();
+					if (signature != null) {
+						proposal.setSignature(signature.toCharArray());
 					}
 					
 					if (parser.inNewExp) {
@@ -2965,6 +2974,17 @@ public class CompletionEngine extends Engine
 		}
 	}
 	
+	private boolean canLeadToClassType(Type type) {
+		switch(type.ty) {
+		case Tclass:
+		case Tstruct:
+		case Tinstance:
+			return true;
+		default:
+			return false;
+		}
+	}
+
 	private boolean isPointerToFunction(Type type) {
 		return type instanceof TypePointer && type.next instanceof TypeFunction;
 	}

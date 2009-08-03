@@ -54,11 +54,12 @@ public class FieldProposal_Test extends AbstractCompletionTest  {
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.FIELD_REF,
 				new int[] { TYPE_SIGNATURE, DECLARATION_SIGNATURE, LABEL },
 				"alignof", pos, pos, "i", "@4testC9SomeClass", "alignof    int - SomeClass",
-				"classinfo", pos, pos, "@6objectC9ClassInfo", "@4testC9SomeClass", "classinfo    TypeInfo - SomeClass",
+				"classinfo", pos, pos, "@6objectC9ClassInfo", "@4testC9SomeClass", "classinfo    ClassInfo - SomeClass",
 				"init", pos, pos, "@4testC9SomeClass", "@4testC9SomeClass", "init    SomeClass - SomeClass",
 				"mangleof", pos, pos, "Aa", "@4testC9SomeClass", "mangleof    char[] - SomeClass",
 				"sizeof", pos, pos, "i", "@4testC9SomeClass", "sizeof    int - SomeClass",
 				"stringof", pos, pos, "Aa", "@4testC9SomeClass", "stringof    char[] - SomeClass",
+				"tupleof", pos, pos, "´1´i", "@4testC9SomeClass", "tupleof    Tuple!(int) - SomeClass",
 				"wxyz", pos, pos, "i", "@4testC9SomeClass", "wxyz    int - SomeClass"
 				);
 	}
@@ -136,9 +137,10 @@ public class FieldProposal_Test extends AbstractCompletionTest  {
 		int pos = s.length(); 
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.FIELD_REF,
+				"wstring", pos - 1, pos,
 				"wxya", pos - 1, pos,
 				"wxyz", pos - 1, pos);
-	}	
+	}
 	
 	public void testVarWithBasicTypeInFunctionScope() throws Exception {
 		String s = "int wxyz; void foo() { int wxya =  }";
@@ -149,12 +151,22 @@ public class FieldProposal_Test extends AbstractCompletionTest  {
 				"wxyz", pos, pos);
 	}
 	
+	public void testVarWithBasicTypeInFunctionScope2() throws Exception {
+		String s = "int wxyz; void foo() { int wxya =  }";
+		
+		int pos = s.lastIndexOf('=') + 2; 
+		
+		assertCompletions(null, "test.d", s, pos, CompletionProposal.LOCAL_VARIABLE_REF,
+				"wxya", pos, pos);
+	}
+	
 	public void testVarWithBasicTypeInFunctionScopeSome() throws Exception {
 		String s = "int wxyz; void foo() { int wxya = w }";
 		
 		int pos = s.lastIndexOf('=') + 3; 
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.FIELD_REF,
+				"wstring", pos - 1, pos,
 				"wxyz", pos - 1, pos);
 	}
 	
