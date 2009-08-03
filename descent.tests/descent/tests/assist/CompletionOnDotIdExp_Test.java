@@ -94,6 +94,7 @@ public class CompletionOnDotIdExp_Test extends AbstractCompletionTest {
 		
 		assertCompletions(null, "test.d", s, s.length(), CompletionProposal.FIELD_REF, 
 				"alignof", s.length(), s.length(),
+				"classinfo", s.length(), s.length(),
 				"init", s.length(), s.length(),
 				"mangleof", s.length(), s.length(),
 				"sizeof", s.length(), s.length(),
@@ -121,6 +122,7 @@ public class CompletionOnDotIdExp_Test extends AbstractCompletionTest {
 		
 		assertCompletions(null, "test.d", s, s.length(), CompletionProposal.FIELD_REF, 
 				"alignof", s.length(), s.length(),
+				"classinfo", s.length(), s.length(),
 				"init", s.length(), s.length(),
 				"mangleof", s.length(), s.length(),
 				"sizeof", s.length(), s.length(),
@@ -149,6 +151,7 @@ public class CompletionOnDotIdExp_Test extends AbstractCompletionTest {
 		
 		assertCompletions(null, "test.d", s, s.length(), CompletionProposal.FIELD_REF, 
 				"alignof", s.length(), s.length(),
+				"classinfo", s.length(), s.length(),
 				"init", s.length(), s.length(),
 				"mangleof", s.length(), s.length(),
 				"sizeof", s.length(), s.length(),
