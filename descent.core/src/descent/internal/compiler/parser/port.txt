@@ -14,7 +14,7 @@ func.c  --> missing StaticCtorDeclaration::StaticCtorDeclaration
             
 Remaining from DMD 2.030 vs. 1.045
 ------------------------------
- * declaration.c (up to but excluding VarDeclaration::semantic)
+ * declaration.c (up to and including VarDeclaration::semantic)
  * declaration.h
  * enum.c
  * enum.h

@@ -1096,6 +1096,9 @@ MissingInitializerInStaticConstructorForConstVariable
 GlobalsStaticsFieldsRefAndAutoParametersCannotBeAuto
 	formatString=Globals, statics, fields, ref and out parameters cannot be auto
 	numArgs=0	
+GlobalsStaticsFieldsManifestConstantsRefAndAutoParametersCannotBeScope
+	formatString=Globals, statics, fields, manifest constants, ref and out parameters cannot be scope
+	numArgs=0	
 ReferenceToScopeClassMustBeScope
 	formatString=Reference to scope class must be scop
 	numArgs=0
@@ -1525,8 +1528,12 @@ GsharedNotAllowedInSafeMode
 InnerStructCannotBeAField
 	formatString=inner struct %1$s cannot be a field
 	numArgs=1
-	
-		
+OnlyParametersOfForeachDeclarationsCanBeRef
+	formatString=Only parameters or foreach declarations can be ref
+	numArgs=0
+ManifestConstantsMustHaveInitializers
+	formatString=Manifest constants must have initializers
+	numArgs=0
 	
 	
 	

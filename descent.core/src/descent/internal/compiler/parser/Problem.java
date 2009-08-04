@@ -863,6 +863,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.MissingInitializerInStaticConstructorForConstVariable);
 		case GlobalsStaticsFieldsRefAndAutoParametersCannotBeAuto:
 			return String.format(ProblemMessages.GlobalsStaticsFieldsRefAndAutoParametersCannotBeAuto);
+		case GlobalsStaticsFieldsManifestConstantsRefAndAutoParametersCannotBeScope:
+			return String.format(ProblemMessages.GlobalsStaticsFieldsManifestConstantsRefAndAutoParametersCannotBeScope);
 		case ReferenceToScopeClassMustBeScope:
 			return String.format(ProblemMessages.ReferenceToScopeClassMustBeScope);
 		case NumberOfKeysMustMatchNumberOfValues:
@@ -1149,6 +1151,10 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.GsharedNotAllowedInSafeMode);
 		case InnerStructCannotBeAField:
 			return String.format(ProblemMessages.InnerStructCannotBeAField, arguments[0]);
+		case OnlyParametersOfForeachDeclarationsCanBeRef:
+			return String.format(ProblemMessages.OnlyParametersOfForeachDeclarationsCanBeRef);
+		case ManifestConstantsMustHaveInitializers:
+			return String.format(ProblemMessages.ManifestConstantsMustHaveInitializers);
 		default:
 			return "";
 		}

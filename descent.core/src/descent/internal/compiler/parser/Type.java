@@ -3,7 +3,11 @@ package descent.internal.compiler.parser;
 import static descent.internal.compiler.parser.MATCH.MATCHconst;
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+import static descent.internal.compiler.parser.STC.STCconst;
 import static descent.internal.compiler.parser.STC.STCfield;
+import static descent.internal.compiler.parser.STC.STCimmutable;
+import static descent.internal.compiler.parser.STC.STCin;
+import static descent.internal.compiler.parser.STC.STCshared;
 import static descent.internal.compiler.parser.TOK.TOKdotvar;
 import static descent.internal.compiler.parser.TOK.TOKvar;
 import static descent.internal.compiler.parser.TY.Tarray;
@@ -37,6 +41,7 @@ import static descent.internal.compiler.parser.TY.Tuns8;
 import static descent.internal.compiler.parser.TY.Tvoid;
 import static descent.internal.compiler.parser.TY.Twchar;
 
+import java.nio.channels.IllegalSelectorException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -819,6 +824,20 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 			return sto;
 		}
 		Type t = makeShared();
+		t = t.merge(context);
+		t.fixTo(this);
+		return t;
+	}
+	
+	public Type sharedConstOf(SemanticContext context) {
+		if (mod == (MODshared | MODconst)) {
+			return this;
+		}
+		if (scto != null) {
+			assert (scto.mod == (MODshared | MODconst));
+			return scto;
+		}
+		Type t = makeSharedConst();
 		t = t.merge(context);
 		t.fixTo(this);
 		return t;
@@ -1761,6 +1780,72 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		e = e.addressOf(sc, context);
 		e.type = tid.type; // do this so we don't get redundant dereference
 		return e;
+	}
+	
+	/************************************
+	 * Add MODxxxx bits to existing type.
+	 * We're adding, not replacing, so adding const to
+	 * a shared type => "shared const"
+	 */
+
+	public Type addMod(int mod, SemanticContext context) {
+		Type t = this;
+
+		/*
+		 * Add anything to immutable, and it remains immutable
+		 */
+		if (!t.isInvariant()) {
+			switch (mod) {
+			case 0:
+			break;
+
+			case MODconst:
+				if (isShared())
+					t = sharedConstOf(context);
+				else
+					t = constOf(context);
+			break;
+
+			case MODinvariant:
+				t = invariantOf(context);
+			break;
+
+			case MODshared:
+				if (isConst())
+					t = sharedConstOf(context);
+				else
+					t = sharedOf(context);
+			break;
+
+			case MODshared | MODconst:
+				t = sharedConstOf(context);
+			break;
+
+			default:
+				throw new IllegalStateException();
+			}
+		}
+		return t;
+	}
+	
+	/************************************
+	 * Add storage class modifiers to type.
+	 */
+	public Type addStorageClass(int stc, SemanticContext context) {
+		/*
+		 * Just translate to MOD bits and let addMod() do the work
+		 */
+		int mod = 0;
+
+		if ((stc & STCimmutable) != 0)
+			mod = MODinvariant;
+		else {
+			if ((stc & (STCconst | STCin)) != 0)
+				mod = MODconst;
+			if ((stc & STCshared) != 0)
+				mod |= MODshared;
+		}
+		return addMod(mod, context);
 	}
 	
 	public Type copy() {

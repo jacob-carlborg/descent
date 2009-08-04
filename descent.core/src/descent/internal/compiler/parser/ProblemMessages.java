@@ -376,6 +376,7 @@ final class ProblemMessages extends NLS {
 	public static String CannotFormTupleOfTuples;
 	public static String MissingInitializerInStaticConstructorForConstVariable;
 	public static String GlobalsStaticsFieldsRefAndAutoParametersCannotBeAuto;
+	public static String GlobalsStaticsFieldsManifestConstantsRefAndAutoParametersCannotBeScope;
 	public static String ReferenceToScopeClassMustBeScope;
 	public static String NumberOfKeysMustMatchNumberOfValues;
 	public static String ExpectedNumberArguments;
@@ -519,6 +520,8 @@ final class ProblemMessages extends NLS {
 	public static String ArrayEqualityComparisonTypeMismatch;
 	public static String GsharedNotAllowedInSafeMode;
 	public static String InnerStructCannotBeAField;
+	public static String OnlyParametersOfForeachDeclarationsCanBeRef;
+	public static String ManifestConstantsMustHaveInitializers;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);
