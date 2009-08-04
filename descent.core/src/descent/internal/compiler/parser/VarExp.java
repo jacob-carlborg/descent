@@ -203,7 +203,7 @@ public class VarExp extends SymbolExp {
 			if (context.isD2()) {
 				if (sc.func != null && sc.func.isPure() && 0 == sc.intypeof)
 				{
-				    if (v.isDataseg(context) && !v.isInvariant()) {
+				    if (v.isDataseg(context) && !v.isInvariant(context)) {
 				    	if (context.acceptsErrors()) {
 				    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.PureFunctionCannotAccessMutableStaticData, sc.func, sc.func.toChars(context), v.toChars(context)));
 				    	}

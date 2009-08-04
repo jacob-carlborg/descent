@@ -689,7 +689,7 @@ public class FuncDeclaration extends Declaration {
 	}
 
 	@Override
-	public boolean isImportedSymbol() {
+	public boolean isImportedSymbol(SemanticContext context) {
 		return (protection == PROTexport) && null == fbody;
 	}
 
@@ -2361,7 +2361,7 @@ public class FuncDeclaration extends Declaration {
 				    	continue;
 				    }
 
-				    Expression e = v.callAutoDtor(sc);
+				    Expression e = v.callAutoDtor(sc, context);
 				    if (e != null)
 				    {	Statement s = new ExpStatement(null, 0, e);
 					s = s.semantic(sc, context);

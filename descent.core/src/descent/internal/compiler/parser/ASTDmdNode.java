@@ -1216,7 +1216,7 @@ public abstract class ASTDmdNode extends ASTNode {
 			SemanticContext context) {
 		Expression e = null;
 		if (v != null
-				&& (v.isConst() || v.isInvariant() || (v.storage_class & STCmanifest) != 0)) {
+				&& (v.isConst() || v.isInvariant(context) || (v.storage_class & STCmanifest) != 0)) {
 			Type tb = v.type.toBasetype(context);
 			if ((result & WANTinterpret) != 0
 					|| (v.storage_class & STCmanifest) != 0
@@ -1751,7 +1751,7 @@ public abstract class ASTDmdNode extends ASTNode {
         {
         	boolean condition;
         	if (context.isD2()) {
-        		condition = (v.isConst() || v.isInvariant()) && v.init != null && null == v.value;
+        		condition = (v.isConst() || v.isInvariant(context)) && v.init != null && null == v.value;
         	} else {
         		condition = v.isConst() && null != v.init();
         	}

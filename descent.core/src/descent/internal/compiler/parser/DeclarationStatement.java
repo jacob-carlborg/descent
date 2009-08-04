@@ -44,7 +44,7 @@ public class DeclarationStatement extends ExpStatement {
 				if (v != null) {
 					Expression e;
 
-					e = v.callAutoDtor(sc);
+					e = v.callAutoDtor(sc, context);
 					if (e != null) {
 						sfinally[0] = new ExpStatement(filename, lineNumber, e);
 					}

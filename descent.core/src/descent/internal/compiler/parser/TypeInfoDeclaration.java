@@ -1,5 +1,7 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.STC.STCgshared;
+import static descent.internal.compiler.parser.STC.STCstatic;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
@@ -13,7 +15,11 @@ public class TypeInfoDeclaration extends VarDeclaration {
 				tinfo.getTypeInfoIdent(internal), 
 				null);
 		this.tinfo = tinfo;
-		this.storage_class = STC.STCstatic;
+		if (context.isD1()) {
+			this.storage_class = STCstatic;
+		} else {
+			this.storage_class = STCstatic | STCgshared;
+		}
 		this.protection = PROT.PROTpublic;
 		this.linkage = LINK.LINKc;
 	}

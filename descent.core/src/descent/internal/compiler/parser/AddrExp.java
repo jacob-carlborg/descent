@@ -241,7 +241,7 @@ public class AddrExp extends UnaExp {
 		if (e1.op == TOKvar) {
 			VarExp ve = (VarExp) e1;
 			if (!ve.var.isOut() && !ve.var.isRef()
-					&& !ve.var.isImportedSymbol()) {
+					&& !ve.var.isImportedSymbol(context)) {
 				if (context.isD2()) {
 				    SymOffExp se = new SymOffExp(filename, lineNumber, ve.var, 0, ve.hasOverloads, context);
 				    se.type = type;
@@ -263,10 +263,10 @@ public class AddrExp extends UnaExp {
 				
 				boolean condition;
 				if (context.isD2()) {
-					condition = ve.type.ty == Tsarray && !ve.var.isImportedSymbol();
+					condition = ve.type.ty == Tsarray && !ve.var.isImportedSymbol(context);
 				} else {
 					condition = ve.type.ty == Tsarray && ve.type.next.ty != Tbit
-					&& !ve.var.isImportedSymbol();
+					&& !ve.var.isImportedSymbol(context);
 				}
 				
 				if (condition) {

@@ -75,7 +75,7 @@ public abstract class Declaration extends Dsymbol {
 				String p = null;
 				if (isConst())
 					p = "const";
-				else if (isInvariant())
+				else if (isInvariant(context))
 					p = "mutable";
 				else if ((storage_class & STCmanifest) != 0)
 					p = "enum";
@@ -151,8 +151,12 @@ public abstract class Declaration extends Dsymbol {
 		return (this.storage_class & STC.STCconst) != 0;
 	}
 	
-	public boolean isInvariant() {
-		return false;
+	public boolean isInvariant(SemanticContext context) {
+		if (context.isD1()) {
+			return false;
+		} else {
+			return (this.storage_class & STC.STCinvariant) != 0;
+		}
 	}
 
 	public boolean isAuto() {

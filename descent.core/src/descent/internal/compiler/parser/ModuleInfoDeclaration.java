@@ -1,5 +1,7 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.STC.STCgshared;
+import static descent.internal.compiler.parser.STC.STCstatic;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
@@ -10,6 +12,11 @@ public class ModuleInfoDeclaration extends VarDeclaration {
 	public ModuleInfoDeclaration(char[] filename, int lineNumber, Module mod, SemanticContext context) {
 		super(filename, lineNumber, context.Module_moduleinfo.type, mod.ident, null);
 		this.mod = mod;
+		if (context.isD1()) {
+			this.storage_class = STCstatic;
+		} else {
+			this.storage_class = STCstatic | STCgshared;
+		}
 	}
 	
 	@Override

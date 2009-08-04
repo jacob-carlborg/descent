@@ -16,6 +16,7 @@ import static descent.internal.compiler.parser.STC.STCinit;
 import static descent.internal.compiler.parser.STC.STCinvariant;
 import static descent.internal.compiler.parser.STC.STClazy;
 import static descent.internal.compiler.parser.STC.STCmanifest;
+import static descent.internal.compiler.parser.STC.STCnodtor;
 import static descent.internal.compiler.parser.STC.STCnothrow;
 import static descent.internal.compiler.parser.STC.STCout;
 import static descent.internal.compiler.parser.STC.STCparameter;
@@ -35,6 +36,7 @@ import static descent.internal.compiler.parser.TOK.TOKint64;
 import static descent.internal.compiler.parser.TOK.TOKstar;
 import static descent.internal.compiler.parser.TOK.TOKstring;
 import static descent.internal.compiler.parser.TY.Taarray;
+import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Tstruct;
 import melnorme.miscutil.tree.TreeVisitor;
 
@@ -109,10 +111,55 @@ public class VarDeclaration extends Declaration {
 		visitor.endVisit(this);
 	}
 	
-	public Expression callAutoDtor(Scope sc) {
+	public Expression callAutoDtor(Scope sc, SemanticContext context) {
 		Expression e = null;
+		
+		if (!context.isD1()) {
+			if (noauto || (storage_class & STCnodtor) != 0)
+				return null;
 
-		if ((storage_class & (STCauto | STCscope)) != 0 && !noauto) {
+			// Destructors for structs and arrays of structs
+			boolean array = false;
+			Type tv = type.toBasetype(context);
+			while (tv.ty == Tsarray) {
+//				TypeSArray ta = (TypeSArray) tv;
+				array = true;
+				tv = tv.nextOf().toBasetype(context);
+			}
+			if (tv.ty == Tstruct) {
+				TypeStruct ts = (TypeStruct) tv;
+				StructDeclaration sd = ts.sym;
+				if (sd.dtor != null) {
+					if (array) {
+						// Typeinfo.destroy(cast(void*)&v);
+						Expression ea = new SymOffExp(filename, lineNumber,
+								this, integer_t.ZERO, false, context);
+						ea = new CastExp(filename, lineNumber, ea,
+								context.Type_tvoidptr);
+						Expressions args = new Expressions(1);
+						args.add(ea);
+
+						Expression et = type.getTypeInfo(sc, context);
+						et = new DotIdExp(filename, lineNumber, et, Id.destroy);
+						e = new CallExp(filename, lineNumber, et, args);
+					} else {
+						e = new VarExp(filename, lineNumber, this);
+						e = new DotVarExp(filename, lineNumber, e, sd.dtor, false);
+						e = new CallExp(filename, lineNumber, e);
+					}
+					return e;
+				}
+			}
+		}
+		
+		boolean condition;
+		if (context.isD1()) {
+			condition = (storage_class & (STCauto | STCscope)) != 0 && !noauto;
+		} else {
+		    condition = (storage_class & (STCauto | STCscope)) != 0;
+		}
+
+		if (condition) {
 			for (ClassDeclaration cd = type.isClassHandle(); cd != null; cd = cd.baseClass) {
 				/*
 				 * We can do better if there's a way with onstack classes to
@@ -136,26 +183,92 @@ public class VarDeclaration extends Declaration {
 
 	@Override
 	public void checkCtorConstInit(SemanticContext context) {
-		if (!ctorinit && isCtorinit() && (storage_class & STCfield) == 0) {
-			if (context.acceptsErrors()) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.MissingInitializerInStaticConstructorForConstVariable, this));
+		if (context.isD1()) {
+			if (!ctorinit && isCtorinit() && (storage_class & STCfield) == 0) {
+				if (context.acceptsErrors()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.MissingInitializerInStaticConstructorForConstVariable, this));
+				}
 			}
+		} else {
+			/* doesn't work if more than one static ctor */
 		}
 	}
 
 	public void checkNestedReference(Scope sc, char[] filename, int lineNumber, SemanticContext context) {
-		if (parent != null && !this.isDataseg(context) && this.parent != sc.parent) {
-			FuncDeclaration fdv = this.toParent().isFuncDeclaration();
-			FuncDeclaration fdthis = (FuncDeclaration) sc.parent.isFuncDeclaration();
+		if (context.isD1()) {
+			if (parent != null && !this.isDataseg(context) && this.parent != sc.parent) {
+				FuncDeclaration fdv = this.toParent().isFuncDeclaration();
+				FuncDeclaration fdthis = (FuncDeclaration) sc.parent.isFuncDeclaration();
+	
+				if (fdv != null && fdthis != null) {
+					if (filename != null)
+						fdthis.getLevel(filename, lineNumber, fdv, context);
+					this.nestedref(1);
+					fdv.nestedFrameRef(true);
+				}
+			}
+		} else {
+			if (parent != null && !isDataseg(context) && parent != sc.parent
+					&& 0 == (storage_class & STCmanifest)) {
+				// The function that this variable is in
+				FuncDeclaration fdv = toParent().isFuncDeclaration();
+				// The current function
+				FuncDeclaration fdthis = sc.parent.isFuncDeclaration();
 
-			if (fdv != null && fdthis != null) {
-				if (filename != null)
-					fdthis.getLevel(filename, lineNumber, fdv, context);
-				this.nestedref(1);
-				fdv.nestedFrameRef(true);
+				if (fdv != null && fdthis != null && fdv != fdthis) {
+					if (filename != null) {
+						fdthis.getLevel(filename, lineNumber, fdv, context);
+					}
+					
+					boolean gotoL1 = false;
+
+					for (int i = 0; i < size(nestedrefs); i++) {
+						FuncDeclaration f = (FuncDeclaration) nestedrefs.get(i);
+						if (f == fdthis) {
+							// goto L1;
+							gotoL1 = true;
+							break;
+						}
+					}
+					
+					if (!gotoL1) {
+						nestedrefs.add(fdthis);
+					}
+					// L1: ;
+					
+					boolean gotoL2 = false;
+
+					for (int i = 0; i < size(fdv.closureVars); i++) {
+						Dsymbol s = (Dsymbol) fdv.closureVars.get(i);
+						if (s == this) {
+							// goto L2;
+							gotoL2 = true;
+							break;
+						}
+					}
+
+					if (!gotoL2) {
+						fdv.closureVars.add(this);
+					}
+					// L2: ;
+				}
 			}
 		}
+	}
+	
+	/*******************************************
+	 * If variable has a constant expression initializer, get it.
+	 * Otherwise, return NULL.
+	 */
+	public Expression getConstInitializer(SemanticContext context) {
+		if ((isConst() || isInvariant(context) || (storage_class & STCmanifest) != 0)
+				&& (storage_class & STCinit) != 0) {
+			ExpInitializer ei = getExpInitializer(context);
+			if (ei != null)
+				return ei.exp;
+		}
+		return null;
 	}
 
 	public ExpInitializer getExpInitializer(SemanticContext context) {
@@ -186,24 +299,58 @@ public class VarDeclaration extends Declaration {
 
 	@Override
 	public boolean isDataseg(SemanticContext context) {
-		Dsymbol parent = this.toParent();
-		if (parent == null && (this.storage_class & (STCstatic | STCconst)) == 0) {
-			if (context.acceptsErrors()) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.CannotResolveForwardReference, this));
+		if (context.isD1()) {
+			Dsymbol parent = this.toParent();
+			if (parent == null && (this.storage_class & (STCstatic | STCconst)) == 0) {
+				if (context.acceptsErrors()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.CannotResolveForwardReference, this));
+				}
+				this.type = Type.terror;
+				return false;
 			}
-			this.type = Type.terror;
-			return false;
+			return ((this.storage_class & (STCstatic | STCconst)) != 0 || parent.isModule() != null || parent.isTemplateInstance() != null);
+		} else {
+			if ((storage_class & STCmanifest) != 0)
+				return false;
+			Dsymbol parent = this.toParent();
+			if (null == parent && 0 == (storage_class & STCstatic)) {
+				if (context.acceptsErrors()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.ForwardReferenceOfSymbol, this,
+							new String[] { this.toChars(context) }));
+				}
+				type = Type.terror;
+				return false;
+			}
+			return canTakeAddressOf()
+					&& ((storage_class & (STCstatic | STCextern | STCtls | STCgshared)) != 0
+							|| toParent().isModule() != null || toParent()
+							.isTemplateInstance() != null);
 		}
-		return ((this.storage_class & (STCstatic | STCconst)) != 0
-				|| parent.isModule() != null || parent.isTemplateInstance() != null);
+	}
+	
+	/*************************************
+	 * Return !=0 if we can take the address of this variable.
+	 */
+	public boolean canTakeAddressOf() {
+		if ((storage_class & STCmanifest) != 0)
+			return false;
+		return true;
 	}
 
 	@Override
-	public boolean isImportedSymbol() {
-		if (protection == PROTexport && init == null
-				&& (isStatic() || isConst() || parent.isModule() == null)) {
-			return true;
+	public boolean isImportedSymbol(SemanticContext context) {
+		if (context.isD1()) {
+			if (protection == PROTexport && init == null
+					&& (isStatic() || isConst() || parent.isModule() == null)) {
+				return true;
+			}
+		} else {
+			if (protection == PROTexport
+					&& null == init
+					&& ((storage_class & STCstatic) != 0 || parent.isModule() != null))
+				return true;
 		}
 		return false;
 	}
@@ -229,6 +376,34 @@ public class VarDeclaration extends Declaration {
 	@Override
 	public String kind() {
 		return "variable";
+	}
+	
+	/******************************************
+	 * Return TRUE if variable needs to call the destructor.
+	 */
+	public boolean needsAutoDtor(SemanticContext context) {
+		if (noauto || (storage_class & STCnodtor) != 0)
+			return false;
+
+		// Destructors for structs and arrays of structs
+		Type tv = type.toBasetype(context);
+		while (tv.ty == Tsarray) {
+//			TypeSArray ta = (TypeSArray) tv;
+			tv = tv.nextOf().toBasetype(context);
+		}
+		if (tv.ty == Tstruct) {
+			TypeStruct ts = (TypeStruct) tv;
+			StructDeclaration sd = ts.sym;
+			if (sd.dtor != null)
+				return true;
+		}
+
+		// Destructors for classes
+		if ((storage_class & (STCauto | STCscope)) != 0) {
+			if (type.isClassHandle() != null)
+				return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -587,7 +762,7 @@ public class VarDeclaration extends Declaration {
 		}
 		
 		if (!context.isD1()) {
-			if ((isConst() || isInvariant()) && null == init && null == fd) {
+			if ((isConst() || isInvariant(context)) && null == init && null == fd) {
 				// Initialize by constructor only
 				storage_class |= STCctorinit;
 			}
@@ -623,7 +798,7 @@ public class VarDeclaration extends Declaration {
 			if (type.ty == TY.Tstruct && ((TypeStruct) type).sym.zeroInit) {
 				/* If a struct is all zeros, as a special case
 			     * set it's initializer to the integer 0.
-			     * In AssignExp::toElem(), we check for this and issue
+			     * In AssignExp.toElem(), we check for this and issue
 			     * a memset() to initialize the struct.
 			     * Must do same check in interpreter.
 			     */				
@@ -1007,7 +1182,16 @@ public class VarDeclaration extends Declaration {
 		}
 		if (init != null) {
 			buf.writestring(" = ");
-			init.toCBuffer(buf, hgs, context);
+			
+			if (context.isD1()) {
+				init.toCBuffer(buf, hgs, context);
+			} else {
+				ExpInitializer ie = init.isExpInitializer();
+				if (ie != null && (ie.exp.op == TOKconstruct || ie.exp.op == TOKblit))
+				    ((AssignExp)ie.exp).e2.toCBuffer(buf, hgs, context);
+				else
+				    init.toCBuffer(buf, hgs, context);
+			}
 		}
 		buf.writeByte(';');
 		buf.writenl();
@@ -1090,7 +1274,18 @@ public class VarDeclaration extends Declaration {
 	public boolean isTemplateArgument() {
 		return false;
 	}
-
-    // PERHAPS Symbol *toSymbol();
+	
+	/************************************
+	 * Does symbol go into thread local storage?
+	 */
+	public boolean isThreadlocal(SemanticContext context) {
+		/*
+		 * Data defaults to being thread-local. It is not thread-local if it is
+		 * immutable, const or shared.
+		 */
+		boolean i = isDataseg(context)
+				&& 0 == (storage_class & (STCimmutable | STCconst | STCshared | STCgshared));
+		return i;
+	}
 
 }

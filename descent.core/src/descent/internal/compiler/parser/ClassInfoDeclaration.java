@@ -1,7 +1,8 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.STC.STCgshared;
+import static descent.internal.compiler.parser.STC.STCstatic;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-
 
 public class ClassInfoDeclaration extends VarDeclaration {
 
@@ -15,6 +16,11 @@ public class ClassInfoDeclaration extends VarDeclaration {
 			SemanticContext context) {
 		super(filename, lineNumber, context.ClassDeclaration_classinfo.type, cd.ident, null);
 		this.cd = cd;
+		if (context.isD1()) {
+			this.storage_class = STCstatic;
+		} else {
+			this.storage_class = STCstatic | STCgshared;
+		}
 	}
 	
 	@Override

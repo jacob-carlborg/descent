@@ -295,7 +295,7 @@ public class Dsymbol extends ASTDmdNode {
 		return null;
 	}
 
-	public boolean isImportedSymbol() {
+	public boolean isImportedSymbol(SemanticContext context) {
 		return false;
 	}
 

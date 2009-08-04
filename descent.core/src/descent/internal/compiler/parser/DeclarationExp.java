@@ -60,7 +60,7 @@ public class DeclarationExp extends Expression {
 			} else { 
 				boolean condition;
 				if (context.isD2()) {
-					condition = s == v && (v.isConst() || v.isInvariant()) && v.init != null;
+					condition = s == v && (v.isConst() || v.isInvariant(context)) && v.init != null;
 				} else {
 					condition = s == v && v.isConst() && v.init() != null;
 				}
