@@ -13,11 +13,16 @@ package descent.internal.ui.preferences.formatter;
 import java.util.Map;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 
 import descent.core.formatter.DefaultCodeFormatterConstants;
+import descent.internal.ui.preferences.ScrolledPageContent;
 
 public class BracesTabPage extends ModifyDialogTabPage {
 	
@@ -65,8 +70,9 @@ public class BracesTabPage extends ModifyDialogTabPage {
 	}
 	
 	protected void doCreatePreferences(Composite composite, int numColumns) {
-		final Group group = createGroup(numColumns, composite, FormatterMessages.BracesTabPage_group_brace_positions_title); 
-		final ComboPreference[] prefs = new ComboPreference[18];
+		final Group group = createGroup(numColumns, composite, FormatterMessages.BracesTabPage_group_brace_positions_title);
+		
+		final ComboPreference[] prefs = new ComboPreference[20];
 		prefs[0] = createBracesCombo(group, numColumns, 
 				FormatterMessages.BracesTabPage_brace_position_for_function_declaration, 
 				DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_FUNCTION_DECLARATION);
@@ -121,6 +127,12 @@ public class BracesTabPage extends ModifyDialogTabPage {
 		prefs[17] = createBracesCombo(group, numColumns, 
 				FormatterMessages.BracesTabPage_brace_position_for_postblit_declaration, 
 				DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_POSTBLIT_DECLARATION);
+		prefs[18] = createBracesCombo(group, numColumns, 
+				FormatterMessages.BracesTabPage_brace_position_for_unittest, 
+				DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_UNITTEST);
+		prefs[19] = createBracesCombo(group, numColumns, 
+				FormatterMessages.BracesTabPage_brace_position_for_class_invariant, 
+				DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_CLASS_INVARIANT);
 		
 		final SetAllGroup setAll = createSetAllGroup(numColumns, composite, FormatterMessages.BracesTabPage_group_set_all_to);
 		createSetAllOption(setAll, FormatterMessages.BracesTabPage_position_same_line, FormatterMessages.BracesTabPage_position_same_line);

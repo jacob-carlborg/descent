@@ -3,8 +3,8 @@ package descent.core.formatter;
 import java.util.Map;
 
 import descent.core.JavaCore;
-import descent.internal.formatter.Alignment;
 import descent.internal.formatter.DefaultCodeFormatterOptions;
+import descent.internal.formatter.Alignment;
 
 /**
  * Constants used to set up the options of the code formatter.
@@ -109,6 +109,8 @@ public class DefaultCodeFormatterConstants {
 	public static final String FORMATTER_BRACE_POSITION_FOR_WITH_STATEMENT = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_with_statement";
 	public static final String FORMATTER_BRACE_POSITION_FOR_SCOPE_STATEMENT = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_scope_statement";
 	public static final String FORMATTER_BRACE_POSITION_FOR_PRAGMAS = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_pragmas";
+	public static final String FORMATTER_BRACE_POSITION_FOR_UNITTEST = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_unittest";
+	public static final String FORMATTER_BRACE_POSITION_FOR_CLASS_INVARIANT = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_class_invariant";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FUNCTION_DECLARATION_PARAMETERS = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_opening_paren_in_function_declaration_parameters";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FUNCTION_TEMPLATE_ARGS = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_opening_paren_in_function_template_args";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FUNCTION_INVOCATION = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_opening_paren_in_function_invocation";
@@ -139,7 +141,6 @@ public class DefaultCodeFormatterConstants {
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_CASTS = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_opening_paren_in_casts";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_TEMPLATE_DECLARATIONS = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_opening_paren_in_template_declarations";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_PARENTHESIZED_EXPRESSIONS = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_opening_paren_in_parenthesized_expressions";
-	public static final String FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_TYPE_DOT_IDENTIFIER_EXPRESSION = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_opening_paren_in_type_dot_identifier_expression";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_CLASS_INVARIANTS = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_opening_paren_in_class_invariants";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_TRAITS_EXPRESSION = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_opening_paren_in_traits_expression";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_MODIFIED_TYPE = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_opening_paren_in_modified_type";
@@ -174,7 +175,6 @@ public class DefaultCodeFormatterConstants {
 	public static final String FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_TEMPLATE_DECLARATIONS = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_opening_paren_in_template_declarations";
 	public static final String FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_PARENTHESIZED_EXPRESSIONS = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_opening_paren_in_parenthesized_expressions";
 	public static final String FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_TEMPLATE_INVOCATION = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_opening_paren_in_template_invocation";
-	public static final String FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_TYPE_DOT_IDENTIFIER_EXPRESSION = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_opening_paren_in_type_dot_identifier_expression";
 	public static final String FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_TRAITS_EXPRESSION = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_opening_paren_in_traits_expression";
 	public static final String FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_MODIFIED_TYPE = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_opening_paren_in_modified_type";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_FUNCTION_DECLARATION_PARAMETERS = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_closing_paren_in_function_declaration_parameters";
@@ -208,7 +208,6 @@ public class DefaultCodeFormatterConstants {
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_TEMPLATE_DECLARATIONS = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_closing_paren_in_template_declarations";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_PARENTHESIZED_EXPRESSIONS = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_closing_paren_in_parenthesized_expressions";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_TEMPLATE_INVOCATION = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_closing_paren_in_template_invocation";
-	public static final String FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_TYPE_DOT_IDENTIFIER_EXPRESSION = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_closing_paren_in_type_dot_identifier_expression";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_TRAITS_EXPRESSION = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_closing_paren_in_traits_expression";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_MODIFIED_TYPE = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_closing_paren_in_modified_type";
 	public static final String FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_PARENS_IN_FUNCTION_DECLARATION_PARAMETERS = JavaCore.PLUGIN_ID + ".formatter.insert_space_between_empty_parens_in_function_declaration_parameters";
@@ -279,9 +278,7 @@ public class DefaultCodeFormatterConstants {
 	public static final String FORMATTER_INSERT_SPACE_AFTER_EXCLAMATION_POINT_IN_TEMPLATE_INVOCATION = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_exclamation_point_in_template_invocation";
 	public static final String FORMATTER_INSERT_SPACE_AFTER_CLOSING_PAREN_IN_CASTS = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_closing_paren_in_casts";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_DOT_IN_QUALIFIED_NAMES = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_dot_in_qualified_names";
-	public static final String FORMATTER_INSERT_SPACE_BEFORE_DOT_IN_TYPE_DOT_IDENTIFIER_EXPRESSIONS = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_dot_in_type_dot_identifier_expressions";
 	public static final String FORMATTER_INSERT_SPACE_AFTER_DOT_IN_QUALIFIED_NAMES = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_dot_in_qualified_names";
-	public static final String FORMATTER_INSERT_SPACE_AFTER_DOT_IN_TYPE_DOT_IDENTIFIER_EXPRESSIONS = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_dot_in_type_dot_identifier_expressions";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_SLICE_OPERATOR = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_slice_operator";
 	public static final String FORMATTER_INSERT_SPACE_AFTER_SLICE_OPERATOR = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_slice_operator";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_SLICE_OPERATOR_IN_FOREACH_RANGE_STATEMENT = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_slice_operator_in_foreach_range_statement";

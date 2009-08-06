@@ -333,6 +333,8 @@ final class FormatterMessages extends NLS {
 	public static String BracesTabPage_brace_position_for_with_statement;
 	public static String BracesTabPage_brace_position_for_scope_statement;
 	public static String BracesTabPage_brace_position_for_pragmas;
+	public static String BracesTabPage_brace_position_for_unittest;
+	public static String BracesTabPage_brace_position_for_class_invariant;
 	public static String BlankLinesTabPage_blank_lines_before_module;
 	public static String BlankLinesTabPage_blank_lines_after_module;
 	public static String BlankLinesTabPage_number_of_empty_lines_to_preserve;

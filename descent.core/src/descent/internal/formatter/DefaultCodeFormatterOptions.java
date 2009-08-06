@@ -76,6 +76,8 @@ public class DefaultCodeFormatterOptions
 			options.brace_position_for_with_statement = BracePosition.NEXT_LINE;
 			options.brace_position_for_scope_statement = BracePosition.NEXT_LINE;
 			options.brace_position_for_pragmas = BracePosition.NEXT_LINE;
+			options.brace_position_for_unittest = BracePosition.NEXT_LINE;
+			options.brace_position_for_class_invariant = BracePosition.NEXT_LINE;
 			options.indent_break_compare_to_switch = true;
 		}
 		
@@ -102,6 +104,8 @@ public class DefaultCodeFormatterOptions
 	public BracePosition brace_position_for_with_statement;
 	public BracePosition brace_position_for_scope_statement;
 	public BracePosition brace_position_for_pragmas;
+	public BracePosition brace_position_for_unittest;
+	public BracePosition brace_position_for_class_invariant;
 	public boolean insert_space_before_opening_paren_in_function_declaration_parameters;
 	public boolean insert_space_before_opening_paren_in_function_template_args;
 	public boolean insert_space_before_opening_paren_in_function_invocation;
@@ -434,6 +438,8 @@ public class DefaultCodeFormatterOptions
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_WITH_STATEMENT, brace_position_for_with_statement.toString());
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_SCOPE_STATEMENT, brace_position_for_scope_statement.toString());
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_PRAGMAS, brace_position_for_pragmas.toString());
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_UNITTEST, brace_position_for_unittest.toString());
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_CLASS_INVARIANT, brace_position_for_class_invariant.toString());
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FUNCTION_DECLARATION_PARAMETERS, insert_space_before_opening_paren_in_function_declaration_parameters ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FUNCTION_TEMPLATE_ARGS, insert_space_before_opening_paren_in_function_template_args ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FUNCTION_INVOCATION, insert_space_before_opening_paren_in_function_invocation ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
@@ -905,6 +911,24 @@ public class DefaultCodeFormatterOptions
 				brace_position_for_pragmas = DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(current) ? BracePosition.NEXT_LINE_SHIFTED : DefaultCodeFormatterConstants.NEXT_LINE.equals(current) ? BracePosition.NEXT_LINE : BracePosition.END_OF_LINE;
 			} catch(Exception e) {
 				brace_position_for_pragmas = BracePosition.END_OF_LINE;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_UNITTEST);
+		if(null != current) {
+			try {
+				brace_position_for_unittest = DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(current) ? BracePosition.NEXT_LINE_SHIFTED : DefaultCodeFormatterConstants.NEXT_LINE.equals(current) ? BracePosition.NEXT_LINE : BracePosition.END_OF_LINE;
+			} catch(Exception e) {
+				brace_position_for_unittest = BracePosition.END_OF_LINE;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_CLASS_INVARIANT);
+		if(null != current) {
+			try {
+				brace_position_for_class_invariant = DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(current) ? BracePosition.NEXT_LINE_SHIFTED : DefaultCodeFormatterConstants.NEXT_LINE.equals(current) ? BracePosition.NEXT_LINE : BracePosition.END_OF_LINE;
+			} catch(Exception e) {
+				brace_position_for_class_invariant = BracePosition.END_OF_LINE;
 			}
 		}
 		
@@ -3575,6 +3599,8 @@ public class DefaultCodeFormatterOptions
 		brace_position_for_with_statement = BracePosition.END_OF_LINE;
 		brace_position_for_scope_statement = BracePosition.END_OF_LINE;
 		brace_position_for_pragmas = BracePosition.END_OF_LINE;
+		brace_position_for_unittest = BracePosition.END_OF_LINE;
+		brace_position_for_class_invariant = BracePosition.END_OF_LINE;
 		insert_space_before_opening_paren_in_function_declaration_parameters = false;
 		insert_space_before_opening_paren_in_function_template_args = false;
 		insert_space_before_opening_paren_in_function_invocation = false;

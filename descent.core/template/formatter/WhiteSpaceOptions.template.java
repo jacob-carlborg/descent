@@ -161,7 +161,6 @@ public final class WhiteSpaceOptions
 		casts.setParent(expressions);
 		parenthesized_expressions.setParent(expressions);
 		template_invocation.setParent(expressions);
-		type_dot_identifier_expression.setParent(expressions);
 		struct_initalizer.setParent(expressions);
 		conditional_expression.setParent(expressions);
 		traits_expression.setParent(expressions);
