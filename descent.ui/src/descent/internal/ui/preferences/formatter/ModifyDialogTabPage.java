@@ -576,8 +576,14 @@ public abstract class ModifyDialogTabPage {
 		final SashForm fSashForm = new SashForm(parent, SWT.HORIZONTAL);
 		fSashForm.setFont(parent.getFont());
 		
-		final Composite settingsPane= new Composite(fSashForm, SWT.NONE);
+		final ScrolledComposite scrollPane = new ScrolledComposite(fSashForm, SWT.V_SCROLL);
+		scrollPane.setExpandHorizontal(true);
+		scrollPane.setExpandVertical(true);
+		
+		final Composite settingsPane= new Composite(scrollPane, SWT.NONE);
 		settingsPane.setFont(fSashForm.getFont());
+		
+		scrollPane.setContent(settingsPane);
 		
 		final GridLayout layout= new GridLayout(numColumns, false);
 		layout.verticalSpacing= (int)(1.5 * fPixelConverter.convertVerticalDLUsToPixels(IDialogConstants.VERTICAL_SPACING));
@@ -586,6 +592,8 @@ public abstract class ModifyDialogTabPage {
 		layout.marginWidth= fPixelConverter.convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_MARGIN);
 		settingsPane.setLayout(layout);
 		doCreatePreferences(settingsPane, numColumns);
+		
+		scrollPane.setMinSize(settingsPane.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 
 		final Composite previewPane= new Composite(fSashForm, SWT.NONE);
 		previewPane.setLayout(createGridLayout(numColumns, true));

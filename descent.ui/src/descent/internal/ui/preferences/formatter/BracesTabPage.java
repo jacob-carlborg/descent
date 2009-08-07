@@ -29,7 +29,7 @@ public class BracesTabPage extends ModifyDialogTabPage {
 	private final String PREVIEW=
 	createPreviewHeader(FormatterMessages.BracesTabPage_preview_header) + 
 	"class ExampleType{\n\n" +
-	"private{int num;}}\n\n" +
+	"private{int num;} invariant(){assert(num>=0);}}\n\n" +
 	"enum ExampleEnum{ONE,TWO,THREE}\n\n" +
 	"version(Tango){alias toUtf8 toString;}" +
 	"object exampleFunction(){\n\n" +
@@ -43,7 +43,8 @@ public class BracesTabPage extends ModifyDialogTabPage {
 	"with(tango.io.console){Stdout(\"Hello, formatted world!\");}\n\n" +
 	"pragma(ExamplePragmaBlock){foo.bar.baz();}\n\n" +
 	"functionThatTakesADelegate({beInAFunctionLiteral();});\n\n" +
-	"return new class{void beUseless();};}";
+	"return new class{void beUseless();};}\n\n" +
+	"unittest{assert(exampleFunction());}";
 	
 	private CompilationUnitPreview fPreview;
 	

@@ -1284,8 +1284,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 			scribe.printNextToken(TOK.TOKrparen,
 					prefs.insert_space_between_empty_parens_in_class_invariants);
 		}
-		scribe.space();
-		node.getBody().accept(this);
+		formatSubStatement(node.getBody(), true, true, true, prefs.brace_position_for_class_invariant);
 		scribe.printTrailingComment();
 		return false;
 	}
@@ -2358,8 +2357,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 	{
 		formatModifiers(true, node.modifiers());
 		scribe.printNextToken(TOK.TOKunittest);
-		scribe.space();
-		node.getBody().accept(this);
+		formatSubStatement(node.getBody(), true, true, true, prefs.brace_position_for_unittest);
 		if(isNextToken(TOK.TOKsemicolon)) {
 			scribe.printNextToken(TOK.TOKsemicolon,
 					prefs.insert_space_before_semicolon);
