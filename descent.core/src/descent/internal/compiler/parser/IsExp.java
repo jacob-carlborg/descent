@@ -61,19 +61,14 @@ public class IsExp extends Expression {
 						IProblem.CanOnlyDeclareTypeAliasesWithinStaticIfConditionals, this));
 			}
 		}
-
-		int errors_save = context.global.errors;
-		context.global.errors = 0;
-		context.global.gag++; // suppress printing of error messages
-		targ = targ.semantic(filename, lineNumber, sc, context);
-		context.global.gag--;
-		int gerrors = context.global.errors;
-		context.global.errors = errors_save;
-
-		if (0 < gerrors) // if any errors happened
-		{ // then condition is false
-			return no(context);
-		} else if (tok2 != TOK.TOKreserved) {
+		
+	    Type t = targ.trySemantic(filename, lineNumber, sc, context);
+	    if (null == t) {
+	    	// goto Lno;			// errors, so condition is false
+	    	return no(context);
+	    }
+	    targ = t;
+	    if (tok2 != TOK.TOKreserved) {
 			switch (tok2) {
 			case TOKtypedef:
 				if (targ.ty != TY.Ttypedef)
@@ -218,7 +213,7 @@ public class IsExp extends Expression {
 						tded = targ;
 					}
 
-					Objects tiargs = new Objects();
+					Objects tiargs = new Objects(1);
 					tiargs.setDim(1);
 					tiargs.set(0, targ);
 

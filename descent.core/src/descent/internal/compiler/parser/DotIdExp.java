@@ -192,9 +192,7 @@ public class DotIdExp extends UnaExp {
 					}
 					type = v.type;
 					
-					if (context.isD2()) {
-						
-					} else {
+					if (context.isD1()) {
 						if (v.isConst()) {
 							if (v.init() != null) {
 								ExpInitializer ei = v.init().isExpInitializer();
@@ -328,11 +326,12 @@ public class DotIdExp extends UnaExp {
 			else if (context.isD2() && (t1b.ty == Tarray ||
 		             t1b.ty == Tsarray ||
 		    	     t1b.ty == Taarray))
-		        {	/* If ident is not a valid property, rewrite:
+		        {	
+				/* If ident is not a valid property, rewrite:
 		    	 *   e1.ident
-		             * as:
-		             *   .ident(e1)
-		             */
+	             * as:
+	             *   .ident(e1)
+	             */
 		    	int errors = context.global.errors;
 		    	context.global.gag++;
 		    	e = e1.type.dotExp(sc, e1, ident, context);

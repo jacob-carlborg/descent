@@ -317,7 +317,11 @@ public abstract class BinExp extends Expression {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.CannotPerformModuloComplexArithmetic, this));
 				}
-				return new IntegerExp(filename, lineNumber, 0);
+				if (context.isD1()) {
+					return new IntegerExp(filename, lineNumber, 0);
+				} else {
+					return new ErrorExp();
+				}
 			}
 		}
 

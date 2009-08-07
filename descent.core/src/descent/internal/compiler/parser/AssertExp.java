@@ -28,7 +28,11 @@ public class AssertExp extends UnaExp {
 	
 	@Override
 	public boolean canThrow(SemanticContext context) {
-		return context.global.params.useAssert;
+		if (context.isD1()) {
+			return context.global.params.useAssert;
+		} else {
+			return false;
+		}
 	}
 	
 	@Override
@@ -102,7 +106,7 @@ public class AssertExp extends UnaExp {
 			msg = msg.optimize(WANTvalue, context);
 		}
 		if (e1.isBool(false)) {
-			FuncDeclaration fd = (FuncDeclaration) sc.parent.isFuncDeclaration(); // SEMANTIC
+			FuncDeclaration fd = sc.parent.isFuncDeclaration();
 			fd.hasReturnExp |= 4;
 
 			if (!context.global.params.useAssert) {
