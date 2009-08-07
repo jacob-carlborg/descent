@@ -14,8 +14,6 @@ func.c  --> missing StaticCtorDeclaration::StaticCtorDeclaration
             
 Remaining from DMD 2.030 vs. 1.045
 ------------------------------
- * enum.c
- * enum.h
  * expression.c
  * expression.h
  * func.c

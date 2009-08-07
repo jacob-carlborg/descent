@@ -127,9 +127,8 @@ public class EnumDeclaration extends ScopeDsymbol {
 				return;
 			}
 
-			if (null == memtype && !isAnonymous()) { // Set memtype if we can
-														// to reduce fwd
-														// reference errors
+			if (null == memtype && !isAnonymous()) { 
+				// Set memtype if we can to reduce fwd reference errors
 				memtype = Type.tint32; // case 1) enum ident { ... }
 			}
 
@@ -148,13 +147,18 @@ public class EnumDeclaration extends ScopeDsymbol {
 				scx = scope; // save so we don't make redundant copies
 				scope = null;
 			}
+			
+		    if ((sc.stc & STCdeprecated) != 0)
+		    	isdeprecated = true;
 
 			parent = sc.parent;
 
 			/*
-			 * The separate, and distinct, cases are: 1. enum { ... } 2. enum :
-			 * memtype { ... } 3. enum ident { ... } 4. enum ident : memtype {
-			 * ... }
+			 * The separate, and distinct, cases are: 
+			 * 1. enum { ... } 
+			 * 2. enum : memtype { ... } 
+			 * 3. enum ident { ... } 
+			 * 4. enum ident : memtype { ... }
 			 */
 
 			if (memtype != null) {
@@ -167,14 +171,8 @@ public class EnumDeclaration extends ScopeDsymbol {
 					EnumDeclaration sym = (EnumDeclaration) memtype.toDsymbol(
 							sc, context);
 					if (null == sym.memtype || null == sym.members
-							|| null == sym.symtab || sym.scope != null) { // memtype
-																			// is
-																			// forward
-																			// referenced,
-																			// so
-																			// try
-																			// again
-																			// later
+							|| null == sym.symtab || sym.scope != null) { 
+						// memtype is forward referenced, so try again later
 						scope = scx != null ? scx : new Scope(sc, context);
 						scope.setNoFree();
 						scope.module.addDeferredSemantic(this, context);
