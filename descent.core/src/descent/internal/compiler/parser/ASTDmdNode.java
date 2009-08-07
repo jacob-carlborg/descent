@@ -2603,6 +2603,33 @@ public abstract class ASTDmdNode extends ASTNode {
 		return false;
 	}
 	
+	/*******************************************
+	 * Given a symbol that could be either a FuncDeclaration or
+	 * a function template, resolve it to a function symbol.
+	 *	sc		instantiation scope
+	 *	loc		instantiation location
+	 *	targsi		initial list of template arguments
+	 *	ethis		if !NULL, the 'this' pointer argument
+	 *	fargs		arguments to function
+	 *	flags		1: do not issue error message on no match, just return NULL
+	 */
+	public static FuncDeclaration resolveFuncCall(Scope sc, char[] filename,
+			int lineNumber, Dsymbol s, Objects tiargs, Expression ethis,
+			Expressions arguments, int flags, SemanticContext context) {
+		if (null == s)
+			return null; // no match
+		FuncDeclaration f = s.isFuncDeclaration();
+		if (f != null)
+			f = f.overloadResolve(filename, lineNumber, ethis, arguments,
+					context, ethis); // SEMANTIC ethis is caller?
+		else {
+			TemplateDeclaration td = s.isTemplateDeclaration();
+			f = td.deduceFunctionTemplate(sc, filename, lineNumber, tiargs,
+					null, arguments, flags, context);
+		}
+		return f;
+	}
+	
 	public int getStart() {
 		return start;
 	}

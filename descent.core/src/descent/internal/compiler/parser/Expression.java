@@ -222,7 +222,11 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 						IProblem.SymbolIsNotOfIntegralType, this, new String[] {
 								toChars(context), type.toChars(context) }));
 			}
-			return new IntegerExp(filename, lineNumber, 0);
+			if (context.isD1()) {
+				return new IntegerExp(filename, lineNumber, 0);
+			} else {
+				return new ErrorExp();
+			}
 		}
 		return this;
 	}
@@ -238,13 +242,22 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	}
 	
 	public void checkPurity(Scope sc, FuncDeclaration f, SemanticContext context) {
-		if (sc.func != null && sc.func.isPure() && 0 == sc.intypeof
-				&& !f.isPure()) {
-			if (context.acceptsErrors()) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.PureFunctionCannotCallImpureFunction, this,
-						sc.func.toChars(context), f.toChars(context)));
+		if (sc.func != null) {
+			FuncDeclaration outerfunc = sc.func;
+			while (outerfunc.toParent2() != null
+					&& outerfunc.toParent2().isFuncDeclaration() != null) {
+				outerfunc = outerfunc.toParent2().isFuncDeclaration();
 			}
+			if (outerfunc.isPure() && 0 == sc.intypeof
+					&& (!f.isNested() && !f.isPure()))
+				if (context.acceptsErrors()) {
+					context
+							.acceptProblem(Problem
+									.newSemanticTypeError(
+											IProblem.PureFunctionCannotCallImpureFunction,
+											this, sc.func.toChars(context), f
+													.toChars(context)));
+				}
 		}
 	}
 

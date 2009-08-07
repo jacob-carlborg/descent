@@ -126,8 +126,12 @@ public class StringExp extends Expression {
 				string = buffer.extractData().toCharArray();
 				len = newlen;
 				sz = 4;
-				type = new TypeSArray(Type.tdchar, new IntegerExp(filename, lineNumber, len,
-						Type.tindex), context.encoder);
+				if (context.isD1()) {
+					type = new TypeSArray(Type.tdchar, new IntegerExp(filename, lineNumber, len,
+							Type.tindex), context.encoder);
+				} else {
+					type = new TypeDArray(Type.tdchar.invariantOf(context));
+				}
 				committed = true;
 				break;
 
@@ -152,22 +156,27 @@ public class StringExp extends Expression {
 				string = buffer.extractData().toCharArray();
 				len = newlen;
 				sz = 2;
-				type = new TypeSArray(Type.twchar, new IntegerExp(filename, lineNumber, len,
-						Type.tindex), context.encoder);
+				if (context.isD1()) {
+					type = new TypeSArray(Type.twchar, new IntegerExp(filename, lineNumber, len,
+							Type.tindex), context.encoder);
+				} else {
+					type = new TypeDArray(Type.twchar.invariantOf(context));
+				}
 				committed = true;
 				break;
 
 			case 'c':
 				committed = true;
 			default:
-				type = new TypeSArray(Type.tchar, new IntegerExp(filename, lineNumber, len,
-						Type.tindex), context.encoder);
+				if (context.isD1()) {
+					type = new TypeSArray(Type.tchar, new IntegerExp(filename, lineNumber, len,
+							Type.tindex), context.encoder);
+				} else {
+					type = new TypeDArray(Type.tchar.invariantOf(context));
+				}
 				break;
 			}
 			type = type.semantic(filename, lineNumber, sc, context);
-			if (context.isD2()) {
-				type = type.invariantOf(context);
-			}
 		}
 		return this;
 	}
@@ -243,7 +252,7 @@ public class StringExp extends Expression {
 										|| tynto == Tdchar)
 									return MATCHexact;
 							} else if (type.ty == Tarray) {
-								if (length() > ((TypeSArray) t).dim.toInteger(
+								if (length(context) > ((TypeSArray) t).dim.toInteger(
 										context).intValue())
 									return MATCHnomatch;
 								TY tynto = t.nextOf().ty;
@@ -659,9 +668,50 @@ public class StringExp extends Expression {
 	/**********************************
 	 * Return length of string.
 	 */
-	public int length() {
-		// SEMANTIC StringExp::len
-		return len;
+	public int length(SemanticContext context) {
+		int result = 0;
+		int[] c = { 0 };
+		int p;
+
+		switch (sz) {
+		case 1:
+			for (int u = 0; u < len;) {
+				int[] pu = { u };
+				p = Utf.decodeChar(string, 0, len, pu, c);
+				if (p >= 0) {
+					if (context.acceptsErrors()) {
+						context.acceptProblem(Problem.newSemanticTypeError(p,
+								this, new String[0]));
+					}
+					break;
+				} else
+					result++;
+			}
+		break;
+
+		case 2:
+			for (int u = 0; u < len;) {
+				int[] pu = { u };
+				p = Utf.decodeChar(string, 0, len, pu, c);
+				if (p >= 0) {
+					if (context.acceptsErrors()) {
+						context.acceptProblem(Problem.newSemanticTypeError(p,
+								this, new String[0]));
+					}
+					break;
+				} else
+					result++;
+			}
+		break;
+
+		case 4:
+			result = len;
+		break;
+
+		default:
+			throw new IllegalStateException();
+		}
+		return result;
 	}
 
 	@Override

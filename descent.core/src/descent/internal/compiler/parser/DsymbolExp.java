@@ -105,10 +105,10 @@ public class DsymbolExp extends Expression {
 
 			em = s.isEnumMember();
 			if (em != null) {
-				if (context.isD2()) {
-					e = em.value();
-				} else {
+				if (context.isD1()) {
 					e = em.value().copy();
+				} else {
+					e = em.value();
 				}
 				e = e.semantic(sc, context);
 				return e;
@@ -126,32 +126,34 @@ public class DsymbolExp extends Expression {
 						type = Type.terror;
 					}
 				}
-				if (v.isConst() && type.toBasetype(context).ty != Tsarray) {
-					if (v.init() != null) {
-						if (v.inuse() != 0) {
-							if (context.acceptsErrors()) {
-								context.acceptProblem(Problem.newSemanticTypeError(IProblem.CircularReferenceTo, this, v.toChars(context)));
+				if (context.isD1()) {
+					if (v.isConst() && type.toBasetype(context).ty != Tsarray) {
+						if (v.init() != null) {
+							if (v.inuse() != 0) {
+								if (context.acceptsErrors()) {
+									context.acceptProblem(Problem.newSemanticTypeError(IProblem.CircularReferenceTo, this, v.toChars(context)));
+								}
+								type = Type.tint32;
+								return this;
 							}
-							type = Type.tint32;
-							return this;
-						}
-						ExpInitializer ei = v.init().isExpInitializer();
-						if (ei != null) {
-							e = ei.exp.copy(); // make copy so we can change loc
-							if (e.op == TOKstring || e.type == null) {
-								e = e.semantic(sc, context);
+							ExpInitializer ei = v.init().isExpInitializer();
+							if (ei != null) {
+								e = ei.exp.copy(); // make copy so we can change loc
+								if (e.op == TOKstring || e.type == null) {
+									e = e.semantic(sc, context);
+								}
+								e = e.implicitCastTo(sc, type, context);
+								e.filename = filename;
+								e.lineNumber = lineNumber;
+								e.copySourceRange(this);
+								return e;
 							}
-							e = e.implicitCastTo(sc, type, context);
+						} else {
+							e = type.defaultInit(context);
 							e.filename = filename;
 							e.lineNumber = lineNumber;
-							e.copySourceRange(this);
 							return e;
 						}
-					} else {
-						e = type.defaultInit(context);
-						e.filename = filename;
-						e.lineNumber = lineNumber;
-						return e;
 					}
 				}
 				e = new VarExp(filename, lineNumber, v);
@@ -168,10 +170,10 @@ public class DsymbolExp extends Expression {
 			f = s.isFuncDeclaration();
 			if (f != null) {
 				VarExp ve;
-				if (context.isD2()) {
-					ve = new VarExp(filename, lineNumber, f, hasOverloads);
-				} else {
+				if (context.isD1()) {
 					ve = new VarExp(filename, lineNumber, f);
+				} else {
+					ve = new VarExp(filename, lineNumber, f, hasOverloads);
 				}
 				ve.copySourceRange(this);
 				return ve;

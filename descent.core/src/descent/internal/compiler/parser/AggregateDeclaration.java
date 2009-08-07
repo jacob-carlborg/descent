@@ -38,8 +38,8 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 
 	// Special member functions
 	public InvariantDeclaration inv; // invariant
-	private NewDeclaration aggNew; // allocator
-	private DeleteDeclaration aggDelete; // deallocator
+	public NewDeclaration aggNew; // allocator
+	public DeleteDeclaration aggDelete; // deallocator
 
 	public List<VarDeclaration> fields;
 	

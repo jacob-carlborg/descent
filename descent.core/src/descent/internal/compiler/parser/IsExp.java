@@ -335,8 +335,7 @@ public class IsExp extends Expression {
 		TemplateParameters p = null;
 		
 		if (context.isD2()) {
-			// This section is identical to that in
-			// TemplateDeclaration::syntaxCopy()			
+			// This section is identical to that in TemplateDeclaration::syntaxCopy()			
 			if (parameters != null) {
 				p = new TemplateParameters(parameters.size());
 				p.setDim(parameters.size());

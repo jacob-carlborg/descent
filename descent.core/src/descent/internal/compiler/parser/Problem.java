@@ -887,6 +887,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.EscapingReferenceToLocal, arguments[0]);
 		case EscapingReferenceToAutoLocal:
 			return String.format(ProblemMessages.EscapingReferenceToAutoLocal, arguments[0]);
+		case EscapingReferenceToScopeLocal:
+			return String.format(ProblemMessages.EscapingReferenceToScopeLocal, arguments[0]);
 		case EscapingReferenceToLocalVariable:
 			return String.format(ProblemMessages.EscapingReferenceToLocalVariable, arguments[0]);
 		case EscapingReferenceToVariadicParameter:
@@ -1139,6 +1141,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.PureFunctionCannotCallImpureFunction, arguments[0], arguments[1]);
 		case PureFunctionCannotAccessMutableStaticData:
 			return String.format(ProblemMessages.PureFunctionCannotAccessMutableStaticData, arguments[0], arguments[1]);
+		case PureNestedFunctionCannotAccessMutableData:
+			return String.format(ProblemMessages.PureNestedFunctionCannotAccessMutableData, arguments[0], arguments[1]);
 		case ConstraintIsNotConstantOrDoesNotEvaluateToABool:
 			return String.format(ProblemMessages.ConstraintIsNotConstantOrDoesNotEvaluateToABool, arguments[0]);
 		case EscapeStringLiteralDeprecated:

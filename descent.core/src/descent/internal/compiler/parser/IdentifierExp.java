@@ -117,16 +117,10 @@ public class IdentifierExp extends Expression {
 					e = context.newTypeDotIdExp(filename, lineNumber, t, this);
 				}
 			} else {
-				if (context.isD2()) {
-					
-				} else {
+				if (context.isD1()) {
 					if (s.parent == null
-							&& scopesym[0].isArrayScopeSymbol() != null) { // Kludge
-						// to
-						// run
-						// semantic()
-						// here
-						// because
+							&& scopesym[0].isArrayScopeSymbol() != null) { 
+						// Kludge to run semantic() here because
 						// ArrayScopeSymbol::search() doesn't have access to sc.
 						s.semantic(sc, context);
 					}

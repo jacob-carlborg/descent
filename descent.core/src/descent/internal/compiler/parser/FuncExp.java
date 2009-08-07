@@ -39,7 +39,9 @@ public class FuncExp extends Expression {
 	public Expression semantic(Scope sc, SemanticContext context) {
 		if (type == null) {
 			fd.semantic(sc, context);
-			fd.parent = sc.parent;
+			if (context.isD1()) {
+				fd.parent = sc.parent;
+			}
 			// Removed all this conditions to get better selection/bindings
 			if (context.global.errors > 0) {
 				if (fd.type.next == null) {

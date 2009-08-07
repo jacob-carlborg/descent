@@ -1132,6 +1132,9 @@ EscapingReferenceToLocal
 EscapingReferenceToAutoLocal
 	formatString=Escaping reference to auto local %1$s
 	numArgs=1
+EscapingReferenceToScopeLocal
+	formatString=Escaping reference to scope local %1$s
+	numArgs=1
 EscapingReferenceToLocalVariable
 	formatString=Escaping reference to local variable %1$s
 	numArgs=1
@@ -1509,6 +1512,9 @@ PureFunctionCannotCallImpureFunction
 	numArgs=2
 PureFunctionCannotAccessMutableStaticData
 	formatString=Pure function '%1$s' cannot access mutable static data '%2$s'
+	numArgs=2
+PureNestedFunctionCannotAccessMutableData
+	formatString=Pure nested function '%1$s' cannot access mutable data '%2$s'
 	numArgs=2
 ConstraintIsNotConstantOrDoesNotEvaluateToABool
 	formatString=Constraint %1$s is not constant or does not evaluate to a bool

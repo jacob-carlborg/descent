@@ -109,12 +109,8 @@ public class SuperExp extends ThisExp {
 		}
 
 		var.isVarDeclaration().checkNestedReference(sc, filename, lineNumber, context);
-		if (context.isD2()) {
+		if (0 == sc.intypeof) {
 			sc.callSuper |= Scope.CSXsuper;
-		} else {
-			if (0 == sc.intypeof) {
-				sc.callSuper |= Scope.CSXsuper;
-			}
 		}
 		return this;
 	}

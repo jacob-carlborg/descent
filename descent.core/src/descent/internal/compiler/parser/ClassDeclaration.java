@@ -38,7 +38,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 	public BaseClasses baseclasses;
 	
 	public ClassDeclaration baseClass; // null only if this is Object
-	private CtorDeclaration ctor;
+	public CtorDeclaration ctor;
 	public CtorDeclaration defaultCtor; // default constructor
 	public FuncDeclarations dtors; // Array of destructors
 	public FuncDeclaration staticCtor;

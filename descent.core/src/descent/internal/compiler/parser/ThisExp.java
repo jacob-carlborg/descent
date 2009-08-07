@@ -81,7 +81,15 @@ public class ThisExp extends Expression {
 				}
 				sd = s.isStructDeclaration();
 				if (sd != null) {
-					type = sd.type.pointerTo(context);
+					if (context.isD1()) {
+						type = sd.type.pointerTo(context);
+					} else if (context.isD2()) {
+						if (context.STRUCTTHISREF()) {
+							type = sd.type;
+						} else {
+							type = sd.type.pointerTo(context);
+						}
+					}
 					return this;
 				}
 			}
@@ -100,12 +108,8 @@ public class ThisExp extends Expression {
 		Assert.isNotNull(var.parent);
 		type = var.type;
 		var.isVarDeclaration().checkNestedReference(sc, filename, lineNumber, context);
-		if (context.isD2()) {
+		if (0 == sc.intypeof) {
 			sc.callSuper |= Scope.CSXthis;
-		} else {
-			if (0 == sc.intypeof) {
-				sc.callSuper |= Scope.CSXthis;
-			}
 		}
 		return this;
 	}

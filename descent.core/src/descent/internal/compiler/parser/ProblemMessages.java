@@ -388,6 +388,7 @@ final class ProblemMessages extends NLS {
 	public static String VariableIsUsedBeforeInitialization;
 	public static String EscapingReferenceToLocal;
 	public static String EscapingReferenceToAutoLocal;
+	public static String EscapingReferenceToScopeLocal;
 	public static String EscapingReferenceToLocalVariable;
 	public static String EscapingReferenceToVariadicParameter;
 	public static String CanOnlyCatchClassObjects;
@@ -514,6 +515,7 @@ final class ProblemMessages extends NLS {
 	public static String FunctionIsOverloaded;
 	public static String PureFunctionCannotCallImpureFunction;
 	public static String PureFunctionCannotAccessMutableStaticData;
+	public static String PureNestedFunctionCannotAccessMutableData;
 	public static String ConstraintIsNotConstantOrDoesNotEvaluateToABool;
 	public static String EscapeStringLiteralDeprecated;
 	public static String DelimiterCannotBeWhitespace;

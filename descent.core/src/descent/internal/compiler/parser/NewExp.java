@@ -234,7 +234,16 @@ public class NewExp extends Expression {
 					}
 				}
 
-				FuncDeclaration f = cd.ctor(context);
+				FuncDeclaration f;
+				
+				if (context.isD1()) {
+					f = cd.ctor(context);
+				} else {
+					f = null;
+					if (cd.ctor != null) {
+					    f = resolveFuncCall(sc, filename, lineNumber, cd.ctor, null, null, arguments, 0, context);
+					}
+				}
 				if (f != null) {
 					f = f.overloadResolve(filename, lineNumber, null, arguments, context, this);
 					
@@ -245,9 +254,7 @@ public class NewExp extends Expression {
 					cd.accessCheck(sc, member, context, this);
 
 					tf = (TypeFunction) f.type;
-					if (context.isD2()) {
-						
-					} else {
+					if (context.isD1()) {
 						type = tf.next;
 					}
 
@@ -294,7 +301,6 @@ public class NewExp extends Expression {
 			} else if (tb.ty == Tstruct) {
 				TypeStruct ts = (TypeStruct) tb;
 				StructDeclaration sd = ts.sym;
-				FuncDeclaration f = sd.aggNew(context);
 				TypeFunction tf;
 
 				if (arguments != null && arguments.size() > 0) {
@@ -303,29 +309,96 @@ public class NewExp extends Expression {
 								IProblem.NoConstructorForSymbol, this, new String[] { type.toChars(context) }));
 					}
 				}
-
-				if (f != null) {
-					Expression e;
-
-					// Prepend the uint size argument to newargs[]
-					e = new IntegerExp(filename, lineNumber, sd.size(context), Type.tuns32);
-					if (newargs == null) {
-						newargs = new Expressions(0);
+				
+				FuncDeclaration f;
+				
+				if (context.isD1()) {
+					f = sd.aggNew(context);
+				} else {
+					f = null;
+					if (sd.ctor != null) {
+					    f = resolveFuncCall(sc, filename, lineNumber, sd.ctor, null, null, arguments, 0, context);
 					}
-					newargs.add(0, e);
+				}
+				
+				if (context.isD1()) {
+					if (f != null) {
+						Expression e;
+	
+						// Prepend the uint size argument to newargs[]
+						e = new IntegerExp(filename, lineNumber, sd.size(context), Type.tuns32);
+						if (newargs == null) {
+							newargs = new Expressions(0);
+						}
+						newargs.add(0, e);
+	
+						f = f.overloadResolve(filename, lineNumber, null, newargs, context, this);
+						allocator = f.isNewDeclaration();
+						Assert.isNotNull(allocator);
+	
+						tf = (TypeFunction) f.type;
+						functionArguments(filename, lineNumber, sc, tf, newargs, context);
+	
+						e = new VarExp(filename, lineNumber, f);
+						e = new CallExp(filename, lineNumber, e, newargs);
+						e = e.semantic(sc, context);
+						e.type = type.pointerTo(context);
+						return e;
+					}
+				} else {
+					if (f != null) {
+						checkDeprecated(sc, f, context);
+						member = f.isCtorDeclaration();
 
-					f = f.overloadResolve(filename, lineNumber, null, newargs, context, this);
-					allocator = f.isNewDeclaration();
-					Assert.isNotNull(allocator);
+						sd.accessCheck(sc, member, context, this); // SEMANTIC this is caller?
 
-					tf = (TypeFunction) f.type;
-					functionArguments(filename, lineNumber, sc, tf, newargs, context);
+						tf = (TypeFunction) f.type;
+						// type = tf.next;
 
-					e = new VarExp(filename, lineNumber, f);
-					e = new CallExp(filename, lineNumber, e, newargs);
-					e = e.semantic(sc, context);
-					e.type = type.pointerTo(context);
-					return e;
+						if (null == arguments) {
+							arguments = new Expressions(0);
+						}
+						functionArguments(filename, lineNumber, sc, tf,
+								arguments, context);
+					} else {
+						if (arguments != null && arguments.size() > 0) {
+							if (context.acceptsErrors()) {
+								context
+										.acceptProblem(Problem
+												.newSemanticTypeError(
+														IProblem.NoConstructorForSymbol,
+														this,
+														sd.toChars(context)));
+							}
+						}
+					}
+
+					if (sd.aggNew != null) {
+						// Prepend the uint size argument to newargs[]
+						Expression e = new IntegerExp(filename, lineNumber, sd
+								.size(context), Type.tuns32);
+						if (null == newargs)
+							newargs = new Expressions();
+						newargs.shift(e);
+
+						f = sd.aggNew.overloadResolve(filename, lineNumber,
+								null, newargs, context, this); // SEMANTIC this
+																// is caller?
+						allocator = f.isNewDeclaration();
+
+						tf = (TypeFunction) f.type;
+						functionArguments(filename, lineNumber, sc, tf,
+								newargs, context);
+					} else {
+						if (newargs != null && 0 == newargs.size()) {
+							if (context.acceptsErrors()) {
+								context.acceptProblem(Problem
+										.newSemanticTypeError(
+												IProblem.NoAllocatorForSymbol,
+												this, sd.toChars(context)));
+							}
+						}
+					}
 				}
 
 				type = type.pointerTo(context);

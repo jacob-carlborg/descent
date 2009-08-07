@@ -73,22 +73,31 @@ public class StructLiteralExp extends Expression {
 	}
 
 	public int getFieldIndex(Type type, int offset, SemanticContext context) {
+		boolean condition;
+		if (context.isD1()) {
+			condition = true;
+		} else {
+			condition = size(elements) > 0;
+		}
+		
 		/* Find which field offset is by looking at the field offsets
 		 */
-		for (int i = 0; i < sd.fields.size(); i++) {
-			Dsymbol s = sd.fields.get(i);
-			VarDeclaration v = s.isVarDeclaration();
-			if (v == null) {
-				throw new IllegalStateException("assert(v);");
-			}
-
-			if (offset == v.offset()
-					&& type.size(context) == v.type.size(context)) {
-				Expression e = elements.get(i);
-				if (e != null) {
-					return i;
+		if (condition) {
+			for (int i = 0; i < sd.fields.size(); i++) {
+				Dsymbol s = sd.fields.get(i);
+				VarDeclaration v = s.isVarDeclaration();
+				if (v == null) {
+					throw new IllegalStateException("assert(v);");
 				}
-				break;
+	
+				if (offset == v.offset()
+						&& type.size(context) == v.type.size(context)) {
+					Expression e = elements.get(i);
+					if (e != null) {
+						return i;
+					}
+					break;
+				}
 			}
 		}
 		return -1;
@@ -208,6 +217,13 @@ public class StructLiteralExp extends Expression {
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		Expression e;
+	    int nfields = 0;
+	    
+	    if (context.isD2()) {
+	    	nfields = size(sd.fields) - (sd.isnested ? 1 : 0);
+	    } else {
+	    	nfields = size(sd.fields);
+	    }
 		
 		if (type != null) {
 			return this;
@@ -240,7 +256,7 @@ public class StructLiteralExp extends Expression {
 				}
 			}
 			e = resolveProperties(sc, e, context);
-			if (i >= sd.fields.size()) {
+			if (i >= nfields) {
 				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.MoreInitiailizersThanFields, this, new String[] { sd.toChars(context) }));
@@ -275,7 +291,7 @@ public class StructLiteralExp extends Expression {
 
 		/* Fill out remainder of elements[] with default initializers for fields[]
 		 */
-		for (int i = elements.size(); i < sd.fields.size(); i++) {
+		for (int i = elements.size(); i < nfields; i++) {
 			Dsymbol s = sd.fields.get(i);
 			VarDeclaration v = s.isVarDeclaration();
 			if (v == null) {
