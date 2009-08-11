@@ -240,8 +240,8 @@ public class NewExp extends Expression {
 					f = cd.ctor(context);
 				} else {
 					f = null;
-					if (cd.ctor != null) {
-					    f = resolveFuncCall(sc, filename, lineNumber, cd.ctor, null, null, arguments, 0, context);
+					if (cd.ctor(context) != null) {
+					    f = resolveFuncCall(sc, filename, lineNumber, cd.ctor(context), null, null, arguments, 0, context);
 					}
 				}
 				if (f != null) {

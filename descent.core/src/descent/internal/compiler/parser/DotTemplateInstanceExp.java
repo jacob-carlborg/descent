@@ -106,7 +106,7 @@ public class DotTemplateInstanceExp extends UnaExp {
 						IProblem.TemplateIsNotAMemberOf, this, ti.toChars(context), e1.toChars(context)));
 			}
 			// goto Lerr;
-			return new IntegerExp(filename, lineNumber, 0);
+			return semantic_Lerr(context);
 		}
 
 		Assert.isNotNull(s);
@@ -125,7 +125,7 @@ public class DotTemplateInstanceExp extends UnaExp {
 				}
 			}
 			// goto Lerr;
-			return new IntegerExp(filename, lineNumber, 0);
+			return semantic_Lerr(context);
 		}
 		s = s2;
 		s.semantic(sc, context);
@@ -136,7 +136,7 @@ public class DotTemplateInstanceExp extends UnaExp {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolNotATemplate, ti.name, new String(id)));
 			}
 			// goto Lerr;
-			return new IntegerExp(filename, lineNumber, 0);
+			return semantic_Lerr(context);
 		}
 		if (context.global.errors > 0) {
 			// goto Lerr;
@@ -166,6 +166,14 @@ public class DotTemplateInstanceExp extends UnaExp {
 		return e;
 
 		// Lerr: return new IntegerExp(0);
+	}
+
+	private Expression semantic_Lerr(SemanticContext context) {
+		if (context.isD1()) {
+			return new IntegerExp(filename, lineNumber, 0);
+		} else {
+			return new ErrorExp();
+		}
 	}
 
 	@Override

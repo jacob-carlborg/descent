@@ -1438,8 +1438,8 @@ WithoutThisCannotBeConstInvariant
 CannotModifySymbol
 	formatString=Cannot modify %1$s
 	numArgs=1
-CannotCallPublicExportFunctionFromInvariant
-	formatString=Cannot call public/export function %1$s from invariant
+CannotCallPublicExportFunctionFromImmutable
+	formatString=Cannot call public/export function %1$s from immutable
 	numArgs=1
 TemplateMemberFunctionNotAllowedInInterface
 	formatString=Template member function not allowed in interface %1$s
@@ -1456,8 +1456,8 @@ SymbolIsNotMutable
 SymbolForSymbolNeedsToBeType
 	formatString=%1$s for %2$s needs to be type %3$s not type %4$s
 	numArgs=4
-CannotModifyConstInvariant
-	formatString=cannot modify const/invariant %1$s
+CannotModifyConstImmutable
+	formatString=cannot modify const/immutable %1$s
 	numArgs=1
 SymbolCanOnlyBeCalledOnAnInvariantObject
 	formatString=%1$s can only be called on an invariant object
@@ -1507,8 +1507,8 @@ AliasThisCanOnlyAppearInStructOrClassDeclaration
 FunctionIsOverloaded
 	formatString=Function %1$s is overloaded
 	numArgs=1
-PureFunctionCannotCallImpureFunction
-	formatString=Pure function '%1$s' cannot call impure function '%2$s'
+PureFunctionCannotCallImpure
+	formatString=Pure function '%1$s' cannot call impure %2$s '%3$s'
 	numArgs=2
 PureFunctionCannotAccessMutableStaticData
 	formatString=Pure function '%1$s' cannot access mutable static data '%2$s'
@@ -1540,7 +1540,9 @@ OnlyParametersOfForeachDeclarationsCanBeRef
 ManifestConstantsMustHaveInitializers
 	formatString=Manifest constants must have initializers
 	numArgs=0
-	
+ForwardReferenceToInferredReturnTypeOfFunctionCall
+	formatString=Forward reference to inferred return type of function call %1$s
+	numArgs=1
 	
 	
 	

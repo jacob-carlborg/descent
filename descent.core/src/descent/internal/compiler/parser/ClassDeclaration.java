@@ -38,8 +38,8 @@ public class ClassDeclaration extends AggregateDeclaration {
 	public BaseClasses baseclasses;
 	
 	public ClassDeclaration baseClass; // null only if this is Object
-	public CtorDeclaration ctor;
-	public CtorDeclaration defaultCtor; // default constructor
+//	public CtorDeclaration ctor;
+//	public CtorDeclaration defaultCtor; // default constructor
 	public FuncDeclarations dtors; // Array of destructors
 	public FuncDeclaration staticCtor;
 	public FuncDeclaration staticDtor;
@@ -1105,18 +1105,6 @@ public class ClassDeclaration extends AggregateDeclaration {
         }
 
 		structsize = sc.offset;
-	}
-	
-	public CtorDeclaration ctor(SemanticContext context) {
-		if (!specialInitialized) {
-			specialInitialized = true;
-			initializeSpecial(context);
-		}
-		return ctor;
-	}
-	
-	public void ctor(CtorDeclaration ctor) {
-		this.ctor = ctor;
 	}
 
 }

@@ -490,13 +490,13 @@ final class ProblemMessages extends NLS {
 	public static String CannotHaveFieldWithSameStructType;
 	public static String WithoutThisCannotBeConstInvariant;
 	public static String CannotModifySymbol;
-	public static String CannotCallPublicExportFunctionFromInvariant;
+	public static String CannotCallPublicExportFunctionFromImmutable;
 	public static String TemplateMemberFunctionNotAllowedInInterface;
 	public static String ArgumentToTypeofIsNotAnExpression;
 	public static String CannotInferTypeFromOverloadedFunctionSymbol;
 	public static String SymbolIsNotMutable;
 	public static String SymbolForSymbolNeedsToBeType;
-	public static String CannotModifyConstInvariant;
+	public static String CannotModifyConstImmutable;
 	public static String SymbolCanOnlyBeCalledOnAnInvariantObject;
 	public static String SymbolCanOnlyBeCalledOnAMutableObject;
 	public static String CannotCallMutableMethodOnFinalStruct;
@@ -513,7 +513,7 @@ final class ProblemMessages extends NLS {
 	public static String ThereCanBeOnlyOneAliasThis;
 	public static String AliasThisCanOnlyAppearInStructOrClassDeclaration;
 	public static String FunctionIsOverloaded;
-	public static String PureFunctionCannotCallImpureFunction;
+	public static String PureFunctionCannotCallImpure;
 	public static String PureFunctionCannotAccessMutableStaticData;
 	public static String PureNestedFunctionCannotAccessMutableData;
 	public static String ConstraintIsNotConstantOrDoesNotEvaluateToABool;
@@ -524,6 +524,7 @@ final class ProblemMessages extends NLS {
 	public static String InnerStructCannotBeAField;
 	public static String OnlyParametersOfForeachDeclarationsCanBeRef;
 	public static String ManifestConstantsMustHaveInitializers;
+	public static String ForwardReferenceToInferredReturnTypeOfFunctionCall;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

@@ -253,7 +253,12 @@ public class CastExp extends UnaExp {
 
 	@Override
 	public Expression syntaxCopy(SemanticContext context) {
-		return new CastExp(filename, lineNumber, e1.syntaxCopy(context), to.syntaxCopy(context));
+		if (context.isD1()) {
+			return new CastExp(filename, lineNumber, e1.syntaxCopy(context), to.syntaxCopy(context));
+		} else {
+		    return to != null ? new CastExp(filename, lineNumber, e1.syntaxCopy(context), to.syntaxCopy(context))
+		      : new CastExp(filename, lineNumber, e1.syntaxCopy(context), mod, tok, modifierStart, tok2, modifier2Start);
+		}
 	}
 
 	@Override

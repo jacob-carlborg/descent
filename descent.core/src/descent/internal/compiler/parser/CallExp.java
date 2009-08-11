@@ -13,6 +13,7 @@ import static descent.internal.compiler.parser.TOK.TOKdotexp;
 import static descent.internal.compiler.parser.TOK.TOKdottd;
 import static descent.internal.compiler.parser.TOK.TOKdotvar;
 import static descent.internal.compiler.parser.TOK.TOKimport;
+import static descent.internal.compiler.parser.TOK.TOKoverloadset;
 import static descent.internal.compiler.parser.TOK.TOKsuper;
 import static descent.internal.compiler.parser.TOK.TOKtemplate;
 import static descent.internal.compiler.parser.TOK.TOKthis;
@@ -91,8 +92,18 @@ public class CallExp extends UnaExp {
 		for (int i = 0; i < size(arguments); i++) {
 			Expression e = (Expression) arguments.get(i);
 
-			if (e.canThrow(context))
-				return true;
+			if (context.isD1()) {
+				if (e.canThrow(context))
+					return true;
+			} else {
+				if (e != null && e.canThrow(context))
+					return true;
+			}
+		}
+		
+		if (!context.isD1()) {
+		    if (context.global.errors != 0 && null == e1.type)
+		    	return false;			// error recovery
 		}
 
 		/*
@@ -222,8 +233,10 @@ public class CallExp extends UnaExp {
 	
 	@Override
 	public boolean isLvalue(SemanticContext context) {
-	    if (type.toBasetype(context).ty == Tstruct)
-			return true;
+		if (context.isD1()) {
+		    if (type.toBasetype(context).ty == Tstruct)
+				return true;
+		}
 		Type tb = e1.type.toBasetype(context);
 		if (tb.ty == Tfunction && ((TypeFunction) tb).isref)
 			return true; // function returns a reference
@@ -294,6 +307,7 @@ public class CallExp extends UnaExp {
 		Type t1 = null;
 		int istemp;
 		Objects targsi = null;
+	    TemplateInstance tierror = null;
 
 		if (type != null) {
 			return this; // semantic() already run
@@ -339,7 +353,9 @@ public class CallExp extends UnaExp {
 						TypeAArray taa = (TypeAArray) dotid.e1.type
 								.toBasetype(context);
 						key = key.implicitCastTo(sc, taa.index, context);
-						key = key.implicitCastTo(sc, taa.key, context);
+						if (context.isD1()) {
+							key = key.implicitCastTo(sc, taa.key, context);
+						}
 						return new RemoveExp(filename, lineNumber, dotid.e1, key);
 					}
 				} else if (e1ty == Tarray || e1ty == Tsarray || e1ty == Taarray) {
@@ -374,6 +390,7 @@ public class CallExp extends UnaExp {
 				if (errors != context.global.errors) {
 					context.global.errors = errors;
 					targsi = ti.tiargs;
+					tierror = ti; // for error reporting
 					e1 = new IdentifierExp(filename, lineNumber, ti.name);
 				}
 			}
@@ -390,17 +407,31 @@ public class CallExp extends UnaExp {
 				 * Attempt to instantiate ti. If that works, go with it. If
 				 * not, go with partial explicit specialization.
 				 */
-				Expression etmp;
-				int errors = context.global.errors;
-				context.global.gag++;
-				etmp = e1.semantic(sc, context);
-				context.global.gag--;
-				if (errors != context.global.errors) {
-					context.global.errors = errors;
-					targsi = ti.tiargs;
-					e1 = new DotIdExp(filename, lineNumber, se.e1, ti.name);
-				} else
-					e1 = etmp;
+			    ti.semanticTiargs(sc, context);
+			    
+			    if (context.isD1()) {
+					Expression etmp;
+					int errors = context.global.errors;
+					context.global.gag++;
+					etmp = e1.semantic(sc, context);
+					context.global.gag--;
+					if (errors != context.global.errors) {
+						context.global.errors = errors;
+						targsi = ti.tiargs;
+						e1 = new DotIdExp(filename, lineNumber, se.e1, ti.name);
+					} else
+						e1 = etmp;
+			    } else {
+					Expression etmp = e1.trySemantic(sc, context);
+					if (etmp != null) {
+						e1 = etmp; // it worked
+					} else // didn't work
+					{
+						targsi = ti.tiargs;
+						tierror = ti; // for error reporting
+						e1 = new DotIdExp(filename, lineNumber, se.e1, ti.name);
+					}
+			    }
 			}
 		}
 
@@ -473,6 +504,44 @@ public class CallExp extends UnaExp {
 
 				if (t1.ty == Tstruct) {
 					ad = ((TypeStruct) t1).sym;
+					
+					if (!context.isD1()) {
+						// First look for constructor
+						if (ad.ctor(context) != null && arguments != null
+								&& arguments.size() > 0) {
+							// Create variable that will get constructed
+							IdentifierExp idtmp = context.uniqueId("__ctmp");
+							VarDeclaration tmp = new VarDeclaration(filename,
+									lineNumber, t1, idtmp, null);
+							Expression av = new DeclarationExp(filename,
+									lineNumber, tmp);
+							av = new CommaExp(filename, lineNumber, av,
+									new VarExp(filename, lineNumber, tmp));
+
+							Expression e;
+							CtorDeclaration cf = ad.ctor(context).isCtorDeclaration();
+							if (cf != null)
+								e = new DotVarExp(filename, lineNumber, av, cf,
+										true);
+							else {
+								TemplateDeclaration td = ad.ctor(context)
+										.isTemplateDeclaration();
+								e = new DotTemplateExp(filename, lineNumber,
+										av, td);
+							}
+							e = new CallExp(filename, lineNumber, e, arguments);
+							if (!context.STRUCTTHISREF()) {
+								/*
+								 * Constructors return a pointer to the instance
+								 */
+								e = new PtrExp(filename, lineNumber, e);
+							}
+							e = e.semantic(sc, context);
+							return e;
+						}
+					}
+					
+				    // No constructor, look for overload of opCall
 					Dsymbol opCall = search_function(ad, Id.call, context);
 					if (opCall != null) {
 						
@@ -603,7 +672,7 @@ public class CallExp extends UnaExp {
 					    f.addPostInvariant(context)
 					   ) {
 						if (context.acceptsErrors()) {
-							context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotCallPublicExportFunctionFromInvariant, this, f.toChars(context)));
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotCallPublicExportFunctionFromImmutable, this, f.toChars(context)));
 						}
 					}
 				}
@@ -687,8 +756,15 @@ public class CallExp extends UnaExp {
 					type = Type.terror;
 					return this;
 				} else {
-					f = cd.baseClass.ctor(context);
-					if (f == null) {
+					boolean condition;
+					if (context.isD1()) {
+						f = cd.baseClass.ctor(context);
+						condition = f != null;
+					} else {
+						condition = cd.baseClass.ctor(context) == null;
+					}
+					
+					if (condition) {
 						if (context.acceptsErrors()) {
 							context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.NoSuperClassConstructor, this, cd.baseClass.toChars(context)));
 						}
@@ -709,7 +785,11 @@ public class CallExp extends UnaExp {
 							sc.callSuper |= CSXany_ctor | CSXsuper_ctor;
 						}
 
-						f = f.overloadResolve(filename, lineNumber, null, arguments, context, this);
+						if (context.isD1()) {
+							f = f.overloadResolve(filename, lineNumber, null, arguments, context, this);
+						} else {
+							f = resolveFuncCall(sc, filename, lineNumber, cd.baseClass.ctor(context), null, null, arguments, 0, context);
+						}
 						
 						// Descent: for binding resolution
 						if (this.sourceE1 != null) {
@@ -729,10 +809,13 @@ public class CallExp extends UnaExp {
 				}
 			} else if (e1.op == TOKthis) {
 				// same class constructor call
-				ClassDeclaration cd = null;
-
+				AggregateDeclaration cd = null;
 				if (sc.func != null) {
-					cd = sc.func.toParent().isClassDeclaration();
+					if (context.isD1()) {
+						cd = sc.func.toParent().isClassDeclaration();
+					} else {
+						cd = sc.func.toParent().isAggregateDeclaration();
+					}
 				}
 				if (cd == null || sc.func.isCtorDeclaration() == null) {
 					if (context.acceptsErrors()) {
@@ -756,8 +839,12 @@ public class CallExp extends UnaExp {
 						sc.callSuper |= CSXany_ctor | CSXthis_ctor;
 				    }
 
-					f = cd.ctor(context);
-					f = f.overloadResolve(filename, lineNumber, null, arguments, context, this);
+					if (context.isD1()) {
+						f = cd.ctor(context);
+						f = f.overloadResolve(filename, lineNumber, null, arguments, context, this);
+					} else {
+					    f = resolveFuncCall(sc, filename, lineNumber, cd.ctor, null, null, arguments, 0, context);
+					}
 					
 					// Descent: for binding resolution
 					if (this.sourceE1 != null) {
@@ -783,9 +870,51 @@ public class CallExp extends UnaExp {
 						}
 					}
 				}
+			} else if (!context.isD1() && e1.op == TOKoverloadset) {
+				OverExp eo = (OverExp) e1;
+				FuncDeclaration f3 = null;
+				for (int i = 0; i < size(eo.vars.a); i++) {
+					Dsymbol s = (Dsymbol) eo.vars.a.get(i);
+					FuncDeclaration f2 = s.isFuncDeclaration();
+					if (f2 != null) {
+						f2 = f2.overloadResolve(filename, lineNumber, null,
+								arguments, 1, context, this); // SEMANTIC this
+						// is caller?
+					} else {
+						TemplateDeclaration td = s.isTemplateDeclaration();
+						f2 = td
+								.deduceFunctionTemplate(sc, filename,
+										lineNumber, targsi, null, arguments, 1,
+										context);
+					}
+					if (f2 != null) {
+						if (f3 != null)
+							/*
+							 * Error if match in more than one overload set,
+							 * even if one is a 'better' match than the other.
+							 */
+							ScopeDsymbol.multiplyDefined(filename, lineNumber,
+									f3, f2, context);
+						else
+							f3 = f2;
+					}
+				}
+				if (null == f3) {
+					/*
+					 * No overload matches, just set f and rely on error message
+					 * being generated later.
+					 */
+					f3 = (FuncDeclaration) eo.vars.a.get(0);
+				}
+				e1 = new VarExp(filename, lineNumber, f3);
+				// goto Lagain;
+				loopLagain = true;
+				continue;
 			} else if (t1 == null) {
 				if (context.acceptsErrors()) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionExpectedBeforeCall, this, e1.toChars(context)));
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.FunctionExpectedBeforeCall, this, e1
+									.toChars(context)));
 				}
 				type = Type.terror;
 				return this;
@@ -794,6 +923,14 @@ public class CallExp extends UnaExp {
 					TypeDelegate td = (TypeDelegate) t1;
 					Assert.isTrue(td.next.ty == Tfunction);
 					tf = (TypeFunction) (td.next);
+					if (context.isD2()) {
+					    if (sc.func != null && sc.func.isPure() && !tf.ispure) {
+					    	if (context.acceptsErrors()) {
+					    		context.acceptProblem(Problem.newSemanticTypeError(
+										IProblem.PureFunctionCannotCallImpure, this, sc.func.toChars(context), "delegate", e1.toChars(context)));
+					    	}
+					    }
+					}
 					// goto Lcheckargs;
 					return semantic_Lcheckargs(sc, tf, f, context);
 				} else if (t1.ty == Tpointer && ((TypePointer)t1).next.ty == Tfunction) {
@@ -801,6 +938,14 @@ public class CallExp extends UnaExp {
 
 					e = new PtrExp(filename, lineNumber, e1);
 					t1 = ((TypePointer)t1).next;
+					if (context.isD2()) {
+					    if (sc.func != null && sc.func.isPure() && !((TypeFunction)t1).ispure) {
+					    	if (context.acceptsErrors()) {
+					    		context.acceptProblem(Problem.newSemanticTypeError(
+										IProblem.PureFunctionCannotCallImpure, this, sc.func.toChars(context), "pointer", e1.toChars(context)));
+					    	}
+					    }
+					}
 					e.type = t1;
 					e1 = e;
 				} else if (e1.op == TOKtemplate) {
@@ -847,29 +992,35 @@ public class CallExp extends UnaExp {
 				f = ve.var.isFuncDeclaration();
 				Assert.isNotNull(f);
 
-				// Look to see if f is really a function template
-				if (false && istemp == 0 && f.parent != null) {
-					TemplateInstance ti = f.parent.isTemplateInstance();
-
-					if (ti != null
-							&& (equals(ti.name, f.ident) || equals(ti.toAlias(context).ident, f.ident)) && ti.tempdecl != null) {
-						/* This is so that one can refer to the enclosing
-						 * template, even if it has the same name as a member
-						 * of the template, if it has a !(arguments)
-						 */
-						TemplateDeclaration tempdecl = ti.tempdecl;
-						if (tempdecl.overroot != null) {
-							tempdecl = tempdecl.overroot; // then get the start
-						}
-						e1 = new TemplateExp(filename, lineNumber, tempdecl);
-						istemp = 1;
-						// goto Lagain;
-						loopLagain = true;
-						continue Lagain;
+				if (context.isD1()) {
+					// Look to see if f is really a function template
+//					if (false && istemp == 0 && f.parent != null) {
+//						TemplateInstance ti = f.parent.isTemplateInstance();
+//	
+//						if (ti != null
+//								&& (equals(ti.name, f.ident) || equals(ti.toAlias(context).ident, f.ident)) && ti.tempdecl != null) {
+//							/* This is so that one can refer to the enclosing
+//							 * template, even if it has the same name as a member
+//							 * of the template, if it has a !(arguments)
+//							 */
+//							TemplateDeclaration tempdecl = ti.tempdecl;
+//							if (tempdecl.overroot != null) {
+//								tempdecl = tempdecl.overroot; // then get the start
+//							}
+//							e1 = new TemplateExp(filename, lineNumber, tempdecl);
+//							istemp = 1;
+//							// goto Lagain;
+//							loopLagain = true;
+//							continue Lagain;
+//						}
+//					}
+					
+					f = f.overloadResolve(filename, lineNumber, null, arguments, context, this);
+				} else {
+					if (ve.hasOverloads) {
+					    f = f.overloadResolve(filename, lineNumber, null, arguments, context, this); // SEMANTIC this is caller?
 					}
 				}
-
-				f = f.overloadResolve(filename, lineNumber, null, arguments, context, this);
 				
 				// Descent: for binding resolution
 				if (this.sourceE1 != null) {
@@ -927,7 +1078,16 @@ public class CallExp extends UnaExp {
 		}
 		functionArguments(filename, lineNumber, sc, tf, arguments, context);
 
-		Assert.isNotNull(type);
+		if (context.isD1()) {
+			Assert.isNotNull(type);
+		} else {
+		    if (null == type) {
+		    	if (context.acceptsErrors()) {
+		    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForwardReferenceToInferredReturnTypeOfFunctionCall, this, toChars(context)));
+		    	}
+		    	type = Type.terror;
+		    }
+		}
 
 		if (f != null && f.tintro() != null) {
 			Type t = type;
@@ -961,9 +1121,16 @@ public class CallExp extends UnaExp {
 
 	@Override
 	public Expression toLvalue(Scope sc, Expression e, SemanticContext context) {
-		if (type.toBasetype(context).ty == Tstruct) {
-			return this;
+		if (context.isD1()) {
+			if (type.toBasetype(context).ty == Tstruct) {
+				return this;
+			} else {
+				return super.toLvalue(sc, e, context);
+			}
 		} else {
+			if (isLvalue(context))
+				return this;
+
 			return super.toLvalue(sc, e, context);
 		}
 	}

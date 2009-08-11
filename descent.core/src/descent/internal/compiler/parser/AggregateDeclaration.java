@@ -43,7 +43,9 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 
 	public List<VarDeclaration> fields;
 	
-	public Dsymbol aliasthis;
+	protected Dsymbol ctor;			// CtorDeclaration or TemplateDeclaration
+	public CtorDeclaration defaultCtor;	// default constructor
+	public Dsymbol aliasthis;			// forward unresolved lookups to aliasthis
 	
 	// Back end
     Symbol stag;		// tag symbol for debug data
@@ -501,6 +503,18 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 	
 	public void aggDelete(DeleteDeclaration aggDelete) {
 		this.aggDelete = aggDelete;
+	}
+	
+	public CtorDeclaration ctor(SemanticContext context) {
+		if (!specialInitialized) {
+			specialInitialized = true;
+			initializeSpecial(context);
+		}
+		return (CtorDeclaration) ctor;
+	}
+	
+	public void ctor(CtorDeclaration ctor) {
+		this.ctor = ctor;
 	}
 	
 }

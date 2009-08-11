@@ -254,9 +254,8 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 					context
 							.acceptProblem(Problem
 									.newSemanticTypeError(
-											IProblem.PureFunctionCannotCallImpureFunction,
-											this, sc.func.toChars(context), f
-													.toChars(context)));
+											IProblem.PureFunctionCannotCallImpure,
+											this, sc.func.toChars(context), "function", f.toChars(context)));
 				}
 		}
 	}

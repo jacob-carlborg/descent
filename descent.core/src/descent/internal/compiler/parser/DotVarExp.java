@@ -106,7 +106,7 @@ public class DotVarExp extends UnaExp {
 			    (var.storage_class & STC.STCmanifest) != 0
 			   ) {
 				if (context.acceptsErrors()) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotModifyConstInvariant, this, this.toChars(context)));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotModifyConstImmutable, this, this.toChars(context)));
 				}
 			}
 		}
@@ -156,8 +156,13 @@ public class DotVarExp extends UnaExp {
 			e1 = e1.semantic(sc, context);
 			
 			type = var.type;
-			if (type == null && context.global.errors > 0) { // var is goofed up, just return 0
-				return new IntegerExp(filename, lineNumber, 0);
+			if (type == null && context.global.errors > 0) { 
+				// var is goofed up, just return 0
+				if (context.isD1()) {
+					return new IntegerExp(filename, lineNumber, 0);
+				} else {
+					return new ErrorExp();
+				}
 			}
 			Assert.isNotNull(type);
 
@@ -168,78 +173,23 @@ public class DotVarExp extends UnaExp {
 					if (t1.ty == TY.Tpointer) {
 						t1 = t1.nextOf();
 					}
-					if (t1.isConst()) {
-						type = type.constOf(context);
-					} else if (t1.isInvariant()) {
-						type = type.invariantOf(context);
-					}
+				    type = type.addMod(t1.mod, context);
 				}
 				
 			    Dsymbol vparent = var.toParent();
 			    AggregateDeclaration ad = vparent != null ? vparent.isAggregateDeclaration() : null;
-
-			    if (context.isD2()) {
-					boolean repeat = true;
-				// L1:
-					while(repeat) {
-						repeat = false;
-						Type t = e1.type.toBasetype(context);
-	
-						if (ad != null
-								&& !(t.ty == TY.Tpointer
-										&& ((TypePointer) t).next.ty == TY.Tstruct && ((TypeStruct) ((TypePointer) t).next).sym == ad)
-								&& !(t.ty == TY.Tstruct && ((TypeStruct) t).sym == ad)) {
-							ClassDeclaration cd = ad.isClassDeclaration();
-							ClassDeclaration tcd = t.isClassHandle();
-	
-							if (null == cd
-									|| null == tcd
-									|| !(tcd == cd || cd.isBaseOf(tcd, null,
-											context))) {
-								if (tcd != null && tcd.isNested()) {
-									// Try again with outer scope
-	
-									e1 = new DotVarExp(filename, lineNumber, e1, tcd.vthis);
-									e1 = e1.semantic(sc, context);
-	
-									// Skip over nested functions, and get the
-									// enclosing
-									// class type.
-									Dsymbol s = tcd.toParent();
-									while (s != null
-											&& s.isFuncDeclaration() != null) {
-										FuncDeclaration f = s.isFuncDeclaration();
-										if (f.vthis != null) {
-											e1 = new VarExp(filename, lineNumber, f.vthis);
-										}
-										s = s.toParent();
-									}
-									if (s != null && s.isClassDeclaration() != null)
-										e1.type = s.isClassDeclaration().type;
-	
-									e1 = e1.semantic(sc, context); // get corrected nested refs
-									// goto L1;
-									repeat = true;
-									continue;
-								}
-								if (context.acceptsErrors()) {
-									context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolForSymbolNeedsToBeType, this, e1.toChars(context), var.toChars(context),
-											ad.toChars(context), t.toChars(context)));
-								}
-							}
-						}
-					}
-				} else {
-					e1 = getRightThis(filename, lineNumber, sc, ad, e1, var, context);
-				}
-			    if (0 == sc.noaccesscheck) {
+			    e1 = getRightThis(filename, lineNumber, sc, ad, e1, var, context);
+				if (0 == sc.noaccesscheck) {
 			    	accessCheck(sc, e1, var, context, ident);
 			    }
 			    
+				VarDeclaration v = var.isVarDeclaration();
 			    if (context.isD2()) {
-			    	
+				    Expression e = expandVar(WANTvalue, v, context);
+				    if (e != null) {
+				    	return e;
+				    }
 			    } else {
-				    VarDeclaration v = var.isVarDeclaration();
 					if (v != null && v.isConst()) {
 						ExpInitializer ei = v.getExpInitializer(context);
 						if (ei != null) {

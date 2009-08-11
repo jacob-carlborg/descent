@@ -159,43 +159,59 @@ public class PtrExp extends UnaExp {
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		Type tb;
-
-		super.semantic(sc, context);
-		e1 = resolveProperties(sc, e1, context);
-		if (type != null) {
-			return this;
+		
+		boolean condition;
+		if (context.isD1()) {
+			condition = true;
+		} else {
+			condition = null == type;
 		}
-		if (e1.type == null) {
-			// printf("PtrExp.semantic('%s')\n", toChars());
-		}
-		tb = e1.type.toBasetype(context);
-		switch (tb.ty) {
-		case Tpointer:
-			type = tb.next;
-			if (type.isbit()) {
-				Expression e;
 
-				// Rewrite *p as p[0]
-				e = new IndexExp(filename, lineNumber, e1, new IntegerExp(filename, lineNumber, 0));
-				return e.semantic(sc, context);
+		if (condition) {
+			super.semantic(sc, context);
+			e1 = resolveProperties(sc, e1, context);
+			if (context.isD1()) {
+				if (type != null) {
+					return this;
+				}
 			}
-			break;
-
-		case Tsarray:
-		case Tarray:
-			type = tb.next;
-			e1 = e1.castTo(sc, type.pointerTo(context), context);
-			break;
-
-		default:
-			if (context.acceptsErrors()) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.CanOnlyDereferenceAPointer, this, new String[] { e1.type.toChars(context) }));
+			if (!context.isD1()) {
+				Expression e = op_overload(sc, context);
+				if (e != null) {
+				    return e;
+				}
 			}
-			type = Type.tint32;
-			break;
+			tb = e1.type.toBasetype(context);
+			switch (tb.ty) {
+			case Tpointer:
+				type = tb.next;
+				if (context.isD1()) {
+					if (type.isbit()) {
+						Expression e;
+		
+						// Rewrite *p as p[0]
+						e = new IndexExp(filename, lineNumber, e1, new IntegerExp(filename, lineNumber, 0));
+						return e.semantic(sc, context);
+					}
+				}
+				break;
+	
+			case Tsarray:
+			case Tarray:
+				type = tb.next;
+				e1 = e1.castTo(sc, type.pointerTo(context), context);
+				break;
+	
+			default:
+				if (context.acceptsErrors()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.CanOnlyDereferenceAPointer, this, new String[] { e1.type.toChars(context) }));
+				}
+				type = Type.tint32;
+				break;
+			}
+			rvalue(context);
 		}
-		rvalue(context);
 		return this;
 	}
 

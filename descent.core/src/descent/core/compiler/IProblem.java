@@ -689,13 +689,13 @@ public interface IProblem {
 	int CannotHaveFieldWithSameStructType = 478;
 	int WithoutThisCannotBeConstInvariant = 479;
 	int CannotModifySymbol = 480;
-	int CannotCallPublicExportFunctionFromInvariant = 481;
+	int CannotCallPublicExportFunctionFromImmutable = 481;
 	int TemplateMemberFunctionNotAllowedInInterface = 482;
 	int ArgumentToTypeofIsNotAnExpression = 483;
 	int CannotInferTypeFromOverloadedFunctionSymbol = 484;
 	int SymbolIsNotMutable = 485;
 	int SymbolForSymbolNeedsToBeType = 486;
-	int CannotModifyConstInvariant = 487;
+	int CannotModifyConstImmutable = 487;
 	int SymbolCanOnlyBeCalledOnAnInvariantObject = 488;
 	int SymbolCanOnlyBeCalledOnAMutableObject = 489;
 	int CannotCallMutableMethodOnFinalStruct = 490;
@@ -712,7 +712,7 @@ public interface IProblem {
 	int ThereCanBeOnlyOneAliasThis = 501;
 	int AliasThisCanOnlyAppearInStructOrClassDeclaration = 502;
 	int FunctionIsOverloaded = 503;
-	int PureFunctionCannotCallImpureFunction = 504;
+	int PureFunctionCannotCallImpure = 504;
 	int PureFunctionCannotAccessMutableStaticData = 505;
 	int PureNestedFunctionCannotAccessMutableData = 506;
 	int ConstraintIsNotConstantOrDoesNotEvaluateToABool = 507;
@@ -723,5 +723,6 @@ public interface IProblem {
 	int InnerStructCannotBeAField = 512;
 	int OnlyParametersOfForeachDeclarationsCanBeRef = 513;
 	int ManifestConstantsMustHaveInitializers = 514;
+	int ForwardReferenceToInferredReturnTypeOfFunctionCall = 515;
 
 }

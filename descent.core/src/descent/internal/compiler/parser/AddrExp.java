@@ -319,20 +319,71 @@ public class AddrExp extends UnaExp {
 				FuncDeclaration f = dve.var.isFuncDeclaration();
 
 				if (f != null) {
-					Expression e = new DelegateExp(filename, lineNumber, dve.e1, f);
+					Expression e;
+					
+					if (context.isD1()) {
+						e = new DelegateExp(filename, lineNumber, dve.e1, f);
+					} else {
+						if (!dve.hasOverloads) {
+						    f.tookAddressOf++;
+						}
+						e = new DelegateExp(filename, lineNumber, dve.e1, f, dve.hasOverloads);
+					}
 					e = e.semantic(sc, context);	
 					return e;
 				}
 			} else if (e1.op == TOKvar) {
-				VarExp dve = (VarExp) e1;
-				FuncDeclaration f = dve.var.isFuncDeclaration();
+				if (context.isD1()) {
+					VarExp dve = (VarExp) e1;
+					FuncDeclaration f = dve.var.isFuncDeclaration();
+	
+					if (f != null && f.isNested()) {
+						Expression e;
+	
+						e = new DelegateExp(filename, lineNumber, e1, f);
+						e = e.semantic(sc, context);
+						return e;
+					}
+				} else {
+					VarExp ve = (VarExp) e1;
 
-				if (f != null && f.isNested()) {
-					Expression e;
+					VarDeclaration v = ve.var.isVarDeclaration();
+					if (v != null && !v.canTakeAddressOf()) {
+						if (context.acceptsErrors()) {
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotTakeAddressOf, this, e1.toChars(context)));
+						}
+					}
 
-					e = new DelegateExp(filename, lineNumber, e1, f);
-					e = e.semantic(sc, context);
-					return e;
+					FuncDeclaration f = ve.var.isFuncDeclaration();
+
+					if (f != null) {
+						if (!ve.hasOverloads ||
+						/*
+						 * Because nested functions cannot be overloaded, mark
+						 * here that we took its address because castTo() may
+						 * not be called with an exact match.
+						 */
+						f.toParent2().isFuncDeclaration() != null) {
+							f.tookAddressOf++;
+						}
+						if (f.isNested()) {
+							Expression e = new DelegateExp(filename,
+									lineNumber, e1, f, ve.hasOverloads);
+							e = e.semantic(sc, context);
+							return e;
+						}
+						if (f.needThis() && hasThis(sc) != null) {
+							/*
+							 * Should probably supply 'this' after overload
+							 * resolution, not before.
+							 */
+							Expression ethis = new ThisExp(filename, lineNumber);
+							Expression e = new DelegateExp(filename,
+									lineNumber, ethis, f, ve.hasOverloads);
+							e = e.semantic(sc, context);
+							return e;
+						}
+					}
 				}
 			} else if (e1.op == TOKarray) {
 				if (e1.type.toBasetype(context).ty == Tbit) {

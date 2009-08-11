@@ -14,7 +14,7 @@ func.c  --> missing StaticCtorDeclaration::StaticCtorDeclaration
             
 Remaining from DMD 2.030 vs. 1.045
 ------------------------------
- * expression.c (up to but excluding DotVarExp::semantic)
+ * expression.c (up to but excluding CastExp::semantic)
  * expression.h
  * func.c
  * interpret.c

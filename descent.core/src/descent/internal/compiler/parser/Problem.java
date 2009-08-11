@@ -1091,8 +1091,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.WithoutThisCannotBeConstInvariant);
 		case CannotModifySymbol:
 			return String.format(ProblemMessages.CannotModifySymbol, arguments[0]);
-		case CannotCallPublicExportFunctionFromInvariant:
-			return String.format(ProblemMessages.CannotCallPublicExportFunctionFromInvariant, arguments[0]);
+		case CannotCallPublicExportFunctionFromImmutable:
+			return String.format(ProblemMessages.CannotCallPublicExportFunctionFromImmutable, arguments[0]);
 		case TemplateMemberFunctionNotAllowedInInterface:
 			return String.format(ProblemMessages.TemplateMemberFunctionNotAllowedInInterface, arguments[0]);
 		case ArgumentToTypeofIsNotAnExpression:
@@ -1103,8 +1103,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.SymbolIsNotMutable, arguments[0]);
 		case SymbolForSymbolNeedsToBeType:
 			return String.format(ProblemMessages.SymbolForSymbolNeedsToBeType, arguments[0], arguments[1], arguments[2], arguments[3]);
-		case CannotModifyConstInvariant:
-			return String.format(ProblemMessages.CannotModifyConstInvariant, arguments[0]);
+		case CannotModifyConstImmutable:
+			return String.format(ProblemMessages.CannotModifyConstImmutable, arguments[0]);
 		case SymbolCanOnlyBeCalledOnAnInvariantObject:
 			return String.format(ProblemMessages.SymbolCanOnlyBeCalledOnAnInvariantObject, arguments[0]);
 		case SymbolCanOnlyBeCalledOnAMutableObject:
@@ -1137,8 +1137,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.AliasThisCanOnlyAppearInStructOrClassDeclaration, arguments[0]);
 		case FunctionIsOverloaded:
 			return String.format(ProblemMessages.FunctionIsOverloaded, arguments[0]);
-		case PureFunctionCannotCallImpureFunction:
-			return String.format(ProblemMessages.PureFunctionCannotCallImpureFunction, arguments[0], arguments[1]);
+		case PureFunctionCannotCallImpure:
+			return String.format(ProblemMessages.PureFunctionCannotCallImpure, arguments[0], arguments[1]);
 		case PureFunctionCannotAccessMutableStaticData:
 			return String.format(ProblemMessages.PureFunctionCannotAccessMutableStaticData, arguments[0], arguments[1]);
 		case PureNestedFunctionCannotAccessMutableData:
@@ -1159,6 +1159,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.OnlyParametersOfForeachDeclarationsCanBeRef);
 		case ManifestConstantsMustHaveInitializers:
 			return String.format(ProblemMessages.ManifestConstantsMustHaveInitializers);
+		case ForwardReferenceToInferredReturnTypeOfFunctionCall:
+			return String.format(ProblemMessages.ForwardReferenceToInferredReturnTypeOfFunctionCall, arguments[0]);
 		default:
 			return "";
 		}
