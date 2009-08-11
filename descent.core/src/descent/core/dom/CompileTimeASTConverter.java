@@ -3711,6 +3711,7 @@ public class CompileTimeASTConverter {
 		case TOKconst: b.setModifierKeyword(descent.core.dom.Modifier.ModifierKeyword.CONST_KEYWORD); break;
 		case TOKscope: b.setModifierKeyword(descent.core.dom.Modifier.ModifierKeyword.SCOPE_KEYWORD); break;
 		case TOKinvariant: b.setModifierKeyword(descent.core.dom.Modifier.ModifierKeyword.INVARIANT_KEYWORD); break;
+		case TOKimmutable: b.setModifierKeyword(descent.core.dom.Modifier.ModifierKeyword.IMMUTABLE_KEYWORD); break;
 		case TOKin: b.setModifierKeyword(descent.core.dom.Modifier.ModifierKeyword.IN_KEYWORD); break;
 		case TOKout: b.setModifierKeyword(descent.core.dom.Modifier.ModifierKeyword.OUT_KEYWORD); break;
 		case TOKinout: b.setModifierKeyword(descent.core.dom.Modifier.ModifierKeyword.INOUT_KEYWORD); break;

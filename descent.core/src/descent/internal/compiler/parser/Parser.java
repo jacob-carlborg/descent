@@ -3669,9 +3669,6 @@ public class Parser extends Lexer {
 		Type ta;
 
 		t = parseBasicType2(t);
-		if (t == null) {
-			return null;
-		}
 
 		switch (token.value) {
 
@@ -3695,7 +3692,7 @@ public class Parser extends Lexer {
 		     * although the D style would be:
 		     *	int[]*[3] ident
 		     */
-			int oldStart = t.start;
+			int oldStart = t == null ? 0 : t.start;
 			nextToken();
 			ts = parseDeclarator(t, pident, null, identStart);
 			ts.setSourceRange(oldStart, token.ptr + token.sourceLen - oldStart);
