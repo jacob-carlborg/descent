@@ -412,5 +412,11 @@ public class Function_Test extends Parser_Test {
 		PostblitDeclaration f = (PostblitDeclaration) getSingleDeclarationNoProblems(s, AST.D2);
 		assertPosition(f, 1, s.length() - 1);
 	}
+	
+	public void testAutoTemplatedFunction() {
+		String s = " auto foo(T)() { }";
+		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s, AST.D2);
+		assertPosition(f, 1, s.length() - 1);
+	}
 
 }
