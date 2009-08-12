@@ -2566,7 +2566,7 @@ public abstract class ASTDmdNode extends ASTNode {
 	}
 	
 	private static boolean typeMerge_Lret(Type[] pt, Expression[] pe1, Expression[] pe2, Type t, Expression e1, Expression e2) {
-		if (pt[0] != null) {
+		if (pt[0] == null) {
 			pt[0] = t;
 		}
 		pe1[0] = e1;
