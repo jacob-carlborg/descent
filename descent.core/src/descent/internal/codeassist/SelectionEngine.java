@@ -52,6 +52,7 @@ import descent.internal.compiler.parser.Token;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeClass;
 import descent.internal.compiler.parser.TypeExp;
+import descent.internal.compiler.parser.TypeFunction;
 import descent.internal.compiler.parser.TypeStruct;
 import descent.internal.compiler.parser.TypeTypedef;
 import descent.internal.compiler.parser.TypedefDeclaration;
@@ -355,6 +356,17 @@ public class SelectionEngine extends AstVisitorAdapter {
 			addBinarySearch(node);
 			return false;
 		}
+		
+		// See if it's over the "auto" keyword
+		if (node.inferRetType && node.start <= offset && offset <= node.start + 4) {
+			doSemantic();
+			
+			if (node.type instanceof TypeFunction) {
+				add(((TypeFunction) node.type).next);
+				return false;
+			}
+		}
+		
 		return isInRange(node);
 	}
 	

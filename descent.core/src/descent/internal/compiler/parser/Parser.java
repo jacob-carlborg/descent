@@ -1126,7 +1126,9 @@ public class Parser extends Lexer {
 			if (token.value == TOKidentifier &&
 			    (tk[0] = peek(token)).value == TOKlparen &&
 			    skipParens(tk[0], tk) &&
-			    peek(tk[0]).value == TOKlparen)
+			    (peek(tk[0]).value == TOKlparen ||
+			     peek(tk[0]).value == TOKlcurly
+			    ))
 			{
 			    a = parseDeclarations(stc);
 			    decldefs.addAll(a);
@@ -3877,250 +3879,265 @@ public class Parser extends Lexer {
 	
 	@SuppressWarnings("unchecked")
 	private Dsymbols parseDeclarations(int stc, List<Comment> lastComments, boolean alreadyThinksItsD2) {
-		int storage_class;
-		Type ts;
-		Type t;
-		Type tfirst;
-		IdentifierExp ident;
+		int storage_class = 0;
+		Type ts = null;
+		Type t = null;
+		Type tfirst = null;
+		IdentifierExp ident = null;
 		int lineNumber = 0;
-		Dsymbols a;
+		Dsymbols a = null;
 		TOK tok = TOK.TOKreserved;
 		LINK link = linkage;
 		
 		List<Modifier> modifiers = new ArrayList<Modifier>();
 		
 		int start = token.ptr;
-
-		expect(typedefAliasExpectations);
-		switch (token.value) {
-		case TOKalias:
-			tok = token.value;
-			nextToken();
-		    if (token.value == TOKidentifier && peek(token).value == TOKthis) {
-		    	// XXX comments for AliasThis
-				AliasThis s = newAliasThis(this.filename, this.lineNumber, newIdentifierExp());
-				nextToken();
-				check(TOKthis);
-				check(TOKsemicolon);
-				s.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
-				this.setPreComments(s, lastComments);
-				a = new Dsymbols(1);
-				a.add(s);
-				return a;
-			}
-			break;
-		case TOKtypedef:
-			tok = token.value;
-			nextToken();
-			break;
-		default:
-			tok = TOKreserved;
-			break;
-		}
-
-		expect(modifierExpectations);
-		storage_class = stc;
+		int prevStart = prevToken.ptr;
 		
-		while (true) {
-			switch (token.value) {
-			case TOKconst:
-			case TOKinvariant:
-			case TOKimmutable:
-			case TOKshared:
-				if (apiLevel >= D2 && peek(token).value == TOKlparen) {
-					break;
-				}
-				// fall
-			case TOKstatic:
-			case TOKfinal:
-			case TOKauto:
-			case TOKscope:
-			case TOKoverride:
-			case TOKabstract:
-			case TOKsynchronized:
-			case TOKdeprecated:
-			case TOKnothrow:
-			case TOKpure:
-			case TOKref:
-			case TOKtls:
-			case TOKgshared:
-			case TOKenum:
-				if (apiLevel < D2 && (
-					token.value == TOKnothrow ||
-					token.value == TOKpure ||
-					token.value == TOKref ||
-					token.value == TOKtls ||
-					token.value == TOKgshared ||
-					token.value == TOKenum
-					)) {
-					break;
-				}
-				
-				stc = STC.fromTOK(token.value);
-				
-				Modifier currentModifier = newModifier();
-				if ((storage_class & stc) != 0) {
-					error(IProblem.RedundantStorageClass, token.lineNumber, currentModifier);
-				}
-				storage_class = storage_class | stc;
-				if (apiLevel >= D2) {
-					composeStorageClass(storage_class);
-				}
-				modifiers.add(currentModifier);
-				
-				nextToken();
-				continue;
+		boolean gotoL2 = false;
+		if (stc != 0) {
+			gotoL2 = true; // infer type
+		}
+		
+		boolean first = true;
+		int nextVarStart = token.ptr;
+		int nextTypdefOrAliasStart = start;
+		VarDeclaration previousVar = null;
 
-			case TOKextern:
-				if (peek(token).value != TOKlparen) {
+		if (!gotoL2) {
+			expect(typedefAliasExpectations);
+			switch (token.value) {
+			case TOKalias:
+				tok = token.value;
+				nextToken();
+			    if (token.value == TOKidentifier && peek(token).value == TOKthis) {
+			    	// XXX comments for AliasThis
+					AliasThis s = newAliasThis(this.filename, this.lineNumber, newIdentifierExp());
+					nextToken();
+					check(TOKthis);
+					check(TOKsemicolon);
+					s.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
+					this.setPreComments(s, lastComments);
+					a = new Dsymbols(1);
+					a.add(s);
+					return a;
+				}
+				break;
+			case TOKtypedef:
+				tok = token.value;
+				nextToken();
+				break;
+			default:
+				tok = TOKreserved;
+				break;
+			}
+	
+			expect(modifierExpectations);
+			storage_class = stc;
+			
+			while (true) {
+				switch (token.value) {
+				case TOKconst:
+				case TOKinvariant:
+				case TOKimmutable:
+				case TOKshared:
+					if (apiLevel >= D2 && peek(token).value == TOKlparen) {
+						break;
+					}
+					// fall
+				case TOKstatic:
+				case TOKfinal:
+				case TOKauto:
+				case TOKscope:
+				case TOKoverride:
+				case TOKabstract:
+				case TOKsynchronized:
+				case TOKdeprecated:
+				case TOKnothrow:
+				case TOKpure:
+				case TOKref:
+				case TOKtls:
+				case TOKgshared:
+				case TOKenum:
+					if (apiLevel < D2 && (
+						token.value == TOKnothrow ||
+						token.value == TOKpure ||
+						token.value == TOKref ||
+						token.value == TOKtls ||
+						token.value == TOKgshared ||
+						token.value == TOKenum
+						)) {
+						break;
+					}
+					
 					stc = STC.fromTOK(token.value);
 					
-					currentModifier = newModifier(token);
+					Modifier currentModifier = newModifier();
 					if ((storage_class & stc) != 0) {
 						error(IProblem.RedundantStorageClass, token.lineNumber, currentModifier);
 					}
 					storage_class = storage_class | stc;
+					if (apiLevel >= D2) {
+						composeStorageClass(storage_class);
+					}
 					modifiers.add(currentModifier);
+					
 					nextToken();
 					continue;
-				}
-
-				link = parseLinkage();
-				continue;
-
-			default:
-				break;
-			}
-			break;
-		}
-		
-		// Descent: better error reporting if source level is D1 but
-		// we find "invariant(...)" or "const(...)"
-		boolean thinksItsD2 = alreadyThinksItsD2;
-		if (!thinksItsD2 && apiLevel < D2 && token.value == TOKlparen && (prevToken.value == TOKinvariant || prevToken.value == TOKconst)) {
-			thinksItsD2 = true;
-			error(prevToken.value == TOKinvariant ? 
-					IProblem.InvariantAsAttributeIsOnlySupportedInD2 :
-					IProblem.ConstAsAttributeIsOnlySupportedInD2, prevToken);
-			nextToken();
-		}
-
-		a = new Dsymbols(2);
-		
-		boolean first = true;
-		VarDeclaration previousVar = null;
-
-		/*
-		 * Look for auto initializers: storage_class identifier = initializer;
-		 */
-		
-		if (apiLevel >= D2) {
-			if (storage_class != 0 && token.value == TOKidentifier
-					&& peek(token).value == TOKassign) {
-				return parseAutoDeclarations(stc, token.ptr, start, modifiers);
-			}
-		} else {
-			while (storage_class != 0 && token.value == TOKidentifier
-					&& peek(token).value == TOKassign) {
-				ident = newIdentifierExp();
-				lineNumber = token.lineNumber;
-				
-				nextToken();
-				nextToken();
-				Initializer init = parseInitializer();
 	
-				VarDeclaration v = newVarDeclaration(filename, lineNumber, null, ident, init);
-				v.first = first;
-				first = false;
-				
-				v.storage_class = storage_class;
-				addModifiers(v, modifiers);
-				a.add(v);
-				
-				if (previousVar != null) {
-					previousVar.next = v;
-				}
-				previousVar = v;
-				
-				if (token.value == TOKsemicolon) {
-					v.setSourceRange(start, token.ptr + token.sourceLen - start);
-					
-					// Discard any previous comments
-					if (comments != null) {
-						lastCommentRead = comments.size();
-					}
-					
-					nextToken();
-					this.setPreComments(v, lastComments);
-					attachLeadingComments(v);
-				} else if (token.value == TOKcomma) {
-					v.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
-					
-					// Discard any previous comments
-					if (comments != null) {
-						lastCommentRead = comments.size();
-					}
-					
-					nextToken();
-					if (!(token.value == TOKidentifier && peek(token).value == TOKassign)) {
-						parsingErrorInsertTokenAfter(prevToken, "identifier");
-					} else {
-						start = token.ptr;
+				case TOKextern:
+					if (peek(token).value != TOKlparen) {
+						stc = STC.fromTOK(token.value);
+						
+						currentModifier = newModifier(token);
+						if ((storage_class & stc) != 0) {
+							error(IProblem.RedundantStorageClass, token.lineNumber, currentModifier);
+						}
+						storage_class = storage_class | stc;
+						modifiers.add(currentModifier);
+						nextToken();
 						continue;
 					}
-				} else {
-					parsingErrorInsertTokenAfter(prevToken, ";");
+	
+					link = parseLinkage();
+					continue;
+	
+				default:
+					break;
 				}
-				
-				return a;
+				break;
 			}
-		}
-
-		expect(classExpectations);
-		if (token.value == TOKclass) {
-			AggregateDeclaration s;
-
-			s = (AggregateDeclaration) parseAggregate();
-			s.storage_class = storage_class;
-			addModifiers(s, modifiers);
-			a.add(s);
-			this.setPreComments(s, lastComments);
-			return a;
-		}
-		
-		int nextVarStart = token.ptr;
-		int nextTypdefOrAliasStart = start;
-		
-		if (apiLevel >= D2) {
-			/*
-			 * Look for return type inference for template functions.
-			 */
-			{
-				Token[] tk = { null };
-				if (storage_class != 0 && token.value == TOKidentifier
-						&& (tk[0] = peek(token)).value == TOKlparen
-						&& skipParens(tk[0], tk)
-						&& peek(tk[0]).value == TOKlparen) {
-					ts = null;
-				} else {
-					ts = parseBasicType();
-					ts = parseBasicType2(ts);
-				}
-			}
-		} else {
-			ts = parseBasicType();
 			
-			if (thinksItsD2 && token.value == TOKrparen) {
+			// Descent: better error reporting if source level is D1 but
+			// we find "invariant(...)" or "const(...)"
+			boolean thinksItsD2 = alreadyThinksItsD2;
+			if (!thinksItsD2 && apiLevel < D2 && token.value == TOKlparen && (prevToken.value == TOKinvariant || prevToken.value == TOKconst)) {
+				thinksItsD2 = true;
+				error(prevToken.value == TOKinvariant ? 
+						IProblem.InvariantAsAttributeIsOnlySupportedInD2 :
+						IProblem.ConstAsAttributeIsOnlySupportedInD2, prevToken);
 				nextToken();
 			}
+	
+			a = new Dsymbols(2);
 			
-			if (ts == null) {
+			first = true;
+			previousVar = null;
+	
+			/*
+			 * Look for auto initializers: storage_class identifier = initializer;
+			 */
+			
+			if (apiLevel >= D2) {
+				if (storage_class != 0 && token.value == TOKidentifier
+						&& peek(token).value == TOKassign) {
+					return parseAutoDeclarations(stc, token.ptr, start, modifiers);
+				}
+			} else {
+				while (storage_class != 0 && token.value == TOKidentifier
+						&& peek(token).value == TOKassign) {
+					ident = newIdentifierExp();
+					lineNumber = token.lineNumber;
+					
+					nextToken();
+					nextToken();
+					Initializer init = parseInitializer();
+		
+					VarDeclaration v = newVarDeclaration(filename, lineNumber, null, ident, init);
+					v.first = first;
+					first = false;
+					
+					v.storage_class = storage_class;
+					addModifiers(v, modifiers);
+					a.add(v);
+					
+					if (previousVar != null) {
+						previousVar.next = v;
+					}
+					previousVar = v;
+					
+					if (token.value == TOKsemicolon) {
+						v.setSourceRange(start, token.ptr + token.sourceLen - start);
+						
+						// Discard any previous comments
+						if (comments != null) {
+							lastCommentRead = comments.size();
+						}
+						
+						nextToken();
+						this.setPreComments(v, lastComments);
+						attachLeadingComments(v);
+					} else if (token.value == TOKcomma) {
+						v.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
+						
+						// Discard any previous comments
+						if (comments != null) {
+							lastCommentRead = comments.size();
+						}
+						
+						nextToken();
+						if (!(token.value == TOKidentifier && peek(token).value == TOKassign)) {
+							parsingErrorInsertTokenAfter(prevToken, "identifier");
+						} else {
+							start = token.ptr;
+							continue;
+						}
+					} else {
+						parsingErrorInsertTokenAfter(prevToken, ";");
+					}
+					
+					return a;
+				}
+			}
+	
+			expect(classExpectations);
+			if (token.value == TOKclass) {
+				AggregateDeclaration s;
+	
+				s = (AggregateDeclaration) parseAggregate();
+				s.storage_class = storage_class;
+				addModifiers(s, modifiers);
+				a.add(s);
+				this.setPreComments(s, lastComments);
 				return a;
 			}
-			ts = parseBasicType2(ts);
+			
+			nextVarStart = token.ptr;
+			nextTypdefOrAliasStart = start;
+			
+			if (apiLevel >= D2) {
+				/*
+				 * Look for return type inference for template functions.
+				 */
+				{
+					Token[] tk = { null };
+					if (storage_class != 0 && token.value == TOKidentifier
+							&& (tk[0] = peek(token)).value == TOKlparen
+							&& skipParens(tk[0], tk)
+							&& peek(tk[0]).value == TOKlparen) {
+						ts = null;
+					} else {
+						ts = parseBasicType();
+						ts = parseBasicType2(ts);
+					}
+				}
+			} else {
+				ts = parseBasicType();
+				
+				if (thinksItsD2 && token.value == TOKrparen) {
+					nextToken();
+				}
+				
+				if (ts == null) {
+					return a;
+				}
+				ts = parseBasicType2(ts);
+			}
 		}
 		
+		// L2:
 		tfirst = null;
+		a = new Dsymbols();
 		
 		int[] identStart = new int[1];
 		
@@ -4249,7 +4266,14 @@ public class Parser extends Lexer {
 				}
 				
 				parseContracts(f);
-				f.setSourceRange(t.start, prevToken.ptr + prevToken.sourceLen - t.start);
+				
+				int theStart = t.start;
+				// was type inference, adjust position to "auto"
+				if (gotoL2) {
+					theStart = prevStart;
+				}
+				
+				f.setSourceRange(theStart, prevToken.ptr + prevToken.sourceLen - theStart);
 				
 				// it's a function template
 				if (tpl != null) {
