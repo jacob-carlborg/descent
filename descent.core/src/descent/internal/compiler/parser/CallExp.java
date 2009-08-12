@@ -843,7 +843,7 @@ public class CallExp extends UnaExp {
 						f = cd.ctor(context);
 						f = f.overloadResolve(filename, lineNumber, null, arguments, context, this);
 					} else {
-					    f = resolveFuncCall(sc, filename, lineNumber, cd.ctor, null, null, arguments, 0, context);
+					    f = resolveFuncCall(sc, filename, lineNumber, cd.ctor(context), null, null, arguments, 0, context);
 					}
 					
 					// Descent: for binding resolution
