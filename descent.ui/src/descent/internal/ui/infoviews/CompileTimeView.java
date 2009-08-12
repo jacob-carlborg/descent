@@ -384,7 +384,7 @@ public class CompileTimeView extends AbstractInfoView implements IMenuListener {
 		
 		CompilationUnit comp;
 		try {
-			comp = unit.getResolvedAtCompileTime(AST.D1);
+			comp = unit.getResolvedAtCompileTime(unit.getJavaProject().getApiLevel());
 		} catch (JavaModelException e) {
 			return "";
 		}

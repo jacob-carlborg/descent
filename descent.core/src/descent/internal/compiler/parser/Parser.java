@@ -1262,14 +1262,8 @@ public class Parser extends Lexer {
 				if (token.value == TOKidentifier
 						&& peek(token).value == TOKassign) {
 					v.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
-					nextToken();
-					start = token.ptr;
-					if (token.value == TOKidentifier
-							&& peek(token).value == TOKassign) {
-						continue;
-					} else {
-						parsingErrorInsertTokenAfter(prevToken, "identifier");
-					}
+					start = peek(token).ptr;
+					continue;
 				} else {
 					parsingErrorInsertTokenAfter(prevToken, "Identifier");
 				}
