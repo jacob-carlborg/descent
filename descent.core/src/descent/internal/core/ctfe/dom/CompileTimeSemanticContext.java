@@ -21,6 +21,7 @@ import descent.internal.compiler.parser.Array;
 import descent.internal.compiler.parser.BaseClasses;
 import descent.internal.compiler.parser.BreakStatement;
 import descent.internal.compiler.parser.CallExp;
+import descent.internal.compiler.parser.CaseRangeStatement;
 import descent.internal.compiler.parser.CaseStatement;
 import descent.internal.compiler.parser.Catch;
 import descent.internal.compiler.parser.ClassDeclaration;
@@ -279,6 +280,13 @@ public class CompileTimeSemanticContext extends SemanticContext {
 	@Override
 	public CaseStatement newCaseStatement(char[] filename, int lineNumber, Expression expression, Statement statement) {
 		return new CompileTimeCaseStatement(filename, lineNumber, expression, statement);
+	}
+	
+	@Override
+	public CaseRangeStatement newCaseRangeStatement(char[] filename,
+			int lineNumber, Expression first, Expression last,
+			Statement statement) {
+		return new CompileTimeCaseRangeStatement(filename, lineNumber, first, last, statement);
 	}
 	
 	@Override

@@ -190,6 +190,9 @@ InvariantAsAttributeIsOnlySupportedInD2
 ConstAsAttributeIsOnlySupportedInD2
 	formatString=const as attribute is only supported in D 2.x. Make sure you set the project's compiler version to 2.x.
 	numArgs=0
+OnlyOneCaseAllowedForStartOfCaseRange
+	formatString=Only one case allowed for start of case range
+	numArgs=0
 SymbolConflictsWithSymbolAtLocation
 	formatString=%1$s conflicts with %2$s %3$s at %4$s
 	numArgs=4
@@ -1543,6 +1546,16 @@ ManifestConstantsMustHaveInitializers
 ForwardReferenceToInferredReturnTypeOfFunctionCall
 	formatString=Forward reference to inferred return type of function call %1$s
 	numArgs=1
+CaseRangesNotAllowedInFinalSwitch
+	formatString=case ranges not allowed in final switch
+	numArgs=0
+MoreThan256CasesInCaseRange
+	formatString=More than 256 cases in case range
+	numArgs=0
+
+	
+	
+	
 	
 	
 	

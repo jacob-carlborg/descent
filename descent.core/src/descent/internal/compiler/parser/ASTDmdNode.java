@@ -270,6 +270,7 @@ public abstract class ASTDmdNode extends ASTNode {
 	public final static int STRUCT_LITERAL_EXP = 204;
 	public final static int INDEX_EXP = 205;
 	public final static int ALIAS_THIS = 206;
+	public final static int CASE_RANGE_STATEMENT = 207;
 
 	// Defined here because MATCH and Match overlap on Windows
 	public static class Match {

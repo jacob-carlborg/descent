@@ -74,6 +74,7 @@ final class ProblemMessages extends NLS {
 	public static String IfTypeThereMustBeAnInitializer;
 	public static String InvariantAsAttributeIsOnlySupportedInD2;
 	public static String ConstAsAttributeIsOnlySupportedInD2;
+	public static String OnlyOneCaseAllowedForStartOfCaseRange;
 	public static String SymbolConflictsWithSymbolAtLocation;
 	public static String SymbolAtLocationConflictsWithSymbolAtLocation;
 	public static String PropertyCanNotBeRedefined;
@@ -525,6 +526,8 @@ final class ProblemMessages extends NLS {
 	public static String OnlyParametersOfForeachDeclarationsCanBeRef;
 	public static String ManifestConstantsMustHaveInitializers;
 	public static String ForwardReferenceToInferredReturnTypeOfFunctionCall;
+	public static String CaseRangesNotAllowedInFinalSwitch;
+	public static String MoreThan256CasesInCaseRange;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

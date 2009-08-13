@@ -5481,6 +5481,7 @@ public class Parser extends Lexer {
 			// Note: this code was changed a little from DMD to support
 			// better code completion
 			List<CaseStatement> caseStatements = new ArrayList<CaseStatement>();
+			Expression last = null;
 
 			while (true) {
 				int caseEnd = token.ptr + token.sourceLen;
@@ -5499,6 +5500,21 @@ public class Parser extends Lexer {
 				}
 			}
 			check(TOKcolon);
+			
+			if (apiLevel == D2) {
+				/*
+				 * case exp: .. case last:
+				 */
+				if (token.value == TOKslice) {
+					if (caseStatements.size() > 1) {
+						error(IProblem.OnlyOneCaseAllowedForStartOfCaseRange, lineNumber, token.ptr, token.sourceLen);
+					}
+					nextToken();
+					check(TOKcase);
+					last = parseAssignExp();
+					check(TOKcolon);
+				}
+			}
 
 			statements = new Statements();
 			while (token.value != TOKcase && token.value != TOKdefault
@@ -5516,11 +5532,15 @@ public class Parser extends Lexer {
 			s = newScopeStatement(filename, lineNumber, s);
 			s.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
 
-			// Keep cases in order by building the case statements backwards
-			for(int i = caseStatements.size(); i != 0; i--) {
-				CaseStatement cs = caseStatements.get(i - 1);
-				cs.setStatement(s);
-				s = cs;
+			if (last != null) {
+				s = newCaseRangeStatement(filename, lineNumber, exp, last, s);
+			} else {
+				// Keep cases in order by building the case statements backwards
+				for(int i = caseStatements.size(); i != 0; i--) {
+					CaseStatement cs = caseStatements.get(i - 1);
+					cs.setStatement(s);
+					s = cs;
+				}
 			}
 			
 			break;
@@ -5850,7 +5870,7 @@ public class Parser extends Lexer {
 		}
 		
 		return s;
-	}
+	}	
 
 	private Statement parseStatement_Lswitch(boolean isfinal) {
 		Expression condition2;
@@ -8775,6 +8795,11 @@ public class Parser extends Lexer {
 	
 	protected CaseStatement newCaseStatement(char[] filename, int lineNumber, Expression exp, Statement statement, int caseEnd, int expStart, int expLength) {
 		return new CaseStatement(filename, lineNumber, exp, statement);
+	}
+	
+	protected CaseRangeStatement newCaseRangeStatement(char[] filename, int lineNumber,
+			Expression first, Expression last, Statement s) {
+		return new CaseRangeStatement(filename, lineNumber, first, last, s);
 	}
 	
 	private final DotIdExp newTypeDotIdExp(char[] filename, int lineNumber, Type t, IdentifierExp exp) {

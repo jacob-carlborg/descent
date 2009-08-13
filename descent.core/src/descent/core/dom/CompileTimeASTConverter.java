@@ -2411,7 +2411,7 @@ public class CompileTimeASTConverter {
 	
 	public descent.core.dom.SwitchStatement convert(SwitchStatement a) {
 		descent.core.dom.SwitchStatement b = new descent.core.dom.SwitchStatement(ast);
-		b.setFinal(a.isfinal);
+		b.setFinal(a.isFinal);
 		if (a.body != null) {
 			descent.core.dom.Statement convertedBody = convert(a.body);
 			if (convertedBody != null) {

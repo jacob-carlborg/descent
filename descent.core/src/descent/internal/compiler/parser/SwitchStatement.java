@@ -19,7 +19,7 @@ public class SwitchStatement extends Statement {
 
 	public Expression condition, sourceCondition;
 	public Statement body, sourceBody;
-	public boolean isfinal;
+	public boolean isFinal;
 	public DefaultStatement sdefault;
 	public List gotoCases; // array of unresolved GotoCaseStatement's
 	public List cases; // array of CaseStatement's
@@ -27,11 +27,11 @@ public class SwitchStatement extends Statement {
 	public TryFinallyStatement tf;
 	public int hasVars;
 
-	public SwitchStatement(char[] filename, int lineNumber, Expression c, Statement b, boolean isfinal) {
+	public SwitchStatement(char[] filename, int lineNumber, Expression c, Statement b, boolean isFinal) {
 		super(filename, lineNumber);
 		this.condition = this.sourceCondition = c;
 		this.body = this.sourceBody = b;
-		this.isfinal = isfinal;
+		this.isFinal = isFinal;
 	}
 
 	@Override
@@ -245,7 +245,7 @@ public class SwitchStatement extends Statement {
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
 		SwitchStatement s = context.newSwitchStatement(filename, lineNumber, condition.syntaxCopy(context),
-				body.syntaxCopy(context), isfinal);
+				body.syntaxCopy(context), isFinal);
 		s.copySourceRange(this);
 		return s;
 	}

@@ -2228,7 +2228,7 @@ public class ASTConverter {
 	
 	public descent.core.dom.SwitchStatement convert(SwitchStatement a) {
 		descent.core.dom.SwitchStatement b = new descent.core.dom.SwitchStatement(ast);
-		b.setFinal(a.isfinal);
+		b.setFinal(a.isFinal);
 		if (a.sourceBody != null) {
 			descent.core.dom.Statement convertedBody = convert(a.sourceBody);
 			if (convertedBody != null) {

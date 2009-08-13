@@ -259,6 +259,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.InvariantAsAttributeIsOnlySupportedInD2);
 		case ConstAsAttributeIsOnlySupportedInD2:
 			return String.format(ProblemMessages.ConstAsAttributeIsOnlySupportedInD2);
+		case OnlyOneCaseAllowedForStartOfCaseRange:
+			return String.format(ProblemMessages.OnlyOneCaseAllowedForStartOfCaseRange);
 		case SymbolConflictsWithSymbolAtLocation:
 			return String.format(ProblemMessages.SymbolConflictsWithSymbolAtLocation, arguments[0], arguments[1], arguments[2], arguments[3]);
 		case SymbolAtLocationConflictsWithSymbolAtLocation:
@@ -1161,6 +1163,10 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.ManifestConstantsMustHaveInitializers);
 		case ForwardReferenceToInferredReturnTypeOfFunctionCall:
 			return String.format(ProblemMessages.ForwardReferenceToInferredReturnTypeOfFunctionCall, arguments[0]);
+		case CaseRangesNotAllowedInFinalSwitch:
+			return String.format(ProblemMessages.CaseRangesNotAllowedInFinalSwitch);
+		case MoreThan256CasesInCaseRange:
+			return String.format(ProblemMessages.MoreThan256CasesInCaseRange);
 		default:
 			return "";
 		}

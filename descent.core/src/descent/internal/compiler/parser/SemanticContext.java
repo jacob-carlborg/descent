@@ -797,4 +797,10 @@ public class SemanticContext {
 		return new CompoundDeclarationStatement(filename, lineNumber, a);
 	}
 
+	public CaseRangeStatement newCaseRangeStatement(char[] filename,
+			int lineNumber, Expression first, Expression last,
+			Statement statement) {
+		return new CaseRangeStatement(filename, lineNumber, first, last, statement);
+	}
+
 }

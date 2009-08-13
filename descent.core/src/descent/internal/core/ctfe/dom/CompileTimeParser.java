@@ -9,6 +9,7 @@ import descent.internal.compiler.parser.Arguments;
 import descent.internal.compiler.parser.Array;
 import descent.internal.compiler.parser.BaseClasses;
 import descent.internal.compiler.parser.BreakStatement;
+import descent.internal.compiler.parser.CaseRangeStatement;
 import descent.internal.compiler.parser.CaseStatement;
 import descent.internal.compiler.parser.ClassDeclaration;
 import descent.internal.compiler.parser.CompileDeclaration;
@@ -168,6 +169,12 @@ public class CompileTimeParser extends Parser {
 	@Override
 	protected CaseStatement newCaseStatement(char[] filename, int lineNumber, Expression exp, Statement statement, int caseEnd, int expStart, int expLength) {
 		return new CompileTimeCaseStatement(filename, lineNumber, exp, statement);
+	}
+	
+	@Override
+	protected CaseRangeStatement newCaseRangeStatement(char[] filename,
+			int lineNumber, Expression first, Expression last, Statement s) {
+		return new CompileTimeCaseRangeStatement(filename, lineNumber, first, last, s);
 	}
 	
 	@Override
