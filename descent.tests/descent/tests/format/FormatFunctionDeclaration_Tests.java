@@ -471,5 +471,97 @@ public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 				options
 				);
 	}
+	
+	public void testUnittestBracesNextLine() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_UNITTEST, DefaultCodeFormatterConstants.NEXT_LINE);
+		assertFormat(
+				"unittest\r\n" +
+				"{\r\n" +
+				"}", 
+				
+				"unittest  {   }",
+				
+				options
+			);
+	}
+	
+	public void testUnittestBracesSameLine() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_UNITTEST, DefaultCodeFormatterConstants.END_OF_LINE);
+		assertFormat(
+				"unittest {\r\n" +
+				"}", 
+				
+				"unittest  {   }",
+				
+				options
+			);
+	}
+	
+	public void testUnittestBracesNextLineShifted() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_UNITTEST, DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED);
+		assertFormat(
+				"unittest\r\n" +
+					"\t{\r\n" +
+					"\t}", 
+				
+				"unittest  {   }",
+				
+				options
+			);
+	}
+	
+	public void testInvariantBracesNextLine() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_CLASS_INVARIANT, DefaultCodeFormatterConstants.NEXT_LINE);
+		assertFormat(
+				"invariant()\r\n" +
+				"{\r\n" +
+				"}", 
+				
+				"invariant()  {   }",
+				
+				options
+			);
+	}
+	
+	public void testInvariantBracesSameLine() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_CLASS_INVARIANT, DefaultCodeFormatterConstants.END_OF_LINE);
+		assertFormat(
+				"invariant() {\r\n" +
+				"}", 
+				
+				"invariant()  {   }",
+				
+				options
+			);
+	}
+	
+	public void testInvariantBracesNextLineShifted() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_CLASS_INVARIANT, DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED);
+		assertFormat(
+				"invariant()\r\n" +
+					"\t{\r\n" +
+					"\t}", 
+				
+				"invariant()  {   }",
+				
+				options
+			);
+	}
+	
+	public void testAutoFunction() throws Exception {
+		Map options = new HashMap();
+		assertFormat(
+				"auto bla() {\r\n" +
+				"}",
+				"auto   bla  (  )   {     }",
+				options
+				);
+	}
 
 }

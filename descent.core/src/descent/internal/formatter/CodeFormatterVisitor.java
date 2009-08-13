@@ -1083,7 +1083,13 @@ public class CodeFormatterVisitor extends ASTVisitor
 	public boolean visit(FunctionDeclaration node)
 	{
 		formatModifiers(true, node.modifiers());
-		node.getReturnType().accept(this);
+		if (node.getReturnType() == null) {
+			// Return type inference, so "auto" follows
+			scribe.printNextToken(TOK.TOKauto);
+			scribe.space();
+		} else {
+			node.getReturnType().accept(this);
+		}
 		scribe.space();
 		node.getName().accept(this);
 		formatFunction(node, prefs.brace_position_for_function_declaration);
@@ -1284,7 +1290,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 			scribe.printNextToken(TOK.TOKrparen,
 					prefs.insert_space_between_empty_parens_in_class_invariants);
 		}
-		formatSubStatement(node.getBody(), true, true, true, prefs.brace_position_for_class_invariant);
+		formatSubStatement(node.getBody(), false, true, true, prefs.brace_position_for_class_invariant);
 		scribe.printTrailingComment();
 		return false;
 	}
@@ -2357,7 +2363,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 	{
 		formatModifiers(true, node.modifiers());
 		scribe.printNextToken(TOK.TOKunittest);
-		formatSubStatement(node.getBody(), true, true, true, prefs.brace_position_for_unittest);
+		formatSubStatement(node.getBody(), false, true, true, prefs.brace_position_for_unittest);
 		if(isNextToken(TOK.TOKsemicolon)) {
 			scribe.printNextToken(TOK.TOKsemicolon,
 					prefs.insert_space_before_semicolon);

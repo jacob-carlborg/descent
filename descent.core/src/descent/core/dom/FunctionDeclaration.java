@@ -43,7 +43,7 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 	 * The "returnType" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor RETURN_TYPE_PROPERTY =
-		new ChildPropertyDescriptor(FunctionDeclaration.class, "returnType", Type.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(FunctionDeclaration.class, "returnType", Type.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "name" structural property of this node type.
@@ -419,16 +419,6 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 	 * @return the return type
 	 */ 
 	public Type getReturnType() {
-		if (this.returnType == null) {
-			// lazy init must be thread-safe for readers
-			synchronized (this) {
-				if (this.returnType == null) {
-					preLazyInit();
-					this.returnType = new PrimitiveType(this.ast);
-					postLazyInit(this.returnType, RETURN_TYPE_PROPERTY);
-				}
-			}
-		}
 		return this.returnType;
 	}
 
@@ -444,9 +434,6 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 	 * </ul>
 	 */ 
 	public void setReturnType(Type returnType) {
-		if (returnType == null) {
-			throw new IllegalArgumentException();
-		}
 		ASTNode oldChild = this.returnType;
 		preReplaceChild(oldChild, returnType, RETURN_TYPE_PROPERTY);
 		this.returnType = returnType;
