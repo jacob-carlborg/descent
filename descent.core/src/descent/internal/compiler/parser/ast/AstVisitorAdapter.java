@@ -97,6 +97,9 @@ public class AstVisitorAdapter implements IASTVisitor {
 
 	public void endVisit(CaseStatement node) {
 	}
+	
+	public void endVisit(CaseRangeStatement node) {
+	}
 
 	public void endVisit(CastExp node) {
 	}
@@ -842,6 +845,10 @@ public class AstVisitorAdapter implements IASTVisitor {
 	}
 
 	public boolean visit(CaseStatement node) {
+		return true;
+	}
+	
+	public boolean visit(CaseRangeStatement node) {
 		return true;
 	}
 

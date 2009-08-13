@@ -185,6 +185,10 @@ public class ASTUpTreeVisitor extends TreeVisitor implements IASTVisitor {
 		Assert.isTrue(CaseStatement.class.getSuperclass().equals(Statement.class));
 		return visit((Statement) node);
 	}
+	public boolean visit(CaseRangeStatement node) {
+		Assert.isTrue(CaseRangeStatement.class.getSuperclass().equals(Statement.class));
+		return visit((Statement) node);
+	}
 	public boolean visit(CastExp node) {
 		Assert.isTrue(CastExp.class.getSuperclass().equals(UnaExp.class));
 		return visit((UnaExp) node);
@@ -1117,6 +1121,10 @@ public class ASTUpTreeVisitor extends TreeVisitor implements IASTVisitor {
 	}
 	public void endVisit(CaseStatement node) {
 		Assert.isTrue(CaseStatement.class.getSuperclass().equals(Statement.class));
+		endVisit((Statement) node);
+	}
+	public void endVisit(CaseRangeStatement node) {
+		Assert.isTrue(CaseRangeStatement.class.getSuperclass().equals(Statement.class));
 		endVisit((Statement) node);
 	}
 	public void endVisit(CastExp node) {

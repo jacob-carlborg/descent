@@ -206,6 +206,8 @@ public class CompileTimeASTConverter {
 			return convert((CallExp) symbol);
 		case ASTDmdNode.CASE_STATEMENT:
 			return convert((CaseStatement) symbol);
+		case ASTDmdNode.CASE_RANGE_STATEMENT:
+			return convert((CaseRangeStatement) symbol);
 		case ASTDmdNode.CAST_EXP:
 			return convert((CastExp) symbol);
 		case ASTDmdNode.CAT_ASSIGN_EXP:
@@ -3103,6 +3105,24 @@ public class CompileTimeASTConverter {
 		
 		if (x.statement != null && ensureBlock((ensureScope(x.statement)).statement).statements.size() > 0) {
 			convertStatements(b.statements(), ensureBlock((ensureScope(x.statement)).statement).statements);
+		}
+		setSourceRange(b, a.start, a.length);
+		return b;
+	}
+	
+	public descent.core.dom.SwitchCaseRange convert(CaseRangeStatement a) {
+		descent.core.dom.SwitchCaseRange b = new descent.core.dom.SwitchCaseRange(ast);
+		
+		CaseRangeStatement x = a;
+		if (x.first != null) {
+			b.setFromExpression(convert(x.first));
+		}
+		if (x.last != null) {
+			b.setToExpression(convert(x.last));
+		}
+		
+		if (x.sourceStatement != null && ((CompoundStatement) ((ScopeStatement) x.sourceStatement).sourceStatement).sourceStatements.size() > 0) {
+			convertStatements(b.statements(), ((CompoundStatement) ((ScopeStatement) x.sourceStatement).sourceStatement).sourceStatements);
 		}
 		setSourceRange(b, a.start, a.length);
 		return b;

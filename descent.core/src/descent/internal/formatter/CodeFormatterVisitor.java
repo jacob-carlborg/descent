@@ -2049,6 +2049,25 @@ public class CodeFormatterVisitor extends ASTVisitor
 		return false;
 	}
 	
+	public boolean visit(SwitchCaseRange node)
+	{
+		scribe.printNextToken(TOK.TOKcase);
+		scribe.space();
+		node.getFromExpression().accept(this);
+		scribe.printNextToken(TOK.TOKcolon);
+		scribe.printNewLine();
+		scribe.printNextToken(TOK.TOKslice);
+		scribe.printNewLine();
+		scribe.printNextToken(TOK.TOKcase);
+		scribe.space();
+		node.getToExpression().accept(this);
+		scribe.printNextToken(TOK.TOKcolon);
+		scribe.printNewLine();
+		formatCaseOrDefaultStatementBody(node.statements());
+		scribe.printTrailingComment();
+		return false;
+	}
+	
 	public boolean visit(SwitchStatement node)
 	{
 		if (node.isFinal()) {

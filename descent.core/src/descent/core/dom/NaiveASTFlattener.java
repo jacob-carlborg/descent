@@ -395,6 +395,20 @@ class NaiveASTFlattener extends ASTVisitor {
 	}
 	
 	@Override
+	public boolean visit(SwitchCaseRange node) {
+		printIndent();
+		this.buffer.append("case ");
+		node.getFromExpression().accept(this);
+		this.buffer.append(": .. case ");
+		node.getToExpression().accept(this);
+		this.buffer.append(":\n");
+		indent++;
+		visitList(node.statements(), "\n");
+		indent--;
+		return false;
+	}
+	
+	@Override
 	public boolean visit(CastExpression node) {
 		this.buffer.append("cast(");
 		node.getType().accept(this);

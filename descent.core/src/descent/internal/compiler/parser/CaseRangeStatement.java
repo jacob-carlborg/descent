@@ -6,9 +6,9 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class CaseRangeStatement extends Statement {
 
-	private Expression first, sourceFirst;
-	private Expression last, sourceLast;
-	private Statement statement, sourceStatement;
+	public Expression first, sourceFirst;
+	public Expression last, sourceLast;
+	public Statement statement, sourceStatement;
 
 	public CaseRangeStatement(char[] filename, int lineNumber, Expression first,
 			Expression last, Statement statement) {

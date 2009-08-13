@@ -53,6 +53,7 @@ public interface IASTVisitor extends ITreeVisitor<ASTNode> {
 	boolean visit(BreakStatement node);
 	boolean visit(CallExp node);
 	boolean visit(CaseStatement node);
+	boolean visit(CaseRangeStatement node);
 	boolean visit(CastExp node);
 	boolean visit(CatAssignExp node);
 	boolean visit(Catch node);
@@ -289,6 +290,7 @@ public interface IASTVisitor extends ITreeVisitor<ASTNode> {
 	void endVisit(BreakStatement node);
 	void endVisit(CallExp node);
 	void endVisit(CaseStatement node);
+	void endVisit(CaseRangeStatement node);
 	void endVisit(CastExp node);
 	void endVisit(CatAssignExp node);
 	void endVisit(Catch node);

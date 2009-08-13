@@ -5,32 +5,32 @@ import java.util.List;
 
 
 /**
- * Slice expression AST node type.
+ * Switch case range statement AST node type.
  *
  * <pre>
- * SliceExpression:
- *    Expression <b>[</b> Expression <b>..</b> Expression <b>]</b>
+ * SwitchCaseRange:
+ *    <b>case</b> Expression <b>:</b> <b>..</b> <b>case</b> Expression <b>:</b> { Statement }
  * </pre>
  */
-public class SliceExpression extends Expression {
-
-	/**
-	 * The "expression" structural property of this node type.
-	 */
-	public static final ChildPropertyDescriptor EXPRESSION_PROPERTY =
-		new ChildPropertyDescriptor(SliceExpression.class, "expression", Expression.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
-
+public class SwitchCaseRange extends Statement {
+	
 	/**
 	 * The "fromExpression" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor FROM_EXPRESSION_PROPERTY =
-		new ChildPropertyDescriptor(SliceExpression.class, "fromExpression", Expression.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(SwitchCaseRange.class, "fromExpression", Expression.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "toExpression" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor TO_EXPRESSION_PROPERTY =
-		new ChildPropertyDescriptor(SliceExpression.class, "toExpression", Expression.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(SwitchCaseRange.class, "toExpression", Expression.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
+
+	/**
+	 * The "statements" structural property of this node type.
+	 */
+	public static final ChildListPropertyDescriptor STATEMENTS_PROPERTY =
+		new ChildListPropertyDescriptor(SwitchCaseRange.class, "statements", Statement.class, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -40,11 +40,11 @@ public class SliceExpression extends Expression {
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(3);
-		createPropertyList(SliceExpression.class, properyList);
-		addProperty(EXPRESSION_PROPERTY, properyList);
+		List properyList = new ArrayList(2);
+		createPropertyList(SwitchCaseRange.class, properyList);
 		addProperty(FROM_EXPRESSION_PROPERTY, properyList);
 		addProperty(TO_EXPRESSION_PROPERTY, properyList);
+		addProperty(STATEMENTS_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -62,25 +62,27 @@ public class SliceExpression extends Expression {
 	public static List propertyDescriptors(int apiLevel) {
 		return PROPERTY_DESCRIPTORS;
 	}
-
+	
 	/**
-	 * The expression.
-	 */
-	private Expression expression;
-
-	/**
-	 * The fromExpression.
+	 * The from expression.
 	 */
 	private Expression fromExpression;
-
+	
 	/**
-	 * The toExpression.
+	 * The from expression.
 	 */
 	private Expression toExpression;
-
+	
+	/**
+	 * The statements
+	 * (element type: <code>Statement</code>).
+	 * Defaults to an empty list.
+	 */
+	private ASTNode.NodeList statements =
+		new ASTNode.NodeList(STATEMENTS_PROPERTY);
 
 	/**
-	 * Creates a new unparented slice expression node owned by the given 
+	 * Creates a new unparented switch case node owned by the given 
 	 * AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
@@ -88,7 +90,7 @@ public class SliceExpression extends Expression {
 	 * 
 	 * @param ast the AST that is to own this node
 	 */
-	SliceExpression(AST ast) {
+	SwitchCaseRange(AST ast) {
 		super(ast);
 	}
 
@@ -98,19 +100,11 @@ public class SliceExpression extends Expression {
 	final List internalStructuralPropertiesForType(int apiLevel) {
 		return propertyDescriptors(apiLevel);
 	}
-
+	
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
-		if (property == EXPRESSION_PROPERTY) {
-			if (get) {
-				return getExpression();
-			} else {
-				setExpression((Expression) child);
-				return null;
-			}
-		}
 		if (property == FROM_EXPRESSION_PROPERTY) {
 			if (get) {
 				return getFromExpression();
@@ -134,19 +128,30 @@ public class SliceExpression extends Expression {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
+	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
+		if (property == STATEMENTS_PROPERTY) {
+			return statements();
+		}
+		// allow default implementation to flag the error
+		return super.internalGetChildListProperty(property);
+	}
+
+	/* (omit javadoc for this method)
+	 * Method declared on ASTNode.
+	 */
 	final int getNodeType0() {
-		return SLICE_EXPRESSION;
+		return SWITCH_CASE;
 	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	ASTNode clone0(AST target) {
-		SliceExpression result = new SliceExpression(target);
+		SwitchCaseRange result = new SwitchCaseRange(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setExpression((Expression) getExpression().clone(target));
 		result.setFromExpression((Expression) ASTNode.copySubtree(target, getFromExpression()));
 		result.setToExpression((Expression) ASTNode.copySubtree(target, getToExpression()));
+		result.statements.addAll(ASTNode.copySubtrees(target, statements()));
 		return result;
 	}
 
@@ -165,53 +170,13 @@ public class SliceExpression extends Expression {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChild(visitor, getExpression());
 			acceptChild(visitor, getFromExpression());
 			acceptChild(visitor, getToExpression());
+			acceptChildren(visitor, this.statements);
 		}
 		visitor.endVisit(this);
 	}
-
-	/**
-	 * Returns the expression of this slice expression.
-	 * 
-	 * @return the expression
-	 */ 
-	public Expression getExpression() {
-		if (this.expression == null) {
-			// lazy init must be thread-safe for readers
-			synchronized (this) {
-				if (this.expression == null) {
-					preLazyInit();
-					this.expression = new SimpleName(this.ast);
-					postLazyInit(this.expression, EXPRESSION_PROPERTY);
-				}
-			}
-		}
-		return this.expression;
-	}
-
-	/**
-	 * Sets the expression of this slice expression.
-	 * 
-	 * @param expression the expression
-	 * @exception IllegalArgumentException if:
-	 * <ul>
-	 * <li>the node belongs to a different AST</li>
-	 * <li>the node already has a parent</li>
-	 * <li>a cycle in would be created</li>
-	 * </ul>
-	 */ 
-	public void setExpression(Expression expression) {
-		if (expression == null) {
-			throw new IllegalArgumentException();
-		}
-		ASTNode oldChild = this.expression;
-		preReplaceChild(oldChild, expression, EXPRESSION_PROPERTY);
-		this.expression = expression;
-		postReplaceChild(oldChild, expression, EXPRESSION_PROPERTY);
-	}
-
+	
 	/**
 	 * Returns the from expression of this slice expression.
 	 * 
@@ -266,6 +231,17 @@ public class SliceExpression extends Expression {
 		postReplaceChild(oldChild, toExpression, TO_EXPRESSION_PROPERTY);
 	}
 
+	/**
+	 * Returns the live ordered list of statements for this
+	 * switch case.
+	 * 
+	 * @return the live list of switch case
+	 *    (element type: <code>Statement</code>)
+	 */ 
+	public List<Statement> statements() {
+		return this.statements;
+	}
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -279,9 +255,9 @@ public class SliceExpression extends Expression {
 	int treeSize() {
 		return
 			memSize()
-			+ (this.expression == null ? 0 : getExpression().treeSize())
 			+ (this.fromExpression == null ? 0 : getFromExpression().treeSize())
 			+ (this.toExpression == null ? 0 : getToExpression().treeSize())
+			+ (this.statements.listSize())
 	;
 	}
 

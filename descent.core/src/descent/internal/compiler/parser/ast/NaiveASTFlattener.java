@@ -469,6 +469,26 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		indent--;
 		return false;
 	}
+	
+	public boolean visit(CaseRangeStatement node) {
+		printIndent();
+		this.buffer.append("case ");
+		node.first.accept(this);
+		this.buffer.append(": .. case");
+		node.last.accept(this);
+		this.buffer.append(":\n");
+		
+		indent++;
+		if (node.statement != null) {
+			if (node.statement instanceof CompoundStatement) {
+				visitList(((CompoundStatement) node.statement).statements, "\n");
+			} else {
+				node.statement.accept(this);
+			}
+		}
+		indent--;
+		return false;
+	}
 
 	public boolean visit(CastExp node) {
 		this.buffer.append("cast(");
