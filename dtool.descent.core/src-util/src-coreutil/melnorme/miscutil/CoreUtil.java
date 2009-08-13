@@ -11,12 +11,14 @@
 package melnorme.miscutil;
 
 
+import static melnorme.miscutil.Assert.assertFail;
+
 import java.util.Arrays;
 
 /**
  * Utils for miscellaneous core language functionality. 
  */
-public class CoreUtil extends Assert {
+public class CoreUtil /* extends Assert */ {
 
 	/** @return whether the two given objects are the same (including null) or equal. */
 	public static boolean areEqual(Object o1, Object o2) {
@@ -46,11 +48,50 @@ public class CoreUtil extends Assert {
 		return null;
 	}
 	
-	/** Marker method for signaling a feature that is not yet implemented. Causes an assertion failure. 
-	 * Uses the Deprecated annotation solely to cause a warning. */
+	/** shortcut for creating an array of T. */
+	public static <T> T[] array(T... elems) {
+		return elems;
+	}
+	
+	public static boolean[] array(boolean... elems) {
+		return elems;
+	}
+	public static byte[] array(byte... elems) {
+		return elems;
+	}
+	public static short[] array(short... elems) {
+		return elems;
+	}
+	public static int[] array(int... elems) {
+		return elems;
+	}
+	public static long[] array(long... elems) {
+		return elems;
+	}
+	public static float[] array(float... elems) {
+		return elems;
+	}
+	public static double[] array(double... elems) {
+		return elems;
+	}
+	public static char[] array(char... elems) {
+		return elems;
+	}
+	
+	/** Marker method for signaling a feature that is not yet implemented. 
+	 * Uses the Deprecated annotation solely to cause a warning.
+	 * Causes an assertion failure. */ 
 	@Deprecated
 	public static void assertTODO() {
 		Assert.fail("TODO");
+	}
+	
+	/** Marker method for signaling a feature that is not yet implemented. 
+	 * Uses the Deprecated annotation solely to cause a warning. 
+	 * Returns false. */
+	@Deprecated
+	public static boolean taskTODO() {
+		return false;
 	}
 
 }

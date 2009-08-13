@@ -145,35 +145,35 @@ public abstract class Assert {
 	}
 	
 	/** Causes an inconditional assertion failure, with message msg. Never returns. */
-	public static <T> T fail(String message) {
+	public static RuntimeException fail(String message) {
 		Assert.isTrue(false, message);
 		return null;
 	}
 	/** Causes an inconditional assertion failure, with message msg. Never returns. */
-	public static <T> T assertFail(String message) {
+	public static RuntimeException assertFail(String message) {
 		Assert.isTrue(false, message);
 		return null;
 	}
 	
 	
 	/** Like {@link #fail(String)} with empty message. */
-	public static <T> T fail() {
+	public static RuntimeException fail() {
 		Assert.isTrue(false, "fail.");
 		return null;
 	}
 	/** Like {@link #fail(String)} with empty message. */
-	public static <T> T assertFail() {
+	public static RuntimeException assertFail() {
 		Assert.isTrue(false, "fail.");
 		return null;
 	}
 	
 	
 	/** Like {@link #fail()}, specifically signals unreachable code */
-	public static AssertionFailedException unreachable() {
+	public static RuntimeException unreachable() {
 		return Assert.fail("Unreachable code.");
 	}
 	/** Like {@link #fail()}, specifically signals unreachable code */
-	public static AssertionFailedException assertUnreachable() {
+	public static RuntimeException assertUnreachable() {
 		return Assert.fail("Unreachable code.");
 	}
 

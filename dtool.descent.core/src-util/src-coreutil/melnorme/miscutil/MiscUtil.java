@@ -20,8 +20,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-public class MiscUtil {
-
+public class MiscUtil 
+	extends CoreUtil // This code-reuse extension is for backwards compatibility 
+{
 	
 	/** Combines two hash codes to make a new one. */
 	public static int combineHashCodes(int hashCode1, int hashCode2) {
@@ -83,7 +84,7 @@ public class MiscUtil {
 	
 	/** Sleeps current thread for given millis amount. 
 	 * If interrupted throws an unchecked exception. */
-	public static void sleepUnchecked(int millis) {
+	public static void sleepUnchecked(long millis) {
 		try {
 			Thread.sleep(millis);
 		} catch (InterruptedException e) {
