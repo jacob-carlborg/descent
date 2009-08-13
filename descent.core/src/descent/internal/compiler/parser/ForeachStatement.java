@@ -896,7 +896,7 @@ public class ForeachStatement extends Statement {
 			}
 
 			s[0] = new CompoundStatement(filename, lineNumber, a2);
-			s[0] = new SwitchStatement(filename, lineNumber, e, s[0]);
+			s[0] = new SwitchStatement(filename, lineNumber, e, s[0], false);
 			s[0] = s[0].semantic(sc, context);
 		}
 	}

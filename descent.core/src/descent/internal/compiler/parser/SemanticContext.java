@@ -641,8 +641,8 @@ public class SemanticContext {
 		return new StaticAssertStatement(assert1);
 	}
 
-	protected SwitchStatement newSwitchStatement(char[] filename, int lineNumber, Expression expression, Statement statement) {
-		return new SwitchStatement(filename, lineNumber, expression, statement);
+	protected SwitchStatement newSwitchStatement(char[] filename, int lineNumber, Expression expression, Statement statement, boolean isfinal) {
+		return new SwitchStatement(filename, lineNumber, expression, statement, isfinal);
 	}
 
 	protected SynchronizedStatement newSynchronizedStatement(char[] filename, int lineNumber, Expression e, Statement statement) {

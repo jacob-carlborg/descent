@@ -4892,9 +4892,14 @@ public class Parser extends Lexer {
 		// case TOKtypeof:
 			// Ldeclaration:
 		{
-			Statement[] ps = { s };
-			parseStatement_Ldeclaration(ps, flags);
-			s = ps[0];
+			if (apiLevel == D2 && token.value == TOKfinal && peekNext() == TOKswitch) {
+				nextToken();
+				s = parseStatement_Lswitch(true);
+			} else {
+				Statement[] ps = { s };
+				parseStatement_Ldeclaration(ps, flags);
+				s = ps[0];
+			}
 			break;
 		}
 
@@ -5464,16 +5469,7 @@ public class Parser extends Lexer {
 		}
 
 		case TOKswitch: {
-			Expression condition2;
-			Statement body;
-
-			nextToken();
-			check(TOKlparen);
-			condition2 = parseExpression();
-			check(TOKrparen);
-			body = parseStatement(PSscope);
-			
-			s = newSwitchStatement(filename, lineNumber, condition2, body);
+			s = parseStatement_Lswitch(false);
 			break;
 		}
 
@@ -5854,6 +5850,19 @@ public class Parser extends Lexer {
 		}
 		
 		return s;
+	}
+
+	private Statement parseStatement_Lswitch(boolean isfinal) {
+		Expression condition2;
+		Statement body;
+
+		nextToken();
+		check(TOKlparen);
+		condition2 = parseExpression();
+		check(TOKrparen);
+		body = parseStatement(PSscope);
+		
+		return newSwitchStatement(filename, lineNumber, condition2, body, isfinal);
 	}
 
 	private void parseStatement_Ldeclaration(Statement[] s, int flags) {
@@ -9052,8 +9061,8 @@ public class Parser extends Lexer {
 		return new StaticAssertStatement(assert1);
 	}
 	
-	protected SwitchStatement newSwitchStatement(char[] filename, int lineNumber, Expression condition2, Statement body) {
-		return new SwitchStatement(filename, lineNumber, condition2, body);
+	protected SwitchStatement newSwitchStatement(char[] filename, int lineNumber, Expression condition2, Statement body, boolean isfinal) {
+		return new SwitchStatement(filename, lineNumber, condition2, body, isfinal);
 	}
 	
 	protected SynchronizedStatement newSynchronizedStatement(char[] filename, int lineNumber, Expression exp, Statement body) {

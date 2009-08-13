@@ -367,8 +367,8 @@ public class CompileTimeSemanticContext extends SemanticContext {
 	}
 	
 	@Override
-	protected SwitchStatement newSwitchStatement(char[] filename, int lineNumber, Expression expression, Statement statement) {
-		return new CompileTimeSwitchStatement(filename, lineNumber, expression, statement);
+	protected SwitchStatement newSwitchStatement(char[] filename, int lineNumber, Expression expression, Statement statement, boolean isfinal) {
+		return new CompileTimeSwitchStatement(filename, lineNumber, expression, statement, isfinal);
 	}
 	
 	@Override

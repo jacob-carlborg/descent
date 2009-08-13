@@ -256,8 +256,8 @@ public class CompileTimeParser extends Parser {
 	}
 	
 	@Override
-	protected SwitchStatement newSwitchStatement(char[] filename, int lineNumber, Expression condition2, Statement body) {
-		return new CompileTimeSwitchStatement(filename, lineNumber, condition2, body);
+	protected SwitchStatement newSwitchStatement(char[] filename, int lineNumber, Expression condition2, Statement body, boolean isfinal) {
+		return new CompileTimeSwitchStatement(filename, lineNumber, condition2, body, isfinal);
 	}
 	
 	@Override

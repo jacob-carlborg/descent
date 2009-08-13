@@ -8,8 +8,8 @@ import descent.internal.compiler.parser.SwitchStatement;
 
 public class CompileTimeSwitchStatement extends SwitchStatement {
 
-	public CompileTimeSwitchStatement(char[] filename, int lineNumber, Expression c, Statement b) {
-		super(filename, lineNumber, c, b);
+	public CompileTimeSwitchStatement(char[] filename, int lineNumber, Expression c, Statement b, boolean isfinal) {
+		super(filename, lineNumber, c, b, isfinal);
 	}
 	
 	@Override

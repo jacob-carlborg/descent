@@ -2051,6 +2051,10 @@ public class CodeFormatterVisitor extends ASTVisitor
 	
 	public boolean visit(SwitchStatement node)
 	{
+		if (node.isFinal()) {
+			scribe.printNextToken(TOK.TOKfinal);
+			scribe.space();
+		}
 		scribe.printNextToken(TOK.TOKswitch);
 		scribe.printNextToken(TOK.TOKlparen, prefs.insert_space_before_opening_paren_in_switch_statements);
 		if(prefs.insert_space_after_opening_paren_in_switch_statements)

@@ -1522,7 +1522,8 @@ public class ASTMatcher {
 		}
 		SwitchStatement o = (SwitchStatement) other;
 		return (
-			safeSubtreeMatch(node.getExpression(), o.getExpression())
+			node.isFinal() == o.isFinal()
+			&& safeSubtreeMatch(node.getExpression(), o.getExpression())
 			&& safeSubtreeMatch(node.getBody(), o.getBody())
 			);
 	}

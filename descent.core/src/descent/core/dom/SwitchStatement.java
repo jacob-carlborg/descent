@@ -9,10 +9,16 @@ import java.util.List;
  *
  * <pre>
  * SwitchStatement:
- *    <b>switch</b> <b>(</b> Expression <b>)</b> Statement
+ *    [ <b>final</b> ] <b>switch</b> <b>(</b> Expression <b>)</b> Statement
  * </pre>
  */
 public class SwitchStatement extends Statement {
+	
+	/**
+	 * The "final" structural property of this node type.
+	 */
+	public static final SimplePropertyDescriptor FINAL_PROPERTY =
+		new SimplePropertyDescriptor(SwitchStatement.class, "final", boolean.class, MANDATORY); //$NON-NLS-1$
 
 	/**
 	 * The "expression" structural property of this node type.
@@ -36,6 +42,7 @@ public class SwitchStatement extends Statement {
 	static {
 		List properyList = new ArrayList(2);
 		createPropertyList(SwitchStatement.class, properyList);
+		addProperty(FINAL_PROPERTY, properyList);
 		addProperty(EXPRESSION_PROPERTY, properyList);
 		addProperty(BODY_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
@@ -55,6 +62,8 @@ public class SwitchStatement extends Statement {
 	public static List propertyDescriptors(int apiLevel) {
 		return PROPERTY_DESCRIPTORS;
 	}
+	
+	private boolean isfinal;
 
 	/**
 	 * The expression.
@@ -85,6 +94,21 @@ public class SwitchStatement extends Statement {
 	 */
 	final List internalStructuralPropertiesForType(int apiLevel) {
 		return propertyDescriptors(apiLevel);
+	}
+	
+	@Override
+	final boolean internalGetSetBooleanProperty(SimplePropertyDescriptor property,
+			boolean get, boolean value) {
+		if (property == FINAL_PROPERTY) {
+			if (get) {
+				return isFinal();
+			} else {
+				setFinal(value);
+				return false;
+			}
+		}
+		// allow default implementation to flag the error
+		return super.internalGetSetBooleanProperty(property, get, value);
 	}
 
 	/* (omit javadoc for this method)
@@ -124,6 +148,7 @@ public class SwitchStatement extends Statement {
 	ASTNode clone0(AST target) {
 		SwitchStatement result = new SwitchStatement(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
+		result.setFinal(this.isFinal());
 		result.setExpression((Expression) getExpression().clone(target));
 		result.setBody((Statement) getBody().clone(target));
 		return result;
@@ -148,6 +173,24 @@ public class SwitchStatement extends Statement {
 			acceptChild(visitor, getBody());
 		}
 		visitor.endVisit(this);
+	}
+	
+	/**
+	 * Returns true if this switch statement is final.
+	 * 
+	 * @return true if this switch statement is final.
+	 */ 
+	public boolean isFinal() {
+		return this.isfinal;
+	}
+
+	/**
+	 * Sets whether this switch statement is final
+	 */ 
+	public void setFinal(boolean isfinal) {
+		preValueChange(FINAL_PROPERTY);
+		this.isfinal = isfinal;
+		postValueChange(FINAL_PROPERTY);
 	}
 
 	/**
@@ -234,7 +277,7 @@ public class SwitchStatement extends Statement {
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 2 * 4;
+		return BASE_NODE_SIZE + 3 * 4;
 	}
 
 	/* (omit javadoc for this method)

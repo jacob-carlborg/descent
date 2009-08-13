@@ -2204,6 +2204,9 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 
 	public boolean visit(SwitchStatement node) {
 		printIndent();
+		if (node.isfinal) {
+			this.buffer.append("final ");
+		}
 		this.buffer.append("switch(");
 		node.condition.accept(this);
 		this.buffer.append(") ");
