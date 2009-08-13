@@ -183,6 +183,16 @@ public class SwitchCaseRange extends Statement {
 	 * @return the from expression
 	 */ 
 	public Expression getFromExpression() {
+		if (this.fromExpression == null) {
+			// lazy init must be thread-safe for readers
+			synchronized (this) {
+				if (this.fromExpression == null) {
+					preLazyInit();
+					this.fromExpression = new SimpleName(this.ast);
+					postLazyInit(this.fromExpression, FROM_EXPRESSION_PROPERTY);
+				}
+			}
+		}
 		return this.fromExpression;
 	}
 
@@ -210,6 +220,16 @@ public class SwitchCaseRange extends Statement {
 	 * @return the to expression
 	 */ 
 	public Expression getToExpression() {
+		if (this.toExpression == null) {
+			// lazy init must be thread-safe for readers
+			synchronized (this) {
+				if (this.toExpression == null) {
+					preLazyInit();
+					this.toExpression = new SimpleName(this.ast);
+					postLazyInit(this.toExpression, TO_EXPRESSION_PROPERTY);
+				}
+			}
+		}
 		return this.toExpression;
 	}
 

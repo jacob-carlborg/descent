@@ -6607,71 +6607,100 @@ public class Parser extends Lexer {
 		// This code parallels parseParameters()
 		Token t = pt[0];
 		int tmp;
+		boolean gotoL2 = false;
 
 		if (t.value != TOKlparen) {
 			return false;
 		}
 
 		t = peek(t);
+	loop:
 		for(; true; t = peek(t)) {
-			switch (t.value) {
-			case TOKrparen:
-				break;
-
-			case TOKdotdotdot:
-				t = peek(t);
-				break;
-
-			case TOKin:
-			case TOKout:
-			case TOKinout:
-			case TOKref:
-			case TOKlazy:
-			case TOKconst:
-			case TOKinvariant:
-			case TOKimmutable:
-			case TOKshared:
-			case TOKfinal:
-				continue;
-				
-			default:
-
-				Token[] pointer2_t = { t };
-				if (!isBasicType(pointer2_t)) {
-					return false;
-				}
-
-				t = pointer2_t[0];
-
-				tmp = 0;
-
-				int[] pointer2_tmp = { tmp };
-
-				if (t.value != TOKdotdotdot
-						&& !isDeclarator(pointer2_t, pointer2_tmp, TOKreserved)) {
-					return false;
-				}
-
-				t = pointer2_t[0];
-				tmp = pointer2_tmp[0];
-
-				if (t.value == TOKassign) {
-					t = peek(t);
-					pointer2_t[0] = t;
-					if (!isExpression(pointer2_t)) {
-						return false;
-					}
-
-					t = pointer2_t[0];
-				}
-				if (t.value == TOKdotdotdot) {
+			
+			boolean repeat = true;
+			while(repeat) {
+				repeat = false;
+				switch (t.value) {
+				case TOKrparen:
+					break;
+	
+				case TOKdotdotdot:
 					t = peek(t);
 					break;
+	
+				case TOKin:
+				case TOKout:
+				case TOKinout:
+				case TOKref:
+				case TOKlazy:
+				case TOKfinal:
+					continue loop;
+					
+				case TOKconst:
+				case TOKinvariant:
+				case TOKimmutable:
+				case TOKshared:
+					t = peek(t);
+					if (t.value == TOKlparen)
+					{
+					    t = peek(t);
+					    Token[] pt2 = { t };
+					    if (!isDeclaration(t, 0, TOKrparen, pt2)) {
+					    	return false;
+					    }
+					    t = pt2[0];
+					    t = peek(t);	// skip past closing ')'
+					    // goto L2;
+					    gotoL2 = true;
+					}
+					if (!gotoL2) {
+						//goto L1;
+						repeat = true;
+						continue;
+					}
+					
+				default:
+					
+					Token[] pointer2_t = { t };
+	
+					if (!gotoL2) {
+						if (!isBasicType(pointer2_t)) {
+							return false;
+						}
+		
+						t = pointer2_t[0];
+					}
+	
+					tmp = 0;
+	
+					int[] pointer2_tmp = { tmp };
+	
+					if (t.value != TOKdotdotdot
+							&& !isDeclarator(pointer2_t, pointer2_tmp, TOKreserved)) {
+						return false;
+					}
+	
+					t = pointer2_t[0];
+					tmp = pointer2_tmp[0];
+	
+					if (t.value == TOKassign) {
+						t = peek(t);
+						pointer2_t[0] = t;
+						if (!isExpression(pointer2_t)) {
+							return false;
+						}
+	
+						t = pointer2_t[0];
+					}
+					if (t.value == TOKdotdotdot) {
+						t = peek(t);
+						break;
+					}
+					if (t.value == TOKcomma) {
+						continue loop;
+					}
+					break;
 				}
-				if (t.value == TOKcomma) {
-					continue;
-				}
-				break;
 			}
 			break;
 		}
