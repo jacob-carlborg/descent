@@ -141,17 +141,15 @@ class DefaultBindingResolver extends BindingResolver {
 
 	@Override
 	ASTNode findDeclaringNode(String bindingKey) {
+		ASTNode node = null;
 		IBinding binding = bindingTables.bindingKeysToBindings.get(bindingKey);
-		if (binding == null) {
-			return findDeclaringNodeBruteForce(bindingKey);
-		}
 		if (binding != null) {
-			ASTNode node = findDeclaringNode(binding);
-			if (node == null) {
-				return findDeclaringNodeBruteForce(bindingKey);
-			}
+			node = findDeclaringNode(binding);
 		}
-		return null;
+		if (node == null) {
+			node = findDeclaringNodeBruteForce(bindingKey);
+		}
+		return node;
 	}
 
 	private ASTNode findDeclaringNodeBruteForce(String bindingKey) {
