@@ -143,20 +143,28 @@ class DefaultBindingResolver extends BindingResolver {
 	ASTNode findDeclaringNode(String bindingKey) {
 		IBinding binding = bindingTables.bindingKeysToBindings.get(bindingKey);
 		if (binding == null) {
-			for(Map.Entry<ASTNode, ASTDmdNode> entry : this.newAstToOldAst.entrySet()) {
-				ASTDmdNode value = entry.getValue();
-				if (value instanceof Dsymbol) {
-					Dsymbol sym = (Dsymbol) value;
-					String signature = sym.getSignature();
-					if (bindingKey.equals(signature)) {
-						resolveDsymbol(sym, entry.getKey());
-						return entry.getKey();
-					}
-				}
-			}
+			return findDeclaringNodeBruteForce(bindingKey);
 		}
 		if (binding != null) {
-			return findDeclaringNode(binding);
+			ASTNode node = findDeclaringNode(binding);
+			if (node == null) {
+				return findDeclaringNodeBruteForce(bindingKey);
+			}
+		}
+		return null;
+	}
+
+	private ASTNode findDeclaringNodeBruteForce(String bindingKey) {
+		for(Map.Entry<ASTNode, ASTDmdNode> entry : this.newAstToOldAst.entrySet()) {
+			ASTDmdNode value = entry.getValue();
+			if (value instanceof Dsymbol) {
+				Dsymbol sym = (Dsymbol) value;
+				String signature = sym.getSignature(ISignatureOptions.None);
+				if (bindingKey.equals(signature)) {
+					resolveDsymbol(sym, entry.getKey());
+					return entry.getKey();
+				}
+			}
 		}
 		return null;
 	}
@@ -276,10 +284,7 @@ class DefaultBindingResolver extends BindingResolver {
 		IBinding binding = bindingTables.bindingKeysToBindings.get(key);
 		if (binding == null) {
 			binding = new TypeBinding(this, dsymbol, key);
-			bindingTables.bindingKeysToBindings.put(key, binding);
-			if (original != null) {
-				bindingsToAstNodesPut(binding, original);
-			}
+			glue(key, binding, original);
 		}
 
 		if (binding != null && !(binding instanceof ITypeBinding)) {
@@ -386,10 +391,7 @@ class DefaultBindingResolver extends BindingResolver {
 		IBinding binding = bindingTables.bindingKeysToBindings.get(key);
 		if (binding == null) {
 			binding = new TypeBinding(this, sym, key);
-			bindingTables.bindingKeysToBindings.put(key, binding);
-			if (original != null) {
-				bindingsToAstNodesPut(binding, original);
-			}
+			glue(key, binding, original);
 		}
 		
 		if (binding != null && !(binding instanceof ITypeBinding)) {
@@ -412,10 +414,7 @@ class DefaultBindingResolver extends BindingResolver {
 		IBinding binding = bindingTables.bindingKeysToBindings.get(key);
 		if (binding == null) {
 			binding = new VariableBinding(this, sym, key);
-			bindingTables.bindingKeysToBindings.put(key, binding);
-			if (original != null) {
-				bindingsToAstNodesPut(binding, original);
-			}
+			glue(key, binding, original);
 		}
 
 		if (binding != null && !(binding instanceof IVariableBinding)) {
@@ -989,10 +988,7 @@ class DefaultBindingResolver extends BindingResolver {
 		}
 
 		if (binding != null) {
-			bindingTables.bindingKeysToBindings.put(key, binding);
-			if (original != null) {
-				bindingsToAstNodesPut(binding, original);
-			}
+			glue(key, binding, original);
 		}
 
 		return (ITypeBinding) binding;
@@ -1011,10 +1007,7 @@ class DefaultBindingResolver extends BindingResolver {
 		IBinding binding = bindingTables.bindingKeysToBindings.get(key);
 		if (binding == null) {
 			binding = new MethodBinding(this, func, key);
-			bindingTables.bindingKeysToBindings.put(key, binding);
-			if (original != null) {
-				bindingsToAstNodesPut(binding, original);
-			}
+			glue(key, binding, original);
 		}
 
 		if (binding != null && !(binding instanceof IMethodBinding)) {
@@ -1037,10 +1030,7 @@ class DefaultBindingResolver extends BindingResolver {
 		IBinding binding = bindingTables.bindingKeysToBindings.get(key);
 		if (binding == null) {
 			binding = new VariableBinding(this, em, key);
-			bindingTables.bindingKeysToBindings.put(key, binding);
-			if (original != null) {
-				bindingsToAstNodesPut(binding, original);
-			}
+			glue(key, binding, original);
 		}
 
 		if (binding != null && !(binding instanceof IVariableBinding)) {
@@ -1063,10 +1053,7 @@ class DefaultBindingResolver extends BindingResolver {
 		IBinding binding = bindingTables.bindingKeysToBindings.get(key);
 		if (binding == null) {
 			binding = new CompilationUnitBinding(this, mod, key);
-			bindingTables.bindingKeysToBindings.put(key, binding);
-			if (original != null) {
-				bindingsToAstNodesPut(binding, original);
-			}
+			glue(key, binding, original);
 		}
 
 		if (binding != null && !(binding instanceof ICompilationUnitBinding)) {
@@ -1074,6 +1061,13 @@ class DefaultBindingResolver extends BindingResolver {
 		}
 
 		return (ICompilationUnitBinding) binding;
+	}
+	
+	private void glue(String key, IBinding binding, ASTNode original) {
+		bindingTables.bindingKeysToBindings.put(key, binding);
+		if (original != null) {
+			bindingsToAstNodesPut(binding, original);
+		}
 	}
 
 	private void bindingsToAstNodesPut(IBinding binding, ASTNode original) {
