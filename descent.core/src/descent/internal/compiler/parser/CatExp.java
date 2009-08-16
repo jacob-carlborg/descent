@@ -1,6 +1,10 @@
 package descent.internal.compiler.parser;
 
 import static descent.internal.compiler.parser.Constfold.Cat;
+import static descent.internal.compiler.parser.MATCH.MATCHconst;
+import static descent.internal.compiler.parser.TOK.TOKstring;
+import static descent.internal.compiler.parser.TY.Tarray;
+import static descent.internal.compiler.parser.TY.Tsarray;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
@@ -93,54 +97,114 @@ public class CatExp extends BinExp {
 		 *	' ' ~ c;
 		 */
 
-		if ((tb1.ty == TY.Tsarray || tb1.ty == TY.Tarray)
-				&& e2.type.equals(tb1.next)) {
-			type = tb1.nextOf().arrayOf(context);
-			if (tb2.ty == TY.Tarray) {
-				// Make e2 into [e2]
-				Expressions elements = new Expressions(1);
-				elements.add(e2);
-				e2 = new ArrayLiteralExp(e2.filename, e2.lineNumber, elements);
-				e2.type = type;
+		if (context.isD1()) {
+			if ((tb1.ty == TY.Tsarray || tb1.ty == TY.Tarray)
+					&& e2.type.equals(tb1.next)) {
+				type = tb1.nextOf().arrayOf(context);
+				if (tb2.ty == TY.Tarray) {
+					// Make e2 into [e2]
+					Expressions elements = new Expressions(1);
+					elements.add(e2);
+					e2 = new ArrayLiteralExp(e2.filename, e2.lineNumber, elements);
+					e2.type = type;
+				}
+				return this;
 			}
-			return this;
-		}
-
-		else if ((tb2.ty == TY.Tsarray || tb2.ty == TY.Tarray)
-				&& e1.type.equals(tb2.next)) {
-			type = tb2.nextOf().arrayOf(context);
-			if (tb1.ty == TY.Tarray) {
-				// Make e1 into [e1]
-				Expressions elements = new Expressions(1);
-				elements.add(e1);
-				e1 = new ArrayLiteralExp(e1.filename, e1.lineNumber, elements);
-				e1.type = type;
+	
+			else if ((tb2.ty == TY.Tsarray || tb2.ty == TY.Tarray)
+					&& e1.type.equals(tb2.next)) {
+				type = tb2.nextOf().arrayOf(context);
+				if (tb1.ty == TY.Tarray) {
+					// Make e1 into [e1]
+					Expressions elements = new Expressions(1);
+					elements.add(e1);
+					e1 = new ArrayLiteralExp(e1.filename, e1.lineNumber, elements);
+					e1.type = type;
+				}
+				return this;
 			}
-			return this;
-		}
-
-		typeCombine(sc, context);
-
-		if (type.toBasetype(context).ty == TY.Tsarray) {
-			type = type.toBasetype(context).next.arrayOf(context);
-		}
-
-		if (e1.op == TOK.TOKstring && e2.op == TOK.TOKstring) {
-			e = optimize(WANTvalue, context);
-		} else if (e1.type.equals(e2.type)
-				&& (e1.type.toBasetype(context).ty == TY.Tarray || e1.type
-						.toBasetype(context).ty == TY.Tsarray)) {
-			e = this;
+	
+			typeCombine(sc, context);
+	
+			if (type.toBasetype(context).ty == TY.Tsarray) {
+				type = type.toBasetype(context).next.arrayOf(context);
+			}
+	
+			if (e1.op == TOK.TOKstring && e2.op == TOK.TOKstring) {
+				e = optimize(WANTvalue, context);
+			} else if (e1.type.equals(e2.type)
+					&& (e1.type.toBasetype(context).ty == TY.Tarray || e1.type
+							.toBasetype(context).ty == TY.Tsarray)) {
+				e = this;
+			} else {
+				if (context.acceptsErrors()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.CanOnlyConcatenateArrays, this,
+							e1.type.toChars(context), e2.type.toChars(context)));
+				}
+				type = Type.tint32;
+				e = this;
+			}
+			e.type = e.type.semantic(filename, lineNumber, sc, context);
+			return e;
 		} else {
-			if (context.acceptsErrors()) {
-				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.CanOnlyConcatenateArrays, this,
-						e1.type.toChars(context), e2.type.toChars(context)));
+			if ((tb1.ty == Tsarray || tb1.ty == Tarray) && e2.type.implicitConvTo(tb1.nextOf(), context).ordinal() >= MATCHconst.ordinal()) {
+				type = tb1.nextOf().arrayOf(context);
+				if (tb2.ty == Tarray) { // Make e2 into [e2]
+					e2 = new ArrayLiteralExp(e2.filename, e2.lineNumber, e2);
+					e2.type = type;
+				}
+				return this;
+			} else if ((tb2.ty == Tsarray || tb2.ty == Tarray) && e1.type.implicitConvTo(tb2.nextOf(), context).ordinal() >= MATCHconst.ordinal()) {
+				type = tb2.nextOf().arrayOf(context);
+				if (tb1.ty == Tarray) { // Make e1 into [e1]
+					e1 = new ArrayLiteralExp(e1.filename, e1.lineNumber, e1);
+					e1.type = type;
+				}
+				return this;
 			}
-			type = Type.tint32;
-			e = this;
+
+			if ((tb1.ty == Tsarray || tb1.ty == Tarray) && (tb2.ty == Tsarray || tb2.ty == Tarray) && (tb1.nextOf().mod != 0 || tb2.nextOf().mod != 0)
+					&& (tb1.nextOf().mod != tb2.nextOf().mod)) {
+				Type t1 = tb1.nextOf().mutableOf(context).constOf(context).arrayOf(context);
+				Type t2 = tb2.nextOf().mutableOf(context).constOf(context).arrayOf(context);
+				if (e1.op == TOKstring && !((StringExp) e1).committed)
+					e1.type = t1;
+				else
+					e1 = e1.castTo(sc, t1, context);
+				if (e2.op == TOKstring && !((StringExp) e2).committed)
+					e2.type = t2;
+				else
+					e2 = e2.castTo(sc, t2, context);
+			}
+
+			typeCombine(sc, context);
+			type = type.toHeadMutable();
+
+			Type tb = type.toBasetype(context);
+			if (tb.ty == Tsarray)
+				type = tb.nextOf().arrayOf(context);
+			if (type.ty == Tarray && tb1.nextOf() != null && tb2.nextOf() != null && tb1.nextOf().mod != tb2.nextOf().mod) {
+				type = type.nextOf().toHeadMutable().arrayOf(context);
+			}
+			Type t1 = e1.type.toBasetype(context);
+			Type t2 = e2.type.toBasetype(context);
+			if (e1.op == TOKstring && e2.op == TOKstring)
+				e = optimize(WANTvalue, context);
+			else if ((t1.ty == Tarray || t1.ty == Tsarray) && (t2.ty == Tarray || t2.ty == Tsarray))
+
+			{
+				e = this;
+			} else {
+				if (context.acceptsErrors()) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CanOnlyConcatenateArrays, this, e1.type.toChars(context), e2.type
+							.toChars(context)));
+				}
+				type = Type.tint32;
+				e = this;
+			}
+			e.type = e.type.semantic(filename, lineNumber, sc, context);
+			return e;
 		}
-		e.type = e.type.semantic(filename, lineNumber, sc, context);
-		return e;
 	}
 }

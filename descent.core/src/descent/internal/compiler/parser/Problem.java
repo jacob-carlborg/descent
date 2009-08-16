@@ -1167,6 +1167,12 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.CaseRangesNotAllowedInFinalSwitch);
 		case MoreThan256CasesInCaseRange:
 			return String.format(ProblemMessages.MoreThan256CasesInCaseRange);
+		case CannotCastTuple:
+			return String.format(ProblemMessages.CannotCastTuple);
+		case CastNotAllowedInSafeMode:
+			return String.format(ProblemMessages.CastNotAllowedInSafeMode, arguments[0], arguments[1]);
+		case SliceIsNotMutable:
+			return String.format(ProblemMessages.SliceIsNotMutable, arguments[0]);
 		default:
 			return "";
 		}

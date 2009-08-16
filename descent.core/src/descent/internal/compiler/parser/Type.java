@@ -1920,4 +1920,34 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		return null;
 	}
 
+	public Type castMod(int mod2, SemanticContext context) {
+		Type t;
+
+		switch (mod) {
+		case 0:
+			t = mutableOf(context);
+			break;
+
+		case MODconst:
+			t = constOf(context);
+			break;
+
+		case MODinvariant:
+			t = invariantOf(context);
+			break;
+
+		case MODshared:
+			t = sharedOf(context);
+			break;
+
+		case MODshared | MODconst:
+			t = sharedConstOf(context);
+			break;
+
+		default:
+			throw new IllegalSelectorException();
+		}
+		return t;
+	}
+
 }

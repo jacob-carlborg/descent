@@ -1,8 +1,10 @@
 package descent.internal.compiler.parser;
 
 import static descent.internal.compiler.parser.Constfold.Cmp;
+import static descent.internal.compiler.parser.MATCH.MATCHconst;
 import static descent.internal.compiler.parser.TOK.TOKnull;
 import static descent.internal.compiler.parser.TY.Tclass;
+import static descent.internal.compiler.parser.TY.Tvoid;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
@@ -104,12 +106,32 @@ public class CmpExp extends BinExp {
 		// Special handling for array comparisons
 		t1 = e1.type.toBasetype(context);
 		t2 = e2.type.toBasetype(context);
-		if ((t1.ty == TY.Tarray || t1.ty == TY.Tsarray)
-				&& (t2.ty == TY.Tarray || t2.ty == TY.Tsarray)) {
-			if (!t1.next.equals(t2.next)) {
-				if (context.acceptsErrors()) {
-					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.ArrayComparisonTypeMismatch, this, t1.next.toChars(context), t2.next.toChars(context)));
+		
+		boolean condition;
+		if (context.isD1()) {
+			condition = (t1.ty == TY.Tarray || t1.ty == TY.Tsarray)
+				&& (t2.ty == TY.Tarray || t2.ty == TY.Tsarray);
+		} else {
+			condition = (t1.ty == TY.Tarray || t1.ty == TY.Tsarray || t1.ty == TY.Tpointer)
+				&& (t2.ty == TY.Tarray || t2.ty == TY.Tsarray || t2.ty == TY.Tpointer);
+		}
+		
+		if (condition) {
+			if (context.isD1()) {
+				if (!t1.next.equals(t2.next)) {
+					if (context.acceptsErrors()) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.ArrayComparisonTypeMismatch, this, t1.next.toChars(context), t2.next.toChars(context)));
+					}
+				}
+			} else {
+				if (t1.nextOf().implicitConvTo(t2.nextOf(), context).ordinal() < MATCHconst.ordinal() &&
+					    t2.nextOf().implicitConvTo(t1.nextOf(), context).ordinal() < MATCHconst.ordinal() &&
+					    (t1.nextOf().ty != Tvoid && t2.nextOf().ty != Tvoid)) {
+					if (context.acceptsErrors()) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.ArrayComparisonTypeMismatch, this, t1.next.toChars(context), t2.next.toChars(context)));
+					}
 				}
 			}
 			e = this;
@@ -131,7 +153,11 @@ public class CmpExp extends BinExp {
 			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CompareNotDefinedForComplexOperands, this));
 			}
-			e = new IntegerExp(filename, lineNumber, 0);
+			if (context.isD1()) {
+				e = new IntegerExp(filename, lineNumber, 0);
+			} else {
+				e = new ErrorExp();
+			}
 		} else {
 			e = this;
 		}

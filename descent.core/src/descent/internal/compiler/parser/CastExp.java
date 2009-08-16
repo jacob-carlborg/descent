@@ -5,7 +5,6 @@ import static descent.internal.compiler.parser.TOK.TOKarrayliteral;
 import static descent.internal.compiler.parser.TOK.TOKcall;
 import static descent.internal.compiler.parser.TOK.TOKconst;
 import static descent.internal.compiler.parser.TOK.TOKimmutable;
-import static descent.internal.compiler.parser.TOK.TOKinvariant;
 import static descent.internal.compiler.parser.TOK.TOKnull;
 import static descent.internal.compiler.parser.TOK.TOKshared;
 import static descent.internal.compiler.parser.TOK.TOKstring;
@@ -208,30 +207,50 @@ public class CastExp extends UnaExp {
 		{
 			e1 = resolveProperties(sc, e1, context);
 			
-			/* Handle cast(const) and cast(invariant)
-			 */
-			if (null == to) {
-				if (tok == TOKconst) {
-					to = e1.type.constOf(context);
-				} else if (tok == TOKinvariant) {
-					to = e1.type.invariantOf(context);
+			if (context.isD1()) {
+				if (null == to) {
+				    /* Handle cast(const) and cast(immutable), etc.
+				     */
+				    to = e1.type.castMod(mod, context);
 				} else {
-					throw new IllegalStateException("assert(0);");
+					to = to.semantic(filename, lineNumber, sc, context);
 				}
 			} else {
 				to = to.semantic(filename, lineNumber, sc, context);
 			}
+			
+			boolean condition;
+			if (context.isD1()) {
+				condition = true;
+			} else {
+				condition = !to.equals(e1.type);
+			}
 
-			e = op_overload(sc, context);
-			if (e != null) {
-				return e.implicitCastTo(sc, to, context);
+			if (condition) {
+				e = op_overload(sc, context);
+				if (e != null) {
+					return e.implicitCastTo(sc, to, context);
+				}
+			}
+
+			Type t1b = null;
+			if (!context.isD1()) {
+				t1b = e1.type.toBasetype(context);
 			}
 
 			Type tob = to.toBasetype(context);
-			if (tob.ty == Tstruct && 
-				!tob.equals(e1.type.toBasetype(context)) &&
-			    null == ((TypeStruct)to).sym.search(null, 0, Id.call, 0, context)
-			    ) 
+			
+			if (context.isD1()) {
+				condition = tob.ty == Tstruct && 
+					!tob.equals(e1.type.toBasetype(context)) &&
+				    null == ((TypeStruct)to).sym.search(null, 0, Id.call, 0, context);
+			} else {
+				condition = tob.ty == Tstruct && 
+					!tob.equals(t1b) &&
+				    null == ((TypeStruct)tob).sym.search(null, 0, Id.call, 0, context);
+			}
+			
+			if (condition) 
 			{
 				/* Look to replace:
 				 *	cast(S)t
@@ -246,9 +265,72 @@ public class CastExp extends UnaExp {
 				e = e.semantic(sc, context);
 				return e;
 			}
+		} else if (!context.isD1()) {
+			if (null == to) {
+				if (context.acceptsErrors()) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotCastTuple, this));
+				}
+				to = Type.terror;
+			}
 		}
+		
+		if (!context.isD1()) {
+		    if (context.global.params.safe && !sc.module.safe
+					&& 0 == sc.intypeof) { // Disallow unsafe casts
+				Type tob = to.toBasetype(context);
+				Type t1b = e1.type.toBasetype(context);
+				if (!t1b.isMutable() && tob.isMutable()) {
+					// Cast not mutable to mutable
+					// Lunsafe:
+					return semantic_Lunsafe(sc, e1, to, context);
+				} else if (t1b.isShared() && !tob.isShared()) {
+					// Cast away shared
+					// goto Lunsafe;
+					return semantic_Lunsafe(sc, e1, to, context);
+				} else if (tob.ty == Tpointer) {
+					if (t1b.ty != Tpointer) {
+						// goto Lunsafe;
+						return semantic_Lunsafe(sc, e1, to, context);
+					}
+					Type tobn = tob.nextOf().toBasetype(context);
+					Type t1bn = t1b.nextOf().toBasetype(context);
+
+					if (!t1bn.isMutable() && tobn.isMutable()) {
+						// Cast away pointer to not mutable
+						// goto Lunsafe;
+						return semantic_Lunsafe(sc, e1, to, context);
+					}
+
+					if (t1bn.isShared() && !tobn.isShared()) {
+						// Cast away pointer to shared
+						// goto Lunsafe;
+						return semantic_Lunsafe(sc, e1, to, context);
+					}
+
+					if (tobn.isTypeBasic() != null
+							&& tobn.size(context) < t1bn.size(context)) {
+						// Allow things like casting a long* to an int*
+						;
+					} else if (tobn.ty != Tvoid) {
+						// Cast to a pointer other than void*
+						// goto Lunsafe;
+						return semantic_Lunsafe(sc, e1, to, context);
+					}
+				}
+				// BUG: Check for casting array types, such as void[] to int*[]
+			}
+		}
+		
 		e = e1.castTo(sc, to, context);
 		return e;
+	}
+	
+	private Expression semantic_Lunsafe(Scope sc, Expression e1, Type to, SemanticContext context) {
+		if (context.acceptsErrors()) {
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.CastNotAllowedInSafeMode, this, e1.type.toChars(context), to.toChars(context)));
+		}
+		
+		return e1.castTo(sc, to, context);
 	}
 
 	@Override

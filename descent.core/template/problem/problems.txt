@@ -1552,8 +1552,18 @@ CaseRangesNotAllowedInFinalSwitch
 MoreThan256CasesInCaseRange
 	formatString=More than 256 cases in case range
 	numArgs=0
+CannotCastTuple
+	formatString=Cannot cast tuple
+	numArgs=0
+CastNotAllowedInSafeMode
+	formatString=Cast from %1$s to %2$s not allowed in safe mode
+	numArgs=2
+SliceIsNotMutable
+	formatString=Slice %1$s is not mutable
+	numArgs=1
 
 	
+
 	
 	
 	

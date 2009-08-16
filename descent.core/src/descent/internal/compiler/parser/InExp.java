@@ -65,8 +65,16 @@ public class InExp extends BinExp {
 		} else {
 			TypeAArray ta = (TypeAArray) t2b;
 
-			// Convert key to type of key
-			e1 = e1.implicitCastTo(sc, ta.index, context);
+			if (context.isD1()) {
+				// Convert key to type of key
+				e1 = e1.implicitCastTo(sc, ta.index, context);
+			} else{
+				// Special handling for array keys
+				if (!arrayTypeCompatible(e1.filename, e1.lineNumber, e1.type, ta.index, context)) {
+				    // Convert key to type of key
+				    e1 = e1.implicitCastTo(sc, ta.index, context);
+				}
+			}
 
 			// Return type is pointer to value
 			type = ta.nextOf().pointerTo(context);

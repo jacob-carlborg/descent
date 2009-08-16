@@ -727,5 +727,8 @@ public interface IProblem {
 	int ForwardReferenceToInferredReturnTypeOfFunctionCall = 516;
 	int CaseRangesNotAllowedInFinalSwitch = 517;
 	int MoreThan256CasesInCaseRange = 518;
+	int CannotCastTuple = 519;
+	int CastNotAllowedInSafeMode = 520;
+	int SliceIsNotMutable = 521;
 
 }

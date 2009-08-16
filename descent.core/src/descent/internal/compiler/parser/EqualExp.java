@@ -121,24 +121,32 @@ public class EqualExp extends BinExp {
 		type = Type.tboolean;
 
 		// Special handling for array comparisons
-		t1 = e1.type.toBasetype(context);
-		t2 = e2.type.toBasetype(context);
-		if ((t1.ty == TY.Tarray || t1.ty == TY.Tsarray)
-				&& (t2.ty == TY.Tarray || t2.ty == TY.Tsarray)) {
-			if (!t1.next.equals(t2.next)) {
-				if (context.acceptsErrors()) {
-					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.ArrayComparisonTypeMismatch, this, t1.next.toChars(context), t2.next.toChars(context)));
+		if (context.isD1()) {
+			t1 = e1.type.toBasetype(context);
+			t2 = e2.type.toBasetype(context);
+			if ((t1.ty == TY.Tarray || t1.ty == TY.Tsarray)
+					&& (t2.ty == TY.Tarray || t2.ty == TY.Tsarray)) {
+				if (!t1.next.equals(t2.next)) {
+					if (context.acceptsErrors()) {
+						context.acceptProblem(Problem.newSemanticTypeError(
+								IProblem.ArrayComparisonTypeMismatch, this, t1.next.toChars(context), t2.next.toChars(context)));
+					}
+				}
+			} else {
+				if (!same(e1.type, e2.type, context) && e1.type.isfloating()
+						&& e2.type.isfloating()) {
+					// Cast both to complex
+					e1 = e1.castTo(sc, Type.tcomplex80, context);
+					e2 = e2.castTo(sc, Type.tcomplex80, context);
 				}
 			}
-		}
-
-		else {
-			if (!same(e1.type, e2.type, context) && e1.type.isfloating()
-					&& e2.type.isfloating()) {
-				// Cast both to complex
-				e1 = e1.castTo(sc, Type.tcomplex80, context);
-				e2 = e2.castTo(sc, Type.tcomplex80, context);
+		} else {
+		    if (!arrayTypeCompatible(filename, lineNumber, e1.type, e2.type, context)) {
+				if (e1.type != e2.type && e1.type.isfloating() && e2.type.isfloating()) {
+					// Cast both to complex
+					e1 = e1.castTo(sc, Type.tcomplex80, context);
+					e2 = e2.castTo(sc, Type.tcomplex80, context);
+				}
 			}
 		}
 		

@@ -528,6 +528,9 @@ final class ProblemMessages extends NLS {
 	public static String ForwardReferenceToInferredReturnTypeOfFunctionCall;
 	public static String CaseRangesNotAllowedInFinalSwitch;
 	public static String MoreThan256CasesInCaseRange;
+	public static String CannotCastTuple;
+	public static String CastNotAllowedInSafeMode;
+	public static String SliceIsNotMutable;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

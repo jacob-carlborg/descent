@@ -69,6 +69,9 @@ public class AddAssignExp extends BinExp {
 				&& (tb2.ty == TY.Tarray || tb2.ty == TY.Tsarray)
 				&& (tb1.nextOf().equals(tb2.nextOf()))) {
 			type = e1.type;
+			if (!context.isD1()) {
+				typeCombine(sc, context);
+			}
 			e = this;
 		} else {
 			e1.checkScalar(context);

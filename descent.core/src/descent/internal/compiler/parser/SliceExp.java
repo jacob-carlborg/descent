@@ -272,7 +272,11 @@ public class SliceExp extends UnaExp {
 				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.StringSliceIsOutOfBounds, this, new String[] { String.valueOf(i1), String.valueOf(i2) }));
 				}
-				e = new IntegerExp(0);
+				if (context.isD1()) {
+					e = new IntegerExp(0);
+				} else {
+					e = new ErrorExp();
+				}
 			}
 			return e;
 		}

@@ -104,7 +104,11 @@ public class MinExp extends BinExp {
 					context.acceptProblem(Problem.newSemanticTypeError(
 							IProblem.IncompatibleTypesForMinus, this));
 				}
-				return new IntegerExp(filename, lineNumber, 0);
+				if (context.isD1()) {
+					return new IntegerExp(filename, lineNumber, 0);
+				} else {
+					return new ErrorExp();
+				}
 			}
 		} else if (t2.ty == TY.Tpointer) {
 			type = e2.type;
@@ -112,7 +116,11 @@ public class MinExp extends BinExp {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.CannotSubtractPointerFromSymbol, this, new String[] { e1.type.toChars(context) }));
 			}
-			return new IntegerExp(filename, lineNumber, 0);
+			if (context.isD1()) {
+				return new IntegerExp(filename, lineNumber, 0);
+			} else {
+				return new ErrorExp();
+			}
 		} else {
 			typeCombine(sc, context);
 			t1 = e1.type.toBasetype(context);

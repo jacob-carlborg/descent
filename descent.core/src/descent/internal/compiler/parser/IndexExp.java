@@ -80,6 +80,14 @@ public class IndexExp extends BinExp {
 						IProblem.StringLiteralsAreImmutable, this));
 			}
 		}
+		if (!context.isD1()) {
+		    if (type != null && !type.isMutable()) {
+		    	if (context.acceptsErrors()) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.SymbolIsNotMutable, this, e.toChars(context)));
+				}
+		    }
+		}
 		if (e1.type.toBasetype(context).ty == TY.Taarray) {
 			e1 = e1.modifiableLvalue(sc, e1, context);
 		}
@@ -176,15 +184,26 @@ public class IndexExp extends BinExp {
 		case Taarray: {
 			TypeAArray taa = (TypeAArray) t1;
 
-			e2 = e2.implicitCastTo(sc, taa.index, context); // type checking
-			e2 = e2.implicitCastTo(sc, taa.key, context); // actual argument type
+			if (context.isD1()) {
+				e2 = e2.implicitCastTo(sc, taa.index, context); // type checking
+				e2 = e2.implicitCastTo(sc, taa.key, context); // actual argument type
+			} else {
+			    if (!arrayTypeCompatible(e2.filename, e2.lineNumber, e2.type,
+						taa.index, context)) {
+					e2 = e2.implicitCastTo(sc, taa.index, context); // type checking
+				}
+			}
 			type = taa.next;
 			break;
 		}
 
 		case Ttuple: {
 			e2 = e2.implicitCastTo(sc, Type.tsize_t, context);
-			e2 = e2.optimize(WANTvalue, context);
+			if (context.isD1()) {
+				e2 = e2.optimize(WANTvalue, context);
+			} else {
+				e2 = e2.optimize(WANTvalue | WANTinterpret, context);
+			}
 			integer_t index = e2.toUInteger(context);
 			BigInteger length = null;
 			TupleExp te = null;

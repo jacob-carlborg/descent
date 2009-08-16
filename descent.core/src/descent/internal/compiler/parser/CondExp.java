@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import static descent.internal.compiler.parser.TOK.TOKstring;
+import static descent.internal.compiler.parser.TY.Tarray;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
@@ -197,6 +198,14 @@ public class CondExp extends BinExp {
 			case Tcomplex80:
 				e1 = e1.castTo(sc, e2.type, context);
 				break;
+			}
+			
+			if (!context.isD1()) {
+				if (type.toBasetype(context).ty == Tarray)
+				{
+				    e1 = e1.castTo(sc, type, context);
+				    e2 = e2.castTo(sc, type, context);
+				}
 			}
 		}
 
