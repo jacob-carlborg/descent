@@ -10,8 +10,6 @@
  *******************************************************************************/
 package descent.ui.text.java;
 
-import org.eclipse.jdt.internal.corext.util.Strings;
-import org.eclipse.jdt.internal.ui.viewsupport.JavaElementLabelComposer;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.text.Assert;
 import org.eclipse.jface.viewers.StyledString;
@@ -24,6 +22,7 @@ import descent.core.Signature;
 import descent.core.compiler.CharOperation;
 import descent.internal.corext.template.java.SignatureUtil;
 import descent.internal.corext.util.Messages;
+import descent.internal.corext.util.Strings;
 import descent.internal.ui.JavaPluginImages;
 import descent.internal.ui.viewsupport.JavaElementImageProvider;
 import descent.ui.JavaElementImageDescriptor;
@@ -403,7 +402,7 @@ public class CompletionProposalLabelProvider {
 //		declaringType= Signature.getSimpleName(declaringType);
 		nameBuffer.append(declaringType, StyledString.QUALIFIER_STYLER);
 		
-		return Strings.markLTR(nameBuffer, JavaElementLabelComposer.ADDITIONAL_DELIMITERS);
+		return Strings.markLTR(nameBuffer, descent.internal.ui.viewsupport.JavaElementLabelComposer.ADDITIONAL_DELIMITERS);
 	}
 	
 	StyledString createOverrideMethodProposalLabel(CompletionProposal methodProposal) {
