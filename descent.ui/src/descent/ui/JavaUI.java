@@ -28,10 +28,12 @@ import org.eclipse.ui.dialogs.SelectionDialog;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 
 import descent.core.IClasspathEntry;
+import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
 import descent.core.IPackageFragmentRoot;
 import descent.core.ISourceReference;
+import descent.core.ITypeRoot;
 import descent.core.JavaModelException;
 import descent.core.search.IJavaSearchScope;
 import descent.core.search.SearchEngine;
@@ -889,4 +891,27 @@ public final class JavaUI {
 	public static IColorManager getColorManager() {
 		return JavaPlugin.getDefault().getJavaTextTools().getColorManager();
 	}
+	
+	/**
+	 * Returns the {@link ITypeRoot} wrapped by the given editor input.
+	 *
+	 * @param editorInput the editor input
+	 * @return the {@link ITypeRoot} wrapped by <code>editorInput</code> or <code>null</code> if the editor input
+	 * does not stand for a ITypeRoot
+	 *
+	 * @since 3.4
+	 */
+	public static ITypeRoot getEditorInputTypeRoot(IEditorInput editorInput) {
+		// Performance: check working copy manager first: this is faster
+		ICompilationUnit cu= JavaPlugin.getDefault().getWorkingCopyManager().getWorkingCopy(editorInput);
+		if (cu != null)
+			return cu;
+
+		IJavaElement je= (IJavaElement) editorInput.getAdapter(IJavaElement.class);
+		if (je instanceof ITypeRoot)
+			return (ITypeRoot) je;
+
+		return null;
+	}
+	
 }

@@ -412,11 +412,9 @@ public class CompileTimeView extends AbstractInfoView implements IMenuListener {
 		}
 		return text;
 	}
-
-	/*
-	 * @see AbstractInfoView#setInput(Object)
-	 */
-	protected void setInput(Object input) {
+	
+	@Override
+	protected void doSetInput(Object input) {
 		int topIndex = fViewer.getTopIndex();
 		
 		if (input instanceof IDocument)

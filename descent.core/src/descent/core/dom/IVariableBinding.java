@@ -11,6 +11,8 @@
 
 package descent.core.dom;
 
+import descent.core.IEvaluationResult;
+
 /**
  * A variable binding represents either a field of a class or interface, or 
  * a local variable declaration (including formal parameters, local variables, 
@@ -128,7 +130,7 @@ public interface IVariableBinding extends IBinding {
 	 * @return the constant value, or <code>null</code> if none
 	 * @since 3.0
 	 */
-	public Object getConstantValue();
+	public IEvaluationResult getConstantValue();
 	
 	/**
 	 * Returns the binding for the variable declaration corresponding to this

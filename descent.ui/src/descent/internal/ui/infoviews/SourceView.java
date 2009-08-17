@@ -413,11 +413,9 @@ public class SourceView extends AbstractInfoView implements IMenuListener {
 
 		return Strings.concatenate(sourceLines, delim);
 	}
-
-	/*
-	 * @see AbstractInfoView#setInput(Object)
-	 */
-	protected void setInput(Object input) {
+	
+	@Override
+	protected void doSetInput(Object input) {
 		if (input instanceof IDocument)
 			fViewer.setInput(input);
 		else if (input == null)

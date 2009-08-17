@@ -185,6 +185,14 @@ public class PreferenceConstants {
 	 * @since 3.2
 	 */
 	public static final String APPEARANCE_CATEGORY= "descent.ui.category";//$NON-NLS-1$
+	
+	/**
+	 * The symbolic font name for the font used to display Javadoc
+	 * (value <code>"org.eclipse.jdt.ui.javadocfont"</code>).
+	 *
+	 * @since 3.3
+	 */
+	public final static String APPEARANCE_JAVADOC_FONT= "descent.ui.javadocfont"; //$NON-NLS-1$
 
 	/**
 	 * A named preference that controls if prefix removal during setter/getter generation is turned on or off. 

@@ -1,5 +1,6 @@
 package descent.core.dom;
 
+import descent.core.IEvaluationResult;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.EnumMember;
@@ -15,7 +16,13 @@ public class VariableBinding extends JavaElementBasedBinding implements IVariabl
 		this.signature = signature;
 	}
 
-	public Object getConstantValue() {
+	public IEvaluationResult getConstantValue() {
+		if (node instanceof VarDeclaration) {
+			VarDeclaration var = (VarDeclaration) node;
+			if (var.isConst()) {
+				return bindingResolver.getEvaluator().evalInit(var.init);
+			}
+		}
 		// TODO Auto-generated method stub
 		return null;
 	}

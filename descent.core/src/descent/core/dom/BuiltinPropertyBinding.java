@@ -1,5 +1,6 @@
 package descent.core.dom;
 
+import descent.core.IEvaluationResult;
 import descent.core.IJavaElement;
 
 public class BuiltinPropertyBinding implements IVariableBinding {
@@ -18,7 +19,7 @@ public class BuiltinPropertyBinding implements IVariableBinding {
 		this.signature = signature;
 	}
 
-	public Object getConstantValue() {
+	public IEvaluationResult getConstantValue() {
 		// TODO Auto-generated method stub
 		return null;
 	}

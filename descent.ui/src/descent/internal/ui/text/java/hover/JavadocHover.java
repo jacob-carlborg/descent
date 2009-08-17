@@ -219,5 +219,36 @@ public class JavadocHover extends AbstractJavaEditorTextHover implements IInform
 		}
 		return buf.toString();
 	}
+	
+	public static void addImageAndLabel(StringBuffer buf, String imageName, int imageWidth, int imageHeight, int imageLeft, int imageTop, String label, int labelLeft, int labelTop) {
+
+		if (imageName != null) {
+			StringBuffer imageStyle= new StringBuffer("position: absolute; "); //$NON-NLS-1$
+			imageStyle.append("width: ").append(imageWidth).append("px; "); //$NON-NLS-1$ //$NON-NLS-2$
+			imageStyle.append("height: ").append(imageHeight).append("px; "); //$NON-NLS-1$ //$NON-NLS-2$
+			imageStyle.append("top: ").append(imageTop).append("px; "); //$NON-NLS-1$ //$NON-NLS-2$
+			imageStyle.append("left: ").append(imageLeft).append("px; "); //$NON-NLS-1$ //$NON-NLS-2$
+
+			buf.append("<!--[if lte IE 6]><![if gte IE 5.5]>\n"); //$NON-NLS-1$
+			buf.append("<span style=\"").append(imageStyle).append("filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='").append(imageName).append("')\"></span>\n"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			buf.append("<![endif]><![endif]-->\n"); //$NON-NLS-1$
+
+			buf.append("<!--[if !IE]>-->\n"); //$NON-NLS-1$
+			buf.append("<img style='").append(imageStyle).append("' src='").append(imageName).append("'/>\n"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			buf.append("<!--<![endif]-->\n"); //$NON-NLS-1$
+			buf.append("<!--[if gte IE 7]>\n"); //$NON-NLS-1$
+			buf.append("<img style='").append(imageStyle).append("' src='").append(imageName).append("'/>\n"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			buf.append("<![endif]-->\n"); //$NON-NLS-1$
+		}
+
+		buf.append("<div style='word-wrap:break-word;"); //$NON-NLS-1$
+		if (imageName != null) {
+			buf.append("margin-left: ").append(labelLeft).append("px; "); //$NON-NLS-1$ //$NON-NLS-2$
+			buf.append("margin-top: ").append(labelTop).append("px; "); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		buf.append("'>"); //$NON-NLS-1$
+		buf.append(label);
+		buf.append("</div>"); //$NON-NLS-1$
+	}
 
 }

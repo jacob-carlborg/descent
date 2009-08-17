@@ -267,6 +267,13 @@ public class JavaElementLabels {
 	public final static long USE_RESOLVED= 1L << 48;
 	
 	/**
+	 * Specifies to apply color styles to labels. This flag only applies to methods taking or returning a {@link StyledString}.
+	 *
+	 * @since 3.4
+	 */
+	public final static long COLORIZE= 1L << 55;
+	
+	/**
 	 * Prepend first category (if any) to field.
 	 * @since 3.2 
 	 */

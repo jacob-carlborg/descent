@@ -392,4 +392,9 @@ public final class ActionMessages extends NLS {
 	public static String GenerateBuildPathActionGroup_update_jar_text;
 	public static String GenerateBuildPathActionGroup_update_jar_description;
 	public static String GenerateBuildPathActionGroup_update_jar_tooltip;
+	
+	public static String OpenExternalBrowserAction_url_label;
+	public static String OpenExternalBrowserAction_url_toolTip;
+	public static String OpenExternalBrowserAction_javadoc_label;
+	public static String OpenExternalBrowserAction_javadoc_toolTip;
 }

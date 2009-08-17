@@ -15,6 +15,8 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DefaultLineTracker;
 import org.eclipse.jface.text.ILineTracker;
 import org.eclipse.jface.text.IRegion;
+import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.osgi.util.TextProcessor;
 
 import descent.core.IJavaProject;
 import descent.core.formatter.IndentManipulation;
@@ -26,6 +28,19 @@ import descent.core.formatter.IndentManipulation;
 public class Strings {
 	
 	private Strings(){}
+	
+	/**
+	 * Tells whether we have to use the {@link TextProcessor}
+	 * <p>
+	 * This is used for performance optimization.
+	 * </p>
+	 * @since 3.4
+	 */
+	private static final boolean USE_TEXT_PROCESSOR;
+	static {
+		String testString= "args : String[]"; //$NON-NLS-1$
+		USE_TEXT_PROCESSOR= testString != TextProcessor.process(testString);
+	}
 	
 	/**
 	 * tests if a char is lower case. Fix for 26529 
@@ -439,6 +454,98 @@ public class Strings {
 	 */
 	public static int computeIndentUnits(String line, IJavaProject project) {
 		return IndentManipulation.measureIndentUnits(line, CodeFormatterUtil.getTabWidth(project), CodeFormatterUtil.getIndentWidth(project));
+	}
+	
+	/**
+	 * Adds special marks so that that the given styled string is readable in a BIDI environment.
+	 *
+	 * @param styledString the styled string
+	 * @return the processed styled string
+	 * @since 3.4
+	 */
+	public static StyledString markLTR(StyledString styledString) {
+		
+		/*
+		 * NOTE: For performance reasons we do not call  markLTR(styledString, null)
+		 */
+		
+		if (!USE_TEXT_PROCESSOR)
+			return styledString;
+
+		String inputString= styledString.getString();
+		String string= TextProcessor.process(inputString);
+		if (string != inputString)
+			insertMarks(styledString, inputString, string);
+		return styledString;
+	}
+	
+	/**
+	 * Adds special marks so that that the given styled string is readable in a BIDI environment.
+	 *
+	 * @param styledString the styled string
+	 * @param additionalDelimiters the additional delimiters
+	 * @return the processed styled string
+	 * @since 3.4
+	 */
+	public static StyledString markLTR(StyledString styledString, String additionalDelimiters) {
+		if (!USE_TEXT_PROCESSOR)
+			return styledString;
+
+		String inputString= styledString.getString();
+		String string= TextProcessor.process(inputString, TextProcessor.getDefaultDelimiters() + additionalDelimiters);
+		if (string != inputString)
+			insertMarks(styledString, inputString, string);
+		return styledString;
+	}
+
+	/**
+	 * Inserts the marks into the given styled string.
+	 * 
+	 * @param styledString the styled string
+	 * @param originalString the original string
+	 * @param processedString the processed string
+	 * @since 3.5
+	 */
+	private static void insertMarks(StyledString styledString, String originalString, String processedString) {
+		int i= 0;
+		char orig= originalString.charAt(0);
+		int processedStringLength= originalString.length();
+		for (int processedIndex= 0; processedIndex < processedStringLength; processedIndex++) {
+			char processed= processedString.charAt(processedIndex);
+			if (orig == processed)
+				orig= originalString.charAt(++i);
+			else
+				styledString.insert(processed, processedIndex);
+		}
+	}
+
+	/**
+	 * Adds special marks so that that the given string is readable in a BIDI environment.
+	 *
+	 * @param string the string
+	 * @return the processed styled string
+	 * @since 3.4
+	 */
+	public static String markLTR(String string) {
+		if (!USE_TEXT_PROCESSOR)
+			return string;
+
+		return TextProcessor.process(string);
+	}
+
+	/**
+	 * Adds special marks so that that the given string is readable in a BIDI environment.
+	 *
+	 * @param string the string
+	 * @param additionalDelimiters the additional delimiters
+	 * @return the processed styled string
+	 * @since 3.4
+	 */
+	public static String markLTR(String string, String additionalDelimiters) {
+		if (!USE_TEXT_PROCESSOR)
+			return string;
+
+		return TextProcessor.process(string, TextProcessor.getDefaultDelimiters() + additionalDelimiters);
 	}
 	
 }

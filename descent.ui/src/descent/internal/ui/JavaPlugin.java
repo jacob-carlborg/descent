@@ -63,6 +63,7 @@ import descent.internal.ui.text.folding.JavaFoldingStructureProviderRegistry;
 import descent.internal.ui.text.java.ContentAssistHistory;
 import descent.internal.ui.text.java.hover.JavaEditorTextHoverDescriptor;
 import descent.internal.ui.viewsupport.ImageDescriptorRegistry;
+import descent.internal.ui.viewsupport.ImagesOnFileSystemRegistry;
 import descent.internal.ui.viewsupport.ProblemMarkerManager;
 import descent.ui.ICommonMenuConstants;
 import descent.ui.IContextMenuConstants;
@@ -199,6 +200,8 @@ public class JavaPlugin extends AbstractUIPlugin {
 	 * @since 3.2
 	 */
 	private ContentAssistHistory fContentAssistHistory;
+	
+	private ImagesOnFileSystemRegistry fImagesOnFSRegistry;
 
 	public static JavaPlugin getDefault() {
 		return fgJavaPlugin;
@@ -882,6 +885,19 @@ public class JavaPlugin extends AbstractUIPlugin {
 			section= dialogSettings.addNewSection(name);
 		}
 		return section;
+	}
+	
+	/**
+	 * Returns the image registry that keeps its images on the local file system.
+	 *
+	 * @return the image registry
+	 * @since 3.4
+	 */
+	public ImagesOnFileSystemRegistry getImagesOnFSRegistry() {
+		if (fImagesOnFSRegistry == null) {
+			fImagesOnFSRegistry= new ImagesOnFileSystemRegistry();
+		}
+		return fImagesOnFSRegistry;
 	}
 	
 	/**

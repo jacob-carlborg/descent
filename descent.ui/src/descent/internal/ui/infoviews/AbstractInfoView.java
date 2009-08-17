@@ -1,6 +1,15 @@
+/*******************************************************************************
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *     Genady Beryozkin <eclipse@genady.org> - [misc] Display values for constant fields in the Javadoc view - https://bugs.eclipse.org/bugs/show_bug.cgi?id=204914
+ *******************************************************************************/
 package descent.internal.ui.infoviews;
-
-import org.eclipse.core.runtime.IAdaptable;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -10,6 +19,11 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
+
+import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuListener;
@@ -35,12 +49,14 @@ import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.ViewPart;
+
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 
 import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
 import descent.core.ILocalVariable;
 import descent.core.IType;
+import descent.core.ITypeParameter;
 import descent.core.JavaModelException;
 
 import descent.ui.IContextMenuConstants;
@@ -55,7 +71,7 @@ import descent.internal.ui.util.SelectionUtil;
  *
  * @since 3.0
  */
-abstract class AbstractInfoView extends ViewPart implements ISelectionListener, IMenuListener, IPropertyChangeListener {
+public abstract class AbstractInfoView extends ViewPart implements ISelectionListener, IMenuListener, IPropertyChangeListener {
 
 
 	/** JavaElementLabels flags used for the title */
@@ -64,7 +80,8 @@ abstract class AbstractInfoView extends ViewPart implements ISelectionListener, 
 		| JavaElementLabels.F_PRE_TYPE_SIGNATURE | JavaElementLabels.M_PRE_TYPE_PARAMETERS | JavaElementLabels.T_TYPE_PARAMETERS
 		| JavaElementLabels.USE_RESOLVED;
 	private final long LOCAL_VARIABLE_TITLE_FLAGS= TITLE_FLAGS & ~JavaElementLabels.F_FULLY_QUALIFIED | JavaElementLabels.F_POST_QUALIFIED;
-	
+	private final long TYPE_PARAMETER_TITLE_FLAGS= TITLE_FLAGS /* | JavaElementLabels.TP_POST_QUALIFIED */;
+
 	/** JavaElementLabels flags used for the tool tip text */
 	private static final long TOOLTIP_LABEL_FLAGS= JavaElementLabels.DEFAULT_QUALIFIED | JavaElementLabels.ROOT_POST_QUALIFIED | JavaElementLabels.APPEND_ROOT_PATH |
 			JavaElementLabels.M_PARAMETER_TYPES | JavaElementLabels.M_PARAMETER_NAMES | JavaElementLabels.M_APP_RETURNTYPE | JavaElementLabels.M_EXCEPTIONS |
@@ -112,21 +129,38 @@ abstract class AbstractInfoView extends ViewPart implements ISelectionListener, 
 	private GotoInputAction fGotoInputAction;
 	/** Counts the number of background computation requests. */
 	private volatile int fComputeCount;
-	
+
+	/**
+	 * Progress monitor used to cancel pending computations.
+	 * @since 3.4
+	 */
+	private IProgressMonitor fComputeProgressMonitor;
+
 	/**
 	 * Background color.
 	 * @since 3.2
 	 */
 	private Color fBackgroundColor;
 	private RGB fBackgroundColorRGB;
-	
+
+	/**
+	 * True if linking with selection is enabled, false otherwise.
+	 * @since 3.4
+	 */
+	private boolean fLinking= true;
+
+	/**
+	 * The last selected element if linking was disabled.
+	 * @since 3.4
+	 */
+	private IJavaElement fLastSelection;
 
 	/**
 	 * Set the input of this view.
 	 *
 	 * @param input the input object
 	 */
-	abstract protected void setInput(Object input);
+	abstract protected void doSetInput(Object input);
 
 	/**
 	 * Computes the input for this view based on the given element.
@@ -135,6 +169,20 @@ abstract class AbstractInfoView extends ViewPart implements ISelectionListener, 
 	 * @return	the input or <code>null</code> if the input was not computed successfully
 	 */
 	abstract protected Object computeInput(Object element);
+
+	/**
+	 * Computes the input for this view based on the given elements
+	 *
+	 * @param part the part that triggered the current element update, or <code>null</code>
+	 * @param selection the new selection, or <code>null</code>
+	 * @param element the new java element that will be displayed
+	 * @param monitor a progress monitor
+	 * @return the input or <code>null</code> if the input was not computed successfully
+	 * @since 3.4
+	 */
+	protected Object computeInput(IWorkbenchPart part, ISelection selection, IJavaElement element, IProgressMonitor monitor) {
+		return computeInput(element);
+	}
 
 	/**
 	 * Create the part control.
@@ -215,6 +263,7 @@ abstract class AbstractInfoView extends ViewPart implements ISelectionListener, 
 	 * @see IMenuListener#menuAboutToShow(org.eclipse.jface.action.IMenuManager)
 	 */
 	public void menuAboutToShow(IMenuManager menu) {
+		menu.add(new Separator(IContextMenuConstants.GROUP_GOTO));
 		menu.add(new Separator(IContextMenuConstants.GROUP_OPEN));
 		menu.add(new Separator(ITextEditorActionConstants.GROUP_EDIT));
 		menu.add(new Separator(IContextMenuConstants.GROUP_ADDITIONS));
@@ -300,10 +349,10 @@ abstract class AbstractInfoView extends ViewPart implements ISelectionListener, 
 			return;
 
 		setForeground(display.getSystemColor(SWT.COLOR_INFO_FOREGROUND));
-		
+
 		ColorRegistry registry= JFaceResources.getColorRegistry();
 		registry.addListener(this);
-		
+
 		fBackgroundColorRGB= registry.getRGB(getBackgroundColorKey());
 		Color bgColor;
 		if (fBackgroundColorRGB == null) {
@@ -313,18 +362,18 @@ abstract class AbstractInfoView extends ViewPart implements ISelectionListener, 
 			bgColor= new Color(display, fBackgroundColorRGB);
 			fBackgroundColor= bgColor;
 		}
-		
+
 		setBackground(bgColor);
 	}
-	
+
 	/**
 	 * The preference key for the background color.
-	 * 
+	 *
 	 * @return the background color key
 	 * @since 3.2
 	 */
 	abstract protected String getBackgroundColorKey();
-	
+
 	public void propertyChange(PropertyChangeEvent event) {
 		if (getBackgroundColorKey().equals(event.getProperty()))
 			inititalizeColors();
@@ -344,6 +393,30 @@ abstract class AbstractInfoView extends ViewPart implements ISelectionListener, 
 		getSite().getPage().removePostSelectionListener(this);
 	}
 
+	/**
+	 * Sets whether this info view reacts to selection
+	 * changes in the workbench.
+	 *
+	 * @param enabled if true then the input is set on selection changes
+	 */
+	protected void setLinkingEnabled(boolean enabled) {
+		fLinking= enabled;
+
+		if (fLinking && fLastSelection != null) {
+			setInput(fLastSelection);
+		}
+	}
+
+	/**
+	 * Returns whether this info view reacts to selection
+	 * changes in the workbench.
+	 *
+	 * @return true if linking with selection is enabled
+	 */
+	protected boolean isLinkingEnabled() {
+		return fLinking;
+	}
+
 	/*
 	 * @see ISelectionListener#selectionChanged(org.eclipse.ui.IWorkbenchPart, org.eclipse.jface.viewers.ISelection)
 	 */
@@ -351,14 +424,22 @@ abstract class AbstractInfoView extends ViewPart implements ISelectionListener, 
 		if (part.equals(this))
 			return;
 
-		computeAndSetInput(part);
+		if (!fLinking) {
+			IJavaElement javaElement= findSelectedJavaElement(part, selection);
+			if (javaElement != null)
+				fLastSelection= javaElement;
+		} else {
+			fLastSelection= null;
+			computeAndSetInput(part);
+		}
 	}
 
 	/**
 	 * Tells whether the new input should be ignored
 	 * if the current input is the same.
 	 *
-	 * @param je the new input
+	 * @param je the new input, may be <code>null</code>
+	 * @param part the workbench part
 	 * @param selection the current selection from the part that provides the input
 	 * @return <code>true</code> if the new input should be ignored
 	 */
@@ -443,9 +524,11 @@ abstract class AbstractInfoView extends ViewPart implements ISelectionListener, 
 	/*
 	 * @see IWorkbenchPart#dispose()
 	 */
-	final public void dispose() {
+	public final void dispose() {
 		// cancel possible running computation
 		fComputeCount++;
+		if (fComputeProgressMonitor != null)
+			fComputeProgressMonitor.setCanceled(true);
 
 		getSite().getWorkbenchWindow().getPartService().removePartListener(fPartListener);
 
@@ -459,7 +542,7 @@ abstract class AbstractInfoView extends ViewPart implements ISelectionListener, 
 			fBackgroundColor.dispose();
 			fBackgroundColor= null;
 		}
-		
+
 		internalDispose();
 
 	}
@@ -476,31 +559,69 @@ abstract class AbstractInfoView extends ViewPart implements ISelectionListener, 
 	 * @param part the workbench part
 	 */
 	private void computeAndSetInput(final IWorkbenchPart part) {
+		computeAndDoSetInput(part, null);
+	}
+
+	/**
+	 * Sets the input for this view.
+	 *
+	 * @param element the java element
+	 */
+	public final void setInput(final IJavaElement element) {
+		computeAndDoSetInput(null, element);
+	}
+
+	/**
+	 * Determines all necessary details and delegates the computation into
+	 * a background thread. One of part or element must be non-null.
+	 *
+	 * @param part the workbench part, or <code>null</code> if <code>element</code> not <code>null</code>
+	 * @param element the java element, or <code>null</code> if <code>part</code> not <code>null</code>
+	 */
+	private void computeAndDoSetInput(final IWorkbenchPart part, final IJavaElement element) {
+		Assert.isLegal(part != null || element != null);
 
 		final int currentCount= ++fComputeCount;
 
-		ISelectionProvider provider= part.getSite().getSelectionProvider();
-		if (provider == null)
-			return;
+		final ISelection selection;
+		if (element != null)
+			selection= null;
+		else {
+			ISelectionProvider provider= part.getSite().getSelectionProvider();
+			if (provider == null)
+				return;
 
-		final ISelection selection= provider.getSelection();
-		if (selection == null || selection.isEmpty())
-			return;
+			selection= provider.getSelection();
+			if (selection == null || selection.isEmpty())
+				return;
+		}
+
+		if (fComputeProgressMonitor != null)
+			fComputeProgressMonitor.setCanceled(true);
+		final IProgressMonitor computeProgressMonitor= new NullProgressMonitor();
+		fComputeProgressMonitor= computeProgressMonitor;
 
 		Thread thread= new Thread("Info view input computer") { //$NON-NLS-1$
 			public void run() {
 				if (currentCount != fComputeCount)
 					return;
 
-				final IJavaElement je= findSelectedJavaElement(part, selection);
+				final IJavaElement je;
+				if (element != null)
+					je= element;
+				else {
+					je= findSelectedJavaElement(part, selection);
+					if (isIgnoringNewInput(je, part, selection))
+						return;
+				}
 
-				if (isIgnoringNewInput(je, part, selection))
-					return;
 
 				// The actual computation
-				final Object input= computeInput(je);
+				final Object input= computeInput(part, selection, je, computeProgressMonitor);
 				if (input == null)
 					return;
+
+				final String description= computeDescription(part, selection, je, computeProgressMonitor);
 
 				Shell shell= getSite().getShell();
 				if (shell.isDisposed())
@@ -520,7 +641,9 @@ abstract class AbstractInfoView extends ViewPart implements ISelectionListener, 
 							return;
 
 						fCurrentViewInput= je;
-						doSetInput(input);
+						doSetInput(input, description);
+
+						fComputeProgressMonitor= null;
 					}
 				});
 			}
@@ -531,19 +654,36 @@ abstract class AbstractInfoView extends ViewPart implements ISelectionListener, 
 		thread.start();
 	}
 
-	private void doSetInput(Object input) {
-		setInput(input);
+	/**
+	 * Computes the contents description that will be displayed for the current element.
+	 *
+	 * @param part the part that triggered the current element update, or <code>null</code>
+	 * @param selection the new selection, or <code>null</code>
+	 * @param inputElement the new java element that will be displayed
+	 * @param localASTMonitor a progress monitor
+	 * @return the contents description for the provided <code>inputElement</code>
+	 * @since 3.4
+	 */
+	protected String computeDescription(IWorkbenchPart part, ISelection selection, IJavaElement inputElement, IProgressMonitor localASTMonitor) {
+		long flags;
+		if (inputElement instanceof ILocalVariable)
+			flags= LOCAL_VARIABLE_TITLE_FLAGS;
+		else if (inputElement instanceof ITypeParameter)
+			flags= TYPE_PARAMETER_TITLE_FLAGS;
+		else
+			flags= TITLE_FLAGS;
+
+		return JavaElementLabels.getElementLabel(inputElement, flags);
+	}
+
+	private void doSetInput(Object input, String description) {
+		doSetInput(input);
 
 		fGotoInputAction.setEnabled(true);
 
-		long flags;
-		
-		if (getInput() instanceof ILocalVariable)
-			flags= LOCAL_VARIABLE_TITLE_FLAGS;
-		else
-			flags= TITLE_FLAGS;
-		
-		setContentDescription(JavaElementLabels.getElementLabel(getInput(), flags));
-		setTitleToolTip(JavaElementLabels.getElementLabel(getInput(), TOOLTIP_LABEL_FLAGS));
+		IJavaElement inputElement= getInput();
+
+		setContentDescription(description);
+		setTitleToolTip(JavaElementLabels.getElementLabel(inputElement, TOOLTIP_LABEL_FLAGS));
 	}
 }

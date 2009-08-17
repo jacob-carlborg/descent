@@ -46,6 +46,7 @@ import descent.internal.compiler.parser.TypeTuple;
 import descent.internal.compiler.parser.TypedefDeclaration;
 import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.compiler.parser.VarExp;
+import descent.internal.core.Evaluator;
 import descent.internal.core.InternalSignature;
 import descent.internal.core.util.Util;
 
@@ -108,6 +109,7 @@ class DefaultBindingResolver extends BindingResolver {
 	final InternalSignature internalSignature;
 
 	final SemanticContext context;
+	final Evaluator evaluator;
 	
 	final int apiLevel;
 
@@ -124,6 +126,7 @@ class DefaultBindingResolver extends BindingResolver {
 		this.newAstToOldAst = new HashMap();
 		this.internalSignature = new InternalSignature(javaProject);
 		this.apiLevel = context == null ? (javaProject == null ? AST.D2 : javaProject.getApiLevel()) : context.apiLevel;
+		this.evaluator = new Evaluator(javaProject, context);
 		
 //		try {
 //			this.environment = new SearchableEnvironment(
@@ -132,6 +135,10 @@ class DefaultBindingResolver extends BindingResolver {
 //			Util.log(e);
 //			throw new RuntimeException(e);
 //		}
+	}
+	
+	final Evaluator getEvaluator() {
+		return evaluator;
 	}
 
 	@Override
