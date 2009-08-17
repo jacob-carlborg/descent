@@ -19,6 +19,7 @@ import descent.core.IClassFile;
 import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
+import descent.core.ITypeRoot;
 import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
@@ -164,7 +165,7 @@ public class ASTParser {
     /**
      * Java mode compilation unit supplying the source.
      */
-    private ICompilationUnit compilationUnitSource = null;
+    private ITypeRoot source = null;
     
     /**
      * Java model class file supplying the source.
@@ -228,7 +229,7 @@ public class ASTParser {
 		/* TODO JDT binary 
 		this.classFileSource = null;
 		*/
-		this.compilationUnitSource = null;
+		this.source = null;
 		this.resolveBindings = false;
 		this.sourceLength = -1;
 		this.sourceOffset = 0;
@@ -469,7 +470,7 @@ public class ASTParser {
 	public void setSource(char[] source) {
 		this.rawSource = source;
 		// clear the others
-		this.compilationUnitSource = null;
+		this.source = null;
 		/* TODO JDT binary 
 		this.classFileSource = null;
 		*/
@@ -484,8 +485,8 @@ public class ASTParser {
 	 * @param source the Java model compilation unit whose source code
      * is to be parsed, or <code>null</code> if none
       */
-	public void setSource(ICompilationUnit source) {
-		this.compilationUnitSource = source;
+	public void setSource(ITypeRoot source) {
+		this.source = source;
 		// clear the others
 		this.rawSource = null;
 		/* TODO JDT binary 
@@ -647,7 +648,7 @@ public class ASTParser {
 	    if (monitor != null) monitor.beginTask("", 1); //$NON-NLS-1$
 		try {
 			if ((this.rawSource == null)
-		   	  && (this.compilationUnitSource == null)
+		   	  && (this.source == null)
 		   	  /*&& (this.classFileSource == null)*/) {
 		   	  throw new IllegalStateException("source not specified"); //$NON-NLS-1$
 		   }
@@ -812,14 +813,14 @@ public class ASTParser {
 		case K_COMPILATION_UNIT :
 			ParseResult result = null;
 			descent.internal.compiler.env.ICompilationUnit sourceUnit = null;
-			IJavaElement element = null;
-			if (this.compilationUnitSource != null) {
-				sourceUnit = (descent.internal.compiler.env.ICompilationUnit) this.compilationUnitSource;
+			ITypeRoot typeRoot = null;
+			if (this.source != null) {
+				sourceUnit = (descent.internal.compiler.env.ICompilationUnit) this.source;
 				// use a BasicCompilation that caches the source instead of using the compilationUnitSource directly 
 				// (if it is a working copy, the source can change between the parse and the AST convertion)
 				// (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=75632)
 				sourceUnit = new BasicCompilationUnit(sourceUnit.getContents(), sourceUnit.getPackageName(), sourceUnit.getFullyQualifiedName(), new String(sourceUnit.getFileName()), this.project);
-				element = this.compilationUnitSource;
+				typeRoot = this.source;
 			/* TODO JDT binary
 			} else if (this.classFileSource != null) {
 				try {
@@ -899,12 +900,12 @@ public class ASTParser {
 			AST ast = AST.newAST(this.apiLevel);
 			CompilationUnit unit;
 			if (needToResolveBindings) {
-				unit = CompilationUnitResolver.convert(ast, result, compilationUnitSource.getJavaProject(), compilationUnitSource, compilationUnitSource.getOwner(), monitor);	
+				unit = CompilationUnitResolver.convert(ast, result, source.getJavaProject(), source, ((ICompilationUnit) source).getOwner(), monitor);	
 			} else {
 				unit = CompilationUnitResolver.convert(ast, result, null, null, null, monitor);
 			}
 			
-			unit.setJavaElement(element);
+			unit.setTypeRoot(typeRoot);
 			return unit;
 		}		
 		throw new IllegalStateException();

@@ -131,7 +131,7 @@ public class RefactoringASTParser {
 	public static ICompilationUnit getCompilationUnit(ASTNode node) {
 		ASTNode root= node.getRoot();
 		if (root instanceof CompilationUnit) {
-			IJavaElement cu= ((CompilationUnit) root).getJavaElement();
+			IJavaElement cu= ((CompilationUnit) root).getTypeRoot();
 			if (cu instanceof ICompilationUnit)
 				return (ICompilationUnit) cu;
 		}

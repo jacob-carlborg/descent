@@ -947,6 +947,9 @@ public ICompilationUnit getWorkingCopy(WorkingCopyOwner workingCopyOwner, IProbl
 	op.runOperation(monitor);
 	return workingCopy;
 }
+public ICompilationUnit getWorkingCopy(WorkingCopyOwner workingCopyOwner, IProgressMonitor monitor) throws JavaModelException {
+	return getWorkingCopy(workingCopyOwner, null, monitor);
+}
 /**
  * @see Openable#hasBuffer()
  */

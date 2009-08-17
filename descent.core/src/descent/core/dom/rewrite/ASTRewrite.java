@@ -232,10 +232,10 @@ public class ASTRewrite {
 			throw new IllegalArgumentException("This API can only be used if the AST is created from a compilation unit"); //$NON-NLS-1$
 		}
 		CompilationUnit astRoot= (CompilationUnit) root;
-		if (!(astRoot.getJavaElement() instanceof ICompilationUnit)) {
+		if (!(astRoot.getTypeRoot() instanceof ICompilationUnit)) {
 			throw new IllegalArgumentException("This API can only be used if the AST is created from a compilation unit"); //$NON-NLS-1$
 		}
-		ICompilationUnit cu= (ICompilationUnit) astRoot.getJavaElement();
+		ICompilationUnit cu= (ICompilationUnit) astRoot.getTypeRoot();
 		
 		char[] content= cu.getBuffer().getCharacters();
 		LineInformation lineInfo= LineInformation.create(astRoot);

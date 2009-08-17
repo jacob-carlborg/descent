@@ -18,6 +18,7 @@ import descent.core.ICompilationUnit;
 import descent.core.IJavaProject;
 import descent.core.IPackageFragmentRoot;
 import descent.core.IProblemRequestor;
+import descent.core.ITypeRoot;
 import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
@@ -550,7 +551,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		}
 	}
 	
-	public static CompilationUnit convert(AST ast, ParseResult parseResult, IJavaProject project, ICompilationUnit unit, WorkingCopyOwner owner, IProgressMonitor monitor) {
+	public static CompilationUnit convert(AST ast, ParseResult parseResult, IJavaProject project, ITypeRoot unit, WorkingCopyOwner owner, IProgressMonitor monitor) {
 		int savedDefaultNodeFlag = ast.getDefaultNodeFlag();
 		ast.setDefaultNodeFlag(ASTNode.ORIGINAL);
 		

@@ -92,7 +92,7 @@ public class BreakContinueTargetFinder extends ASTVisitor {
 	/* Returns contents or <code>null</code> if there's trouble. */
 	private String getContents(CompilationUnit root) {
 		try {
-			IJavaElement rootElem= root.getJavaElement();
+			IJavaElement rootElem= root.getTypeRoot();
 			if ((rootElem instanceof ISourceReference))
 				return ((ISourceReference)rootElem).getSource();
 			else

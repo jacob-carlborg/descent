@@ -108,7 +108,7 @@ public class CompileTimeASTConverter {
 		this.module = module;
 		
 		CompilationUnit unit = new CompilationUnit(ast);
-		unit.setJavaElement(cu);
+		unit.setTypeRoot(cu);
 		
 		if (module.comments != null) {
 			moduleComments = convertComments(module.comments);

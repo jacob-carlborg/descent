@@ -9,7 +9,7 @@ import java.util.Map;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.text.edits.TextEdit;
 
-import descent.core.IJavaElement;
+import descent.core.ITypeRoot;
 import descent.core.compiler.IProblem;
 
 /**
@@ -77,7 +77,7 @@ public class CompilationUnit extends ASTNode {
 	 * this compilation unit was created from, or <code>null</code> if it was not created from a Java element.
 	 * @since 3.1
 	 */
-	private IJavaElement element = null;
+	private ITypeRoot typeRoot = null;
 
 	/**
 	 * The moduleDeclaration.
@@ -683,11 +683,11 @@ public class CompilationUnit extends ASTNode {
 	 * Sets the Java element (an <code>descent.core.ICompilationUnit</code> or an <code>descent.core.IClassFile</code>) 
 	 * this compilation unit was created from, or <code>null</code> if it was not created from a Java element.
 	 * 
-	 * @param element the Java element this compilation unit was created from
+	 * @param typeRoot the Java element this compilation unit was created from
 	 * @since 3.1
 	 */
-	void setJavaElement(IJavaElement element) {
-		this.element = element;
+	void setTypeRoot(ITypeRoot typeRoot) {
+		this.typeRoot = typeRoot;
 	}
 	
 	/**
@@ -697,8 +697,8 @@ public class CompilationUnit extends ASTNode {
 	 * @return the Java element this compilation unit was created from, or <code>null</code> if none
 	 * @since 3.1
 	 */
-	public IJavaElement getJavaElement() {
-		return this.element;
+	public ITypeRoot getTypeRoot() {
+		return this.typeRoot;
 	}
 	
 	/**
