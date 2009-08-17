@@ -75,6 +75,7 @@ import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.IAnnotationHoverExtension;
 import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.text.source.IAnnotationModelExtension;
+import org.eclipse.jface.text.source.IAnnotationModelExtension2;
 import org.eclipse.jface.text.source.ICharacterPairMatcher;
 import org.eclipse.jface.text.source.ILineRange;
 import org.eclipse.jface.text.source.IOverviewRuler;
@@ -842,9 +843,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 				if ("org.eclipse.jface.text.source.projection.ProjectionAnnotationHover".equals(annotationHover.getClass().getName())) { //$NON-NLS-1$
 					controlCreator= new IInformationControlCreator() {
 						public IInformationControl createInformationControl(Shell shell) {
-							int shellStyle= SWT.RESIZE | SWT.TOOL | getOrientation();
-							int style= SWT.V_SCROLL | SWT.H_SCROLL;
-							return new SourceViewerInformationControl(shell, shellStyle, style);
+							return new SourceViewerInformationControl(shell, true, getOrientation(), EditorsUI.getTooltipAffordanceString());
 						}
 					};
 					
@@ -1823,7 +1822,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 		fProjectionSupport.addSummarizableAnnotationType("org.eclipse.ui.workbench.texteditor.warning"); //$NON-NLS-1$
 		fProjectionSupport.setHoverControlCreator(new IInformationControlCreator() {
 			public IInformationControl createInformationControl(Shell shell) {
-				return new SourceViewerInformationControl(shell, SWT.TOOL | SWT.NO_TRIM | getOrientation(), SWT.NONE);
+				return new SourceViewerInformationControl(shell, true, getOrientation(), EditorsUI.getTooltipAffordanceString());
 			}
 		});
 		fProjectionSupport.install();
@@ -3510,7 +3509,10 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 		int distance= Integer.MAX_VALUE;
 
 		IAnnotationModel model= getDocumentProvider().getAnnotationModel(getEditorInput());
-		Iterator e= new JavaAnnotationIterator(model, true, true);
+		if (model == null)
+			return null;
+
+		Iterator e= new JavaAnnotationIterator(model.getAnnotationIterator(), true);
 		while (e.hasNext()) {
 			Annotation a= (Annotation) e.next();
 			if ((a instanceof IJavaAnnotation) && ((IJavaAnnotation)a).hasOverlay() || !isNavigationTarget(a))
@@ -3575,7 +3577,16 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	 */
 	private Annotation getAnnotation(int offset, int length) {
 		IAnnotationModel model= getDocumentProvider().getAnnotationModel(getEditorInput());
-		Iterator e= new JavaAnnotationIterator(model, true, false);
+		if (model == null)
+			return null;
+
+		Iterator parent;
+		if (model instanceof IAnnotationModelExtension2)
+			parent= ((IAnnotationModelExtension2)model).getAnnotationIterator(offset, length, true, true);
+		else
+			parent= model.getAnnotationIterator();
+
+		Iterator e= new JavaAnnotationIterator(parent, false);
 		while (e.hasNext()) {
 			Annotation a= (Annotation) e.next();
 			Position p= model.getPosition(a);

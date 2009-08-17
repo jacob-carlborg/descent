@@ -2,6 +2,7 @@ package descent.ui.text.java;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.Image;
 
 import descent.internal.ui.text.java.JavaCompletionProposal;
@@ -9,6 +10,11 @@ import descent.internal.ui.text.java.JavaCompletionProposal;
 public class PackageCompletionProposal extends JavaCompletionProposal {
 
 	public PackageCompletionProposal(String replacementString, int replacementOffset, int replacementLength, Image image, String displayString, int relevance) {
+		super(replacementString, replacementOffset, replacementLength, image,
+				displayString, relevance);
+	}
+	
+	public PackageCompletionProposal(String replacementString, int replacementOffset, int replacementLength, Image image, StyledString displayString, int relevance) {
 		super(replacementString, replacementOffset, replacementLength, image,
 				displayString, relevance);
 	}

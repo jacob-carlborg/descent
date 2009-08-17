@@ -12,6 +12,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.text.edits.TextEdit;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.part.IWorkbenchPartOrientation;
 
 import descent.core.ICodeAssist;
@@ -20,14 +21,19 @@ import descent.core.JavaModelException;
 import descent.core.ToolFactory;
 import descent.core.dom.CompilationUnit;
 import descent.core.formatter.CodeFormatter;
+import descent.internal.ui.JavaPlugin;
 
 public class JavaEvaluateHover extends AbstractJavaEditorTextHover implements
 		ITextHoverExtension, IInformationProviderExtension2 {
 
 	private IEvaluationResult result;
+	
+	public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion) {
+		return getHoverInfo2(textViewer, hoverRegion);
+	}
 
 	@Override
-	public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion) {
+	public String getHoverInfo2(ITextViewer textViewer, IRegion hoverRegion) {
 		ICodeAssist resolve = getCodeAssist();
 		if (resolve != null) {
 			try {
@@ -124,25 +130,15 @@ public class JavaEvaluateHover extends AbstractJavaEditorTextHover implements
 	 * @since 3.0
 	 */
 	public IInformationControlCreator getHoverControlCreator() {
-		if (result == null) {
-			return new AbstractReusableInformationControlCreator() {
-				public IInformationControl doCreateInformationControl(Shell parent) {
-					return new BrowserInformationControl(parent, SWT.NO_TRIM | SWT.TOOL, SWT.NONE, null);
-				}
-			};
-		} else {
-			return new IInformationControlCreator() {
-				public IInformationControl createInformationControl(Shell parent) {
-					IEditorPart editor = getEditor();
-					int shellStyle = SWT.TOOL | SWT.NO_TRIM;
-					if (editor instanceof IWorkbenchPartOrientation)
-						shellStyle |= ((IWorkbenchPartOrientation) editor)
-								.getOrientation();
-					return new SourceViewerInformationControl(parent,
-							shellStyle, SWT.NONE, getTooltipAffordanceString());
-				}
-			};
-		}
+		return new IInformationControlCreator() {
+			public IInformationControl createInformationControl(Shell parent) {
+				IEditorPart editor= getEditor();
+				int orientation= SWT.NONE;
+				if (editor instanceof IWorkbenchPartOrientation)
+					orientation= ((IWorkbenchPartOrientation) editor).getOrientation();
+				return new SourceViewerInformationControl(parent, false, orientation, EditorsUI.getTooltipAffordanceString());
+			}
+		};
 	}
 
 	/*
@@ -150,26 +146,15 @@ public class JavaEvaluateHover extends AbstractJavaEditorTextHover implements
 	 * @since 3.0
 	 */
 	public IInformationControlCreator getInformationPresenterControlCreator() {
-		if (result == null) {
-			return new AbstractReusableInformationControlCreator() {
-				public IInformationControl doCreateInformationControl(Shell parent) {
-					return new BrowserInformationControl(parent, SWT.NO_TRIM | SWT.TOOL, SWT.NONE, null);
-				}
-			};
-		} else {
-			return new IInformationControlCreator() {
-				public IInformationControl createInformationControl(Shell parent) {
-					int style = SWT.V_SCROLL | SWT.H_SCROLL;
-					int shellStyle = SWT.RESIZE | SWT.TOOL;
-					IEditorPart editor = getEditor();
-					if (editor instanceof IWorkbenchPartOrientation)
-						shellStyle |= ((IWorkbenchPartOrientation) editor)
-								.getOrientation();
-					return new SourceViewerInformationControl(parent,
-							shellStyle, style);
-				}
-			};
-		}
+		return new IInformationControlCreator() {
+			public IInformationControl createInformationControl(Shell parent) {
+				IEditorPart editor= getEditor();
+				int orientation= SWT.NONE;
+				if (editor instanceof IWorkbenchPartOrientation)
+					orientation= ((IWorkbenchPartOrientation) editor).getOrientation();
+				return new SourceViewerInformationControl(parent, true, orientation, EditorsUI.getTooltipAffordanceString());
+			}
+		};
 	}
 
 }

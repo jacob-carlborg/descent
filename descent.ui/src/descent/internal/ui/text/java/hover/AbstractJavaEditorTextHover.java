@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,60 +7,49 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Brock Janiczak <brockj@tpg.com.au> - [implementation] Streams not being closed in Javadoc views - https://bugs.eclipse.org/bugs/show_bug.cgi?id=214854
  *******************************************************************************/
 package descent.internal.ui.text.java.hover;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
 
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.Platform;
+
+import org.eclipse.swt.widgets.Shell;
+
 import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextHoverExtension;
+import org.eclipse.jface.text.ITextHoverExtension2;
 import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Shell;
+
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.keys.IBindingService;
-import org.osgi.framework.Bundle;
+
+import org.eclipse.ui.editors.text.EditorsUI;
 
 import descent.core.ICodeAssist;
 import descent.core.IJavaElement;
+import descent.core.ITypeRoot;
 import descent.core.JavaModelException;
-import descent.internal.corext.util.Messages;
-import descent.internal.ui.JavaPlugin;
-import descent.internal.ui.infoviews.JavadocViewHelper;
-import descent.internal.ui.javaeditor.WorkingCopyManager;
-import descent.internal.ui.text.HTMLTextPresenter;
-import descent.internal.ui.text.JavaWordFinder;
-import descent.ui.PreferenceConstants;
-import descent.ui.actions.IJavaEditorActionDefinitionIds;
+
+import descent.ui.JavaUI;
 import descent.ui.text.java.hover.IJavaEditorTextHover;
+
+import descent.internal.ui.JavaPlugin;
+import descent.internal.ui.javaeditor.IClassFileEditorInput;
+import descent.internal.ui.javaeditor.WorkingCopyManager;
+import descent.internal.ui.text.JavaWordFinder;
+
+
 
 /**
  * Abstract class for providing hover information for Java elements.
  *
  * @since 2.1
  */
-public abstract class AbstractJavaEditorTextHover implements IJavaEditorTextHover, ITextHoverExtension {
-
-	/**
-	 * The style sheet (css).
-	 * @since 3.2
-	 */
-	private static String fgStyleSheet;
+public abstract class AbstractJavaEditorTextHover implements IJavaEditorTextHover, ITextHoverExtension, ITextHoverExtension2 {
 	private IEditorPart fEditor;
-	private IBindingService fBindingService;
-	{
-		fBindingService= (IBindingService)PlatformUI.getWorkbench().getAdapter(IBindingService.class);
-	}
 
 	/*
 	 * @see IJavaEditorTextHover#setEditor(IEditorPart)
@@ -76,18 +65,24 @@ public abstract class AbstractJavaEditorTextHover implements IJavaEditorTextHove
 	protected ICodeAssist getCodeAssist() {
 		if (fEditor != null) {
 			IEditorInput input= fEditor.getEditorInput();
-			/* TODO JDT binary
 			if (input instanceof IClassFileEditorInput) {
 				IClassFileEditorInput cfeInput= (IClassFileEditorInput) input;
 				return cfeInput.getClassFile();
 			}
-			*/
 
 			WorkingCopyManager manager= JavaPlugin.getDefault().getWorkingCopyManager();
 			return manager.getWorkingCopy(input, false);
 		}
 
 		return null;
+	}
+
+    /*
+	 * @see org.eclipse.jface.text.ITextHoverExtension2#getHoverInfo2(org.eclipse.jface.text.ITextViewer, org.eclipse.jface.text.IRegion)
+	 * @since 3.4
+	 */
+	public Object getHoverInfo2(ITextViewer textViewer, IRegion hoverRegion) {
+		return getHoverInfo(textViewer, hoverRegion);
 	}
 
 	/*
@@ -97,11 +92,15 @@ public abstract class AbstractJavaEditorTextHover implements IJavaEditorTextHove
 		return JavaWordFinder.findWord(textViewer.getDocument(), offset);
 	}
 
-	/*
-	 * @see ITextHover#getHoverInfo(ITextViewer, IRegion)
+	/**
+	 * Returns the Java elements at the given hover region.
+	 *
+	 * @param textViewer the text viewer
+	 * @param hoverRegion the hover region
+	 * @return the array with the Java elements or <code>null</code>
+	 * @since 3.4
 	 */
-	public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion) {
-		
+	protected IJavaElement[] getJavaElementsAt(ITextViewer textViewer, IRegion hoverRegion) {
 		/*
 		 * The region should be a word region an not of length 0.
 		 * This check is needed because codeSelect(...) also finds
@@ -109,36 +108,15 @@ public abstract class AbstractJavaEditorTextHover implements IJavaEditorTextHove
 		 */
 		if (hoverRegion.getLength() == 0)
 			return null;
-		
+
 		ICodeAssist resolve= getCodeAssist();
 		if (resolve != null) {
 			try {
-				IJavaElement[] result= resolve.codeSelect(hoverRegion.getOffset(), hoverRegion.getLength());
-				if (result == null)
-					return null;
-
-				int nResults= result.length;
-				if (nResults == 0)
-					return null;
-
-				return getHoverInfo(result);
-
+				return resolve.codeSelect(hoverRegion.getOffset(), hoverRegion.getLength());
 			} catch (JavaModelException x) {
 				return null;
 			}
 		}
-		
-		return null;
-	}
-
-	/**
-	 * Provides hover information for the given Java elements.
-	 *
-	 * @param javaElements the Java elements for which to provide hover information
-	 * @return the hover information string
-	 * @since 2.1
-	 */
-	protected String getHoverInfo(IJavaElement[] javaElements) {
 		return null;
 	}
 
@@ -149,59 +127,27 @@ public abstract class AbstractJavaEditorTextHover implements IJavaEditorTextHove
 	public IInformationControlCreator getHoverControlCreator() {
 		return new IInformationControlCreator() {
 			public IInformationControl createInformationControl(Shell parent) {
-				return new DefaultInformationControl(parent, SWT.NONE, new HTMLTextPresenter(true), getTooltipAffordanceString());
+				return new DefaultInformationControl(parent, EditorsUI.getTooltipAffordanceString());
 			}
 		};
 	}
 
-	/**
-	 * Returns the tool tip affordance string.
-	 *
-	 * @return the affordance string or <code>null</code> if disabled or no key binding is defined
-	 * @since 3.0
+	/*
+	 * @see org.eclipse.jface.text.ITextHoverExtension2#getInformationPresenterControlCreator()
+	 * @since 3.4
 	 */
-	protected String getTooltipAffordanceString() {
-		if (fBindingService == null || !JavaPlugin.getDefault().getPreferenceStore().getBoolean(PreferenceConstants.EDITOR_SHOW_TEXT_HOVER_AFFORDANCE))
-			return null;
-
-		String keySequence= fBindingService.getBestActiveBindingFormattedFor(IJavaEditorActionDefinitionIds.SHOW_JAVADOC);
-		if (keySequence == null)
-			return null;
-		
-		return Messages.format(JavaHoverMessages.JavaTextHover_makeStickyHint, keySequence == null ? "" : keySequence); //$NON-NLS-1$
-	}
-
-	/**
-	 * Returns the style sheet.
-	 *
-	 * @since 3.2
-	 */
-	protected static String getStyleSheet() {
-		if (fgStyleSheet == null) {
-			Bundle bundle= Platform.getBundle(JavaPlugin.getPluginId());
-			URL styleSheetURL= bundle.getEntry("/JavadocHoverStyleSheet.css"); //$NON-NLS-1$
-			if (styleSheetURL != null) {
-				try {
-					styleSheetURL= FileLocator.toFileURL(styleSheetURL);
-					BufferedReader reader= new BufferedReader(new InputStreamReader(styleSheetURL.openStream()));
-					StringBuffer buffer= new StringBuffer(200);
-					String line= reader.readLine();
-					while (line != null) {
-						buffer.append(line);
-						buffer.append('\n');
-						line= reader.readLine();
-					}
-					
-					JavadocViewHelper.addPreferencesFontsAndColorsToStyleSheet(buffer);
-					
-					fgStyleSheet= buffer.toString();
-				} catch (IOException ex) {
-					JavaPlugin.log(ex);
-					fgStyleSheet= ""; //$NON-NLS-1$
-				}
+	public IInformationControlCreator getInformationPresenterControlCreator() {
+		return new IInformationControlCreator() {
+			public IInformationControl createInformationControl(Shell shell) {
+				return new DefaultInformationControl(shell, true);
 			}
-		}
-		return fgStyleSheet;
+		};
 	}
-	
+
+	protected ITypeRoot getEditorInputJavaElement() {
+		IEditorPart editor= getEditor();
+		if (editor != null)
+			return JavaUI.getEditorInputTypeRoot(editor.getEditorInput());
+		return null;
+	}
 }

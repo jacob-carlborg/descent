@@ -23,11 +23,22 @@ final class JavaHoverMessages extends NLS {
 		// Do not instantiate
 	}
 
+	public static String JavadocHover_back;
+	public static String JavadocHover_back_toElement_toolTip;
+	public static String JavadocHover_back_toolTip;
+	public static String JavadocHover_forward;
+	public static String JavadocHover_forward_toElement_toolTip;
+	public static String JavadocHover_forward_toolTip;
+	public static String JavadocHover_showInJavadoc;
+	public static String JavadocHover_openDeclaration;
 	public static String JavadocHover_noAttachedInformation;
 	public static String JavaTextHover_createTextHover;
 	public static String JavaTextHover_makeStickyHint;
 	public static String NoBreakpointAnnotation_addBreakpoint;
 	public static String NLSStringHover_NLSStringHover_missingKeyWarning;
+	public static String AbstractAnnotationHover_action_configureAnnotationPreferences;
+	public static String AbstractAnnotationHover_message_singleQuickFix;
+	public static String AbstractAnnotationHover_message_multipleQuickFix;
 
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, JavaHoverMessages.class);

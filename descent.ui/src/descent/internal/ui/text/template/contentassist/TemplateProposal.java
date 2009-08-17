@@ -14,14 +14,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Shell;
-
 import org.eclipse.jface.dialogs.MessageDialog;
-
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.BadPositionCategoryException;
 import org.eclipse.jface.text.DocumentEvent;
@@ -49,7 +42,12 @@ import org.eclipse.jface.text.templates.TemplateBuffer;
 import org.eclipse.jface.text.templates.TemplateContext;
 import org.eclipse.jface.text.templates.TemplateException;
 import org.eclipse.jface.text.templates.TemplateVariable;
-
+import org.eclipse.jface.viewers.StyledCellLabelProvider;
+import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.part.IWorkbenchPartOrientation;
 import org.eclipse.ui.texteditor.link.EditorLinkedModeUI;
@@ -57,13 +55,11 @@ import org.eclipse.ui.texteditor.link.EditorLinkedModeUI;
 import descent.internal.corext.template.java.CompilationUnitContext;
 import descent.internal.corext.template.java.JavaDocContext;
 import descent.internal.corext.util.Messages;
-
-import descent.ui.text.java.IJavaCompletionProposal;
-
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.javaeditor.EditorHighlightingSynchronizer;
 import descent.internal.ui.javaeditor.JavaEditor;
 import descent.internal.ui.util.ExceptionHandler;
+import descent.ui.text.java.IJavaCompletionProposal;
 
 /**
  * A template proposal.
@@ -77,7 +73,7 @@ public class TemplateProposal implements IJavaCompletionProposal, ICompletionPro
 	private int fRelevance;
 
 	private IRegion fSelectedRegion; // initialized by apply()
-	private String fDisplayString;
+	private StyledString fDisplayString;
 
 	/**
 	 * Creates a template proposal with a template and its context.
@@ -375,14 +371,24 @@ public class TemplateProposal implements IJavaCompletionProposal, ICompletionPro
 	 * @see ICompletionProposal#getDisplayString()
 	 */
 	public String getDisplayString() {
+		return getStyledDisplayString().getString();
+	}
+
+	/*
+	 * @see org.eclipse.jface.text.contentassist.ICompletionProposalExtension6#getStyledDisplayString()
+	 * @since 3.4
+	 */
+	public StyledString getStyledDisplayString() {
 		if (fDisplayString == null) {
 			String[] arguments= new String[] { fTemplate.getName(), fTemplate.getDescription() };
-			fDisplayString= Messages.format(TemplateContentAssistMessages.TemplateProposal_displayString, arguments);
+			String decorated= Messages.format(TemplateContentAssistMessages.TemplateProposal_displayString, arguments);
+			StyledString string= new StyledString(fTemplate.getName(), StyledString.COUNTER_STYLER);
+			fDisplayString= StyledCellLabelProvider.styleDecoratedString(decorated, StyledString.QUALIFIER_STYLER, string);
 		}
 		return fDisplayString;
 	}
 
-	public void setDisplayString(String displayString) {
+	public void setDisplayString(StyledString displayString) {
 		fDisplayString= displayString;
 	}
 

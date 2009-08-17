@@ -12,6 +12,7 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.TextUtilities;
 import org.eclipse.jface.text.contentassist.ICompletionProposalExtension4;
+import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.TextEdit;
 
@@ -47,8 +48,12 @@ public class OverrideCompletionProposal extends JavaTypeCompletionProposal imple
 	private IJavaProject fJavaProject;
 	private String fMethodName;
 	private String[] fParamTypes;
-
+	
 	public OverrideCompletionProposal(IJavaProject jproject, ICompilationUnit cu, String methodName, String[] paramTypes, int start, int length, String displayName, String completionProposal) {
+		this(jproject, cu, methodName, paramTypes, start, length, new StyledString(displayName), completionProposal);
+	}
+
+	public OverrideCompletionProposal(IJavaProject jproject, ICompilationUnit cu, String methodName, String[] paramTypes, int start, int length, StyledString displayName, String completionProposal) {
 		super(completionProposal, cu, start, length, null, displayName, 0);
 		Assert.isNotNull(jproject);
 		Assert.isNotNull(methodName);

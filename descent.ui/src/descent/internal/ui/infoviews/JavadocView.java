@@ -362,7 +362,7 @@ public class JavadocView extends AbstractInfoView {
 	 * Action to show content in external browser
 	 * @since 3.4
 	 */
-	private OpenExternalBrowserAction fOpenExternalBrowserAction;
+//	private OpenExternalBrowserAction fOpenExternalBrowserAction;
 
 	/**
 	 * A selection provider providing the current
@@ -640,9 +640,9 @@ public class JavadocView extends AbstractInfoView {
 		fToggleLinkAction.setActionDefinitionId(IWorkbenchCommandConstants.NAVIGATE_TOGGLE_LINK_WITH_EDITOR);
 
 		fInputSelectionProvider= new SimpleSelectionProvider();
-		fOpenExternalBrowserAction= new OpenExternalBrowserAction(getSite().getShell().getDisplay(), fInputSelectionProvider);
-		fOpenExternalBrowserAction.setActionDefinitionId(IJavaEditorActionDefinitionIds.OPEN_EXTERNAL_JAVADOC);
-		fInputSelectionProvider.addSelectionChangedListener(fOpenExternalBrowserAction);
+//		fOpenExternalBrowserAction= new OpenExternalBrowserAction(getSite().getShell().getDisplay(), fInputSelectionProvider);
+//		fOpenExternalBrowserAction.setActionDefinitionId(IJavaEditorActionDefinitionIds.OPEN_EXTERNAL_JAVADOC);
+//		fInputSelectionProvider.addSelectionChangedListener(fOpenExternalBrowserAction);
 
 		IJavaElement input= getInput();
 		StructuredSelection selection;
@@ -664,11 +664,11 @@ public class JavadocView extends AbstractInfoView {
 		actionBars.setGlobalActionHandler(ActionFactory.BACK.getId(), fBackAction);
 		actionBars.setGlobalActionHandler(ActionFactory.FORWARD.getId(), fForthAction);
 
-		fInputSelectionProvider.addSelectionChangedListener(new ISelectionChangedListener() {
-			public void selectionChanged(SelectionChangedEvent event) {
-				actionBars.setGlobalActionHandler(JdtActionConstants.OPEN_EXTERNAL_JAVA_DOC, fOpenExternalBrowserAction);
-			}
-		});
+//		fInputSelectionProvider.addSelectionChangedListener(new ISelectionChangedListener() {
+//			public void selectionChanged(SelectionChangedEvent event) {
+//				actionBars.setGlobalActionHandler(JdtActionConstants.OPEN_EXTERNAL_JAVA_DOC, fOpenExternalBrowserAction);
+//			}
+//		});
 
 		IHandlerService handlerService= (IHandlerService) getSite().getService(IHandlerService.class);
 		handlerService.activateHandler(IWorkbenchCommandConstants.NAVIGATE_TOGGLE_LINK_WITH_EDITOR, new ActionHandler(fToggleLinkAction));
@@ -685,7 +685,7 @@ public class JavadocView extends AbstractInfoView {
 
 		tbm.add(fToggleLinkAction);
 		super.fillToolBar(tbm);
-		tbm.add(fOpenExternalBrowserAction);
+//		tbm.add(fOpenExternalBrowserAction);
 	}
 	
 	/* (non-Javadoc)
@@ -698,7 +698,7 @@ public class JavadocView extends AbstractInfoView {
 		menu.appendToGroup(IContextMenuConstants.GROUP_GOTO, fBackAction);
 		menu.appendToGroup(IContextMenuConstants.GROUP_GOTO, fForthAction);
 
-		menu.appendToGroup(IContextMenuConstants.GROUP_OPEN, fOpenExternalBrowserAction);
+//		menu.appendToGroup(IContextMenuConstants.GROUP_OPEN, fOpenExternalBrowserAction);
 	}
 
 
@@ -777,10 +777,10 @@ public class JavadocView extends AbstractInfoView {
 			fFontListener= null;
 		}
 
-		if (fOpenExternalBrowserAction != null) {
-			fInputSelectionProvider.removeSelectionChangedListener(fOpenExternalBrowserAction);
-			fOpenExternalBrowserAction= null;
-		}
+//		if (fOpenExternalBrowserAction != null) {
+//			fInputSelectionProvider.removeSelectionChangedListener(fOpenExternalBrowserAction);
+//			fOpenExternalBrowserAction= null;
+//		}
 	}
 
 	/*
@@ -957,18 +957,17 @@ public class JavadocView extends AbstractInfoView {
 
 			IJavaElement curr= result[0];
 			
+			String constantValue= null;
+			if (curr instanceof IField) {
+				constantValue= computeFieldConstant(activePart, selection, (IField) curr, monitor);
+				if (constantValue != null)
+					constantValue= HTMLPrinter.convertToHTMLContent(constantValue);
+			}
+
+			HTMLPrinter.addSmallHeader(buffer, getInfoText(curr, constantValue, true));
+
 			if (curr instanceof IDocumented) {
 				IDocumented member= (IDocumented) curr;
-				
-				String constantValue= null;
-				if (member instanceof IField) {
-					constantValue= computeFieldConstant(activePart, selection, (IField) member, monitor);
-					if (constantValue != null)
-						constantValue= HTMLPrinter.convertToHTMLContent(constantValue);
-				}
-
-				HTMLPrinter.addSmallHeader(buffer, getInfoText(member, constantValue, true));
-				
 				try {
 					Reader reader= JavadocContentAccess.getHTMLContentReader(member, true, true);
 					

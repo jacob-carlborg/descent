@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
 package descent.internal.ui.text.java.hover;
 
 import java.io.IOException;
@@ -9,13 +19,14 @@ import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
-import org.eclipse.jface.text.ITextHoverExtension;
-import org.eclipse.jface.text.information.IInformationProviderExtension2;
+import org.eclipse.jface.text.IRegion;
+import org.eclipse.jface.text.ITextViewer;
 
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.part.IWorkbenchPartOrientation;
 
-import descent.core.ICompilationUnit;
+import org.eclipse.ui.editors.text.EditorsUI;
+
 import descent.core.IJavaElement;
 import descent.core.ILocalVariable;
 import descent.core.IMember;
@@ -29,22 +40,22 @@ import descent.internal.corext.util.Strings;
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.text.JavaCodeReader;
 
+
 /**
  * Provides source as hover info for Java elements.
  */
-public class JavaSourceHover extends AbstractJavaEditorTextHover implements ITextHoverExtension, IInformationProviderExtension2 {
+public class JavaSourceHover extends AbstractJavaEditorTextHover {
 
 	/*
 	 * @see JavaElementHover
 	 */
-	protected String getHoverInfo(IJavaElement[] result) {
-		int nResults= result.length;
-
-		if (nResults > 1)
+	public String getHoverInfo(ITextViewer textViewer, IRegion region) {
+		IJavaElement[] result= getJavaElementsAt(textViewer, region);
+		if (result == null || result.length == 0 || result.length > 1)
 			return null;
 
 		IJavaElement curr= result[0];
-		if ((curr instanceof IMember || curr instanceof ILocalVariable || curr instanceof ITypeParameter || curr instanceof ICompilationUnit) && curr instanceof ISourceReference) {
+		if ((curr instanceof IMember || curr instanceof ILocalVariable || curr instanceof ITypeParameter) && curr instanceof ISourceReference) {
 			try {
 				String source= ((ISourceReference) curr).getSource();
 				if (source == null)
@@ -74,7 +85,7 @@ public class JavaSourceHover extends AbstractJavaEditorTextHover implements ITex
 	}
 
 	private String removeLeadingComments(String source) {
-		JavaCodeReader reader= new JavaCodeReader();
+		final JavaCodeReader reader= new JavaCodeReader();
 		IDocument document= new Document(source);
 		int i;
 		try {
@@ -89,8 +100,7 @@ public class JavaSourceHover extends AbstractJavaEditorTextHover implements ITex
 			i= 0;
 		} finally {
 			try {
-				if (reader != null)
-					reader.close();
+				reader.close();
 			} catch (IOException ex) {
 				JavaPlugin.log(ex);
 			}
@@ -108,28 +118,27 @@ public class JavaSourceHover extends AbstractJavaEditorTextHover implements ITex
 	public IInformationControlCreator getHoverControlCreator() {
 		return new IInformationControlCreator() {
 			public IInformationControl createInformationControl(Shell parent) {
-				IEditorPart editor= getEditor(); 
-				int shellStyle= SWT.TOOL | SWT.NO_TRIM;
+				IEditorPart editor= getEditor();
+				int orientation= SWT.NONE;
 				if (editor instanceof IWorkbenchPartOrientation)
-					shellStyle |= ((IWorkbenchPartOrientation)editor).getOrientation();
-				return new SourceViewerInformationControl(parent, shellStyle, SWT.NONE, getTooltipAffordanceString());
+					orientation= ((IWorkbenchPartOrientation) editor).getOrientation();
+				return new SourceViewerInformationControl(parent, false, orientation, EditorsUI.getTooltipAffordanceString());
 			}
 		};
 	}
 
 	/*
-	 * @see IInformationProviderExtension2#getInformationPresenterControlCreator()
+	 * @see org.eclipse.jface.text.ITextHoverExtension2#getInformationPresenterControlCreator()
 	 * @since 3.0
 	 */
 	public IInformationControlCreator getInformationPresenterControlCreator() {
 		return new IInformationControlCreator() {
 			public IInformationControl createInformationControl(Shell parent) {
-				int style= SWT.V_SCROLL | SWT.H_SCROLL;
-				int shellStyle= SWT.RESIZE | SWT.TOOL;
-				IEditorPart editor= getEditor(); 
+				IEditorPart editor= getEditor();
+				int orientation= SWT.NONE;
 				if (editor instanceof IWorkbenchPartOrientation)
-					shellStyle |= ((IWorkbenchPartOrientation)editor).getOrientation();
-				return new SourceViewerInformationControl(parent, shellStyle, style);
+					orientation= ((IWorkbenchPartOrientation) editor).getOrientation();
+				return new SourceViewerInformationControl(parent, true, orientation, EditorsUI.getTooltipAffordanceString());
 			}
 		};
 	}

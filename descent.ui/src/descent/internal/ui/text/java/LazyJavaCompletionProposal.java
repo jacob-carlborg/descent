@@ -15,6 +15,7 @@ package descent.internal.ui.text.java;
 import org.eclipse.jface.text.Assert;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.contentassist.IContextInformation;
+import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.Image;
 
 import descent.core.CompletionProposal;
@@ -224,8 +225,23 @@ public class LazyJavaCompletionProposal extends AbstractJavaCompletionProposal {
 	 */
 	public final String getDisplayString() {
 		if (!fDisplayStringComputed)
-			setDisplayString(computeDisplayString());
+			setStyledDisplayString(computeDisplayString());
 		return super.getDisplayString();
+	}
+	
+	/*
+	 * @see org.eclipse.jdt.internal.ui.text.java.AbstractJavaCompletionProposal#getStyledDisplayString()
+	 * @since 3.4
+	 */
+	public StyledString getStyledDisplayString() {
+		if (!fDisplayStringComputed)
+			setStyledDisplayString(computeDisplayString());
+		return super.getStyledDisplayString();
+	}
+	
+	public void setStyledDisplayString(StyledString text) {
+		fDisplayStringComputed= true;
+		super.setStyledDisplayString(text);
 	}
 
 	protected final void setDisplayString(String string) {
@@ -233,8 +249,8 @@ public class LazyJavaCompletionProposal extends AbstractJavaCompletionProposal {
 		super.setDisplayString(string);
 	}
 
-	protected String computeDisplayString() {
-		return fInvocationContext.getLabelProvider().createLabel(fProposal);
+	protected StyledString computeDisplayString() {
+		return fInvocationContext.getLabelProvider().createStyledLabel(fProposal);
 	}
 
 	/*

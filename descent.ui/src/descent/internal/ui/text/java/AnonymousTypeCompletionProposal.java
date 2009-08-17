@@ -17,6 +17,7 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.TextUtilities;
 import org.eclipse.jface.text.contentassist.ICompletionProposalExtension4;
+import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.Image;
 
 import descent.core.ICompilationUnit;
@@ -37,8 +38,12 @@ public class AnonymousTypeCompletionProposal extends JavaTypeCompletionProposal 
 
 	private String fDeclarationSignature;
 	private IType fSuperType;
-
+	
 	public AnonymousTypeCompletionProposal(IJavaProject jproject, ICompilationUnit cu, int start, int length, String constructorCompletion, String displayName, String declarationSignature, int relevance) {
+		this(jproject, cu, start, length, constructorCompletion, new StyledString(displayName), declarationSignature, relevance);
+	}
+
+	public AnonymousTypeCompletionProposal(IJavaProject jproject, ICompilationUnit cu, int start, int length, String constructorCompletion, StyledString displayName, String declarationSignature, int relevance) {
 		super(constructorCompletion, cu, start, length, null, displayName, relevance);
 		Assert.isNotNull(declarationSignature);
 		Assert.isNotNull(jproject);

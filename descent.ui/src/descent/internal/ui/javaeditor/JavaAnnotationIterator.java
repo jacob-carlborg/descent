@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,11 +10,15 @@
  *******************************************************************************/
 package descent.internal.ui.javaeditor;
 
-import java.util.Collections;
 import java.util.Iterator;
 
+import org.eclipse.core.runtime.CoreException;
+
+import org.eclipse.core.resources.IMarker;
+
 import org.eclipse.jface.text.source.Annotation;
-import org.eclipse.jface.text.source.IAnnotationModel;
+
+import org.eclipse.ui.texteditor.MarkerAnnotation;
 
 
 /**
@@ -24,51 +28,43 @@ public class JavaAnnotationIterator implements Iterator {
 
 	private Iterator fIterator;
 	private Annotation fNext;
-	private boolean fSkipIrrelevants;
 	private boolean fReturnAllAnnotations;
 
-	/**
-	 * Equivalent to <code>JavaAnnotationIterator(model, skipIrrelevants, false)</code>.
-	 */
-	public JavaAnnotationIterator(IAnnotationModel model, boolean skipIrrelevants) {
-		this(model, skipIrrelevants, false);
-	}
 
 	/**
 	 * Returns a new JavaAnnotationIterator.
-	 * @param model the annotation model
-	 * @param skipIrrelevants whether to skip irrelevant annotations
-	 * @param returnAllAnnotations Whether to return non IJavaAnnotations as well
+	 * @param parent the parent iterator to iterate over annotations
+	 * @param returnAllAnnotations whether to return all annotations or just problem annotations
 	 */
-	public JavaAnnotationIterator(IAnnotationModel model, boolean skipIrrelevants, boolean returnAllAnnotations) {
+	public JavaAnnotationIterator(Iterator parent, boolean returnAllAnnotations) {
 		fReturnAllAnnotations= returnAllAnnotations;
-		if (model != null)
-			fIterator= model.getAnnotationIterator();
-		else
-			fIterator= Collections.EMPTY_LIST.iterator();
-		fSkipIrrelevants= skipIrrelevants;
+		fIterator= parent;
 		skip();
 	}
 
 	private void skip() {
 		while (fIterator.hasNext()) {
 			Annotation next= (Annotation) fIterator.next();
-			if (next instanceof IJavaAnnotation) {
-				if (fSkipIrrelevants) {
-					if (!next.isMarkedDeleted()) {
-						fNext= next;
-						return;
-					}
-				} else {
-					fNext= next;
-					return;
-				}
-			} else if (fReturnAllAnnotations) {
+
+			if (next.isMarkedDeleted())
+				continue;
+
+			if (fReturnAllAnnotations || next instanceof IJavaAnnotation || isProblemMarkerAnnotation(next)) {
 				fNext= next;
 				return;
 			}
 		}
 		fNext= null;
+	}
+
+	private static boolean isProblemMarkerAnnotation(Annotation annotation) {
+		if (!(annotation instanceof MarkerAnnotation))
+			return false;
+		try {
+			return(((MarkerAnnotation)annotation).getMarker().isSubtypeOf(IMarker.PROBLEM));
+		} catch (CoreException e) {
+			return false;
+		}
 	}
 
 	/*

@@ -22,6 +22,9 @@ public class VariableBinding extends JavaElementBasedBinding implements IVariabl
 			if (var.isConst()) {
 				return bindingResolver.getEvaluator().evalInit(var.init);
 			}
+		} else if (node instanceof EnumMember) {
+			EnumMember member = (EnumMember) node;
+			return bindingResolver.getEvaluator().evalExp(member.value);
 		}
 		// TODO Auto-generated method stub
 		return null;

@@ -898,6 +898,33 @@
             %DeclarationViewBackgroundColor.description
          </description>
       </colorDefinition>
+      <colorDefinition
+            label="%coloredLabels.inherited.label"
+            categoryId="org.eclipse.jdt.ui.presentation"
+            value="COLOR_DARK_BLUE"
+            id="org.eclipse.jdt.ui.ColoredLabels.inherited">
+         <description>
+            %coloredLabels.inherited.description
+         </description>
+      </colorDefinition>
+      <colorDefinition
+            label="%coloredLabels.match_highlight.label"
+            categoryId="org.eclipse.jdt.ui.presentation"
+            value="206,204,247"
+            id="org.eclipse.jdt.ui.ColoredLabels.match_highlight">
+         <description>
+            %coloredLabels.match_highlight.description
+         </description>
+      </colorDefinition>
+      <colorDefinition
+            label="%coloredLabels.writeaccess_highlight.label"
+            categoryId="org.eclipse.jdt.ui.presentation"
+            value="240,216,168"
+            id="org.eclipse.jdt.ui.ColoredLabels.writeaccess_highlight">
+         <description>
+            %coloredLabels.writeaccess_highlight.description
+         </description>
+      </colorDefinition>
    </extension>
    <extension
          point="org.eclipse.ui.ide.projectNatureImages">
@@ -990,12 +1017,6 @@
             description="%ActionDefinition.selectLast.description"
             categoryId="org.eclipse.ui.category.edit"
             id="descent.ui.edit.text.java.select.last">
-      </command>
-      <command
-            name="%ActionDefinition.showJavadoc.name"
-            description="%ActionDefinition.showJavadoc.description"
-            categoryId="org.eclipse.ui.category.edit"
-            id="descent.ui.edit.text.java.show.javadoc">
       </command>
       <command
             name="%ActionDefinition.showInPackageView.name"

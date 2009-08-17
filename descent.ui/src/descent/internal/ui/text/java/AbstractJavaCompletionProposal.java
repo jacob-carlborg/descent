@@ -40,6 +40,7 @@ import org.eclipse.jface.text.contentassist.ICompletionProposalExtension;
 import org.eclipse.jface.text.contentassist.ICompletionProposalExtension2;
 import org.eclipse.jface.text.contentassist.ICompletionProposalExtension3;
 import org.eclipse.jface.text.contentassist.ICompletionProposalExtension5;
+import org.eclipse.jface.text.contentassist.ICompletionProposalExtension6;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.link.ILinkedModeListener;
 import org.eclipse.jface.text.link.LinkedModeModel;
@@ -48,6 +49,7 @@ import org.eclipse.jface.text.link.LinkedPosition;
 import org.eclipse.jface.text.link.LinkedPositionGroup;
 import org.eclipse.jface.text.link.LinkedModeUI.ExitFlags;
 import org.eclipse.jface.text.link.LinkedModeUI.IExitPolicy;
+import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
@@ -79,7 +81,7 @@ import descent.ui.text.java.IJavaCompletionProposal;
  * 
  * @since 3.2
  */
-public abstract class AbstractJavaCompletionProposal implements IJavaCompletionProposal, ICompletionProposalExtension, ICompletionProposalExtension2, ICompletionProposalExtension3, ICompletionProposalExtension5 {
+public abstract class AbstractJavaCompletionProposal implements IJavaCompletionProposal, ICompletionProposalExtension, ICompletionProposalExtension2, ICompletionProposalExtension3, ICompletionProposalExtension5, ICompletionProposalExtension6 {
 	/**
 	 * A class to simplify tracking a reference position in a document.
 	 */
@@ -176,7 +178,7 @@ public abstract class AbstractJavaCompletionProposal implements IJavaCompletionP
 	
 	}
 
-	private String fDisplayString;
+	private StyledString fDisplayString;
 	private String fReplacementString;
 	private int fReplacementOffset;
 	private int fReplacementLength;
@@ -456,7 +458,21 @@ public abstract class AbstractJavaCompletionProposal implements IJavaCompletionP
 	 * @see ICompletionProposal#getDisplayString()
 	 */
 	public String getDisplayString() {
+		if (fDisplayString != null)
+			return fDisplayString.getString();
+		return ""; //$NON-NLS-1$
+	}
+	
+	/*
+	 * @see org.eclipse.jface.text.contentassist.ICompletionProposalExtension6#getStyledDisplayString()
+	 * @since 3.4
+	 */
+	public StyledString getStyledDisplayString() {
 		return fDisplayString;
+	}
+
+	public void setStyledDisplayString(StyledString text) {
+		fDisplayString= text;
 	}
 
 	/*
@@ -959,7 +975,7 @@ public abstract class AbstractJavaCompletionProposal implements IJavaCompletionP
 	}
 
 	protected void setDisplayString(String string) {
-		fDisplayString= string;
+		fDisplayString= new StyledString(string);
 	}
 	
 	/*

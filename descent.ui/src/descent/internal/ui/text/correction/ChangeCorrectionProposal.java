@@ -4,27 +4,23 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
-
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
-
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRewriteTarget;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.link.LinkedModeModel;
-
-import org.eclipse.ui.IEditorPart;
-
+import org.eclipse.jface.viewers.StyledCellLabelProvider;
+import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.NullChange;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.ui.IEditorPart;
 
 import descent.internal.corext.util.Messages;
-
-import descent.ui.text.java.IJavaCompletionProposal;
-
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.util.ExceptionHandler;
+import descent.ui.text.java.IJavaCompletionProposal;
 
 /**
  * Implementation of a Java completion proposal to be used for quick fix and quick assist
@@ -160,6 +156,29 @@ public class ChangeCorrectionProposal implements IJavaCompletionProposal, IComma
 		if (shortCutString != null) {
 			return Messages.format(CorrectionMessages.ChangeCorrectionProposal_name_with_shortcut, new String[] { fName, shortCutString });
 		}
+		return fName;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.eclipse.jface.text.contentassist.ICompletionProposalExtension6#getStyledDisplayString()
+	 */
+	public StyledString getStyledDisplayString() {
+		StyledString str= new StyledString(getName());
+
+		String shortCutString= CorrectionCommandHandler.getShortCutString(getCommandId());
+		if (shortCutString != null) {
+			String decorated= Messages.format(CorrectionMessages.ChangeCorrectionProposal_name_with_shortcut, new String[] { getName(), shortCutString });
+			return StyledCellLabelProvider.styleDecoratedString(decorated, StyledString.QUALIFIER_STYLER, str);
+		}
+		return str;
+	}
+	
+	/**
+	 * Returns the name of the proposal.
+	 *
+	 * @return return the name of the proposal
+	 */
+	public String getName() {
 		return fName;
 	}
 	

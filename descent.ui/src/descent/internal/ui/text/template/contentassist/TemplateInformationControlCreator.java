@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,15 +15,17 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Shell;
 
-import org.eclipse.jface.text.Assert;
+import org.eclipse.core.runtime.Assert;
+
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.IInformationControlCreatorExtension;
 
+import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.text.java.hover.SourceViewerInformationControl;
 
 
-final public class TemplateInformationControlCreator implements IInformationControlCreator, IInformationControlCreatorExtension {
+public final class TemplateInformationControlCreator implements IInformationControlCreator, IInformationControlCreatorExtension {
 
 	private SourceViewerInformationControl fControl;
 
@@ -37,7 +39,7 @@ final public class TemplateInformationControlCreator implements IInformationCont
 	/**
 	 * @param orientation the orientation, allowed values are: SWT#RIGHT_TO_LEFT or SWT#LEFT_TO_RIGHT
 	 */
-	public TemplateInformationControlCreator(int orientation)  {
+	public TemplateInformationControlCreator(int orientation) {
 		Assert.isLegal(orientation == SWT.RIGHT_TO_LEFT || orientation == SWT.LEFT_TO_RIGHT);
 		fOrientation= orientation;
 	}
@@ -46,7 +48,7 @@ final public class TemplateInformationControlCreator implements IInformationCont
 	 * @see org.eclipse.jface.text.IInformationControlCreator#createInformationControl(org.eclipse.swt.widgets.Shell)
 	 */
 	public IInformationControl createInformationControl(Shell parent) {
-		fControl= new SourceViewerInformationControl(parent, SWT.TOOL | fOrientation, SWT.NONE);
+		fControl= new SourceViewerInformationControl(parent, false, fOrientation, JavaPlugin.getAdditionalInfoAffordanceString());
 		fControl.addDisposeListener(new DisposeListener() {
 			public void widgetDisposed(DisposeEvent e) {
 				fControl= null;

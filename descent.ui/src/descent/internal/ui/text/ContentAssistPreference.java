@@ -12,6 +12,7 @@ package descent.internal.ui.text;
 
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.ui.IWorkbenchPreferenceConstants;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
@@ -61,6 +62,11 @@ public class ContentAssistPreference {
 	private static final String FILL_METHOD_ARGUMENTS= PreferenceConstants.CODEASSIST_FILL_ARGUMENT_NAMES;
 	/** Preference key for prefix completion. */
 	private static final String PREFIX_COMPLETION= PreferenceConstants.CODEASSIST_PREFIX_COMPLETION;
+	/**
+	 * Preference key for colored labels.
+	 * @since 3.4
+	 */
+	private static final String USE_COLORED_LABELS= IWorkbenchPreferenceConstants.USE_COLORED_LABELS;
 
 	private static Color getColor(IPreferenceStore store, String key, IColorManager manager) {
 		RGB rgb= PreferenceConverter.getColor(store, key);
@@ -149,6 +155,10 @@ public class ContentAssistPreference {
 
 		enabled= store.getBoolean(PREFIX_COMPLETION);
 		assistant.enablePrefixCompletion(enabled);
+		
+		// TODO JDT UI fix colored labels
+//		enabled= store.getBoolean(USE_COLORED_LABELS);
+		assistant.enableColoredLabels(true);
 
 		configureJavaProcessor(assistant, store);
 		configureJavaDocProcessor(assistant, store);

@@ -21,6 +21,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.viewers.StyledString;
 
 import descent.core.ICompilationUnit;
 import descent.core.IType;
@@ -46,10 +47,20 @@ public class JavaTypeCompletionProposal extends JavaCompletionProposal {
 	private final String fFullyQualifiedTypeName;
 
 	public JavaTypeCompletionProposal(String replacementString, ICompilationUnit cu, int replacementOffset, int replacementLength, Image image, String displayString, int relevance) {
+		this(replacementString, cu, replacementOffset, replacementLength, image, new StyledString(displayString), relevance, null);
+	}
+	
+	public JavaTypeCompletionProposal(String replacementString, ICompilationUnit cu, int replacementOffset, int replacementLength, Image image, StyledString displayString, int relevance) {
 		this(replacementString, cu, replacementOffset, replacementLength, image, displayString, relevance, null);
 	}
-
+	
 	public JavaTypeCompletionProposal(String replacementString, ICompilationUnit cu, int replacementOffset, int replacementLength, Image image, String displayString, int relevance,
+			String fullyQualifiedTypeName)
+	{
+		this(replacementString, cu, replacementOffset, replacementLength, image, new StyledString(displayString), relevance, fullyQualifiedTypeName);
+	}
+
+	public JavaTypeCompletionProposal(String replacementString, ICompilationUnit cu, int replacementOffset, int replacementLength, Image image, StyledString displayString, int relevance,
 		String fullyQualifiedTypeName)
 	{
 		super(replacementString, replacementOffset, replacementLength, image, displayString, relevance);

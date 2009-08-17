@@ -10,8 +10,11 @@
  *******************************************************************************/
 package descent.ui.text.java;
 
+import org.eclipse.jdt.internal.corext.util.Strings;
+import org.eclipse.jdt.internal.ui.viewsupport.JavaElementLabelComposer;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.text.Assert;
+import org.eclipse.jface.viewers.StyledString;
 
 import descent.core.CompletionContext;
 import descent.core.CompletionProposal;
@@ -75,7 +78,7 @@ public class CompletionProposalLabelProvider {
 				methodProposal.getKind() == CompletionProposal.TEMPLATED_AGGREGATE_REF ||
 				methodProposal.getKind() == CompletionProposal.TEMPLATED_FUNCTION_REF);
 		
-		StringBuffer sb1 = new StringBuffer();
+		StyledString sb1 = new StyledString();
 		
 		if (expandFunctionTemplateArguments) {
 			if (methodProposal.getKind() != CompletionProposal.OP_CALL &&
@@ -84,7 +87,7 @@ public class CompletionProposalLabelProvider {
 			}
 		}
 		
-		StringBuffer sb2 = new StringBuffer();
+		StyledString sb2 = new StyledString();
 		if (methodProposal.getKind() == CompletionProposal.METHOD_REF ||
 				methodProposal.getKind() == CompletionProposal.EXTENSION_METHOD ||
 				methodProposal.getKind() == CompletionProposal.OP_CALL ||
@@ -112,7 +115,7 @@ public class CompletionProposalLabelProvider {
 	 * @param methodProposal the method proposal
 	 * @return the modified <code>buffer</code>
 	 */
-	private StringBuffer appendUnboundedParameterList(StringBuffer buffer, CompletionProposal methodProposal) {
+	private StyledString appendUnboundedParameterList(StyledString buffer, CompletionProposal methodProposal) {
 		// TODO remove once https://bugs.eclipse.org/bugs/show_bug.cgi?id=85293
 		// gets fixed.
 		//char[] signature= SignatureUtil.fix83600(methodProposal.getSignature());
@@ -146,11 +149,12 @@ public class CompletionProposalLabelProvider {
 		return appendParameterSignature(buffer, parameterTypes, parameterNames, parameterDefaultValues, methodProposal.getKind());
 	}
 	
-	private StringBuffer appendVarargs(StringBuffer buffer, CompletionProposal methodProposal) {
+	private StyledString appendVarargs(StyledString buffer, CompletionProposal methodProposal) {
 		int varargs = Signature.getVariadic(methodProposal.getTypeSignature());
 		if (varargs != IMethod.VARARGS_NO) {
 			if (varargs == IMethod.VARARGS_UNDEFINED_TYPES) {
-				if (buffer.charAt(buffer.length() - 1) != '(') {
+				char[][] parameterNames= methodProposal.findParameterNames(null);
+				if (parameterNames != null && parameterNames.length > 0) {
 					buffer.append(',');
 					buffer.append(' ');
 				}
@@ -162,7 +166,7 @@ public class CompletionProposalLabelProvider {
 		return buffer;
 	}
 	
-	private StringBuffer appendTemplateParameterList(StringBuffer buffer, CompletionProposal tempProposal) {
+	private StyledString appendTemplateParameterList(StyledString buffer, CompletionProposal tempProposal) {
 		// TODO remove once https://bugs.eclipse.org/bugs/show_bug.cgi?id=85293
 		// gets fixed.
 		//char[] signature= SignatureUtil.fix83600(tempProposal.getSignature());
@@ -242,7 +246,7 @@ public class CompletionProposalLabelProvider {
 	 * @return the display string of the parameter list defined by the passed
 	 *         arguments
 	 */
-	private final StringBuffer appendParameterSignature(StringBuffer buffer, char[][] parameterTypes, char[][] parameterNames, char[][] parameterDefaultValues, int completionKind) {
+	private final StyledString appendParameterSignature(StyledString buffer, char[][] parameterTypes, char[][] parameterNames, char[][] parameterDefaultValues, int completionKind) {
 		if (parameterTypes != null) {
 			int start = completionKind == CompletionProposal.EXTENSION_METHOD ? 1 : 0;
 			
@@ -291,8 +295,8 @@ public class CompletionProposalLabelProvider {
 	 * @param methodProposal the method proposal to display
 	 * @return the display label for the given method proposal
 	 */
-	String createMethodProposalLabel(CompletionProposal methodProposal) {
-		StringBuffer nameBuffer= new StringBuffer();
+	StyledString createMethodProposalLabel(CompletionProposal methodProposal) {
+		StyledString nameBuffer= new StyledString();
 		nameBuffer.append(methodProposal.getName());
 		
 		if (Signature.getTypeSignatureKind(methodProposal.getSignature()) == Signature.TEMPLATED_FUNCTION_SIGNATURE
@@ -312,17 +316,17 @@ public class CompletionProposalLabelProvider {
 		if (!methodProposal.isConstructor()) {
 			// TODO remove SignatureUtil.fix83600 call when bugs are fixed
 			char[] returnType= createTypeDisplayName(SignatureUtil.getUpperBound(Signature.getReturnType(SignatureUtil.fix83600(methodProposal.getTypeSignature()))));
-			nameBuffer.append("  "); //$NON-NLS-1$
+			nameBuffer.append(" : "); //$NON-NLS-1$
 			nameBuffer.append(returnType);
 		}
 
 		appendDeclaration(methodProposal, nameBuffer);
 
-		return nameBuffer.toString();
+		return nameBuffer;
 	}
 	
-	String createTemplateProposalLabel(CompletionProposal tempProposal) {
-		StringBuffer nameBuffer= new StringBuffer();
+	StyledString createTemplateProposalLabel(CompletionProposal tempProposal) {
+		StyledString nameBuffer= new StyledString();
 		nameBuffer.append(tempProposal.getName());
 		nameBuffer.append('!');
 		nameBuffer.append('(');
@@ -331,11 +335,11 @@ public class CompletionProposalLabelProvider {
 		
 		appendDeclaration(tempProposal, nameBuffer);
 		
-		return nameBuffer.toString();
+		return nameBuffer;
 	}
 	
-	String createTemplatedFunctionProposalLabel(CompletionProposal tempProposal) {
-		StringBuffer nameBuffer= new StringBuffer();
+	StyledString createTemplatedFunctionProposalLabel(CompletionProposal tempProposal) {
+		StyledString nameBuffer= new StyledString();
 		nameBuffer.append(tempProposal.getName());
 		nameBuffer.append('!');
 		nameBuffer.append('(');
@@ -347,23 +351,23 @@ public class CompletionProposalLabelProvider {
 		
 		appendDeclaration(tempProposal, nameBuffer);
 		
-		return nameBuffer.toString();
+		return nameBuffer;
 	}
 
-	private void appendDeclaration(CompletionProposal proposal, StringBuffer nameBuffer) {
+	private void appendDeclaration(CompletionProposal proposal, StyledString nameBuffer) {
 		// declaring type
 		String declaringType= extractDeclaringTypeFQN(proposal);
 		if (declaringType != null) {
-			nameBuffer.append(" - "); //$NON-NLS-1$
-			nameBuffer.append(declaringType);
+			nameBuffer.append(JavaElementLabels.CONCAT_STRING, StyledString.QUALIFIER_STYLER);
+			nameBuffer.append(declaringType, StyledString.QUALIFIER_STYLER);
 		} else {
 			// module name
 			char[] fullName= Signature.toCharArray(proposal.getSignature(),
 					false /* don't fully qualify names */);
 			int qIndex= findSimpleNameStart(fullName);
 			if (qIndex > 0) {
-				nameBuffer.append(JavaElementLabels.CONCAT_STRING);
-				nameBuffer.append(fullName, 0, qIndex - 1);
+				nameBuffer.append(JavaElementLabels.CONCAT_STRING, StyledString.QUALIFIER_STYLER);
+				nameBuffer.append(new String(fullName, 0, qIndex - 1), StyledString.QUALIFIER_STYLER);
 			}
 		}
 	}
@@ -386,24 +390,24 @@ public class CompletionProposalLabelProvider {
 	 * @return the display label for the given method proposal
 	 * @since 3.2
 	 */
-	String createJavadocMethodProposalLabel(CompletionProposal methodProposal) {
-		StringBuffer nameBuffer= new StringBuffer();
+	StyledString createJavadocMethodProposalLabel(CompletionProposal methodProposal) {
+		StyledString nameBuffer= new StyledString();
 		
 		// method name
 		nameBuffer.append(methodProposal.getCompletion());
 		
 		// declaring type
-		nameBuffer.append(" - "); //$NON-NLS-1$
+		nameBuffer.append(JavaElementLabels.CONCAT_STRING, StyledString.QUALIFIER_STYLER); //$NON-NLS-1$
 		String declaringType= extractDeclaringTypeFQN(methodProposal);
 		// TODO JDT signature
 //		declaringType= Signature.getSimpleName(declaringType);
-		nameBuffer.append(declaringType);
+		nameBuffer.append(declaringType, StyledString.QUALIFIER_STYLER);
 		
-		return nameBuffer.toString();
+		return Strings.markLTR(nameBuffer, JavaElementLabelComposer.ADDITIONAL_DELIMITERS);
 	}
 	
-	String createOverrideMethodProposalLabel(CompletionProposal methodProposal) {
-		StringBuffer nameBuffer= new StringBuffer();
+	StyledString createOverrideMethodProposalLabel(CompletionProposal methodProposal) {
+		StyledString nameBuffer= new StyledString();
 
 		// method name
 		nameBuffer.append(methodProposal.getName());
@@ -419,15 +423,15 @@ public class CompletionProposalLabelProvider {
 		nameBuffer.append(returnType);
 
 		// declaring type
-		nameBuffer.append(" - "); //$NON-NLS-1$
+		nameBuffer.append(JavaElementLabels.CONCAT_STRING, StyledString.QUALIFIER_STYLER); //$NON-NLS-1$
 
 		String declaringType= extractDeclaringTypeFQN(methodProposal);
 		
 		// TODO JDT signature
 //		declaringType= Signature.getSimpleName(declaringType);
-		nameBuffer.append(Messages.format(JavaTextMessages.ResultCollector_overridingmethod, new String(declaringType)));
+		nameBuffer.append(Messages.format(JavaTextMessages.ResultCollector_overridingmethod, new String(declaringType)), StyledString.QUALIFIER_STYLER);
 
-		return nameBuffer.toString();
+		return nameBuffer;
 	}
 
 	/**
@@ -464,8 +468,8 @@ public class CompletionProposalLabelProvider {
 	 * @param typeProposal the method proposal to display
 	 * @return the display label for the given type proposal
 	 */
-	String createTypeProposalLabel(CompletionProposal typeProposal) {
-		StringBuffer nameBuffer = new StringBuffer();
+	StyledString createTypeProposalLabel(CompletionProposal typeProposal) {
+		StyledString nameBuffer = new StyledString();
 		
 		if (typeProposal.isAlias()) {
 			nameBuffer.append(typeProposal.getName());
@@ -481,47 +485,47 @@ public class CompletionProposalLabelProvider {
 		
 		appendDeclaration(typeProposal, nameBuffer);
 
-		return nameBuffer.toString();
+		return nameBuffer;
 	}
 	
-	String createJavadocTypeProposalLabel(CompletionProposal typeProposal) {
+	StyledString createJavadocTypeProposalLabel(CompletionProposal typeProposal) {
 		char[] fullName= Signature.toCharArray(typeProposal.getSignature(),
 				false /* don't fully qualify names */);
 		return createJavadocTypeProposalLabel(fullName);
 	}
 	
-	String createJavadocSimpleProposalLabel(CompletionProposal proposal) {
+	StyledString createJavadocSimpleProposalLabel(CompletionProposal proposal) {
 		// TODO get rid of this
 		return createSimpleLabel(proposal);
 	}
 	
-	String createTypeProposalLabel(char[] fullName) {
+	StyledString createTypeProposalLabel(char[] fullName) {
 		// only display innermost type name as type name, using any
 		// enclosing types as qualification
 		int qIndex= findSimpleNameStart(fullName);
 
-		StringBuffer buf= new StringBuffer();
-		buf.append(fullName, qIndex, fullName.length - qIndex);
+		StyledString buf= new StyledString();
+		buf.append(new String(fullName, qIndex, fullName.length - qIndex));
 		if (qIndex > 0) {
-			buf.append(JavaElementLabels.CONCAT_STRING);
-			buf.append(fullName, 0, qIndex - 1);
+			buf.append(JavaElementLabels.CONCAT_STRING, StyledString.QUALIFIER_STYLER);
+			buf.append(new String(fullName, 0, qIndex - 1), StyledString.QUALIFIER_STYLER);
 		}
-		return buf.toString();
+		return buf;
 	}
 	
-	String createJavadocTypeProposalLabel(char[] fullName) {
+	StyledString createJavadocTypeProposalLabel(char[] fullName) {
 		// only display innermost type name as type name, using any
 		// enclosing types as qualification
 		int qIndex= findSimpleNameStart(fullName);
 		
-		StringBuffer buf= new StringBuffer("{@link "); //$NON-NLS-1$
-		buf.append(fullName, qIndex, fullName.length - qIndex);
+		StyledString buf= new StyledString("{@link "); //$NON-NLS-1$
+		buf.append(new String(fullName, qIndex, fullName.length - qIndex));
 		buf.append('}');
 		if (qIndex > 0) {
-			buf.append(JavaElementLabels.CONCAT_STRING);
-			buf.append(fullName, 0, qIndex - 1);
+			buf.append(JavaElementLabels.CONCAT_STRING, StyledString.QUALIFIER_STYLER);
+			buf.append(new String(fullName, 0, qIndex - 1), StyledString.QUALIFIER_STYLER);
 		}
-		return buf.toString();
+		return buf;
 	}
 	
 	private int findSimpleNameStart(char[] array) {
@@ -537,13 +541,13 @@ public class CompletionProposalLabelProvider {
 		return lastDot;
 	}
 
-	String createSimpleLabelWithType(CompletionProposal proposal) {
-		StringBuffer buf= new StringBuffer();
+	StyledString createSimpleLabelWithType(CompletionProposal proposal) {
+		StyledString buf= new StyledString();
 		buf.append(proposal.getCompletion());
 		
 		char[] typeName = proposal.getTypeSignature();
 		if (typeName != null && typeName.length != 0) {
-			buf.append("    "); //$NON-NLS-1$
+			buf.append(" : "); //$NON-NLS-1$
 			buf.append(Signature.getSimpleName(Signature.toCharArray(typeName,
 					false /* don't fully qualify names */)));
 		}
@@ -553,26 +557,26 @@ public class CompletionProposalLabelProvider {
 //			buf.append("    "); //$NON-NLS-1$
 //			buf.append(typeName);
 //		}
-		return buf.toString();
+		return buf;
 	}
 
-	String createLabelWithTypeAndDeclaration(CompletionProposal proposal) {
-		StringBuffer buf= new StringBuffer();
+	StyledString createLabelWithTypeAndDeclaration(CompletionProposal proposal) {
+		StyledString buf= new StyledString();
 		buf.append(proposal.getName());
 		
 		char[] typeSignature = proposal.getTypeSignature();
 		if (typeSignature != null && typeSignature.length != 0) {
-			buf.append("    "); //$NON-NLS-1$
+			buf.append(" : "); //$NON-NLS-1$
 			buf.append(Signature.toCharArray(typeSignature,
 					false /* don't fully qualify names */));
 		}
 		
 		char[] declSignature = proposal.getDeclarationSignature();
 		if (declSignature != null && declSignature.length != 0) {
-			buf.append(JavaElementLabels.CONCAT_STRING);
+			buf.append(JavaElementLabels.CONCAT_STRING, StyledString.QUALIFIER_STYLER);
 			
 			buf.append(Signature.toCharArray(declSignature,
-					false /* don't fully qualify names */));	
+					false /* don't fully qualify names */), StyledString.QUALIFIER_STYLER);	
 		}
 		
 //		char[] typeName= Signature.getSignatureSimpleName(proposal.getTypeName());
@@ -593,32 +597,42 @@ public class CompletionProposalLabelProvider {
 //			}
 //			return buf.toString();
 //		}
-		return buf.toString();
+		return buf;
 	}
 
-	String createPackageProposalLabel(CompletionProposal proposal) {
+	StyledString createPackageProposalLabel(CompletionProposal proposal) {
 		Assert.isTrue(proposal.getKind() == CompletionProposal.COMPILATION_UNIT_REF);
-		return String.valueOf(proposal.getDeclarationSignature());
+		return new StyledString(String.valueOf(proposal.getDeclarationSignature()));
 	}
 
-	String createSimpleLabel(CompletionProposal proposal) {
-		return String.valueOf(proposal.getCompletion());
+	StyledString createSimpleLabel(CompletionProposal proposal) {
+		return new StyledString(String.valueOf(proposal.getCompletion()));
 	}
 
-	String createAnonymousTypeLabel(CompletionProposal proposal) {
+	StyledString createAnonymousTypeLabel(CompletionProposal proposal) {
 		char[] declaringTypeSignature= proposal.getDeclarationSignature();
 
-		StringBuffer buffer= new StringBuffer();
+		StyledString buffer= new StyledString();
 		
 		// TODO JDT signature
 //		buffer.append(Signature.getSignatureSimpleName(declaringTypeSignature));
 		buffer.append('(');
 		appendUnboundedParameterList(buffer, proposal);
 		buffer.append(')');
-		buffer.append("  "); //$NON-NLS-1$
+		buffer.append(" : "); //$NON-NLS-1$
 		buffer.append(JavaTextMessages.ResultCollector_anonymous_type);
 
-		return buffer.toString();
+		return buffer;
+	}
+	
+	/**
+	 * Creates the display label for a given <code>CompletionProposal</code>.
+	 *
+	 * @param proposal the completion proposal to create the display label for
+	 * @return the display label for <code>proposal</code>
+	 */
+	public String createLabel(CompletionProposal proposal) {
+		return createStyledLabel(proposal).getString();
 	}
 
 	/**
@@ -627,7 +641,7 @@ public class CompletionProposalLabelProvider {
 	 * @param proposal the completion proposal to create the display label for
 	 * @return the display label for <code>proposal</code>
 	 */
-	public String createLabel(CompletionProposal proposal) {
+	public StyledString createStyledLabel(CompletionProposal proposal) {
 		switch (proposal.getKind()) {
 			case CompletionProposal.METHOD_NAME_REFERENCE:
 			case CompletionProposal.METHOD_REF:

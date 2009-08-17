@@ -4,9 +4,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
-
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
@@ -18,7 +15,10 @@ import org.eclipse.jface.text.link.LinkedModeModel;
 import org.eclipse.jface.text.link.LinkedModeUI;
 import org.eclipse.jface.text.link.LinkedPosition;
 import org.eclipse.jface.text.link.LinkedPositionGroup;
-
+import org.eclipse.jface.viewers.StyledCellLabelProvider;
+import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.texteditor.link.EditorLinkedModeUI;
 
@@ -26,19 +26,15 @@ import descent.core.ICompilationUnit;
 import descent.core.dom.ASTNode;
 import descent.core.dom.CompilationUnit;
 import descent.core.dom.SimpleName;
-
-import descent.internal.corext.dom.LinkedNodeFinder;
 import descent.internal.corext.dom.NodeFinder;
 import descent.internal.corext.util.Messages;
-
-import descent.ui.text.java.IJavaCompletionProposal;
-
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.JavaPluginImages;
 import descent.internal.ui.javaeditor.ASTProvider;
 import descent.internal.ui.javaeditor.EditorHighlightingSynchronizer;
 import descent.internal.ui.javaeditor.JavaEditor;
 import descent.internal.ui.search.NaiveOccurrencesFinder;
+import descent.ui.text.java.IJavaCompletionProposal;
 
 /**
  * A template proposal.
@@ -196,6 +192,20 @@ public class LinkedNamesAssistProposal implements IJavaCompletionProposal, IComp
 			return Messages.format(CorrectionMessages.ChangeCorrectionProposal_name_with_shortcut, new String[] { fLabel, shortCutString });
 		}
 		return fLabel;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.eclipse.jface.text.contentassist.ICompletionProposalExtension6#getStyledDisplayString()
+	 */
+	public StyledString getStyledDisplayString() {
+		StyledString str= new StyledString(fLabel);
+
+		String shortCutString= CorrectionCommandHandler.getShortCutString(getCommandId());
+		if (shortCutString != null) {
+			String decorated= Messages.format(CorrectionMessages.ChangeCorrectionProposal_name_with_shortcut, new String[] { fLabel, shortCutString });
+			return StyledCellLabelProvider.styleDecoratedString(decorated, StyledString.QUALIFIER_STYLER, str);
+		}
+		return str;
 	}
 
 	/*
