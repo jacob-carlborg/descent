@@ -17,7 +17,6 @@ Remaining from DMD 2.030 vs. 1.045
  * func.c
  * mtype.c
  * mtype.h
- * opover.c
  * optimize.c
  * statement.c
  * statement.h

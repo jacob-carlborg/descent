@@ -1452,6 +1452,32 @@ public abstract class BinExp extends Expression {
 				return e;
 			}
 		}
+		
+		if (!context.isD1()) {
+			// Try alias this on first operand
+			if (ad1 != null && ad1.aliasthis != null) {
+				/*
+				 * Rewrite (e1 op e2) as: (e1.aliasthis op e2)
+				 */
+				Expression e1 = new DotIdExp(filename, lineNumber, this.e1, ad1.aliasthis.ident);
+				Expression e = copy();
+				((BinExp) e).e1 = e1;
+				e = e.semantic(sc, context);
+				return e;
+			}
+
+			// Try alias this on second operand
+			if (ad2 != null && ad2.aliasthis != null) {
+				/*
+				 * Rewrite (e1 op e2) as: (e1 op e2.aliasthis)
+				 */
+				Expression e2 = new DotIdExp(filename, lineNumber, this.e2, ad2.aliasthis.ident);
+				Expression e = copy();
+				((BinExp) e).e2 = e2;
+				e = e.semantic(sc, context);
+				return e;
+			}
+		}
 
 		return null;
 	}

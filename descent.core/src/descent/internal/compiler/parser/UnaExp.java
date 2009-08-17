@@ -60,10 +60,11 @@ public abstract class UnaExp extends Expression {
 		fd = search_function(ad, opId(context), context);
 		if (fd != null) {
 			if (op == TOKarray) {
-				Expression e;
-				ArrayExp ae = (ArrayExp) this;
-
-				e = new DotIdExp(filename, lineNumber, e1, fd.ident);
+				/* Rewrite op e1[arguments] as:
+				 *    e1.fd(arguments)
+				 */
+				Expression e = new DotIdExp(filename, lineNumber, e1, fd.ident);
+				ArrayExp ae = (ArrayExp) this;				
 				e = new CallExp(filename, lineNumber, e, ae.arguments);
 				e = e.semantic(sc, context);
 				return e;
@@ -72,6 +73,21 @@ public abstract class UnaExp extends Expression {
 				return build_overload(filename, lineNumber, sc, e1, null, fd.ident, context);
 			}
 		}
+		
+		if (!context.isD1()) {
+			// Didn't find it. Forward to aliasthis
+			if (ad.aliasthis != null) {
+				/*
+				 * Rewrite op(e1) as: op(e1.aliasthis)
+				 */
+				Expression e1 = new DotIdExp(filename, lineNumber, this.e1, ad.aliasthis.ident);
+				Expression e = copy();
+				((UnaExp) e).e1 = e1;
+				e = e.semantic(sc, context);
+				return e;
+			}
+		}
+		
 		return null;
 	}
 

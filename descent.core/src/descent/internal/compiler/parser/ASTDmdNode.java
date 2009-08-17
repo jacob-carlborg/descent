@@ -23,6 +23,7 @@ import static descent.internal.compiler.parser.TOK.TOKdefault;
 import static descent.internal.compiler.parser.TOK.TOKdelegate;
 import static descent.internal.compiler.parser.TOK.TOKdotexp;
 import static descent.internal.compiler.parser.TOK.TOKfloat64;
+import static descent.internal.compiler.parser.TOK.TOKforeach;
 import static descent.internal.compiler.parser.TOK.TOKforeach_reverse;
 import static descent.internal.compiler.parser.TOK.TOKfunction;
 import static descent.internal.compiler.parser.TOK.TOKnull;
@@ -431,6 +432,35 @@ public abstract class ASTDmdNode extends ASTNode {
 		case Tstruct: {
 			ad = ((TypeStruct) tab).sym;
 			// goto Laggr;
+			// Laggr:
+			if (!context.isD1()) {
+				if (size(arguments) == 1) {
+					if (null == arg.type) {
+						/*
+						 * Look for a head() or rear() overload
+						 */
+						char[] id = (op == TOKforeach) ? Id.Fhead : Id.Ftoe;
+						Dsymbol s = search_function(ad, id, context);
+						FuncDeclaration fd2 = s != null ? s.isFuncDeclaration() : null;
+						
+						boolean gotoLapply = false;
+						if (null == fd2) {
+							if (s != null && s.isTemplateDeclaration() != null) {
+								break;
+							}
+							// goto Lapply;
+							gotoLapply = true;
+						}
+						
+						if (!gotoLapply) {
+							arg.type = fd2.type.nextOf();
+						}
+					}
+					break;
+				}
+			}
+			
+			// Lapply:
 			/*
 			 * Look for an int opApply(int delegate(inout Type [, ...]) dg);
 			 * overload
