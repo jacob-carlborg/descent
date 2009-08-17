@@ -59,6 +59,7 @@ import descent.core.IMember;
 import descent.core.ISourceRange;
 import descent.core.ISourceReference;
 import descent.core.ITypeParameter;
+import descent.core.ITypeRoot;
 import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.internal.corext.util.JavaModelUtil;
@@ -335,13 +336,13 @@ public class EditorUtility {
 	 * @return the given editor's input as Java element or <code>null</code> if none
 	 * @since 3.2
 	 */
-	public static IJavaElement getEditorInputJavaElement(IEditorPart editor, boolean primaryOnly) {
+	public static ITypeRoot getEditorInputJavaElement(IEditorPart editor, boolean primaryOnly) {
 		Assert.isNotNull(editor);
 		IEditorInput editorInput= editor.getEditorInput();
 		if (editorInput == null)
 			return null;
 		
-		IJavaElement je= JavaUI.getEditorInputJavaElement(editorInput);
+		ITypeRoot je= JavaUI.getEditorInputTypeRoot(editorInput);
 		if (je != null || primaryOnly)
 			return je;
 

@@ -31,6 +31,31 @@
    </extension>
    
    <extension
+         point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectorTargets">
+      <target
+            id="descent.ui.javaCode"
+            name="%JavaEditorHyperlinkTarget">
+            <context type="org.eclipse.ui.texteditor.ITextEditor"/>
+      </target>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
+      <hyperlinkDetector
+            class="descent.internal.ui.javaeditor.JavaElementHyperlinkDetector"
+            id="descent.internal.ui.javaeditor.JavaElementHyperlinkDetector"
+            name="%JavaElementHyperlinkDetector"
+            targetId="descent.ui.javaCode">
+      </hyperlinkDetector>
+      <hyperlinkDetector
+	        class="descent.internal.ui.javaeditor.JavaElementHyperlinkImplementationDetector"
+            id="descent.internal.ui.javaeditor.JavaElementHyperlinkImplementationDetector"
+            name="%JavaElementHyperlinkImplementationDetector"
+            targetId="descent.ui.javaCode">
+      </hyperlinkDetector>
+   </extension>
+   
+   <extension
          id="modelProvider"
          name="%JavaModelProvider.name"
          point="org.eclipse.core.resources.modelProviders">
@@ -900,27 +925,27 @@
       </colorDefinition>
       <colorDefinition
             label="%coloredLabels.inherited.label"
-            categoryId="org.eclipse.jdt.ui.presentation"
+            categoryId="descent.ui.presentation"
             value="COLOR_DARK_BLUE"
-            id="org.eclipse.jdt.ui.ColoredLabels.inherited">
+            id="descent.ui.ColoredLabels.inherited">
          <description>
             %coloredLabels.inherited.description
          </description>
       </colorDefinition>
       <colorDefinition
             label="%coloredLabels.match_highlight.label"
-            categoryId="org.eclipse.jdt.ui.presentation"
+            categoryId="descent.ui.presentation"
             value="206,204,247"
-            id="org.eclipse.jdt.ui.ColoredLabels.match_highlight">
+            id="descent.ui.ColoredLabels.match_highlight">
          <description>
             %coloredLabels.match_highlight.description
          </description>
       </colorDefinition>
       <colorDefinition
             label="%coloredLabels.writeaccess_highlight.label"
-            categoryId="org.eclipse.jdt.ui.presentation"
+            categoryId="descent.ui.presentation"
             value="240,216,168"
-            id="org.eclipse.jdt.ui.ColoredLabels.writeaccess_highlight">
+            id="descent.ui.ColoredLabels.writeaccess_highlight">
          <description>
             %coloredLabels.writeaccess_highlight.description
          </description>

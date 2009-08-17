@@ -148,6 +148,13 @@ final class JavaEditorMessages extends NLS {
 	public static String Editor_OpenPropertiesFile_error_fileNotFound_dialogMessage;
 	public static String Editor_OpenPropertiesFile_error_openEditor_dialogMessage;
 	public static String Editor_MoveLines_IllegalMove_status;
+	public static String JavaElementHyperlink_hyperlinkText;
+	public static String JavaElementHyperlink_hyperlinkText_qualified;
+	public static String JavaElementImplementationHyperlink_error_no_implementations_found_message;
+	public static String JavaElementImplementationHyperlink_error_status_message;
+	public static String JavaElementImplementationHyperlink_hyperlinkText;
+	public static String JavaElementImplementationHyperlink_hyperlinkText_qualified;
+	public static String JavaElementImplementationHyperlink_search_method_implementors;
 
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, JavaEditorMessages.class);

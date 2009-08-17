@@ -1,10 +1,28 @@
+/*******************************************************************************
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
 package descent.internal.ui.javaeditor;
 
-import org.eclipse.jface.action.IAction;
+import org.eclipse.core.runtime.Assert;
 
-import org.eclipse.jface.text.Assert;
+import org.eclipse.jface.viewers.StructuredSelection;
+
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
+
+import descent.core.IJavaElement;
+
+import descent.internal.corext.util.Messages;
+
+import descent.ui.JavaElementLabels;
+import descent.ui.actions.SelectionDispatchAction;
 
 
 /**
@@ -15,22 +33,33 @@ import org.eclipse.jface.text.hyperlink.IHyperlink;
 public class JavaElementHyperlink implements IHyperlink {
 
 	private final IRegion fRegion;
-	private final IAction fOpenAction;
+	private final SelectionDispatchAction fOpenAction;
+	private final IJavaElement fElement;
+	private final boolean fQualify;
 
 
 	/**
 	 * Creates a new Java element hyperlink.
+	 * 
+	 * @param region the region of the link
+	 * @param openAction the action to use to open the java elements
+	 * @param element the java element to open
+	 * @param qualify <code>true</code> if the hyperlink text should show a qualified name for
+	 *            element.
 	 */
-	public JavaElementHyperlink(IRegion region, IAction openAction) {
+	public JavaElementHyperlink(IRegion region, SelectionDispatchAction openAction, IJavaElement element, boolean qualify) {
 		Assert.isNotNull(openAction);
 		Assert.isNotNull(region);
+		Assert.isNotNull(element);
 
 		fRegion= region;
 		fOpenAction= openAction;
+		fElement= element;
+		fQualify= qualify;
 	}
 
 	/*
-	 * @see org.eclipse.jdt.internal.ui.javaeditor.IHyperlink#getHyperlinkRegion()
+	 * @see descent.internal.ui.javaeditor.IHyperlink#getHyperlinkRegion()
 	 * @since 3.1
 	 */
 	public IRegion getHyperlinkRegion() {
@@ -38,15 +67,15 @@ public class JavaElementHyperlink implements IHyperlink {
 	}
 
 	/*
-	 * @see org.eclipse.jdt.internal.ui.javaeditor.IHyperlink#open()
+	 * @see descent.internal.ui.javaeditor.IHyperlink#open()
 	 * @since 3.1
 	 */
 	public void open() {
-		fOpenAction.run();
+		fOpenAction.run(new StructuredSelection(fElement));
 	}
 
 	/*
-	 * @see org.eclipse.jdt.internal.ui.javaeditor.IHyperlink#getTypeLabel()
+	 * @see descent.internal.ui.javaeditor.IHyperlink#getTypeLabel()
 	 * @since 3.1
 	 */
 	public String getTypeLabel() {
@@ -54,10 +83,15 @@ public class JavaElementHyperlink implements IHyperlink {
 	}
 
 	/*
-	 * @see org.eclipse.jdt.internal.ui.javaeditor.IHyperlink#getHyperlinkText()
+	 * @see descent.internal.ui.javaeditor.IHyperlink#getHyperlinkText()
 	 * @since 3.1
 	 */
 	public String getHyperlinkText() {
-		return null;
+		if (fQualify) {
+			String elementLabel= JavaElementLabels.getElementLabel(fElement, JavaElementLabels.ALL_POST_QUALIFIED);
+			return Messages.format(JavaEditorMessages.JavaElementHyperlink_hyperlinkText_qualified, new Object[] { elementLabel });
+		} else {
+			return JavaEditorMessages.JavaElementHyperlink_hyperlinkText;
+		}
 	}
 }

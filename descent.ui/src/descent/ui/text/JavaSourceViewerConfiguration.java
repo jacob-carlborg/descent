@@ -10,6 +10,7 @@
  *******************************************************************************/
 package descent.ui.text;
 
+import java.util.Map;
 import java.util.Vector;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -931,28 +932,14 @@ public class JavaSourceViewerConfiguration extends TextSourceViewerConfiguration
 			if (event.getNewValue() instanceof String)
 				fJavaDoubleClickSelector.setSourceVersion((String) event.getNewValue());
 	}
-
+	
 	/*
-	 * @see org.eclipse.jface.text.source.SourceViewerConfiguration#getHyperlinkDetectors(org.eclipse.jface.text.source.ISourceViewer)
-	 * @since 3.1
+	 * @see org.eclipse.jface.text.source.SourceViewerConfiguration#getHyperlinkDetectorTargets(org.eclipse.jface.text.source.ISourceViewer)
+	 * @since 3.3
 	 */
-	public IHyperlinkDetector[] getHyperlinkDetectors(ISourceViewer sourceViewer) {
-		if (!fPreferenceStore.getBoolean(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_HYPERLINKS_ENABLED))
-			return null;
-
-		IHyperlinkDetector[] inheritedDetectors= super.getHyperlinkDetectors(sourceViewer);
-
-		if (fTextEditor == null)
-			return inheritedDetectors;
-
-		int inheritedDetectorsLength= inheritedDetectors != null ? inheritedDetectors.length : 0;
-		// TODO JDT UI NLS
-		IHyperlinkDetector[] detectors= new IHyperlinkDetector[inheritedDetectorsLength + 1];
-		// detectors[0]= new NLSKeyHyperlinkDetector(fTextEditor);
-		detectors[0]= new JavaElementHyperlinkDetector(fTextEditor);
-		for (int i= 0; i < inheritedDetectorsLength; i++)
-			detectors[i+1]= inheritedDetectors[i];
-
-		return detectors;
+	protected Map getHyperlinkDetectorTargets(ISourceViewer sourceViewer) {
+		Map targets= super.getHyperlinkDetectorTargets(sourceViewer);
+		targets.put("descent.ui.javaCode", fTextEditor); //$NON-NLS-1$
+		return targets;
 	}
 }
