@@ -139,7 +139,7 @@ public class TypeTuple extends Type {
 	}
 
 	@Override
-	public void toDecoBuffer(OutBuffer buf, SemanticContext context) {
+	public void toDecoBuffer(OutBuffer buf, int flag, SemanticContext context) {
 		 OutBuffer buf2 = new OutBuffer();
 		 Argument.argsToDecoBuffer(buf2, arguments, context);
 		 int len = buf2.data.length();

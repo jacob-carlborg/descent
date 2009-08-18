@@ -212,7 +212,8 @@ public class TypeTypedef extends Type {
 	}
 
 	@Override
-	public void toDecoBuffer(OutBuffer buf, SemanticContext context) {
+	public void toDecoBuffer(OutBuffer buf, int flag, SemanticContext context) {
+		super.toDecoBuffer(buf, flag, context);
 		String name = sym.mangle(context);
 		buf.writestring(ty.mangleChar);
 		buf.writestring(name);

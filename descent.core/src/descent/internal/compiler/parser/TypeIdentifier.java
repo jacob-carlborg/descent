@@ -151,7 +151,9 @@ public class TypeIdentifier extends TypeQualified {
 	}
 
 	@Override
-	public void toDecoBuffer(OutBuffer buf, SemanticContext context) {
+	public void toDecoBuffer(OutBuffer buf, int flag, SemanticContext context) {
+		super.toDecoBuffer(buf, flag, context);
+		
 		String name = ident.toChars();
 		int len = name.length();
 		buf.writestring(ty.mangleChar);

@@ -87,7 +87,7 @@ public class IntegerExp extends Expression {
 			if (((Expression) o).op == TOK.TOKint64) {
 				IntegerExp ne = (IntegerExp) o;
 				if (context.isD2()) {
-					return (type.toHeadMutable().equals(ne.type.toHeadMutable()))
+					return (type.toHeadMutable(context).equals(ne.type.toHeadMutable(context)))
 					 	&& value.equals(ne.value);
 				} else {
 					return type.equals(ne.type) && value.equals(ne.value);

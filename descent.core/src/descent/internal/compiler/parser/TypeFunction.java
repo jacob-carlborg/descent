@@ -385,7 +385,7 @@ public class TypeFunction extends Type implements Cloneable {
 	}
 
 	@Override
-	public void toDecoBuffer(OutBuffer buf, SemanticContext context) {
+	public void toDecoBuffer(OutBuffer buf, int flag, SemanticContext context) {
 		char mc;
 
 		if (inuse != 0) {
@@ -422,7 +422,7 @@ public class TypeFunction extends Type implements Cloneable {
 		Argument.argsToDecoBuffer(buf, parameters, context);
 		buf.writeByte((char) ('Z' - varargs)); // mark end of arg list
 		
-		next.toDecoBuffer(buf, context);
+		next.toDecoBuffer(buf, 0, context);
 		inuse--;
 	}
 
@@ -711,8 +711,8 @@ public class TypeFunction extends Type implements Cloneable {
 	}
 	
 	@Override
-	public Type makeConst(int startPosition, int length) {
-		TypeFunction tf = (TypeFunction) super.makeConst(startPosition, length);
+	public Type makeConst(int startPosition, int length, SemanticContext context) {
+		TypeFunction tf = (TypeFunction) super.makeConst(startPosition, length, context);
 		if (tf.postModifiers == null) {
 			tf.postModifiers = new ArrayList<Modifier>();
 		}
@@ -721,8 +721,8 @@ public class TypeFunction extends Type implements Cloneable {
 	}
 	
 	@Override
-	public Type makeInvariant(int startPosition, int length) {
-		TypeFunction tf = (TypeFunction) super.makeInvariant(startPosition, length);
+	public Type makeInvariant(int startPosition, int length, SemanticContext context) {
+		TypeFunction tf = (TypeFunction) super.makeInvariant(startPosition, length, context);
 		if (tf.postModifiers == null) {
 			tf.postModifiers = new ArrayList<Modifier>();
 		}

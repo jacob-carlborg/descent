@@ -582,10 +582,46 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	}
 
 	public Type semantic(char[] filename, int lineNumber, Scope sc, SemanticContext context) {
-		if (next != null) {
-			next = next.semantic(filename, lineNumber, sc, context);
+		if (context.isD1()) {
+			if (next != null) {
+				next = next.semantic(filename, lineNumber, sc, context);
+			}
 		}
 		return merge(context);
+	}
+	
+	/*******************************
+	 * Determine if converting 'this' to 'to' is an identity operation,
+	 * a conversion to const operation, or the types aren't the same.
+	 * Returns:
+	 *	MATCHequal	'this' == 'to'
+	 *	MATCHconst	'to' is const
+	 *	MATCHnomatch	conversion to mutable or invariant
+	 */
+	public MATCH constConv(Type to) {
+		MATCH m;
+		
+		if (equals(to)) {
+			m = MATCHexact;
+		} else if (ty == to.ty && to.mod == MODconst) {
+			m = MATCHconst;
+		} else {
+			m = MATCHnomatch;
+		}
+		
+		// TypeNext
+		if (m == MATCHconst && next.constConv(to.next) == MATCHnomatch) {
+			m = MATCHnomatch;
+		}
+		
+		return m;
+	}
+	
+	public void transitive(SemanticContext context) {
+		/*
+		 * Invoke transitivity of type attributes
+		 */
+		next = next.addMod(mod, context);
 	}
 	
 	public Type trySemantic(char[] filename, int lineNumber, Scope sc, SemanticContext context) {
@@ -613,7 +649,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 			OutBuffer buf = new OutBuffer();
 			StringValue sv;
 			
-			toDecoBuffer(buf, context);
+			toDecoBuffer(buf, 0, context);
 			sv = context.stringTable.update(buf.toString());
 			if (sv.ptrvalue != null) {
 				// Descent: changed to have better alias resolution in UI
@@ -658,11 +694,31 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		return t;
 	}
 
-	public void toDecoBuffer(OutBuffer buf, SemanticContext context) {
-		buf.writeByte(ty.mangleChar);
-		if (next != null) {
-			Assert.isTrue(next != this);
-			next.toDecoBuffer(buf, context);
+	public void toDecoBuffer(OutBuffer buf, int flag, SemanticContext context) {
+		if (context.isD1()) {
+			buf.writeByte(ty.mangleChar);
+			if (next != null) {
+				Assert.isTrue(next != this);
+				next.toDecoBuffer(buf, flag, context);
+			}
+		} else {
+			if (flag != mod && flag != 0x100) {
+				if ((mod & MODshared) != 0)
+					buf.writeByte('O');
+
+				if ((mod & MODconst) != 0)
+					buf.writeByte('x');
+				else if ((mod & MODinvariant) != 0)
+					buf.writeByte('y');
+
+				// Cannot be both const and invariant
+				assert ((mod & (MODconst | MODinvariant)) != (MODconst | MODinvariant));
+			}
+			buf.writeByte(ty.mangleChar);
+			
+			if (next != null) {
+				next.toDecoBuffer(buf, (flag & 0x100) != 0 ? 0 : mod, context);
+			}
 		}
 	}
 
@@ -749,8 +805,9 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		if (cto != null) {
 			return cto;
 		}
-		Type t = makeConst(0, 0);
+		Type t = makeConst(0, 0, context);
 		t = t.merge(context);
+		t.fixTo(this);
 		cto = t;
 		if (ito != null) {
 			ito.cto = t;
@@ -765,8 +822,9 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		if (ito != null) {
 			return ito;
 		}
-		Type t = makeInvariant(0, 0);
+		Type t = makeInvariant(0, 0, context);
 		t = t.merge(context);
+		t.fixTo(this);
 		ito = t;
 		if (cto != null) {
 			cto.ito = t;
@@ -777,7 +835,10 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	public Type mutableOf(SemanticContext context) {
 		Type t = this;
 		if (isConst()) {
-			t = cto;
+		    if (isShared())
+			    t = sto;		// shared const => shared
+			else
+			    t = cto;
 		} else if (isInvariant()) {
 			t = ito;
 		}
@@ -793,23 +854,35 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 			t.rto = null;
 			t.cto = null;
 			t.ito = null;
+			t.sto = null;
+			t.scto = null;
+			t.vtinfo = null;
 //			if (ty == Tsarray) {
 //				TypeSArray ta = (TypeSArray) t;
 //				//ta.next = ta.next.mutableOf();
 //			}
 			t = t.merge(context);
-			if (isConst()) {
-				cto = t;
+			t.fixTo(this);
+			
+			switch (mod) {
+			case MODconst:
 				t.cto = this;
-				if (ito != null) {
-					ito.cto = this;
-				}
-			} else if (isInvariant()) {
-				ito = t;
+				break;
+
+			case MODinvariant:
 				t.ito = this;
-				if (cto != null) {
-					cto.ito = this;
-				}
+				break;
+
+			case MODshared:
+				t.sto = this;
+				break;
+
+			case MODshared | MODconst:
+				t.scto = this;
+				break;
+
+			default:
+				throw new IllegalStateException();
 			}
 		}
 		return t;
@@ -823,7 +896,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 			Assert.isTrue (sto.isShared());
 			return sto;
 		}
-		Type t = makeShared();
+		Type t = makeShared(context);
 		t = t.merge(context);
 		t.fixTo(this);
 		return t;
@@ -837,7 +910,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 			assert (scto.mod == (MODshared | MODconst));
 			return scto;
 		}
-		Type t = makeSharedConst();
+		Type t = makeSharedConst(context);
 		t = t.merge(context);
 		t.fixTo(this);
 		return t;
@@ -1168,8 +1241,10 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		}
 	}
 	
-	public Type toHeadMutable() {
-		return this;
+	public Type toHeadMutable(SemanticContext context) {
+		if (0 == mod)
+			return this;
+		return mutableOf(context);
 	}
 	
 	public boolean isConst() {
@@ -1186,6 +1261,10 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	
 	public boolean isShared() {
 		return (mod & MODshared) != 0;
+	}
+	
+	public boolean isSharedConst() {
+		return mod == (MODshared | MODconst);
 	}
 
 	public Expression dotExp(Scope sc, Expression e, IdentifierExp ident,
@@ -1492,7 +1571,11 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		return next;
 	}
 
-	public Type makeConst(int startPosition, int length) {
+	public Type makeConst(int startPosition, int length, SemanticContext context) {
+		if (cto != null) {
+			return cto;
+		}
+		
 		Type t = copy();
 		t.mod = MODconst;
 	    t.deco = null;
@@ -1501,16 +1584,31 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	    t.rto = null;
 	    t.cto = null;
 	    t.ito = null;
-	    t.vtinfo = null;
+	    t.sto = null;
+		t.scto = null;
+		t.vtinfo = null;
 		if (t.modifications == null) {
 			t.modifications = new ArrayList<Modification>();
 		}
 		t.modifications.add(new Modification(TOK.TOKconst, startPosition,
 				length));
+		
+		// TypeNext
+		if (ty != Tfunction && ty != Tdelegate && next.deco != null && !next.isInvariant() && !next.isConst()) {
+			if (next.isShared())
+				t.next = next.sharedConstOf(context);
+			else
+				t.next = next.constOf(context);
+		}
+		
 		return t;
 	}
 
-	public Type makeInvariant(int startPosition, int length) {
+	public Type makeInvariant(int startPosition, int length, SemanticContext context) {
+		if (ito != null) {
+			return ito;
+		}
+		
 		Type t = copy();
 		t.mod = MODinvariant;
 	    t.deco = null;
@@ -1519,16 +1617,24 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	    t.rto = null;
 	    t.cto = null;
 	    t.ito = null;
-	    t.vtinfo = null;
+	    t.sto = null;
+		t.scto = null;
+		t.vtinfo = null;
 		if (t.modifications == null) {
 			t.modifications = new ArrayList<Modification>();
 		}
 		t.modifications.add(new Modification(TOK.TOKinvariant,
 				startPosition, length));
+		
+		// TypeNext
+		if (ty != Tfunction && ty != Tdelegate && next.deco != null && !next.isInvariant()) {
+			t.next = next.invariantOf(context);
+		}
+		
 		return t;
 	}
 	
-	public Type makeShared() {
+	public Type makeShared(SemanticContext context) {
 		if (sto != null)
 			return sto;
 		Type t = copy();
@@ -1542,10 +1648,19 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		t.sto = null;
 		t.scto = null;
 		t.vtinfo = null;
+		
+		// TypeNext
+		if (ty != Tfunction && ty != Tdelegate && next.deco != null && !next.isInvariant() && !next.isShared()) {
+			if (next.isConst())
+				t.next = next.sharedConstOf(context);
+			else
+				t.next = next.sharedOf(context);
+		}
+		
 		return t;
 	}
 	
-	public Type makeSharedConst() {
+	public Type makeSharedConst(SemanticContext context) {
 		if (scto != null)
 			return scto;
 		Type t = copy();
@@ -1559,6 +1674,12 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		t.sto = null;
 		t.scto = null;
 		t.vtinfo = null;
+		
+		// TypeNext
+		if (ty != Tfunction && ty != Tdelegate && next.deco != null && !next.isInvariant() && !next.isSharedConst()) {
+			t.next = next.sharedConstOf(context);
+		}
+		
 		return t;
 	}
 

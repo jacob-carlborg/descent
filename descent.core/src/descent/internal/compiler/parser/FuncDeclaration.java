@@ -1088,22 +1088,22 @@ public class FuncDeclaration extends Declaration {
 				case STCimmutable | STCconst | STCshared:
 				case STCimmutable | STCshared:
 					// Don't use toInvariant(), as that will do a merge()
-					type = type.makeInvariant(0, 0);
+					type = type.makeInvariant(0, 0, context);
 					type.deco = type.merge(context).deco;
 				break;
 
 				case STCconst:
-					type = type.makeConst(0, 0);
+					type = type.makeConst(0, 0, context);
 					type.deco = type.merge(context).deco;
 				break;
 
 				case STCshared | STCconst:
-					type = type.makeSharedConst();
+					type = type.makeSharedConst(context);
 					type.deco = type.merge(context).deco;
 				break;
 
 				case STCshared:
-					type = type.makeShared();
+					type = type.makeShared(context);
 					type.deco = type.merge(context).deco;
 				break;
 

@@ -377,8 +377,9 @@ public class TypeStruct extends Type {
 	}
 
 	@Override
-	public void toDecoBuffer(OutBuffer buf, SemanticContext context) {
+	public void toDecoBuffer(OutBuffer buf, int flag, SemanticContext context) {
 		String name = sym.mangle(context);
+		super.toDecoBuffer(buf, flag, context);
 		buf.printf(ty.mangleChar + name);
 	}
 

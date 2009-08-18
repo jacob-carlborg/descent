@@ -179,13 +179,13 @@ public class CatExp extends BinExp {
 			}
 
 			typeCombine(sc, context);
-			type = type.toHeadMutable();
+			type = type.toHeadMutable(context);
 
 			Type tb = type.toBasetype(context);
 			if (tb.ty == Tsarray)
 				type = tb.nextOf().arrayOf(context);
 			if (type.ty == Tarray && tb1.nextOf() != null && tb2.nextOf() != null && tb1.nextOf().mod != tb2.nextOf().mod) {
-				type = type.nextOf().toHeadMutable().arrayOf(context);
+				type = type.nextOf().toHeadMutable(context).arrayOf(context);
 			}
 			Type t1 = e1.type.toBasetype(context);
 			Type t2 = e2.type.toBasetype(context);

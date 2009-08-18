@@ -53,6 +53,16 @@ public class TypeSArray extends TypeArray {
 	public int alignsize(SemanticContext context) {
 		return next.alignsize(context);
 	}
+	
+	@Override
+	public MATCH constConv(Type to) {
+		if (to.ty == Tsarray) {
+			TypeSArray tsa = (TypeSArray) to;
+			if (!dim.equals(tsa.dim))
+				return MATCHnomatch;
+		}
+		return super.constConv(to);
+	}
 
 	@Override
 	public MATCH deduceType(Scope sc, Type tparam,
@@ -454,13 +464,12 @@ public class TypeSArray extends TypeArray {
 	}
 
 	@Override
-	public void toDecoBuffer(OutBuffer buf, SemanticContext context) {
+	public void toDecoBuffer(OutBuffer buf, int flag, SemanticContext context) {
 		buf.writeByte(ty.mangleChar);
 		if (null != dim)
 			buf.data.append(dim.toInteger(context));
-			//buf.printf(dim.toInteger(context) + "u");
 		if (null != next)
-			next.toDecoBuffer(buf, context);
+			next.toDecoBuffer(buf, (flag & 0x100) != 0 ? flag : mod, context);
 	}
 
 	@Override

@@ -14,7 +14,7 @@ func.c  --> missing StaticCtorDeclaration::StaticCtorDeclaration
             
 Remaining from DMD 2.030 vs. 1.045
 ------------------------------
- * mtype.c
+ * mtype.c (up to but excluding TypeSArray::implicitConvTo)
  * mtype.h
  * optimize.c
  * statement.c

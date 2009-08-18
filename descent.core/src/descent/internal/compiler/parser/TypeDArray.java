@@ -171,10 +171,10 @@ public class TypeDArray extends TypeArray {
 	}
 
 	@Override
-	public void toDecoBuffer(OutBuffer buf, SemanticContext context) {
+	public void toDecoBuffer(OutBuffer buf, int flag, SemanticContext context) {
 		buf.writeByte(ty.mangleChar);
 		if (next != null) {
-			next.toDecoBuffer(buf, context);
+			next.toDecoBuffer(buf, (flag & 0x100) != 0 ? 0 : mod, context);
 		}
 	}
 	

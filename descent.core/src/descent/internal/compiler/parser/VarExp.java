@@ -64,7 +64,7 @@ public class VarExp extends SymbolExp {
 			if (((Expression) o).op == TOKvar) {
 				VarExp ne = (VarExp) o;
 				if (context.isD2()) {
-					return (type.toHeadMutable().equals(ne.type.toHeadMutable()))
+					return (type.toHeadMutable(context).equals(ne.type.toHeadMutable(context)))
 						&& var.equals(ne.var);
 				} else {
 					return type.equals(ne.type) && var.equals(ne.var);

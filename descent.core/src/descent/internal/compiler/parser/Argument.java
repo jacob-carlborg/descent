@@ -252,7 +252,7 @@ public class Argument extends ASTDmdNode implements Cloneable {
 		default:
 			throw new IllegalStateException("assert(0);");
 		}
-		type.toDecoBuffer(buf, context);
+		type.toDecoBuffer(buf, 0, context);
 	}
 	
 	public Argument copy() {
