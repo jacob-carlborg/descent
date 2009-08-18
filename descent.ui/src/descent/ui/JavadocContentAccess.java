@@ -415,15 +415,13 @@ public class JavadocContentAccess {
 			case ITerminalSymbols.TokenNameEQUAL_EQUAL_EQUAL:
 			case ITerminalSymbols.TokenNameGREATER:
 			case ITerminalSymbols.TokenNameGREATER_EQUAL:
-			case ITerminalSymbols.TokenNameLBRACE:
-			case ITerminalSymbols.TokenNameLBRACKET:
+			
 			case ITerminalSymbols.TokenNameLEFT_SHIFT:
 			case ITerminalSymbols.TokenNameLEFT_SHIFT_EQUAL:
 			case ITerminalSymbols.TokenNameLESS:
 			case ITerminalSymbols.TokenNameLESS_EQUAL:
 			case ITerminalSymbols.TokenNameLESS_GREATER:
 			case ITerminalSymbols.TokenNameLESS_GREATER_EQUAL:
-			case ITerminalSymbols.TokenNameLPAREN:
 			case ITerminalSymbols.TokenNameMINUS:
 			case ITerminalSymbols.TokenNameMINUS_EQUAL:
 			case ITerminalSymbols.TokenNameMINUS_MINUS:
@@ -445,13 +443,10 @@ public class JavadocContentAccess {
 			case ITerminalSymbols.TokenNamePLUS_EQUAL:
 			case ITerminalSymbols.TokenNamePLUS_PLUS:
 			case ITerminalSymbols.TokenNameQUESTION:
-			case ITerminalSymbols.TokenNameRBRACE:
-			case ITerminalSymbols.TokenNameRBRACKET:
 			case ITerminalSymbols.TokenNameREMAINDER:
 			case ITerminalSymbols.TokenNameREMAINDER_EQUAL:
 			case ITerminalSymbols.TokenNameRIGHT_SHIFT:
 			case ITerminalSymbols.TokenNameRIGHT_SHIFT_EQUAL:
-			case ITerminalSymbols.TokenNameRPAREN:
 			case ITerminalSymbols.TokenNameSEMICOLON:
 			case ITerminalSymbols.TokenNameTILDE:
 			case ITerminalSymbols.TokenNameTILDE_EQUAL:
@@ -460,6 +455,14 @@ public class JavadocContentAccess {
 			case ITerminalSymbols.TokenNameXOR:
 			case ITerminalSymbols.TokenNameXOR_EQUAL:
 				styleClassName = IJavaColorConstants.JAVA_OPERATOR;				
+				break;
+			case ITerminalSymbols.TokenNameRBRACE:
+			case ITerminalSymbols.TokenNameRBRACKET:
+			case ITerminalSymbols.TokenNameRPAREN:
+			case ITerminalSymbols.TokenNameLBRACE:
+			case ITerminalSymbols.TokenNameLBRACKET:
+			case ITerminalSymbols.TokenNameLPAREN:
+				styleClassName = IJavaColorConstants.JAVA_BRACKET;				
 				break;
 			case ITerminalSymbols.TokenNamePRAGMA:
 				styleClassName = IJavaColorConstants.JAVA_PRAGMA;

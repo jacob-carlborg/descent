@@ -18,6 +18,7 @@ public class JavadocViewHelper {
 		addStyle(buffer, IJavaColorConstants.JAVA_KEYWORD_RETURN);
 		addStyle(buffer, IJavaColorConstants.JAVA_SPECIAL_TOKEN);
 		addStyle(buffer, IJavaColorConstants.JAVA_OPERATOR);
+		addStyle(buffer, IJavaColorConstants.JAVA_BRACKET);
 		addStyle(buffer, IJavaColorConstants.JAVA_DEFAULT);
 		addStyle(buffer, IJavaColorConstants.JAVA_PRAGMA);
 		addStyle(buffer, IJavaColorConstants.JAVA_STRING);

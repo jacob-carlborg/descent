@@ -18,6 +18,7 @@ import org.eclipse.swt.graphics.RGB;
 
 import descent.core.Flags;
 import descent.core.dom.ASTNode;
+import descent.core.dom.Expression;
 import descent.core.dom.FunctionDeclaration;
 import descent.core.dom.IBinding;
 import descent.core.dom.IMethodBinding;
@@ -218,6 +219,13 @@ public class SemanticHighlightings {
 	 * @since 3.2
 	 */
 	public static final String TYPE_ARGUMENT="typeArgument"; //$NON-NLS-1$
+	
+	/**
+	 * A named preference part that controls the highlighting of numbers.
+	 *
+	 * @since 3.2
+	 */
+	public static final String NUMBER="number"; //$NON-NLS-1$
 	
 	/**
 	 * Semantic highlightings
@@ -1891,6 +1899,75 @@ public class SemanticHighlightings {
 	}
 	
 	/**
+	 * Semantic highlighting for numbers.
+	 * @since 3.4
+	 */
+	private static final class NumberHighlighting extends SemanticHighlighting {
+
+		/*
+		 * @see org.eclipse.jdt.internal.ui.javaeditor.SemanticHighlighting#getPreferenceKey()
+		 */
+		public String getPreferenceKey() {
+			return NUMBER;
+		}
+
+		/*
+		 * @see org.eclipse.jdt.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextColor()
+		 */
+		public RGB getDefaultDefaultTextColor() {
+			return new RGB(42, 0, 255);
+		}
+
+		/*
+		 * @see org.eclipse.jdt.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextStyleBold()
+		 */
+		public boolean isBoldByDefault() {
+			return false;
+		}
+
+		/*
+		 * @see org.eclipse.jdt.internal.ui.javaeditor.SemanticHighlighting#isItalicByDefault()
+		 */
+		public boolean isItalicByDefault() {
+			return false;
+		}
+
+		/*
+		 * @see org.eclipse.jdt.internal.ui.javaeditor.SemanticHighlighting#isEnabledByDefault()
+		 */
+		public boolean isEnabledByDefault() {
+			return false;
+		}
+
+		/*
+		 * @see org.eclipse.jdt.internal.ui.javaeditor.ISemanticHighlighting#getDisplayName()
+		 */
+		public String getDisplayName() {
+			return JavaEditorMessages.SemanticHighlighting_numbers;
+		}
+		
+		@Override
+		public RGB getDefaultTextColor() {
+			return new RGB(0, 0, 0);
+		}
+
+		/*
+		 * @see org.eclipse.jdt.internal.ui.javaeditor.SemanticHighlighting#consumes(org.eclipse.jdt.internal.ui.javaeditor.SemanticToken)
+		 */
+		public boolean consumes(SemanticToken token) {
+			return false;
+		}
+
+		/*
+		 * @see org.eclipse.jdt.internal.ui.javaeditor.SemanticHighlighting#consumesLiteral(org.eclipse.jdt.internal.ui.javaeditor.SemanticToken)
+		 */
+		public boolean consumesLiteral(SemanticToken token) {
+			Expression expr= token.getLiteral();
+			return expr != null && expr.getNodeType() == ASTNode.NUMBER_LITERAL;
+		}
+	}
+	
+	/**
 	 * A named preference that controls the given semantic highlighting's color.
 	 *
 	 * @param semanticHighlighting the semantic highlighting
@@ -1983,6 +2060,7 @@ public class SemanticHighlightings {
 				new EnumHighlighting(),
 				new InterfaceHighlighting(),
 				new TemplateHighlighting(),
+				new NumberHighlighting(),
 			};
 		return fgSemanticHighlightings;
 	}

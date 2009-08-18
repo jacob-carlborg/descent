@@ -100,6 +100,13 @@ public interface IJavaColorConstants {
 	 * @since 3.0
 	 */
 	String JAVA_OPERATOR= "java_operator"; //$NON-NLS-1$
+	
+	/** The color key for brackets in Java code
+	 * (value <code>"java_bracket"</code>).
+	 *
+	 * @since 3.3
+	 */
+	String JAVA_BRACKET= "java_bracket"; //$NON-NLS-1$
 
 	/**
 	 * The color key for everything in Java code for which no other color is specified
