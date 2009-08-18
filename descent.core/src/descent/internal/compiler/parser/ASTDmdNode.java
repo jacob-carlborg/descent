@@ -1582,24 +1582,26 @@ public abstract class ASTDmdNode extends ASTNode {
 						return 0;
 					}
 					
-					/* Try to disambiguate using template-style partial ordering rules.
-				     * In essence, if f() and g() are ambiguous, if f() can call g(),
-				     * but g() cannot call f(), then pick f().
-				     * This is because f() is "more specialized."
-				     */
-				    {
-						MATCH c1 = f.leastAsSpecialized(m.lastf, context);
-						MATCH c2 = m.lastf.leastAsSpecialized(f, context);
-						if (c1.ordinal() > c2.ordinal()) {
-							// goto LfIsBetter;
-							m.last = match;
-							m.lastf = f;
-							m.count = 1;
-							return 0;
-						}
-						if (c1.ordinal() < c2.ordinal()) {
-							// goto LlastIsBetter;
-							return 0;
+					if (context.isD2()) {
+						/* Try to disambiguate using template-style partial ordering rules.
+					     * In essence, if f() and g() are ambiguous, if f() can call g(),
+					     * but g() cannot call f(), then pick f().
+					     * This is because f() is "more specialized."
+					     */
+					    {
+							MATCH c1 = f.leastAsSpecialized(m.lastf, context);
+							MATCH c2 = m.lastf.leastAsSpecialized(f, context);
+							if (c1.ordinal() > c2.ordinal()) {
+								// goto LfIsBetter;
+								m.last = match;
+								m.lastf = f;
+								m.count = 1;
+								return 0;
+							}
+							if (c1.ordinal() < c2.ordinal()) {
+								// goto LlastIsBetter;
+								return 0;
+							}
 						}
 					}
 

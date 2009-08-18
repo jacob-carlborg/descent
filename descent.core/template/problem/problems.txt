@@ -295,6 +295,9 @@ DeleteDeallocatorsOnlyForClassOrStruct
 ConstructorsOnlyForClass
 	formatString=Constructors only are for class definitions
 	numArgs=0
+ConstructorsOnlyForClassOrStruct
+	formatString=Constructors only are for class or struct definitions
+	numArgs=0
 DestructorsOnlyForClass
 	formatString=Destructors only are for class definitions
 	numArgs=0
@@ -1561,7 +1564,12 @@ CastNotAllowedInSafeMode
 SliceIsNotMutable
 	formatString=Slice %1$s is not mutable
 	numArgs=1
-
+SymbolIsNothrowYetMayThrow
+	formatString='%1$s' is nothrow yet may throw
+	numArgs=1
+DefaultConstructorNotAllowedForStructs
+	formatString=Default constructor not allowed for structs
+	numArgs=0
 	
 
 	

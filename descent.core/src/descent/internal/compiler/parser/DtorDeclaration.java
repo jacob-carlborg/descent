@@ -67,17 +67,22 @@ public class DtorDeclaration extends FuncDeclaration {
 
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-		ClassDeclaration cd;
+		AggregateDeclaration cd;
 
 		parent = sc.parent;
 		Dsymbol parent = toParent();
-		cd = parent.isClassDeclaration();
+		
+		if (context.isD1()) {
+			cd = parent.isClassDeclaration();
+		} else {
+			cd = parent.isAggregateDeclaration();
+		}
 		if (cd == null) {
 			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 						IProblem.DestructorsOnlyForClass, this));
 			}
-		} else {
+		} else if (context.isD1() || (context.isD2() && equals(ident, Id.dtor))){
 			if (cd.dtors == null) {
 				cd.dtors = new FuncDeclarations(1);
 			}
@@ -92,6 +97,16 @@ public class DtorDeclaration extends FuncDeclaration {
 		super.semantic(sc, context);
 
 		sc.pop();
+	}
+	
+	@Override
+	public String kind() {
+		return "destructor";
+	}
+	
+	@Override
+	public String toChars(SemanticContext context) {
+		return "~this";
 	}
 
 	@Override

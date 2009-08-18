@@ -109,6 +109,7 @@ final class ProblemMessages extends NLS {
 	public static String NewAllocatorsOnlyForClassOrStruct;
 	public static String DeleteDeallocatorsOnlyForClassOrStruct;
 	public static String ConstructorsOnlyForClass;
+	public static String ConstructorsOnlyForClassOrStruct;
 	public static String DestructorsOnlyForClass;
 	public static String InvariantsOnlyForClassStructUnion;
 	public static String FunctionDoesNotOverrideAny;
@@ -531,6 +532,8 @@ final class ProblemMessages extends NLS {
 	public static String CannotCastTuple;
 	public static String CastNotAllowedInSafeMode;
 	public static String SliceIsNotMutable;
+	public static String SymbolIsNothrowYetMayThrow;
+	public static String DefaultConstructorNotAllowedForStructs;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

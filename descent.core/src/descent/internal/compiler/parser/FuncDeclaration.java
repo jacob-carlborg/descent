@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import static descent.internal.compiler.parser.BE.BEfallthru;
+import static descent.internal.compiler.parser.BE.BEthrow;
 import static descent.internal.compiler.parser.BUILTIN.BUILTINcos;
 import static descent.internal.compiler.parser.BUILTIN.BUILTINfabs;
 import static descent.internal.compiler.parser.BUILTIN.BUILTINnot;
@@ -14,11 +15,13 @@ import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 import static descent.internal.compiler.parser.PROT.PROTexport;
 import static descent.internal.compiler.parser.PROT.PROTprivate;
+import static descent.internal.compiler.parser.STC.STC_TYPECTOR;
 import static descent.internal.compiler.parser.STC.STCabstract;
 import static descent.internal.compiler.parser.STC.STCauto;
 import static descent.internal.compiler.parser.STC.STCconst;
 import static descent.internal.compiler.parser.STC.STCdeprecated;
 import static descent.internal.compiler.parser.STC.STCfinal;
+import static descent.internal.compiler.parser.STC.STCimmutable;
 import static descent.internal.compiler.parser.STC.STCin;
 import static descent.internal.compiler.parser.STC.STCinvariant;
 import static descent.internal.compiler.parser.STC.STClazy;
@@ -27,6 +30,7 @@ import static descent.internal.compiler.parser.STC.STCout;
 import static descent.internal.compiler.parser.STC.STCparameter;
 import static descent.internal.compiler.parser.STC.STCref;
 import static descent.internal.compiler.parser.STC.STCscope;
+import static descent.internal.compiler.parser.STC.STCshared;
 import static descent.internal.compiler.parser.STC.STCstatic;
 import static descent.internal.compiler.parser.STC.STCtls;
 import static descent.internal.compiler.parser.STC.STCvariadic;
@@ -42,8 +46,10 @@ import static descent.internal.compiler.parser.TY.Tinstance;
 import static descent.internal.compiler.parser.TY.Tint32;
 import static descent.internal.compiler.parser.TY.Tpointer;
 import static descent.internal.compiler.parser.TY.Tsarray;
+import static descent.internal.compiler.parser.TY.Tstruct;
 import static descent.internal.compiler.parser.TY.Ttuple;
 import static descent.internal.compiler.parser.TY.Tvoid;
+import static descent.internal.compiler.parser.Type.MODconst;
 
 import java.util.List;
 
@@ -345,7 +351,7 @@ public class FuncDeclaration extends Declaration {
 					return 1;
 				}
 			} else {
-				ClassDeclaration thiscd = s.isClassDeclaration();
+				AggregateDeclaration thiscd = context.isD1() ? s.isClassDeclaration() : s.isAggregateDeclaration();
 				if (thiscd != null) {
 					if (!thiscd.isNested()) {
 						// goto Lerr;
@@ -743,8 +749,7 @@ public class FuncDeclaration extends Declaration {
 	}
 	
 	public boolean isPure() {
-		// SEMANTIC pure
-		return false;
+	    return ((TypeFunction)this.type).ispure;
 	}
 
 	public boolean isVirtual(SemanticContext context) {
@@ -816,11 +821,13 @@ public class FuncDeclaration extends Declaration {
 			return false;
 		}
 
-		if (type != null && f.type != null
-				&& // can be NULL for overloaded constructors
-				f.type.covariant(type, context) != 0
-				&& isFuncAliasDeclaration() == null) {
-			return false;
+		if (context.isD1()) {
+			if (type != null && f.type != null
+					&& // can be NULL for overloaded constructors
+					f.type.covariant(type, context) != 0
+					&& isFuncAliasDeclaration() == null) {
+				return false;
+			}
 		}
 
 		if (overnext != null) {
@@ -838,59 +845,56 @@ public class FuncDeclaration extends Declaration {
 	 *	match	'this' is at least as specialized as g
 	 *	0	g is more specialized than 'this'
 	 */
-	public MATCH leastAsSpecialized(FuncDeclaration g, SemanticContext context)
-	{
-	    /* This works by calling g() with f()'s parameters, and
-	     * if that is possible, then f() is at least as specialized
-	     * as g() is.
-	     */
+	public MATCH leastAsSpecialized(FuncDeclaration g, SemanticContext context) {
+		/*
+		 * This works by calling g() with f()'s parameters, and if that is
+		 * possible, then f() is at least as specialized as g() is.
+		 */
 
-	    TypeFunction tf = (TypeFunction) type;
-	    TypeFunction tg = (TypeFunction) g.type;
-	    int nfparams = Argument.dim(tf.parameters, context);
-	    int ngparams = Argument.dim(tg.parameters, context);
-	    MATCH match = MATCHexact;
+		TypeFunction tf = (TypeFunction) type;
+		TypeFunction tg = (TypeFunction) g.type;
+		int nfparams = Argument.dim(tf.parameters, context);
+		int ngparams = Argument.dim(tg.parameters, context);
+		MATCH match = MATCHexact;
 
-	    /* If both functions have a 'this' pointer, and the mods are not
-	     * the same and g's is not const, then this is less specialized.
-	     */
-	    if (needThis() && g.needThis())
-	    {
-		if (tf.mod != tg.mod)
-		{
-		    if (tg.mod == Type.MODconst)
-			match = MATCHconst;
-		    else
-			return MATCHnomatch;
+		/*
+		 * If both functions have a 'this' pointer, and the mods are not the
+		 * same and g's is not const, then this is less specialized.
+		 */
+		if (needThis() && g.needThis()) {
+			if (tf.mod != tg.mod) {
+				if (tg.mod == Type.MODconst)
+					match = MATCHconst;
+				else
+					return MATCHnomatch;
+			}
 		}
-	    }
 
-	    /* Create a dummy array of arguments out of the parameters to f()
-	     */
-	    Expressions args = new Expressions(nfparams);
-	    args.setDim(nfparams);
-	    for (int u = 0; u < nfparams; u++)
-	    {
-		Argument p = Argument.getNth(tf.parameters, u, context);
-		Expression e = p.type.defaultInit(context);
-		args.set(u, e);
-	    }
+		/*
+		 * Create a dummy array of arguments out of the parameters to f()
+		 */
+		Expressions args = new Expressions(nfparams);
+		args.setDim(nfparams);
+		for (int u = 0; u < nfparams; u++) {
+			Argument p = Argument.getNth(tf.parameters, u, context);
+			Expression e = p.type.defaultInit(context);
+			args.set(u, e);
+		}
 
-	    MATCH m = (MATCH) tg.callMatch(null, args, context);
-	    if (m != MATCHnomatch)
-	    {
-	        /* A variadic template is less specialized than a
-	         * non-variadic one.
-	         */
-	        if (tf.varargs != 0 && 0 == tg.varargs) {
-	            // goto L1;	// less specialized
-	        	return MATCHnomatch;
-	        }
+		MATCH m = (MATCH) tg.callMatch(null, args, context);
+		if (m != MATCHnomatch) {
+			/*
+			 * A variadic template is less specialized than a non-variadic one.
+			 */
+			if (tf.varargs != 0 && 0 == tg.varargs) {
+				// goto L1; // less specialized
+				return MATCHnomatch;
+			}
 
-	        return m;
-	    }
-//	  L1:
-	    return MATCHnomatch;
+			return m;
+		}
+		// L1:
+		return MATCHnomatch;
 	}
 	
 	public FuncDeclaration overloadResolve(char[] filename, int lineNumber, Expression ethis, Expressions arguments,
@@ -1053,7 +1057,11 @@ public class FuncDeclaration extends Declaration {
 			protection = sc.protection;
 		}
 		
-		storage_class |= sc.stc;		
+		if (context.isD1()) {
+			storage_class |= sc.stc;
+		} else {
+			storage_class |= sc.stc & ~STCref;
+		}
 		
 		if (context.isD2()) {
 			if (null == originalType)
@@ -1063,20 +1071,50 @@ public class FuncDeclaration extends Declaration {
 				 * Apply const and invariant storage class to the function type
 				 */
 				type = type.semantic(filename, lineNumber, sc, context);
-				if ((storage_class & STCinvariant) != 0) { // Don't use
-															// toInvariant(), as
-															// that will do a
-															// merge()
+				int stc = 0;
+				if (type.isInvariant()) {
+					stc |= STCimmutable;
+				}
+				if (type.isConst()) {
+					stc |= STCconst;
+				}
+				if (type.isShared()) {
+					stc |= STCshared;
+				}
+				
+				switch (stc & STC_TYPECTOR) {
+				case STCimmutable:
+				case STCimmutable | STCconst:
+				case STCimmutable | STCconst | STCshared:
+				case STCimmutable | STCshared:
+					// Don't use toInvariant(), as that will do a merge()
 					type = type.makeInvariant(0, 0);
 					type.deco = type.merge(context).deco;
-				} else if ((storage_class & STCconst) != 0) {
-					if (!type.isInvariant()) { // Don't use toConst(), as that
-												// will do a merge()
-						type = type.makeConst(0, 0);
-						type.deco = type.merge(context).deco;
-					}
+				break;
+
+				case STCconst:
+					type = type.makeConst(0, 0);
+					type.deco = type.merge(context).deco;
+				break;
+
+				case STCshared | STCconst:
+					type = type.makeSharedConst();
+					type.deco = type.merge(context).deco;
+				break;
+
+				case STCshared:
+					type = type.makeShared();
+					type.deco = type.merge(context).deco;
+				break;
+
+				case 0:
+				break;
+
+				default:
+					throw new IllegalStateException();
 				}
 			}
+			
 			if (type.ty != Tfunction) {
 				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolMustBeAFunction, this, new String[] { toChars(context) }));
@@ -1098,11 +1136,13 @@ public class FuncDeclaration extends Declaration {
 
 		Dsymbol parent = toParent();
 		
-	    if (equals(ident, Id.ctor) && null == isCtorDeclaration()) {
-	    	if (context.acceptsErrors()) {
-	    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.CtorIsReservedForConstructors, this));
-	    	}
-	    }
+		if (context.isD1()) {
+		    if (equals(ident, Id.ctor) && null == isCtorDeclaration()) {
+		    	if (context.acceptsErrors()) {
+		    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.CtorIsReservedForConstructors, this));
+		    	}
+		    }
+		}
 
 		if (context.isD2()) {
 			if (isAuto() || isScope()) {
@@ -1145,20 +1185,28 @@ public class FuncDeclaration extends Declaration {
 
 		sd = parent.isStructDeclaration();
 		if (sd != null) {
-			boolean condition;
 			if (context.isD2()) {
-				condition = isCtorDeclaration() != null;
-			} else {
-				condition = isCtorDeclaration() != null 
-				  || isDtorDeclaration() != null;
+				if (isCtorDeclaration() != null) {
+					return;
+				}
 			}
 			
-			// Verify no constructors, destructors, etc.
-			if (condition) {
-				if (context.acceptsErrors()) {
-					context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-							IProblem.SpecialMemberFunctionsNotAllowedForSymbol,
-							this, new String[] { sd.kind() }));
+			if (context.isD1()) {
+				boolean condition;
+				if (context.isD2()) {
+					condition = isCtorDeclaration() != null;
+				} else {
+					condition = isCtorDeclaration() != null 
+					  || isDtorDeclaration() != null;
+				}
+				
+				// Verify no constructors, destructors, etc.
+				if (condition) {
+					if (context.acceptsErrors()) {
+						context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+								IProblem.SpecialMemberFunctionsNotAllowedForSymbol,
+								this, new String[] { sd.kind() }));
+					}
 				}
 			}
 		}
@@ -1690,26 +1738,44 @@ public class FuncDeclaration extends Declaration {
 				
 				if (context.isD2()) {
 					Type thandle = ad.handle;
-					if ((storage_class & STCconst) != 0 || type.isConst())
-					{
-					    if (thandle.ty == Tclass)
-						thandle = thandle.constOf(context);
-					    else
-					    {	assert(thandle.ty == Tpointer);
-						thandle = thandle.nextOf().constOf(context).pointerTo(context);
-					    }
-					}
-					else if ((storage_class & STCinvariant) != 0 || type.isInvariant())
-					{
-					    if (thandle.ty == Tclass)
-						thandle = thandle.invariantOf(context);
-					    else
-					    {	assert(thandle.ty == Tpointer);
-						thandle = thandle.nextOf().invariantOf(context).pointerTo(context);
-					    }
+					if (context.STRUCTTHISREF()) {
+						thandle = thandle.addMod(type.mod, context);
+						thandle = thandle.addStorageClass(storage_class,
+								context);
+						if (isPure()) {
+							thandle = thandle.addMod(MODconst, context);
+						}
+					} else {
+						if ((storage_class & STCconst) != 0 || type.isConst()) {
+							throw new IllegalStateException(
+									"BUG: shared not handled");
+							// if (thandle.ty == Tclass)
+							// thandle = thandle.constOf(context);
+							// else
+							// { assert(thandle.ty == Tpointer);
+							// thandle =
+							// thandle.nextOf().constOf(context).pointerTo(context);
+							// }
+						} else if ((storage_class & STCimmutable) != 0
+								|| type.isInvariant()) {
+							if (thandle.ty == Tclass)
+								thandle = thandle.invariantOf(context);
+							else {
+								assert (thandle.ty == Tpointer);
+								thandle = thandle.nextOf().invariantOf(context)
+										.pointerTo(context);
+							}
+						} else if ((storage_class & STCshared) != 0
+								|| type.isShared()) {
+							throw new IllegalStateException("not implemented");
+						}
 					}
 					v = new ThisDeclaration(filename, lineNumber, thandle);
 					v.storage_class |= STCparameter;
+					if (context.STRUCTTHISREF()) {
+						if (thandle.ty == Tstruct)
+						    v.storage_class |= STCref;
+					}
 				} else {
 					v = new ThisDeclaration(filename, lineNumber, ad.handle);
 					v.storage_class |= STCparameter | STCin;
@@ -1820,7 +1886,18 @@ public class FuncDeclaration extends Declaration {
 				     */
 				    arg.ident = id = context.generateId("_param_", i);
 				}
-				VarDeclaration v = new VarDeclaration(filename, lineNumber, arg.type, id, null);
+				VarDeclaration v;
+				
+				if (context.isD1()) {
+					v = new VarDeclaration(filename, lineNumber, arg.type, id, null);
+					
+				} else {
+					Type vtype = arg.type;
+					if (isPure())
+					    vtype = vtype.addMod(MODconst, context);
+					v = new VarDeclaration(filename, lineNumber, vtype, id, null);
+				}
+				
 				v.copySourceRange(arg);
 
 				// Descent: for binding resolution
@@ -1852,6 +1929,12 @@ public class FuncDeclaration extends Declaration {
 						v.storage_class |= STCin;
 					}
 				}
+				
+				if (context.isD2()) {
+					if ((v.storage_class & STClazy) != 0)
+					    v.storage_class |= STCin;
+				}
+				
 				v.semantic(sc2, context);
 				if (sc2.insert(v) == null) {
 					if (context.acceptsErrors()) {
@@ -2011,9 +2094,16 @@ public class FuncDeclaration extends Declaration {
 						e = new CallExp(filename, lineNumber, e);
 						e = e.semantic(sc2, context);
 					}
-				} else { // Call invariant virtually
-					ThisExp v = new ThisExp(filename, lineNumber);
+				} else { 
+					// Call invariant virtually
+					Expression v = new ThisExp(filename, lineNumber);
 					v.type = vthis.type;
+					
+					if (context.STRUCTTHISREF()) {
+					    if (ad.isStructDeclaration() != null)
+							v = v.addressOf(sc, context);
+					}
+					
 					e = new AssertExp(filename, lineNumber, v);
 				}
 				if (e != null) {
@@ -2063,7 +2153,7 @@ public class FuncDeclaration extends Declaration {
 				f = (TypeFunction) type;
 			}
 
-			boolean offend = fbody != null ? (fbody.blockExit(context) & BEfallthru) != 0: true;
+			int offend = fbody != null ? fbody.blockExit(context) & BEfallthru : 1;
 
 			if (isStaticCtorDeclaration() != null) {
 				/*
@@ -2121,23 +2211,28 @@ public class FuncDeclaration extends Declaration {
 					Expression e1 = new SuperExp(filename, lineNumber);
 					Expression e = new CallExp(filename, lineNumber, e1);
 
-					int errors = context.global.errors;
-					context.global.gag++;
-					e = e.semantic(sc2, context);
-					context.global.gag--;
-					if (errors != context.global.errors) {
+					if (context.isD1()) {
+						int errors = context.global.errors;
+						context.global.gag++;
+						e = e.semantic(sc2, context);
+						context.global.gag--;
+						if (errors != context.global.errors) {
+							if (context.acceptsErrors()) {
+								context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.NoMatchForImplicitSuperCallInConstructor, this));
+							}
+						}
 
-						if (context.acceptsErrors()) {
-							context
-									.acceptProblem(Problem
-											.newSemanticTypeErrorLoc(
-													IProblem.NoMatchForImplicitSuperCallInConstructor,
-													this));
+						Statement s = new ExpStatement(filename, lineNumber, e);
+						fbody = new CompoundStatement(filename, lineNumber, s, fbody);
+					} else {
+						e = e.trySemantic(sc2, context);
+						if (null == e) {
+							context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.NoMatchForImplicitSuperCallInConstructor, this));
+						} else {
+							Statement s = new ExpStatement(filename, lineNumber, e);
+							fbody = new CompoundStatement(filename, lineNumber, s, fbody);
 						}
 					}
-
-					Statement s = new ExpStatement(filename, lineNumber, e);
-					fbody = new CompoundStatement(filename, lineNumber, s, fbody);
 				}
 			} else if (fes != null) {
 				// For foreach(){} body, append a return 0;
@@ -2152,44 +2247,42 @@ public class FuncDeclaration extends Declaration {
 							new String[] { type.nextOf().toString() }));
 				}
 			} else if (!inlineAsm) {
-				offend = fbody != null ? (fbody.blockExit(context) & BEfallthru) != 0 : true;
+				if (context.isD2()) {
+					int blockexit = fbody != null ? fbody.blockExit(context) : 0;
+					if (f.isnothrow && (blockexit & BEthrow) != 0) {
+						if (context.acceptsErrors()) {
+							context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+									IProblem.SymbolIsNothrowYetMayThrow, this,
+									toChars(context)));
+						}
+					}
+
+					offend = blockexit & BEfallthru;
+				}
 				
 				if (type.nextOf().ty == Tvoid) {
-					if (offend && isMain()) { // Add a return 0; statement
+					if (offend != 0 && isMain()) { // Add a return 0; statement
 						Statement s = new ReturnStatement(filename, lineNumber, new IntegerExp(
 								filename, lineNumber, 0));
 						fbody = new CompoundStatement(filename, lineNumber, fbody, s);
 					}
 				} else {
-					if (offend) {
+					if (offend != 0) {
 						Expression e;
 
 						if (context.global.params.warnings) {
 							if (context.acceptsWarnings()) {
-								context
-										.acceptProblem(Problem
-												.newSemanticTypeWarning(
-														IProblem.NoReturnAtEndOfFunction,
-														getLineNumber(),
-														getErrorStart(),
-														getErrorLength(),
-														new String[] { toChars(context) }));
+								context.acceptProblem(Problem.newSemanticTypeWarning(IProblem.NoReturnAtEndOfFunction, getLineNumber(), getErrorStart(),
+										getErrorLength(), new String[] { toChars(context) }));
 							}
 						}
 
 						if (context.global.params.useAssert
-								&& !context.global.params.useInline) { /*
-						 * Add
-						 * an
-						 * assert(0,
-						 * msg);
-						 * where
-						 * the
-						 * missing
-						 * return
-						 * should
-						 * be.
-						 */
+								&& !context.global.params.useInline) { 
+							/*
+							 * Add an assert(0, msg); where the missing return
+							 * should be.
+							 */
 							e = new AssertExp(filename, lineNumber, new IntegerExp(filename, lineNumber, 0),
 									new StringExp(filename, lineNumber,
 											missing_return_expression,
@@ -2260,8 +2353,10 @@ public class FuncDeclaration extends Declaration {
 				e = new AssignExp(filename, lineNumber, e1, e);
 				if (context.isD2()) {
 					e.op = TOKconstruct;
+					e = e.semantic(sc2, context);
+				} else {
+					e = e.semantic(sc, context);
 				}
-				e = e.semantic(sc, context);
 				ExpStatement es = new ExpStatement(filename, lineNumber, e);
 				a.add(es);
 			}
@@ -2300,9 +2395,14 @@ public class FuncDeclaration extends Declaration {
 						e = new CallExp(filename, lineNumber, e);
 						e = e.semantic(sc2, context);
 					}
-				} else { // Call invariant virtually
-					ThisExp v = new ThisExp(filename, lineNumber);
+				} else { 
+					// Call invariant virtually
+					Expression v = new ThisExp(filename, lineNumber);
 					v.type = vthis.type;
+					if (context.STRUCTTHISREF()) {
+					    if (ad.isStructDeclaration() != null)
+							v = v.addressOf(sc, context);
+					}
 					Expression se = new StringExp(filename, lineNumber, null_this,
 							null_this.length);
 					se = se.semantic(sc, context);
@@ -2342,36 +2442,37 @@ public class FuncDeclaration extends Declaration {
 			}
 			
 			if (context.isD2()) {
-				/* Append destructor calls for parameters as finally blocks.
-			     */
-			    if (parameters != null)
-			    {	for (int i = 0; i < size(parameters); i++)
-				{
-				    VarDeclaration v = (VarDeclaration) parameters.get(i);
+				/*
+				 * Append destructor calls for parameters as finally blocks.
+				 */
+				if (parameters != null) {
+					for (int i = 0; i < size(parameters); i++) {
+						VarDeclaration v = (VarDeclaration) parameters.get(i);
 
-				    if ((v.storage_class & (STCref | STCout)) != 0) {
-				    	continue;
-				    }
+						if ((v.storage_class & (STCref | STCout)) != 0) {
+							continue;
+						}
 
-				    /* Don't do this for static arrays, since static
-				     * arrays are called by reference. Remove this
-				     * when we change them to call by value.
-				     */
-				    if (v.type.toBasetype(context).ty == Tsarray) {
-				    	continue;
-				    }
+						/*
+						 * Don't do this for static arrays, since static arrays
+						 * are called by reference. Remove this when we change
+						 * them to call by value.
+						 */
+						if (v.type.toBasetype(context).ty == Tsarray) {
+							continue;
+						}
 
-				    Expression e = v.callAutoDtor(sc, context);
-				    if (e != null)
-				    {	Statement s = new ExpStatement(null, 0, e);
-					s = s.semantic(sc, context);
-					if (fbody.blockExit(context) == BEfallthru)
-					    fbody = new CompoundStatement(null, 0, fbody, s);
-					else
-					    fbody = new TryFinallyStatement(null, 0, fbody, s);
-				    }
+						Expression e = v.callAutoDtor(sc, context);
+						if (e != null) {
+							Statement s = new ExpStatement(null, 0, e);
+							s = s.semantic(sc, context);
+							if (fbody.blockExit(context) == BEfallthru)
+								fbody = new CompoundStatement(null, 0, fbody, s);
+							else
+								fbody = new TryFinallyStatement(null, 0, fbody, s);
+						}
+					}
 				}
-			    }
 			}
 		}
 
@@ -2435,6 +2536,9 @@ public class FuncDeclaration extends Declaration {
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
+		if (context.isD2()) {
+		    StorageClassDeclaration.stcToCBuffer(buf, storage_class, context);
+		}
 		type.toCBuffer(buf, ident, hgs, context);
 		bodyToCBuffer(buf, hgs, context);
 	}

@@ -84,6 +84,9 @@ public class FuncLiteralDeclaration extends FuncDeclaration {
 			f = (FuncLiteralDeclaration) s;
 		} else {
 			f = new FuncLiteralDeclaration(filename, lineNumber, type.syntaxCopy(context), tok, fes);
+			if (context.isD2()) {
+				f.ident = ident;		// keep old identifier
+			}
 		}
 		super.syntaxCopy(f, context);
 		return f;

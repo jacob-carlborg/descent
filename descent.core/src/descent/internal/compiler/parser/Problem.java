@@ -329,6 +329,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.DeleteDeallocatorsOnlyForClassOrStruct);
 		case ConstructorsOnlyForClass:
 			return String.format(ProblemMessages.ConstructorsOnlyForClass);
+		case ConstructorsOnlyForClassOrStruct:
+			return String.format(ProblemMessages.ConstructorsOnlyForClassOrStruct);
 		case DestructorsOnlyForClass:
 			return String.format(ProblemMessages.DestructorsOnlyForClass);
 		case InvariantsOnlyForClassStructUnion:
@@ -1173,6 +1175,10 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.CastNotAllowedInSafeMode, arguments[0], arguments[1]);
 		case SliceIsNotMutable:
 			return String.format(ProblemMessages.SliceIsNotMutable, arguments[0]);
+		case SymbolIsNothrowYetMayThrow:
+			return String.format(ProblemMessages.SymbolIsNothrowYetMayThrow, arguments[0]);
+		case DefaultConstructorNotAllowedForStructs:
+			return String.format(ProblemMessages.DefaultConstructorNotAllowedForStructs);
 		default:
 			return "";
 		}

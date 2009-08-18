@@ -64,7 +64,7 @@ public class CtorDeclaration extends FuncDeclaration {
 
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-		ClassDeclaration cd;
+		AggregateDeclaration cd;
 		Type tret;
 		
 	    if (type != null) {
@@ -75,18 +75,38 @@ public class CtorDeclaration extends FuncDeclaration {
 		sc.stc &= ~STC.STCstatic; // not a static constructor
 
 		parent = sc.parent;
-		Dsymbol parent = toParent();
-		cd = parent.isClassDeclaration();
+		Dsymbol parent;
+		
+		boolean condition;
+		if (context.isD1()) {
+			parent = toParent();
+			cd = parent.isClassDeclaration();
+			condition = cd == null;
+		} else {
+			parent = toParent2();
+			cd = parent.isAggregateDeclaration();
+			condition = cd == null || parent.isUnionDeclaration() != null;
+		}
+		
 		if (cd == null) {
 			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-						IProblem.ConstructorsOnlyForClass, this));
+						context.isD1() ? IProblem.ConstructorsOnlyForClass : IProblem.ConstructorsOnlyForClassOrStruct, this));
 			}
 			tret = Type.tvoid;
 		} else {
-			tret = cd.type; // .referenceTo();
+			if (context.isD1()) {
+				tret = cd.type; // .referenceTo();
+			} else {
+				tret = cd.handle;
+			}
 		}
 		type = new TypeFunction(arguments, tret, varargs, LINK.LINKd);
+		
+		if (context.STRUCTTHISREF()) {
+		    if (cd != null && cd.isStructDeclaration() != null)
+		    	((TypeFunction)type).isref = true;
+		}
 		
 		if (null == originalType) {
 			originalType = type;
@@ -100,11 +120,8 @@ public class CtorDeclaration extends FuncDeclaration {
 		// return this;
 		// to the function body
 		if (fbody != null) {
-			Expression e;
-			Statement s;
-
-			e = new ThisExp(filename, lineNumber);
-			s = new ReturnStatement(filename, lineNumber, e);
+			Expression e = new ThisExp(filename, lineNumber);
+			Statement s = new ReturnStatement(filename, lineNumber, e);
 			fbody = new CompoundStatement(filename, lineNumber, fbody, s);
 		}
 
@@ -114,7 +131,18 @@ public class CtorDeclaration extends FuncDeclaration {
 
 		// See if it's the default constructor
 		if (cd != null && varargs == 0 && Argument.dim(arguments, context) == 0) {
-			cd.defaultCtor = this;
+			if (context.isD1()) {
+				cd.defaultCtor = this;
+			} else {
+			    if (cd.isStructDeclaration() != null) {
+			    	if (context.acceptsErrors()) {
+						context.acceptProblem(Problem.newSemanticTypeErrorLoc(
+								IProblem.DefaultConstructorNotAllowedForStructs, this));
+					}
+			    } else {
+				    cd.defaultCtor = this;
+			    }
+			}
 		}
 
 	}
