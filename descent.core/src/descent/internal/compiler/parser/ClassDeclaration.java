@@ -480,12 +480,6 @@ public class ClassDeclaration extends AggregateDeclaration {
 					if (!gotoL7) {
 						if (tc.sym.symtab == null || tc.sym.scope != null
 								|| tc.sym.sizeok == 0) {
-							// error("forward reference of base class %s",
-							// baseClass.toChars());
-							// Forward reference of base class, try again later
-							// printf("\ttry later, forward reference of base
-							// class %s\n",
-							// tc.sym.toChars());
 							scope = scx != null ? scx : new Scope(sc, context);
 							scope.setNoFree();
 							scope.module.addDeferredSemantic(this, context);
@@ -550,11 +544,6 @@ public class ClassDeclaration extends AggregateDeclaration {
 				
 				b.base = tc.sym;
 				if (b.base.symtab == null || b.base.scope != null) {
-					// error("forward reference of base class %s",
-					// baseClass.toChars());
-					// Forward reference of base, try again later
-					// printf("\ttry later, forward reference of base %s\n",
-					// baseClass.toChars());
 					scope = scx != null ? scx : new Scope(sc, context);
 					scope.setNoFree();
 					scope.module.addDeferredSemantic(this, context);
@@ -826,11 +815,8 @@ public class ClassDeclaration extends AggregateDeclaration {
 			scope.setNoFree();
 			scope.module.addDeferredSemantic(this, context);
 
-			// printf("\tsemantic('%s') failed\n", toChars());
 			return;
 		}
-
-		// printf("\tsemantic('%s') successful\n", toChars());
 
 		structsize = sc.offset;
 		// members.print();

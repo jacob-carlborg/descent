@@ -92,7 +92,6 @@ public class Constfold {
 
 	public static final UnaExp_fp Ptr = new UnaExp_fp() {
 		public Expression call(Type type, Expression e1, SemanticContext context) {
-			// printf("Ptr(e1 = %s)\n", e1.toChars());
 			if (e1.op == TOKadd) {
 				AddExp ae = (AddExp) e1;
 				if (ae.e1.op == TOKaddress && ae.e2.op == TOKint64) {

@@ -353,7 +353,6 @@ public class TemplateDeclaration extends ScopeDsymbol {
 				if (nfparams == 0) // if no function parameters
 				{
 					Tuple t = new Tuple();
-					// printf("t = %p\n", t);
 					dedargs.set(parameters.size() - 1, t);
 				    declareParameter(paramscope, tp, t, context);
 				    // goto L2
@@ -521,7 +520,6 @@ public class TemplateDeclaration extends ScopeDsymbol {
 								&& tf.nextOf().toBasetype(context).ty == Tvoid)
 							m = MATCHconvert;
 					}
-					// printf("\tm2 = %d\n", m);
 				}
 
 				if (m != MATCHnomatch) {
@@ -622,7 +620,6 @@ public class TemplateDeclaration extends ScopeDsymbol {
 					    Declaration[] sparam = { null };
 					    dedargs.set(i, oded);
 					    MATCH m2 = tp.matchArg(paramscope, dedargs, i, parameters, dedtypes, sparam, 0, context);
-					    //printf("m2 = %d\n", m2);
 					    if (null == m2) {
 					    	// goto Lnomatch;
 					    	return deduceFunctionTemplateMatch_Lnomatch(paramscope);
@@ -686,7 +683,6 @@ public class TemplateDeclaration extends ScopeDsymbol {
 	private MATCH deduceFunctionTemplateMatch_Lnomatch(Scope paramscope) {
 		//Lnomatch:
 		paramscope.pop();
-		//printf("\tnomatch\n");
 		return MATCHnomatch;
 	}
 

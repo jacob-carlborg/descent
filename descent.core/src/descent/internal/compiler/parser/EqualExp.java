@@ -58,8 +58,8 @@ public class EqualExp extends BinExp {
 		e2 = e2.optimize(WANTvalue | (result & WANTinterpret), context);
 		e = this;
 
-		Expression e1 = fromConstInitializer(this.e1, context);
-		Expression e2 = fromConstInitializer(this.e2, context);
+		Expression e1 = fromConstInitializer(context.isD1() ? 0 : result, this.e1, context);
+		Expression e2 = fromConstInitializer(context.isD1() ? 0 : result, this.e2, context);
 
 		e = Equal.call(op, type, e1, e2, context);
 		if (e == EXP_CANT_INTERPRET) {

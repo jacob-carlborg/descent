@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import static descent.internal.compiler.parser.Constfold.Cast;
+import static descent.internal.compiler.parser.MATCH.MATCHconst;
 import static descent.internal.compiler.parser.TOK.TOKarrayliteral;
 import static descent.internal.compiler.parser.TOK.TOKcall;
 import static descent.internal.compiler.parser.TOK.TOKconst;
@@ -8,6 +9,7 @@ import static descent.internal.compiler.parser.TOK.TOKimmutable;
 import static descent.internal.compiler.parser.TOK.TOKnull;
 import static descent.internal.compiler.parser.TOK.TOKshared;
 import static descent.internal.compiler.parser.TOK.TOKstring;
+import static descent.internal.compiler.parser.TOK.TOKstructliteral;
 import static descent.internal.compiler.parser.TOK.TOKsymoff;
 import static descent.internal.compiler.parser.TOK.TOKvar;
 import static descent.internal.compiler.parser.TY.Tarray;
@@ -133,24 +135,58 @@ public class CastExp extends UnaExp {
 			return e1;
 		}
 		TOK op1 = e1.op;
-
+		
+	    Expression e1old = e1;
+	    
 		e1 = e1.optimize(result, context);
-		if ((result & WANTinterpret) != 0) {
+		if (context.isD2() || (context.isD1() && (result & WANTinterpret) != 0)) {
 			e1 = fromConstInitializer(e1, context);
 		}
+		
+		if (context.isD2()) {
+		    if (e1 == e1old &&
+	    		e1.op == TOKarrayliteral &&
+	    		type.toBasetype(context).ty == Tpointer &&
+	    		e1.type.toBasetype(context).ty != Tsarray) {
+				// Casting this will result in the same expression, and
+				// infinite loop because of Expression::implicitCastTo()
+				return this; // no change
+			}
+		}
 
-		if ((e1.op == TOKstring || e1.op == TOKarrayliteral)
-				&& (type.ty == Tpointer || type.ty == Tarray)
-				&& type.next.equals(e1.type.next)) {
-			e1.type = type;
-			return e1;
+		if (context.isD1()) {
+			if ((e1.op == TOKstring || e1.op == TOKarrayliteral)
+					&& (type.ty == Tpointer || type.ty == Tarray)
+					&& type.next.equals(e1.type.next)) {
+				e1.type = type;
+				return e1;
+			}
+		} else {
+			if ((e1.op == TOKstring || e1.op == TOKarrayliteral) && (type.ty == Tpointer || type.ty == Tarray)
+					&& e1.type.nextOf().size(context) == type.nextOf().size(context)) {
+				Expression e = e1.castTo(null, type, context);
+				return e;
+			}
+
+			if (e1.op == TOKstructliteral && e1.type.implicitConvTo(type, context).ordinal() >= MATCHconst.ordinal()) {
+				e1.type = type;
+				return e1;
+			}
 		}
 		/* The first test here is to prevent infinite loops
 		 */
 		if (op1 != TOKarrayliteral && e1.op == TOKarrayliteral) {
 			return e1.castTo(null, to, context);
 		}
-		if (e1.op == TOKnull && (type.ty == Tpointer || type.ty == Tclass)) {
+		
+		boolean condition;
+		if (context.isD1()) {
+			condition = e1.op == TOKnull && (type.ty == Tpointer || type.ty == Tclass);
+		} else {
+			condition = e1.op == TOKnull && (type.ty == Tpointer || type.ty == Tclass || type.ty == Tarray);
+		}
+		
+		if (condition) {
 			e1.type = type;
 			return e1;
 		}
@@ -165,6 +201,16 @@ public class CastExp extends UnaExp {
 			cdfrom = e1.type.isClassHandle();
 			cdto = type.isClassHandle();
 			if (cdto.isBaseOf(cdfrom, offset, context) && offset[0] == 0) {
+				e1.type = type;
+				return e1;
+			}
+		}
+		
+		if (context.isD2()) {
+			// We can convert 'head const' to mutable
+			if (to.constOf(context).equals(e1.type.constOf(context)))
+			// if (to.constConv(e1.type) >= MATCHconst)
+			{
 				e1.type = type;
 				return e1;
 			}

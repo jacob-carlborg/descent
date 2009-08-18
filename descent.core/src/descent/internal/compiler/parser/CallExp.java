@@ -265,7 +265,7 @@ public class CallExp extends UnaExp {
 					if (null == e)	{		// failed
 					    e = this;		// evaluate at runtime
 					}
-			    } else {
+			    } else if (context.isD1() || (context.isD2() && (result & WANTinterpret) != 0)) {
 			    	context.startFunctionInterpret(this);
 			    	
 			    	try {

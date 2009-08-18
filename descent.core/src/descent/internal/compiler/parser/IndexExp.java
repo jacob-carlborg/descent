@@ -100,8 +100,12 @@ public class IndexExp extends BinExp {
 
 		Expression e1 = this.e1.optimize(WANTvalue | (result & WANTinterpret),
 				context);
-		if ((result & WANTinterpret) != 0) {
-			e1 = fromConstInitializer(e1, context);
+		if (context.isD1()) {
+			if ((result & WANTinterpret) != 0) {
+				e1 = fromConstInitializer(e1, context);
+			}
+		} else {
+		    e1 = fromConstInitializer(result, e1, context);
 		}
 		e2 = e2.optimize(WANTvalue | (result & WANTinterpret), context);
 		e = Index.call(type, e1, e2, context);

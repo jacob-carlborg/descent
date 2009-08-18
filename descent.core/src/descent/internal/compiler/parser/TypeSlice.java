@@ -116,9 +116,7 @@ public class TypeSlice extends Type {
 	@Override
 	public Type semantic(char[] filename, int lineNumber, Scope sc, SemanticContext context)
 	{
-		// printf("TypeSlice.semantic() %s\n", toChars());
 		next = next.semantic(filename, lineNumber, sc, context);
-		// printf("next: %s\n", next.toChars());
 		
 		Type tbn = next.toBasetype(context);
 		if(tbn.ty != Ttuple)

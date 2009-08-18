@@ -166,7 +166,6 @@ public abstract class BinExp extends Expression {
 				 * Construct the function
 				 */
 				TypeFunction ftype = new TypeFunction(fparams, type, 0, LINKc);
-				// printf("ftype: %s\n", ftype.toChars());
 				fd = new FuncDeclaration(null, 0, new IdentifierExp(name
 						.toCharArray()), STCundefined, ftype);
 				fd.fbody = fbody;
@@ -1484,7 +1483,15 @@ public abstract class BinExp extends Expression {
 	
 	@Override
 	public Expression optimize(int result, SemanticContext context) {
-		e1 = e1.optimize(result, context);
+		boolean condition;
+		if (context.isD1()) {
+			condition = true;
+		} else {
+		    condition = op != TOKconstruct && op != TOKblit; // don't replace const variable with its initializer
+		}
+
+		if (condition)
+			e1 = e1.optimize(result, context);
 		e2 = e2.optimize(result, context);
 		if (op == TOKshlass || op == TOKshrass || op == TOKushrass) {
 			if (e2.isConst()) {

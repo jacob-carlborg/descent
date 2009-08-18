@@ -54,7 +54,6 @@ public class IsExp extends Expression {
 	public Expression semantic(Scope sc, SemanticContext context) {
 		Type tded = null;
 
-		//printf("IftypeExp.semantic()\n");
 		if (null != id && ((sc.flags & Scope.SCOPEstaticif) == 0)) {
 			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(

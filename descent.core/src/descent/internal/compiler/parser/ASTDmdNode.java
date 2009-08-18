@@ -1007,8 +1007,6 @@ public abstract class ASTDmdNode extends ASTNode {
 								FuncDeclaration f = ve.var.isFuncDeclaration();
 								if (f != null) {
 									f.tookAddressOf--;
-									// printf("tookAddressOf = %d\n",
-									// f.tookAddressOf);
 								}
 							}
 						}
@@ -1248,6 +1246,11 @@ public abstract class ASTDmdNode extends ASTNode {
 		Expression e = null;
 		if (v != null
 				&& (v.isConst() || v.isInvariant(context) || (v.storage_class & STCmanifest) != 0)) {
+			
+			if (null == v.type) {
+				return e;
+			}
+			
 			Type tb = v.type.toBasetype(context);
 			if ((result & WANTinterpret) != 0
 					|| (v.storage_class & STCmanifest) != 0
@@ -1297,6 +1300,9 @@ public abstract class ASTDmdNode extends ASTNode {
 					e = e.castTo(null, v.type, context);
 				}
 				e = e.optimize(result, context);
+			    v.inuse++;
+			    e = e.optimize(result, context);
+			    v.inuse--;
 			}
 		}
 		//L1: 

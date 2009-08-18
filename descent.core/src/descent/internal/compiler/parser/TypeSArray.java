@@ -190,8 +190,6 @@ public class TypeSArray extends TypeArray {
 
 	@Override
 	public MATCH implicitConvTo(Type to, SemanticContext context) {
-		// printf("TypeSArray.implicitConvTo()\n");
-
 		// Allow implicit conversion of static array to pointer or dynamic array
 		if ((context.global.params.useDeprecated && to.ty == Tpointer)
 				&& (to.next.ty == Tvoid || next.equals(to.next)
@@ -228,9 +226,7 @@ public class TypeSArray extends TypeArray {
 	@Override
 	public void resolve(char[] filename, int lineNumber, Scope sc, Expression[] pe, Type[] pt,
 			Dsymbol[] ps, SemanticContext context) {
-		// printf("TypeSArray.resolve() %s\n", toChars());
 		next.resolve(filename, lineNumber, sc, pe, pt, ps, context);
-		// printf("s = %p, e = %p, t = %p\n", ps, pe, pt);
 		if (null != pe[0]) { // It's really an index expression
 			Expression e;
 			e = new IndexExp(filename, lineNumber, pe[0], dim);

@@ -266,7 +266,7 @@ public class AddrExp extends UnaExp {
 					condition = ve.type.ty == Tsarray && !ve.var.isImportedSymbol(context);
 				} else {
 					condition = ve.type.ty == Tsarray && ve.type.next.ty != Tbit
-					&& !ve.var.isImportedSymbol(context);
+						&& !ve.var.isImportedSymbol(context);
 				}
 				
 				if (condition) {

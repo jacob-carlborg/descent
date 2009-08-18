@@ -107,7 +107,6 @@ public class PtrExp extends UnaExp {
 	@Override
 	public Expression optimize(int result, SemanticContext context)
 	{
-		//printf("PtrExp.optimize(result = x%x) %s\n", result, toChars());
 		e1 = e1.optimize(result, context);
 		// Convert &ex to ex
 		if(e1.op == TOKaddress)
@@ -142,7 +141,7 @@ public class PtrExp extends UnaExp {
 				if (e != null && e.op == TOKstructliteral) {
 					StructLiteralExp sle = (StructLiteralExp) e;
 					e = sle.getField(type, se.offset.intValue(), context);
-					if (e != EXP_CANT_INTERPRET)
+					if (e != null && e != EXP_CANT_INTERPRET)
 						return e;
 				}
 			}

@@ -112,13 +112,18 @@ public class SliceExp extends UnaExp {
 			if(e1.op == TOKstring)
 			{ // Convert slice of string literal into dynamic array
 				Type t = e1.type.toBasetype(context);
-				if(null != t.next)
-					e = e1.castTo(null, t.next.arrayOf(context), context);
+				if(null != (context.isD1() ? t.next : t.nextOf()))
+					e = e1.castTo(null,  (context.isD1() ? t.next : t.nextOf()).arrayOf(context), context);
 			}
 			return e;
 		}
-		if((result & WANTinterpret) > 0)
-			e1 = fromConstInitializer(e1, context);
+		
+		if (context.isD1()) {
+			if((result & WANTinterpret) > 0)
+				e1 = fromConstInitializer(e1, context);
+		} else {
+		    e1 = fromConstInitializer(result, e1, context);
+		}
 		lwr = lwr.optimize(WANTvalue | (result & WANTinterpret), context);
 		upr = upr.optimize(WANTvalue | (result & WANTinterpret), context);
 		e = Constfold.Slice(type, e1, lwr, upr, context);
@@ -128,18 +133,16 @@ public class SliceExp extends UnaExp {
 	}
 
 	@Override
-	public void scanForNestedRef(Scope sc, SemanticContext context)
-	{
+	public void scanForNestedRef(Scope sc, SemanticContext context) {
 		e1.scanForNestedRef(sc, context);
-		
-		if(null != lengthVar)
-		{ //printf("lengthVar\n");
+
+		if (null != lengthVar) {
 			lengthVar.parent = sc.parent;
 		}
-		
-		if(null != lwr)
+
+		if (null != lwr)
 			lwr.scanForNestedRef(sc, context);
-		if(null != upr)
+		if (null != upr)
 			upr.scanForNestedRef(sc, context);
 	}
 

@@ -526,7 +526,6 @@ public class TypeFunction extends Type implements Cloneable {
 			} else {
 				m = arg.implicitConvTo(p.type, context);
 			}
-			// printf("\tm = %d\n", m);
 			if (m == MATCHnomatch) // if no match
 			{
 				// L1:

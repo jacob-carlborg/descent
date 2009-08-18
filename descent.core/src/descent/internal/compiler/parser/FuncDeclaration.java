@@ -240,8 +240,6 @@ public class FuncDeclaration extends Declaration {
 			for (int j = 0; j < size(v.nestedrefs); j++) {
 				FuncDeclaration f = (FuncDeclaration) v.nestedrefs.get(j);
 
-				// printf("\t\tf = %s, %d, %d\n", f.toChars(), f.isVirtual(),
-				// f.tookAddressOf);
 				if (f.isThis() != null || f.tookAddressOf != 0) {
 					// goto Lyes; // assume f escapes this function's scope
 					return true;

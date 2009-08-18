@@ -161,13 +161,11 @@ public class VarExp extends SymbolExp {
 	}
 
 	@Override
-	public Expression optimize(int result, SemanticContext context)
-	{
+	public Expression optimize(int result, SemanticContext context) {
 		if (context.isD2()) {
-		    return fromConstInitializer(result, this, context);
+			return fromConstInitializer(result, this, context);
 		} else {
-			if((result & WANTinterpret) > 0)
-			{
+			if ((result & WANTinterpret) > 0) {
 				return fromConstInitializer(this, context);
 			}
 			return this;
@@ -175,11 +173,9 @@ public class VarExp extends SymbolExp {
 	}
 
 	@Override
-	public void scanForNestedRef(Scope sc, SemanticContext context)
-	{
-		//printf("VarExp.scanForNestedRef(%s)\n", toChars());
+	public void scanForNestedRef(Scope sc, SemanticContext context) {
 		VarDeclaration v = var.isVarDeclaration();
-		if(null != v)
+		if (null != v)
 			v.checkNestedReference(sc, null, 0, context);
 	}
 

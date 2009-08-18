@@ -91,7 +91,6 @@ public class TypeTypedef extends Type {
 	public MATCH implicitConvTo(Type to, SemanticContext context) {
 		MATCH m;
 
-		//printf("TypeTypedef::implicitConvTo()\n");
 		if (this.equals(to)) {
 			m = MATCHexact; // exact match
 		} else if (sym.basetype.implicitConvTo(to, context) != MATCHnomatch) {

@@ -295,8 +295,6 @@ public class TemplateMixin extends TemplateInstance {
 				s = members.get(i);
 				s.addMember(scope, this, i, context);
 				//sc.insert(s);
-				//printf("sc.parent = %p, sc.scopesym = %p\n", sc.parent, sc.scopesym);
-				//printf("s.parent = %s\n", s.parent.toChars());
 			}
 	
 			// Do semantic() analysis on template instance members

@@ -55,12 +55,24 @@ public class CmpExp extends BinExp {
 	public Expression optimize(int result, SemanticContext context) {
 		Expression e;
 
-		e1 = e1.optimize(result, context);
-		e2 = e2.optimize(result, context);
-		if (e1.isConst() && e2.isConst()) {
-			e = Cmp.call(op, type, this.e1, this.e2, context);
+		if (context.isD1()) {
+			e1 = e1.optimize(result, context);
+			e2 = e2.optimize(result, context);
+			if (e1.isConst() && e2.isConst()) {
+				e = Cmp.call(op, type, this.e1, this.e2, context);
+			} else {
+				e = this;
+			}
 		} else {
-			e = this;
+			e1 = e1.optimize(WANTvalue | (result & WANTinterpret), context);
+			e2 = e2.optimize(WANTvalue | (result & WANTinterpret), context);
+
+			Expression e1 = fromConstInitializer(result, this.e1, context);
+			Expression e2 = fromConstInitializer(result, this.e2, context);
+
+			e = Cmp.call(op, type, e1, e2, context);
+			if (e == EXP_CANT_INTERPRET)
+				e = this;
 		}
 		return e;
 	}

@@ -4697,7 +4697,6 @@ public class Lexer implements IProblemRequestor {
 					int psave = p;
 					p--;
 					scan(t2); // read in possible heredoc identifier
-					//printf("endid = '%s'\n", t.ident.toChars());
 					if (t2.value == TOKidentifier
 							&& CharOperation.equals(t2.sourceString, hereid)) { /* should check that rest of line is blank
 					 */
