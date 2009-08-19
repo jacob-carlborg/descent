@@ -273,6 +273,8 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		int tuple_dim = 0;
 		MATCH match = MATCHexact;
 		FuncDeclaration fd = onemember.toAlias(context).isFuncDeclaration();
+	    Arguments fparameters;		// function parameter list
+	    int fvarargs;			// function varargs
 		TypeFunction fdtype;
 		Objects dedtypes = new Objects(3); // for T:T*, the dedargs is the T*,
 		// dedtypes is the T
@@ -292,14 +294,46 @@ public class TemplateDeclaration extends ScopeDsymbol {
 
 		nargsi = 0;
 		if (null != targsi) { // Set initial template arguments
+			
+			int n;
 
-			nargsi = targsi.size();
-			if (nargsi > parameters.size()) {
-				if (null == tp) {
-					return deduceFunctionTemplateMatch_Lnomatch(paramscope); // goto Lnomatch;
+			if (context.isD1()) {
+				nargsi = targsi.size();
+				if (nargsi > parameters.size()) {
+					if (null == tp) {
+						return deduceFunctionTemplateMatch_Lnomatch(paramscope); // goto Lnomatch;
+					}
+					dedargs.setDim(nargsi);
+					dedargs.zero();
 				}
-				dedargs.setDim(nargsi);
-				dedargs.zero();
+				
+				n = nargsi;
+			} else {
+				nargsi = size(targsi);
+				n = size(parameters);
+				if (tp != null)
+					n--;
+				if (nargsi > n) {
+					if (null == tp) {
+						// goto Lnomatch;
+						return deduceFunctionTemplateMatch_Lnomatch(paramscope);
+					}
+
+					/*
+					 * The extra initial template arguments now form the tuple
+					 * argument.
+					 */
+					Tuple t = new Tuple();
+					dedargs.set(size(parameters) - 1, t);
+
+					tuple_dim = nargsi - n;
+					t.objects.setDim(tuple_dim);
+					for (int i2 = 0; i2 < tuple_dim; i2++) {
+						t.objects.set(i2, targsi.get(n + i2));
+					}
+					declareParameter(paramscope, tp, t, context);
+				} else
+					n = nargsi;
 			}
 
 			//memcpy(dedargs.data, targsi.data, nargsi * sizeof(dedargs.data));
@@ -307,7 +341,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 				dedargs.set(i, targsi.get(i));
 			}
 
-			for (i = 0; i < nargsi; i++) {
+			for (i = 0; i < n; i++) {
 				TemplateParameter $tp = (TemplateParameter) parameters.get(i);
 				MATCH m;
 				Declaration[] sparam = new Declaration[1];
@@ -325,10 +359,27 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			}
 		}
 
-		assert (fd.type.ty == Tfunction);
-		fdtype = (TypeFunction) fd.type;
-		
-		nfparams = Argument.dim(fdtype.parameters, context); // number of
+		if (context.isD1()) {
+			assert (fd.type.ty == Tfunction);
+			fdtype = (TypeFunction) fd.type;
+			
+			nfparams = Argument.dim(fdtype.parameters, context); // number of
+		} else {
+			if (fd.type != null) {
+				assert (fd.type.ty == Tfunction);
+				fdtype = (TypeFunction) fd.type;
+				fparameters = fdtype.parameters;
+				fvarargs = fdtype.varargs;
+			} else {
+				CtorDeclaration fctor = fd.isCtorDeclaration();
+				assert (fctor != null);
+				fparameters = fctor.arguments;
+				fvarargs = fctor.varargs;
+			}
+
+			nfparams = Argument.dim(fparameters, context); // number of function
+													// parameters
+		}
 		// function
 		// parameters
 		nfargs = fargs.size(); // number of function arguments

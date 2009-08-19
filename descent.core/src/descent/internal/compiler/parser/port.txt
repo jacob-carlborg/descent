@@ -16,7 +16,7 @@ Remaining from DMD 2.030 vs. 1.045
 ------------------------------
  * mtype.c (up to but excluding TypeSArray::implicitConvTo)
  * mtype.h
- * template.c
+ * template.c (up to but excluding TemplateDeclaration::deduceFunctionTemplateMatch)
  * template.h
  * StringExp::length()
  * Parser::parseBaseClasses what's the difference?
