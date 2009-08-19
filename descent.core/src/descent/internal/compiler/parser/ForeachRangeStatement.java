@@ -1,5 +1,9 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.BE.BEbreak;
+import static descent.internal.compiler.parser.BE.BEcontinue;
+import static descent.internal.compiler.parser.BE.BEfallthru;
+import static descent.internal.compiler.parser.BE.BEthrow;
 import static descent.internal.compiler.parser.Constfold.Add;
 import static descent.internal.compiler.parser.Constfold.Cmp;
 import static descent.internal.compiler.parser.Constfold.Min;
@@ -46,6 +50,67 @@ public class ForeachRangeStatement extends Statement {
 			TreeVisitor.acceptChildren(visitor, body);
 		}
 		visitor.endVisit(this);
+	}
+	
+	@Override
+	public boolean hasBreak() {
+		return true;
+	}
+	
+	@Override
+	public boolean hasContinue() {
+		return true;
+	}
+	
+	@Override
+	public boolean usesEH(SemanticContext context) {
+		return body.usesEH(context);
+	}
+	
+	@Override
+	public int blockExit(SemanticContext context) {
+		int result = BEfallthru;
+
+		if (lwr != null && lwr.canThrow(context))
+			result |= BEthrow;
+		else if (upr != null && upr.canThrow(context))
+			result |= BEthrow;
+
+		if (body != null) {
+			result |= body.blockExit(context) & ~(BEbreak | BEcontinue);
+		}
+		return result;
+	}
+	
+	@Override
+	public boolean comeFrom() {
+		if (body != null)
+			return body.comeFrom();
+		return false;
+	}
+	
+	@Override
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+		buf.writestring(op.charArrayValue);
+		buf.writestring(" (");
+
+		if (arg.type != null)
+			arg.type.toCBuffer(buf, arg.ident, hgs, context);
+		else
+			buf.writestring(arg.ident.toChars());
+
+		buf.writestring("; ");
+		lwr.toCBuffer(buf, hgs, context);
+		buf.writestring(" .. ");
+		upr.toCBuffer(buf, hgs, context);
+		buf.writebyte(')');
+		buf.writenl();
+		buf.writebyte('{');
+		buf.writenl();
+		if (body != null)
+			body.toCBuffer(buf, hgs, context);
+		buf.writebyte('}');
+		buf.writenl();
 	}
 	
 	@Override
@@ -149,6 +214,7 @@ public class ForeachRangeStatement extends Statement {
 		}
 
 		if (null != arg.type) {
+			arg.type = arg.type.semantic(filename, lineNumber, sc, context);
 			lwr = lwr.implicitCastTo(sc, arg.type, context);
 			upr = upr.implicitCastTo(sc, arg.type, context);
 		} else {
@@ -156,7 +222,7 @@ public class ForeachRangeStatement extends Statement {
 			 */
 			AddExp ea = new AddExp(filename, lineNumber, lwr, upr);
 			ea.typeCombine(sc, context);
-			arg.type = ea.type;
+			arg.type = ea.type.mutableOf(context);
 			lwr = ea.e1;
 			upr = ea.e2;
 		}

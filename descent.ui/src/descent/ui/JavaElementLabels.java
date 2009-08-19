@@ -1131,7 +1131,7 @@ public class JavaElementLabels {
 					getElementLabel(type.getParent(), 0, buf);
 				}
 			} else {
-				getPackageFragmentLabel(type.getPackageFragment(), flags & QUALIFIER_FLAGS, buf);
+				getCompilationUnitLabel(type.getCompilationUnit(), (flags & QUALIFIER_FLAGS) | CU_QUALIFIED, buf);
 			}
 		}
 	}

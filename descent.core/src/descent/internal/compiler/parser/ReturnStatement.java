@@ -2,6 +2,8 @@ package descent.internal.compiler.parser;
 
 import static descent.internal.compiler.parser.BE.BEreturn;
 import static descent.internal.compiler.parser.BE.BEthrow;
+import static descent.internal.compiler.parser.STC.STCout;
+import static descent.internal.compiler.parser.STC.STCref;
 import static descent.internal.compiler.parser.Scope.CSXany_ctor;
 import static descent.internal.compiler.parser.Scope.CSXreturn;
 import static descent.internal.compiler.parser.Scope.CSXsuper_ctor;
@@ -154,20 +156,35 @@ public class ReturnStatement extends Statement {
 				VarExp ve = (VarExp) exp;
 				VarDeclaration v = ve.var.isVarDeclaration();
 
-				if (v == null || v.isOut() || v.isRef()) {
-					fd.nrvo_can = 0;
-				} else if (context.isD2() && tbret.ty == Tstruct && ((TypeStruct)tbret).sym.dtor != null) {
-					// Struct being returned has destructors
-					fd.nrvo_can = 0;
-				} else if (fd.nrvo_var == null) {
-					if (!v.isDataseg(context) && !v.isParameter()
-							&& v.toParent2() == fd) {
-						fd.nrvo_var = v;
-					} else {
+				if (context.isD1()) {
+					if (v == null || v.isOut() || v.isRef()) {
+						fd.nrvo_can = 0;
+					} else if (fd.nrvo_var == null) {
+						if (!v.isDataseg(context) && !v.isParameter()
+								&& v.toParent2() == fd) {
+							fd.nrvo_var = v;
+						} else {
+							fd.nrvo_can = 0;
+						}
+					} else if (fd.nrvo_var != v) {
 						fd.nrvo_can = 0;
 					}
-				} else if (fd.nrvo_var != v) {
-					fd.nrvo_can = 0;
+				} else {
+					if (((TypeFunction) fd.type).isref)
+						// Function returns a reference
+						fd.nrvo_can = 0;
+					else if (null == v || v.isOut() || v.isRef())
+						fd.nrvo_can = 0;
+					else if (tbret.ty == Tstruct && ((TypeStruct) tbret).sym.dtor != null)
+						// Struct being returned has destructors
+						fd.nrvo_can = 0;
+					else if (fd.nrvo_var == null) {
+						if (!v.isDataseg(context) && !v.isParameter() && v.toParent2() == fd) {
+							fd.nrvo_var = v;
+						} else
+							fd.nrvo_can = 0;
+					} else if (fd.nrvo_var != v)
+						fd.nrvo_can = 0;
 				}
 			} else {
 				fd.nrvo_can = 0;
@@ -192,6 +209,9 @@ public class ReturnStatement extends Statement {
 				}
 			} else if (tbret.ty != Tvoid) {
 				exp = exp.implicitCastTo(sc, tret, context);
+				if (context.isD2()) {
+				    exp = exp.optimize(WANTvalue, context);
+				}
 			}
 		} else if (fd.inferRetType) {
 			if (fd.type.nextOf() != null) {
@@ -280,6 +300,27 @@ public class ReturnStatement extends Statement {
 				exp = new AssignExp(filename, lineNumber, v, exp);
 				exp = exp.semantic(sc, context);
 			}
+			
+			if (context.isD2()) {
+				if (((TypeFunction) fd.type).isref && null == fd.isCtorDeclaration()) {
+					// Function returns a reference
+					if (tbret.isMutable())
+						exp = exp.modifiableLvalue(sc, exp, context);
+					else
+						exp = exp.toLvalue(sc, exp, context);
+
+					if (exp.op == TOKvar) {
+						VarExp ve = (VarExp) exp;
+						VarDeclaration v = ve.var.isVarDeclaration();
+						if (v != null && !v.isDataseg(context) && 0 == (v.storage_class & (STCref | STCout))) {
+							if (context.acceptsErrors()) {
+								context.acceptProblem(Problem.newSemanticTypeError(IProblem.EscapingReferenceToLocalVariable, v, v.toChars(context)));
+							}
+						}
+					}
+				}
+			}
+			
 			//exp.dump(0);
 			//exp.print();
 			exp.checkEscape(context);

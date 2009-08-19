@@ -16,8 +16,6 @@ Remaining from DMD 2.030 vs. 1.045
 ------------------------------
  * mtype.c (up to but excluding TypeSArray::implicitConvTo)
  * mtype.h
- * statement.c
- * statement.h
  * template.c
  * template.h
  * StringExp::length()

@@ -34,6 +34,7 @@ public interface Id {
 	static final char[] classinfo = { 'c', 'l', 'a', 's', 's', 'i', 'n', 'f', 'o' };
 	static final char[] typeinfo = { 't', 'y', 'p', 'e', 'i', 'n', 'f', 'o' };
 	static final char[] Exception = { 'E', 'x', 'c', 'e', 'p', 't', 'i', 'o', 'n' };
+	static final char[] Throwable = { 'T', 'h', 'r', 'o', 'w', 'a', 'b', 'l', 'e' };
 	static final char[] withSym = { '_', '_', 'w', 'i', 't', 'h', 'S', 'y', 'm' };
 	static final char[] result = { '_', '_', 'r', 'e', 's', 'u', 'l', 't' };
 	static final char[] returnLabel = { '_', '_', 'r', 'e', 't', 'u', 'r', 'n', 'L', 'a', 'b', 'e', 'l' };

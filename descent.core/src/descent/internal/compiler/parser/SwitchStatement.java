@@ -141,7 +141,10 @@ public class SwitchStatement extends Statement {
 
 	@Override
 	public Statement semantic(Scope sc, SemanticContext context) {
-		tf = sc.tf;
+		if (context.isD2()) {
+			tf = sc.tf;
+		}
+		
 		if (cases != null) {
 			throw new IllegalStateException("assert(!cases);"); // ensure semantic() is only run once
 		}

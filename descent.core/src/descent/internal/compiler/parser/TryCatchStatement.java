@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.BE.BEthrow;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
@@ -32,15 +33,30 @@ public class TryCatchStatement extends Statement {
 	
 	@Override
 	public int blockExit(SemanticContext context) {
-		int result;
+		int result = body.blockExit(context);
 
-		result = body.blockExit(context);
+		if (context.isD1()) {
+			for (int i = 0; i < size(catches); i++) {
+				Catch c = (Catch) catches.get(i);
+				result |= c.blockExit(context);
+			}
+			return result;
+		} else {
+			int catchresult = 0;
+			for (int i = 0; i < size(catches); i++) {
+				Catch c = (Catch) catches.get(i);
+				catchresult |= c.blockExit(context);
 
-		for (int i = 0; i < size(catches); i++) {
-			Catch c = (Catch) catches.get(i);
-			result |= c.blockExit(context);
+				/*
+				 * If we're catching Object, then there is no throwing
+				 */
+				IdentifierExp id = c.type.toBasetype(context).isClassHandle().ident;
+				if (i == 0 && (equals(id, Id.Object) || equals(id, Id.Throwable) || equals(id, Id.Exception))) {
+					result &= ~BEthrow;
+				}
+			}
+			return result | catchresult;
 		}
-		return result;
 	}
 
 	@Override

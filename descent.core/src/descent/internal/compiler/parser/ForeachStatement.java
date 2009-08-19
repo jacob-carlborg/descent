@@ -7,6 +7,7 @@ import static descent.internal.compiler.parser.BE.BEthrow;
 import static descent.internal.compiler.parser.Constfold.ArrayLength;
 import static descent.internal.compiler.parser.Constfold.Index;
 import static descent.internal.compiler.parser.MATCH.MATCHconst;
+import static descent.internal.compiler.parser.STC.STC_TYPECTOR;
 import static descent.internal.compiler.parser.STC.STCconst;
 import static descent.internal.compiler.parser.STC.STCfinal;
 import static descent.internal.compiler.parser.STC.STCforeach;
@@ -229,6 +230,7 @@ public class ForeachStatement extends Statement {
 		sc.numberForLocalVariables++;
 		
 		ScopeDsymbol sym;
+		Statement temp;
 		Statement s = this;
 		int dim = arguments.size();
 		int i;
@@ -401,13 +403,15 @@ public class ForeachStatement extends Statement {
 			return s;
 		}
 
-		for (i = 0; i < dim; i++) {
-			Argument arg = arguments.get(i);
-			if (arg.type == null) {
-				if (context.acceptsErrors()) {
-					context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.CannotInferTypeForSymbol, arg, new String[] { arg.ident.toChars() }));
+		if (context.isD1()) {
+			for (i = 0; i < dim; i++) {
+				Argument arg = arguments.get(i);
+				if (arg.type == null) {
+					if (context.acceptsErrors()) {
+						context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.CannotInferTypeForSymbol, arg, new String[] { arg.ident.toChars() }));
+					}
+					return this;
 				}
-				return this;
 			}
 		}
 
@@ -420,6 +424,11 @@ public class ForeachStatement extends Statement {
 		switch (tab.ty) {
 		case Tarray:
 		case Tsarray:
+			if (context.isD2()) {
+			    if (!checkForArgTypes(context))
+					return this;
+			}
+			
 			if (dim < 1 || dim > 2) {
 				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.OnlyOneOrTwoArgumentsForArrayForeach, this));
@@ -456,7 +465,10 @@ public class ForeachStatement extends Statement {
 					}
 					// goto Lapply;
 					Statement[] ps = { null };
-					semantic_Lapply(sc, context, dim, ps, tab, taa, tn, tnv, i);
+					temp = semantic_Lapply(sc, context, dim, ps, tab, taa, tn, tnv);
+					if (temp != null)
+						return this;
+					
 					s = ps[0];
 					break;
 				}
@@ -471,14 +483,7 @@ public class ForeachStatement extends Statement {
 				var.storage_class |= STCforeach;
 				
 				if (context.isD2()) {
-					var.storage_class |= arg.storageClass & (STCin | STCout | STCref | STCconst | STCinvariant);
-					if (dim == 2 && i == 0) {
-						key = var;
-						// var.storage_class |= STCfinal;
-					} else { // if (!(arg.storageClass & STCref))
-						// var.storage_class |= STCfinal;
-						value = var;
-					}
+					var.storage_class |= arg.storageClass & (STCin | STCout | STCref | STC_TYPECTOR);
 				} else {
 					var.storage_class |= arg.storageClass & (STCin | STCout | STCref);
 				}
@@ -489,15 +494,29 @@ public class ForeachStatement extends Statement {
 				}
 				arg.var = var;
 				
-				DeclarationExp de = new DeclarationExp(filename, lineNumber, var);
-				de.semantic(sc, context);
-				
-				if (!context.isD2()) {
+				if (context.isD1()) {
+					DeclarationExp de = new DeclarationExp(filename, lineNumber, var);
+					de.semantic(sc, context);
+
+					if (dim == 2 && i == 0)
+						key = var;
+					else
+						value = var;
+				} else {
 					if (dim == 2 && i == 0) {
 						key = var;
 					} else {
 						value = var;
+						/*
+						 * Reference to immutable data should be marked as const
+						 */
+						if ((var.storage_class & STCref) != 0 && !tn.isMutable()) {
+							var.storage_class |= STCconst;
+						}
 					}
+
+					DeclarationExp de = new DeclarationExp(filename, lineNumber, var);
+					de.semantic(sc, context);
 				}
 			}
 
@@ -546,6 +565,11 @@ public class ForeachStatement extends Statement {
 			break;
 
 		case Taarray:
+			if (context.isD2()) {
+			    if (!checkForArgTypes(context))
+					return this;
+			}
+			
 			taa = (TypeAArray) tab;
 			if (dim < 1 || dim > 2) {
 				if (context.acceptsErrors()) {
@@ -560,7 +584,10 @@ public class ForeachStatement extends Statement {
 			}
 			// goto Lapply
 			Statement[] ps = { null };
-			semantic_Lapply(sc, context, dim, ps, tab, taa, tn, tnv, i);
+			temp = semantic_Lapply(sc, context, dim, ps, tab, taa, tn, tnv);
+			if (temp != null)
+				return this;
+			
 			s = ps[0];
 			break;
 
@@ -600,9 +627,12 @@ public class ForeachStatement extends Statement {
 				 * aggregate.
 				 */
 				IdentifierExp id = context.generateId("__r");
-				VarDeclaration r = new VarDeclaration(filename, lineNumber, null, id,
-						new ExpInitializer(filename, lineNumber, aggr));
-				r.semantic(sc, context);
+			    aggr = aggr.semantic(sc, context);
+			    Expression rinit = new SliceExp(filename, lineNumber, aggr, null, null);
+			    rinit = rinit.trySemantic(sc, context);
+			    if (null == rinit)			// if application of [] failed
+				rinit = aggr;
+			    VarDeclaration r = new VarDeclaration(filename, lineNumber, null, id, new ExpInitializer(filename, lineNumber, rinit));
 				Statement init = new DeclarationStatement(filename, lineNumber, r);
 
 				// !__r.empty
@@ -619,13 +649,20 @@ public class ForeachStatement extends Statement {
 				 */
 				e = new VarExp(filename, lineNumber, r);
 				Expression einit = new DotIdExp(filename, lineNumber, e, idhead);
-				einit = einit.semantic(sc, context);
+				if (context.isD1()) {
+					einit = einit.semantic(sc, context);
+				}
 				Argument arg = (Argument) arguments.get(0);
 				VarDeclaration ve = new VarDeclaration(filename, lineNumber, arg.type,
 						arg.ident, new ExpInitializer(filename, lineNumber, einit));
 				ve.storage_class |= STCforeach;
-				ve.storage_class |= arg.storageClass
-						& (STCin | STCout | STCref | STCconst | STCinvariant);
+				if (context.isD1()) {
+					ve.storage_class |= arg.storageClass
+							& (STCin | STCout | STCref | STCconst | STCinvariant);
+				} else {
+					ve.storage_class |= arg.storageClass
+							& (STCin | STCout | STCref | STC_TYPECTOR);
+				}
 
 				DeclarationExp de = new DeclarationExp(filename, lineNumber, ve);
 
@@ -638,7 +675,10 @@ public class ForeachStatement extends Statement {
 			}
 			
 			Statement[] pointer_s = { null };
-			semantic_Lapply(sc, context, dim, pointer_s, tab, taa, tn, tnv, i);
+			temp = semantic_Lapply(sc, context, dim, pointer_s, tab, taa, tn, tnv);
+			if (temp != null)
+				return this;
+			
 			s = pointer_s[0];
 			break;
 		}
@@ -648,6 +688,10 @@ public class ForeachStatement extends Statement {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.NotAnAggregateType, sourceAggr, new String[] { aggr.type.toString() }));
 			}
+			if (context.isD2()) {
+				// error recovery
+				s = null;
+			}
 			break;
 		}
 		sc.noctor--;
@@ -655,8 +699,13 @@ public class ForeachStatement extends Statement {
 		return s;
 	}
 
-	private void semantic_Lapply(Scope sc, SemanticContext context, int dim,
-			Statement[] s, Type tab, TypeAArray taa, Type tn, Type tnv, int i) {
+	private Statement semantic_Lapply(Scope sc, SemanticContext context, int dim,
+			Statement[] s, Type tab, TypeAArray taa, Type tn, Type tnv) {
+		if (!checkForArgTypes(context)) {
+			body = body.semantic(sc, context);
+			return this;
+		}
+		
 		FuncDeclaration fdapply;
 		Arguments args;
 		Expression ec;
@@ -689,7 +738,7 @@ public class ForeachStatement extends Statement {
 		 * body }
 		 */
 		args = new Arguments(dim);
-		for (i = 0; i < dim; i++) {
+		for (int i = 0; i < dim; i++) {
 			Argument arg = arguments.get(i);
 
 			arg.type = arg.type.semantic(filename, lineNumber, sc, context);
@@ -851,12 +900,27 @@ public class ForeachStatement extends Statement {
 				}
 			}
 		} else {
+			Expressions exps = new Expressions(2);
+			char[] idapply = null;
+			Dsymbol sapply = null;
+			
+			if (context.isD2()) {
+				assert(tab.ty == Tstruct || tab.ty == Tclass);
+				idapply = (op == TOKforeach_reverse)
+						? Id.applyReverse : Id.apply;
+				sapply = search_function((AggregateDeclaration)tab.toDsymbol(sc, context), idapply, context);
+			}
+			
 			/*
 			 * Call: aggr.apply(flde)
 			 */
-			ec = new DotIdExp(filename, lineNumber, aggr, (op == TOKforeach_reverse) ? Id.applyReverse : Id.apply);
-			Expressions exps = new Expressions(1);
-			exps.add(flde);
+			if (context.isD1()) {
+				ec = new DotIdExp(filename, lineNumber, aggr, (op == TOKforeach_reverse) ? Id.applyReverse : Id.apply);
+				exps.add(flde);
+			} else {
+			    ec = new DotIdExp(filename, lineNumber, aggr, idapply);
+			    exps.add(flde);
+			}
 			
 			// TODO: kludge to not lose source ranges, fixme
 			int oldSourceAggrStart = sourceAggr.start;
@@ -899,7 +963,26 @@ public class ForeachStatement extends Statement {
 			s[0] = new SwitchStatement(filename, lineNumber, e, s[0], false);
 			s[0] = s[0].semantic(sc, context);
 		}
+		
+		return null;
 	}
+	
+	public boolean checkForArgTypes(SemanticContext context) {
+		boolean result = true;
+
+		for (int i = 0; i < size(arguments); i++) {
+			Argument arg = (Argument) arguments.get(i);
+			if (null == arg.type) {
+				if (context.acceptsErrors()) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotInferTypeForSymbol, arg, arg.ident.toChars(context)));
+				}
+				arg.type = Type.terror;
+				result = false;
+			}
+		}
+		return result;
+	}
+
 
 	@Override
 	public Statement syntaxCopy(SemanticContext context) {
