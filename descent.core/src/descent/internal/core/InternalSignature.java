@@ -521,7 +521,8 @@ public class InternalSignature {
 					Type type = types.isEmpty() ? null : types.get(0);
 					Type def = defaultValue == null ? null : toType(defaultValue, encoder, startPosition, length);
 					
-					param[0] = new TemplateAliasParameter(null, 0, null, type, def);
+					// SEMANTIC signature
+					param[0] = new TemplateAliasParameter(null, 0, null, null, type, def);
 					param[0].setSourceRange(startPosition, length);
 				}
 				@Override

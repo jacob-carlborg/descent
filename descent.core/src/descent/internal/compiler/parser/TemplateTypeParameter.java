@@ -134,6 +134,7 @@ public class TemplateTypeParameter extends TemplateParameter {
 			}
 			t = (Type) dedtypes.get(i);
 		} else {
+			// So that matches with specializations are better
 			m = MATCHconvert;
 			if (t != null) { 
 				// Must match already deduced type

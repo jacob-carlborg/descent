@@ -22,7 +22,7 @@ public class SignatureToTemplateParameter_Test extends AbstractSignatureTest imp
 		TemplateAliasParameter param = (TemplateAliasParameter) 
 			InternalSignature.toTemplateParameter("" + TEMPLATE_ALIAS_PARAMETER, null, new ASTNodeEncoder(AST.D1));
 		assertNull(param.ident);
-		assertNull(param.specAliasT);
+		assertNull(param.specAlias);
 		assertNull(param.defaultAlias);
 	}
 	
@@ -30,7 +30,7 @@ public class SignatureToTemplateParameter_Test extends AbstractSignatureTest imp
 		TemplateAliasParameter param = (TemplateAliasParameter) 
 			InternalSignature.toTemplateParameter("" + TEMPLATE_ALIAS_PARAMETER, "i", new ASTNodeEncoder(AST.D1));
 		assertNull(param.ident);
-		assertNull(param.specAliasT);
+		assertNull(param.specAlias);
 		assertSame(Type.tint32, param.defaultAlias);
 	}
 	
@@ -38,7 +38,7 @@ public class SignatureToTemplateParameter_Test extends AbstractSignatureTest imp
 		TemplateAliasParameter param = (TemplateAliasParameter) 
 			InternalSignature.toTemplateParameter("" + TEMPLATE_ALIAS_PARAMETER + TEMPLATE_ALIAS_PARAMETER2 + i, null, new ASTNodeEncoder(AST.D1));
 		assertNull(param.ident);
-		assertSame(Type.tint32, param.specAliasT);
+		assertSame(Type.tint32, param.specAlias);
 		assertNull(param.defaultAlias);
 	}
 	

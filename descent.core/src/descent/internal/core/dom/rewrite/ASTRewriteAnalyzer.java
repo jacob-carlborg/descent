@@ -1473,8 +1473,8 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 		}
 		
 		int pos = rewriteRequiredNode(node, AliasTemplateParameter.NAME_PROPERTY);
-		pos = rewriteNode(node, AliasTemplateParameter.SPECIFIC_TYPE_PROPERTY, pos, ASTRewriteFormatter.COLON);
-		pos = rewriteNode(node, AliasTemplateParameter.DEFAULT_TYPE_PROPERTY, pos, ASTRewriteFormatter.EQUALS);
+		pos = rewriteNode(node, AliasTemplateParameter.SPECIFIC_NODE_PROPERTY, pos, ASTRewriteFormatter.COLON);
+		pos = rewriteNode(node, AliasTemplateParameter.DEFAULT_NODE_PROPERTY, pos, ASTRewriteFormatter.EQUALS);
 		return false;
 	}
 	

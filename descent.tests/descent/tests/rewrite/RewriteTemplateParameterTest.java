@@ -12,33 +12,33 @@ public class RewriteTemplateParameterTest extends AbstractRewriteTest {
 	
 	public void testAliasTemplateParameterAddSpecificType() throws Exception {
 		AliasTemplateParameter param = (AliasTemplateParameter) beginTemplateParameter("alias X");
-		param.setSpecificType(ast.newSimpleType(ast.newSimpleName("Y")));
+		param.setSpecificObject(ast.newSimpleType(ast.newSimpleName("Y")));
 		assertTemplateParameterEqualsTokenByToken("alias X : Y", end());
 	}
 	
 	public void testAliasTemplateParameterRemoveSpecificType() throws Exception {
 		AliasTemplateParameter param = (AliasTemplateParameter) beginTemplateParameter("alias X : Y");
-		param.getSpecificType().delete();
+		param.getSpecificObject().delete();
 		assertTemplateParameterEqualsTokenByToken("alias X", end());
 	}
 	
 	public void testAliasTemplateParameterAddDefaultType() throws Exception {
 		AliasTemplateParameter param = (AliasTemplateParameter) beginTemplateParameter("alias X");
-		param.setDefaultType(ast.newSimpleType(ast.newSimpleName("Y")));
+		param.setDefaultObject(ast.newSimpleType(ast.newSimpleName("Y")));
 		assertTemplateParameterEqualsTokenByToken("alias X = Y", end());
 	}
 	
 	public void testAliasTemplateParameterRemoveDefaultType() throws Exception {
 		AliasTemplateParameter param = (AliasTemplateParameter) beginTemplateParameter("alias X = Y");
-		param.getDefaultType().delete();
+		param.getDefaultObject().delete();
 		assertTemplateParameterEqualsTokenByToken("alias X", end());
 	}
 	
 	public void testMultiChange() throws Exception {
 		AliasTemplateParameter param = (AliasTemplateParameter) beginTemplateParameter("alias X");
 		param.setName(ast.newSimpleName("T"));
-		param.setSpecificType(ast.newSimpleType(ast.newSimpleName("Y")));
-		param.setDefaultType(ast.newSimpleType(ast.newSimpleName("Z")));
+		param.setSpecificObject(ast.newSimpleType(ast.newSimpleName("Y")));
+		param.setDefaultObject(ast.newSimpleType(ast.newSimpleName("Z")));
 		assertTemplateParameterEqualsTokenByToken("alias T : Y = Z", end());
 	}
 

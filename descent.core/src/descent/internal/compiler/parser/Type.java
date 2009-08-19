@@ -1730,46 +1730,73 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 			if (null == tp.isTemplateTypeParameter()) {
 				return MATCHnomatch;
 			}
+			Type tt = this;
 			Type at = (Type) dedtypes.get(i);
-			if (null == at) {
-				if (context.isD2()) {
-					// 3*3 == 9 cases
-					if (tparam.isMutable()) { // foo(U:U) T => T
-						// foo(U:U) const(T) => const(T)
-						// foo(U:U) invariant(T) => invariant(T)
-						dedtypes.set(i, this);
-						// goto Lexact;
-						return MATCHexact;
-					} else if (mod == tparam.mod) { // foo(U:const(U)) const(T)
-													// => T
-						// foo(U:invariant(U)) invariant(T) => T
-						dedtypes.set(i, mutableOf(context));
-						// goto Lexact;
-						return MATCHexact;
-					} else if (tparam.isConst()) { // foo(U:const(U)) T => T
-						// foo(U:const(U)) invariant(T) => T
-						dedtypes.set(i, mutableOf(context));
-						// goto Lconst;
-						return MATCHconst;
-					} else { // foo(U:invariant(U)) T => nomatch
-						// foo(U:invariant(U)) const(T) => nomatch
-						// goto Lnomatch;
-						return MATCHnomatch;
-					}
-				} else {
+			
+			if (context.isD1()) {
+				if (null == at) {
 					dedtypes.set(i, this);
+					return MATCHexact;
 				}
-				return MATCHexact;
-			}
-			if (equals(at)) {
-				return MATCHexact;
-			} else if (ty == Tclass && at.ty == Tclass) {
-				return implicitConvTo(at, context);
-			} else if (ty == Tsarray && at.ty == Tarray
-					&& nextOf().equals(at.nextOf())) {
-				return MATCHexact;
+				if (equals(at)) {
+					return MATCHexact;
+				} else if (ty == Tclass && at.ty == Tclass) {
+					return implicitConvTo(at, context);
+				} else if (ty == Tsarray && at.ty == Tarray
+						&& nextOf().equals(at.nextOf())) {
+					return MATCHexact;
+				} else {
+					return MATCHnomatch;
+				}
 			} else {
-				return MATCHnomatch;
+				// 3*3 == 9 cases
+				if (tparam.isMutable())
+				{   // foo(U:U) T            => T
+				    // foo(U:U) const(T)     => const(T)
+				    // foo(U:U) invariant(T) => invariant(T)
+				    if (null == at)
+				    {   dedtypes.set(i, this);
+						return MATCHexact;
+				    }
+				}
+				else if (mod == tparam.mod)
+				{   // foo(U:const(U))     const(T)     => T
+				    // foo(U:invariant(U)) invariant(T) => T
+				    tt = mutableOf(context);
+				    if (null == at)
+				    {   dedtypes.set(i, tt);
+						return MATCHexact;
+				    }
+				}
+				else if (tparam.isConst())
+				{   // foo(U:const(U)) T            => T
+				    // foo(U:const(U)) invariant(T) => T
+				    tt = mutableOf(context);
+				    if (null == at)
+				    {   dedtypes.set(i, tt);
+						return MATCHconst;
+				    }
+				}
+				else
+				{   // foo(U:invariant(U)) T        => nomatch
+				    // foo(U:invariant(U)) const(T) => nomatch
+				    if (null == at)
+						return MATCHnomatch;
+				}
+
+				if (tt.equals(at))
+				    return MATCHexact;
+				else if (tt.ty == Tclass && at.ty == Tclass)
+				{
+				    return tt.implicitConvTo(at, context);
+				}
+				else if (tt.ty == Tsarray && at.ty == Tarray &&
+				    tt.nextOf().implicitConvTo(at.nextOf(), context).ordinal() >= MATCHconst.ordinal())
+				{
+				    return MATCHexact;
+				}
+				else
+				    return MATCHnomatch;
 			}
 		}
 

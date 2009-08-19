@@ -1337,10 +1337,10 @@ public class CompileTimeASTConverter {
 			}
 		}
 		if (a.defaultAlias != null) {
-			b.setDefaultType(convert(a.defaultAlias));
+			b.setDefaultObject(convert(a.defaultAlias));
 		}
-		if (a.specAliasT != null) {
-			b.setSpecificType(convert(a.specAliasT));
+		if (a.specAlias != null) {
+			b.setSpecificObject(convert(a.specAlias));
 		}
 		setSourceRange(b, a.start, a.length);
 		return b;

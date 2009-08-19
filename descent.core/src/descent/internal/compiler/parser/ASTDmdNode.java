@@ -2669,6 +2669,18 @@ public abstract class ASTDmdNode extends ASTNode {
 		return f;
 	}
 	
+	public ASTDmdNode objectSyntaxCopy(ASTDmdNode o, SemanticContext context) {
+		if (null == o)
+			return null;
+		Type t = isType(o);
+		if (t != null)
+			return t.syntaxCopy(context);
+		Expression e = isExpression(o);
+		if (e != null)
+			return e.syntaxCopy(context);
+		return o;
+	}
+	
 	public int getStart() {
 		return start;
 	}

@@ -148,8 +148,8 @@ public class ASTRewriteFlattener extends ASTVisitor {
 	public boolean visit(AliasTemplateParameter node) {
 		this.result.append("alias ");
 		visitChild(node, AliasTemplateParameter.NAME_PROPERTY);
-		visitChild(node, AliasTemplateParameter.SPECIFIC_TYPE_PROPERTY, " : ", EMPTY);
-		visitChild(node, AliasTemplateParameter.DEFAULT_TYPE_PROPERTY, " : ", EMPTY);
+		visitChild(node, AliasTemplateParameter.SPECIFIC_NODE_PROPERTY, " : ", EMPTY);
+		visitChild(node, AliasTemplateParameter.DEFAULT_NODE_PROPERTY, " : ", EMPTY);
 		return false;
 	}
 	

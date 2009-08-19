@@ -2598,7 +2598,7 @@ public class Parser extends Lexer {
 					}
 					
 					if (apiLevel < D2) {
-						tp = new TemplateAliasParameter(filename, lineNumber, tp_ident, tp_spectype, tp_defaulttype);
+						tp = new TemplateAliasParameter(filename, lineNumber, tp_ident, null, tp_spectype, tp_defaulttype);
 					} else {
 						tp = new TemplateAliasParameter(filename, lineNumber, tp_ident, spectype, spec, def);
 					}

@@ -165,13 +165,13 @@ class NaiveASTFlattener extends ASTVisitor {
 	public boolean visit(AliasTemplateParameter node) {
 		this.buffer.append("alias ");
 		node.getName().accept(this);
-		if (node.getSpecificType() != null) {
+		if (node.getSpecificObject() != null) {
 			this.buffer.append(" : ");
-			node.getSpecificType().accept(this);
+			node.getSpecificObject().accept(this);
 		}
-		if (node.getDefaultType() != null) {
+		if (node.getDefaultObject() != null) {
 			this.buffer.append(" = ");
-			node.getDefaultType().accept(this);
+			node.getDefaultObject().accept(this);
 		}
 		return false;
 	}

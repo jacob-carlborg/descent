@@ -76,8 +76,8 @@ public class Template_Test extends Parser_Test {
 		AliasTemplateParameter tap = (AliasTemplateParameter) tp.get(4);		
 		assertEquals("A", tap.getName().getIdentifier());
 		assertPosition(tap, 44, 15);
-		assertEquals("B", ((SimpleType) tap.getSpecificType()).getName().getFullyQualifiedName());
-		assertEquals("C", ((SimpleType) tap.getDefaultType()).getName().getFullyQualifiedName());
+		assertEquals("B", ((SimpleType) tap.getSpecificObject()).getName().getFullyQualifiedName());
+		assertEquals("C", ((SimpleType) tap.getDefaultObject()).getName().getFullyQualifiedName());
 	}
 	
 	public void testParametersTuple() {

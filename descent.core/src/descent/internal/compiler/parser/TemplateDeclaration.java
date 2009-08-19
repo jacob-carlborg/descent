@@ -117,17 +117,22 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			// tdtypes.data[i] always matches ea here
 			Initializer init = new ExpInitializer(filename, lineNumber, ea);
 			TemplateValueParameter tvp = tp.isTemplateValueParameter();
-			if (tvp == null) {
-				throw new IllegalStateException("assert(tvp);");
-			}
-
-			VarDeclaration v = new TemplateVarDeclaration(filename, lineNumber, tvp.valType,
-					tp.ident, init);
-			if (context.isD2()) {
-				v.storage_class = STCmanifest;
-			} else {
+			
+			VarDeclaration v;
+			if (context.isD1()) {
+				if (tvp == null) {
+					throw new IllegalStateException("assert(tvp);");
+				}
+				v = new TemplateVarDeclaration(filename, lineNumber, tvp.valType,
+						tp.ident, init);
 				v.storage_class = STCconst;
+			} else {
+				Type t = tvp != null ? tvp.valType : null;
+
+				v = new VarDeclaration(filename, lineNumber, t, tp.ident, init);
+				v.storage_class = STCmanifest;
 			}
+			
 			s = v;
 		} else if (va != null) {
 			s = new TupleDeclaration(filename, lineNumber, tp.ident, va.objects);
@@ -273,8 +278,8 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		int tuple_dim = 0;
 		MATCH match = MATCHexact;
 		FuncDeclaration fd = onemember.toAlias(context).isFuncDeclaration();
-	    Arguments fparameters;		// function parameter list
-	    int fvarargs;			// function varargs
+	    Arguments fparameters = null;		// function parameter list
+	    int fvarargs = 0;			// function varargs
 		TypeFunction fdtype = null;
 		Objects dedtypes = new Objects(3); // for T:T*, the dedargs is the T*,
 		// dedtypes is the T
@@ -419,8 +424,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 				     * Set the index of this function parameter to fptupindex.
 				     */
 				    for (fptupindex = 0; fptupindex < nfparams; fptupindex++) {
-						Argument fparam = (Argument) fdtype.parameters
-								.get(fptupindex);
+						Argument fparam = (context.isD1() ? fdtype.parameters : fparameters).get(fptupindex);
 						if (fparam.type.ty != Tident) {
 							continue;
 						}
@@ -430,7 +434,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 								|| (tid.idents != null && tid.idents.size() > 0)) {
 							continue;
 						}
-						if (fdtype.varargs > 0) // variadic function doesn't
+						if ((context.isD1() ? fdtype.varargs : fvarargs) > 0) // variadic function doesn't
 							return deduceFunctionTemplateMatch_Lnomatch(paramscope); // goto Lnomatch; // go
 						// with
 						// variadic template
@@ -464,7 +468,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			if (nfparams == nfargs)
 				;
 			else if (nfargs > nfparams) {
-				if (fdtype.varargs == 0)
+				if ((context.isD1() ? fdtype.varargs : fvarargs) == 0)
 					return deduceFunctionTemplateMatch_Lnomatch(paramscope); // goto Lnomatch; // too
 				// many
 				// args,
@@ -511,7 +515,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 				continue;
 			}
 			
-			Argument fparam = Argument.getNth(fdtype.parameters, i, context);
+			Argument fparam = Argument.getNth((context.isD1() ? fdtype.parameters : fparameters), i, context);
 			Expression farg;
 			MATCH m;
 
@@ -579,7 +583,11 @@ public class TemplateDeclaration extends ScopeDsymbol {
 					continue;
 				}
 			}
-			if (!(fdtype.varargs == 2 && i + 1 == nfparams))
+			
+			/* The following code for variadic arguments closely
+			 * matches TypeFunction::callMatch()
+			 */
+			if (!((context.isD1() ? fdtype.varargs : fvarargs) == 2 && i + 1 == nfparams))
 				return deduceFunctionTemplateMatch_Lnomatch(paramscope); // goto Lnomatch;
 
 			/*

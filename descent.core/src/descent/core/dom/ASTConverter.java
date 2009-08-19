@@ -1200,10 +1200,10 @@ public class ASTConverter {
 			}
 		}
 		if (a.sourceDefaultAlias != null) {
-			b.setDefaultType(convert(a.sourceDefaultAlias));
+			b.setDefaultObject(convert(a.sourceDefaultAlias));
 		}
-		if (a.sourceSpecAliasT != null) {
-			b.setSpecificType(convert(a.sourceSpecAliasT));
+		if (a.sourceSpecAlias != null) {
+			b.setSpecificObject(convert(a.sourceSpecAlias));
 		}
 		setSourceRange(b, a.start, a.length);
 		return b;

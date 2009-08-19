@@ -9,7 +9,7 @@ import java.util.List;
  *
  * <pre>
  * AliasTemplateParameter:
- *    <b>alias</b> SimpleName [ <b>:</b> Type ] [ <b>=</b> Type ]
+ *    <b>alias</b> SimpleName [ <b>:</b> ASTNode ] [ <b>=</b> ASTNode ]
  * </pre>
  */
 public class AliasTemplateParameter extends TemplateParameter {
@@ -21,16 +21,16 @@ public class AliasTemplateParameter extends TemplateParameter {
 	internalNamePropertyFactory(AliasTemplateParameter.class); //$NON-NLS-1$
 
 	/**
-	 * The "specificType" structural property of this node type.
+	 * The "specificNode" structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor SPECIFIC_TYPE_PROPERTY =
-		new ChildPropertyDescriptor(AliasTemplateParameter.class, "specificType", Type.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
+	public static final ChildPropertyDescriptor SPECIFIC_NODE_PROPERTY =
+		new ChildPropertyDescriptor(AliasTemplateParameter.class, "specificType", ASTNode.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
-	 * The "defaultType" structural property of this node type.
+	 * The "defaultNode" structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor DEFAULT_TYPE_PROPERTY =
-		new ChildPropertyDescriptor(AliasTemplateParameter.class, "defaultType", Type.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
+	public static final ChildPropertyDescriptor DEFAULT_NODE_PROPERTY =
+		new ChildPropertyDescriptor(AliasTemplateParameter.class, "defaultType", ASTNode.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -43,8 +43,8 @@ public class AliasTemplateParameter extends TemplateParameter {
 		List properyList = new ArrayList(3);
 		createPropertyList(AliasTemplateParameter.class, properyList);
 		addProperty(NAME_PROPERTY, properyList);
-		addProperty(SPECIFIC_TYPE_PROPERTY, properyList);
-		addProperty(DEFAULT_TYPE_PROPERTY, properyList);
+		addProperty(SPECIFIC_NODE_PROPERTY, properyList);
+		addProperty(DEFAULT_NODE_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -64,14 +64,14 @@ public class AliasTemplateParameter extends TemplateParameter {
 	}
 
 	/**
-	 * The specificType.
+	 * The specificObject.
 	 */
-	private Type specificType;
+	private ASTNode specificObject;
 
 	/**
-	 * The defaultType.
+	 * The defaultObject.
 	 */
-	private Type defaultType;
+	private ASTNode defaultObject;
 
 
 	/**
@@ -106,19 +106,19 @@ public class AliasTemplateParameter extends TemplateParameter {
 				return null;
 			}
 		}
-		if (property == SPECIFIC_TYPE_PROPERTY) {
+		if (property == SPECIFIC_NODE_PROPERTY) {
 			if (get) {
-				return getSpecificType();
+				return getSpecificObject();
 			} else {
-				setSpecificType((Type) child);
+				setSpecificObject((Type) child);
 				return null;
 			}
 		}
-		if (property == DEFAULT_TYPE_PROPERTY) {
+		if (property == DEFAULT_NODE_PROPERTY) {
 			if (get) {
-				return getDefaultType();
+				return getDefaultObject();
 			} else {
-				setDefaultType((Type) child);
+				setDefaultObject((Type) child);
 				return null;
 			}
 		}
@@ -145,8 +145,8 @@ public class AliasTemplateParameter extends TemplateParameter {
 		AliasTemplateParameter result = new AliasTemplateParameter(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.setName((SimpleName) getName().clone(target));
-	result.setSpecificType((Type) ASTNode.copySubtree(target, getSpecificType()));
-	result.setDefaultType((Type) ASTNode.copySubtree(target, getDefaultType()));
+	result.setSpecificObject((Type) ASTNode.copySubtree(target, getSpecificObject()));
+	result.setDefaultObject((Type) ASTNode.copySubtree(target, getDefaultObject()));
 		return result;
 	}
 
@@ -166,25 +166,25 @@ public class AliasTemplateParameter extends TemplateParameter {
 		if (visitChildren) {
 			// visit children in normal left to right reading order
 			acceptChild(visitor, getName());
-			acceptChild(visitor, getSpecificType());
-			acceptChild(visitor, getDefaultType());
+			acceptChild(visitor, getSpecificObject());
+			acceptChild(visitor, getDefaultObject());
 		}
 		visitor.endVisit(this);
 	}
 
 	/**
-	 * Returns the specific type of this alias template parameter.
+	 * Returns the specific object of this alias template parameter.
 	 * 
-	 * @return the specific type
+	 * @return the specific object
 	 */ 
-	public Type getSpecificType() {
-		return this.specificType;
+	public ASTNode getSpecificObject() {
+		return this.specificObject;
 	}
 
 	/**
-	 * Sets the specific type of this alias template parameter.
+	 * Sets the specific object of this alias template parameter.
 	 * 
-	 * @param specificType the specific type
+	 * @param specificObject the specific object
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -192,26 +192,26 @@ public class AliasTemplateParameter extends TemplateParameter {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setSpecificType(Type specificType) {
-		ASTNode oldChild = this.specificType;
-		preReplaceChild(oldChild, specificType, SPECIFIC_TYPE_PROPERTY);
-		this.specificType = specificType;
-		postReplaceChild(oldChild, specificType, SPECIFIC_TYPE_PROPERTY);
+	public void setSpecificObject(ASTNode specificObject) {
+		ASTNode oldChild = this.specificObject;
+		preReplaceChild(oldChild, specificObject, SPECIFIC_NODE_PROPERTY);
+		this.specificObject = specificObject;
+		postReplaceChild(oldChild, specificObject, SPECIFIC_NODE_PROPERTY);
 	}
 
 	/**
-	 * Returns the default type of this alias template parameter.
+	 * Returns the default object of this alias template parameter.
 	 * 
-	 * @return the default type
+	 * @return the default object
 	 */ 
-	public Type getDefaultType() {
-		return this.defaultType;
+	public ASTNode getDefaultObject() {
+		return this.defaultObject;
 	}
 
 	/**
-	 * Sets the default type of this alias template parameter.
+	 * Sets the default object of this alias template parameter.
 	 * 
-	 * @param defaultType the default type
+	 * @param defaultObject the default type
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -219,11 +219,11 @@ public class AliasTemplateParameter extends TemplateParameter {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setDefaultType(Type defaultType) {
-		ASTNode oldChild = this.defaultType;
-		preReplaceChild(oldChild, defaultType, DEFAULT_TYPE_PROPERTY);
-		this.defaultType = defaultType;
-		postReplaceChild(oldChild, defaultType, DEFAULT_TYPE_PROPERTY);
+	public void setDefaultObject(ASTNode defaultObject) {
+		ASTNode oldChild = this.defaultObject;
+		preReplaceChild(oldChild, defaultObject, DEFAULT_NODE_PROPERTY);
+		this.defaultObject = defaultObject;
+		postReplaceChild(oldChild, defaultObject, DEFAULT_NODE_PROPERTY);
 	}
 
 	/* (omit javadoc for this method)
@@ -240,8 +240,8 @@ public class AliasTemplateParameter extends TemplateParameter {
 		return
 			memSize()
 			+ (this.name == null ? 0 : getName().treeSize())
-			+ (this.specificType == null ? 0 : getSpecificType().treeSize())
-			+ (this.defaultType == null ? 0 : getDefaultType().treeSize())
+			+ (this.specificObject == null ? 0 : getSpecificObject().treeSize())
+			+ (this.defaultObject == null ? 0 : getDefaultObject().treeSize())
 	;
 	}
 

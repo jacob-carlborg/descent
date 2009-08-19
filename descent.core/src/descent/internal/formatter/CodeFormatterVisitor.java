@@ -217,22 +217,22 @@ public class CodeFormatterVisitor extends ASTVisitor
 		scribe.printNextToken(TOK.TOKalias);
 		scribe.space();
 		node.getName().accept(this);
-		Type specificType = node.getSpecificType();
-		if(null != specificType)
+		ASTNode specificObject = node.getSpecificObject();
+		if(null != specificObject)
 		{
 			scribe.printNextToken(TOK.TOKcolon, prefs.insert_space_before_colon_in_template_specific_type);
 			if(prefs.insert_space_after_colon_in_template_specific_type)
 				scribe.space();
-			specificType.accept(this);
+			specificObject.accept(this);
 		}
-		Type defaultType = node.getDefaultType();
-		if(null != defaultType)
+		ASTNode defaultObject = node.getDefaultObject();
+		if(null != defaultObject)
 		{
 			scribe.printNextToken(TOK.TOKassign,
 					prefs.insert_space_before_equals_in_default_template_arguments);
 			if(prefs.insert_space_after_equals_in_default_template_arguments)
 				scribe.space();
-			defaultType.accept(this);
+			defaultObject.accept(this);
 		}
 		scribe.printTrailingComment();
 		return false;

@@ -2262,9 +2262,9 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	public boolean visit(TemplateAliasParameter node) {
 		this.buffer.append("alias ");
 		node.ident.accept(this);
-		if (node.specAliasT != null) {
+		if (node.specAlias != null) {
 			this.buffer.append(" : ");
-			node.specAliasT.accept(this);
+			node.specAlias.accept(this);
 		}
 		if (node.defaultAlias != null) {
 			this.buffer.append(" = ");

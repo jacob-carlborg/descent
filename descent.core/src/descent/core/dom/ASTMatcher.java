@@ -2134,8 +2134,8 @@ public class ASTMatcher {
 		AliasTemplateParameter o = (AliasTemplateParameter) other;
 		return (
 			safeSubtreeMatch(node.getName(), o.getName())
-			&& safeSubtreeMatch(node.getSpecificType(), o.getSpecificType())
-			&& safeSubtreeMatch(node.getDefaultType(), o.getDefaultType())
+			&& safeSubtreeMatch(node.getSpecificObject(), o.getSpecificObject())
+			&& safeSubtreeMatch(node.getDefaultObject(), o.getDefaultObject())
 			);
 	}
 	
