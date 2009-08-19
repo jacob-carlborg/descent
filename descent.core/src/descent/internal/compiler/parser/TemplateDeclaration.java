@@ -275,7 +275,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		FuncDeclaration fd = onemember.toAlias(context).isFuncDeclaration();
 	    Arguments fparameters;		// function parameter list
 	    int fvarargs;			// function varargs
-		TypeFunction fdtype;
+		TypeFunction fdtype = null;
 		Objects dedtypes = new Objects(3); // for T:T*, the dedargs is the T*,
 		// dedtypes is the T
 
