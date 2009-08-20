@@ -18,14 +18,25 @@ import descent.internal.core.JavaProject;
 /*package*/ class ResourceSearch
 {
 	private INameEnvironment env;
-	private IJavaProject activeProject;
+	private IJavaProject targetProject;
+	
+	public ResourceSearch(IJavaProject targetProject) {
+		if (targetProject != null) {
+			this.targetProject = targetProject;
+			try {
+				this.env = new CancelableNameEnvironment((JavaProject) targetProject, null, null);
+			} catch (CoreException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 	
 	public ICompilationUnit search(String filename)
 	{
 		if (this.env == null) {
-			activeProject = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot()).getActiveProject();
+			targetProject = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot()).getActiveProject();
 			try {
-				this.env = new CancelableNameEnvironment((JavaProject) activeProject, null, null);
+				this.env = new CancelableNameEnvironment((JavaProject) targetProject, null, null);
 			} catch (CoreException e) {
 				e.printStackTrace();
 				return null;
@@ -55,7 +66,7 @@ import descent.internal.core.JavaProject;
 	}
 	
 	private ICompilationUnit searchClassFile(String filename) throws JavaModelException {
-		for(IPackageFragmentRoot root : activeProject.getAllPackageFragmentRoots()) {
+		for(IPackageFragmentRoot root : targetProject.getAllPackageFragmentRoots()) {
 			String rootDir;
 			if (root.isExternal()) {
 				rootDir = root.getPath().toOSString();
