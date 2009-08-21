@@ -7038,7 +7038,9 @@ public class Parser extends Lexer {
 		    break;
 		    
 		case TOKfile: {
-			char[] s = filename != null ? filename : module.ident.ident;
+			// Id.empty might happen if we are decoding an expression.
+			// TODO fix this (low priority)
+			char[] s = filename != null ? filename : (module != null ? module.ident.ident : Id.empty);
 			e = new StringExp(filename, lineNumber, s, s.length, (char) 0);
 			nextToken();
 			break;
