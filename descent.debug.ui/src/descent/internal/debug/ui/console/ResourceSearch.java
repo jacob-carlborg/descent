@@ -21,20 +21,15 @@ import descent.internal.core.JavaProject;
 	private IJavaProject targetProject;
 	
 	public ResourceSearch(IJavaProject targetProject) {
-		if (targetProject != null) {
-			this.targetProject = targetProject;
-			try {
-				this.env = new CancelableNameEnvironment((JavaProject) targetProject, null, null);
-			} catch (CoreException e) {
-				e.printStackTrace();
-			}
-		}
+		this.targetProject = targetProject;
 	}
 	
 	public ICompilationUnit search(String filename)
 	{
 		if (this.env == null) {
-			targetProject = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot()).getActiveProject();
+			if (targetProject == null) {
+				targetProject = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot()).getActiveProject();
+			}
 			try {
 				this.env = new CancelableNameEnvironment((JavaProject) targetProject, null, null);
 			} catch (CoreException e) {

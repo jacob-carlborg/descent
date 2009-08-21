@@ -2669,7 +2669,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		return f;
 	}
 	
-	public ASTDmdNode objectSyntaxCopy(ASTDmdNode o, SemanticContext context) {
+	public static ASTDmdNode objectSyntaxCopy(ASTDmdNode o, SemanticContext context) {
 		if (null == o)
 			return null;
 		Type t = isType(o);

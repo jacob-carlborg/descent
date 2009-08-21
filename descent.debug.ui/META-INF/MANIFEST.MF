@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Descent Debug Ui Plug-in
 Bundle-SymbolicName: descent.debug.ui;singleton:=true
-Bundle-Version: 0.5.6.20090819
+Bundle-Version: 0.5.6.20090820
 Bundle-Activator: descent.debug.ui.DescentDebugUI
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,

@@ -143,10 +143,10 @@ public class TemplateValueParameter extends TemplateParameter {
 		}
 		
 		if (context.isD2()) {
-			if (ei != null && ei.op == TOKvar)
-		    {	// Resolve const variables that we had skipped earlier
-			ei = ei.optimize(WANTvalue | WANTinterpret, context);
-		    }
+			if (ei != null && ei.op == TOKvar) { 
+				// Resolve const variables that we had skipped earlier
+				ei = ei.optimize(WANTvalue | WANTinterpret, context);
+			}
 		}
 
 		if (specValue != null) {

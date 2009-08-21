@@ -80,16 +80,22 @@ public class TemplateInstance extends ScopeDsymbol {
 		if (objs != null) {
 			a = new Objects(objs.size());
 			a.setDim(objs.size());
-			for (int i = 0; i < objs.size(); i++) {
-				Type ta = isType(objs.get(i));
-				if (ta != null) {
-					a.set(i, ta.syntaxCopy(context));
-				} else {
-					Expression ea = isExpression(objs.get(i));
-					if (ea == null) {
-						throw new IllegalStateException("assert(ea);");
+			if (context.isD1()) {
+				for (int i = 0; i < objs.size(); i++) {
+					Type ta = isType(objs.get(i));
+					if (ta != null) {
+						a.set(i, ta.syntaxCopy(context));
+					} else {
+						Expression ea = isExpression(objs.get(i));
+						if (ea == null) {
+							throw new IllegalStateException("assert(ea);");
+						}
+						a.set(i, ea.syntaxCopy(context));
 					}
-					a.set(i, ea.syntaxCopy(context));
+				}
+			} else {
+				for (int i = 0; i < objs.size(); i++) {
+				    a.set(i, objectSyntaxCopy(objs.get(i), context));
 				}
 			}
 		}
@@ -331,6 +337,10 @@ public class TemplateInstance extends ScopeDsymbol {
 				//				sinteger_t v;
 				//				real_t r;
 				//				char p;
+				
+				if (context.isD2()) {
+				    ea = ea.optimize(WANTvalue | WANTinterpret, context);
+				}
 
 				if (ea.op == TOKvar) {
 					sa = ((VarExp) ea).var;
@@ -362,6 +372,9 @@ public class TemplateInstance extends ScopeDsymbol {
 								context.acceptProblem(Problem.newSemanticTypeError(
 										IProblem.ForwardReferenceOfSymbol, this, new String[] { d.toChars(context) }));
 							}
+							if (context.isD2()) {
+								continue;
+							}
 						} else {
 							String p2 = sa.mangle(context);
 							buf.data.append(p2.length()).append(p2);
@@ -388,6 +401,9 @@ public class TemplateInstance extends ScopeDsymbol {
 					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								IProblem.ForwardReferenceOfSymbol, this, new String[] { d.toChars(context) }));
+					}
+					if (context.isD2()) {
+						continue;
 					}
 				} else {
 					String p = sa.mangle(context);
@@ -447,21 +463,43 @@ public class TemplateInstance extends ScopeDsymbol {
 
 				// else if(null != sa)
 				if (gotoLsa) {
-					Declaration d = sa.isDeclaration();
+					Declaration d;
+					boolean gotoL2 = false;
 					
-					boolean condition = null != d
-							&& !d.isDataseg(context)
-							&& (null == d.isFuncDeclaration() || d
-									.isFuncDeclaration().isNested())
-							&& null == isTemplateMixin();
-					if (context.isD2()) {
-						condition = condition && null != d && 0 == (d.storage_class & STCmanifest);
+					if (context.isD1()) {
+						d = sa.isDeclaration();
+					} else {
+						d = null;
+						TemplateDeclaration td = sa.isTemplateDeclaration();
+						if (td != null && td.literal) {
+							// goto L2;
+							gotoL2 = true;
+						}
+						if (!gotoL2) {
+							d = sa.isDeclaration();
+						}
+					}
+					
+					boolean condition;
+					
+					if (gotoL2) {
+						condition = true;
+					} else {
+						condition = null != d
+								&& !d.isDataseg(context)
+								&& (null == d.isFuncDeclaration() || d
+										.isFuncDeclaration().isNested())
+								&& null == isTemplateMixin();
+						if (context.isD2()) {
+							condition = condition && null != d && 0 == (d.storage_class & STCmanifest);
+						}
 					}
 					
 					if (condition) {
+						// L2:
 						// if module level template
 						if (null != tempdecl.toParent().isModule()) {
-							Dsymbol dparent = d.toParent();
+							Dsymbol dparent = context.isD1() ? d.toParent() : sa.toParent();
 							if (null == isnested)
 								isnested = dparent;
 							else if (isnested != dparent) {
@@ -685,7 +723,7 @@ public class TemplateInstance extends ScopeDsymbol {
 			
 			if (scx != null && scx.scopesym != null &&
 				    scx.scopesym.members != null && null == scx.scopesym.isTemplateMixin()
-				    && 0 == scx.module.selfImports(context)
+				    && (context.isD1() ? (0 == scx.module.selfImports(context)) : true)
 				    ) {
 			    a = scx.scopesym.members;
 		    } else {
@@ -998,7 +1036,12 @@ public class TemplateInstance extends ScopeDsymbol {
 				ta[0].resolve(filename, lineNumber, sc, ea, ta, sa, context);
 				if (ea[0] != null) {
 					ea[0] = ea[0].semantic(sc, context);
-					ea[0] = ea[0].optimize(WANTvalue | WANTinterpret, context);
+					if (context.isD1()) {
+						ea[0] = ea[0].optimize(WANTvalue | WANTinterpret, context);
+					} else {
+						if (ea[0].op != TOKvar || (flags & 1) != 0)
+						    ea[0] = ea[0].optimize(WANTvalue | WANTinterpret, context);
+					}
 					tiargs.set(j, ea[0]);
 				} else if (sa[0] != null) {
 					tiargs.set(j, sa[0]);
@@ -1045,12 +1088,23 @@ public class TemplateInstance extends ScopeDsymbol {
 					throw new IllegalStateException("assert(ea);");
 				}
 				ea[0] = ea[0].semantic(sc, context);
-				ea[0] = ea[0].optimize(WANTvalue | WANTinterpret, context);
+				if (context.isD1()) {
+					ea[0] = ea[0].optimize(WANTvalue | WANTinterpret, context);
+				} else {
+				    if (ea[0].op != TOKvar || (flags & 1) != 0)
+						ea[0] = ea[0].optimize(WANTvalue | WANTinterpret, context);
+				}
 				tiargs.set(j, ea[0]);
 			    if (ea[0].op == TOKtype) {
 					tiargs.set(j, ea[0].type);
 			    }
 			} else if (sa[0] != null) {
+				if (context.isD2()) {
+				    TemplateDeclaration td = sa[0].isTemplateDeclaration();
+				    if (td != null && null == td.scope && td.literal) {
+				    	td.semantic(sc, context);
+				    }
+				}
 			} else {
 				throw new IllegalStateException("assert (0);");
 			}

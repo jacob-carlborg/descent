@@ -23,7 +23,6 @@ import org.eclipse.ui.texteditor.ITextEditor;
 
 import descent.core.IJavaProject;
 import descent.core.JavaCore;
-import descent.core.compiler.IProblem;
 import descent.internal.ui.javaeditor.EditorUtility;
 
 public class DmdfeConsoleLineTracker implements IConsoleLineTracker {
@@ -38,8 +37,7 @@ public class DmdfeConsoleLineTracker implements IConsoleLineTracker {
 		private TextConsole console;
 		private IDocument doc;
 		private ResourceSearch resourceSearch;
-		private IJavaProject targetProject;
-
+		
 		public void connect(TextConsole console) {
 			this.console = console;
 			this.doc = console.getDocument();
