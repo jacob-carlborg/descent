@@ -12,16 +12,16 @@ public class TypeTuple extends Type {
 	public Arguments arguments;
 
 	private TypeTuple() {
-		super(TY.Ttuple, null);
+		super(TY.Ttuple);
 	}
 
 	public TypeTuple(Arguments arguments) {
-		super(Ttuple, null);
+		super(Ttuple);
 		this.arguments = arguments;
 	}
 	
 	public TypeTuple(Expressions exps, SemanticContext context) {
-		super(Ttuple, null);
+		super(Ttuple);
 		Arguments arguments = new Arguments(size(exps));
 		if (exps != null) {
 			arguments.setDim(exps.size());

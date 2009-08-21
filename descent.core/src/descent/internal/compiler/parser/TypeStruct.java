@@ -18,7 +18,7 @@ public class TypeStruct extends Type {
 	public StructDeclaration sym;
 
 	public TypeStruct(StructDeclaration sym) {
-		super(TY.Tstruct, null);
+		super(TY.Tstruct);
 		this.sym = sym;
 	}
 

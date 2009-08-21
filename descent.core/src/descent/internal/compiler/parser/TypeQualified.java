@@ -14,7 +14,7 @@ public abstract class TypeQualified extends Type {
 	public Identifiers idents = new Identifiers(2);
 
 	public TypeQualified(char[] filename, int lineNumber, TY ty) {
-		super(ty, null);
+		super(ty);
 		this.filename = filename;
 		this.lineNumber = lineNumber;
 	}

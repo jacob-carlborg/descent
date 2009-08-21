@@ -23,7 +23,7 @@ public class TypeClass extends Type {
 	public ClassDeclaration sym;
 
 	public TypeClass(ClassDeclaration sym) {
-		super(TY.Tclass, null);
+		super(TY.Tclass);
 		this.sym = sym;
 	}
 

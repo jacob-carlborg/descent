@@ -49,7 +49,7 @@ public class TypeBasic extends Type {
 	public final static integer_t LDBL_MIN_EXP = DBL_MIN_EXP;	
 
 	public TypeBasic(TY ty) {
-		super(ty, null);
+		super(ty);
 	}
 
 	public TypeBasic(Type singleton) {

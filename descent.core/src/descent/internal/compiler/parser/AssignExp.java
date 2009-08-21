@@ -259,48 +259,60 @@ public class AssignExp extends BinExp {
 				}
 			}
 		} else {
-			if (t1.ty == TY.Tclass || t1.ty == TY.Tstruct) {
-				StructDeclaration sd = ((TypeStruct)t1).sym;
-				if (op == TOKassign)
-				{
-				    Expression e = op_overload(sc, context);
-				    if (e != null) {
-				    	return e;
-				    }
-				}
-				else if (op == TOKconstruct) {
-					Type t2 = e2.type.toBasetype(context);
-					if (t2.ty == Tstruct && sd == ((TypeStruct) t2).sym && sd.cpctor != null) {
-						/*
-						 * We have a copy constructor for this
-						 */
-						if (e2.op == TOKvar || e2.op == TOKstar) {
-							/*
-							 * Write as: e1.cpctor(e2);
-							 */
-							Expression e = new DotVarExp(filename, lineNumber, e1, sd.cpctor, false);
-							e = new CallExp(filename, lineNumber, e, e2);
-							return e.semantic(sc, context);
-						} else if (e2.op == TOKquestion) {
-							/*
-							 * Write as: a ? e1 = b : e1 = c;
-							 */
-							CondExp ec = (CondExp) e2;
-							AssignExp ea1 = new AssignExp(ec.e1.filename, ec.e1.lineNumber, e1, ec.e1);
-							ea1.op = op;
-							AssignExp ea2 = new AssignExp(ec.e1.filename, ec.e1.lineNumber, e1, ec.e2);
-							ea2.op = op;
-							Expression e = new CondExp(filename, lineNumber, ec.econd, ea1, ea2);
-							return e.semantic(sc, context);
+			if (context.isD1()) {
+				if (t1.ty == TY.Tclass || t1.ty == TY.Tstruct) {
+					// Disallow assignment operator overloads for same type
+					if (MATCH.MATCHnomatch == e2.type.implicitConvTo(e1.type, context)) {
+						Expression e = op_overload(sc, context);
+						if (e != null) {
+							return e;
 						}
 					}
 				}
-			} else if (t1.ty == Tclass) { 
-				// Disallow assignment operator overloads for same type
-				if (MATCH.MATCHnomatch == e2.type.implicitConvTo(e1.type, context)) {
-					Expression e = op_overload(sc, context);
-					if (e != null) {
-						return e;
+			} else {
+				if (t1.ty == TY.Tstruct) {
+					StructDeclaration sd = ((TypeStruct)t1).sym;
+					if (op == TOKassign)
+					{
+					    Expression e = op_overload(sc, context);
+					    if (e != null) {
+					    	return e;
+					    }
+					}
+					else if (op == TOKconstruct) {
+						Type t2 = e2.type.toBasetype(context);
+						if (t2.ty == Tstruct && sd == ((TypeStruct) t2).sym && sd.cpctor != null) {
+							/*
+							 * We have a copy constructor for this
+							 */
+							if (e2.op == TOKvar || e2.op == TOKstar) {
+								/*
+								 * Write as: e1.cpctor(e2);
+								 */
+								Expression e = new DotVarExp(filename, lineNumber, e1, sd.cpctor, false);
+								e = new CallExp(filename, lineNumber, e, e2);
+								return e.semantic(sc, context);
+							} else if (e2.op == TOKquestion) {
+								/*
+								 * Write as: a ? e1 = b : e1 = c;
+								 */
+								CondExp ec = (CondExp) e2;
+								AssignExp ea1 = new AssignExp(ec.e1.filename, ec.e1.lineNumber, e1, ec.e1);
+								ea1.op = op;
+								AssignExp ea2 = new AssignExp(ec.e1.filename, ec.e1.lineNumber, e1, ec.e2);
+								ea2.op = op;
+								Expression e = new CondExp(filename, lineNumber, ec.econd, ea1, ea2);
+								return e.semantic(sc, context);
+							}
+						}
+					}
+				} else if (t1.ty == Tclass) { 
+					// Disallow assignment operator overloads for same type
+					if (MATCH.MATCHnomatch == e2.type.implicitConvTo(e1.type, context)) {
+						Expression e = op_overload(sc, context);
+						if (e != null) {
+							return e;
+						}
 					}
 				}
 			}

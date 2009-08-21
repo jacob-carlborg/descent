@@ -15,7 +15,7 @@ public class TypeTypedef extends Type {
 	public TypedefDeclaration sym;
 
 	public TypeTypedef(TypedefDeclaration sym) {
-		super(TY.Ttypedef, null);
+		super(TY.Ttypedef);
 		this.sym = sym;
 	}
 

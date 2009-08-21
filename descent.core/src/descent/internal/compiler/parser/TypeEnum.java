@@ -14,7 +14,7 @@ public class TypeEnum extends Type {
 	public EnumDeclaration sym;
 
 	public TypeEnum(EnumDeclaration sym) {
-		super(TY.Tenum, null);
+		super(TY.Tenum);
 		this.sym = sym;
 	}
 
