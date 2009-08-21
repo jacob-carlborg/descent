@@ -670,7 +670,7 @@ class DefaultBindingResolver extends BindingResolver {
 					binding = new BuiltinPropertyBinding(this, type,
 							context.Type_tvoidptr, identifier, signature);
 				} else if (CharOperation.equals(prop, Id.funcptr)) {
-					TypePointer tp = new TypePointer(type.next);
+					TypePointer tp = new TypePointer(type.nextOf());
 					String newSignature = "P" + signature.substring(1);
 					
 					binding = new BuiltinPropertyBinding(this, type,

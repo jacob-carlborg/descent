@@ -1179,6 +1179,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.SymbolIsNothrowYetMayThrow, arguments[0]);
 		case DefaultConstructorNotAllowedForStructs:
 			return String.format(ProblemMessages.DefaultConstructorNotAllowedForStructs);
+		case VoidDoesNotHaveADefaiñtInitializer:
+			return String.format(ProblemMessages.VoidDoesNotHaveADefaiñtInitializer);
 		default:
 			return "";
 		}

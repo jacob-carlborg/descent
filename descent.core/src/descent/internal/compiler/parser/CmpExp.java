@@ -130,10 +130,10 @@ public class CmpExp extends BinExp {
 		
 		if (condition) {
 			if (context.isD1()) {
-				if (!t1.next.equals(t2.next)) {
+				if (!t1.nextOf().equals(t2.nextOf())) {
 					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.ArrayComparisonTypeMismatch, this, t1.next.toChars(context), t2.next.toChars(context)));
+								IProblem.ArrayComparisonTypeMismatch, this, t1.nextOf().toChars(context), t2.nextOf().toChars(context)));
 					}
 				}
 			} else {
@@ -142,7 +142,7 @@ public class CmpExp extends BinExp {
 					    (t1.nextOf().ty != Tvoid && t2.nextOf().ty != Tvoid)) {
 					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.ArrayComparisonTypeMismatch, this, t1.next.toChars(context), t2.next.toChars(context)));
+								IProblem.ArrayComparisonTypeMismatch, this, t1.nextOf().toChars(context), t2.nextOf().toChars(context)));
 					}
 				}
 			}

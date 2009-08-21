@@ -733,5 +733,6 @@ public interface IProblem {
 	int SliceIsNotMutable = 522;
 	int SymbolIsNothrowYetMayThrow = 523;
 	int DefaultConstructorNotAllowedForStructs = 524;
+	int VoidDoesNotHaveADefaiñtInitializer = 525;
 
 }

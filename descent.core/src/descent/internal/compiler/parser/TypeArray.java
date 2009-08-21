@@ -6,7 +6,7 @@ import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Twchar;
 
 
-public abstract class TypeArray extends Type {
+public abstract class TypeArray extends TypeNext {
 
 	private final static char[][] name1 = { "_adReverseChar".toCharArray(),
 			"_adReverseWchar".toCharArray() };

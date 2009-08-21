@@ -173,7 +173,7 @@ public class IndexExp extends BinExp {
 		case Tpointer:
 		case Tarray: {
 			e2 = e2.implicitCastTo(sc, Type.tsize_t, context);
-			e.type = t1.next;
+			e.type = t1.nextOf();
 			break;
 		}
 

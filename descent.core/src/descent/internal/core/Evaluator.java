@@ -252,7 +252,7 @@ public class Evaluator {
 	
 	public IEvaluationResult evalString(StringExp exp) {
 		String s = new String(exp.string); 
-		Type next = exp.type.next;
+		Type next = exp.type.nextOf();
 		if (next == null) {
 			return null;
 		}

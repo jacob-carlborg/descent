@@ -352,7 +352,7 @@ public abstract class BinExp extends Expression {
 			}
 			
 			if (context.isD1()) {
-				if (t1b.next.isbit()) {
+				if (t1b.nextOf().isbit()) {
 					// BUG: should add runtime check for misaligned offsets
 					// This perhaps should be done by rewriting as &p[i]
 					// and letting back end do it.
@@ -380,7 +380,7 @@ public abstract class BinExp extends Expression {
 			}
 			
 			if (context.isD1()) {
-				if (t2b.next.isbit()) {
+				if (t2b.nextOf().isbit()) {
 					// BUG: should add runtime check for misaligned offsets
 					e = new UshrExp(filename, lineNumber, e, new IntegerExp(filename, lineNumber, 3, t));
 				} else {
@@ -558,8 +558,8 @@ public abstract class BinExp extends Expression {
 				}
 			} else if (t1.ty == Tpointer && t2.ty == Tpointer) {
 				// Bring pointers to compatible type
-				Type t1n = t1.next;
-				Type t2n = t2.next;
+				Type t1n = t1.nextOf();
+				Type t2n = t2.nextOf();
 	
 				assert (!same(t1n, t2n, context));
 				if (t1n.ty == Tvoid) {
@@ -589,7 +589,7 @@ public abstract class BinExp extends Expression {
 			} else if ((t1.ty == Tsarray || t1.ty == Tarray) && e2.op == TOKnull
 					&& t2.ty == Tpointer && t2.nextOf().ty == Tvoid) {
 				// goto Lx1;
-				t = t1.next.arrayOf(context);
+				t = t1.nextOf().arrayOf(context);
 				e1 = e1.castTo(sc, t, context);
 				e2 = e2.castTo(sc, t, context);
 				if (type == null) {
@@ -599,7 +599,7 @@ public abstract class BinExp extends Expression {
 			} else if ((t2.ty == Tsarray || t2.ty == Tarray) && e1.op == TOKnull
 					&& t1.ty == Tpointer && t1.nextOf().ty == Tvoid) {
 				// goto Lx2;
-				t = t2.next.arrayOf(context);
+				t = t2.nextOf().arrayOf(context);
 				e1 = e1.castTo(sc, t, context);
 				e2 = e2.castTo(sc, t, context);
 				if (type == null) {

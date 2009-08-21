@@ -207,7 +207,7 @@ public class StringExp extends Expression {
 			try {
 				boolean comparison = context.isD2() ? 
 						t.ty == Tpointer && t.nextOf().ty == Tvoid : 
-						t.ty == Tpointer && t.next.ty == Tvoid;
+						t.ty == Tpointer && t.nextOf().ty == Tvoid;
 				if (!committed && comparison) {
 					return MATCHnomatch;
 				}
@@ -215,7 +215,7 @@ public class StringExp extends Expression {
 				throw e;
 			}
 			if (type.ty == Tsarray || type.ty == Tarray || type.ty == Tpointer) {
-				if (type.next.ty == Tchar) {
+				if (type.nextOf().ty == Tchar) {
 					
 					if (context.isD1()) {
 						switch (t.ty) {
@@ -229,11 +229,11 @@ public class StringExp extends Expression {
 							}
 						case Tarray:
 						case Tpointer:
-							if (t.next.ty == Tchar) {
+							if (t.nextOf().ty == Tchar) {
 								return MATCHexact;
-							} else if (t.next.ty == Twchar) {
+							} else if (t.nextOf().ty == Twchar) {
 								return MATCHexact;
-							} else if (t.next.ty == Tdchar) {
+							} else if (t.nextOf().ty == Tdchar) {
 								return MATCHexact;
 							}
 							break;
@@ -541,7 +541,7 @@ public class StringExp extends Expression {
 					se.len = newlen;
 					se.sz = tb.nextOf().size(context);
 				} else {
-					if (se.type.next.size(context) == tb.next.size(context)) {
+					if (se.type.nextOf().size(context) == tb.nextOf().size(context)) {
 						se.type = t;
 						return se;
 					}

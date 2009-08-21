@@ -437,7 +437,7 @@ public class TypeClass extends Type {
 
 		if (context.global.params.Dversion == 1) {
 			// Allow conversion to (void *)
-			if (to.ty == Tpointer && to.next.ty == Tvoid) {
+			if (to.ty == Tpointer && to.nextOf().ty == Tvoid) {
 				return MATCHconvert;
 			}
 		}

@@ -2145,7 +2145,7 @@ public class FuncDeclaration extends Declaration {
 			if (inferRetType) { // If no return type inferred yet, then
 				// infer a void
 				if (type.nextOf() == null) {
-					type.next = Type.tvoid;
+					((TypeFunction)type).next = Type.tvoid;
 					type = type.semantic(filename, lineNumber, sc, context);
 				}
 				f = (TypeFunction) type;

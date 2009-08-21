@@ -62,8 +62,8 @@ public class TypeTypedef extends Type {
 		e = bt.defaultInit(filename, lineNumber, context);
 		e.type = this;
 		while (bt.ty == TY.Tsarray) {
-			e.type = bt.next;
-			bt = bt.next.toBasetype(context);
+			e.type = bt.nextOf();
+			bt = bt.nextOf().toBasetype(context);
 		}
 		return e;
 	}

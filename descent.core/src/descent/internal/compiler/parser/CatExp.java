@@ -99,7 +99,7 @@ public class CatExp extends BinExp {
 
 		if (context.isD1()) {
 			if ((tb1.ty == TY.Tsarray || tb1.ty == TY.Tarray)
-					&& e2.type.equals(tb1.next)) {
+					&& e2.type.equals(tb1.nextOf())) {
 				type = tb1.nextOf().arrayOf(context);
 				if (tb2.ty == TY.Tarray) {
 					// Make e2 into [e2]
@@ -112,7 +112,7 @@ public class CatExp extends BinExp {
 			}
 	
 			else if ((tb2.ty == TY.Tsarray || tb2.ty == TY.Tarray)
-					&& e1.type.equals(tb2.next)) {
+					&& e1.type.equals(tb2.nextOf())) {
 				type = tb2.nextOf().arrayOf(context);
 				if (tb1.ty == TY.Tarray) {
 					// Make e1 into [e1]
@@ -127,7 +127,7 @@ public class CatExp extends BinExp {
 			typeCombine(sc, context);
 	
 			if (type.toBasetype(context).ty == TY.Tsarray) {
-				type = type.toBasetype(context).next.arrayOf(context);
+				type = type.toBasetype(context).nextOf().arrayOf(context);
 			}
 	
 			if (e1.op == TOK.TOKstring && e2.op == TOK.TOKstring) {

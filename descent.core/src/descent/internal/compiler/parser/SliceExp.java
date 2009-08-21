@@ -112,8 +112,8 @@ public class SliceExp extends UnaExp {
 			if(e1.op == TOKstring)
 			{ // Convert slice of string literal into dynamic array
 				Type t = e1.type.toBasetype(context);
-				if(null != (context.isD1() ? t.next : t.nextOf()))
-					e = e1.castTo(null,  (context.isD1() ? t.next : t.nextOf()).arrayOf(context), context);
+				if(null != t.nextOf())
+					e = e1.castTo(null, t.nextOf().arrayOf(context), context);
 			}
 			return e;
 		}

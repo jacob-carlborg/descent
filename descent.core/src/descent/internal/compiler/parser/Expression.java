@@ -331,7 +331,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 			Expression e;
 
 			e = new PtrExp(filename, lineNumber, this);
-			e.type = type.next;
+			e.type = type.nextOf();
 			return e;
 		}
 		return this;

@@ -32,7 +32,7 @@ public class DescentArrayInitializerValue extends DescentDebugElement implements
 	}
 
 	public String getValueString() throws DebugException {
-		return Utils.getTypeName(fArray.type.next) + "[" + fArray.dim +"]";
+		return Utils.getTypeName(fArray.type.nextOf()) + "[" + fArray.dim +"]";
 	}
 	
 	public IVariable[] getVariables() throws DebugException {
@@ -52,7 +52,7 @@ public class DescentArrayInitializerValue extends DescentDebugElement implements
 			
 			for (int i = 0; i < fVariables.length; i++) {
 				if (fVariables[i] == null) {
-					fVariables[i] = fElementFactory.newVariable(fStackFrame, "[" + i + "]", Utils.getDefaultValue(fArray.type.next));
+					fVariables[i] = fElementFactory.newVariable(fStackFrame, "[" + i + "]", Utils.getDefaultValue(fArray.type.nextOf()));
 				}
 			}
 		}

@@ -200,7 +200,7 @@ public class ReturnStatement extends Statement {
 						}
 					}
 				} else {
-					fd.type.next = exp.type;
+					((TypeFunction)fd.type).next = exp.type;
 					fd.type = fd.type.semantic(filename, lineNumber, sc, context);
 					if (fd.tintro == null) {
 						tret = fd.type.nextOf();
@@ -222,7 +222,7 @@ public class ReturnStatement extends Statement {
 					}
 				}
 			} else {
-				fd.type.next = Type.tvoid;
+				((TypeFunction)fd.type).next = Type.tvoid;
 				fd.type = fd.type.semantic(filename, lineNumber, sc, context);
 				if (fd.tintro == null) {
 					tret = Type.tvoid;

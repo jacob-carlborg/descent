@@ -24,7 +24,7 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
-public class TypeFunction extends Type implements Cloneable {
+public class TypeFunction extends TypeNext implements Cloneable {
 
 	public int inuse;
 	public LINK linkage; // calling convention
@@ -481,7 +481,7 @@ public class TypeFunction extends Type implements Cloneable {
 								 */
 								Type tret = p.isLazyArray(context);
 								if (null != tret) {
-									if (tb.next.equals(arg.type)) {
+									if (tb.nextOf().equals(arg.type)) {
 										m = MATCHexact;
 									} else {
 										m = arg.implicitConvTo(tret, context);
@@ -492,7 +492,7 @@ public class TypeFunction extends Type implements Cloneable {
 										}
 									}
 								} else {
-									m = arg.implicitConvTo(tb.next, context);
+									m = arg.implicitConvTo(tb.nextOf(), context);
 								}
 								if (m == MATCHnomatch) {
 									return MATCHnomatch; // goto Nomatch;
@@ -553,7 +553,7 @@ public class TypeFunction extends Type implements Cloneable {
 							 */
 							Type tret = p.isLazyArray(context);
 							if (null != tret) {
-								if (tb.next.equals(arg.type)) {
+								if (tb.nextOf().equals(arg.type)) {
 									m = MATCHexact;
 								} else {
 									m = arg.implicitConvTo(tret, context);
@@ -564,7 +564,7 @@ public class TypeFunction extends Type implements Cloneable {
 									}
 								}
 							} else {
-								m = arg.implicitConvTo(tb.next, context);
+								m = arg.implicitConvTo(tb.nextOf(), context);
 							}
 							if (m == MATCHnomatch) {
 								return MATCHnomatch; // goto Nomatch;

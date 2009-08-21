@@ -123,7 +123,7 @@ public class AssocArrayLiteralExp extends Expression {
 					break; // no need to check for worse
 				}
 				e = values.get(i);
-				m = e.implicitConvTo(tb.next, context);
+				m = e.implicitConvTo(tb.nextOf(), context);
 				if (m.ordinal() < result.ordinal()) {
 					result = m; // remember worst match
 				}

@@ -82,14 +82,7 @@ public class NullExp extends Expression {
 		}
 		
 		// NULL implicitly converts to any pointer type or dynamic array
-		boolean condition;
-		if (context.isD2()) {
-			condition = type.ty == Tpointer && type.next.ty == Tvoid;
-		} else {
-			condition = type.ty == Tpointer && type.nextOf().ty == Tvoid;
-		}
-		
-		if (condition) {
+		if (type.ty == Tpointer && type.nextOf().ty == Tvoid) {
 			if (t.ty == Ttypedef) {
 				t = ((TypeTypedef) t).sym.basetype;
 			}

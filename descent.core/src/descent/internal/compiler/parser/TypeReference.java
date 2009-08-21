@@ -5,7 +5,7 @@ import static descent.internal.compiler.parser.TY.Treference;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
-public class TypeReference extends Type {
+public class TypeReference extends TypeNext {
 	
 	private SemanticContext context;
 

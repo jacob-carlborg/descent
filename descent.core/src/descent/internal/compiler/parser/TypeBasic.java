@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.MATCH.MATCHconst;
 import static descent.internal.compiler.parser.MATCH.MATCHconvert;
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
@@ -11,6 +12,7 @@ import java.math.BigInteger;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
@@ -51,7 +53,7 @@ public class TypeBasic extends Type {
 	}
 
 	public TypeBasic(Type singleton) {
-		super(singleton.ty, null, singleton);
+		super(singleton.ty, singleton);
 		this.deco = singleton.deco;
 	}
 
@@ -90,7 +92,7 @@ public class TypeBasic extends Type {
 
 	@Override
 	public Expression defaultInit(char[] filename, int lineNumber, SemanticContext context) {
-		BigInteger value;
+		BigInteger value = BigInteger.ZERO;
 
 		switch (ty) {
 		case Tchar:
@@ -112,6 +114,13 @@ public class TypeBasic extends Type {
 		case Tcomplex64:
 		case Tcomplex80:
 			return getProperty(filename, lineNumber, Id.nan, 0, 0, context);
+		case Tvoid:
+			if (context.isD2()) {
+				if (context.acceptsErrors()) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.VoidDoesNotHaveADefaiñtInitializer, this));
+				}
+				break;
+			}
 		default:
 			return new IntegerExp(filename, lineNumber, Id.ZERO, 0, this);
 		}
@@ -140,9 +149,6 @@ public class TypeBasic extends Type {
 				// goto L1;
 				e = e.castTo(sc, t, context);
 				break;
-			// L1:
-			// e = e.castTo(sc, t, context);
-			// break;
 
 			case Tfloat32:
 			case Tfloat64:
@@ -162,9 +168,6 @@ public class TypeBasic extends Type {
 				t = tfloat80; // goto L2;
 				e = new RealExp(null, 0, 0.0, t);
 				break;
-			// L2:
-			// e = new RealExp(null, 0, 0.0, t);
-			// break;
 
 			default:
 				return getProperty(e.filename, e.lineNumber,  ident, context);
@@ -194,29 +197,31 @@ public class TypeBasic extends Type {
 				e = e.castTo(sc, t, context);
 				e.type = t2;
 				break;
-			// L3:
-			// e = e.castTo(sc, t, context);
-			// e.type = t2;
-			// break;
 
 			case Timaginary32:
 				t = tfloat32;
 				// goto L4;
+				if (context.isD2()) {
+					e = e.copy();
+				}
 				e.type = t;
 				break;
 			case Timaginary64:
 				t = tfloat64;
 				// goto L4;
+				if (context.isD2()) {
+					e = e.copy();
+				}
 				e.type = t;
 				break;
 			case Timaginary80:
 				t = tfloat80;
 				// goto L4;
+				if (context.isD2()) {
+					e = e.copy();
+				}
 				e.type = t;
 				break;
-			// L4:
-			// e.type = t;
-			// break;
 
 			case Tfloat32:
 			case Tfloat64:
@@ -552,6 +557,13 @@ public class TypeBasic extends Type {
 
 		if (this == to) {
 			return MATCHexact;
+		}
+		
+		if (context.isD2()) { 
+		    if (ty == to.ty)
+		    {
+			return (mod == to.mod) ? MATCHexact : MATCHconst;
+		    }
 		}
 
 		if (ty == Tvoid || to.ty == Tvoid) {

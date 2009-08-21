@@ -98,15 +98,15 @@ public class TypeDArray extends TypeArray {
 		// Allow implicit conversion of array to pointer
 		if (context.global.params.useDeprecated
 				&& to.ty == Tpointer
-				&& (to.next.ty == Tvoid || next.equals(to.next) /*|| to.next.isBaseOf(next)*/)) {
+				&& (to.nextOf().ty == Tvoid || next.equals(to.nextOf()) /*|| to.next.isBaseOf(next)*/)) {
 			return MATCHconvert;
 		}
 
 		if (to.ty == Tarray) {
 			int[] offset = { 0 };
 
-			if ((to.next.isBaseOf(next, offset, context) && offset[0] == 0)
-					|| to.next.ty == Tvoid) {
+			if ((to.nextOf().isBaseOf(next, offset, context) && offset[0] == 0)
+					|| to.nextOf().ty == Tvoid) {
 				return MATCHconvert;
 			}
 		}

@@ -192,16 +192,16 @@ public class TypeSArray extends TypeArray {
 	public MATCH implicitConvTo(Type to, SemanticContext context) {
 		// Allow implicit conversion of static array to pointer or dynamic array
 		if ((context.global.params.useDeprecated && to.ty == Tpointer)
-				&& (to.next.ty == Tvoid || next.equals(to.next)
+				&& (to.nextOf().ty == Tvoid || next.equals(to.nextOf())
 				/* || to.next.isBaseOf(next) */)) {
 			return MATCHconvert;
 		}
 		if (to.ty == Tarray) {
 			int offset = 0;
 
-			if (next.equals(to.next)
-					|| (to.next.isBaseOf(next, new int[] { offset }, context) && offset == 0)
-					|| to.next.ty == Tvoid)
+			if (next.equals(to.nextOf())
+					|| (to.nextOf().isBaseOf(next, new int[] { offset }, context) && offset == 0)
+					|| to.nextOf().ty == Tvoid)
 				return MATCHconvert;
 		}
 		return super.implicitConvTo(to, context);

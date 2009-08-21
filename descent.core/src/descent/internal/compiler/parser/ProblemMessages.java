@@ -534,6 +534,7 @@ final class ProblemMessages extends NLS {
 	public static String SliceIsNotMutable;
 	public static String SymbolIsNothrowYetMayThrow;
 	public static String DefaultConstructorNotAllowedForStructs;
+	public static String VoidDoesNotHaveADefaiñtInitializer;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

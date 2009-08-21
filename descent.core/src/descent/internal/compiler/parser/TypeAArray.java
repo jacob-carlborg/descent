@@ -71,7 +71,7 @@ public class TypeAArray extends TypeArray {
 			arguments = new Expressions(1);
 			arguments.add(e);
 			e = new CallExp(e.filename, e.lineNumber,  ec, arguments);
-			e.type = fd.type.next;
+			e.type = fd.type.nextOf();
 		} else if (equals(ident, Id.keys)) {
 			Expression ec;
 			FuncDeclaration fd;

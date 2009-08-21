@@ -502,7 +502,6 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 
 	public TY ty;
 	public int mod; // modifiers (MODconst, MODinvariant)
-	public Type next, sourceNext;
 	public String deco;
 	public Type cto; // MODconst ? mutable version of this type : const version
 	public Type ito; // MODinvariant ? mutable version of this type : invariant version
@@ -538,17 +537,13 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 
 	public List<Modification> modifications;
 
-	public Type(TY ty, Type next) {
+	public Type(TY ty) {
 		this.ty = ty;
-		this.next = next;
-		this.sourceNext = next;
 		this.singleton = this;
 	}
 
-	public Type(TY ty, Type next, Type singleton) {
+	public Type(TY ty, Type singleton) {
 		this.ty = ty;
-		this.next = next;
-		this.sourceNext = next;
 		this.singleton = singleton;
 	}
 
@@ -582,11 +577,6 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	}
 
 	public Type semantic(char[] filename, int lineNumber, Scope sc, SemanticContext context) {
-		if (context.isD1()) {
-			if (next != null) {
-				next = next.semantic(filename, lineNumber, sc, context);
-			}
-		}
 		return merge(context);
 	}
 	
@@ -599,29 +589,13 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	 *	MATCHnomatch	conversion to mutable or invariant
 	 */
 	public MATCH constConv(Type to) {
-		MATCH m;
-		
 		if (equals(to)) {
-			m = MATCHexact;
+			return MATCHexact;
 		} else if (ty == to.ty && to.mod == MODconst) {
-			m = MATCHconst;
+			return MATCHconst;
 		} else {
-			m = MATCHnomatch;
+			return MATCHnomatch;
 		}
-		
-		// TypeNext
-		if (m == MATCHconst && next.constConv(to.next) == MATCHnomatch) {
-			m = MATCHnomatch;
-		}
-		
-		return m;
-	}
-	
-	public void transitive(SemanticContext context) {
-		/*
-		 * Invoke transitivity of type attributes
-		 */
-		next = next.addMod(mod, context);
 	}
 	
 	public Type trySemantic(char[] filename, int lineNumber, Scope sc, SemanticContext context) {
@@ -642,10 +616,6 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 
 		t = this;
 		if (deco == null) {
-			if (next != null) {
-				next = next.merge(context);
-			}
-			
 			OutBuffer buf = new OutBuffer();
 			StringValue sv;
 			
@@ -695,31 +665,21 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	}
 
 	public void toDecoBuffer(OutBuffer buf, int flag, SemanticContext context) {
-		if (context.isD1()) {
-			buf.writeByte(ty.mangleChar);
-			if (next != null) {
-				Assert.isTrue(next != this);
-				next.toDecoBuffer(buf, flag, context);
-			}
-		} else {
+		if (context.isD2()) {
 			if (flag != mod && flag != 0x100) {
 				if ((mod & MODshared) != 0)
 					buf.writeByte('O');
-
+	
 				if ((mod & MODconst) != 0)
 					buf.writeByte('x');
 				else if ((mod & MODinvariant) != 0)
 					buf.writeByte('y');
-
+	
 				// Cannot be both const and invariant
 				assert ((mod & (MODconst | MODinvariant)) != (MODconst | MODinvariant));
 			}
-			buf.writeByte(ty.mangleChar);
-			
-			if (next != null) {
-				next.toDecoBuffer(buf, (flag & 0x100) != 0 ? 0 : mod, context);
-			}
 		}
+		buf.writeByte(ty.mangleChar);
 	}
 
 	public void resolve(char[] filename, int lineNumber, Scope sc, Expression[] pe, Type[] pt,
@@ -1172,7 +1132,11 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 						IProblem.DeprecatedProperty, lineNumber, start, length,
 						new String[] { ".size", ".sizeof" }));
 			}
-			e = new IntegerExp(filename, lineNumber, size(filename, lineNumber, context), Type.tsize_t);
+			if (context.isD1()) {
+				e = new IntegerExp(filename, lineNumber, size(filename, lineNumber, context), Type.tsize_t);
+			} else {
+				e = new ErrorExp();
+			}
 		} else if (equals(ident, Id.alignof)) {
 			e = new IntegerExp(filename, lineNumber, alignsize(context), Type.tsize_t);
 		} else if (equals(ident, Id.typeinfo)) {
@@ -1216,28 +1180,23 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 						IProblem.UndefinedProperty, lineNumber, start, length, new String[] {
 								new String(ident), toChars(context) }));
 			}
-			e = new IntegerExp(filename, lineNumber, Id.ONE, 1, Type.tint32);
+			if (context.isD1()) {
+				e = new IntegerExp(filename, lineNumber, Id.ONE, 1, Type.tint32);
+			} else  {
+				e = new ErrorExp();
+			}
 		}
 		return e;
 	}
 
 	public Type reliesOnTident() {
-		if (next == null) {
-			return null;
-		} else {
-			return next.reliesOnTident();
-		}
+		return null;
 	}
 
 	public void checkDeprecated(char[] filename, int lineNumber, Scope sc, SemanticContext context) {
-		Type t;
-		Dsymbol s;
-
-		for (t = this; t != null; t = t.next) {
-			s = t.toDsymbol(sc, context);
-			if (s != null) {
-				s.checkDeprecated(sc, context, this); // TODO check "this" for reference
-			}
+		Dsymbol s = toDsymbol(sc, context);
+		if (s != null) {
+			s.checkDeprecated(sc, context, this); // SEMANTIC this is reference?
 		}
 	}
 	
@@ -1538,7 +1497,12 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	public void toCBuffer3(OutBuffer buf, HdrGenState hgs, int mod,
 			SemanticContext context) {
 		if (mod != this.mod) {
-			switch (this.mod) {
+			if (context.isD2()) {
+				if ((this.mod & MODshared) != 0)
+				    buf.writestring("shared(");
+			}
+			
+			switch (context.isD1() ? this.mod : (this.mod & (MODconst | MODinvariant))) {
 			case 0:
 				toCBuffer2(buf, hgs, this.mod, context);
 				break;
@@ -1548,12 +1512,21 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 				buf.writeByte(')');
 				break;
 			case MODinvariant:
-				buf.writestring("invariant(");
+				if (context.isD1()) {
+					buf.writestring("invariant(");
+				} else {
+					buf.writestring("immutable(");
+				}
 				toCBuffer2(buf, hgs, this.mod, context);
 				buf.writeByte(')');
 				break;
 			default:
 				throw new IllegalStateException("assert(0)");
+			}
+			
+			if (context.isD2()) {
+				if ((this.mod & MODshared) != 0)
+				    buf.writeByte(')');
 			}
 		}
 	}
@@ -1568,7 +1541,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	}
 
 	public Type nextOf() {
-		return next;
+		return null;
 	}
 
 	public Type makeConst(int startPosition, int length, SemanticContext context) {
@@ -1592,15 +1565,6 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		}
 		t.modifications.add(new Modification(TOK.TOKconst, startPosition,
 				length));
-		
-		// TypeNext
-		if (ty != Tfunction && ty != Tdelegate && next.deco != null && !next.isInvariant() && !next.isConst()) {
-			if (next.isShared())
-				t.next = next.sharedConstOf(context);
-			else
-				t.next = next.constOf(context);
-		}
-		
 		return t;
 	}
 
@@ -1625,12 +1589,6 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		}
 		t.modifications.add(new Modification(TOK.TOKinvariant,
 				startPosition, length));
-		
-		// TypeNext
-		if (ty != Tfunction && ty != Tdelegate && next.deco != null && !next.isInvariant()) {
-			t.next = next.invariantOf(context);
-		}
-		
 		return t;
 	}
 	
@@ -1648,15 +1606,6 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		t.sto = null;
 		t.scto = null;
 		t.vtinfo = null;
-		
-		// TypeNext
-		if (ty != Tfunction && ty != Tdelegate && next.deco != null && !next.isInvariant() && !next.isShared()) {
-			if (next.isConst())
-				t.next = next.sharedConstOf(context);
-			else
-				t.next = next.sharedOf(context);
-		}
-		
 		return t;
 	}
 	
@@ -1674,12 +1623,6 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		t.sto = null;
 		t.scto = null;
 		t.vtinfo = null;
-		
-		// TypeNext
-		if (ty != Tfunction && ty != Tdelegate && next.deco != null && !next.isInvariant() && !next.isSharedConst()) {
-			t.next = next.sharedConstOf(context);
-		}
-		
 		return t;
 	}
 
@@ -1881,7 +1824,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 		t = toBasetype(context);
 		switch (t.ty) {
 		case Tsarray:
-			t = t.next.arrayOf(context); // convert to corresponding dynamic array type
+			t = t.nextOf().arrayOf(context); // convert to corresponding dynamic array type
 			break;
 
 		case Tclass:
@@ -1899,7 +1842,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 			    	break;
 			    }
 			} else {
-				if (t.next.ty != Tclass) {
+				if (t.nextOf().ty != Tclass) {
 					break;
 				}
 			}

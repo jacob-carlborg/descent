@@ -180,9 +180,9 @@ public class IsExp extends Expression {
 				if (targ.ty == TY.Tfunction)
 					tded = ((TypeFunction)targ).next;
 				else if (targ.ty == TY.Tdelegate)
-					tded = targ.next.next;
-				else if (targ.ty == TY.Tpointer && targ.next.ty == TY.Tfunction)
-					tded = targ.next.next;
+					tded = targ.nextOf().nextOf();
+				else if (targ.ty == TY.Tpointer && targ.nextOf().ty == TY.Tfunction)
+					tded = targ.nextOf().nextOf();
 				else
 					return no(context);
 				break;

@@ -213,7 +213,7 @@ public class Argument extends ASTDmdNode implements Cloneable {
 		{
 			Type tb = type.toBasetype(context);
 			if (tb.ty == Tsarray || tb.ty == Tarray) {
-				Type tel = tb.next.toBasetype(context);
+				Type tel = tb.nextOf().toBasetype(context);
 				if (tel.ty == Tdelegate) {
 					TypeDelegate td = (TypeDelegate) tel;
 					TypeFunction tf = (TypeFunction) td.next;

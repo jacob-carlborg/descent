@@ -890,7 +890,7 @@ public class Constfold {
 
 				if (type.toBasetype(context).ty == Tsarray) {
 					if (context.isD1()) {
-						e.type = new TypeSArray(e1.type.toBasetype(context).next,
+						e.type = new TypeSArray(e1.type.toBasetype(context).nextOf(),
 								new IntegerExp(null, 0, es1.elements.size(),
 										Type.tindex), context.encoder);
 					} else {

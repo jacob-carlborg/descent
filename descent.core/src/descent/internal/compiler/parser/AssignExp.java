@@ -350,7 +350,7 @@ public class AssignExp extends BinExp {
 				!(t1.nextOf().equals(e2.type.nextOf()))) { 
 			// memset
 			ismemset = true;	// make it easy for back end to tell what this is
-			e2 = e2.implicitCastTo(sc, context.isD1() ? t1.next : t1.nextOf(), context);
+			e2 = e2.implicitCastTo(sc, t1.nextOf(), context);
 		} else if (t1.ty == TY.Tsarray) {
 			if (context.isD1()) {
 				if (context.acceptsErrors()) {

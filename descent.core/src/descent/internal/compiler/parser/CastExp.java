@@ -157,7 +157,7 @@ public class CastExp extends UnaExp {
 		if (context.isD1()) {
 			if ((e1.op == TOKstring || e1.op == TOKarrayliteral)
 					&& (type.ty == Tpointer || type.ty == Tarray)
-					&& type.next.equals(e1.type.next)) {
+					&& type.nextOf().equals(e1.type.nextOf())) {
 				e1.type = type;
 				return e1;
 			}

@@ -461,20 +461,20 @@ public class InternalNamingConventions {
 			sb.append(type.toCharArray());
 			break;
 		case ASTDmdNode.TYPE_D_ARRAY:
-			appendReadableName(type.next, sb);
+			appendReadableName(type.nextOf(), sb);
 			if (sb.length() == 0 || sb.charAt(sb.length() - 1) != 's') {
 				sb.append('s');
 			}
 			break;
 		case ASTDmdNode.TYPE_DELEGATE:
-			appendReadableName(type.next, sb);
+			appendReadableName(type.nextOf(), sb);
 			sb.append("Dg");
 			break;
 		case ASTDmdNode.TYPE_DOT_ID_EXP:
 			sb.append(type.toCharArray());
 			break;
 		case ASTDmdNode.TYPE_FUNCTION:
-			appendReadableName(type.next, sb);
+			appendReadableName(type.nextOf(), sb);
 			break;
 		case ASTDmdNode.TYPE_IDENTIFIER:
 			sb.append(type.toCharArray());
@@ -484,22 +484,22 @@ public class InternalNamingConventions {
 			sb.append(ti.tempinst.name);
 			break;
 		case ASTDmdNode.TYPE_POINTER:
-			if (type.next.getNodeType() == ASTDmdNode.TYPE_FUNCTION) {
-				appendReadableName(type.next.next, sb);
+			if (type.nextOf().getNodeType() == ASTDmdNode.TYPE_FUNCTION) {
+				appendReadableName(type.nextOf().nextOf(), sb);
 				sb.append("Func");
 			} else {
 				sb.append('p');
-				appendUppercaseReadableName(type.next, sb);
+				appendUppercaseReadableName(type.nextOf(), sb);
 			}
 			break;
 		case ASTDmdNode.TYPE_S_ARRAY:
-			appendReadableName(type.next, sb);
+			appendReadableName(type.nextOf(), sb);
 			if (sb.length() == 0 || sb.charAt(sb.length() - 1) != 's') {
 				sb.append('s');
 			}
 			break;
 		case ASTDmdNode.TYPE_SLICE:
-			appendReadableName(type.next, sb);
+			appendReadableName(type.nextOf(), sb);
 			break;
 		case ASTDmdNode.TYPE_TYPEOF:
 			sb.append("typeof");

@@ -46,18 +46,18 @@ public class DelegateExp extends UnaExp {
 			FuncDeclaration f;
 			
 			boolean condition = context.isD1() ?
-					type.ty == Tdelegate && type.next.ty == Tfunction && tb.ty == Tdelegate && tb.next.ty == Tfunction
+					type.ty == Tdelegate && type.nextOf().ty == Tfunction && tb.ty == Tdelegate && tb.nextOf().ty == Tfunction
 				:
 					typeb.ty == Tdelegate && typeb.nextOf().ty == Tfunction && tb.ty == Tdelegate && tb.nextOf().ty == Tfunction;
 
 			if (condition) {
 				if (func != null) {
-					f = func.overloadExactMatch(context.isD1() ? tb.next : tb.nextOf(), context);
+					f = func.overloadExactMatch(context.isD1() ? tb.nextOf() : tb.nextOf(), context);
 					if (f != null) {
 						int[] offset = { 0 };
 						
 						condition = context.isD1() ?
-								f.tintro() != null && f.tintro().next.isBaseOf(f.type.next, offset, context) && offset[0] != 0
+								f.tintro() != null && f.tintro().nextOf().isBaseOf(f.type.nextOf(), offset, context) && offset[0] != 0
 							:
 								f.tintro() != null && f.tintro().nextOf().isBaseOf(f.type.nextOf(), offset, context) && offset[0] != 0;
 						
@@ -91,7 +91,7 @@ public class DelegateExp extends UnaExp {
 			}
 			
 			boolean condition = context.isD1() ?
-					func.tintro() != null && func.tintro().next.isBaseOf(func.type.next, offset, context) && offset[0] != 0
+					func.tintro() != null && func.tintro().nextOf().isBaseOf(func.type.nextOf(), offset, context) && offset[0] != 0
 				:
 					func.tintro() != null && func.tintro().nextOf().isBaseOf(func.type.nextOf(), offset, context) && offset[0] != 0;
 

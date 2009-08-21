@@ -44,8 +44,8 @@ public class FuncExp extends Expression {
 			}
 			// Removed all this conditions to get better selection/bindings
 			if (context.global.errors > 0) {
-				if (fd.type.next == null) {
-					fd.type.next = Type.terror;
+				if (((TypeFunction)fd.type).next == null) {
+					((TypeFunction)fd.type).next = Type.terror;
 				}
 			} 
 //				else {

@@ -3572,11 +3572,11 @@ public class Parser extends Lexer {
 
 						if (ts != t) {
 							Type pt = ts;
-							while(pt.next != t) {
-								pt = pt.next;
+							while(pt.nextOf() != t) {
+								pt = pt.nextOf();
 							}
-							pt.next = ta;
-							pt.sourceNext = ta;
+							((TypeNext)pt).next = ta;
+							((TypeNext)pt).sourceNext = ta;
 						} else {
 							ts = ta;
 						}
@@ -3737,11 +3737,11 @@ public class Parser extends Lexer {
 
 				if (ts != t) {
 					Type pt = ts;
-					while (pt.next != t) {
-						pt = pt.next;
+					while (((TypeNext)pt).nextOf() != t) {
+						pt = pt.nextOf();
 					}
-					pt.next = ta;
-					pt.sourceNext = ta;
+					((TypeNext)pt).next = ta;
+					((TypeNext)pt).sourceNext = ta;
 				} else {
 					ts = ta;
 				}
@@ -3838,11 +3838,11 @@ public class Parser extends Lexer {
 
 				if (ts != t) {
 					Type pt = ts;
-					while (pt.next != t) {
-						pt = pt.next;
+					while (pt.nextOf() != t) {
+						pt = pt.nextOf();
 					}
-					pt.next = ta;
-					pt.sourceNext = ta;
+					((TypeNext)pt).next = ta;
+					((TypeNext)pt).sourceNext = ta;
 				} else {
 					ts = ta;
 				}
@@ -8430,7 +8430,7 @@ public class Parser extends Lexer {
 				if (e2 != null) {
 					arguments = new Expressions(1);
 					arguments.add(e2);				
-					t = new TypeDArray(t.next);
+					t = new TypeDArray(t.nextOf());
 				} else {
 					error(IProblem.NeedSizeOfRightmostArray, lineNumber, index);
 					NullExp nullExp = new NullExp(filename, lineNumber);
@@ -8444,7 +8444,7 @@ public class Parser extends Lexer {
 				arguments = new Expressions(1);
 				arguments.add(e2);
 				
-				t = new TypeDArray(t.next);
+				t = new TypeDArray(t.nextOf());
 			} else if (token.value == TOKlparen) {
 				arguments = parseArguments();
 			}

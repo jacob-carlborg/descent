@@ -528,7 +528,7 @@ public class ForeachStatement extends Statement {
 			if (context.isD2()) {
 				condition = tab.nextOf().implicitConvTo(value.type, context).ordinal() < MATCHconst.ordinal();
 			} else {
-				condition = !value.type.equals(tab.next);
+				condition = !value.type.equals(tab.nextOf());
 			}
 			
 			if (condition) {

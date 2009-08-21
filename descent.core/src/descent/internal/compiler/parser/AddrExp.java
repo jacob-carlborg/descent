@@ -50,13 +50,13 @@ public class AddrExp extends UnaExp {
 				VarExp ve;
 				FuncDeclaration f;
 	
-				if (type.ty == Tpointer && type.next.ty == Tfunction
-						&& tb.ty == Tpointer && tb.next.ty == Tfunction
+				if (type.ty == Tpointer && type.nextOf().ty == Tfunction
+						&& tb.ty == Tpointer && tb.nextOf().ty == Tfunction
 						&& e1.op == TOKvar) {
 					ve = (VarExp) e1;
 					f = ve.var.isFuncDeclaration();
 					if (f != null) {
-						f = f.overloadExactMatch(tb.next, context);
+						f = f.overloadExactMatch(tb.nextOf(), context);
 						if (f != null) {
 							e = new VarExp(filename, lineNumber, f);
 							e.type = f.type;
@@ -140,12 +140,12 @@ public class AddrExp extends UnaExp {
 				FuncDeclaration f;
 	
 				t = t.toBasetype(context);
-				if (type.ty == Tpointer && type.next.ty == Tfunction
-						&& t.ty == Tpointer && t.next.ty == Tfunction
+				if (type.ty == Tpointer && type.nextOf().ty == Tfunction
+						&& t.ty == Tpointer && t.nextOf().ty == Tfunction
 						&& e1.op == TOKvar) {
 					ve = (VarExp) e1;
 					f = ve.var.isFuncDeclaration();
-					if (f != null && f.overloadExactMatch(t.next, context) != null) {
+					if (f != null && f.overloadExactMatch(t.nextOf(), context) != null) {
 						result = MATCHexact;
 					}
 				}
@@ -265,7 +265,7 @@ public class AddrExp extends UnaExp {
 				if (context.isD2()) {
 					condition = ve.type.ty == Tsarray && !ve.var.isImportedSymbol(context);
 				} else {
-					condition = ve.type.ty == Tsarray && ve.type.next.ty != Tbit
+					condition = ve.type.ty == Tsarray && ve.type.nextOf().ty != Tbit
 						&& !ve.var.isImportedSymbol(context);
 				}
 				

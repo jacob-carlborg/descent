@@ -4,7 +4,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
-public class TypeDelegate extends Type {
+public class TypeDelegate extends TypeNext {
 
 	public TypeDelegate(Type next) {
 		super(TY.Tdelegate, next);

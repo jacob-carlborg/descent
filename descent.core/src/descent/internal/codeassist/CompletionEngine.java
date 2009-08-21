@@ -675,8 +675,8 @@ public class CompletionEngine extends Engine
 		if (parser.expectedTypeNode instanceof CompletionOnReturnStatement) {
 			CompletionOnReturnStatement stm = (CompletionOnReturnStatement) parser.expectedTypeNode;
 			Scope scope = stm.scope;
-			if (scope != null && scope.func != null && scope.func.type != null && scope.func.type.next != null) {
-				expectedType = scope.func.type.next;
+			if (scope != null && scope.func != null && scope.func.type != null && scope.func.type.nextOf() != null) {
+				expectedType = scope.func.type.nextOf();
 				expectedTypeSignature = expectedType.getSignature().toCharArray();
 			}
 		}
@@ -1392,8 +1392,8 @@ public class CompletionEngine extends Engine
 				if (var.var instanceof FuncDeclaration) {
 					suggestContextInfo((FuncDeclaration) var.var);
 				}
-			} else if (node.e1.type instanceof TypeFunction && node.e1.type.next != null) {
-				trySuggestCall(node.e1.type.next, currentName, CharOperation.NO_CHAR, false /* dosen't matter here */);
+			} else if (node.e1.type instanceof TypeFunction && node.e1.type.nextOf() != null) {
+				trySuggestCall(node.e1.type.nextOf(), currentName, CharOperation.NO_CHAR, false /* dosen't matter here */);
 			} else {
 				// This means that the call is not resolved
 				if (node.e1.type instanceof TypeBasic) {
@@ -2581,7 +2581,7 @@ public class CompletionEngine extends Engine
 				if (currentName.length == 0 || match(currentName, ident)) {
 					// If the type of the variable is a pointer to a function, suggest the call
 					if (!parser.isInAddrExp && isPointerToFunction(var.type)) {
-						FuncDeclaration func = new FuncDeclaration(null, 0, var.ident, 0, var.type.next);
+						FuncDeclaration func = new FuncDeclaration(null, 0, var.ident, 0, var.type.nextOf());
 						func.parent = var.parent;
 						func.copySourceRange(var);
 						suggestMember(func, onlyStatics, flags, funcSignatures, includes);
@@ -2989,7 +2989,7 @@ public class CompletionEngine extends Engine
 	}
 
 	private boolean isPointerToFunction(Type type) {
-		return type instanceof TypePointer && type.next instanceof TypeFunction;
+		return type instanceof TypePointer && type.nextOf() instanceof TypeFunction;
 	}
 
 	private void handleMethodCompletion(CompletionProposal proposal, char[] ident) {
@@ -3867,12 +3867,12 @@ public class CompletionEngine extends Engine
 			return 0;
 		}
 		
-		if (type instanceof TypeFunction && type.next != null) {
+		if (type instanceof TypeFunction && type.nextOf() != null) {
 			// If the expected type is a function pointer, and the type to suggest
 			// is a function, suggest it, if it matches
-			if (expectedType instanceof TypePointer && expectedType.next instanceof TypeFunction) {
+			if (expectedType instanceof TypePointer && expectedType.nextOf() instanceof TypeFunction) {
 				Type expectedTypeSave = expectedType;
-				expectedType = expectedType.next;
+				expectedType = expectedType.nextOf();
 				expectedTypeSignature = expectedType.getSignature().toCharArray();
 				
 				int relevance = computeRelevanceForExpectedType(type);
@@ -3885,12 +3885,12 @@ public class CompletionEngine extends Engine
 					return R_EXPECTED_TYPE;
 				}
 			} else if (expectedType instanceof TypeDelegate) {
-				if (type.covariant(expectedType.next, context) == 1) {
+				if (type.covariant(expectedType.nextOf(), context) == 1) {
 					return R_EXPECTED_TYPE;
 				}
 			}
 			
-			return computeRelevanceForExpectedType(type.next);
+			return computeRelevanceForExpectedType(type.nextOf());
 		}
 		
 		MATCH match = type.implicitConvTo(expectedType, context);

@@ -11,7 +11,7 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
-public class TypePointer extends Type {
+public class TypePointer extends TypeNext {
 
 	public TypePointer(Type next) {
 		super(TY.Tpointer, next);
@@ -54,17 +54,17 @@ public class TypePointer extends Type {
 		if (same(this, to, context)) {
 			return MATCHexact;
 		}
-		if (to.ty == Tpointer && to.next != null) {
-			if (to.next.ty == Tvoid) {
+		if (to.ty == Tpointer && to.nextOf() != null) {
+			if (to.nextOf().ty == Tvoid) {
 				return MATCHconvert;
 			}
 
-			if (next.ty == Tfunction && to.next.ty == Tfunction) {
+			if (next.ty == Tfunction && to.nextOf().ty == Tfunction) {
 				TypeFunction tf;
 				TypeFunction tfto;
 
-				tf = (TypeFunction) (next);
-				tfto = (TypeFunction) (to.next);
+				tf = (TypeFunction) next;
+				tfto = (TypeFunction) to.nextOf();
 				return tfto.equals(tf) ? MATCHexact : MATCHnomatch;
 			}
 		}

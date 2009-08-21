@@ -7,7 +7,7 @@ import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
-public class TypeSlice extends Type {
+public class TypeSlice extends TypeNext {
 
 	public Expression lwr, sourceLwr;
 	public Expression upr, sourceUpr;

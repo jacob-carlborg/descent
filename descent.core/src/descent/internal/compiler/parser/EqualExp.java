@@ -126,10 +126,10 @@ public class EqualExp extends BinExp {
 			t2 = e2.type.toBasetype(context);
 			if ((t1.ty == TY.Tarray || t1.ty == TY.Tsarray)
 					&& (t2.ty == TY.Tarray || t2.ty == TY.Tsarray)) {
-				if (!t1.next.equals(t2.next)) {
+				if (!t1.nextOf().equals(t2.nextOf())) {
 					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.ArrayComparisonTypeMismatch, this, t1.next.toChars(context), t2.next.toChars(context)));
+								IProblem.ArrayComparisonTypeMismatch, this, t1.nextOf().toChars(context), t2.nextOf().toChars(context)));
 					}
 				}
 			} else {

@@ -63,11 +63,11 @@ public class SymOffExp extends SymbolExp {
 				// overloaded.
 				FuncDeclaration f;
 	
-				if (type.ty == Tpointer && type.next.ty == Tfunction
-						&& tb.ty == Tpointer && tb.next.ty == Tfunction) {
+				if (type.ty == Tpointer && type.nextOf().ty == Tfunction
+						&& tb.ty == Tpointer && tb.nextOf().ty == Tfunction) {
 					f = var.isFuncDeclaration();
 					if (f != null) {
-						f = f.overloadExactMatch(tb.next, context);
+						f = f.overloadExactMatch(tb.nextOf(), context);
 						if (f != null) {
 							e = new SymOffExp(filename, lineNumber, f, 0, context);
 							e.type = t;
@@ -154,10 +154,10 @@ public class SymOffExp extends SymbolExp {
 			t = t.toBasetype(context);
 			
 			if (context.isD1()) {
-				if (type.ty == Tpointer && type.next.ty == Tfunction
-						&& t.ty == Tpointer && t.next.ty == Tfunction) {
+				if (type.ty == Tpointer && type.nextOf().ty == Tfunction
+						&& t.ty == Tpointer && t.nextOf().ty == Tfunction) {
 					f = var.isFuncDeclaration();
-					if (f != null && f.overloadExactMatch(t.next, context) != null) {
+					if (f != null && f.overloadExactMatch(t.nextOf(), context) != null) {
 						result = MATCHexact;
 					}
 				}

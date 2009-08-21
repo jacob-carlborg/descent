@@ -1570,7 +1570,9 @@ SymbolIsNothrowYetMayThrow
 DefaultConstructorNotAllowedForStructs
 	formatString=Default constructor not allowed for structs
 	numArgs=0
-	
+VoidDoesNotHaveADefaiñtInitializer
+	formatString=void does not have a default initializer
+	numArgs=0
 
 	
 	

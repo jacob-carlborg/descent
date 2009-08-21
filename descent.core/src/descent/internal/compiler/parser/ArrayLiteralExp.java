@@ -71,7 +71,7 @@ public class ArrayLiteralExp extends Expression {
 			e.elements = (Expressions) elements.copy();
 			for (int i = 0; i < elements.size(); i++) {
 				Expression ex = elements.get(i);
-				ex = ex.castTo(sc, tb.next, context);
+				ex = ex.castTo(sc, tb.nextOf(), context);
 				e.elements.set(i, ex);
 			}
 			e.type = t;

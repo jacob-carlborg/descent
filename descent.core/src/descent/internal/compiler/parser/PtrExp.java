@@ -16,7 +16,7 @@ public class PtrExp extends UnaExp {
 	public PtrExp(char[] filename, int lineNumber, Expression e) {
 		super(filename, lineNumber, TOK.TOKstar, e);
 		if (e.type != null) {
-			type = e.type.next;
+			type = e.type.nextOf();
 		}
 	}
 
@@ -183,7 +183,7 @@ public class PtrExp extends UnaExp {
 			tb = e1.type.toBasetype(context);
 			switch (tb.ty) {
 			case Tpointer:
-				type = tb.next;
+				type = tb.nextOf();
 				if (context.isD1()) {
 					if (type.isbit()) {
 						Expression e;
@@ -197,7 +197,7 @@ public class PtrExp extends UnaExp {
 	
 			case Tsarray:
 			case Tarray:
-				type = tb.next;
+				type = tb.nextOf();
 				e1 = e1.castTo(sc, type.pointerTo(context), context);
 				break;
 	
