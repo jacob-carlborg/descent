@@ -10,21 +10,21 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class WhileStatement extends Statement {
 
-	public Expression condition;
-	public Statement body;
+	public Expression condition, sourceCondition;
+	public Statement body, sourceBody;
 
 	public WhileStatement(char[] filename, int lineNumber, Expression c, Statement b) {
 		super(filename, lineNumber);
-		this.condition = c;
-		this.body = b;
+		this.condition = this.sourceCondition = c;
+		this.body = this.sourceBody = b;
 	}
 
 	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, condition);
-			TreeVisitor.acceptChildren(visitor, body);
+			TreeVisitor.acceptChildren(visitor, sourceCondition);
+			TreeVisitor.acceptChildren(visitor, sourceBody);
 		}
 		visitor.endVisit(this);
 	}

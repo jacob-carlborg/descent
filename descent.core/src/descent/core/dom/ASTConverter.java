@@ -2165,14 +2165,14 @@ public class ASTConverter {
 	
 	public descent.core.dom.WhileStatement convert(WhileStatement a) {
 		descent.core.dom.WhileStatement b = new descent.core.dom.WhileStatement(ast);
-		if (a.body != null) {
-			descent.core.dom.Statement convertedBody = convert(a.body);
+		if (a.sourceBody != null) {
+			descent.core.dom.Statement convertedBody = convert(a.sourceBody);
 			if (convertedBody != null) {
 				b.setBody(convertedBody);
 			}
 		}
-		if (a.condition != null) {
-			descent.core.dom.Expression convertedExp = convert(a.condition);
+		if (a.sourceCondition != null) {
+			descent.core.dom.Expression convertedExp = convert(a.sourceCondition);
 			if (convertedExp != null) {
 				b.setExpression(convertedExp);
 			}
