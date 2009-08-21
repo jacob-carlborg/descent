@@ -1591,6 +1591,9 @@ public class CompletionEngine extends Engine
 	}
 	
 	private void completeScope(Scope scope, int includes) {
+		if (scope == null)
+			return;
+		
 		// No current scope properties
 		wantProperties = false;
 		completeScope0(scope, includes);
