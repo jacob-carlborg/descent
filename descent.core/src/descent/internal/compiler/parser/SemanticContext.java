@@ -23,7 +23,7 @@ import descent.internal.core.CompilerConfiguration;
 import descent.internal.core.JavaProject;
 import descent.internal.core.util.Util;
 
-public class SemanticContext {
+public class SemanticContext implements IStringTableHolder {
 
 	public boolean BREAKABI = true;
 	public boolean IN_GCC = false;
@@ -82,7 +82,7 @@ public class SemanticContext {
 	
 	public int apiLevel;
 	
-	public StringTable stringTable;
+	private IStringTableHolder holder;
 	public DsymbolTable st;
 	
 	/*
@@ -146,13 +146,14 @@ public class SemanticContext {
 			WorkingCopyOwner owner,
 			Global global,
 			CompilerConfiguration config,
-			ASTNodeEncoder encoder) throws JavaModelException {
+			ASTNodeEncoder encoder,
+			IStringTableHolder stringTableHolder) throws JavaModelException {
 		this.problemRequestor = problemRequestor;
 		this.Module_rootModule = module;
 		this.global = global;
 		this.project = project;
 		this.moduleFinder = newModuleFinder(new CancelableNameEnvironment((JavaProject) project, owner, null), config, encoder);
-		this.stringTable = new StringTable();
+		this.holder = stringTableHolder;
 		this.Type_tvoidptr = Type.tvoid.pointerTo(this);
 		this.encoder = encoder;
 		this.templateEvaluationStack = new LinkedList<ASTDmdNode>();
@@ -171,6 +172,10 @@ public class SemanticContext {
 
 		Module_init();
 		afterParse(module);
+	}
+	
+	public StringTable getStringTable() {
+		return holder.getStringTable();
 	}
 
 	private int uniqueIdCount = 0;
@@ -512,7 +517,9 @@ public class SemanticContext {
 	}
 	
 	protected Parser newParser(int apiLevel, char[] source) {
-		return new Parser(apiLevel, source);
+		Parser parser = new Parser(apiLevel, source);
+		parser.holder = holder;
+		return parser;
 	}
 	
 	protected Parser newParser(char[] source, int offset, int length,
@@ -521,7 +528,9 @@ public class SemanticContext {
 			int apiLevel,
 			char[][] taskTags, char[][] taskPriorities, boolean isTaskCaseSensitive,
 			char[] filename) {
-		return new Parser(source, offset, length, tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator, apiLevel, taskTags, taskPriorities, isTaskCaseSensitive, filename);
+		Parser parser = new Parser(source, offset, length, tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator, apiLevel, taskTags, taskPriorities, isTaskCaseSensitive, filename);
+		parser.holder = holder;
+		return parser;
 	}
 	
 	protected boolean mustCopySourceRangeForMixins() {

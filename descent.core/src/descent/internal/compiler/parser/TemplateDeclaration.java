@@ -78,53 +78,49 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		visitor.endVisit(this);
 	}
 
-	public void declareParameter(Scope sc, TemplateParameter tp, ASTDmdNode o,
-			SemanticContext context) {
+	public void declareParameter(Scope sc, TemplateParameter tp, ASTDmdNode o, SemanticContext context) {
 		Type targ = isType(o);
 		Expression ea = isExpression(o);
 		Dsymbol sa = isDsymbol(o);
 		Tuple va = isTuple(o);
 
 		Dsymbol s;
-		
-	    // See if tp.ident already exists with a matching definition
-	    Dsymbol[] scopesym = { null };
-	    s = sc.search(filename, lineNumber, tp.ident, scopesym, context);
-	    if (s != null && scopesym[0] == sc.scopesym)
-	    {
-		TupleDeclaration td = s.isTupleDeclaration();
-		if (va != null && td != null)
-		{   Tuple tup = new Tuple();
-		    tup.objects = td.objects;
-		    if (match(va, tup, this, sc, context))
-		    {
-			return;
-		    }
+
+		// See if tp.ident already exists with a matching definition
+		Dsymbol[] scopesym = { null };
+		s = sc.search(filename, lineNumber, tp.ident, scopesym, context);
+		if (s != null && scopesym[0] == sc.scopesym) {
+			TupleDeclaration td = s.isTupleDeclaration();
+			if (va != null && td != null) {
+				Tuple tup = new Tuple();
+				tup.objects = td.objects;
+				if (match(va, tup, this, sc, context)) {
+					return;
+				}
+			}
 		}
-	    }
 
 		if (targ != null) {
 			s = new AliasDeclaration(null, 0, tp.ident, targ);
-			
+
 			// Descent
 			((AliasDeclaration) s).isTemplateParameter = true;
 		} else if (sa != null) {
 			s = new AliasDeclaration(null, 0, tp.ident, sa);
-			
+
 			// Descent
 			((AliasDeclaration) s).isTemplateParameter = true;
 		} else if (ea != null) {
 			// tdtypes.data[i] always matches ea here
 			Initializer init = new ExpInitializer(filename, lineNumber, ea);
 			TemplateValueParameter tvp = tp.isTemplateValueParameter();
-			
+
 			VarDeclaration v;
 			if (context.isD1()) {
 				if (tvp == null) {
 					throw new IllegalStateException("assert(tvp);");
 				}
-				v = new TemplateVarDeclaration(filename, lineNumber, tvp.valType,
-						tp.ident, init);
+				v = new TemplateVarDeclaration(filename, lineNumber, tvp.valType, tp.ident, init);
 				v.storage_class = STCconst;
 			} else {
 				Type t = tvp != null ? tvp.valType : null;
@@ -132,7 +128,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 				v = new VarDeclaration(filename, lineNumber, t, tp.ident, init);
 				v.storage_class = STCmanifest;
 			}
-			
+
 			s = v;
 		} else if (va != null) {
 			s = new TupleDeclaration(filename, lineNumber, tp.ident, va.objects);
@@ -141,9 +137,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		}
 		if (null == sc.insert(s)) {
 			if (context.acceptsErrors()) {
-				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
-						IProblem.DeclarationIsAlreadyDefined, s,
-						new String[] { tp.ident.toChars(context) }));
+				context.acceptProblem(Problem.newSemanticTypeErrorLoc(IProblem.DeclarationIsAlreadyDefined, s, new String[] { tp.ident.toChars(context) }));
 			}
 		}
 		s.semantic(sc, context);

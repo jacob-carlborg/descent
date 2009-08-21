@@ -30,7 +30,7 @@ public abstract class TypeNext extends Type {
 	}
 	
 	@Override
-	public Type makeConst(int startPosition, int length, SemanticContext context) {
+	public Type makeConst(int startPosition, int length, IStringTableHolder context) {
 		if (cto != null) {
 			assert (cto.mod == MODconst);
 			return cto;
@@ -46,7 +46,7 @@ public abstract class TypeNext extends Type {
 	}
 	
 	@Override
-	public Type makeInvariant(int startPosition, int length, SemanticContext context) {
+	public Type makeInvariant(int startPosition, int length, IStringTableHolder context) {
 		if (ito != null) {
 			assert (ito.isInvariant());
 			return ito;
@@ -59,7 +59,7 @@ public abstract class TypeNext extends Type {
 	}
 	
 	@Override
-	public Type makeShared(SemanticContext context) {
+	public Type makeShared(IStringTableHolder context) {
 		if (sto != null) {
 			assert (sto.mod == MODshared);
 			return sto;
@@ -75,7 +75,7 @@ public abstract class TypeNext extends Type {
 	}
 	
 	@Override
-	public Type makeSharedConst(SemanticContext context) {
+	public Type makeSharedConst(IStringTableHolder context) {
 		if (scto != null) {
 			assert (scto.mod == (MODshared | MODconst));
 			return scto;

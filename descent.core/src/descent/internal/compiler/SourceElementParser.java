@@ -53,6 +53,7 @@ import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.EnumMember;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.FuncDeclaration;
+import descent.internal.compiler.parser.IStringTableHolder;
 import descent.internal.compiler.parser.Id;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Import;
@@ -115,6 +116,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 	private final NaiveASTFlattener flattener;
 	private final Stack< Stack<AttribDeclaration> > attribDeclarationStack;
 	public ASTNodeEncoder encoder;
+	public IStringTableHolder holder;
 	private char[] source;
 	
 	public boolean diet = true;
@@ -161,6 +163,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		
 		module = result.module;
 		encoder = result.encoder;
+		holder = result.holder;
 		
 		module.moduleName = unit.getFullyQualifiedName();
 	

@@ -178,6 +178,8 @@ public class Parser extends Lexer {
 	private boolean appendLeadingComments = true;
 	
 	private LINK linkage = LINKd;
+	
+	public IStringTableHolder holder = new StringTableHolder();
 
 	public Parser(int apiLevel, String source) {
 		this(apiLevel, source.toCharArray(), 0, source.length(), null);
@@ -3188,7 +3190,7 @@ public class Parser extends Lexer {
 			 * shared const type
 			 */
 			t = parseType(pident, tpl);
-			t = t.makeSharedConst(null);
+			t = t.makeSharedConst(holder);
 			return t;
 		} else if (token.value == TOKconst && peek(token).value != TOKlparen) {
 			int start = token.ptr;
@@ -3196,7 +3198,7 @@ public class Parser extends Lexer {
 			/* const type
 			 */
 			t = parseType(pident, tpl);
-			t = t.makeConst(start, prevToken.ptr + prevToken.sourceLen - start, null);
+			t = t.makeConst(start, prevToken.ptr + prevToken.sourceLen - start, holder);
 			return t;
 		} else if ((token.value == TOKinvariant || token.value == TOKimmutable)
 				&& peek(token).value != TOKlparen) {
@@ -3205,7 +3207,7 @@ public class Parser extends Lexer {
 			/* invariant type
 			 */
 			t = parseType(pident, tpl);
-			t = t.makeInvariant(start, prevToken.ptr + prevToken.sourceLen - start, null);
+			t = t.makeInvariant(start, prevToken.ptr + prevToken.sourceLen - start, holder);
 			return t;
 		} else if (token.value == TOKshared && peekNext() != TOKlparen)
 		    {
@@ -3213,7 +3215,7 @@ public class Parser extends Lexer {
 			/* shared type
 			 */
 			t = parseType(pident, tpl);
-			t = t.makeShared(null);
+			t = t.makeShared(holder);
 			return t;
 		} else {
 			t = parseBasicType();
@@ -3380,9 +3382,9 @@ public class Parser extends Lexer {
 		    t = parseType();
 		    check(TOKrparen);
 		    if (t.isShared()) {
-				t = t.makeSharedConst(null);
+				t = t.makeSharedConst(holder);
 		    } else {
-				t = t.makeConst(start, prevToken.ptr + prevToken.sourceLen - start, null);
+				t = t.makeConst(start, prevToken.ptr + prevToken.sourceLen - start, holder);
 		    }
 		    break;
 		}
@@ -3400,7 +3402,7 @@ public class Parser extends Lexer {
 		    check(TOKlparen);
 		    t = parseType();
 		    check(TOKrparen);
-		    t = t.makeInvariant(start, prevToken.ptr + prevToken.sourceLen - start, null);
+		    t = t.makeInvariant(start, prevToken.ptr + prevToken.sourceLen - start, holder);
 		    break;
 		}
 		
@@ -3416,9 +3418,9 @@ public class Parser extends Lexer {
 			t = parseType();
 			check(TOKrparen);
 			if (t.isConst()) {
-				t = t.makeSharedConst(null);
+				t = t.makeSharedConst(holder);
 			} else {
-				t = t.makeShared(null);
+				t = t.makeShared(holder);
 			}
 		    break;
 		}
@@ -3785,21 +3787,21 @@ public class Parser extends Lexer {
 					    switch (token.value)
 					    {
 						case TOKconst:
-						    ta = ta.makeConst(token.ptr, token.sourceLen, null);
+						    ta = ta.makeConst(token.ptr, token.sourceLen, holder);
 						    nextToken();
 						    continue;
 
 						case TOKinvariant:
 						case TOKimmutable:
-						    ta = ta.makeInvariant(token.ptr, token.sourceLen, null);
+						    ta = ta.makeInvariant(token.ptr, token.sourceLen, holder);
 						    nextToken();
 						    continue;
 						    
 						case TOKshared:
 						    if (ta.isConst()) {
-								ta = ta.makeSharedConst(null);
+								ta = ta.makeSharedConst(holder);
 							} else {
-								ta = ta.makeShared(null);
+								ta = ta.makeShared(holder);
 							}
 						    nextToken();
 						    continue;

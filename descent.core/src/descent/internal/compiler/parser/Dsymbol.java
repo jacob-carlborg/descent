@@ -629,7 +629,11 @@ public class Dsymbol extends ASTDmdNode {
 	}
 
 	public String locToChars(SemanticContext context) {
-	    return new String(filename);
+		if (filename != null) {
+			return new String(filename);
+		} else {
+			return null;
+		}
 	}
 	
 	@Override

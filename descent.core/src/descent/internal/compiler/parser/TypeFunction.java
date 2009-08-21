@@ -710,7 +710,7 @@ public class TypeFunction extends TypeNext implements Cloneable {
 	}
 	
 	@Override
-	public Type makeConst(int startPosition, int length, SemanticContext context) {
+	public Type makeConst(int startPosition, int length, IStringTableHolder context) {
 		TypeFunction tf = (TypeFunction) super.makeConst(startPosition, length, context);
 		if (tf.postModifiers == null) {
 			tf.postModifiers = new ArrayList<Modifier>();
@@ -720,7 +720,7 @@ public class TypeFunction extends TypeNext implements Cloneable {
 	}
 	
 	@Override
-	public Type makeInvariant(int startPosition, int length, SemanticContext context) {
+	public Type makeInvariant(int startPosition, int length, IStringTableHolder context) {
 		TypeFunction tf = (TypeFunction) super.makeInvariant(startPosition, length, context);
 		if (tf.postModifiers == null) {
 			tf.postModifiers = new ArrayList<Modifier>();

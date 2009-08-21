@@ -2660,7 +2660,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		FuncDeclaration f = s.isFuncDeclaration();
 		if (f != null)
 			f = f.overloadResolve(filename, lineNumber, ethis, arguments,
-					context, ethis); // SEMANTIC ethis is caller?
+					context, f); // SEMANTIC f is caller?
 		else {
 			TemplateDeclaration td = s.isTemplateDeclaration();
 			f = td.deduceFunctionTemplate(sc, filename, lineNumber, tiargs,

@@ -55,6 +55,7 @@ import descent.internal.compiler.parser.Global;
 import descent.internal.compiler.parser.GotoCaseStatement;
 import descent.internal.compiler.parser.GotoDefaultStatement;
 import descent.internal.compiler.parser.GotoStatement;
+import descent.internal.compiler.parser.IStringTableHolder;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Identifiers;
 import descent.internal.compiler.parser.IfStatement;
@@ -116,8 +117,8 @@ public class CompileTimeSemanticContext extends SemanticContext {
 
 	public CompileTimeSemanticContext(IProblemRequestor problemRequestor,
 			Module module, IJavaProject project, WorkingCopyOwner owner,
-			Global global, CompilerConfiguration config, ASTNodeEncoder encoder, IDebugger debugger) throws JavaModelException {
-		super(problemRequestor, module, project, owner, global, config, encoder);
+			Global global, CompilerConfiguration config, ASTNodeEncoder encoder, IStringTableHolder holder, IDebugger debugger) throws JavaModelException {
+		super(problemRequestor, module, project, owner, global, config, encoder, holder);
 		this.debugger = debugger;
 	}
 	
@@ -214,12 +215,16 @@ public class CompileTimeSemanticContext extends SemanticContext {
 	
 	@Override
 	protected Parser newParser(int apiLevel, char[] source) {
-		return new CompileTimeParser(apiLevel, source, 0, source.length, null, false);
+		CompileTimeParser parser = new CompileTimeParser(apiLevel, source, 0, source.length, null, false);
+		parser.holder = this;
+		return parser;
 	}
 	
 	@Override
 	protected Parser newParser(char[] source, int offset, int length, boolean tokenizeComments, boolean tokenizePragmas, boolean tokenizeWhiteSpace, boolean recordLineSeparator, int apiLevel, char[][] taskTags, char[][] taskPriorities, boolean isTaskCaseSensitive, char[] filename) {
-		return new CompileTimeParser(apiLevel, source, offset, length, filename, recordLineSeparator);
+		CompileTimeParser parser = new CompileTimeParser(apiLevel, source, offset, length, filename, recordLineSeparator);
+		parser.holder = this;
+		return parser;
 	}
 	
 	@Override

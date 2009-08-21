@@ -85,6 +85,7 @@ import descent.internal.compiler.parser.FuncAliasDeclaration;
 import descent.internal.compiler.parser.FuncDeclaration;
 import descent.internal.compiler.parser.FuncLiteralDeclaration;
 import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
+import descent.internal.compiler.parser.IStringTableHolder;
 import descent.internal.compiler.parser.Id;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Import;
@@ -245,6 +246,7 @@ public class CompletionEngine extends Engine
 	Module module;
 	SemanticContext context;
 	ASTNodeEncoder encoder;
+	IStringTableHolder holder;
 	
 	char[] fileName = null;
 	char[] sourceUnitFqn = null;
@@ -370,6 +372,7 @@ public class CompletionEngine extends Engine
 			
 			parser = new CompletionParser(Util.getApiLevel(this.compilerOptions.getMap()), source, this.fileName);
 			encoder = parser.encoder;
+			holder = parser.holder;
 			
 			parser.cursorLocation = completionPosition;
 			parser.nextToken();
@@ -754,7 +757,7 @@ public class CompletionEngine extends Engine
 		}
 		
 		semanticRun = true;
-		context = CompilationUnitResolver.resolve(module, this.javaProject, null, encoder);
+		context = CompilationUnitResolver.resolve(module, this.javaProject, null, encoder, holder);
 	}
 
 	private void completeModuleDeclaration(CompletionOnModuleDeclaration node) {

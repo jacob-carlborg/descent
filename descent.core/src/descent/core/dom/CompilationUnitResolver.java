@@ -33,6 +33,7 @@ import descent.internal.compiler.impl.CompilerOptions;
 import descent.internal.compiler.parser.ASTNodeEncoder;
 import descent.internal.compiler.parser.Global;
 import descent.internal.compiler.parser.HashtableOfCharArrayAndObject;
+import descent.internal.compiler.parser.IStringTableHolder;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.SemanticContext;
@@ -51,10 +52,12 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		public PublicScanner scanner;
 		public SemanticContext context;
 		public ASTNodeEncoder encoder;
-		public ParseResult(Module module, PublicScanner scanner, ASTNodeEncoder encoder) {
+		public IStringTableHolder holder;
+		public ParseResult(Module module, PublicScanner scanner, ASTNodeEncoder encoder, IStringTableHolder holder) {
 			this.module = module;
 			this.scanner = scanner;
 			this.encoder = encoder;
+			this.holder = holder;
 		}
 	}
 	
@@ -185,7 +188,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		Module module = parser.parseModuleObj();
 		module.setSourceRange(0, source.length);
 		
-		return new ParseResult(module, scanner, parser.encoder);
+		return new ParseResult(module, scanner, parser.encoder, parser.holder);
 	}
 	
 	public static ParseResult prepareForResolve(int apiLevel,
@@ -203,7 +206,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		
 		ParseResult result = parse(apiLevel, sourceUnit, options, recordLineSeparator, statementsRecovery, false, debugger != null);
 		result.module.moduleName = sourceUnit.getFullyQualifiedName();
-		result.context = getContext(result.module, javaProject, owner, config, result.encoder, debugger);
+		result.context = getContext(result.module, javaProject, owner, config, result.encoder, result.holder, debugger);
 		return result;
 	}
 	
@@ -264,7 +267,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		
 		ParseResult result = parse(apiLevel, sourceUnit, options, recordLineSeparator, statementsRecovery, diet, debugger != null);
 		result.module.moduleName = sourceUnit.getFullyQualifiedName();
-		result.context = resolve(result.module, javaProject, owner, result.encoder, analyzeTemplates, debugger);
+		result.context = resolve(result.module, javaProject, owner, result.encoder, result.holder, analyzeTemplates, debugger);
 		return result;
 	}
 	
@@ -272,9 +275,10 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			final Module module, 
 			final IJavaProject project,
 			final WorkingCopyOwner owner,
-			final ASTNodeEncoder encoder) 
+			final ASTNodeEncoder encoder,
+			final IStringTableHolder holder) 
 		throws JavaModelException {
-		return resolve(module, project, owner, encoder, true);
+		return resolve(module, project, owner, encoder, holder, true);
 	}
 	
 	public static SemanticContext resolve(
@@ -282,9 +286,10 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			final IJavaProject project,
 			final WorkingCopyOwner owner,
 			final ASTNodeEncoder encoder,
+			final IStringTableHolder holder,
 			final boolean analayzeTemplates) 
 		throws JavaModelException {
-		return resolve(module, project, owner, encoder, analayzeTemplates, null);
+		return resolve(module, project, owner, encoder, holder, analayzeTemplates, null);
 	}
 	
 	public static SemanticContext resolve(
@@ -292,6 +297,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			final IJavaProject project,
 			final WorkingCopyOwner owner,
 			final ASTNodeEncoder encoder,
+			final IStringTableHolder holder,
 			final boolean analayzeTemplates,
 			final IDebugger debugger) 
 		throws JavaModelException {
@@ -301,7 +307,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			config.analyzeTemplates = false;
 		}
 		
-		return resolve(module, project, owner, config, encoder, debugger);
+		return resolve(module, project, owner, config, encoder, holder, debugger);
 	}
 	
 	private static SemanticContext resolve(
@@ -310,9 +316,10 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			final WorkingCopyOwner owner,
 			final CompilerConfiguration config,
 			final ASTNodeEncoder encoder,
+			final IStringTableHolder holder,
 			final IDebugger debugger) throws JavaModelException {
 		
-		SemanticContext context = getContext(module, project, owner, config, encoder, debugger);
+		SemanticContext context = getContext(module, project, owner, config, encoder, holder, debugger);
 		
 		if (!RESOLVE) 
 			return context;
@@ -350,6 +357,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			final WorkingCopyOwner owner,
 			final CompilerConfiguration config,
 			final ASTNodeEncoder encoder,
+			final IStringTableHolder holder,
 			final IDebugger debugger) throws JavaModelException {
 		Global global = getGlobal(project, config);
 		
@@ -504,11 +512,11 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		if (debugger == null) {
 			context = new SemanticContext(
 					problemRequestor, module, project, owner,
-					global, config, encoder);
+					global, config, encoder, holder);
 		} else {
 			context = new CompileTimeSemanticContext(
 					problemRequestor, module, project, owner,
-					global, config, encoder, debugger);
+					global, config, encoder, holder, debugger);
 		}
 		
 		return context;

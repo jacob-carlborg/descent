@@ -233,6 +233,9 @@ public class VarDeclaration extends Declaration {
 					}
 					
 					if (!gotoL1) {
+						if (nestedrefs == null) {
+							nestedrefs = new FuncDeclarations(3);
+						}
 						nestedrefs.add(fdthis);
 					}
 					// L1: ;
@@ -249,6 +252,9 @@ public class VarDeclaration extends Declaration {
 					}
 
 					if (!gotoL2) {
+						if (fdv.closureVars == null) {
+							fdv.closureVars = new Dsymbols(3);
+						}
 						fdv.closureVars.add(this);
 					}
 					// L2: ;

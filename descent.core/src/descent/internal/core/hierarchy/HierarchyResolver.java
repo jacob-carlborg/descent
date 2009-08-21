@@ -103,7 +103,7 @@ public class HierarchyResolver {
 				
 				ParseResult result = CompilationUnitResolver.parse(Parser.D1, toParse, options, false, false, true);
 				result.module.moduleName = cu.getFullyQualifiedName();
-				result.context = CompilationUnitResolver.resolve(result.module, cu.getJavaProject(), cu.getOwner(), result.encoder, true);
+				result.context = CompilationUnitResolver.resolve(result.module, cu.getJavaProject(), cu.getOwner(), result.encoder, result.holder, true);
 				
 				parsedUnits[i] = result;
 				cus[i] = cu;

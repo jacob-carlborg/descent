@@ -678,6 +678,7 @@ public class StringExp extends Expression {
 			for (int u = 0; u < len;) {
 				int[] pu = { u };
 				p = Utf.decodeChar(string, 0, len, pu, c);
+				u = pu[0];
 				if (p >= 0) {
 					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(p,
@@ -693,6 +694,7 @@ public class StringExp extends Expression {
 			for (int u = 0; u < len;) {
 				int[] pu = { u };
 				p = Utf.decodeChar(string, 0, len, pu, c);
+				u = pu[0];
 				if (p >= 0) {
 					if (context.acceptsErrors()) {
 						context.acceptProblem(Problem.newSemanticTypeError(p,

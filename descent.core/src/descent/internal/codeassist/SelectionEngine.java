@@ -31,6 +31,7 @@ import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.EnumMember;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.FuncDeclaration;
+import descent.internal.compiler.parser.IStringTableHolder;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.InterfaceDeclaration;
@@ -90,6 +91,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 	Module module;
 	SemanticContext context;
 	ASTNodeEncoder encoder;
+	IStringTableHolder holder;
 	List<IJavaElement> selectedElements;
 	InternalSignature internalSignature;
 	Stack<FuncDeclaration> insideFuncs = new Stack<FuncDeclaration>();
@@ -121,6 +123,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 			parser.selectionLength = this.length;
 			
 			encoder = parser.encoder;
+			holder = parser.holder;
 			
 			parser.nextToken();
 
@@ -199,7 +202,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 		if (context == null) {
 			try {
 				context = CompilationUnitResolver.resolve(module, javaProject,
-						owner, encoder);
+						owner, encoder, holder);
 			} catch (JavaModelException e) {
 				Util.log(e);
 			}
