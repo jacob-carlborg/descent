@@ -35,3 +35,5 @@ strong	     { font-weight: bold; }
 em	         { font-style: italic; }
 var	         { font-style: italic; }
 th	         { font-weight: bold; }
+
+.code		 { font-family: monospace; background-color: #e7e7e8; border: 2px solid #cccccc; padding: 1ex; width:95%; }

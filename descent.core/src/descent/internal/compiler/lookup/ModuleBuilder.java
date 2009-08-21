@@ -798,7 +798,7 @@ public class ModuleBuilder {
 				getType(signature, sourceReference), 
 				name == null || name.length() == 0 ? null : new IdentifierExp(name.toCharArray()), 
 				defaultValue == null ? null : 
-					decodeExpression(defaultValue.toCharArray(), sourceReference));
+					decodeDefaultInitExpression(defaultValue.toCharArray(), sourceReference));
 	}
 	
 	
@@ -1120,6 +1120,12 @@ public class ModuleBuilder {
 	
 	private Expression decodeExpression(char[] value, ISourceReference sourceReference) throws JavaModelException {
 		Expression exp = encoder.decodeExpression(value);
+		copySourceRangeRecursive(exp, sourceReference);
+		return exp;
+	}
+	
+	private Expression decodeDefaultInitExpression(char[] value, ISourceReference sourceReference) throws JavaModelException {
+		Expression exp = encoder.decodeDefaultInitExpression(value);
 		copySourceRangeRecursive(exp, sourceReference);
 		return exp;
 	}

@@ -94,6 +94,19 @@ public class ASTNodeEncoder {
 		return initParser(value).parseExpression();
 	}
 	
+	public Expression decodeDefaultInitExpression(char[] value) {
+		if (apiLevel < Parser.D2)
+			return decodeExpression(value);
+		
+		if (value == null || value.length == 0) {
+			return null;
+		}
+		
+		value = decodeForIndexer(value);
+		
+		return initParser(value).parseDefaultInitExp();
+	}
+	
 	public char[] encodeInitializer(Initializer init) {
 		if (init == null) {
 			return null;

@@ -19,11 +19,11 @@ public class real_t {
 	public double nanOrInfinite;
 
 	public real_t(BigInteger value) {
-		this.value = new BigDecimal(value);
+		this(new BigDecimal(value));
 	}
 
 	public real_t(integer_t value) {
-		this.value = new BigDecimal(value.bigIntegerValue());
+		this(new BigDecimal(value.bigIntegerValue()));
 	}
 
 	public real_t(BigDecimal value) {
@@ -354,28 +354,24 @@ public class real_t {
 	}
 
 	public real_t sin() {
-		double val = value.doubleValue();
-		return new real_t(Math.sin(val));
+		return new real_t(Math.sin(doubleValue()));
 	}
 	
 	public real_t cos() {
-		double val = value.doubleValue();
-		return new real_t(Math.cos(val));
+		return new real_t(Math.cos(doubleValue()));
 	}
 	
 	public real_t tan() {
-		double val = value.doubleValue();
-		return new real_t(Math.tan(val));
+		return new real_t(Math.tan(doubleValue()));
 	}
 	
 	public real_t sqrt() {
-		double val = value.doubleValue();
-		return new real_t(Math.sqrt(val));
+		return new real_t(Math.sqrt(doubleValue()));
 	}
 	
 	public real_t abs() {
 		double val = value.doubleValue();
-		return new real_t(Math.abs(val));
+		return new real_t(Math.abs(doubleValue()));
 	}
 
 	public static BigDecimal strtold(String string) {

@@ -533,7 +533,7 @@ public class InternalSignature {
 				public void exitTemplateValueParameter(String signature) {
 					Stack<Type> types = stack.peek();
 					Type type = types.get(0);
-					Expression def = defaultValue == null ? null : encoder.decodeExpression(defaultValue.toCharArray());
+					Expression def = defaultValue == null ? null : encoder.decodeDefaultInitExpression(defaultValue.toCharArray());
 					
 					param[0] = new TemplateValueParameter(null, 0, null, type, specValue[0], def, encoder);
 					param[0].setSourceRange(startPosition, length);

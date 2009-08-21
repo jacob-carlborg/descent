@@ -68,6 +68,7 @@ import descent.internal.ui.JavaPluginImages;
 import descent.internal.ui.actions.OpenBrowserUtil;
 import descent.internal.ui.actions.SimpleSelectionProvider;
 import descent.internal.ui.infoviews.JavadocView;
+import descent.internal.ui.infoviews.JavadocViewHelper;
 import descent.internal.ui.javaeditor.ASTProvider;
 import descent.internal.ui.javaeditor.EditorUtility;
 import descent.internal.ui.viewsupport.BasicElementLabels;
@@ -718,6 +719,9 @@ public class JavadocHover extends AbstractJavaEditorTextHover {
 					buffer.append('\n');
 					line= reader.readLine();
 				}
+				
+				JavadocViewHelper.addPreferencesFontsAndColorsToStyleSheet(buffer);
+				
 				return buffer.toString();
 			} catch (IOException ex) {
 				JavaPlugin.log(ex);

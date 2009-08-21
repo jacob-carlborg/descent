@@ -3711,30 +3711,28 @@ public class Lexer implements IProblemRequestor {
 					}
 					break;
 				case 'L':
-					if (apiLevel != D2) {
+					p++;
+					if (input(p) == 'I') {
 						p++;
-						if (input(p) == 'I') {
+						if (input(p) == 'N') {
 							p++;
-							if (input(p) == 'N') {
+							if (input(p) == 'E') {
 								p++;
-								if (input(p) == 'E') {
+								if (input(p) == '_') {
 									p++;
-									if (input(p) == '_') {
-										p++;
-										if (input(p) == '_'
-												&& !Chars.isidchar(input(p + 1))) {
-											if (apiLevel == D2) {
-												t.value = TOK.TOKline;
-											} else {
-												t.value = TOK.TOKint64v;
-												t.intValue = new integer_t(lineNumber);
-												t.special = Token.SPECIAL__LINE__;
-												t.sourceString = Id.LINE;
-											}
-											t.sourceLen = 8;
-											p++;
-											return;
+									if (input(p) == '_'
+											&& !Chars.isidchar(input(p + 1))) {
+										if (apiLevel == D2) {
+											t.value = TOK.TOKline;
+										} else {
+											t.value = TOK.TOKint64v;
+											t.intValue = new integer_t(lineNumber);
+											t.special = Token.SPECIAL__LINE__;
+											t.sourceString = Id.LINE;
 										}
+										t.sourceLen = 8;
+										p++;
+										return;
 									}
 								}
 							}

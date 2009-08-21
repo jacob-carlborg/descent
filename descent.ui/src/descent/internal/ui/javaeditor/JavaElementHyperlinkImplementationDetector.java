@@ -5,6 +5,8 @@ import org.eclipse.jface.text.hyperlink.IHyperlink;
 
 import org.eclipse.ui.texteditor.ITextEditor;
 
+import descent.core.ICompilationUnit;
+import descent.core.IConditional;
 import descent.core.IJavaElement;
 import descent.core.IMember;
 import descent.core.IMethod;
@@ -43,8 +45,18 @@ public class JavaElementHyperlinkImplementationDetector extends JavaElementHyper
 	 *         class is final, or in case of an exception, <code>true</code> otherwise
 	 */
 	private boolean canBeOverridden(IMethod method) {
+		IJavaElement parent = method.getParent();
+		while(parent instanceof IConditional) {
+			parent = parent.getParent();
+		}
+		
+		// Functions can't be overriden: only methods
+		if (parent instanceof ICompilationUnit) {
+			return false;
+		}
+		
 		try {
-			return !(JdtFlags.isPrivate(method) || JdtFlags.isFinal(method) || JdtFlags.isStatic(method) || method.isConstructor() || JdtFlags.isFinal((IMember)method.getParent()));
+			return !(JdtFlags.isPrivate(method) || JdtFlags.isFinal(method) || JdtFlags.isStatic(method) || method.isConstructor() /* || JdtFlags.isFinal((IMember)method.getParent()) */);
 		} catch (JavaModelException e) {
 			JavaPlugin.log(e);
 			return false;

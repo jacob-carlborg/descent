@@ -4368,7 +4368,7 @@ public class Parser extends Lexer {
 	 * Parses default argument initializer expression that is an assign expression,
 	 * with special handling for __FILE__ and __LINE__.
 	 */
-	private Expression parseDefaultInitExp() {
+	public Expression parseDefaultInitExp() {
 		if (token.value == TOKfile || token.value == TOKline) {
 			Token t = peek(token);
 			if (t.value == TOKcomma || t.value == TOKrparen) {
@@ -8265,7 +8265,7 @@ public class Parser extends Lexer {
 		return e;
 	}
 
-	private Expression parseCondExp() {
+	public Expression parseCondExp() {
 		Expression e;
 		Expression e1;
 		Expression e2;
