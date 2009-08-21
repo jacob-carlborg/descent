@@ -734,5 +734,6 @@ public interface IProblem {
 	int SymbolIsNothrowYetMayThrow = 523;
 	int DefaultConstructorNotAllowedForStructs = 524;
 	int VoidDoesNotHaveADefaiñtInitializer = 525;
+	int CannotImplicitlyConvertToImmutable = 526;
 
 }

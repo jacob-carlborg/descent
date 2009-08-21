@@ -1573,6 +1573,9 @@ DefaultConstructorNotAllowedForStructs
 VoidDoesNotHaveADefaiñtInitializer
 	formatString=void does not have a default initializer
 	numArgs=0
+CannotImplicitlyConvertToImmutable
+	formatString=Cannot implicitly convert element type %1$s to immutable
+	numArgs=1
 
 	
 	

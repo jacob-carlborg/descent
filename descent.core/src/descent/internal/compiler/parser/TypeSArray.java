@@ -318,6 +318,11 @@ public class TypeSArray extends TypeArray {
 		}
 
 		next = next.semantic(filename, lineNumber, sc, context);
+		
+		if (context.isD2()) {
+			transitive(context);
+		}
+		
 		Type tbn = next.toBasetype(context);
 
 		if (null != dim) {
@@ -397,6 +402,17 @@ public class TypeSArray extends TypeArray {
 			Argument arg = (Argument) tt.arguments.get(d);
 			return arg.type;
 		}
+		case Tstruct:
+			if (context.isD2()) {
+				TypeStruct ts = (TypeStruct)tbn;
+			    if (ts.sym.isnested) {
+			    	if (context.acceptsErrors()) {
+			    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotHaveArrayOfType, this, "inner structs " + ts.toChars(context)));
+			    	}
+			    }
+			    break;
+			}
+			break;
 		case Tfunction:
 		case Tnone:
 			if (context.acceptsErrors()) {
@@ -455,17 +471,25 @@ public class TypeSArray extends TypeArray {
 		Type t = next.syntaxCopy(context);
 		Expression e = dim.syntaxCopy(context);
 		t = new TypeSArray(t, e, context.encoder);
+		t.mod = mod;
 		t.copySourceRange(this);
 		return t;
 	}
 
 	@Override
 	public void toDecoBuffer(OutBuffer buf, int flag, SemanticContext context) {
+		super.toDecoBuffer(buf, flag, context);
 		buf.writeByte(ty.mangleChar);
 		if (null != dim)
 			buf.data.append(dim.toInteger(context));
-		if (null != next)
+		if (null != next) {
+			/* Note that static arrays are value types, so
+			 * for a parameter, propagate the 0x100 to the next
+			 * level, since for T[4][3], any const should apply to the T,
+			 * not the [4].
+			 */
 			next.toDecoBuffer(buf, (flag & 0x100) != 0 ? flag : mod, context);
+		}
 	}
 
 	@Override
