@@ -7,16 +7,28 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class TypeReference extends TypeNext {
 	
-	private SemanticContext context;
-
 	public TypeReference(Type t, SemanticContext context) {
 		super(Treference, t);
-		this.context = context;
 		if (t.ty == Tbit) {
 			if (context.acceptsErrors()) {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.CannotMakeReferenceToABit, this));
 			}
+		}
+	}
+	
+	@Override
+	public Type semantic(char[] filename, int lineNumber, Scope sc, SemanticContext context) {
+		if (context.isD1()) {
+			return super.semantic(filename, lineNumber, sc, context);
+		} else {
+		    Type n = next.semantic(filename, lineNumber, sc, context);
+		    if (!same(n, next, context)) {
+		    	deco = null;
+		    }
+		    next = n;
+		    transitive(context);
+		    return merge(context);
 		}
 	}
 
@@ -27,6 +39,7 @@ public class TypeReference extends TypeNext {
 			t = this;
 		} else {
 			t = new TypeReference(t, context);
+			t.mod = mod;
 			t.copySourceRange(this);
 		}
 		return t;

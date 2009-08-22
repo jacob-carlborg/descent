@@ -379,7 +379,11 @@ public class TypeFunction extends TypeNext implements Cloneable {
 	public Type syntaxCopy(SemanticContext context) {
 		Type treturn = next != null ? next.syntaxCopy(context) : null;
 		Arguments params = Dsymbol.arraySyntaxCopy(parameters, context);
-		Type t = new TypeFunction(params, treturn, varargs, linkage);
+		TypeFunction t = new TypeFunction(params, treturn, varargs, linkage);
+	    t.mod = mod;
+	    t.isnothrow = isnothrow;
+	    t.ispure = ispure;
+	    t.isref = isref;
 		t.copySourceRange(this);
 		return t;
 	}

@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.MATCH.MATCHconst;
 import static descent.internal.compiler.parser.MATCH.MATCHconvert;
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
@@ -51,24 +52,57 @@ public class TypePointer extends TypeNext {
 
 	@Override
 	public MATCH implicitConvTo(Type to, SemanticContext context) {
-		if (same(this, to, context)) {
-			return MATCHexact;
-		}
-		if (to.ty == Tpointer && to.nextOf() != null) {
-			if (to.nextOf().ty == Tvoid) {
-				return MATCHconvert;
+		if (context.isD1()) {
+			if (same(this, to, context)) {
+				return MATCHexact;
 			}
-
-			if (next.ty == Tfunction && to.nextOf().ty == Tfunction) {
-				TypeFunction tf;
-				TypeFunction tfto;
-
-				tf = (TypeFunction) next;
-				tfto = (TypeFunction) to.nextOf();
-				return tfto.equals(tf) ? MATCHexact : MATCHnomatch;
+			if (to.ty == Tpointer && to.nextOf() != null) {
+				if (to.nextOf().ty == Tvoid) {
+					return MATCHconvert;
+				}
+	
+				if (next.ty == Tfunction && to.nextOf().ty == Tfunction) {
+					TypeFunction tf;
+					TypeFunction tfto;
+	
+					tf = (TypeFunction) next;
+					tfto = (TypeFunction) to.nextOf();
+					return tfto.equals(tf) ? MATCHexact : MATCHnomatch;
+				}
 			}
+			return MATCHnomatch;
+		} else {
+			if (equals(to))
+				return MATCHexact;
+			if (to.ty == Tpointer) {
+				TypePointer tp = (TypePointer) to;
+
+				if (!(next.mod == tp.next.mod || tp.next.mod == MODconst))
+					return MATCHnomatch; // not const-compatible
+
+				/*
+				 * Alloc conversion to void[]
+				 */
+				if (next.ty != Tvoid && tp.next.ty == Tvoid) {
+					return MATCHconvert;
+				}
+
+				MATCH m = next.constConv(tp.next);
+				if (m != MATCHnomatch) {
+					if (m == MATCHexact && mod != to.mod)
+						m = MATCHconst;
+					return m;
+				}
+
+				/*
+				 * Conversion of ptr to derived to ptr to base
+				 */
+				int[] offset = { 0 };
+				if (tp.next.isBaseOf(next, offset, context) && offset[0] == 0)
+					return MATCHconvert;
+			}
+		    return MATCHnomatch;
 		}
-		return MATCHnomatch;
 	}
 
 	@Override
@@ -97,6 +131,11 @@ public class TypePointer extends TypeNext {
 			deco = null;
 		}
 		next = n;
+		
+		if (context.isD2()) {
+			transitive(context);
+		}
+		
 		return merge(context);
 	}
 
@@ -112,6 +151,7 @@ public class TypePointer extends TypeNext {
 			t = this;
 		} else {
 			t = new TypePointer(t);
+			t.mod = mod;
 			t.copySourceRange(this);
 		}
 		return t;
