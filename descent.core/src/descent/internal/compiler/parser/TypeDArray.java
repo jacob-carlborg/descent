@@ -1,6 +1,9 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.MATCH.MATCHconst;
 import static descent.internal.compiler.parser.MATCH.MATCHconvert;
+import static descent.internal.compiler.parser.MATCH.MATCHexact;
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 import static descent.internal.compiler.parser.TOK.TOKstring;
 import static descent.internal.compiler.parser.TY.Tarray;
 import static descent.internal.compiler.parser.TY.Tchar;
@@ -96,21 +99,78 @@ public class TypeDArray extends TypeArray {
 	@Override
 	public MATCH implicitConvTo(Type to, SemanticContext context) {
 		// Allow implicit conversion of array to pointer
-		if (context.global.params.useDeprecated
-				&& to.ty == Tpointer
-				&& (to.nextOf().ty == Tvoid || next.equals(to.nextOf()) /*|| to.next.isBaseOf(next)*/)) {
-			return MATCHconvert;
-		}
-
-		if (to.ty == Tarray) {
-			int[] offset = { 0 };
-
-			if ((to.nextOf().isBaseOf(next, offset, context) && offset[0] == 0)
-					|| to.nextOf().ty == Tvoid) {
+		if (context.isD1()) {
+			if (context.IMPLICIT_ARRAY_TO_PTR()
+					&& to.ty == Tpointer
+					&& (to.nextOf().ty == Tvoid || next.equals(to.nextOf()) /*|| to.next.isBaseOf(next)*/)) {
 				return MATCHconvert;
 			}
+	
+			if (to.ty == Tarray) {
+				int[] offset = { 0 };
+	
+				if ((to.nextOf().isBaseOf(next, offset, context) && offset[0] == 0)
+						|| to.nextOf().ty == Tvoid) {
+					return MATCHconvert;
+				}
+			}
+			return super.implicitConvTo(to, context);
+		} else {
+			if (equals(to))
+				return MATCHexact;
+
+			// Allow implicit conversion of array to pointer
+			if (context.IMPLICIT_ARRAY_TO_PTR() && to.ty == Tpointer) {
+				TypePointer tp = (TypePointer) to;
+
+				/*
+				 * Allow conversion to void*
+				 */
+				if (tp.next.ty == Tvoid && (next.mod == tp.next.mod || tp.next.mod == MODconst)) {
+					return MATCHconvert;
+				}
+
+				return next.constConv(to);
+			}
+
+			if (to.ty == Tarray) {
+				int[] offset = { 0 };
+				TypeDArray ta = (TypeDArray) to;
+
+				if (!(next.mod == ta.next.mod || ta.next.mod == MODconst))
+					return MATCHnomatch; // not const-compatible
+
+				/*
+				 * Allow conversion to void[]
+				 */
+				if (next.ty != Tvoid && ta.next.ty == Tvoid) {
+					return MATCHconvert;
+				}
+
+				MATCH m = next.constConv(ta.next);
+				if (m != MATCHnomatch) {
+					if (m == MATCHexact && mod != to.mod)
+						m = MATCHconst;
+					return m;
+				}
+
+				/*
+				 * Allow conversions of T[][] to const(T)[][]
+				 */
+				if (mod == ta.mod && next.ty == Tarray && ta.next.ty == Tarray) {
+					m = next.implicitConvTo(ta.next, context);
+					if (m == MATCHconst)
+						return m;
+				}
+
+				/*
+				 * Conversion of array of derived to array of base
+				 */
+				if (ta.next.isBaseOf(next, offset, context) && offset[0] == 0)
+					return MATCHconvert;
+			}
+			return super.implicitConvTo(to, context);
 		}
-		return super.implicitConvTo(to, context);
 	}
 
 	@Override
@@ -139,6 +199,17 @@ public class TypeDArray extends TypeArray {
 			}
 			tn = next = tint32;
 			break;
+		case Tstruct:
+			if (context.isD2()) {
+				TypeStruct ts = (TypeStruct)tbn;
+			    if (ts.sym.isnested) {
+			    	if (context.acceptsErrors()) {
+			    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotHaveArrayOfType, this, "inner structs " + ts.toChars(context)));
+			    	}
+			    }
+			    break;
+			}
+			break;
 		}
 		if (tn.isauto()) {
 			if (context.acceptsErrors()) {
@@ -146,9 +217,14 @@ public class TypeDArray extends TypeArray {
 						IProblem.CannotHaveArrayOfAuto, this, new String[] { tn.toChars(context) }));
 			}
 		}
-		if (next != tn) {
-			//deco = NULL;			// redo
-			return tn.arrayOf(context);
+		if (context.isD1()) {
+			if (next != tn) {
+				//deco = NULL;			// redo
+				return tn.arrayOf(context);
+			}
+		} else {
+		    next = tn;
+		    transitive(context);
 		}
 		return merge(context);
 	}
@@ -165,6 +241,7 @@ public class TypeDArray extends TypeArray {
 			t = this;
 		} else {
 			t = new TypeDArray(t);
+			t.mod = mod;
 			t.copySourceRange(this);
 		}
 		return t;
@@ -172,7 +249,7 @@ public class TypeDArray extends TypeArray {
 
 	@Override
 	public void toDecoBuffer(OutBuffer buf, int flag, SemanticContext context) {
-		buf.writeByte(ty.mangleChar);
+		Type_toDecoBuffer(buf, flag, context);
 		if (next != null) {
 			next.toDecoBuffer(buf, (flag & 0x100) != 0 ? 0 : mod, context);
 		}

@@ -99,7 +99,7 @@ public abstract class TypeNext extends Type {
 	
 	@Override
 	public void toDecoBuffer(OutBuffer buf, int flag, SemanticContext context) {
-	    super.toDecoBuffer(buf, flag, context);
+	    Type_toDecoBuffer(buf, flag, context);
 	    assert(next != this);
 	    next.toDecoBuffer(buf, (flag & 0x100) != 0 ? 0 : mod, context);
 	}

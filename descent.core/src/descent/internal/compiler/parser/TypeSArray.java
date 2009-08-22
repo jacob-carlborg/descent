@@ -3,6 +3,7 @@ package descent.internal.compiler.parser;
 import static descent.internal.compiler.parser.DYNCAST.DYNCAST_DSYMBOL;
 import static descent.internal.compiler.parser.DYNCAST.DYNCAST_EXPRESSION;
 import static descent.internal.compiler.parser.DYNCAST.DYNCAST_TYPE;
+import static descent.internal.compiler.parser.MATCH.MATCHconst;
 import static descent.internal.compiler.parser.MATCH.MATCHconvert;
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
@@ -191,20 +192,68 @@ public class TypeSArray extends TypeArray {
 	@Override
 	public MATCH implicitConvTo(Type to, SemanticContext context) {
 		// Allow implicit conversion of static array to pointer or dynamic array
-		if ((context.global.params.useDeprecated && to.ty == Tpointer)
-				&& (to.nextOf().ty == Tvoid || next.equals(to.nextOf())
-				/* || to.next.isBaseOf(next) */)) {
-			return MATCHconvert;
-		}
-		if (to.ty == Tarray) {
-			int offset = 0;
-
-			if (next.equals(to.nextOf())
-					|| (to.nextOf().isBaseOf(next, new int[] { offset }, context) && offset == 0)
-					|| to.nextOf().ty == Tvoid)
+		if (context.isD1()) {
+			if ((context.IMPLICIT_ARRAY_TO_PTR() && to.ty == Tpointer)
+					&& (to.nextOf().ty == Tvoid || next.equals(to.nextOf())
+					/* || to.next.isBaseOf(next) */)) {
 				return MATCHconvert;
+			}
+			if (to.ty == Tarray) {
+				int offset = 0;
+	
+				if (next.equals(to.nextOf())
+						|| (to.nextOf().isBaseOf(next, new int[] { offset }, context) && offset == 0)
+						|| to.nextOf().ty == Tvoid)
+					return MATCHconvert;
+			}
+			return super.implicitConvTo(to, context);
+		} else {
+		    // Allow implicit conversion of static array to pointer or dynamic array
+			if (context.IMPLICIT_ARRAY_TO_PTR() && to.ty == Tpointer) {
+				TypePointer tp = (TypePointer) to;
+
+				if (next.mod != tp.next.mod && tp.next.mod != MODconst)
+					return MATCHnomatch;
+
+				if (tp.next.ty == Tvoid || next.constConv(tp.next) != MATCHnomatch) {
+					return MATCHconvert;
+				}
+				return MATCHnomatch;
+			}
+			if (to.ty == Tarray) {
+				int[] offset = { 0 };
+				TypeDArray ta = (TypeDArray) to;
+
+				if (next.mod != ta.next.mod && ta.next.mod != MODconst)
+					return MATCHnomatch;
+
+				if (next.equals(ta.next) || next.implicitConvTo(ta.next, context).ordinal() >= MATCHconst.ordinal()
+						|| (ta.next.isBaseOf(next, offset, context) && offset[0] == 0) || ta.next.ty == Tvoid)
+					return MATCHconvert;
+				return MATCHnomatch;
+			}
+			if (to.ty == Tsarray) {
+				if (this == to)
+					return MATCHexact;
+
+				TypeSArray tsa = (TypeSArray) to;
+
+				if (dim.equals(tsa.dim)) {
+					/*
+					 * Since static arrays are value types, allow conversions
+					 * from const elements to non-const ones, just like we allow
+					 * conversion from const int to int.
+					 */
+					MATCH m = next.implicitConvTo(tsa.next, context);
+					if (m.ordinal() >= MATCHconst.ordinal()) {
+						if (mod != to.mod)
+							m = MATCHconst;
+						return m;
+					}
+				}
+			}
+			return MATCHnomatch;
 		}
-		return super.implicitConvTo(to, context);
 	}
 
 	@Override
@@ -478,7 +527,7 @@ public class TypeSArray extends TypeArray {
 
 	@Override
 	public void toDecoBuffer(OutBuffer buf, int flag, SemanticContext context) {
-		super.toDecoBuffer(buf, flag, context);
+		Type_toDecoBuffer(buf, flag, context);
 		buf.writeByte(ty.mangleChar);
 		if (null != dim)
 			buf.data.append(dim.toInteger(context));

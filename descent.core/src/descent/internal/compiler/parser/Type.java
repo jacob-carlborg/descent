@@ -665,6 +665,10 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	}
 
 	public void toDecoBuffer(OutBuffer buf, int flag, SemanticContext context) {
+		Type_toDecoBuffer(buf, flag, context);
+	}
+	
+	protected void Type_toDecoBuffer(OutBuffer buf, int flag, SemanticContext context) {
 		if (flag != mod && flag != 0x100) {
 			if ((mod & MODshared) != 0)
 				buf.writeByte('O');

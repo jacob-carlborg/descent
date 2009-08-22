@@ -31,6 +31,10 @@ public class SemanticContext implements IStringTableHolder {
 	public boolean STRUCTTHISREF() {
 		return apiLevel == Parser.D2;
 	}
+	
+	public boolean IMPLICIT_ARRAY_TO_PTR() {
+		return global.params.useDeprecated;
+	}
 
 	// If DMD is being run on Win32
 	public boolean _WIN32 = true;
