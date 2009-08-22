@@ -3693,7 +3693,9 @@ public class Parser extends Lexer {
 			int oldStart = t == null ? 0 : t.start;
 			nextToken();
 			ts = parseDeclarator(t, pident, null, identStart);
-			ts.setSourceRange(oldStart, token.ptr + token.sourceLen - oldStart);
+			if (ts != null) {
+				ts.setSourceRange(oldStart, token.ptr + token.sourceLen - oldStart);
+			}
 			check(TOKrparen);
 			break;
 
@@ -4151,7 +4153,7 @@ public class Parser extends Lexer {
 			tpl = pointer2_tpl[0];
 			
 			if(t == null) {
-				throw new IllegalStateException();
+				break;
 			}
 			if (tfirst == null) {
 				tfirst = t;

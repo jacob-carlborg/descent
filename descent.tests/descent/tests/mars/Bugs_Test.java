@@ -415,5 +415,13 @@ public class Bugs_Test extends Parser_Test {
 		Module m = getParseResult(s, AST.D2).module;
 		assertNotNull(m);
 	}
+	
+	public void testAliasThisWrongOrder() {
+		String s = 
+			"struct S { alias this foo; }";
+		
+		Module m = getParseResult(s, AST.D2).module;
+		assertNotNull(m);
+	}
 
 }
