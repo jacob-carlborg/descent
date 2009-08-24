@@ -93,6 +93,7 @@ public class TypeDelegate extends TypeNext {
 			t = this;
 		} else {
 			t = new TypeDelegate(t);
+			t.mod = mod;
 			t.copySourceRange(this);
 		}
 		return t;

@@ -267,6 +267,7 @@ final class ProblemMessages extends NLS {
 	public static String FunctionsCannotReturnAFunction;
 	public static String FunctionsCannotReturnATuple;
 	public static String FunctionsCannotReturnAuto;
+	public static String FunctionsCannotReturnScope;
 	public static String RecursiveType;
 	public static String VariadicFunctionsWithNonDLinkageMustHaveAtLeastOneParameter;
 	public static String SymbolMustBeAFunction;
@@ -536,6 +537,7 @@ final class ProblemMessages extends NLS {
 	public static String DefaultConstructorNotAllowedForStructs;
 	public static String VoidDoesNotHaveADefaiñtInitializer;
 	public static String CannotImplicitlyConvertToImmutable;
+	public static String CannotHaveConstInvariantOutParameterOfType;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

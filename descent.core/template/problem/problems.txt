@@ -769,6 +769,9 @@ FunctionsCannotReturnATuple
 FunctionsCannotReturnAuto
 	formatString=Functions cannot return auto %1$s
 	numArgs=1
+FunctionsCannotReturnScope
+	formatString=Functions cannot return scope %1$s
+	numArgs=1
 RecursiveType
 	formatString=Recursive type
 	numArgs=0
@@ -1575,6 +1578,9 @@ VoidDoesNotHaveADefaiñtInitializer
 	numArgs=0
 CannotImplicitlyConvertToImmutable
 	formatString=Cannot implicitly convert element type %1$s to immutable
+	numArgs=1
+CannotHaveConstInvariantOutParameterOfType
+	formatString=Cannot have const/invariant out parameter of type %1$s
 	numArgs=1
 
 	

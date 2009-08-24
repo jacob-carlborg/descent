@@ -7,6 +7,7 @@ import static descent.internal.compiler.parser.STC.STCconst;
 import static descent.internal.compiler.parser.STC.STCfield;
 import static descent.internal.compiler.parser.STC.STCimmutable;
 import static descent.internal.compiler.parser.STC.STCin;
+import static descent.internal.compiler.parser.STC.STCscope;
 import static descent.internal.compiler.parser.STC.STCshared;
 import static descent.internal.compiler.parser.TOK.TOKdotvar;
 import static descent.internal.compiler.parser.TOK.TOKvar;
@@ -1406,8 +1407,16 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 				if (!arg1.type.equals(arg2.type)) {
 					return DISTINCT;
 				}
-				if (arg1.storageClass != arg2.storageClass) {
-					inoutmismatch = true;
+				if (context.isD1()) {
+					if (arg1.storageClass != arg2.storageClass) {
+						inoutmismatch = true;
+					}
+				} else {
+					if ((arg1.storageClass & ~STCscope) != (arg2.storageClass & ~STCscope))
+						inoutmismatch = true;
+					// We can add scope, but not subtract it
+					if (0 == (arg1.storageClass & STCscope) && (arg2.storageClass & STCscope) != 0)
+						inoutmismatch = true;
 				}
 			}
 		} else if (t1.parameters != t2.parameters) {
@@ -1422,28 +1431,94 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 			return NOT_COVARIANT;
 		}
 
+	    // Return types
 		Type t1n = t1.next;
 		Type t2n = t2.next;
 
 		if (t1n.equals(t2n)) {
 			return COVARIANT;
 		}
-		if (t1n.ty != TY.Tclass || t2n.ty != TY.Tclass) {
+		
+		if (context.isD1()) {
+			if (t1n.ty != TY.Tclass || t2n.ty != TY.Tclass) {
+				return NOT_COVARIANT;
+			}
+	
+			// If t1n is forward referenced:
+			ClassDeclaration cd = ((TypeClass) t1n).sym;
+			if (cd.baseClass == null && cd.baseclasses != null
+					&& cd.baseclasses.size() > 0
+					&& cd.isInterfaceDeclaration() == null) {
+				return OTHER;
+			}
+	
+			if (t1n.implicitConvTo(t2n, context) != MATCH.MATCHnomatch) {
+				return COVARIANT;
+			}
 			return NOT_COVARIANT;
-		}
+		} else {
+			boolean gotoLcovariant = false;
 
-		// If t1n is forward referenced:
-		ClassDeclaration cd = ((TypeClass) t1n).sym;
-		if (cd.baseClass == null && cd.baseclasses != null
-				&& cd.baseclasses.size() > 0
-				&& cd.isInterfaceDeclaration() == null) {
-			return OTHER;
-		}
+			if (t1n.ty == Tclass && t2n.ty == Tclass) {
+				/*
+				 * If same class type, but t2n is const, then it's covariant. Do
+				 * this test first because it can work on forward references.
+				 */
+				if (((TypeClass) t1n).sym == ((TypeClass) t2n).sym && t2n.mod == MODconst) {
+					// goto Lcovariant;
+					gotoLcovariant = true;
+				}
 
-		if (t1n.implicitConvTo(t2n, context) != MATCH.MATCHnomatch) {
+				if (!gotoLcovariant) {
+					// If t1n is forward referenced:
+					ClassDeclaration cd = ((TypeClass) t1n).sym;
+					if (null == cd.baseClass && size(cd.baseclasses) != 0 && null == cd.isInterfaceDeclaration()) {
+						return 3;
+					}
+				}
+			}
+
+			if (!gotoLcovariant) {
+				if (t1n.implicitConvTo(t2n, context) != null) {
+					// goto Lcovariant;
+					gotoLcovariant = true;
+				}
+			}
+
+			if (!gotoLcovariant) {
+				return NOT_COVARIANT;
+			}
+
+			// Lcovariant:
+			/*
+			 * Can convert mutable to const
+			 */
+			if (t1.mod != t2.mod) {
+				if (0 == (t1.mod & MODconst) && (t2.mod & MODconst) != 0) {
+					return NOT_COVARIANT;
+				}
+				if (0 == (t1.mod & MODshared) && (t2.mod & MODshared) != 0) {
+					return NOT_COVARIANT;
+				}
+			}
+
+			/*
+			 * Can convert pure to impure, and nothrow to throw
+			 */
+			if (!t1.ispure && t2.ispure) {
+				return NOT_COVARIANT;
+			}
+
+			if (!t1.isnothrow && t2.isnothrow) {
+				return NOT_COVARIANT;
+			}
+
+			if (t1.isref != t2.isref) {
+				return NOT_COVARIANT;
+			}
+
 			return COVARIANT;
 		}
-		return NOT_COVARIANT;
 	}
 
 	public boolean isfloating() {

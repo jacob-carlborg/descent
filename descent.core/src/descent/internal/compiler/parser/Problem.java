@@ -645,6 +645,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.FunctionsCannotReturnATuple);
 		case FunctionsCannotReturnAuto:
 			return String.format(ProblemMessages.FunctionsCannotReturnAuto, arguments[0]);
+		case FunctionsCannotReturnScope:
+			return String.format(ProblemMessages.FunctionsCannotReturnScope, arguments[0]);
 		case RecursiveType:
 			return String.format(ProblemMessages.RecursiveType);
 		case VariadicFunctionsWithNonDLinkageMustHaveAtLeastOneParameter:
@@ -1183,6 +1185,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.VoidDoesNotHaveADefaiñtInitializer);
 		case CannotImplicitlyConvertToImmutable:
 			return String.format(ProblemMessages.CannotImplicitlyConvertToImmutable, arguments[0]);
+		case CannotHaveConstInvariantOutParameterOfType:
+			return String.format(ProblemMessages.CannotHaveConstInvariantOutParameterOfType, arguments[0]);
 		default:
 			return "";
 		}

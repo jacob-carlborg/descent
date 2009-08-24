@@ -1,15 +1,22 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.MATCH.MATCHconst;
 import static descent.internal.compiler.parser.MATCH.MATCHconvert;
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+import static descent.internal.compiler.parser.STC.STCalias;
+import static descent.internal.compiler.parser.STC.STCauto;
 import static descent.internal.compiler.parser.STC.STClazy;
+import static descent.internal.compiler.parser.STC.STCnothrow;
 import static descent.internal.compiler.parser.STC.STCout;
+import static descent.internal.compiler.parser.STC.STCpure;
 import static descent.internal.compiler.parser.STC.STCref;
 import static descent.internal.compiler.parser.STC.STCscope;
+import static descent.internal.compiler.parser.STC.STCstatic;
 import static descent.internal.compiler.parser.Scope.SCOPEctor;
 import static descent.internal.compiler.parser.TY.Tfunction;
 import static descent.internal.compiler.parser.TY.Tident;
+import static descent.internal.compiler.parser.TY.Tpointer;
 import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Ttuple;
 import static descent.internal.compiler.parser.TY.Tvoid;
@@ -262,6 +269,15 @@ public class TypeFunction extends TypeNext implements Cloneable {
 				tf.parameters.add(parameters.get(i).copy());
 			}
 	    }
+	    
+	    if (context.isD2()) {
+			if ((sc.stc & STCpure) != 0)
+				tf.ispure = true;
+			if ((sc.stc & STCnothrow) != 0)
+				tf.isnothrow = true;
+			if ((sc.stc & STCref) != 0)
+				tf.isref = true;
+	    }
 
 		tf.linkage = sc.linkage;
 		if (null == tf.next) {
@@ -289,7 +305,7 @@ public class TypeFunction extends TypeNext implements Cloneable {
 		}
 		if (tf.next.isauto() && (sc.flags & SCOPEctor) == 0) {
 			if (context.acceptsErrors()) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionsCannotReturnAuto, this, new String[] { tf.next.toChars(context) }));
+				context.acceptProblem(Problem.newSemanticTypeError(context.isD1() ? IProblem.FunctionsCannotReturnAuto : IProblem.FunctionsCannotReturnScope, this, new String[] { tf.next.toChars(context) }));
 			}
 		}
 
@@ -302,19 +318,30 @@ public class TypeFunction extends TypeNext implements Cloneable {
 
 				tf.inuse++;
 				arg.type = arg.type.semantic(filename, lineNumber, sc, context);
-				if (tf.inuse == 1) {
-					tf.inuse--;
+				if (tf.inuse == 1) tf.inuse--;
+				
+				if (context.isD1()) {
+					t = arg.type.toBasetype(context);
+				} else {
+					arg.type = arg.type.addStorageClass(arg.storageClass, context);
+
+					if ((arg.storageClass & (STCauto | STCalias | STCstatic)) != 0) {
+						if (null == arg.type)
+							continue;
+					}
+
+					t = arg.type.toBasetype(context);
 				}
-				t = arg.type.toBasetype(context);
 
 				if ((arg.storageClass & (STCout | STCref | STClazy)) != 0) {
 					if (t.ty == Tsarray) {
 						if (context.acceptsErrors()) {
-							context
-									.acceptProblem(Problem
-											.newSemanticTypeError(
-													IProblem.CannotHaveOutOrInoutParameterOfTypeStaticArray,
-													t));
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotHaveOutOrInoutParameterOfTypeStaticArray, t));
+						}
+					}
+					if ((arg.storageClass & STCout) != 0 && arg.type.mod != 0) {
+						if (context.acceptsErrors()) {
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotHaveConstInvariantOutParameterOfType, t, t.toChars(context)));
 						}
 					}
 				}
@@ -398,6 +425,15 @@ public class TypeFunction extends TypeNext implements Cloneable {
 		}
 		inuse++;
 		
+		if (context.isD2()) {
+			if ((mod & MODshared) != 0)
+				buf.writeByte('O');
+			if ((mod & MODconst) != 0)
+				buf.writeByte('x');
+			else if ((mod & MODinvariant) != 0)
+				buf.writeByte('y');
+		}
+		
 		// TODO Descent: for now assume everything has D linkage so that deco
 		// comparisons work
 //		switch (linkage) {
@@ -422,6 +458,19 @@ public class TypeFunction extends TypeNext implements Cloneable {
 		linkageChar = mc;
 		
 		buf.writeByte(mc);
+		
+		if (context.isD2()) {
+			if (ispure || isnothrow || isref) {
+				if (ispure)
+					buf.writestring("Na");
+				if (isnothrow)
+					buf.writestring("Nb");
+				if (isref)
+					buf.writestring("Nc");
+			}
+		}
+		
+		
 		// Write argument types
 		Argument.argsToDecoBuffer(buf, parameters, context);
 		buf.writeByte((char) ('Z' - varargs)); // mark end of arg list
@@ -432,6 +481,21 @@ public class TypeFunction extends TypeNext implements Cloneable {
 
 	public MATCH callMatch(Expression ethis, Expressions args, SemanticContext context) {
 		MATCH match = MATCHexact; // assume exact match
+		
+		if (context.isD2()) {
+			if (ethis != null) {
+				Type t = ethis.type;
+				if (t.toBasetype(context).ty == Tpointer)
+					t = t.toBasetype(context).nextOf(); // change struct* to
+														// struct
+				if (t.mod != mod) {
+					if (mod == MODconst)
+						match = MATCHconst;
+					else
+						return MATCHnomatch;
+				}
+			}
+		}
 
 		int nparams = Argument.dim(parameters, context);
 		int nargs = null != args ? args.size() : 0;
@@ -446,91 +510,54 @@ public class TypeFunction extends TypeNext implements Cloneable {
 		}
 
 		for (int u = 0; u < nparams; u++) {
-			MATCH m;
+			MATCH m = MATCHnomatch;
 			Expression arg;
 
 			// BUG: what about out and ref?
 
 			Argument p = Argument.getNth(parameters, u, context);
 			Assert.isTrue(null != p);
+			
+			boolean gotoL1 = false;
+			
 			if (u >= nargs) {
 				if (null != p.defaultArg) {
 					continue;
 				}
 				if (varargs == 2 && u + 1 == nparams) {
 					// goto L1;
-					// PERHAPS this was copied & pasted, so i'm not 100% the
-					// logic here is right
-					if (varargs == 2 && u + 1 == nparams) // if last varargs
-															// param
-					{
-						Type tb = p.type.toBasetype(context);
-						TypeSArray tsa;
-						integer_t sz;
-
-						switch (tb.ty) {
-						case Tsarray:
-							tsa = (TypeSArray) tb;
-							sz = tsa.dim.toInteger(context);
-							if (!sz.equals(nargs - u)) {
-								return MATCHnomatch; // goto Nomatch;
-							}
-						case Tarray:
-							for (; u < nargs; u++) {
-								arg = args.get(u);
-								assert (null != arg);
-								/*
-								 * If lazy array of delegates, convert arg(s) to
-								 * delegate(s)
-								 */
-								Type tret = p.isLazyArray(context);
-								if (null != tret) {
-									if (tb.nextOf().equals(arg.type)) {
-										m = MATCHexact;
-									} else {
-										m = arg.implicitConvTo(tret, context);
-										if (m == MATCHnomatch) {
-											if (tret.toBasetype(context).ty == Tvoid) {
-												m = MATCHconvert;
-											}
-										}
-									}
-								} else {
-									m = arg.implicitConvTo(tb.nextOf(), context);
-								}
-								if (m == MATCHnomatch) {
-									return MATCHnomatch; // goto Nomatch;
-								}
-								if (m.ordinal() < match.ordinal()) {
-									match = m;
-								}
-							}
-							return match; // goto Ldone;
-
-						case Tclass:
-							// Should see if there's a constructor match?
-							// Or just leave it ambiguous?
-							return match; // goto Ldone;
-
-						default:
-							return MATCHnomatch; // goto Nomatch;
-						}
-					}
-					return MATCHnomatch; // goto Nomatch;
+					gotoL1 = true;
 				} else {
 					return MATCHnomatch; // goto Nomatch; // not enough
 											// arguments
 				}
 			}
-			arg = args.get(u);
-			assert (null != arg);
-			if (0 != (p.storageClass & STClazy) && p.type.ty == Tvoid
-					&& arg.type.ty != Tvoid) {
-				m = MATCHconvert;
-			} else {
-				m = arg.implicitConvTo(p.type, context);
+			
+			if (!gotoL1) {
+				arg = args.get(u);
+				assert (null != arg);
+				
+				if (context.isD1()) {
+					if (0 != (p.storageClass & STClazy) && p.type.ty == Tvoid
+							&& arg.type.ty != Tvoid) {
+						m = MATCHconvert;
+					} else {
+						m = arg.implicitConvTo(p.type, context);
+					}
+				} else {
+					// Non-lvalues do not match ref or out parameters
+					if ((p.storageClass & (STCref | STCout)) != 0 && !arg.isLvalue(context)) {
+						return MATCHnomatch;
+					}
+
+					if ((p.storageClass & STClazy) != 0 && p.type.ty == Tvoid && arg.type.ty != Tvoid)
+						m = MATCHconvert;
+					else
+						m = arg.implicitConvTo(p.type, context);
+				}
 			}
-			if (m == MATCHnomatch) // if no match
+			
+			if (gotoL1 || m == MATCHnomatch) // if no match
 			{
 				// L1:
 				if (varargs == 2 && u + 1 == nparams) // if last varargs
@@ -548,6 +575,7 @@ public class TypeFunction extends TypeNext implements Cloneable {
 							return MATCHnomatch; // goto Nomatch;
 						}
 					case Tarray:
+				    	TypeArray ta = (TypeArray)tb;
 						for (; u < nargs; u++) {
 							arg = args.get(u);
 							assert (null != arg);
@@ -557,7 +585,7 @@ public class TypeFunction extends TypeNext implements Cloneable {
 							 */
 							Type tret = p.isLazyArray(context);
 							if (null != tret) {
-								if (tb.nextOf().equals(arg.type)) {
+								if (ta.next.equals(arg.type)) {
 									m = MATCHexact;
 								} else {
 									m = arg.implicitConvTo(tret, context);
@@ -568,7 +596,7 @@ public class TypeFunction extends TypeNext implements Cloneable {
 									}
 								}
 							} else {
-								m = arg.implicitConvTo(tb.nextOf(), context);
+								m = arg.implicitConvTo(ta.next, context);
 							}
 							if (m == MATCHnomatch) {
 								return MATCHnomatch; // goto Nomatch;
@@ -607,9 +635,27 @@ public class TypeFunction extends TypeNext implements Cloneable {
 			return;
 		}
 		inuse++;
-		if (next != null
-				&& (null == ident || equals(ident.toHChars2(), ident.toChars()
-						.toCharArray()))) {
+		
+		if (context.isD2()) {
+			/*
+			 * Use 'storage class' style for attributes
+			 */
+			if ((mod & MODconst) != 0)
+				buf.writestring("const ");
+			if ((mod & MODinvariant) != 0)
+				buf.writestring("immutable ");
+			if ((mod & MODshared) != 0)
+				buf.writestring("shared ");
+
+			if (ispure)
+				buf.writestring("pure ");
+			if (isnothrow)
+				buf.writestring("nothrow ");
+			if (isref)
+				buf.writestring("ref ");
+		}
+		
+		if (next != null && (null == ident || equals(ident.toHChars2(), ident.toChars().toCharArray()))) {
 			next.toCBuffer2(buf, hgs, 0, context);
 		}
 		if (hgs.ddoc != 1) {
@@ -645,12 +691,12 @@ public class TypeFunction extends TypeNext implements Cloneable {
 		if (!hgs.hdrgen && p != null) {
 			buf.writestring(p);
 		}
-		
+
 		if (ident != null) {
 			buf.writeByte(' ');
 			buf.writestring(ident.toHChars2());
 		}
-		
+
 		Argument.argsToCBuffer(buf, hgs, parameters, varargs, context);
 		inuse--;
 	}
@@ -702,6 +748,27 @@ public class TypeFunction extends TypeNext implements Cloneable {
 		}
 		buf.writestring(" function");
 		Argument.argsToCBuffer(buf, hgs, parameters, varargs, context);
+		
+		if (context.isD2()) {
+			/*
+			 * Use postfix style for attributes
+			 */
+			if (mod != this.mod) {
+				if ((mod & MODconst) != 0)
+					buf.writestring(" const");
+				if ((mod & MODinvariant) != 0)
+					buf.writestring(" invariant");
+				if ((mod & MODshared) != 0)
+					buf.writestring(" shared");
+			}
+			if (ispure)
+				buf.writestring(" pure");
+			if (isnothrow)
+				buf.writestring(" nothrow");
+			if (isref)
+				buf.writestring(" ref");
+		}
+		
 		inuse--;
 	}
 	
