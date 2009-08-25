@@ -10,19 +10,18 @@
  *******************************************************************************/
 package melnorme.miscutil;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 
 /**
  * Miscellaneous file utilities. 
  */
 public final class FileUtil extends StreamUtil {
 	
-
 	/** Read all bytes of the given file. */
 	public static byte[] readBytesFromFile(File file) throws IOException, FileNotFoundException {
 		long fileLength = file.length();
@@ -40,15 +39,28 @@ public final class FileUtil extends StreamUtil {
 	
 	
 	/** Write the given array of bytes to given file */
-	public static void writeBytesToFile(byte[] bytes, File file) throws FileNotFoundException,
-			IOException {
+	public static void writeBytesToFile(byte[] bytes, File file) throws IOException,
+			FileNotFoundException {
 		FileOutputStream fileOS = new FileOutputStream(file);
-		BufferedOutputStream fileBOS = new BufferedOutputStream(fileOS);
-		try {
-			fileBOS.write(bytes);
-		} finally {
-			fileBOS.close();
-		}
+		writeBytesToStream(bytes, fileOS);
+	}	
+	
+	/** Writes given chars array to given writer. 
+	 * Close writer afterwards. */
+	public static void writeCharsToFile(char[] chars, File file, String charsetName) 
+			throws IOException, FileNotFoundException {
+		FileOutputStream fileOS = new FileOutputStream(file);
+		OutputStreamWriter osWriter = new OutputStreamWriter(fileOS, charsetName);
+		writeCharsToWriter(chars, osWriter);
+	}
+	
+	/** Writes given string to given writer. 
+	 * Close writer afterwards. */
+	public static void writeStringToFile(String string, File file, String charsetName) 
+			throws IOException, FileNotFoundException {
+		FileOutputStream fileOS = new FileOutputStream(file);
+		OutputStreamWriter osWriter = new OutputStreamWriter(fileOS, charsetName);
+		writeStringToWriter(string, osWriter);
 	}
 	
 }

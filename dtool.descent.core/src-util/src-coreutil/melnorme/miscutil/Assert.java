@@ -36,9 +36,6 @@ public abstract class Assert {
 	private static class AssertionFailedException extends RuntimeException {
     	// Note: it is quite useful to place a class creation breakpoint in this class.
 
-        public AssertionFailedException() { 
-        }
-
         public AssertionFailedException(String message) {
             super(message);
         }
@@ -144,12 +141,12 @@ public abstract class Assert {
 		}
 	}
 	
-	/** Causes an inconditional assertion failure, with message msg. Never returns. */
+	/** Causes an inconditional assertion failure, with given message. Never returns. */
 	public static RuntimeException fail(String message) {
 		Assert.isTrue(false, message);
 		return null;
 	}
-	/** Causes an inconditional assertion failure, with message msg. Never returns. */
+	/** Causes an inconditional assertion failure, with given message. Never returns. */
 	public static RuntimeException assertFail(String message) {
 		Assert.isTrue(false, message);
 		return null;

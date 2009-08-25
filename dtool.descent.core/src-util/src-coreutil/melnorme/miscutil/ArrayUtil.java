@@ -225,7 +225,7 @@ public class ArrayUtil {
 	public static<T> T[] remove(T[] array, T obj) {
 		for (int i = 0; i < array.length; i++) {
 			T elem = array[i];
-			if(elem.equals(obj));
+			if(elem.equals(obj))
 				return removeAt(array, i);
 		}
 		return array;
@@ -240,7 +240,6 @@ public class ArrayUtil {
 		return newArray;
 	}
 	
-
 	
 	/** Return the index of the first occurrence of elem in array, or -1 if no occurrences. */
 	public static <T> int indexOf(T[] array, T elem) {
@@ -260,7 +259,8 @@ public class ArrayUtil {
 		return false;
 	}
 	
-	/** Return the index of the first occurrence of elem in array, or -1 if no occurrences. */
+	/** Returns the index in given array of the first occurrence of given elem, 
+	 * or -1 if none is found. */
 	public static int indexOf(byte[] array, byte elem) {
 		for (int i = 0; i < array.length; i++) {
 			if(array[i] == elem)
@@ -268,12 +268,17 @@ public class ArrayUtil {
 		}
 		return -1;
 	}
-
 	
-	/** Finds the index in the given array of the element that equal given elem. */
-	public static <T> int getIndexOfEquals(T[] arr, T elem) {
-		for (int i = 0; i < arr.length; i++) {
-			if(arr[i].equals(elem));
+	@Deprecated
+	public static <T> int getIndexOfEquals(T[] array, T elem) {
+		return indexOfUsingEquals(array, elem);
+	}
+	
+	/** Returns the index in given array of the first element that equals given elem, 
+	 * or -1 if none is found. */
+	public static <T> int indexOfUsingEquals(T[] array, T elem) {
+		for (int i = 0; i < array.length; i++) {
+			if(array[i].equals(elem))
 				return i;
 		}
 		return -1;
@@ -303,6 +308,5 @@ public class ArrayUtil {
 		}
 		return newIx == arrayIx ? newArray : ArrayUtil.copyOfRange(newArray, 0, newIx);
 	}
-
-
+	
 }

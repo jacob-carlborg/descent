@@ -14,7 +14,6 @@ import static melnorme.miscutil.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,13 +41,8 @@ public class MiscUtil
 		procBuilder.directory(new File(directory));
 	
 		Process process = procBuilder.start();
-		InputStream inputStream = process.getInputStream();
-		int ch;
-		while ((ch = inputStream.read()) != -1) {
-			//read proccess's stdout and stderr
-			if(false)
-				System.out.print((char)ch);
-		}
+		// read proccess's stdout and stderr, so it doesn't get stuck in I/O
+		StreamUtil.readAllBytesFromStream(process.getInputStream());
 		
 		try {
 			return process.waitFor();

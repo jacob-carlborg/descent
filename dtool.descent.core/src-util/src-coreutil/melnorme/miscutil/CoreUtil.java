@@ -48,7 +48,7 @@ public class CoreUtil /* extends Assert */ {
 		return null;
 	}
 	
-	/** shortcut for creating an array of T. */
+	/** Shortcut for creating an array of T. */
 	public static <T> T[] array(T... elems) {
 		return elems;
 	}
@@ -82,8 +82,8 @@ public class CoreUtil /* extends Assert */ {
 	 * Uses the Deprecated annotation solely to cause a warning.
 	 * Causes an assertion failure. */ 
 	@Deprecated
-	public static void assertTODO() {
-		Assert.fail("TODO");
+	public static RuntimeException assertTODO() {
+		return Assert.fail("TODO");
 	}
 	
 	/** Marker method for signaling a feature that is not yet implemented. 

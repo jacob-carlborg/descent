@@ -62,7 +62,7 @@ public final class FileUtil_Test {
 		assertTrue(bytes.length == 1000);
 		
 		
-		URL tempFileURL = tempFile.toURL();
+		URL tempFileURL = tempFile.toURI().toURL();
 		
 		bytes = FileUtil.readAvailableBytesFromStream(tempFileURL.openStream());
 		assertTrue(bytes.length == FILE_LENGTH);
