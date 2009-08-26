@@ -39,12 +39,7 @@ public class TypeReturn extends TypeQualified {
 			return terror;
 		}
 		t = sc.func.type.nextOf();
-
-		if ((mod & MODinvariant) != 0) {
-			t = t.invariantOf(context);
-		} else if ((mod & MODconst) != 0) {
-			t = t.constOf(context);
-		}
+		t = t.addMod(mod, context);
 
 		if (idents != null && idents.size() != 0) {
 			Dsymbol s = t.toDsymbol(sc, context);

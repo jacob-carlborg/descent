@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.MATCH.MATCHconst;
 import static descent.internal.compiler.parser.MATCH.MATCHconvert;
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
@@ -35,6 +36,15 @@ public class TypeEnum extends Type {
 		}
 		return sym.memtype.alignsize(context);
 	}
+	
+	@Override
+	public MATCH constConv(Type to) {
+		if (equals(to))
+			return MATCHexact;
+		if (ty == to.ty && sym == ((TypeEnum) to).sym && to.mod == MODconst)
+			return MATCHconst;
+		return MATCHnomatch;
+	}
 
 	@Override
 	public MATCH deduceType(Scope sc, Type tparam,
@@ -56,6 +66,12 @@ public class TypeEnum extends Type {
 		// Initialize to first member of enum
 		Expression e;
 		if (context.isD2()) {
+			if (null == sym.defaultval) {
+				if (context.acceptsErrors()) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForwardReferenceOfSymbol, this, toChars(context) + ".init"));
+				}
+				return new ErrorExp();
+			}
 			e = (Expression) sym.defaultval;
 		} else {
 			e = new IntegerExp(filename, lineNumber, (integer_t) sym.defaultval, this);
@@ -70,15 +86,19 @@ public class TypeEnum extends Type {
 		Dsymbol s;
 		Expression em;
 		
-	    if (null == sym.symtab) {
-	    	// goto Lfwd;
-	    	if (context.acceptsErrors()) {
-	    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForwardReferenceOfEnumSymbolDotSymbol, e, ident, new String[] { toChars(context), ident.toChars() }));
-	    	}
-	        return new IntegerExp(null, 0, 0, Type.terror);
-	    }
+		if (context.isD1()) {
+		    if (null == sym.symtab) {
+		    	// goto Lfwd;
+		    	if (context.acceptsErrors()) {
+		    		context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForwardReferenceOfEnumSymbolDotSymbol, e, ident, new String[] { toChars(context), ident.toChars() }));
+		    	}
+		        return new IntegerExp(null, 0, 0, Type.terror);
+		    }
 
-		s = sym.symtab.lookup(ident);
+		    s = sym.symtab.lookup(ident);
+		} else {
+		    s = sym.search(e.filename, e.lineNumber, ident, 0, context);
+		}
 		
 		// Descent: for binding resolution
 		ident.setResolvedSymbol(s, context);
@@ -109,21 +129,39 @@ public class TypeEnum extends Type {
 		Expression e;
 
 		if (equals(ident, Id.max)) {
-			if (null == sym.symtab) {
-				// goto Lfwd;
-				return getProperty_Lfwd(ident, context);
+			if (context.isD1()) {
+				if (null == sym.symtab) {
+					// goto Lfwd;
+					return getProperty_Lfwd(ident, context);
+				}
+				e = new IntegerExp(null, 0, (integer_t) sym.maxval, this);
+			} else {
+				if (null == sym.maxval) {
+				    // goto Lfwd;
+					return getProperty_Lfwd(ident, context);
+				}
+				e = (Expression) sym.maxval;
 			}
-			e = new IntegerExp(null, 0, (integer_t) sym.maxval, this);
 		} else if (equals(ident, Id.min)) {
-			if (null == sym.symtab) {
-				// goto Lfwd;
-				return getProperty_Lfwd(ident, context);
+			if (context.isD1()) {
+				if (null == sym.symtab) {
+					// goto Lfwd;
+					return getProperty_Lfwd(ident, context);
+				}
+				e = new IntegerExp(null, 0, (integer_t) sym.minval, this);
+			} else {
+				if (null == sym.minval) {
+				    // goto Lfwd;
+					return getProperty_Lfwd(ident, context);
+				}
+				e = (Expression) sym.minval;
 			}
-			e = new IntegerExp(null, 0, (integer_t) sym.minval, this);
 		} else if (equals(ident, Id.init)) {
-			if (null == sym.symtab) {
-				// goto Lfwd;
-				return getProperty_Lfwd(ident, context);
+			if (context.isD1()) {
+				if (null == sym.symtab) {
+					// goto Lfwd;
+					return getProperty_Lfwd(ident, context);
+				}
 			}
 			e = defaultInit(filename, lineNumber, context);
 		}
@@ -133,11 +171,15 @@ public class TypeEnum extends Type {
 			Scope sc = new Scope();
 			e = e.semantic(sc, context);
 		} else {
-			if (null == sym.memtype) {
-				// goto Lfwd;
-				return getProperty_Lfwd(ident, context);
+			if (context.isD1()) {
+				if (null == sym.memtype) {
+					// goto Lfwd;
+					return getProperty_Lfwd(ident, context);
+				}
+				e = sym.memtype.getProperty(filename, lineNumber, ident, start, length, context);
+			} else {
+				e = toBasetype(context).getProperty(filename, lineNumber, ident, start, length, context);
 			}
-			e = sym.memtype.getProperty(filename, lineNumber, ident, start, length, context);
 		}
 		return e;
 	}
@@ -149,7 +191,11 @@ public class TypeEnum extends Type {
 					new String[] { toChars(context),
 							new String(ident) }));
 		}
-		return new IntegerExp(null, 0, 0, this);
+		if (context.isD1()) {
+			return new IntegerExp(null, 0, 0, this);
+		} else {
+			return new ErrorExp();
+		}
 	}
 
 	@Override
@@ -166,12 +212,21 @@ public class TypeEnum extends Type {
 	public MATCH implicitConvTo(Type to, SemanticContext context) {
 		MATCH m;
 
-		if (this.equals(to)) {
-			m = MATCHexact; // exact match
-		} else if (sym.memtype.implicitConvTo(to, context) != MATCHnomatch) {
-			m = MATCHconvert; // match with conversions
+		if (context.isD1()) {
+			if (this.equals(to)) {
+				m = MATCHexact; // exact match
+			} else if (sym.memtype.implicitConvTo(to, context) != MATCHnomatch) {
+				m = MATCHconvert; // match with conversions
+			} else {
+				m = MATCHnomatch; // no match
+			}
 		} else {
-			m = MATCHnomatch; // no match
+			if (ty == to.ty && sym == ((TypeEnum) to).sym)
+				m = (mod == to.mod) ? MATCHexact : MATCHconst;
+			else if (MATCHnomatch != sym.memtype.implicitConvTo(to, context))
+				m = MATCHconvert; // match with conversions
+			else
+				m = MATCHnomatch; // no match
 		}
 		return m;
 	}
@@ -199,6 +254,12 @@ public class TypeEnum extends Type {
 	@Override
 	public boolean isZeroInit(char[] filename, int lineNumber, SemanticContext context) {
 		if (context.isD2()) {
+			if (null == sym.defaultval) {
+				if (context.acceptsErrors()) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.EnumIsForwardReference, this, sym.toChars(context)));
+				}
+				return false;
+			}
 			return (((Expression)sym.defaultval)).equals(new IntegerExp(0), context);
 		} else {
 			return (sym.defaultval.equals(0));
@@ -230,7 +291,11 @@ public class TypeEnum extends Type {
 				context.acceptProblem(Problem.newSemanticTypeErrorLoc(
 						IProblem.EnumIsForwardReference, sym));
 			}
-			return terror;
+			if (context.isD1()) {
+				return terror;
+			} else {
+				return tint32;
+			}
 		}
 		return sym.memtype.toBasetype(context);
 	}
@@ -246,13 +311,16 @@ public class TypeEnum extends Type {
 
 	@Override
 	public String toChars(SemanticContext context) {
+		if (mod != 0) {
+			return super.toChars(context);
+		}
 		return sym.toChars(context);
 	}
 
 	@Override
 	public void toDecoBuffer(OutBuffer buf, int flag, SemanticContext context) {
 		String name = sym.mangle(context);
-		super.toDecoBuffer(buf, flag, context);
+		Type_toDecoBuffer(buf, flag, context);
 		buf.writestring(ty.mangleChar);
 		buf.writestring(name);
 	}

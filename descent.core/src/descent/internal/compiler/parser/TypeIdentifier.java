@@ -82,6 +82,10 @@ public class TypeIdentifier extends TypeQualified {
 				pt[0].alias = s;
 			}
 		}
+		
+		if (pt != null && pt[0] != null) {
+			pt[0] = pt[0].addMod(mod, context);
+		}
 	}
 
 	@Override
@@ -103,6 +107,7 @@ public class TypeIdentifier extends TypeQualified {
 					}
 				}
 			}
+			t[0] = t[0].addMod(mod, context);
 		} else {
 			if (s[0] != null) {
 				if (context.acceptsErrors()) {
@@ -152,11 +157,10 @@ public class TypeIdentifier extends TypeQualified {
 
 	@Override
 	public void toDecoBuffer(OutBuffer buf, int flag, SemanticContext context) {
-		super.toDecoBuffer(buf, flag, context);
+		Type_toDecoBuffer(buf, flag, context);
 		
 		String name = ident.toChars();
 		int len = name.length();
-		buf.writestring(ty.mangleChar);
 		buf.writestring(len);
 		buf.writestring(name);
 	}

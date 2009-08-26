@@ -207,7 +207,11 @@ public class TypeTypedef extends Type {
 
 	@Override
 	public String toChars(SemanticContext context) {
-		return sym.toChars(context);
+		if (context.isD1()) {
+			return sym.toChars(context);
+		} else {
+			return super.toChars(context);
+		}
 	}
 
 	@Override

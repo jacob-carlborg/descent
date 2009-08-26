@@ -269,6 +269,10 @@ public class TypeInstance extends TypeQualified {
 			s.semantic(sc, context);
 		}
 		resolveHelper(filename, lineNumber, sc, s, null, pe, pt, ps, context);
+		
+		if (pt != null && pt[0] != null) {
+			pt[0] = pt[0].addMod(mod, context);
+		}
 	}
 
 	@Override
@@ -309,6 +313,7 @@ public class TypeInstance extends TypeQualified {
 
 		t = new TypeInstance(filename, lineNumber, (TemplateInstance) tempinst.syntaxCopy(null, context));
 		t.syntaxCopyHelper(this, context);
+		t.mod = mod;
 		t.copySourceRange(this);
 		return t;
 	}

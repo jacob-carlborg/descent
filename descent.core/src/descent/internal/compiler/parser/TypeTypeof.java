@@ -103,6 +103,7 @@ public class TypeTypeof extends TypeQualified {
 	public Type syntaxCopy(SemanticContext context) {
 		TypeTypeof t = new TypeTypeof(filename, lineNumber, exp.syntaxCopy(context), encoder);
 		t.syntaxCopyHelper(this, context);
+		t.mod = mod;
 		t.copySourceRange(this);
 		return t;
 	}
