@@ -519,7 +519,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 			SemanticContext context) {
 		// See if this expression is a modifiable lvalue (i.e. not const)
 		if (context.isD2()) {
-			if (type != null && (!type.isMutable() || !type.isAssignable())) {
+			if (type != null && (!type.isMutable() || !type.isAssignable(context))) {
 				if (context.acceptsErrors()) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolIsNotMutable, e, e.toChars(context)));
 				}

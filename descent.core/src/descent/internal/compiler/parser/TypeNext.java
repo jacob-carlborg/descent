@@ -21,10 +21,10 @@ public abstract class TypeNext extends Type {
 	}
 	
 	@Override
-	public MATCH constConv(Type to) {
-		MATCH m = super.constConv(to);
+	public MATCH constConv(Type to, SemanticContext context) {
+		MATCH m = super.constConv(to, context);
 
-		if (m == MATCHconst && next.constConv(((TypeNext) to).next) == MATCHnomatch)
+		if (m == MATCHconst && next.constConv(((TypeNext) to).next, context) == MATCHnomatch)
 			m = MATCHnomatch;
 		return m;
 	}

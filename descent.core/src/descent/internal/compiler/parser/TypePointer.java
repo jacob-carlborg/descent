@@ -87,7 +87,7 @@ public class TypePointer extends TypeNext {
 					return MATCHconvert;
 				}
 
-				MATCH m = next.constConv(tp.next);
+				MATCH m = next.constConv(tp.next, context);
 				if (m != MATCHnomatch) {
 					if (m == MATCHexact && mod != to.mod)
 						m = MATCHconst;

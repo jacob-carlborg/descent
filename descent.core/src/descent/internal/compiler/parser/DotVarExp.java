@@ -102,7 +102,7 @@ public class DotVarExp extends UnaExp {
 			if (!t1.isMutable() ||
 			    (t1.ty == TY.Tpointer && !t1.nextOf().isMutable()) ||
 			    !var.type.isMutable() ||
-			    !var.type.isAssignable() ||
+			    !var.type.isAssignable(context) ||
 			    (var.storage_class & STC.STCmanifest) != 0
 			   ) {
 				if (context.acceptsErrors()) {

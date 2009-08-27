@@ -1,12 +1,20 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.STC.STCalias;
+import static descent.internal.compiler.parser.STC.STCauto;
+import static descent.internal.compiler.parser.STC.STCconst;
+import static descent.internal.compiler.parser.STC.STCimmutable;
 import static descent.internal.compiler.parser.STC.STCin;
 import static descent.internal.compiler.parser.STC.STClazy;
 import static descent.internal.compiler.parser.STC.STCout;
 import static descent.internal.compiler.parser.STC.STCref;
+import static descent.internal.compiler.parser.STC.STCscope;
+import static descent.internal.compiler.parser.STC.STCshared;
+import static descent.internal.compiler.parser.STC.STCstatic;
 import static descent.internal.compiler.parser.TY.Tarray;
 import static descent.internal.compiler.parser.TY.Tdelegate;
 import static descent.internal.compiler.parser.TY.Tsarray;
+import static descent.internal.compiler.parser.Type.MODshared;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -29,14 +37,34 @@ public class Argument extends ASTDmdNode implements Cloneable {
 				if ((arg.storageClass & STCout) != 0) {
 					buf.writestring("out ");
 				} else if ((arg.storageClass & STCref) != 0) {
-					buf
-							.writestring((context.global.params.Dversion == 1) ? "inout "
-									: "ref ");
+					buf.writestring((context.global.params.Dversion == 1) ? "inout " : "ref ");
+				} else if (context.isD2() && (arg.storageClass & STCin) != 0) {
+					buf.writestring("in ");
 				} else if ((arg.storageClass & STClazy) != 0) {
 					buf.writestring("lazy ");
+				} else if (context.isD2() && (arg.storageClass & STCalias) != 0) {
+					buf.writestring("alias ");
+				} else if (context.isD2() && (arg.storageClass & STCauto) != 0) {
+					buf.writestring("auto ");
 				}
+				
+				if (context.isD2()) {
+					int stc = arg.storageClass;
+					if (arg.type != null && (arg.type.mod & MODshared) != 0) {
+						stc &= ~STCshared;
+					}
+
+					StorageClassDeclaration.stcToCBuffer(buf, (stc & (STCconst | STCimmutable | STCshared | STCscope)), context);
+				}
+				
 				argbuf.reset();
-				arg.type.toCBuffer(argbuf, arg.ident, hgs, context);
+				
+				if (context.isD2() && (arg.storageClass & STCalias) != 0) {
+					if (arg.ident != null)
+						argbuf.writestring(arg.ident.toChars());
+				} else {
+					arg.type.toCBuffer(argbuf, arg.ident, hgs, context);
+				}
 				if (arg.defaultArg != null) {
 					argbuf.writestring(" = ");
 					arg.defaultArg.toCBuffer(argbuf, hgs, context);
@@ -67,35 +95,38 @@ public class Argument extends ASTDmdNode implements Cloneable {
 
 	public static String argsTypesToChars(Arguments args, int varargs,
 			SemanticContext context) {
-		OutBuffer buf;
-
-		buf = new OutBuffer();
-
-		buf.writeByte('(');
-		if (args != null) {
-			int i;
-			OutBuffer argbuf = new OutBuffer();
-			HdrGenState hgs = new HdrGenState();
-
-			for (i = 0; i < args.size(); i++) {
-				Argument arg;
-
-				if (i != 0) {
-					buf.writeByte(',');
+		OutBuffer buf = new OutBuffer();
+		
+		if (context.isD1()) {
+		    HdrGenState hgs = new HdrGenState();
+		    argsToCBuffer(buf, hgs, args, varargs, context);
+		} else {
+			buf.writeByte('(');
+			if (args != null) {
+				int i;
+				OutBuffer argbuf = new OutBuffer();
+				HdrGenState hgs = new HdrGenState();
+	
+				for (i = 0; i < args.size(); i++) {
+					Argument arg;
+	
+					if (i != 0) {
+						buf.writeByte(',');
+					}
+					arg = args.get(i);
+					argbuf.reset();
+					arg.type.toCBuffer2(argbuf, hgs, 0, context);
+					buf.write(argbuf);
 				}
-				arg = args.get(i);
-				argbuf.reset();
-				arg.type.toCBuffer2(argbuf, hgs, 0, context);
-				buf.write(argbuf);
-			}
-			if (varargs != 0) {
-				if (i != 0 && varargs == 1) {
-					buf.writeByte(',');
+				if (varargs != 0) {
+					if (i != 0 && varargs == 1) {
+						buf.writeByte(',');
+					}
+					buf.writestring("...");
 				}
-				buf.writestring("...");
 			}
+			buf.writeByte(')');
 		}
-		buf.writeByte(')');
 
 		return buf.toChars();
 	}
@@ -227,6 +258,23 @@ public class Argument extends ASTDmdNode implements Cloneable {
 		}
 		return null;
 	}
+	
+	/****************************************
+	 * Determine if parameter list is really a template parameter list
+	 * (i.e. it has auto or alias parameters)
+	 */
+	public boolean isTPL(Arguments arguments, SemanticContext context) {
+		if (arguments != null) {
+			int dim = Argument.dim(arguments, context);
+			for (int i = 0; i < dim; i++) {
+				Argument arg = Argument.getNth(arguments, i, context);
+				if ((arg.storageClass & (STCalias | STCauto | STCstatic)) != 0) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
 	public Argument syntaxCopy(SemanticContext context) {
 		Argument a = new Argument(storageClass, type != null ? type
@@ -236,6 +284,11 @@ public class Argument extends ASTDmdNode implements Cloneable {
 	}
 
 	public void toDecoBuffer(OutBuffer buf, SemanticContext context) {
+		if (context.isD2()) {
+		    if ((storageClass & STCscope) != 0)
+		    	buf.writeByte('M');
+		}
+		
 		switch (storageClass & (STCin | STCout | STCref | STClazy)) {
 		case 0:
 		case STCin:

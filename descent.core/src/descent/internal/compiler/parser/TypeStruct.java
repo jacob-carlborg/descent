@@ -1,7 +1,10 @@
 package descent.internal.compiler.parser;
 
 import static descent.internal.compiler.parser.DYNCAST.DYNCAST_IDENTIFIER;
+import static descent.internal.compiler.parser.MATCH.MATCHconst;
+import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+import static descent.internal.compiler.parser.STC.STCref;
 import static descent.internal.compiler.parser.TOK.TOKdotexp;
 import static descent.internal.compiler.parser.TOK.TOKimport;
 import static descent.internal.compiler.parser.TOK.TOKtype;
@@ -42,6 +45,15 @@ public class TypeStruct extends Type {
 	@Override
 	public boolean checkBoolean(SemanticContext context) {
 		return false;
+	}
+	
+	@Override
+	public MATCH constConv(Type to, SemanticContext context) {
+		if (equals(to))
+			return MATCHexact;
+		if (ty == to.ty && sym == ((TypeStruct) to).sym && to.mod == MODconst)
+			return MATCHconst;
+		return MATCHnomatch;
 	}
 
 	@Override
@@ -122,7 +134,11 @@ public class TypeStruct extends Type {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.StructIsForwardReferenced, this, new String[] { sym.toChars(context) }));
 			}
-			return new IntegerExp(e.filename, e.lineNumber,  0, Type.tint32);
+			if (context.isD1()) {
+				return new IntegerExp(e.filename, e.lineNumber,  0, Type.tint32);
+			} else {
+				return new ErrorExp();
+			}
 		}
 
 		if (equals(ident, Id.tupleof)) {
@@ -150,10 +166,12 @@ public class TypeStruct extends Type {
 			DotExp de_ = (DotExp) e;
 
 			if (de_.e1.op == TOKimport) {
-				ScopeExp se = (ScopeExp) de_.e1;
-
-				s = se.sds.search(e.filename, e.lineNumber,  ident, 0, context);
-				e = de_.e1;
+			    throw new IllegalStateException();	// cannot find a case where this happens; leave assert in until we do
+				
+//				ScopeExp se = (ScopeExp) de_.e1;
+//
+//				s = se.sds.search(e.filename, e.lineNumber,  ident, 0, context);
+//				e = de_.e1;
 				//goto L1;
 			} else {
 				s = sym.search(e.filename, e.lineNumber,  ident, 0, context);
@@ -175,6 +193,36 @@ public class TypeStruct extends Type {
 		while(continueInL1) {
 			continueInL1 = false;
 			if (null == s) {
+				if (context.isD2()) {
+					if (!equals(ident, Id.__sizeof) && !equals(ident, Id.alignof) && !equals(ident, Id.init) && !equals(ident, Id.mangleof)
+							&& !equals(ident, Id.stringof) && !equals(ident, Id.offsetof)) {
+						/*
+						 * See if we should forward to the alias this.
+						 */
+						if (sym.aliasthis != null) { /*
+													 * Rewrite e.ident as:
+													 * e.aliasthis.ident
+													 */
+							e = new DotIdExp(e.filename, e.lineNumber, e, sym.aliasthis.ident);
+							e = new DotIdExp(e.filename, e.lineNumber, e, ident);
+							return e.semantic(sc, context);
+						}
+
+						/*
+						 * Look for overloaded opDot() to see if we should
+						 * forward request to it.
+						 */
+						Dsymbol fd = search_function(sym, Id.opDot, context);
+						if (fd != null) { 
+							/*
+							 * Rewrite e.ident as: e.opId().ident
+							 */
+							e = build_overload(e.filename, e.lineNumber, sc, e, null, fd.ident, context);
+							e = new DotIdExp(e.filename, e.lineNumber, e, ident);
+							return e.semantic(sc, context);
+						}
+					}
+				}
 				return super.dotExp(sc, e, ident, context);
 			}
 	
@@ -184,13 +232,24 @@ public class TypeStruct extends Type {
 			s = s.toAlias(context);
 	
 			v = s.isVarDeclaration();
-			if (null != v && v.isConst() && v.type.toBasetype(context).ty != Tsarray) {
-				ExpInitializer ei = v.getExpInitializer(context);
-	
-				if (null != ei) {
-					e = ei.exp.copy(); // need to copy it if it's a StringExp
-					e = e.semantic(sc, context);
-					return e;
+			
+			if (context.isD1()) {
+				if (null != v && v.isConst() && v.type.toBasetype(context).ty != Tsarray) {
+					ExpInitializer ei = v.getExpInitializer(context);
+					if (null != ei) {
+						e = ei.exp.copy(); // need to copy it if it's a StringExp
+						e = e.semantic(sc, context);
+						return e;
+					}
+				}
+			} else {
+				if (v != null && !v.isDataseg(context)) {
+					Expression ei = v.getConstInitializer(context);
+					if (null != ei) {
+						e = ei.copy(); // need to copy it if it's a StringExp
+						e = e.semantic(sc, context);
+						return e;
+					}
 				}
 			}
 	
@@ -207,9 +266,7 @@ public class TypeStruct extends Type {
 	
 			TemplateMixin tm = s.isTemplateMixin();
 			if (null != tm) {
-				Expression de_;
-	
-				de_ = new DotExp(e.filename, e.lineNumber,  e, new ScopeExp(e.filename, e.lineNumber,  tm));
+				Expression de_ = new DotExp(e.filename, e.lineNumber,  e, new ScopeExp(e.filename, e.lineNumber,  tm));
 				de_.type = e.type;
 				return de_;
 			}
@@ -245,9 +302,33 @@ public class TypeStruct extends Type {
 		
 	    Import timp = s.isImport();
 		if (timp != null) {
-			e = new DsymbolExp(e.filename, e.lineNumber,  s);
+			e = new DsymbolExp(e.filename, e.lineNumber, s);
 			e = e.semantic(sc, context);
 			return e;
+		}
+		
+		if (context.isD2()) {
+			OverloadSet o = s.isOverloadSet();
+			if (o != null) {
+				/* We really should allow this, triggered by:
+				 *   template c()
+				 *   {
+				 *	void a();
+				 *	void b () { this.a(); }
+				 *   }
+				 *   struct S
+				 *   {
+				 *	mixin c;
+				 *	mixin c;
+				 *  }
+				 *  alias S e;
+				 */
+				if (context.acceptsErrors()) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.OverloadSetNotAllowedInStructDeclaration, this, e.toChars(context), ident
+							.toChars()));
+				}
+				return new ErrorExp();
+			}
 		}
 
 		d = s.isDeclaration();
@@ -259,15 +340,24 @@ public class TypeStruct extends Type {
 		if (e.op == TOKtype) {
 			FuncDeclaration fd = sc.func;
 
-			if (d.needThis() && null != fd && null != fd.vthis) {
-				e = new DotVarExp(e.filename, e.lineNumber,  new ThisExp(e.filename, e.lineNumber), d);
-				e = e.semantic(sc, context);
-				return e;
+			if (context.isD1()) {
+				if (d.needThis() && null != fd && null != fd.vthis) {
+					e = new DotVarExp(e.filename, e.lineNumber,  new ThisExp(e.filename, e.lineNumber), d);
+					e = e.semantic(sc, context);
+					return e;
+				}
 			}
 			if (null != d.isTupleDeclaration()) {
 				e = new TupleExp(e.filename, e.lineNumber,  d.isTupleDeclaration(), context);
 				e = e.semantic(sc, context);
 				return e;
+			}
+			if (!context.isD1()) {
+				if (d.needThis() && null != fd && null != fd.vthis) {
+					e = new DotVarExp(e.filename, e.lineNumber,  new ThisExp(e.filename, e.lineNumber), d);
+					e = e.semantic(sc, context);
+					return e;
+				}
 			}
 			return new VarExp(e.filename, e.lineNumber,  d);
 		}
@@ -322,14 +412,92 @@ public class TypeStruct extends Type {
 		StructDeclaration s = sym;
 
 		sym.size(context); // give error for forward references
-		if (null != s.members) {
-			for (int i = 0; i < s.members.size(); i++) {
-				Dsymbol sm = s.members.get(i);
-				if (sm.hasPointers(context))
+		if (context.isD1()) {
+			if (null != s.members) {
+				for (int i = 0; i < s.members.size(); i++) {
+					Dsymbol sm = s.members.get(i);
+					if (sm.hasPointers(context))
+						return true;
+				}
+			}
+		} else {
+			for (int i = 0; i < size(s.fields); i++) {
+				Dsymbol sm = (Dsymbol) s.fields.get(i);
+				Declaration d = sm.isDeclaration();
+				if ((d.storage_class & STCref) != 0 || d.hasPointers(context))
 					return true;
 			}
 		}
 		return false;
+	}
+	
+	@Override
+	public boolean isAssignable(SemanticContext context) {
+		if (context.isD1()) {
+			return super.isAssignable(context);
+		} else {
+			/*
+			 * If any of the fields are const or invariant, then one cannot
+			 * assign this struct.
+			 */
+			for (int i = 0; i < size(sym.fields); i++) {
+				VarDeclaration v = (VarDeclaration) sym.fields.get(i);
+				if (v.isConst() || v.isInvariant(context))
+					return false;
+			}
+			return true;
+		}
+	}
+	
+	@Override
+	public MATCH implicitConvTo(Type to, SemanticContext context) {
+		if (context.isD1()) {
+			return super.implicitConvTo(to, context);
+		} else {
+			MATCH m;
+
+			if (ty == to.ty && sym == ((TypeStruct) to).sym) {
+				m = MATCHexact; // exact match
+				if (mod != to.mod) {
+					if (to.mod == MODconst)
+						m = MATCHconst;
+					else {
+						/*
+						 * Check all the fields. If they can all be converted,
+						 * allow the conversion.
+						 */
+						for (int i = 0; i < size(sym.fields); i++) {
+							Dsymbol s = (Dsymbol) sym.fields.get(i);
+							VarDeclaration v = s.isVarDeclaration();
+							// assert(v && v.storage_class & STCfield);
+
+							// 'from' type
+							Type tvf = v.type.addMod(mod, context);
+
+							// 'to' type
+							Type tv = v.type.castMod(to.mod, context);
+
+							// printf("\t%s => %s, match = %d\n",
+							// v.type.toChars(), tv.toChars(),
+							// tvf.implicitConvTo(tv));
+							if (tvf.implicitConvTo(tv, context).ordinal() < MATCHconst.ordinal())
+								return MATCHnomatch;
+						}
+						m = MATCHconst;
+					}
+				}
+			} else if (sym.aliasthis != null) {
+				m = MATCHnomatch;
+				Declaration d = sym.aliasthis.isDeclaration();
+				if (d != null) {
+					// assert(d.type);
+					Type t = d.type.addMod(mod, context);
+					m = t.implicitConvTo(to, context);
+				}
+			} else
+				m = MATCHnomatch; // no match
+			return m;
+		}
 	}
 
 	@Override
@@ -370,6 +538,10 @@ public class TypeStruct extends Type {
 	@Override
 	public String toChars(SemanticContext context) {
 		TemplateInstance ti = sym.parent.isTemplateInstance();
+		if (context.isD2()) {
+		    if (mod != 0)
+		    	return super.toChars(context);
+		}
 		if (ti != null && ti.toAlias(context) == sym) {
 			return ti.toChars(context);
 		}
@@ -379,13 +551,18 @@ public class TypeStruct extends Type {
 	@Override
 	public void toDecoBuffer(OutBuffer buf, int flag, SemanticContext context) {
 		String name = sym.mangle(context);
-		super.toDecoBuffer(buf, flag, context);
-		buf.printf(ty.mangleChar + name);
+		Type_toDecoBuffer(buf, flag, context);
+		buf.printf(name);
 	}
 
 	@Override
 	public Dsymbol toDsymbol(Scope sc, SemanticContext context) {
 		return sym;
+	}
+	
+	@Override
+	public Type toHeadMutable(SemanticContext context) {
+	    return this;
 	}
 	
 	@Override

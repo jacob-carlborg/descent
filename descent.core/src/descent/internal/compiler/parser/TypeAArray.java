@@ -53,15 +53,15 @@ public class TypeAArray extends TypeArray {
 	}
 	
 	@Override
-	public MATCH constConv(Type to) {
+	public MATCH constConv(Type to, SemanticContext context) {
 		if (to.ty == Taarray) {
 			TypeAArray taa = (TypeAArray) to;
-			MATCH mindex = index.constConv(taa.index);
-			MATCH mkey = next.constConv(taa.next);
+			MATCH mindex = index.constConv(taa.index, context);
+			MATCH mkey = next.constConv(taa.next, context);
 			// Pick the worst match
 			return mkey.ordinal() < mindex.ordinal() ? mkey : mindex;
 		} else {
-			return super.constConv(to);
+			return super.constConv(to, context);
 		}
 	}
 
@@ -169,8 +169,8 @@ public class TypeAArray extends TypeArray {
 				if (!(index.mod == ta.index.mod || ta.index.mod == MODconst))
 					return MATCHnomatch; // not const-compatible
 
-				MATCH m = next.constConv(ta.next);
-				MATCH mi = index.constConv(ta.index);
+				MATCH m = next.constConv(ta.next, context);
+				MATCH mi = index.constConv(ta.index, context);
 				if (m != MATCHnomatch && mi != MATCHnomatch) {
 					if (m == MATCHexact && mod != to.mod)
 						m = MATCHconst;

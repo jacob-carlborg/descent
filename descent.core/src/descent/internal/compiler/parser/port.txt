@@ -14,9 +14,7 @@ func.c  --> missing StaticCtorDeclaration::StaticCtorDeclaration
             
 Remaining from DMD 2.030 vs. 1.045
 ------------------------------
- * mtype.c (up to but excluding TypeTypedef::toHeadMutable)
  * mtype.c: missing TypeQualified::resolveHelper
- * mtype.h
  * Parser::parseBaseClasses what's the difference?
             
 Remaining from DMD 2.013

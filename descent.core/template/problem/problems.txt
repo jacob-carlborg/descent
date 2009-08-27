@@ -1093,6 +1093,9 @@ DotOffsetDeprecated
 NoClassInfoForComInterfaceObjects
 	formatString=No .classinfo for COM interface objects
 	numArgs=0
+NoClassInfoForCppInterfaceObjects
+	formatString=No .classinfo for C++ interface objects
+	numArgs=0
 CannotMakeReferenceToABit
 	formatString=Cannot make reference to a bit
 	numArgs=0
@@ -1582,7 +1585,9 @@ CannotImplicitlyConvertToImmutable
 CannotHaveConstInvariantOutParameterOfType
 	formatString=Cannot have const/invariant out parameter of type %1$s
 	numArgs=1
-
+OverloadSetNotAllowedInStructDeclaration
+	formatString=Overload set for %1$s.%2$s not allowed in struct declaration
+	numArgs=2
 	
 	
 	

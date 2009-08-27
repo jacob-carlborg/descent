@@ -588,8 +588,9 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	 *	MATCHequal	'this' == 'to'
 	 *	MATCHconst	'to' is const
 	 *	MATCHnomatch	conversion to mutable or invariant
+	 * @param context TODO
 	 */
-	public MATCH constConv(Type to) {
+	public MATCH constConv(Type to, SemanticContext context) {
 		if (equals(to)) {
 			return MATCHexact;
 		} else if (ty == to.ty && to.mod == MODconst) {
@@ -2030,8 +2031,9 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	 * Can we assign:
 	 *	a = b;
 	 * ?
+	 * @param context TODO
 	 */
-	public boolean isAssignable() {
+	public boolean isAssignable(SemanticContext context) {
 	    return true;
 	}
 	

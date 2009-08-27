@@ -56,13 +56,13 @@ public class TypeSArray extends TypeArray {
 	}
 	
 	@Override
-	public MATCH constConv(Type to) {
+	public MATCH constConv(Type to, SemanticContext context) {
 		if (to.ty == Tsarray) {
 			TypeSArray tsa = (TypeSArray) to;
 			if (!dim.equals(tsa.dim))
 				return MATCHnomatch;
 		}
-		return super.constConv(to);
+		return super.constConv(to, context);
 	}
 
 	@Override
@@ -215,7 +215,7 @@ public class TypeSArray extends TypeArray {
 				if (next.mod != tp.next.mod && tp.next.mod != MODconst)
 					return MATCHnomatch;
 
-				if (tp.next.ty == Tvoid || next.constConv(tp.next) != MATCHnomatch) {
+				if (tp.next.ty == Tvoid || next.constConv(tp.next, context) != MATCHnomatch) {
 					return MATCHconvert;
 				}
 				return MATCHnomatch;

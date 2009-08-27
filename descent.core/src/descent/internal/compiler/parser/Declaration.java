@@ -79,7 +79,7 @@ public abstract class Declaration extends Dsymbol {
 					p = "mutable";
 				else if ((storage_class & STCmanifest) != 0)
 					p = "enum";
-				else if (!t.isAssignable())
+				else if (!t.isAssignable(context))
 					p = "struct with immutable members";
 				if (p != null) {
 					if (context.acceptsErrors()) {

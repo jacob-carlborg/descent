@@ -117,6 +117,9 @@ public class TypeSlice extends TypeNext {
 	public Type semantic(char[] filename, int lineNumber, Scope sc, SemanticContext context)
 	{
 		next = next.semantic(filename, lineNumber, sc, context);
+		if (context.isD2()) {
+		    transitive(context);
+		}
 		
 		Type tbn = next.toBasetype(context);
 		if(tbn.ty != Ttuple)
@@ -160,6 +163,7 @@ public class TypeSlice extends TypeNext {
 	public Type syntaxCopy(SemanticContext context) {
 		TypeSlice ts = new TypeSlice(next.syntaxCopy(context), lwr
 				.syntaxCopy(context), upr.syntaxCopy(context), context.encoder);
+		ts.mod = mod;
 		ts.copySourceRange(this);
 		return ts;
 	}

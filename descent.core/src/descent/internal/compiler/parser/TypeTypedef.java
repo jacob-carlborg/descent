@@ -34,6 +34,15 @@ public class TypeTypedef extends Type {
 	public boolean checkBoolean(SemanticContext context) {
 		return sym.basetype.checkBoolean(context);
 	}
+	
+	@Override
+	public MATCH constConv(Type to, SemanticContext context) {
+		if (equals(to))
+			return MATCHexact;
+		if (ty == to.ty && sym == ((TypeTypedef) to).sym)
+			return sym.basetype.implicitConvTo(((TypeTypedef) to).sym.basetype, context);
+		return MATCHnomatch;
+	}
 
 	@Override
 	public MATCH deduceType(Scope sc, Type tparam,
@@ -90,15 +99,25 @@ public class TypeTypedef extends Type {
 	@Override
 	public MATCH implicitConvTo(Type to, SemanticContext context) {
 		MATCH m;
-
 		if (this.equals(to)) {
 			m = MATCHexact; // exact match
 		} else if (sym.basetype.implicitConvTo(to, context) != MATCHnomatch) {
 			m = MATCHconvert; // match with conversions
+		} else if (context.isD2() && (ty == to.ty && sym == ((TypeTypedef) to).sym)) {
+			m = constConv(to, context);
 		} else {
 			m = MATCHnomatch; // no match
 		}
 		return m;
+	}
+	
+	@Override
+	public boolean isAssignable(SemanticContext context) {
+		if (context.isD1()) {
+			return super.isAssignable(context);
+		} else {
+		    return sym.basetype.isAssignable(context);
+		}
 	}
 
 	@Override
@@ -193,6 +212,9 @@ public class TypeTypedef extends Type {
 		sym.inuse = 1;
 		Type t = sym.basetype.toBasetype(context);
 		sym.inuse = 0;
+		if (context.isD2()) {
+		    t = t.addMod(mod, context);
+		}
 		return t;
 	}
 
@@ -216,15 +238,27 @@ public class TypeTypedef extends Type {
 
 	@Override
 	public void toDecoBuffer(OutBuffer buf, int flag, SemanticContext context) {
-		super.toDecoBuffer(buf, flag, context);
+		Type_toDecoBuffer(buf, flag, context);
 		String name = sym.mangle(context);
-		buf.writestring(ty.mangleChar);
 		buf.writestring(name);
 	}
 
 	@Override
 	public Dsymbol toDsymbol(Scope sc, SemanticContext context) {
 		return sym;
+	}
+	
+	@Override
+	public Type toHeadMutable(SemanticContext context) {
+		if (0 == mod)
+			return this;
+
+		Type tb = toBasetype(context);
+		Type t = tb.toHeadMutable(context);
+		if (t.equals(tb))
+			return this;
+		else
+			return mutableOf(context);
 	}
 	
 	@Override

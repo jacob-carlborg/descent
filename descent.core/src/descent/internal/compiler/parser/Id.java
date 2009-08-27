@@ -155,6 +155,7 @@ public interface Id {
 	static final char[] opIn = { 'o', 'p', 'I', 'n' };
 	static final char[] opIn_r = { 'o', 'p', 'I', 'n', '_', 'r' };
 	static final char[] opStar = { 'o', 'p', 'S', 't', 'a', 'r' };
+	static final char[] opDot = { 'o', 'p', 'D', 'o', 't' };
 	static final char[] classNew = { 'n', 'e', 'w' };
 	static final char[] classDelete = { 'd', 'e', 'l', 'e', 't', 'e' };
 	static final char[] apply = { 'o', 'p', 'A', 'p', 'p', 'l', 'y' };

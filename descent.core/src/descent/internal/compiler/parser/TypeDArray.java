@@ -130,7 +130,7 @@ public class TypeDArray extends TypeArray {
 					return MATCHconvert;
 				}
 
-				return next.constConv(to);
+				return next.constConv(to, context);
 			}
 
 			if (to.ty == Tarray) {
@@ -147,7 +147,7 @@ public class TypeDArray extends TypeArray {
 					return MATCHconvert;
 				}
 
-				MATCH m = next.constConv(ta.next);
+				MATCH m = next.constConv(ta.next, context);
 				if (m != MATCHnomatch) {
 					if (m == MATCHexact && mod != to.mod)
 						m = MATCHconst;

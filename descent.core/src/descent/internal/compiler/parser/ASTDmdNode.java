@@ -2681,6 +2681,24 @@ public abstract class ASTDmdNode extends ASTNode {
 		return o;
 	}
 	
+	/***********************************
+	 * Utility to build a function call out of this reference and argument.
+	 */
+	public static Expression build_overload(char[] filename, int lineNumber, Scope sc, Expression ethis, Expression earg, IdentifierExp id,
+			SemanticContext context) {
+		Expression e;
+
+		e = new DotIdExp(filename, lineNumber, ethis, id);
+
+		if (earg != null)
+			e = new CallExp(filename, lineNumber, e, earg);
+		else
+			e = new CallExp(filename, lineNumber, e);
+
+		e = e.semantic(sc, context);
+		return e;
+	}
+	
 	public int getStart() {
 		return start;
 	}

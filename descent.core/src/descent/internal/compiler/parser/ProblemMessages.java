@@ -375,6 +375,7 @@ final class ProblemMessages extends NLS {
 	public static String KindSymbolHasNoMembers;
 	public static String DotOffsetDeprecated;
 	public static String NoClassInfoForComInterfaceObjects;
+	public static String NoClassInfoForCppInterfaceObjects;
 	public static String CannotMakeReferenceToABit;
 	public static String CannotFormTupleOfTuples;
 	public static String MissingInitializerInStaticConstructorForConstVariable;
@@ -538,6 +539,7 @@ final class ProblemMessages extends NLS {
 	public static String VoidDoesNotHaveADefaiñtInitializer;
 	public static String CannotImplicitlyConvertToImmutable;
 	public static String CannotHaveConstInvariantOutParameterOfType;
+	public static String OverloadSetNotAllowedInStructDeclaration;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

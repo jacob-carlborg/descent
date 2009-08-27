@@ -861,6 +861,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.DotOffsetDeprecated);
 		case NoClassInfoForComInterfaceObjects:
 			return String.format(ProblemMessages.NoClassInfoForComInterfaceObjects);
+		case NoClassInfoForCppInterfaceObjects:
+			return String.format(ProblemMessages.NoClassInfoForCppInterfaceObjects);
 		case CannotMakeReferenceToABit:
 			return String.format(ProblemMessages.CannotMakeReferenceToABit);
 		case CannotFormTupleOfTuples:
@@ -1187,6 +1189,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.CannotImplicitlyConvertToImmutable, arguments[0]);
 		case CannotHaveConstInvariantOutParameterOfType:
 			return String.format(ProblemMessages.CannotHaveConstInvariantOutParameterOfType, arguments[0]);
+		case OverloadSetNotAllowedInStructDeclaration:
+			return String.format(ProblemMessages.OverloadSetNotAllowedInStructDeclaration, arguments[0], arguments[1]);
 		default:
 			return "";
 		}

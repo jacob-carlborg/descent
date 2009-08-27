@@ -38,7 +38,7 @@ public class TypeEnum extends Type {
 	}
 	
 	@Override
-	public MATCH constConv(Type to) {
+	public MATCH constConv(Type to, SemanticContext context) {
 		if (equals(to))
 			return MATCHexact;
 		if (ty == to.ty && sym == ((TypeEnum) to).sym && to.mod == MODconst)

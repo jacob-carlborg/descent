@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import static descent.internal.compiler.parser.STC.STCin;
+import static descent.internal.compiler.parser.STC.STCundefined;
 import static descent.internal.compiler.parser.TY.Ttuple;
 import descent.core.Signature;
 import descent.core.compiler.IProblem;
@@ -33,7 +34,7 @@ public class TypeTuple extends Type {
 								IProblem.CannotFormTupleOfTuples, e, new String[] { toChars(context) }));
 					}
 				}
-				Argument arg = new Argument(STCin, e.type, null, null);
+				Argument arg = new Argument(context.isD1() ? STCin : STCundefined, e.type, null, null);
 				arguments.set(i, arg);
 			}
 		}
@@ -91,7 +92,11 @@ public class TypeTuple extends Type {
 						IProblem.NoPropertyForTuple, lineNumber, start, length, new String[] { new String(ident),
 								toChars(context) }));
 			}
-			e = new IntegerExp(filename, lineNumber, 1, Type.tint32);
+			if (context.isD1()) {
+				e = new IntegerExp(filename, lineNumber, 1, Type.tint32);
+			} else {
+				return new ErrorExp();
+			}
 		}
 		return e;
 	}
@@ -129,6 +134,7 @@ public class TypeTuple extends Type {
 	public Type syntaxCopy(SemanticContext context) {
 		Arguments args = Argument.arraySyntaxCopy(arguments, context);
 		Type t = TypeTuple.newArguments(args);
+	    t.mod = mod;
 		t.copySourceRange(this);
 		return t;
 	}
@@ -140,10 +146,11 @@ public class TypeTuple extends Type {
 
 	@Override
 	public void toDecoBuffer(OutBuffer buf, int flag, SemanticContext context) {
-		 OutBuffer buf2 = new OutBuffer();
-		 Argument.argsToDecoBuffer(buf2, arguments, context);
-		 int len = buf2.data.length();
-		 buf.printf("" + ty.mangleChar + len + buf2.extractData());
+		Type_toDecoBuffer(buf, flag, context);
+		OutBuffer buf2 = new OutBuffer();
+		Argument.argsToDecoBuffer(buf2, arguments, context);
+		int len = buf2.data.length();
+		buf.printf("" + len + buf2.extractData());
 	}
 
 	public static TypeTuple newArguments(Arguments arguments) {

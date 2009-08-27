@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import static descent.internal.compiler.parser.DYNCAST.DYNCAST_IDENTIFIER;
+import static descent.internal.compiler.parser.MATCH.MATCHconst;
 import static descent.internal.compiler.parser.MATCH.MATCHconvert;
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
@@ -48,6 +49,15 @@ public class TypeClass extends Type {
 	@Override
 	public boolean checkBoolean(SemanticContext context) {
 		return true;
+	}
+	
+	@Override
+	public MATCH constConv(Type to, SemanticContext context) {
+		if (equals(to))
+			return MATCHexact;
+		if (ty == to.ty && sym == ((TypeClass) to).sym && to.mod == MODconst)
+			return MATCHconst;
+		return MATCHnomatch;
 	}
 
 	@Override
@@ -198,14 +208,19 @@ public class TypeClass extends Type {
 						e = new PtrExp(e.filename, e.lineNumber,  e);
 						e.type = t.pointerTo(context);
 						if (sym.isInterfaceDeclaration() != null) {
-							if (sym.isCOMinterface()) {
+							if ((context.isD1() && sym.isCOMinterface()) || (context.isD2() && sym.isCPPinterface())) {
 							    /* COM interface vtbl[]s are different in that the
 								 * first entry is always pointer to QueryInterface().
 								 * We can't get a .classinfo for it.
 								 */
 								if (context.acceptsErrors()) {
-									context.acceptProblem(Problem.newSemanticTypeError(
-											IProblem.NoClassInfoForComInterfaceObjects, this));
+									if (context.isD1()) {
+										context.acceptProblem(Problem.newSemanticTypeError(
+												IProblem.NoClassInfoForComInterfaceObjects, this));
+									} else {
+										context.acceptProblem(Problem.newSemanticTypeError(
+												IProblem.NoClassInfoForCppInterfaceObjects, this));
+									}
 								}
 							}
 						    /* 
@@ -227,7 +242,11 @@ public class TypeClass extends Type {
 				{   /* The pointer to the vtbl[]
 				     * *cast(void***)e
 				     */
-				    e = e.castTo(sc, context.Type_tvoidptr.pointerTo(context).pointerTo(context), context);
+					if (context.isD1()) {
+						e = e.castTo(sc, context.Type_tvoidptr.pointerTo(context).pointerTo(context), context);
+					} else {
+						e = e.castTo(sc, context.Type_tvoidptr.invariantOf(context).pointerTo(context), context);
+					}
 				    e = new PtrExp(e.filename, e.lineNumber,  e);
 				    e = e.semantic(sc, context);
 				    return e;
@@ -259,7 +278,38 @@ public class TypeClass extends Type {
 						&& null != sym.vthis) {
 					s = sym.vthis;
 				} else {
-					//return getProperty(e.filename, e.lineNumber,  ident);
+					if (context.isD2()) {
+						if (!equals(ident, Id.__sizeof) && !equals(ident, Id.alignof) && !equals(ident, Id.init) && !equals(ident, Id.mangleof)
+								&& !equals(ident, Id.stringof) && !equals(ident, Id.offsetof)) {
+							/*
+							 * See if we should forward to the alias this.
+							 */
+							if (sym.aliasthis != null) { 
+								/*
+								 * Rewrite e.ident as:
+								 *  e.aliasthis.ident
+								 */
+								e = new DotIdExp(e.filename, e.lineNumber, e, sym.aliasthis.ident);
+								e = new DotIdExp(e.filename, e.lineNumber, e, ident);
+								return e.semantic(sc, context);
+							}
+
+							/*
+							 * Look for overloaded opDot() to see if we should
+							 * forward request to it.
+							 */
+							Dsymbol fd = search_function(sym, Id.opDot, context);
+							if (fd != null) { /*
+											 * Rewrite e.ident as:
+											 * e.opId().ident
+											 */
+								e = build_overload(e.filename, e.lineNumber, sc, e, null, fd.ident, context);
+								e = new DotIdExp(e.filename, e.lineNumber, e, ident);
+								return e.semantic(sc, context);
+							}
+						}
+
+					}
 					return super.dotExp(sc, e, ident, context);
 				}
 			}
@@ -273,13 +323,25 @@ public class TypeClass extends Type {
 			
 			s = s.toAlias(context);
 			v = s.isVarDeclaration();
-		    if (null != v && v.isConst() && v.type.toBasetype(context).ty != Tsarray) {
-				ExpInitializer ei = v.getExpInitializer(context);
-	
-				if (null != ei) {
-					e = ei.exp.copy(); // need to copy it if it's a StringExp
-					e = e.semantic(sc, context);
-					return e;
+			if (context.isD1()) {
+			    if (null != v && v.isConst() && v.type.toBasetype(context).ty != Tsarray) {
+					ExpInitializer ei = v.getExpInitializer(context);
+		
+					if (null != ei) {
+						e = ei.exp.copy(); // need to copy it if it's a StringExp
+						e = e.semantic(sc, context);
+						return e;
+					}
+				}
+			} else {
+				if (v != null && !v.isDataseg(context)) {
+					Expression ei = v.getConstInitializer(context);
+
+					if (ei != null) {
+						e = ei.copy(); // need to copy it if it's a StringExp
+						e = e.semantic(sc, context);
+						return e;
+					}
 				}
 			}
 	
@@ -295,9 +357,7 @@ public class TypeClass extends Type {
 	
 			TemplateMixin tm = s.isTemplateMixin();
 			if (null != tm) {
-				Expression de_;
-	
-				de_ = new DotExp(e.filename, e.lineNumber,  e, new ScopeExp(e.filename, e.lineNumber,  tm));
+				Expression de_ = new DotExp(e.filename, e.lineNumber,  e, new ScopeExp(e.filename, e.lineNumber,  tm));
 				de_.type = e.type;
 				return de_;
 			}
@@ -325,6 +385,20 @@ public class TypeClass extends Type {
 				return de2;
 			}
 		}
+		
+		if (context.isD2()) {
+			OverloadSet o = s.isOverloadSet();
+			if (o != null) {
+				/*
+				 * We really should allow this
+				 */
+				if (context.acceptsErrors()) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.OverloadSetNotAllowedInStructDeclaration, this, e.toChars(context), ident
+							.toChars()));
+				}
+				return new ErrorExp();
+			}
+		}
 
 		d = s.isDeclaration();
 		if (null == d) {
@@ -332,13 +406,24 @@ public class TypeClass extends Type {
 				context.acceptProblem(Problem.newSemanticTypeError(
 						IProblem.SymbolDotSymbolIsNotADeclaration, this, new String[] { e.toChars(context), ident.toChars() }));
 			}
-			return new IntegerExp(e.filename, e.lineNumber,  1, Type.tint32);
+			if (context.isD1()) {
+				return new IntegerExp(e.filename, e.lineNumber,  1, Type.tint32);
+			} else {
+				return new ErrorExp();
+			}
 		}
 
 		if (e.op == TOKtype) {
 			VarExp ve;
 
-			if (d.needThis()
+			/* It's:
+			 *    Class.d
+			 */
+			if (context.isD2() && d.isTupleDeclaration() != null) {
+				e = new TupleExp(e.filename, e.lineNumber, d.isTupleDeclaration(), context);
+				e = e.semantic(sc, context);
+				return e;
+			} else if (d.needThis()
 					&& (null != hasThis(sc) || null == d.isFuncDeclaration())) {
 				if (null != sc.func) {
 					ClassDeclaration thiscd;
@@ -367,13 +452,17 @@ public class TypeClass extends Type {
 				de = new DotVarExp(e.filename, e.lineNumber,  new ThisExp(e.filename, e.lineNumber), d);
 				e = de.semantic(sc, context);
 				return e;
-			} else if (null != d.isTupleDeclaration()) {
+			} else if (context.isD1() && null != d.isTupleDeclaration()) {
 				e = new TupleExp(e.filename, e.lineNumber,  d.isTupleDeclaration(), context);
 				;
 				e = e.semantic(sc, context);
 				return e;
 			} else {
-				ve = new VarExp(e.filename, e.lineNumber,  d);
+				if (context.isD1()) {
+					ve = new VarExp(e.filename, e.lineNumber,  d);
+				} else {
+					ve = new VarExp(e.filename, e.lineNumber,  d, true);
+				}
 			}
 			return ve;
 		}
@@ -383,7 +472,11 @@ public class TypeClass extends Type {
 			VarExp ve;
 
 			accessCheck(sc, e, d, context);
-			ve = new VarExp(e.filename, e.lineNumber,  d);
+			if (context.isD1()) {
+				ve = new VarExp(e.filename, e.lineNumber,  d);
+			} else {
+				ve = new VarExp(e.filename, e.lineNumber,  d, true);
+			}
 			e = new CommaExp(e.filename, e.lineNumber,  e, ve);
 			e.type = d.type;
 			return e;
@@ -426,8 +519,16 @@ public class TypeClass extends Type {
 
 	@Override
 	public MATCH implicitConvTo(Type to, SemanticContext context) {
-		if (same(this, to, context)) {
-			return MATCHexact;
+		MATCH m;
+		
+		if (context.isD1()) {
+			if (same(this, to, context)) {
+				return MATCHexact;
+			}
+		} else {
+			m = constConv(to, context);
+			if (m != MATCHnomatch)
+				return m;
 		}
 
 		ClassDeclaration cdto = to.isClassHandle();
@@ -439,6 +540,18 @@ public class TypeClass extends Type {
 			// Allow conversion to (void *)
 			if (to.ty == Tpointer && to.nextOf().ty == Tvoid) {
 				return MATCHconvert;
+			}
+		}
+		
+		if (context.isD2()) {
+			m = MATCHnomatch;
+			if (sym.aliasthis != null) {
+				Declaration d = sym.aliasthis.isDeclaration();
+				if (d != null) {
+					// assert(d.type);
+					Type t = d.type.addMod(mod, context);
+					m = t.implicitConvTo(to, context);
+				}
 			}
 		}
 
@@ -500,20 +613,28 @@ public class TypeClass extends Type {
 
 	@Override
 	public String toChars(SemanticContext context) {
+		if (context.isD2()) {
+		    if (mod != 0)
+		    	return super.toChars(context);
+		}
 		return sym.toPrettyChars(context);
 	}
 
 	@Override
 	public void toDecoBuffer(OutBuffer buf, int flag, SemanticContext context) {
 		String name = sym.mangle(context);
-		super.toDecoBuffer(buf, flag, context);
-		buf.writestring(ty.mangleChar);
+		Type_toDecoBuffer(buf, flag, context);
 		buf.writestring(name);
 	}
 
 	@Override
 	public Dsymbol toDsymbol(Scope sc, SemanticContext context) {
 		return sym;
+	}
+	
+	@Override
+	public Type toHeadMutable(SemanticContext context) {
+		return this;
 	}
 	
 	@Override
