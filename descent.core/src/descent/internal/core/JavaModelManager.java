@@ -108,9 +108,12 @@ import descent.core.WorkingCopyOwner;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.CompilationParticipant;
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.env.AccessRestriction;
 import descent.internal.compiler.util.HashtableOfObjectToInt;
 import descent.internal.core.builder.OriginalJavaBuilder;
 import descent.internal.core.search.AbstractSearchScope;
+import descent.internal.core.search.BasicSearchEngine;
+import descent.internal.core.search.IRestrictedAccessTypeRequestor;
 import descent.internal.core.search.JavaWorkspaceScope;
 import descent.internal.core.search.indexing.IndexManager;
 import descent.internal.core.util.LRUCache;
@@ -3536,7 +3539,6 @@ public class JavaModelManager implements ISaveParticipant, IContentTypeChangeLis
 	 * If not waiting for indexes and indexing is running, will return types found in current built indexes...
 	 */
 	private Map secondaryTypesSearching(IJavaProject project, boolean waitForIndexes, IProgressMonitor monitor, final PerProjectInfo projectInfo) throws JavaModelException {
-		/* TODO JDT search
 		if (VERBOSE || BasicSearchEngine.VERBOSE) {
 			StringBuffer buffer = new StringBuffer("JavaModelManager.secondaryTypesSearch("); //$NON-NLS-1$
 			buffer.append(project.getElementName());
@@ -3548,7 +3550,7 @@ public class JavaModelManager implements ISaveParticipant, IContentTypeChangeLis
 
 		final Hashtable secondaryTypes = new Hashtable(3);
 		IRestrictedAccessTypeRequestor nameRequestor = new IRestrictedAccessTypeRequestor() {
-			public void acceptType(int modifiers, char[] packageName, char[] simpleTypeName, char[][] enclosingTypeNames, String path, AccessRestriction access) {
+			public void acceptType(long modifiers, char[] packageName, char[] simpleTypeName, char[] templateParametersSignature, char[][] enclosingTypeNames, String path, int declarationStart, AccessRestriction access) {
 				String key = packageName==null ? "" : new String(packageName); //$NON-NLS-1$
 				HashMap types = (HashMap) secondaryTypes.get(key);
 				if (types == null) types = new HashMap(3);
@@ -3604,7 +3606,6 @@ public class JavaModelManager implements ISaveParticipant, IContentTypeChangeLis
 				}
 			}
 		}
-		*/
 		return projectInfo.secondaryTypes;
 	}
 
