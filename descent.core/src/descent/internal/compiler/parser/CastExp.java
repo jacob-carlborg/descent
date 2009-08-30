@@ -253,7 +253,9 @@ public class CastExp extends UnaExp {
 		{
 			e1 = resolveProperties(sc, e1, context);
 			
-			if (!context.isD1()) {
+			if (context.isD1()) {
+				to = to.semantic(filename, lineNumber, sc, context);
+			} else {
 				if (null == to) {
 				    /* Handle cast(const) and cast(immutable), etc.
 				     */
@@ -261,8 +263,6 @@ public class CastExp extends UnaExp {
 				} else {
 					to = to.semantic(filename, lineNumber, sc, context);
 				}
-			} else {
-				
 			}
 			
 			boolean condition;

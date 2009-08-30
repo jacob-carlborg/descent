@@ -759,7 +759,7 @@ public class CallExp extends UnaExp {
 					boolean condition;
 					if (context.isD1()) {
 						f = cd.baseClass.ctor(context);
-						condition = f != null;
+						condition = f == null;
 					} else {
 						condition = cd.baseClass.ctor(context) == null;
 					}

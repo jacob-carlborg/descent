@@ -1,21 +1,9 @@
 This file list the porting process from DMD.
 
-Last DMD 1.x ported version: 1.033
-Last DMD 2.x ported version: 2.003 (but just the lexer and parser)
+Last DMD 1.x ported version: 1.045
+Last DMD 2.x ported version: 2.030
 
 -o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-
-
-Remaining from DMD 1.028
-------------------------------
-class.c --> check if buildDtor is really necessary
-clone.c
-func.c  --> missing StaticCtorDeclaration::StaticCtorDeclaration 
-            and StaticDtorDeclaration::StaticDtorDeclaration
-            
-Remaining from DMD 2.030 vs. 1.045
-------------------------------
- * mtype.c: missing TypeQualified::resolveHelper
- * Parser::parseBaseClasses what's the difference?
 
 Remaining from DMD 2.031 vs. 2.030
 ------------------------------
@@ -50,3 +38,14 @@ Remaining from DMD 2.031 vs. 2.030
  * struct.c
  * template.c
  * template.h
+ 
+Remaining from DMD 2.030 vs. 1.045
+------------------------------
+ * Parser::parseBaseClasses what's the difference?
+ 
+Remaining from DMD 1.028
+------------------------------
+class.c --> check if buildDtor is really necessary
+clone.c
+func.c  --> missing StaticCtorDeclaration::StaticCtorDeclaration 
+            and StaticDtorDeclaration::StaticDtorDeclaration
