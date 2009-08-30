@@ -39,7 +39,8 @@ public class PackageExplorerOpenActionProvider extends CommonActionProvider {
 			
 			if(fOpenAndExpand == null && fOpenGroup.getOpenAction().isEnabled()) // TODO: is not updated!
 				actionBars.setGlobalActionHandler(ICommonActionConstants.OPEN, fOpenGroup.getOpenAction());
-			else if(fOpenAndExpand.isEnabled())
+			// Descent: commented to not expand the tree each time we open a module, I don't know why it's not working well
+			else // if(fOpenAndExpand.isEnabled())
 				actionBars.setGlobalActionHandler(ICommonActionConstants.OPEN, fOpenAndExpand);
 		}
 
@@ -66,8 +67,11 @@ public class PackageExplorerOpenActionProvider extends CommonActionProvider {
 
 				fOpenGroup = new OpenEditorActionGroup(viewPart); 
 
-				if (site.getStructuredViewer() instanceof TreeViewer)
-					fOpenAndExpand = new OpenAndExpand(workbenchSite.getSite(), (OpenAction) fOpenGroup.getOpenAction(), (TreeViewer) site.getStructuredViewer());
+				if (site.getStructuredViewer() instanceof TreeViewer) {
+					// Changed for Descent: we don't want the tree to expand each time we open a module
+//					fOpenAndExpand = new OpenAndExpand(workbenchSite.getSite(), (OpenAction) fOpenGroup.getOpenAction(), (TreeViewer) site.getStructuredViewer());
+					fOpenAndExpand = (OpenAction) fOpenGroup.getOpenAction();
+				}
 				fInViewPart = true;
 			} 
 		} 
