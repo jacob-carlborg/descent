@@ -230,6 +230,9 @@ public class IdentifierExp extends Expression {
 	
 	public String toChars() {
 //		return new String(ident).intern();
+		if (ident == null) {
+			return "";
+		}
 		return new String(ident);
 	}
 

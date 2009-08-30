@@ -557,6 +557,10 @@ public class CodeFormatterVisitor extends ASTVisitor
 	
 	public boolean visit(CatchClause node)
 	{
+		if (prefs.insert_new_line_before_catch) {
+			scribe.printNewLine();
+		}
+		
 		scribe.printNextToken(TOK.TOKcatch);
 		if(isNextToken(TOK.TOKlparen))
 		{
@@ -2248,7 +2252,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 	public boolean visit(TryStatement node)
 	{
 		scribe.printNextToken(TOK.TOKtry);
-		boolean simple = formatSubStatement(node.getBody(), prefs.insert_new_line_before_catch, true, !prefs.keep_simple_try_statement_on_same_line, prefs.brace_position_for_try_catch_finally);
+		boolean simple = formatSubStatement(node.getBody(), false, true, !prefs.keep_simple_try_statement_on_same_line, prefs.brace_position_for_try_catch_finally);
 		if (simple) {
 			scribe.printNewLine();
 		}
@@ -3157,6 +3161,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 
 		if (insertNewLineAfterLastStatement)
 			scribe.printNewLine();
+		scribe.printComment();
 	}
 	
 	/**

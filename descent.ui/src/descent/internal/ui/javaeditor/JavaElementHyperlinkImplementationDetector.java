@@ -7,6 +7,7 @@ import org.eclipse.ui.texteditor.ITextEditor;
 
 import descent.core.ICompilationUnit;
 import descent.core.IConditional;
+import descent.core.IInitializer;
 import descent.core.IJavaElement;
 import descent.core.IMember;
 import descent.core.IMethod;
@@ -46,7 +47,7 @@ public class JavaElementHyperlinkImplementationDetector extends JavaElementHyper
 	 */
 	private boolean canBeOverridden(IMethod method) {
 		IJavaElement parent = method.getParent();
-		while(parent instanceof IConditional) {
+		while(parent instanceof IConditional || parent instanceof IInitializer) {
 			parent = parent.getParent();
 		}
 		

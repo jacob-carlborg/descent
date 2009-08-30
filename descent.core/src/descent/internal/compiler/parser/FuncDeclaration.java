@@ -626,7 +626,7 @@ public class FuncDeclaration extends Declaration {
 			String source = javaElement.getSource();
 			// TODO api level
 			Parser parser = context.newParser(source.toCharArray(), 0, source
-					.length(), false, false, false, false, Lexer.D1,
+					.length(), false, false, false, false, context.apiLevel,
 					null, null, false, null);
 			parser.nextToken();
 	

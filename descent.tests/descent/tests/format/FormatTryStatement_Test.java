@@ -265,5 +265,36 @@ public class FormatTryStatement_Test extends AbstractFormatInsideFunction_Test {
 				options
 				);
 	}
+	
+	public void testBracesAtEndOfLineWithComments() throws Exception {
+		assertFormat(
+				"try {\r\n" +
+				"\tint x;\r\n" +
+				"\t/* some comment */\r\n" +
+				"} catch {\r\n" +
+				"} finally {\r\n" +
+				"}", 
+				
+				"try { int x;\r\n /* some comment */ \r\n   }  catch  {   }   finally { }"
+			);
+	}
+	
+	public void testBracesAtEndOfLineWithCommentsNewLineBeforeCatchManyCatches() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_CATCH, DefaultCodeFormatterConstants.TRUE);
+		assertFormat(
+				"try {\r\n" +
+				"}\r\n" +
+				"catch(One e) {\r\n" +
+				"}\r\n" +
+				"catch(Two e) {\r\n" +
+				"} finally {\r\n" +
+				"}", 
+				
+				"try {   }  catch  (One e) {   } catch (Two e)  { }  finally { }",
+				
+				options
+			);
+	}
 
 }
