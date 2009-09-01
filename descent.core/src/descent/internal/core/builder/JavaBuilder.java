@@ -32,6 +32,7 @@ import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
 import descent.core.IJavaModelMarker;
 import descent.core.IJavaProject;
+import descent.core.IPackageFragmentRoot;
 import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
@@ -258,6 +259,14 @@ public class JavaBuilder extends IncrementalProjectBuilder {
 			command.setOutputDir(binDir);
 			command.setOutputFile(outFilename);
 			
+			for(IPackageFragmentRoot root : javaProject.getAllPackageFragmentRoots()) {
+				if (root.isExternal()) {
+					command.addIncludeDir(root.getPath().toOSString());
+				} else {
+					command.addIncludeDir(root.getResource().getLocation().toOSString());
+				}
+			}
+			
 			String cmd = command.toString();
 			
 //			System.out.println(cmd);
@@ -317,9 +326,7 @@ public class JavaBuilder extends IncrementalProjectBuilder {
 		List<ICompilationUnit> units = new ArrayList<ICompilationUnit>();
 		for(String dep : dependencies) {
 			ICompilationUnit depUnit = toCompilationUnit(javaProject, dep);
-			if (!(depUnit instanceof IClassFile)) {
-				units.add(depUnit);
-			}
+			units.add(depUnit);
 		}
 		return units;
 	}
@@ -344,22 +351,35 @@ public class JavaBuilder extends IncrementalProjectBuilder {
 			command.setCommand("dmd");
 			command.setDebug(true);
 			command.addInputFile(inFilename);
+			
+			for(IPackageFragmentRoot root : javaProject.getAllPackageFragmentRoots()) {
+				if (root.isExternal()) {
+					command.addIncludeDir(root.getPath().toOSString());
+				}
+			}
+			
 			for(ICompilationUnit dependency : deps) {
-				command.addInputFile(dependency.getFullyQualifiedName() + ".obj");
+				if (dependency.getJavaProject().equals(javaProject)) {
+					command.addInputFile(dependency.getFullyQualifiedName() + ".obj");
+				} else {
+					String projectDir = dependency.getJavaProject().getResource().getLocation().toOSString();
+					String projectBinDir = projectDir + "\\bin\\";
+					command.addInputFile("\"" + projectBinDir + dependency.getFullyQualifiedName() + ".obj\"");
+				}
 			}
 			command.setOutputDir(binDir);
 			command.setOutputFile(outFilename);
 			
 			String cmd = command.toString();
 			
-//			System.out.println(cmd);
+			System.out.println(cmd);
 			
 			Process process = Runtime.getRuntime().exec(cmd, null, new File(binDir));
 			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			String line;
 			
 			while((line = reader.readLine()) != null) {
-//				System.out.println(line);
+				System.out.println(line);
 			}
 		} catch (Exception e) {
 			System.out.println(e);
@@ -398,6 +418,9 @@ public class JavaBuilder extends IncrementalProjectBuilder {
 	 * Removes any task markers from the given file.
 	 */
 	public static void removeTasks(IFile file) throws CoreException {
+		if (!file.exists())
+			return;
+		
 		file.deleteMarkers(IJavaModelMarker.TASK_MARKER, false, IResource.DEPTH_INFINITE);
 	}
 	
@@ -405,11 +428,14 @@ public class JavaBuilder extends IncrementalProjectBuilder {
 	 * Removes any problem markers from the given file.
 	 */
 	public static void removeProblems(IFile file) throws CoreException {
+		if (!file.exists())
+			return;
+		
 		file.deleteMarkers(IJavaModelMarker.JAVA_MODEL_PROBLEM_MARKER, false, IResource.DEPTH_INFINITE);
 	}
 	
 	private static void associateTaskTags(IFile file, Parser parser) throws CoreException {
-		if (parser.foundTaskMessages == null) {
+		if (parser.foundTaskMessages == null || !file.exists()) {
 			return;
 		}
 		
@@ -436,7 +462,7 @@ public class JavaBuilder extends IncrementalProjectBuilder {
 	}
 	
 	private static void associateProblems(IFile file, Module module) throws CoreException {
-		if (module.problems == null) {
+		if (module.problems == null || !file.exists()) {
 			return;
 		}
 		
@@ -455,6 +481,9 @@ public class JavaBuilder extends IncrementalProjectBuilder {
 	}
 	
 	private static void associateProblem(IFile file, int lineNumber, String message) throws CoreException {
+		if (!file.exists())
+			return;
+		
 		IMarker marker = file.createMarker(IJavaModelMarker.JAVA_MODEL_PROBLEM_MARKER);
 		marker.setAttribute(IMarker.MESSAGE, message);
 		marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);

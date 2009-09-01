@@ -10,11 +10,13 @@ public class CompilerCommand {
 	private String outputDir;
 	private String outputFile;
 	private List<String> inFiles;
+	private List<String> includeDirs;
 	private boolean findDependencies;
 	private boolean debug;
 	
 	public CompilerCommand() {
 		this.inFiles = new ArrayList<String>();
+		this.includeDirs = new ArrayList<String>();
 	}
 	
 	public void setDebug(boolean debug) {
@@ -41,6 +43,10 @@ public class CompilerCommand {
 		this.inFiles.add(file);
 	}
 	
+	public void addIncludeDir(String includeDir) {
+		this.includeDirs.add(includeDir);
+	}
+	
 	public void setFindDependencies(boolean findDependencies) {
 		this.findDependencies = findDependencies;
 	}
@@ -54,6 +60,9 @@ public class CompilerCommand {
 		}
 		if (compile) {
 			sb.append(" -c");
+		}
+		for(String includeDir : includeDirs) {
+			sb.append(" -I\"").append(includeDir).append("\"");
 		}
 		if (outputFile != null) {
 			sb.append(" -of\"").append(outputFile).append("\"");
