@@ -1,6 +1,13 @@
 package descent.internal.core.builder;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -12,30 +19,29 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.SubProgressMonitor;
 
+import descent.core.IClassFile;
 import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
 import descent.core.IJavaModelMarker;
 import descent.core.IJavaProject;
-import descent.core.IPackageFragmentRoot;
 import descent.core.JavaCore;
+import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
-import descent.core.dom.CompilationUnitResolver;
 import descent.internal.compiler.parser.ASTNodeEncoder;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Parser;
-import descent.internal.core.util.Util;
 
-/**
- * Uses the lexer to grab the task tags in a source file, and creates
- * task resource markers with them.
- */
 public class JavaBuilder extends IncrementalProjectBuilder {
-
+	
+	private static BuildState buildState = new BuildState();
+	
 	@Override
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
 		IProject project = getProject();
@@ -49,10 +55,39 @@ public class JavaBuilder extends IncrementalProjectBuilder {
 			IJavaProject javaProject = JavaCore.create(project);
 			delta.accept(new JavaBuilderVisitor(javaProject.getApiLevel(), isShowSemanticErrors()));
 		}
-
+		
+		Set<ICompilationUnit> executables = new HashSet<ICompilationUnit>();
+		
+		while(buildState.hasPendingRequests()) {
+			BuildRequest request = buildState.pop();
+			build(request);
+			
+			if (request.unit.hasMainMethod()) {
+				executables.add(request.unit);
+			}
+		}
+		
+		for(ICompilationUnit exec : executables) {
+			createExecutable(exec.getJavaProject(), (IFile) exec.getResource(), exec);
+		}
+		
 		return null;
 	}
-	
+
+	private void build(BuildRequest request) {
+		List<ICompilationUnit> dependencies = compile(request.unit.getJavaProject(), request.file, request.unit);
+		buildState.setDependencies(request.unit, dependencies);
+		
+		List<ICompilationUnit> reverseDependencies = buildState.getCompilationUnitsThatDependOn(request.unit);
+		if (!request.isDependency && reverseDependencies != null) {
+			for(ICompilationUnit reverse : reverseDependencies) {
+				BuildRequest depRequest = new BuildRequest(reverse, (IFile) reverse.getResource(), request.encoder);
+				depRequest.isDependency = true;
+				buildState.add(depRequest);
+			}
+		}
+	}
+
 	private void fullBuild(IProject project, IProgressMonitor monitor) throws CoreException {
 		IJavaProject javaProject = JavaCore.create(project);
 		IResource[] members = project.members();
@@ -136,37 +171,134 @@ public class JavaBuilder extends IncrementalProjectBuilder {
 	public static void build(IJavaProject javaProject, boolean showSemanticErrors,  IFile file, ASTNodeEncoder encoder) throws CoreException {
 		IJavaElement element = JavaCore.create(file);
 		if (element != null && element.getElementType() == IJavaElement.COMPILATION_UNIT) {
-			removeTasks(file);
-			removeProblems(file);
-			
 			ICompilationUnit unit = (ICompilationUnit) element;
-			String source = unit.getSource();
-			
-			IPackageFragmentRoot root = (IPackageFragmentRoot) unit.getAncestor(IJavaElement.PACKAGE_FRAGMENT_ROOT);
-			char[] filename = unit.getPath().removeFirstSegments(root.getPath().segmentCount()).toString().toCharArray();
-			
-			Parser parser = new Parser(
-					Util.getApiLevel(javaProject), 
-					source.toCharArray(), 
-					0, 
-					source.length(),
-					getTaskTags(javaProject),
-					getTaskPriorities(javaProject),
-					getTaskCaseSensitive(javaProject),
-					filename,
-					encoder
-					);
-			Module module = parser.parseModuleObj();
-			module.moduleName = unit.getFullyQualifiedName();
-			
-			if (showSemanticErrors) {
-				CompilationUnitResolver.resolve(module, javaProject, unit.getOwner(), parser.encoder, parser.holder,  false /* don't analyze templates */);
-			}
-			
-			associateTaskTags(file, parser);
-			associateProblems(file, module);
+			buildState.add(new BuildRequest(unit, file, encoder));
 		}
 	}
+
+	// Compiles and returns the dependencies
+	private static List<ICompilationUnit> compile(IJavaProject javaProject, IFile file, ICompilationUnit unit) {
+		List<String> dependencies = new ArrayList<String>();
+		
+		try {
+			String inFilename = file.getLocation().toOSString();
+			String workingDir = javaProject.getResource().getLocation().toOSString(); 
+			String binDir = workingDir + "\\bin";
+			String outFilename = unit.getFullyQualifiedName() + ".obj";;
+			
+			CompilerCommand command = new CompilerCommand();
+			command.setCommand("dmd");
+			command.setCompile(true);
+			command.setFindDependencies(true);
+			command.addInputFile(inFilename);
+			command.setOutputDir(binDir);
+			command.setOutputFile(outFilename);
+			
+			String cmd = command.toString();
+			
+			System.out.println(cmd);
+			
+			Process process = Runtime.getRuntime().exec(cmd, null, new File(workingDir));
+			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			String line;
+			
+			while((line = reader.readLine()) != null) {
+				if (line.startsWith("import    ")) {
+					int end = line.indexOf('\t', 10);
+					String dep = line.substring(10, end);
+					dependencies.add(dep);
+				}
+				System.out.println(line);
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		
+		try {
+			return toCompilationUnits(javaProject, dependencies);
+		} catch (JavaModelException e) {
+			e.printStackTrace();
+			return new ArrayList<ICompilationUnit>(0);
+		}
+	}
+	
+	private static List<ICompilationUnit> toCompilationUnits(IJavaProject javaProject, List<String> dependencies) throws JavaModelException {
+		List<ICompilationUnit> units = new ArrayList<ICompilationUnit>();
+		for(String dep : dependencies) {
+			ICompilationUnit depUnit = toCompilationUnit(javaProject, dep);
+			if (!(depUnit instanceof IClassFile)) {
+				units.add(depUnit);
+			}
+		}
+		return units;
+	}
+
+	private static ICompilationUnit toCompilationUnit(IJavaProject javaProject, String dependency) throws JavaModelException {
+		ResourceSearch search = new ResourceSearch(javaProject);
+		return search.search(dependency);
+	}
+
+	private static void createExecutable(IJavaProject javaProject, IFile file, ICompilationUnit unit) {
+		List<ICompilationUnit> deps = buildState.getDependencies(unit);
+		
+		try {
+			String workingDir = javaProject.getResource().getLocation().toOSString(); 
+			String binDir = workingDir + "\\bin";
+			String inFilename = unit.getFullyQualifiedName() + ".obj";
+			String outFilename = unit.getFullyQualifiedName() + ".exe";
+			
+			CompilerCommand command = new CompilerCommand();
+			command.setCommand("dmd");
+			command.addInputFile(inFilename);
+			for(ICompilationUnit dependency : deps) {
+				command.addInputFile(dependency.getFullyQualifiedName() + ".obj");
+			}
+			command.setOutputDir(binDir);
+			command.setOutputFile(outFilename);
+			
+			String cmd = command.toString();
+			
+			System.out.println(cmd);
+			
+			Process process = Runtime.getRuntime().exec(cmd, null, new File(binDir));
+			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			String line;
+			
+			while((line = reader.readLine()) != null) {
+				System.out.println(line);
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+	}
+//
+//	private static void findTaskTags(IJavaProject javaProject, boolean showSemanticErrors, IFile file, ICompilationUnit unit, ASTNodeEncoder encoder) throws CoreException {
+//		String source = unit.getSource();
+//		
+//		IPackageFragmentRoot root = (IPackageFragmentRoot) unit.getAncestor(IJavaElement.PACKAGE_FRAGMENT_ROOT);
+//		char[] filename = unit.getPath().removeFirstSegments(root.getPath().segmentCount()).toString().toCharArray();
+//		
+//		Parser parser = new Parser(
+//				Util.getApiLevel(javaProject), 
+//				source.toCharArray(), 
+//				0, 
+//				source.length(),
+//				getTaskTags(javaProject),
+//				getTaskPriorities(javaProject),
+//				getTaskCaseSensitive(javaProject),
+//				filename,
+//				encoder
+//				);
+//		Module module = parser.parseModuleObj();
+//		module.moduleName = unit.getFullyQualifiedName();
+//		
+//		if (showSemanticErrors) {
+//			CompilationUnitResolver.resolve(module, javaProject, unit.getOwner(), parser.encoder);
+//		}
+//		
+//		associateTaskTags(file, parser);
+////		associateProblems(file, module);
+//	}
 
 	/**
 	 * Removes any task markers from the given file.

@@ -2,7 +2,7 @@
 <feature
       id="descent.ui"
       label="Descent"
-      version="0.5.6.20090820"
+      version="0.5.6.20090830"
       provider-name="Descent">
 
    <description url="http://dsource.org/projects/descent">

@@ -348,7 +348,7 @@ public class CompletionEngine extends Engine
 			System.out.println(sourceUnit.getContents());
 		}
 		
-//		long time = System.currentTimeMillis();
+		long time = System.currentTimeMillis();
 		
 		this.requestor.beginReporting();
 		try {
@@ -484,8 +484,8 @@ public class CompletionEngine extends Engine
 		} finally {
 			this.requestor.endReporting();
 			
-//			time = System.currentTimeMillis() - time;
-//			System.out.println("Completion took " + time + " milliseconds to complete.");
+			time = System.currentTimeMillis() - time;
+			System.out.println("Completion took " + time + " milliseconds to complete.");
 		}
 	}
 

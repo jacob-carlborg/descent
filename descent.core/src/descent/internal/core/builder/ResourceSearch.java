@@ -1,4 +1,4 @@
-package descent.internal.debug.ui.console;
+package descent.internal.core.builder;
 
 import java.io.File;
 
