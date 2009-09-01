@@ -10,6 +10,11 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 
+import descent.core.ICompilationUnit;
+import descent.core.IJavaElement;
+import descent.core.JavaCore;
+import descent.core.JavaModelException;
+
 public class DLaunchableTester extends PropertyTester {
 	
 	private final static Set<String> knownFilesThatAreNotExecutables;
@@ -54,6 +59,20 @@ public class DLaunchableTester extends PropertyTester {
 			return false;
 		
 		String extension = resource.getFileExtension();
+		
+		if ("d".equals(extension) || "di".equals(extension)) {
+			IJavaElement element = JavaCore.create((IFile)resource);
+			if (element instanceof ICompilationUnit) {
+				ICompilationUnit unit = (ICompilationUnit) element;
+				try {
+					if (unit.hasMainMethod()) {
+						return true;
+					}
+				} catch (JavaModelException e) {
+				}
+			}
+		}
+		
 		if (knownFilesThatAreNotExecutables.contains(extension)) {
 			return false;
 		}

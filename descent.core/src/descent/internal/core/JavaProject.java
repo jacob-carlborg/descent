@@ -1078,17 +1078,10 @@ public class JavaProject
 
 				// lookup type
 				NameLookup lookup = newNameLookup(owner);
-				NameLookup.Answer answer = lookup.findType(
-					qualifiedName,
-					false,
-					NameLookup.ACCEPT_ALL,
-					true/* consider secondary types */,
-					false/* do NOT wait for indexes */,
-					false/*don't check restrictions*/,
-					null);
+				ICompilationUnit unit = lookup.findCompilationUnit(qualifiedName);
 
-				if (answer != null) {
-					return answer.type.getParent();
+				if (unit != null) {
+					return unit;
 				} else {
 					return null;
 				}

@@ -184,7 +184,7 @@ public class JavaBuilder extends IncrementalProjectBuilder {
 			String inFilename = file.getLocation().toOSString();
 			String workingDir = javaProject.getResource().getLocation().toOSString(); 
 			String binDir = workingDir + "\\bin";
-			String outFilename = unit.getFullyQualifiedName() + ".obj";;
+			String outFilename = unit.getFullyQualifiedName() + ".obj";
 			
 			CompilerCommand command = new CompilerCommand();
 			command.setCommand("dmd");
@@ -234,8 +234,10 @@ public class JavaBuilder extends IncrementalProjectBuilder {
 	}
 
 	private static ICompilationUnit toCompilationUnit(IJavaProject javaProject, String dependency) throws JavaModelException {
-		ResourceSearch search = new ResourceSearch(javaProject);
-		return search.search(dependency);
+		dependency = dependency.replace('.', '/') + ".d";
+		IPath path = new Path(dependency);
+		
+		return (ICompilationUnit) javaProject.findElement(path);
 	}
 
 	private static void createExecutable(IJavaProject javaProject, IFile file, ICompilationUnit unit) {

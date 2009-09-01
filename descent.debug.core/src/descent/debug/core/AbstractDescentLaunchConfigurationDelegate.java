@@ -40,6 +40,8 @@ import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.debug.core.model.LaunchConfigurationDelegate;
 import org.eclipse.jface.preference.IPreferenceStore;
 
+import descent.core.ICompilationUnit;
+import descent.core.IJavaElement;
 import descent.core.IJavaProject;
 import descent.core.JavaCore;
 import descent.internal.debug.core.model.DescentDebugTarget;
@@ -274,9 +276,24 @@ public abstract class AbstractDescentLaunchConfigurationDelegate extends LaunchC
 		if (programPath == null || programPath.isEmpty()) {
 			return null;
 		}
+		
 		if (!programPath.isAbsolute()) {
 			IFile wsProgramPath = cproject.getProject().getFile(programPath);
 			programPath = wsProgramPath.getLocation();
+		} else {
+			IPath projectPath = cproject.getResource().getLocation();
+			if (projectPath.isPrefixOf(programPath)) {
+				programPath = programPath.makeRelativeTo(projectPath);
+			}
+			
+			IJavaElement element = cproject.findElement(programPath);
+			if (element instanceof ICompilationUnit) {
+				// Translate to .exe in bin folder
+				String workingDir = cproject.getResource().getLocation().toOSString(); 
+				String binDir = workingDir + "\\bin\\";
+				String outFilename = ((ICompilationUnit)element).getFullyQualifiedName() + ".exe";
+				programPath = new Path(binDir, outFilename);
+			}
 		}
 		if (!programPath.toFile().exists()) {
 			abort(
