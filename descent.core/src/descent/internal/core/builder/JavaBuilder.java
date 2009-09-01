@@ -8,6 +8,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -42,6 +44,14 @@ public class JavaBuilder extends IncrementalProjectBuilder {
 	
 	private static BuildState buildState = new BuildState();
 	
+	private static final String ERROR_REGEX = "(\\w:)?.*?:";
+	private static final String LINE_REGEX = "^(.*?)\\((\\d+)\\):";
+	private static final String NO_LINE_REGEX = "^(.*?\\.di?):";
+
+	private static Pattern errorPattern = Pattern.compile(ERROR_REGEX);
+	private static Pattern linePattern = Pattern.compile(LINE_REGEX);
+	private static Pattern noLinePattern = Pattern.compile(NO_LINE_REGEX);
+	
 	@Override
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
 		IProject project = getProject();
@@ -62,7 +72,7 @@ public class JavaBuilder extends IncrementalProjectBuilder {
 			BuildRequest request = buildState.pop();
 			build(request);
 			
-			if (request.unit.hasMainMethod()) {
+			if (!request.isDelete && request.unit.hasMainMethod()) {
 				executables.add(request.unit);
 			}
 		}
@@ -75,17 +85,47 @@ public class JavaBuilder extends IncrementalProjectBuilder {
 	}
 
 	private void build(BuildRequest request) {
-		List<ICompilationUnit> dependencies = compile(request.unit.getJavaProject(), request.file, request.unit);
-		buildState.setDependencies(request.unit, dependencies);
-		
-		List<ICompilationUnit> reverseDependencies = buildState.getCompilationUnitsThatDependOn(request.unit);
-		if (!request.isDependency && reverseDependencies != null) {
-			for(ICompilationUnit reverse : reverseDependencies) {
-				BuildRequest depRequest = new BuildRequest(reverse, (IFile) reverse.getResource(), request.encoder);
-				depRequest.isDependency = true;
-				buildState.add(depRequest);
+		if (request.isDelete) {
+			clean(request.unit.getJavaProject(), request.unit);
+			
+			List<ICompilationUnit> reverseDependencies = buildState.getCompilationUnitsThatDependOn(request.unit);
+			
+			buildState.setDependencies(request.unit, null);
+			
+			// Must recompile all affected files
+			if (!request.isDependency && reverseDependencies != null) {
+				for(ICompilationUnit reverse : reverseDependencies) {
+					BuildRequest depRequest = new BuildRequest(reverse, (IFile) reverse.getResource(), request.encoder);
+					depRequest.isDependency = true;
+					buildState.add(depRequest);
+				}
+			}
+		} else {
+			List<ICompilationUnit> dependencies = compile(request.unit.getJavaProject(), request.file, request.unit);
+			buildState.setDependencies(request.unit, dependencies);
+			
+			// Must recompile all affected files
+			List<ICompilationUnit> reverseDependencies = buildState.getCompilationUnitsThatDependOn(request.unit);
+			if (!request.isDependency && reverseDependencies != null) {
+				for(ICompilationUnit reverse : reverseDependencies) {
+					BuildRequest depRequest = new BuildRequest(reverse, (IFile) reverse.getResource(), request.encoder);
+					depRequest.isDependency = true;
+					buildState.add(depRequest);
+				}
 			}
 		}
+	}
+	
+	private void clean(IJavaProject javaProject, ICompilationUnit unit) {
+		String workingDir = javaProject.getResource().getLocation().toOSString(); 
+		String binDir = workingDir + "\\bin";
+		String outFilename = unit.getFullyQualifiedName() + ".obj";
+		String mapFilename = unit.getFullyQualifiedName() + ".map";
+		String exeFilename = unit.getFullyQualifiedName() + ".exe";
+		
+		new File(binDir, outFilename).delete();
+		new File(binDir, mapFilename).delete();
+		new File(binDir, exeFilename).delete();
 	}
 
 	private void fullBuild(IProject project, IProgressMonitor monitor) throws CoreException {
@@ -121,12 +161,16 @@ public class JavaBuilder extends IncrementalProjectBuilder {
 			if (resource.getType() == IResource.FILE) {
 				switch(delta.getKind()) {
 				case IResourceDelta.ADDED:
-				case IResourceDelta.CHANGED:
+				case IResourceDelta.CHANGED: {
 					IFile file = (IFile) resource;
 					build(JavaCore.create(file.getProject()), showSemanticErrors, file, encoder);
 					break;
-				case IResourceDelta.REMOVED:
+				}
+				case IResourceDelta.REMOVED: {
+					IFile file = (IFile) resource;
+					delete(JavaCore.create(file.getProject()), file);
 					break;
+				}
 				}
 			}
 			return true;
@@ -168,16 +212,35 @@ public class JavaBuilder extends IncrementalProjectBuilder {
 	 * Associate tasks and problems to the given file, 
 	 * if that file is an ICompilationUnit.
 	 */
-	public static void build(IJavaProject javaProject, boolean showSemanticErrors,  IFile file, ASTNodeEncoder encoder) throws CoreException {
+	public static void build(IJavaProject javaProject, boolean showSemanticErrors, IFile file, ASTNodeEncoder encoder) throws CoreException {
 		IJavaElement element = JavaCore.create(file);
 		if (element != null && element.getElementType() == IJavaElement.COMPILATION_UNIT) {
 			ICompilationUnit unit = (ICompilationUnit) element;
 			buildState.add(new BuildRequest(unit, file, encoder));
 		}
 	}
+	
+	private void delete(IJavaProject javaProject, IFile file) {
+		IJavaElement element = JavaCore.create(file);
+		if (element != null && element.getElementType() == IJavaElement.COMPILATION_UNIT) {
+			ICompilationUnit unit = (ICompilationUnit) element;
+			
+			BuildRequest request = new BuildRequest(unit, file, null);
+			request.isDelete = true;
+			buildState.add(request);
+		}
+	}
 
 	// Compiles and returns the dependencies
 	private static List<ICompilationUnit> compile(IJavaProject javaProject, IFile file, ICompilationUnit unit) {
+		try {
+			removeProblems(file);
+		} catch (CoreException e1) {
+			e1.printStackTrace();
+		}
+		
+		ResourceSearch search = new ResourceSearch(javaProject);
+		
 		List<String> dependencies = new ArrayList<String>();
 		
 		try {
@@ -189,6 +252,7 @@ public class JavaBuilder extends IncrementalProjectBuilder {
 			CompilerCommand command = new CompilerCommand();
 			command.setCommand("dmd");
 			command.setCompile(true);
+			command.setDebug(true);
 			command.setFindDependencies(true);
 			command.addInputFile(inFilename);
 			command.setOutputDir(binDir);
@@ -196,7 +260,7 @@ public class JavaBuilder extends IncrementalProjectBuilder {
 			
 			String cmd = command.toString();
 			
-			System.out.println(cmd);
+//			System.out.println(cmd);
 			
 			Process process = Runtime.getRuntime().exec(cmd, null, new File(workingDir));
 			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
@@ -207,8 +271,35 @@ public class JavaBuilder extends IncrementalProjectBuilder {
 					int end = line.indexOf('\t', 10);
 					String dep = line.substring(10, end);
 					dependencies.add(dep);
+				} else {
+					Matcher matcher = errorPattern.matcher(line);
+					boolean match = matcher.find(0);
+					if (match) {
+						String filename;
+						int linenumber;
+						String message;
+						
+						Matcher split = linePattern.matcher(line);
+						if (split.find(0) && split.groupCount() == 2) {
+							message = line.substring(split.group(0).length()).trim();
+							filename = split.group(1);
+							linenumber = Integer.parseInt(split.group(2));
+						} else {
+							split = noLinePattern.matcher(line);
+							if (!split.matches() || split.groupCount() != 1)
+								continue;
+							message = line.substring(split.group(0).length()).trim();
+							filename = split.group(1);
+							linenumber = 0;
+						}
+						
+						ICompilationUnit target = search.search(filename);
+						if (target.getResource().equals(file)) {
+							associateProblem(file, linenumber, message);
+						}
+					}
 				}
-				System.out.println(line);
+//				System.out.println(line);
 			}
 		} catch (Exception e) {
 			System.out.println(e);
@@ -251,6 +342,7 @@ public class JavaBuilder extends IncrementalProjectBuilder {
 			
 			CompilerCommand command = new CompilerCommand();
 			command.setCommand("dmd");
+			command.setDebug(true);
 			command.addInputFile(inFilename);
 			for(ICompilationUnit dependency : deps) {
 				command.addInputFile(dependency.getFullyQualifiedName() + ".obj");
@@ -260,14 +352,14 @@ public class JavaBuilder extends IncrementalProjectBuilder {
 			
 			String cmd = command.toString();
 			
-			System.out.println(cmd);
+//			System.out.println(cmd);
 			
 			Process process = Runtime.getRuntime().exec(cmd, null, new File(binDir));
 			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			String line;
 			
 			while((line = reader.readLine()) != null) {
-				System.out.println(line);
+//				System.out.println(line);
 			}
 		} catch (Exception e) {
 			System.out.println(e);
@@ -360,6 +452,13 @@ public class JavaBuilder extends IncrementalProjectBuilder {
 			marker.setAttribute(IMarker.CHAR_END, problem.getSourceEnd() + 1); // for markers it's + 1
 			marker.setAttribute(IMarker.LINE_NUMBER, problem.getSourceLineNumber());
 		}
+	}
+	
+	private static void associateProblem(IFile file, int lineNumber, String message) throws CoreException {
+		IMarker marker = file.createMarker(IJavaModelMarker.JAVA_MODEL_PROBLEM_MARKER);
+		marker.setAttribute(IMarker.MESSAGE, message);
+		marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
+		marker.setAttribute(IMarker.LINE_NUMBER, lineNumber);
 	}
 	
 	private static char[][] getTaskTags(IJavaProject project) {

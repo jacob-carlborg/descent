@@ -11,9 +11,14 @@ public class CompilerCommand {
 	private String outputFile;
 	private List<String> inFiles;
 	private boolean findDependencies;
+	private boolean debug;
 	
 	public CompilerCommand() {
 		this.inFiles = new ArrayList<String>();
+	}
+	
+	public void setDebug(boolean debug) {
+		this.debug = debug;
 	}
 	
 	public void setCommand(String command) {
@@ -58,6 +63,9 @@ public class CompilerCommand {
 		}
 		if (findDependencies) {
 			sb.append(" -v");
+		}
+		if (debug) {
+			sb.append(" -g");
 		}
 		return sb.toString();
 	}

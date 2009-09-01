@@ -12,6 +12,7 @@ public class BuildRequest {
 	public IFile file;
 	public ASTNodeEncoder encoder;
 	public boolean isDependency;
+	public boolean isDelete;
 	
 	public BuildRequest(ICompilationUnit unit, IFile file, ASTNodeEncoder encoder) {
 		this.unit = unit;

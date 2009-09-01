@@ -51,23 +51,27 @@ public class BuildState {
 	
 	public void setDependencies(ICompilationUnit unit, List<ICompilationUnit> dependencies) {
 		// First remove old dependencies from the reverse lookup
-		for(ICompilationUnit dependency : dependencies) {
-			List<ICompilationUnit> list = this.reverseDependencies.get(dependency);
-			if (list != null) {
-				list.remove(unit);
+		if (dependencies != null) {
+			for(ICompilationUnit dependency : dependencies) {
+				List<ICompilationUnit> list = this.reverseDependencies.get(dependency);
+				if (list != null) {
+					list.remove(unit);
+				}
 			}
 		}
 		
 		this.dependencies.put(unit, dependencies);
 		
 		// Then add the new dependencies to the reverse lookup
-		for(ICompilationUnit dependency : dependencies) {
-			List<ICompilationUnit> list = this.reverseDependencies.get(dependency);
-			if (list == null) {
-				list = new ArrayList<ICompilationUnit>();
-				this.reverseDependencies.put(dependency, list);
+		if (dependencies != null) {
+			for(ICompilationUnit dependency : dependencies) {
+				List<ICompilationUnit> list = this.reverseDependencies.get(dependency);
+				if (list == null) {
+					list = new ArrayList<ICompilationUnit>();
+					this.reverseDependencies.put(dependency, list);
+				}
+				list.add(unit);
 			}
-			list.add(unit);
 		}
 	}
 	
