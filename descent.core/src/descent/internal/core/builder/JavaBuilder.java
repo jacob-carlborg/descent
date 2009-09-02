@@ -326,7 +326,9 @@ public class JavaBuilder extends IncrementalProjectBuilder {
 		List<ICompilationUnit> units = new ArrayList<ICompilationUnit>();
 		for(String dep : dependencies) {
 			ICompilationUnit depUnit = toCompilationUnit(javaProject, dep);
-			units.add(depUnit);
+			if (!(depUnit instanceof IClassFile)) {
+				units.add(depUnit);
+			}
 		}
 		return units;
 	}
