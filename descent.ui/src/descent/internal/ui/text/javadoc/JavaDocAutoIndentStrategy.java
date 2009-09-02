@@ -54,14 +54,16 @@ public class JavaDocAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy
 
 	/** The partitioning that this strategy operates on. */
 	private final String fPartitioning;
+	private final String fStar;
 
 	/**
 	 * Creates a new Javadoc auto indent strategy for the given document partitioning.
 	 *
 	 * @param partitioning the document partitioning
 	 */
-	public JavaDocAutoIndentStrategy(String partitioning) {
+	public JavaDocAutoIndentStrategy(String partitioning, String star) {
 		fPartitioning= partitioning;
+		fStar = star;
 	}
 
 	/**
@@ -96,14 +98,16 @@ public class JavaDocAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy
 			if (firstNonWS < offset) {
 				if (d.getChar(firstNonWS) == '/') {
 					// javadoc started on this line
-					buf.append(" * "); //$NON-NLS-1$
+					buf.append(" "); //$NON-NLS-1$
+					buf.append(fStar); //$NON-NLS-1$
+					buf.append(" "); //$NON-NLS-1$
 
 					if (isPreferenceTrue(PreferenceConstants.EDITOR_CLOSE_JAVADOCS) && isNewComment(d, offset)) {
 						c.shiftsCaret= false;
 						c.caretOffset= c.offset + buf.length();
 						String lineDelimiter= TextUtilities.getDefaultLineDelimiter(d);
 
-						String endTag= lineDelimiter + indentation + " */"; //$NON-NLS-1$
+						String endTag= lineDelimiter + indentation + " " + fStar + "/"; //$NON-NLS-1$
 
 						if (isPreferenceTrue(PreferenceConstants.EDITOR_ADD_JAVADOC_TAGS)) {
 							// we need to close the comment before computing
@@ -169,7 +173,7 @@ public class JavaDocAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy
 		int lineOffset= line.getOffset();
 		int lineEnd= lineOffset + line.getLength();
 		int indentEnd= findEndOfWhiteSpace(document, lineOffset, lineEnd);
-		if (indentEnd < lineEnd && document.getChar(indentEnd) == '*') {
+		if (indentEnd < lineEnd && document.getChar(indentEnd) == fStar.charAt(0)) {
 			indentEnd++;
 			while (indentEnd < lineEnd && document.getChar(indentEnd) == ' ')
 				indentEnd++;
@@ -221,11 +225,11 @@ public class JavaDocAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy
 	 */
 	private String prepareTemplateComment(String comment, String indentation, IJavaProject project, String lineDelimiter) {
 		//	trim comment start and end if any
-		if (comment.endsWith("*/")) //$NON-NLS-1$
+		if (comment.endsWith(fStar + "/")) //$NON-NLS-1$
 			comment= comment.substring(0, comment.length() - 2);
 		comment= comment.trim();
-		if (comment.startsWith("/*")) { //$NON-NLS-1$
-			if (comment.length() > 2 && comment.charAt(2) == '*') {
+		if (comment.startsWith("/" + fStar)) { //$NON-NLS-1$
+			if (comment.length() > 2 && comment.charAt(2) == fStar.charAt(0)) {
 				comment= comment.substring(3); // remove '/**'
 			} else {
 				comment= comment.substring(2); // remove '/*'
@@ -247,7 +251,7 @@ public class JavaDocAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy
 		String[] typeParamNames= StubUtility.getTypeParameterNames(type.getTypeParameters());
 		String comment= CodeGeneration.getTypeComment(type.getCompilationUnit(), type.getTypeQualifiedName('.'), typeParamNames, lineDelimiter);
 		if (comment != null) {
-			boolean javadocComment= comment.startsWith("/**"); //$NON-NLS-1$
+			boolean javadocComment= comment.startsWith("/" + fStar + fStar); //$NON-NLS-1$
 			if (!isFirstComment(document, command, type, javadocComment)) 
 				return null;
 			return prepareTemplateComment(comment.trim(), indentation, type.getJavaProject(), lineDelimiter);
@@ -263,10 +267,12 @@ public class JavaDocAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy
 		String comment= CodeGeneration.getMethodComment(method, inheritedMethod, lineDelimiter);
 		if (comment != null) {
 			comment= comment.trim();
-			boolean javadocComment= comment.startsWith("/**"); //$NON-NLS-1$
+			comment = comment.replace("*", fStar);
+			
+			boolean javadocComment= comment.startsWith("/" + fStar + fStar); //$NON-NLS-1$
 			if (!isFirstComment(document, command, method, javadocComment))
 				return null;
-			boolean isJavaDoc= partition.getLength() >= 3 && document.get(partition.getOffset(), 3).equals("/**"); //$NON-NLS-1$
+			boolean isJavaDoc= partition.getLength() >= 3 && document.get(partition.getOffset(), 3).equals("/" + fStar + fStar); //$NON-NLS-1$
 			if (javadocComment == isJavaDoc) {
 				return prepareTemplateComment(comment, indentation, method.getJavaProject(), lineDelimiter);
 			}
@@ -298,7 +304,7 @@ public class JavaDocAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy
 			nameRelativeOffset = nameRange.getOffset() - srcOffset;
 		}
 		int partitionRelativeOffset= partition.getOffset() - srcOffset;
-		String token= ignoreNonJavadoc ? "/**" :  "/*"; //$NON-NLS-1$ //$NON-NLS-2$
+		String token= ignoreNonJavadoc ? "/" + fStar + fStar :  "/" + fStar; //$NON-NLS-1$ //$NON-NLS-2$
 		return document.get(srcOffset, srcLength).lastIndexOf(token, nameRelativeOffset) == partitionRelativeOffset; 
 	}
 
@@ -313,7 +319,7 @@ public class JavaDocAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy
 			return;
 		}
 		try {
-			if ("* ".equals(d.get(c.offset - 2, 2))) { //$NON-NLS-1$
+			if ((fStar + " ").equals(d.get(c.offset - 2, 2))) { //$NON-NLS-1$
 				// modify document command
 				c.length++;
 				c.offset--;
@@ -348,7 +354,7 @@ public class JavaDocAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy
 				return true; // partition goes to end of document - probably a new comment
 
 			String comment= document.get(partition.getOffset(), partition.getLength());
-			if (comment.indexOf("/*", 2) != -1) //$NON-NLS-1$
+			if (comment.indexOf("/" + fStar, 2) != -1) //$NON-NLS-1$
 				return true; // enclosed another comment -> probably a new comment
 
 			return false;
