@@ -1110,8 +1110,8 @@ public class ModuleBuilder {
 	}
 	
 	protected void copySourceRange(ASTDmdNode node, ISourceReference sourceReference) throws JavaModelException {
-		ISourceRange range = sourceReference.getSourceRange();
-		node.setSourceRange(range.getOffset(), range.getLength());
+//		ISourceRange range = sourceReference.getSourceRange();
+//		node.setSourceRange(range.getOffset(), range.getLength());
 	}
 	
 	protected void copySourceRangeRecursive(ASTDmdNode node, ISourceReference sourceReference) throws JavaModelException {

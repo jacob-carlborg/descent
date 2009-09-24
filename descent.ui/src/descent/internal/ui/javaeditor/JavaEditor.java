@@ -2952,7 +2952,6 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 		 */
 		@Override
 		public IStatus run(IProgressMonitor progressMonitor) {
-
 			fProgressMonitor= progressMonitor;
 
 			if (isCanceled())

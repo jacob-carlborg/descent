@@ -40,6 +40,7 @@ import descent.internal.codeassist.complete.CompletionOnJavadocImpl;
 import descent.internal.codeassist.complete.CompletionOnModuleDeclaration;
 import descent.internal.codeassist.complete.CompletionOnNewExp;
 import descent.internal.codeassist.complete.CompletionOnReturnStatement;
+import descent.internal.codeassist.complete.CompletionOnSliceExp;
 import descent.internal.codeassist.complete.CompletionOnSuperDotExp;
 import descent.internal.codeassist.complete.CompletionOnTemplateMixin;
 import descent.internal.codeassist.complete.CompletionOnThisDotExp;
@@ -560,10 +561,13 @@ public class CompletionEngine extends Engine
 			} else if (assistNode instanceof CompletionOnInterfaceDeclaration) {
 				CompletionOnInterfaceDeclaration node = (CompletionOnInterfaceDeclaration) assistNode;
 				completeInterfaceDeclaration(node);
+			} else if (assistNode instanceof CompletionOnSliceExp) {
+				CompletionOnSliceExp node = (CompletionOnSliceExp) assistNode;
+				completeSliceExp(node);
 			}
 		}
 	}
-	
+
 	private void computeExpectedType() {
 		computeExpectedTypeBasic();
 		
@@ -1374,13 +1378,6 @@ public class CompletionEngine extends Engine
 		}
 		
 		if (node.e1 != null && node.e1.type != null) {
-			if (node.sourceE1 instanceof CompletionOnDotIdExp) {
-				this.wantArguments = false;
-				this.isBetweenMethodName = true;
-				completeNode(node.sourceE1);
-				return;
-			}
-			
 			currentName = CharOperation.NO_CHAR;
 			startPosition = actualCompletionPosition;
 			endPosition = actualCompletionPosition;
@@ -1451,6 +1448,50 @@ public class CompletionEngine extends Engine
 		} else if (node.sourceNewtype != null) {
 			completeNode(node.sourceNewtype);
 		}
+	}
+	
+	private void completeSliceExp(CompletionOnSliceExp node) throws JavaModelException {
+		doSemantic();
+		
+		Expression e = node.e1;
+		if (!(e instanceof VarExp))
+			return;
+		
+		VarExp varExp = (VarExp) e;
+		Declaration decl = varExp.var;
+		Type type = decl.type;
+
+		ScopeDsymbol sym;
+		if (type instanceof TypeClass) {
+			sym = ((TypeClass) type).sym;
+		} else if (type instanceof TypeStruct) {
+			sym = ((TypeStruct) type).sym;
+		} else {
+			return;
+		}
+		
+		// Search opIndex
+		Dsymbol dsym = ASTDmdNode.search_function(sym, Id.index, context);
+		if (dsym == null)
+			return;
+		
+		if (dsym instanceof TemplateDeclaration) {
+			TemplateDeclaration temp = (TemplateDeclaration) dsym;
+			if (!temp.wrapper || temp.members == null || temp.members.isEmpty() )
+				return;
+			
+			dsym = temp.members.get(0);
+		}
+		
+		if (!(dsym instanceof FuncDeclaration))
+			return;
+		
+		currentName = CharOperation.NO_CHAR;
+		startPosition = actualCompletionPosition;
+		endPosition = actualCompletionPosition;
+		
+		FuncDeclaration func = (FuncDeclaration) dsym;
+		suggestContextInfo(func);
 	}
 	
 	private void completeTemplateMixin(CompletionOnTemplateMixin node) throws JavaModelException {
@@ -2890,9 +2931,13 @@ public class CompletionEngine extends Engine
 				char[] funcName = ident;
 				
 				// Skip op*, unless currentName starts with op
-				if ((includes & INCLUDE_OPCALL) == 0 && ops.containsKey(funcName) &&
-						!CharOperation.prefixEquals(op, currentName)) {
-					return;
+				if (wantMethodContextInfo && CharOperation.equals(funcName, Id.index)) {
+					
+				} else {
+					if ((includes & INCLUDE_OPCALL) == 0 && ops.containsKey(funcName) &&
+							!CharOperation.prefixEquals(op, currentName)) {
+						return;
+					}
 				}
 				
 				// Skip special functions if not completing constructors and opCall

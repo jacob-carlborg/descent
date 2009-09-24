@@ -1319,8 +1319,8 @@ public class SourceElementParser extends AstVisitorAdapter {
 		}
 		
 		int initializerStart = node.sourceInit == null ? - 1 : startOf(node.sourceInit); // SEMANTIC
-		int declarationSourceEnd = endOf(last);
-		int declarationEnd = endOfDeclaration(node.ident);
+		int declarationSourceEnd = endOfDeclaration(last);
+		int declarationEnd = endOf(node.ident);
 		
 		requestor.exitField(initializerStart, declarationEnd, declarationSourceEnd);
 	}
@@ -1337,8 +1337,8 @@ public class SourceElementParser extends AstVisitorAdapter {
 		}
 		
 		int initializerStart = endOf(node.ident);
-		int declarationSourceEnd = endOf(last);
-		int declarationEnd = endOfDeclaration(node.ident);
+		int declarationSourceEnd = endOfDeclaration(last);
+		int declarationEnd = endOf(node.ident);
 		
 		requestor.exitField(initializerStart, declarationEnd, declarationSourceEnd);
 	}
@@ -1350,8 +1350,8 @@ public class SourceElementParser extends AstVisitorAdapter {
 		}
 		
 		int initializerStart = endOf(node.ident);
-		int declarationSourceEnd = endOf(node);
-		int declarationEnd = endOfDeclaration(node.ident);
+		int declarationSourceEnd = endOfDeclaration(node);
+		int declarationEnd = endOf(node.ident);
 		
 		requestor.exitField(initializerStart, declarationEnd, declarationSourceEnd);
 	}
@@ -1368,8 +1368,8 @@ public class SourceElementParser extends AstVisitorAdapter {
 		}
 		
 		int initializerStart = endOf(node.ident);
-		int declarationSourceEnd = endOf(last);
-		int declarationEnd = endOfDeclaration(node.ident);
+		int declarationSourceEnd = endOfDeclaration(last);
+		int declarationEnd = endOf(node.ident);
 		
 		requestor.exitField(initializerStart, declarationEnd, declarationSourceEnd);
 	}

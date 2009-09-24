@@ -7570,14 +7570,14 @@ public class Parser extends Lexer {
 				inBrackets++;
 				nextToken();
 				if (token.value == TOKrbracket) { // array[]
-					e = new SliceExp(filename, lineNumber, e, null, null);
+					e = newSliceExp(filename, lineNumber, e, null, null);
 					nextToken();
 				} else {
 					index = parseAssignExp();
 					if (token.value == TOKslice) { // array[lwr .. upr]
 						nextToken();
 						upr = parseAssignExp();
-						e = new SliceExp(filename, lineNumber, e, index, upr);
+						e = newSliceExp(filename, lineNumber, e, index, upr);
 					} else { // array[index, i2, i3, i4, ...]
 						Expressions arguments = new Expressions(2);
 						arguments.add(index);
@@ -7614,7 +7614,7 @@ public class Parser extends Lexer {
 				nextToken();
 			}
 	    }
-	}
+	}	
 
 	private Expression parseUnaryExp() {
 		Expression e;
@@ -9243,6 +9243,10 @@ public class Parser extends Lexer {
 	
 	protected AliasThis newAliasThis(char[] filename, int lineNumber, IdentifierExp id) {
 		return new AliasThis(filename, lineNumber, id);
+	}
+	
+	protected SliceExp newSliceExp(char[] filename, int lineNumber, Expression e, Expression lwr, Expression upr) {
+		return new SliceExp(filename, lineNumber, e, lwr, upr);
 	}
 	
 	protected Import addImportAlias(Import s, IdentifierExp name, IdentifierExp alias) {

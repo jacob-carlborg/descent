@@ -230,7 +230,6 @@ public class JavaParameterListValidator implements IContextInformationValidator,
 	 * @see IContextInformationValidator#isContextInformationValid(int)
 	 */
 	public boolean isContextInformationValid(int position) {
-
 		try {
 			if (position < fPosition)
 				return false;
@@ -241,27 +240,30 @@ public class JavaParameterListValidator implements IContextInformationValidator,
 			if (position < line.getOffset() || position >= document.getLength())
 				return false;
 			
-			boolean isSetter = false;
 			int pos = fPosition;
-		loop:
-			while(pos >= 0) {
-				char c = document.getChar(pos);
-				switch(c) {
-				case '(':
-					break loop;
-				case '=':
-					isSetter = true;
-					break loop;
+			if (document.getChar(pos - 1) == '[') {
+				return getCharCount(document, fPosition, position, "[", "]", false) >= 0; //$NON-NLS-1$ //$NON-NLS-2$
+			} else {
+				boolean isSetter = false;
+			loop:
+				while(pos >= 0) {
+					char c = document.getChar(pos);
+					switch(c) {
+					case '(':
+						break loop;
+					case '=':
+						isSetter = true;
+						break loop;
+					}
+					pos--;
 				}
-				pos--;
-			}
-			
-			if (isSetter) {
-				return Character.isJavaIdentifierPart(document.getChar(position));
-			}
+				
+				if (isSetter) {
+					return Character.isJavaIdentifierPart(document.getChar(position));
+				}
 
-			return getCharCount(document, fPosition, position, "(", ")", false) >= 0; //$NON-NLS-1$ //$NON-NLS-2$
-
+				return getCharCount(document, fPosition, position, "(", ")", false) >= 0; //$NON-NLS-1$ //$NON-NLS-2$
+			}
 		} catch (BadLocationException x) {
 			return false;
 		}

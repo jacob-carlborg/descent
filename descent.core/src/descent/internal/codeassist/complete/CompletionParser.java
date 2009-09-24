@@ -36,6 +36,7 @@ import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.ModuleDeclaration;
 import descent.internal.compiler.parser.Objects;
 import descent.internal.compiler.parser.Parser;
+import descent.internal.compiler.parser.SliceExp;
 import descent.internal.compiler.parser.Statement;
 import descent.internal.compiler.parser.Statements;
 import descent.internal.compiler.parser.StructDeclaration;
@@ -889,6 +890,16 @@ public class CompletionParser extends Parser {
 		
 		return newExp;
 	}
+	
+//	@Override
+//	protected SliceExp newSliceExp(char[] filename, int lineNumber, Expression e, Expression lwr, Expression upr) {
+//		if (prevToken.value == TOK.TOKlbracket && prevToken.ptr + prevToken.sourceLen <= cursorLocation && cursorLocation <= token.ptr) {
+//			assistNode = new CompletionOnSliceExp(filename, lineNumber, e, lwr, upr);
+//			return (SliceExp) assistNode;
+//		} else {
+//			return super.newSliceExp(filename, lineNumber, e, lwr, upr);
+//		}
+//	}
 	
 	@Override
 	protected Statement newReturnStatement(char[] filename, int lineNumber, Expression exp) {
