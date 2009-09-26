@@ -74,8 +74,6 @@ public class Scope {
 
 	public AnonymousAggregateDeclaration anonAgg; // for temporary analysis
 
-	public SemanticContext context;
-	
 	/*
 	 * The number of this scope, for determining the correct signature of local
 	 * variables. The first scope is 0, the second is 1. For example:
@@ -92,7 +90,6 @@ public class Scope {
 	}
 
 	public Scope(SemanticContext context) {
-		this.context = context;
 		this.module = null;
 		this.scopesym = null;
 		this.sd = null;
@@ -124,8 +121,7 @@ public class Scope {
 		this.anonAgg = null;
 	}
 
-	public Scope(Scope enclosing, SemanticContext context) {
-		this.context = context;
+	public Scope(Scope enclosing) {
 		this.module = enclosing.module;
 		this.func = enclosing.func;
 		this.parent = enclosing.parent;
@@ -155,7 +151,6 @@ public class Scope {
 		this.callSuper = enclosing.callSuper;
 		this.flags = 0;
 		this.anonAgg = null;
-		this.context = context;
 	}
 	
 	public static Scope copy(Scope scope) {
@@ -246,7 +241,7 @@ public class Scope {
 		return null;
 	}
 
-	public void mergeCallSuper(char[] filename, int lineNumber, int cs, ASTDmdNode reference) {
+	public void mergeCallSuper(char[] filename, int lineNumber, int cs, ASTDmdNode reference, SemanticContext context) {
 		// This does a primitive flow analysis to support the restrictions
 		// regarding when and how constructors can appear.
 		// It merges the results of two paths.
@@ -285,7 +280,7 @@ public class Scope {
 	}
 
 	public Scope push() {
-		Scope s = new Scope(this, context);
+		Scope s = new Scope(this);
 		assert (this != s);
 		return s;
 	}

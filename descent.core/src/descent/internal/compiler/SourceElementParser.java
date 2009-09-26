@@ -177,12 +177,12 @@ public class SourceElementParser extends AstVisitorAdapter {
 		return module;
 	}
 	
-	protected int startOf(ASTDmdNode node) {
+	private static int startOf(ASTDmdNode node) {
 		if (node == null) return 0;
 		return node.start;
 	}
 	
-	protected int endOf(ASTDmdNode node) {
+	protected static int endOf(ASTDmdNode node) {
 		if (node == null) return 0;
 		int end = startOf(node) + node.length - 1;
 		if (end <= 0) {
@@ -256,7 +256,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		}
 	}
 	
-	protected int getFlags(ASTDmdNode node, List<Modifier> modifiers) {
+	private int getFlags(ASTDmdNode node, List<Modifier> modifiers) {
 		int flags = 0;
 		if (modifiers != null) {
 			for(Modifier modifier : modifiers) {
@@ -297,7 +297,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		return flags;
 	}
 	
-	private char[][] getTokens(BaseClasses baseClasses) {
+	private static char[][] getTokens(BaseClasses baseClasses) {
 		if (baseClasses == null || baseClasses.size() == 0) {
 			return CharOperation.NO_CHAR_CHAR;
 		}
@@ -327,7 +327,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		return infos;
 	}
 	
-	private char[][] getParameterNames(Arguments arguments) {
+	private static char[][] getParameterNames(Arguments arguments) {
 		if (arguments.size() == 0) return CharOperation.NO_CHAR_CHAR;
 		
 		char[][] names = new char[arguments.size()][];
@@ -342,7 +342,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		return names;
 	}
 	
-	private char[][] getParameterTypes(Arguments arguments) {
+	private static char[][] getParameterTypes(Arguments arguments) {
 		if (arguments.size() == 0) return CharOperation.NO_CHAR_CHAR;
 		
 		char[][] types = new char[arguments.size()][];
@@ -367,7 +367,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		return values;
 	}
 	
-	private char[] getSignature(Type node) {
+	private static char[] getSignature(Type node) {
 		if (node == null) {
 			return CharOperation.NO_CHAR;
 		} else {
@@ -1042,7 +1042,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		return false;
 	}
 
-	private String[] getSelectiveImportsAliases(Import node) {
+	private static String[] getSelectiveImportsAliases(Import node) {
 		if (node.aliases == null || node.aliases.size() == 0) {
 			return null;
 		}
@@ -1057,7 +1057,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		return ret;
 	}
 
-	private String[] getSelectiveImportsNames(Import node) {
+	private static String[] getSelectiveImportsNames(Import node) {
 		if (node.names == null || node.names.size() == 0) {
 			return null;
 		}
@@ -1072,14 +1072,14 @@ public class SourceElementParser extends AstVisitorAdapter {
 		return ret;
 	}
 
-	private String getAlias(Import node) {
+	private static String getAlias(Import node) {
 		if (node.aliasId != null) {
 			return new String(node.aliasId.ident);
 		}
 		return null;
 	}
 
-	private String getName(Import node) {
+	private static String getName(Import node) {
 		StringBuilder sb = new StringBuilder();
 		if (node.packages != null && !node.packages.isEmpty()) {
 			for (int i = 0; i < node.packages.size(); i++) {
@@ -1129,7 +1129,7 @@ public class SourceElementParser extends AstVisitorAdapter {
 		stack.push(node);
 	}
 	
-	protected void pushLevelInAttribDeclarationStack() {
+	private void pushLevelInAttribDeclarationStack() {
 		attribDeclarationStack.push(new Stack<AttribDeclaration>());
 	}
 	

@@ -164,7 +164,7 @@ public class TemplateMixin extends TemplateInstance {
 					ad.sizeok = 2;
 				} else {
 					// Forward reference
-					scope = scx != null ? scx : new Scope(sc, context);
+					scope = scx != null ? scx : new Scope(sc);
 					scope.setNoFree();
 					scope.module.addDeferredSemantic(this, context);
 				}

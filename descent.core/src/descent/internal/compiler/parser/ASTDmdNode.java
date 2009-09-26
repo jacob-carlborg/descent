@@ -2031,13 +2031,13 @@ public abstract class ASTDmdNode extends ASTNode {
 		StringBuilder sb = new StringBuilder();
 		if (packages != null) {
 			for(int i = 0; i < packages.size(); i++) {
-				sb.append(packages.get(i).toCharArray());
+				sb.append(packages.get(i));
 				sb.append('.');
 			}
 		}
 		
 		if (id != null) {
-			sb.append(id.toCharArray());
+			sb.append(id);
 		}
 		
 		char[] ret = new char[sb.length()];

@@ -162,7 +162,7 @@ public class IfStatement extends Statement {
 		if (elsebody != null) {
 			elsebody = elsebody.semanticScope(sc, null, null, context);
 		}
-		sc.mergeCallSuper(filename, lineNumber, cs1, this);
+		sc.mergeCallSuper(filename, lineNumber, cs1, this, context);
 
 		return this;
 	}

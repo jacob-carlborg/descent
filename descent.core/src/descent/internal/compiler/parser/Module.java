@@ -53,6 +53,7 @@ public class Module extends Package {
 	// Very important: this field must be set to the module name
 	// if signatures are to be requested
 	public String moduleName; // foo.bar 
+	public char[] moduleNameChars; // foo.bar
 	private String signature; // Descent signature
 	protected ICompilationUnit javaElement;
 	

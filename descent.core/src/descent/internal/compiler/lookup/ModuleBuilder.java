@@ -159,6 +159,7 @@ public class ModuleBuilder {
 		} else {
 			module = new LazyModule(unit.getElementName(), new IdentifierExp(unit.getModuleName().toCharArray()), this, info.getTopLevelIdentifiers(), info.getLastImportLocation());
 			module.moduleName = moduleName;
+			module.moduleNameChars = moduleName.toCharArray();
 		}
 		module.setJavaElement(unit);
 		
@@ -255,7 +256,7 @@ public class ModuleBuilder {
 			fill(module, elseDecls, cond.getElseChildren(), state);
 			
 			Expression exp = decodeExpression(cond.getElementName().toCharArray(), cond);
-			StaticIfCondition condition = new StaticIfCondition(module.moduleName.toCharArray(), 0, exp);
+			StaticIfCondition condition = new StaticIfCondition(module.moduleNameChars, 0, exp);
 			
 			StaticIfDeclaration member = newStaticIfDeclaration(condition, thenDecls, elseDecls);
 			copySourceRange(member, cond);
@@ -279,7 +280,7 @@ public class ModuleBuilder {
 				if ((state != null && state.versions.containsKey(nameC))) {
 					buildConditional(module, members, cond, state, nameC, 0, false /* not debug */);
 				} else {
-					if (config.isVersionEnabled(name.toCharArray()) || (module.versionids != null && module.versionids.containsKey(nameC))) {
+					if (config.isVersionEnabled(nameC) || (module.versionids != null && module.versionids.containsKey(nameC))) {
 						fill(module, members, cond.getThenChildren(), state);
 					} else {
 						fill(module, members, cond.getElseChildren(), state);
@@ -304,7 +305,7 @@ public class ModuleBuilder {
 				if (state != null && state.debugs.containsKey(nameC)) {
 					buildConditional(module, members, cond, state, nameC, 0, true /* debug */);
 				} else {	
-					if (config.isDebugEnabled(name.toCharArray()) || (module.debugids != null && module.debugids.containsKey(nameC))) {
+					if (config.isDebugEnabled(nameC) || (module.debugids != null && module.debugids.containsKey(nameC))) {
 						fill(module, members, cond.getThenChildren(), state);
 					} else {
 						fill(module, members, cond.getElseChildren(), state);
@@ -352,7 +353,7 @@ public class ModuleBuilder {
 			fillVersionAssignment(module, members, init, state);
 		} else if (init.isMixin()) {
 			Expression exp = decodeExpression(init.getElementName().toCharArray(), init);
-			CompileDeclaration member = newCompileDeclaration(module.moduleName.toCharArray(), 0, exp);
+			CompileDeclaration member = newCompileDeclaration(module.moduleNameChars, 0, exp);
 			copySourceRange(member, init);
 			member.setJavaElement(init);
 			members.add(member);
@@ -373,13 +374,13 @@ public class ModuleBuilder {
 			state.debugs.put(ident, this);
 		}
 		
-		Version version = new Version(module.moduleName.toCharArray(), 0, ident);
+		Version version = new Version(module.moduleNameChars, 0, ident);
 		DebugSymbol member;
 		try {
 			long level = Long.parseLong(init.getElementName());
-			member = newDebugSymbol(module.moduleName.toCharArray(), 0, level, version);
+			member = newDebugSymbol(module.moduleNameChars, 0, level, version);
 		} catch(NumberFormatException e) {
-			member = newDebugSymbol(module.moduleName.toCharArray(), 0, new IdentifierExp(ident), version);
+			member = newDebugSymbol(module.moduleNameChars, 0, new IdentifierExp(ident), version);
 		}
 		copySourceRange(member, init);
 		members.add(member);
@@ -393,13 +394,13 @@ public class ModuleBuilder {
 			state.versions.put(ident, this);
 		}
 		
-		Version version = new Version(module.moduleName.toCharArray(), 0, ident);
+		Version version = new Version(module.moduleNameChars, 0, ident);
 		VersionSymbol member;
 		try {
 			long level = Long.parseLong(init.getElementName());
-			member = newVersionSymbol(module.moduleName.toCharArray(), 0, level, version);
+			member = newVersionSymbol(module.moduleNameChars, 0, level, version);
 		} catch(NumberFormatException e) {
-			member = newVersionSymbol(module.moduleName.toCharArray(), 0, new IdentifierExp(ident), version);
+			member = newVersionSymbol(module.moduleNameChars, 0, new IdentifierExp(ident), version);
 		}
 		copySourceRange(member, init);
 		members.add(member);
@@ -408,27 +409,27 @@ public class ModuleBuilder {
 
 	private void fillMethod(Module module, Dsymbols members, final IMethod method) throws JavaModelException {
 		if (method.isConstructor()) {
-			CtorDeclaration member = newCtorDeclaration(module.moduleName.toCharArray(), 0, getArguments(method), getVarargs(method));
+			CtorDeclaration member = newCtorDeclaration(module.moduleNameChars, 0, getArguments(method), getVarargs(method));
 			copySourceRange(member, method);
 			member.setJavaElement(method);
 			members.add(wrapWithTemplate(module, member, method));
 		} else if (method.isDestructor()) {
-			DtorDeclaration member = newDtorDeclaration(module.moduleName.toCharArray(), 0);
+			DtorDeclaration member = newDtorDeclaration(module.moduleNameChars, 0);
 			copySourceRange(member, method);
 			member.setJavaElement(method);
 			members.add(wrap(member, method));
 		} else if (method.isNew()) {
-			NewDeclaration member = newNewDeclaration(module.moduleName.toCharArray(), 0, getArguments(method), getVarargs(method));
+			NewDeclaration member = newNewDeclaration(module.moduleNameChars, 0, getArguments(method), getVarargs(method));
 			copySourceRange(member, method);
 			member.setJavaElement(method);
 			members.add(wrap(member, method));
 		} else if (method.isDelete()) {
-			DeleteDeclaration member = newDeleteDeclaration(module.moduleName.toCharArray(), 0, getArguments(method));
+			DeleteDeclaration member = newDeleteDeclaration(module.moduleNameChars, 0, getArguments(method));
 			copySourceRange(member, method);
 			member.setJavaElement(method);
 			members.add(wrap(member, method));	
 		} else { 
-			FuncDeclaration member = newFuncDeclaration(module.moduleName.toCharArray(), 0, getIdent(method), getStorageClass(method), getType(method));
+			FuncDeclaration member = newFuncDeclaration(module.moduleNameChars, 0, getIdent(method), getStorageClass(method), getType(method));
 			copySourceRange(member, method);
 			member.setJavaElement(method);		
 			members.add(wrapWithTemplate(module, member, method));
@@ -438,7 +439,7 @@ public class ModuleBuilder {
 	public void fillType(final Module module, Dsymbols members, final IType type, 
 			final State state) throws JavaModelException {
 		if (type.isClass()) {
-			ClassDeclaration member = newClassDeclaration(module.moduleName.toCharArray(), 0, getIdent(type), getBaseClasses(type));
+			ClassDeclaration member = newClassDeclaration(module.moduleNameChars, 0, getIdent(type), getBaseClasses(type));
 			if (!type.isForwardDeclaration()) {
 				member.members = new Dsymbols();
 				fill(module, member.members, type.getChildren(), state);
@@ -448,7 +449,7 @@ public class ModuleBuilder {
 			member.setJavaElement(type);			
 			members.add(wrapWithTemplate(module, member, type));
 		} else if (type.isInterface()) {
-			InterfaceDeclaration member = newInterfaceDeclaration(module.moduleName.toCharArray(), 0, getIdent(type), getBaseClasses(type));
+			InterfaceDeclaration member = newInterfaceDeclaration(module.moduleNameChars, 0, getIdent(type), getBaseClasses(type));
 			if (!type.isForwardDeclaration()) {
 				member.members = new Dsymbols();
 				fill(module, member.members, type.getChildren(), state);
@@ -462,7 +463,7 @@ public class ModuleBuilder {
 			if (id == null) {
 				fillAnon(module, members, type, false /* is not union, is struct */, state);
 			} else {
-				StructDeclaration member = newStructDeclaration(module.moduleName.toCharArray(), 0, id);
+				StructDeclaration member = newStructDeclaration(module.moduleNameChars, 0, id);
 				if (!type.isForwardDeclaration()) {
 					member.members = new Dsymbols();
 					fill(module, member.members, type.getChildren(), state);
@@ -477,7 +478,7 @@ public class ModuleBuilder {
 			if (id == null) {
 				fillAnon(module, members, type, true /* is union */, state);
 			} else {
-				UnionDeclaration member = newUnionDeclaration(module.moduleName.toCharArray(), 0, id);
+				UnionDeclaration member = newUnionDeclaration(module.moduleNameChars, 0, id);
 				if (!type.isForwardDeclaration()) {
 					member.members = new Dsymbols();
 					fill(module, member.members, type.getChildren(), state);
@@ -494,7 +495,7 @@ public class ModuleBuilder {
 			fill(module, symbols, type.getChildren(), state);
 				
 			TemplateDeclaration member = newTemplateDeclaration(
-					module.moduleName.toCharArray(), 0, 
+					module.moduleNameChars, 0, 
 					getIdent(type), 
 					getTemplateParameters(type),
 					null, // XXX Template Constraints
@@ -509,13 +510,13 @@ public class ModuleBuilder {
 		IdentifierExp ident = getIdent(type);
 		
 		BaseClasses baseClasses = getBaseClasses(type);
-		EnumDeclaration member = newEnumDeclaration(module.moduleName.toCharArray(), 0, ident, baseClasses.isEmpty() ? Type.tint32 : baseClasses.get(0).type);
+		EnumDeclaration member = newEnumDeclaration(module.moduleNameChars, 0, ident, baseClasses.isEmpty() ? Type.tint32 : baseClasses.get(0).type);
 		
 		if (!type.isForwardDeclaration()) {
 			member.members = new Dsymbols();
 			for(IJavaElement sub : type.getChildren()) {
 				IField field = (IField) sub;
-				EnumMember enumMember = newEnumMember(module.moduleName.toCharArray(), 0, getIdent(field), getExpression(field));
+				EnumMember enumMember = newEnumMember(module.moduleNameChars, 0, getIdent(field), getExpression(field));
 				copySourceRange(enumMember, field);
 				enumMember.setJavaElement(field);
 				member.members.add(enumMember);
@@ -534,7 +535,7 @@ public class ModuleBuilder {
 			boolean isUnion, State state) throws JavaModelException {
 		Dsymbols symbols = new Dsymbols();
 		fill(module, symbols, type.getChildren(), state);
-		AnonDeclaration member = newAnonDeclaration(module.moduleName.toCharArray(), 0, isUnion, symbols);
+		AnonDeclaration member = newAnonDeclaration(module.moduleNameChars, 0, isUnion, symbols);
 		copySourceRange(member, type);
 		member.setJavaElement(type);
 		members.add(wrap(member, type));
@@ -542,31 +543,31 @@ public class ModuleBuilder {
 
 	public void fillField(Module module, Dsymbols members, final IField field) throws JavaModelException {
 		if (field.isVariable() || field.isEnumConstant()) { // enum constant for D2, like "enum int foo = 2;"
-			VarDeclaration member = newVarDeclaration(module.moduleName.toCharArray(), 0, getType(field), getIdent(field), getInitializer(field));
+			VarDeclaration member = newVarDeclaration(module.moduleNameChars, 0, getType(field), getIdent(field), getInitializer(field));
 			copySourceRange(member, field);
 			member.setJavaElement(field);
 			members.add(wrap(member, field));
 		} else if (field.isAlias()) {
 			if (field.getTypeSignature() == null) {
-				AliasThis member = newAliasThis(module.moduleName.toCharArray(), 0, getIdent(field));
+				AliasThis member = newAliasThis(module.moduleNameChars, 0, getIdent(field));
 				copySourceRange(member, field);
 				member.setJavaElement(field);
 				members.add(wrap(member, field));
 			} else {
-				AliasDeclaration member = newAliasDeclaration(module.moduleName.toCharArray(), 0, getIdent(field), getType(field));
+				AliasDeclaration member = newAliasDeclaration(module.moduleNameChars, 0, getIdent(field), getType(field));
 				copySourceRange(member, field);
 				member.setJavaElement(field);
 				members.add(wrap(member, field));
 			}
 		} else if (field.isTypedef()) {
-			TypedefDeclaration member = newTypedefDeclaration(module.moduleName.toCharArray(), 0, getIdent(field), getType(field), getInitializer(field));
+			TypedefDeclaration member = newTypedefDeclaration(module.moduleNameChars, 0, getIdent(field), getType(field), getInitializer(field));
 			copySourceRange(member, field);
 			member.setJavaElement(field);
 			members.add(wrap(member, field));
 		} else if (field.isTemplateMixin()) {
 			TemplateMixin member = encoder.decodeTemplateMixin(field.getTypeSignature(), field.getElementName());
 			copySourceRange(member, field);
-			member.filename = module.moduleName.toCharArray();
+			member.filename = module.moduleNameChars;
 			members.add(wrap(member, field));
 		}
 	}	
@@ -579,7 +580,7 @@ public class ModuleBuilder {
 		
 		long flags = impDecl.getFlags();
 		
-		Import imp = new Import(module.moduleName.toCharArray(), 0, packages, name, alias, (flags & Flags.AccStatic) != 0);
+		Import imp = new Import(module.moduleNameChars, 0, packages, name, alias, (flags & Flags.AccStatic) != 0);
 		
 		String[] names = impDecl.getSelectiveImportsNames();
 		String[] aliases = impDecl.getSelectiveImportsAliases();
@@ -634,7 +635,7 @@ public class ModuleBuilder {
 	private Dsymbol wrapWithTemplate(Module module, Dsymbol symbol, final ITemplated templated) throws JavaModelException {
 		if (templated.isTemplate()) {
 			TemplateDeclaration temp = newTemplateDeclaration(
-					module.moduleName.toCharArray(), 0, 
+					module.moduleNameChars, 0, 
 							getIdent((IJavaElement) templated), 
 							getTemplateParameters(templated),
 							null, // XXX Template Constraint

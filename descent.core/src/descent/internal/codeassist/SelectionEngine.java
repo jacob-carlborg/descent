@@ -617,7 +617,8 @@ public class SelectionEngine extends AstVisitorAdapter {
 
 	private boolean isLocal(descent.internal.compiler.parser.Declaration node) {
 		return (node.effectiveParent() instanceof FuncDeclaration)
-			|| !insideFuncs.isEmpty();
+//			|| !insideFuncs.isEmpty()
+			;
 	}
 
 	private void add(VarDeclaration node) {

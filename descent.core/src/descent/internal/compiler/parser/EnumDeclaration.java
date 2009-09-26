@@ -173,7 +173,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 					if (null == sym.memtype || null == sym.members
 							|| null == sym.symtab || sym.scope != null) { 
 						// memtype is forward referenced, so try again later
-						scope = scx != null ? scx : new Scope(sc, context);
+						scope = scx != null ? scx : new Scope(sc);
 						scope.setNoFree();
 						scope.module.addDeferredSemantic(this, context);
 						return;

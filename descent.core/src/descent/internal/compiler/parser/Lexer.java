@@ -181,7 +181,18 @@ public class Lexer implements IProblemRequestor {
 			charArray_t = new char[] { 't' }, charArray_u = new char[] { 'u' },
 			charArray_v = new char[] { 'v' }, charArray_w = new char[] { 'w' },
 			charArray_x = new char[] { 'x' }, charArray_y = new char[] { 'y' },
-			charArray_z = new char[] { 'z' };
+			charArray_z = new char[] { 'z' },
+			charArray_0 = new char[] { '0' },
+			charArray_1 = new char[] { '1' }, 
+			charArray_2 = new char[] { '2' },
+			charArray_3 = new char[] { '3' },
+			charArray_4 = new char[] { '4' },
+			charArray_5 = new char[] { '5' },
+			charArray_6 = new char[] { '6' },
+			charArray_7 = new char[] { '7' },
+			charArray_8 = new char[] { '8' },
+			charArray_9 = new char[] { '9' }
+				;
 
 	static final char[] initCharArray = new char[] { '\u0000', '\u0000',
 			'\u0000', '\u0000', '\u0000', '\u0000' };
@@ -523,7 +534,20 @@ public class Lexer implements IProblemRequestor {
 			case '9':
 				t.value = number(t);
 				t.sourceLen = p - t.ptr;
-				t.setString(input, t.ptr, t.sourceLen);
+				if (t.sourceLen == 1) {
+					switch(input[t.ptr]) {
+					case '0': t.sourceString = charArray_0; break;
+					case '1': t.sourceString = charArray_1; break;
+					case '2': t.sourceString = charArray_2; break;
+					case '3': t.sourceString = charArray_3; break;
+					case '4': t.sourceString = charArray_4; break;
+					case '5': t.sourceString = charArray_5; break;
+					case '6': t.sourceString = charArray_6; break;
+					case '7': t.sourceString = charArray_7; break;
+					case '8': t.sourceString = charArray_8; break;
+					case '9': t.sourceString = charArray_9; break;
+					}
+				}
 				return;
 
 				/*
@@ -5291,6 +5315,7 @@ public class Lexer implements IProblemRequestor {
 						&& stringbuffer.data.length() > 1) {
 					if (stringbuffer.data.charAt(1) == 'x'
 							|| stringbuffer.data.charAt(1) == 'X') {
+					
 						p = 2;
 						r = 16;
 					} else if (stringbuffer.data.charAt(1) == 'b'

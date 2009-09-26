@@ -480,7 +480,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 					if (!gotoL7) {
 						if (tc.sym.symtab == null || tc.sym.scope != null
 								|| tc.sym.sizeok == 0) {
-							scope = scx != null ? scx : new Scope(sc, context);
+							scope = scx != null ? scx : new Scope(sc);
 							scope.setNoFree();
 							scope.module.addDeferredSemantic(this, context);
 							return;
@@ -544,7 +544,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 				
 				b.base = tc.sym;
 				if (b.base.symtab == null || b.base.scope != null) {
-					scope = scx != null ? scx : new Scope(sc, context);
+					scope = scx != null ? scx : new Scope(sc);
 					scope.setNoFree();
 					scope.module.addDeferredSemantic(this, context);
 					return;
@@ -811,7 +811,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 
 			sc = sc.pop();
 
-			scope = scx != null ? scx : new Scope(sc, context);
+			scope = scx != null ? scx : new Scope(sc);
 			scope.setNoFree();
 			scope.module.addDeferredSemantic(this, context);
 

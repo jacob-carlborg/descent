@@ -434,7 +434,7 @@ public class CompletionEngine extends Engine
 									// Use the name of the expected type, might be an alias to a class
 									// currentName = cd.ident.ident;
 									currentName = Signature.toCharArray(expectedTypeSignature, false);									
-									suggestConstructors(cd);
+									suggestConstructors(cd, getSignatureChars(cd));
 								}
 							}
 						}
@@ -450,7 +450,7 @@ public class CompletionEngine extends Engine
 					if (typeStruct.sym != null && typeStruct.sym.members != null) {
 						currentName = typeStruct.sym.ident.ident;
 						wantConstructorsAndOpCall = true;
-						suggestMembers(typeStruct.sym.members, true, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
+						suggestMembers(typeStruct.sym.members, getSignatureChars(typeStruct.sym), true, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
 					}
 				}
 			}
@@ -807,7 +807,7 @@ public class CompletionEngine extends Engine
 			node.mod = node.mod.unlazy(this.currentName, context);
 			
 			this.wantArguments = false;
-			suggestMembers(node.mod.members, false, new HashtableOfCharArrayAndObject(), INCLUDE_TYPES | INCLUDE_VARIABLES | INCLUDE_FUNCTIONS);
+			suggestMembers(node.mod.members, getSignatureChars(node.mod), false, new HashtableOfCharArrayAndObject(), INCLUDE_TYPES | INCLUDE_VARIABLES | INCLUDE_FUNCTIONS);
 		}
 	}
 	
@@ -1185,23 +1185,24 @@ public class CompletionEngine extends Engine
 		}
 		
 		boolean onlyStatics = resolvedExpression instanceof TypeExp;
+		char[] parentSignature = getSignatureChars(sym);
 		
 		if (sym instanceof ClassDeclaration) {
 			// First constructors, only if in new
 			if (parser.inNewExp) {
-				suggestConstructors((ClassDeclaration) sym);
+				suggestConstructors((ClassDeclaration) sym, parentSignature);
 			// Then opCalls, only if not in new
 			} else {
 				ClassDeclaration cd = ((ClassDeclaration) sym).unlazy(this.currentName, context);
-				suggestMembers(cd.members, onlyStatics, 0, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
+				suggestMembers(cd.members, parentSignature, onlyStatics, 0, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
 			}
 		} else if (sym instanceof StructDeclaration) {
 			StructDeclaration struct = ((StructDeclaration) sym).unlazy(CharOperation.NO_CHAR, context);
-			suggestMembers(struct.members, onlyStatics, 0, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
+			suggestMembers(struct.members, parentSignature, onlyStatics, 0, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
 		}
 	}
 	
-	private void suggestConstructors(ClassDeclaration sym) {
+	private void suggestConstructors(ClassDeclaration sym, char[] parentSignature) {
 		ClassDeclaration cd = sym.unlazy(this.currentName, context);
 		
 		Declaration func = cd.ctor(context);
@@ -1214,10 +1215,10 @@ public class CompletionEngine extends Engine
 			cd.ctor(context).type = new TypeFunction(new Arguments(0), cd.type, 0, LINK.LINKd);
 			cd.ctor(context).parent = cd;
 			
-			suggestMember(cd.ctor(context), false, 0, hash, INCLUDE_CONSTRUCTORS);
+			suggestMember(cd.ctor(context), parentSignature, false, 0, hash, INCLUDE_CONSTRUCTORS);
 		} else {
 			while(func != null) {
-				suggestMember(func, false, 0, hash, INCLUDE_CONSTRUCTORS);
+				suggestMember(func, parentSignature, false, 0, hash, INCLUDE_CONSTRUCTORS);
 				
 				if (func instanceof FuncDeclaration) {
 					func = ((FuncDeclaration) func).overnext;
@@ -1412,20 +1413,21 @@ public class CompletionEngine extends Engine
 	}
 	
 	private void suggestContextInfo(FuncDeclaration func) {
+		char[] parentSignature = getSignatureChars(func.parent);
 		int includes = func instanceof CtorDeclaration ? INCLUDE_CONSTRUCTORS : INCLUDE_FUNCTIONS;
 		
 		wantMethodContextInfo = true;
-		suggestMember(func, false, 0, null, includes);
+		suggestMember(func, parentSignature, false, 0, null, includes);
 		
 		Dsymbol prev = func.overprevious;
 		while(prev != null) {
-			suggestMember(prev, false, 0, null, includes);
+			suggestMember(prev, parentSignature, false, 0, null, includes);
 			prev = prev.overprevious;
 		}
 		
 		Dsymbol next = func.overnext;
 		while(next != null) {
-			suggestMember(next, false, 0, null, includes);
+			suggestMember(next, parentSignature, false, 0, null, includes);
 			if (next instanceof FuncDeclaration) {
 				next = ((FuncDeclaration) next).overnext;
 			} else if (next instanceof AliasDeclaration) {
@@ -1709,7 +1711,7 @@ public class CompletionEngine extends Engine
 						}
 					}
 					
-					suggestMembers(syms, false /* not only statics */, new HashtableOfCharArrayAndObject(), includes);	
+					suggestMembers(syms, null, false /* not only statics */, new HashtableOfCharArrayAndObject(), includes);	
 				}
 				
 				if (scopeDsymbol.members != null || scopeDsymbol.imports != null) {
@@ -1722,13 +1724,16 @@ public class CompletionEngine extends Engine
 				return;
 			}
 			
+			
+			char[] parentSignature = getSignatureChars(scope.scopesym);
+			
 			for(Object value : table.values()) {
 				if (value == null)
 					continue;
 				
 				Dsymbol dsymbol = (Dsymbol) value;
 				if (dsymbol != null) {
-					suggestDsymbol(dsymbol, includes);
+					suggestDsymbol(dsymbol, parentSignature, includes);
 				}
 			}
 		}
@@ -1744,7 +1749,7 @@ public class CompletionEngine extends Engine
 				sd = ((Module) sd).unlazy(context);
 			}
 			
-			suggestMembers(sd.members, sd instanceof Module ? false : onlyStatics, 0, new HashtableOfCharArrayAndObject(), includes);
+			suggestMembers(sd.members, getSignatureChars(sd), sd instanceof Module ? false : onlyStatics, 0, new HashtableOfCharArrayAndObject(), includes);
 		}
 	}
 
@@ -1816,19 +1821,22 @@ public class CompletionEngine extends Engine
 			ScopeExp se = (ScopeExp) e1;
 			if (se.sds instanceof Module) {
 				currentName = computePrefixAndSourceRange(ident);
-				suggestMembers((((Module) se.sds)).unlazy(context).members, 
-						false /* not only statics */, 
-						new HashtableOfCharArrayAndObject(), INCLUDE_ALL & ~INCLUDE_IMPORTS);
+				ScopeDsymbol un = (((Module) se.sds)).unlazy(context);
+				suggestMembers(un.members, 
+						getSignatureChars(un), 
+						false /* not only statics */, new HashtableOfCharArrayAndObject(), INCLUDE_ALL & ~INCLUDE_IMPORTS);
 			} else if (se.sds instanceof ClassDeclaration) {
 				currentName = computePrefixAndSourceRange(ident);
-				suggestMembers((((ClassDeclaration) se.sds)).unlazy(context).members, 
-						false /* not only statics */, 
-						new HashtableOfCharArrayAndObject(), INCLUDE_ALL);
+				ScopeDsymbol un = (((ClassDeclaration) se.sds)).unlazy(context);
+				suggestMembers(un.members, 
+						getSignatureChars(un), 
+						false /* not only statics */, new HashtableOfCharArrayAndObject(), INCLUDE_ALL);
 			} else if (se.sds instanceof StructDeclaration) {
 				currentName = computePrefixAndSourceRange(ident);
-				suggestMembers((((StructDeclaration) se.sds)).unlazy(context).members, 
-						false /* not only statics */, 
-						new HashtableOfCharArrayAndObject(), INCLUDE_ALL);
+				ScopeDsymbol un = (((StructDeclaration) se.sds)).unlazy(context);
+				suggestMembers(un.members, 
+						getSignatureChars(un), 
+						false /* not only statics */, new HashtableOfCharArrayAndObject(), INCLUDE_ALL);
 			} else if (se.sds instanceof Package) {
 				char[] name = ident.ident;
 				this.startPosition = se.start;
@@ -1837,7 +1845,8 @@ public class CompletionEngine extends Engine
 			} else if (se.sds instanceof TemplateInstance) {
 				currentName = computePrefixAndSourceRange(ident);
 				options.checkVisibility = false;
-				suggestMembers(((TemplateInstance) se.sds).members, false, 0, new HashtableOfCharArrayAndObject(), INCLUDE_ALL);
+				TemplateInstance un = (TemplateInstance) se.sds;
+				suggestMembers(un.members, getSignatureChars(un), false, 0, new HashtableOfCharArrayAndObject(), INCLUDE_ALL);
 				options.checkVisibility = true;
 			}
 		} else if (e1 instanceof DsymbolExp) {
@@ -1845,7 +1854,8 @@ public class CompletionEngine extends Engine
 			if (de.s instanceof TemplateInstance) {
 				currentName = computePrefixAndSourceRange(ident);
 				options.checkVisibility = false;
-				suggestMembers(((TemplateInstance) de.s).members, false, 0, new HashtableOfCharArrayAndObject(), INCLUDE_ALL);
+				TemplateInstance un = (TemplateInstance) de.s;
+				suggestMembers(un.members, getSignatureChars(un), false, 0, new HashtableOfCharArrayAndObject(), INCLUDE_ALL);
 				options.checkVisibility = true;
 			}
 		} else if (e1 instanceof ThisExp) {
@@ -1876,7 +1886,7 @@ public class CompletionEngine extends Engine
 			startPosition = ident.start;
 			endPosition = ident.start + ident.length;
 			
-			suggestDsymbol(resolved, INCLUDE_ALL);
+			suggestDsymbol(resolved, getSignatureChars(resolved.parent), INCLUDE_ALL);
 			return;
 		}
 	}
@@ -1984,7 +1994,7 @@ public class CompletionEngine extends Engine
 	private void suggestExtensionMethods(TypeArray array, Module module, boolean original) {
 		module.unlazy(context);
 		
-		suggestExtensionMethods(array, module.members);
+		suggestExtensionMethods(array, module.members, getSignatureChars(module));
 		
 		if (CharOperation.equals(Id.object, module.ident.ident)) {
 			return;
@@ -2000,15 +2010,15 @@ public class CompletionEngine extends Engine
 		}
 	}
 	
-	private void suggestExtensionMethods(TypeArray array, Dsymbols dsymbols) {
+	private void suggestExtensionMethods(TypeArray array, Dsymbols dsymbols, char[] parentSignature) {
 		if (dsymbols == null) return;
 		
 		for(Dsymbol s : dsymbols) {
-			suggestExtensionMethod(array, s);
+			suggestExtensionMethod(array, s, parentSignature);
 		}
 	}
 
-	private void suggestExtensionMethod(TypeArray array, Dsymbol s) {
+	private void suggestExtensionMethod(TypeArray array, Dsymbol s, char[] parentSignature) {
 		if (s instanceof AttribDeclaration) {
 			AttribDeclaration attrib = (AttribDeclaration) s;
 			switch(attrib.getNodeType()) {
@@ -2019,14 +2029,14 @@ public class CompletionEngine extends Engine
 			case ASTDmdNode.PRAGMA_DECLARATION:
 			case ASTDmdNode.PROT_DECLARATION:
 			case ASTDmdNode.STORAGE_CLASS_DECLARATION:
-				suggestExtensionMethods(array, attrib.decl);
+				suggestExtensionMethods(array, attrib.decl, parentSignature);
 				break;
 			case ASTDmdNode.CONDITIONAL_DECLARATION:
 				ConditionalDeclaration conditional = (ConditionalDeclaration) attrib;
 				if (conditional.condition.inc == 1) {
-					suggestExtensionMethods(array, conditional.decl);
+					suggestExtensionMethods(array, conditional.decl, parentSignature);
 				} else if (conditional.condition.inc == 2) {
-					suggestExtensionMethods(array, conditional.elsedecl);
+					suggestExtensionMethods(array, conditional.elsedecl, parentSignature);
 				}
 				break;
 			}
@@ -2039,21 +2049,21 @@ public class CompletionEngine extends Engine
 		
 		if (s instanceof FuncDeclaration) {
 			FuncDeclaration f = (FuncDeclaration) s;
-			suggestExtensionMethod(array, f, false /* is not template */);
+			suggestExtensionMethod(array, f, false /* is not template */, parentSignature);
 		} else if (s instanceof TemplateDeclaration) {
 			TemplateDeclaration t = (TemplateDeclaration) s;
 			if (t.parameters != null && t.parameters.size() == 1) {
 				for(Dsymbol s2 : t.members) {
 					if (s2 instanceof FuncDeclaration) {
 						FuncDeclaration f = (FuncDeclaration) s2;
-						suggestExtensionMethod(array, f, true /* is template */);
+						suggestExtensionMethod(array, f, true /* is template */, parentSignature);
 					}
 				}
 			}
 		}
 	}
 
-	private void suggestExtensionMethod(TypeArray array, FuncDeclaration f, boolean isTemplate) {
+	private void suggestExtensionMethod(TypeArray array, FuncDeclaration f, boolean isTemplate, char[] parentSignature) {
 		if (f.ident == null || f.ident.ident == null) {
 			return;
 		}
@@ -2088,9 +2098,12 @@ public class CompletionEngine extends Engine
 				handleMethodCompletion(proposal, ident);
 			}
 			
+			if (parentSignature == null)
+				parentSignature = getSignatureChars(f.parent);
+			
 			proposal.setTypeSignature(f.type.getSignature().toCharArray());
 			proposal.setSignature(f.getSignature().toCharArray());
-			proposal.setDeclarationSignature(f.parent.getSignature().toCharArray());
+			proposal.setDeclarationSignature(parentSignature);
 			proposal.setFlags(f.getFlags());
 			proposal.setRelevance(relevance);
 			proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
@@ -2340,7 +2353,7 @@ public class CompletionEngine extends Engine
 		}
 		
 		// First suggest my members
-		suggestMembers(decl.members, onlyStatics, funcSignatures, INCLUDE_ALL);
+		suggestMembers(decl.members, getSignatureChars(decl), onlyStatics, funcSignatures, INCLUDE_ALL);
 		
 		// Then suggest superclass and superinterface members
 		BaseClasses baseClasses = decl.baseclasses;
@@ -2385,7 +2398,7 @@ public class CompletionEngine extends Engine
 		}
 		
 		// Suggest members
-		suggestMembers(decl.members, onlyStatics, null, INCLUDE_ALL);
+		suggestMembers(decl.members, getSignatureChars(decl), onlyStatics, null, INCLUDE_ALL);
 		
 		// And also all type's properties
 		suggestAllTypesProperties(type);
@@ -2427,37 +2440,37 @@ public class CompletionEngine extends Engine
 		
 		handleMethodCompletion(proposal, fd.ident.ident);
 		
-		proposal.setSignature(fd.getSignature().toCharArray());
-		proposal.setTypeSignature(fd.type.getSignature().toCharArray());
-		proposal.setDeclarationSignature(fd.parent.getSignature().toCharArray());
+		proposal.setSignature(getSignatureChars(fd));
+		proposal.setTypeSignature(getSignatureChars(fd.type));
+		proposal.setDeclarationSignature(getSignatureChars(fd.parent));
 		proposal.setRelevance(relevance);
 		proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
 		CompletionEngine.this.requestor.accept(proposal);
 	}
 	
-	private void suggestMembers(Dsymbols members, boolean onlyStatics, HashtableOfCharArrayAndObject funcSignatures, int includes) {
-		suggestMembers(members, onlyStatics, 0, funcSignatures, includes);
+	private void suggestMembers(Dsymbols members, char[] parentSignature, boolean onlyStatics, HashtableOfCharArrayAndObject funcSignatures, int includes) {
+		suggestMembers(members, parentSignature, onlyStatics, 0, funcSignatures, includes);
 	}
 	
-	private void suggestMembers(Dsymbols members, boolean onlyStatics, long flags, HashtableOfCharArrayAndObject funcSignatures, int includes) {
+	private void suggestMembers(Dsymbols members, char[] parentSignature, boolean onlyStatics, long flags, HashtableOfCharArrayAndObject funcSignatures, int includes) {
 		if (members == null || members.isEmpty()) {
 			return;
 		}
 		
 		int length = members.size();
 		for(int i = 0; i < length; i++) {
-			suggestMember(members.get(i), onlyStatics, flags, funcSignatures, includes);
+			suggestMember(members.get(i), parentSignature, onlyStatics, flags, funcSignatures, includes);
 		}
 	}
 	
-	private void suggestDsymbol(Dsymbol dsymbol, int includes) {
-		suggestMember(dsymbol, false, 0, null, includes);
+	private void suggestDsymbol(Dsymbol dsymbol, char[] parentSignature, int includes) {
+		suggestMember(dsymbol, parentSignature, false, 0, null, includes);
 	}
 	
 	/*
 	 * Suggest a member with it's name.
 	 */
-	private void suggestMember(Dsymbol member, boolean onlyStatics, long flags, HashtableOfCharArrayAndObject funcSignatures, int includes) {
+	private void suggestMember(Dsymbol member, char[] parentSignature, boolean onlyStatics, long flags, HashtableOfCharArrayAndObject funcSignatures, int includes) {
 		if (member instanceof AttribDeclaration) {
 			AttribDeclaration attrib = (AttribDeclaration) member;
 			switch(attrib.getNodeType()) {
@@ -2468,14 +2481,14 @@ public class CompletionEngine extends Engine
 			case ASTDmdNode.PRAGMA_DECLARATION:
 			case ASTDmdNode.PROT_DECLARATION:
 			case ASTDmdNode.STORAGE_CLASS_DECLARATION:
-				suggestMembers(attrib.decl, onlyStatics, flags | attrib.getFlags(), funcSignatures, includes);
+				suggestMembers(attrib.decl, parentSignature, onlyStatics, flags | attrib.getFlags(), funcSignatures, includes);
 				break;
 			case ASTDmdNode.CONDITIONAL_DECLARATION:
 				ConditionalDeclaration conditional = (ConditionalDeclaration) attrib;
 				if (conditional.condition.inc == 1) {
-					suggestMembers(conditional.decl, onlyStatics, flags | attrib.getFlags(), funcSignatures, includes);
+					suggestMembers(conditional.decl, parentSignature, onlyStatics, flags | attrib.getFlags(), funcSignatures, includes);
 				} else if (conditional.condition.inc == 2) {
-					suggestMembers(conditional.elsedecl, onlyStatics, flags | attrib.getFlags(), funcSignatures, includes);
+					suggestMembers(conditional.elsedecl, parentSignature, onlyStatics, flags | attrib.getFlags(), funcSignatures, includes);
 				}
 				break;
 			}
@@ -2486,7 +2499,8 @@ public class CompletionEngine extends Engine
 			// Suggest member of anynoymous symbols
 			if (member instanceof StructDeclaration ||
 				member instanceof EnumDeclaration) {
-				suggestMembers(((ScopeDsymbol) member).unlazy(context).members, onlyStatics, flags, funcSignatures, includes);
+				ScopeDsymbol un = ((ScopeDsymbol) member).unlazy(context);
+				suggestMembers(un.members, getSignatureChars(un), onlyStatics, flags, funcSignatures, includes);
 			}
 			return;
 		}
@@ -2496,17 +2510,17 @@ public class CompletionEngine extends Engine
 			return;
 		}
 		
-		suggestMember(member, member.ident.ident, onlyStatics, flags, funcSignatures, includes);
-	}		
+		suggestMember(member, parentSignature, member.ident.ident, onlyStatics, flags, funcSignatures, includes);
+	}
 		
 	/*
 	 * Suggest a member with another name (for aliases).
 	 */
-	private void suggestMember(Dsymbol member, char[] ident, boolean onlyStatics, long flags, HashtableOfCharArrayAndObject funcSignatures, int includes) {
-		suggestMember(member, ident, onlyStatics, flags, funcSignatures, includes, false);
+	private void suggestMember(Dsymbol member, char[] parentSignature, char[] ident, boolean onlyStatics, long flags, HashtableOfCharArrayAndObject funcSignatures, int includes) {
+		suggestMember(member, parentSignature, ident, onlyStatics, flags, funcSignatures, includes, false);
 	}
 	
-	private void suggestMember(Dsymbol member, char[] ident, boolean onlyStatics, long flags, HashtableOfCharArrayAndObject funcSignatures, int includes, boolean isAliased) {
+	private void suggestMember(Dsymbol member, char[] parentSignature, char[] ident, boolean onlyStatics, long flags, HashtableOfCharArrayAndObject funcSignatures, int includes, boolean isAliased) {
 		if (includesFilter != 0) {
 			includes &= ~includesFilter;
 		}
@@ -2530,7 +2544,7 @@ public class CompletionEngine extends Engine
 				if (!suggestedModules.containsKey(fqn)) {
 					suggestedModules.put(fqn, this);
 					mod = mod.unlazy(this.currentName, context);
-					suggestMembers(mod.members, false, funcSignatures, includes & (~INCLUDE_IMPORTS));
+					suggestMembers(mod.members, getSignatureChars(mod), false, funcSignatures, includes & (~INCLUDE_IMPORTS));
 				}
 			}
 			return;
@@ -2571,7 +2585,7 @@ public class CompletionEngine extends Engine
 				CompletionEngine.this.requestor.accept(proposal);
 			}
 			
-			suggestMembers(mixin.members, onlyStatics, funcSignatures, includes);
+			suggestMembers(mixin.members, null, onlyStatics, funcSignatures, includes);
 			return;
 		}
 		
@@ -2600,7 +2614,8 @@ public class CompletionEngine extends Engine
 		if (alias != null) {
 			Dsymbol sym = alias.toAlias(context);
 			if (sym != null && sym != alias) {
-				suggestMember(sym, ident, onlyStatics, flags, funcSignatures, includes, true);
+				char[] ps = getSignatureChars(sym.parent);
+				suggestMember(sym, ps, ident, onlyStatics, flags, funcSignatures, includes, true);
 				
 				if (sym instanceof FuncAliasDeclaration) {
 					sym = ((FuncAliasDeclaration) sym).funcalias;
@@ -2613,7 +2628,7 @@ public class CompletionEngine extends Engine
 					context.allowOvernextBySignature = true;				
 					Declaration funcDecl = func.overnext;
 					if (funcDecl != null && funcDecl != sym) {
-						suggestMember(funcDecl, ident, onlyStatics, flags, funcSignatures, includes);
+						suggestMember(funcDecl, ps, ident, onlyStatics, flags, funcSignatures, includes);
 					}
 					sym = funcDecl;
 				}
@@ -2631,7 +2646,7 @@ public class CompletionEngine extends Engine
 						FuncDeclaration func = new FuncDeclaration(null, 0, var.ident, 0, var.type.nextOf());
 						func.parent = var.parent;
 						func.copySourceRange(var);
-						suggestMember(func, onlyStatics, flags, funcSignatures, includes);
+						suggestMember(func, parentSignature, onlyStatics, flags, funcSignatures, includes);
 						return;
 					}
 					
@@ -2673,7 +2688,7 @@ public class CompletionEngine extends Engine
 					proposal.setCompletion(ident);
 					proposal.setTypeSignature(typeName);
 					proposal.setSignature(sig);
-					proposal.setDeclarationSignature(var.parent.getSignature().toCharArray());
+					proposal.setDeclarationSignature(parentSignature == null ? getSignatureChars(member.parent) : parentSignature);
 					proposal.setFlags(flags | var.getFlags());
 					proposal.setRelevance(relevance);
 					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
@@ -2836,7 +2851,7 @@ public class CompletionEngine extends Engine
 					proposal.setCompletion(ident);
 					proposal.setSignature(sigChars);
 					proposal.setTypeSignature(sigChars);
-					proposal.setDeclarationSignature(member.parent.getSignature().toCharArray());
+					proposal.setDeclarationSignature(parentSignature == null ? getSignatureChars(member.parent) : parentSignature);
 					proposal.setFlags(flags | member.getFlags());
 					proposal.setRelevance(relevance);
 					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
@@ -2913,7 +2928,7 @@ public class CompletionEngine extends Engine
 				char[] sig = member.getSignature().toCharArray();
 				proposal.setSignature(sig);
 				proposal.setTypeSignature(sig);
-				proposal.setDeclarationSignature(temp.parent.getSignature().toCharArray());
+				proposal.setDeclarationSignature(parentSignature == null ? getSignatureChars(member.parent) : parentSignature);
 				
 				proposal.setFlags(flags | member.getFlags());
 				proposal.setRelevance(relevance);
@@ -3010,11 +3025,8 @@ public class CompletionEngine extends Engine
 					proposal.setRelevance(relevance);
 					proposal.setReplaceRange(this.startPosition - this.offset, this.endPosition - this.offset);
 					proposal.isAlias = isAliased;
-					if (func.parent != null) {
-						String parentSignature = func.parent.getSignature();
-						if (parentSignature != null) {
-							proposal.setDeclarationSignature(parentSignature.toCharArray());
-						}
+					if (parentSignature != null) {
+						proposal.setDeclarationSignature(parentSignature);
 					}
 					
 					CompletionEngine.this.requestor.accept(proposal);
@@ -3105,13 +3117,13 @@ public class CompletionEngine extends Engine
 		case ASTDmdNode.TYPE_STRUCT: {
 			currentName = ident;
 			StructDeclaration sym = (((TypeStruct) type).sym).unlazy(Id.call, context);			
-			suggestMembers(sym.members, onlyStatics, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
+			suggestMembers(sym.members, getSignatureChars(sym), onlyStatics, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
 			break;
 		}
 		case ASTDmdNode.TYPE_CLASS: {
 			currentName = ident;
 			ClassDeclaration sym = (((TypeClass) type).sym).unlazy(this.currentName, context);			
-			suggestMembers(sym.members, onlyStatics, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
+			suggestMembers(sym.members, getSignatureChars(sym), onlyStatics, new HashtableOfCharArrayAndObject(), INCLUDE_OPCALL);
 			
 			// Then try with superclass and superinterface members
 			BaseClasses baseClasses = sym.baseclasses;
@@ -3622,6 +3634,8 @@ public class CompletionEngine extends Engine
 		proposal.wantArguments = this.wantArguments;
 		return proposal;
 	}
+	
+	private HashtableOfCharArrayAndObject packageNamesToSignatures = new HashtableOfCharArrayAndObject();
 
 	public void acceptCompilationUnit(char[] fullyQualifiedName) {
 		if (knownCompilationUnits.containsKey(fullyQualifiedName)
@@ -3679,7 +3693,11 @@ public class CompletionEngine extends Engine
 		StringBuilder sig = new StringBuilder();
 		InternalSignature.appendPackageName(packageName, sig);
 		
-		char[] declSignature = sig.toString().toCharArray();
+		char[] declSignature = (char[]) packageNamesToSignatures.get(packageName);
+		if (declSignature == null) {
+			declSignature = sig.toString().toCharArray();
+			packageNamesToSignatures.put(packageName, declSignature);
+		}
 		
 		if (templateParametersSignature.length > 0) {
 			sig.append(Signature.C_TEMPLATED_CLASS);
@@ -3788,7 +3806,11 @@ public class CompletionEngine extends Engine
 		StringBuilder sig = new StringBuilder();
 		InternalSignature.appendPackageName(packageName, sig);
 		
-		char[] declSignature = sig.toString().toCharArray();
+		char[] declSignature = (char[]) packageNamesToSignatures.get(packageName);
+		if (declSignature == null) {
+			declSignature = sig.toString().toCharArray();
+			packageNamesToSignatures.put(packageName, declSignature);
+		}
 		
 		sig.append(Signature.C_VARIABLE);
 		sig.append(name.length);
@@ -3839,7 +3861,11 @@ public class CompletionEngine extends Engine
 		StringBuilder sig = new StringBuilder();
 		InternalSignature.appendPackageName(packageName, sig);
 		
-		char[] declSignature = sig.toString().toCharArray();
+		char[] declSignature = (char[]) packageNamesToSignatures.get(packageName);
+		if (declSignature == null) {
+			declSignature = sig.toString().toCharArray();
+			packageNamesToSignatures.put(packageName, declSignature);
+		}
 		
 		if (templateParametersSignature.length > 0) {
 			sig.append(Signature.C_TEMPLATED_FUNCTION);
@@ -4046,6 +4072,28 @@ public class CompletionEngine extends Engine
 			}
 		}
 		return false;
+	}
+	
+	private char[] getSignatureChars(Dsymbol sym) {
+		if (sym == null)
+			return null;
+		
+		String signature = sym.getSignature();
+		if (signature == null)
+			return null;
+		
+		return signature.toCharArray();
+	}
+	
+	private char[] getSignatureChars(Type type) {
+		if (type == null)
+			return null;
+		
+		String signature = type.getSignature();
+		if (signature == null)
+			return null;
+		
+		return signature.toCharArray();
 	}
 
 }

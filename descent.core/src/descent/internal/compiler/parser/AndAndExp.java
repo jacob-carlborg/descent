@@ -43,7 +43,7 @@ public class AndAndExp extends BinExp {
 		}
 
 		e2 = e2.semantic(sc, context);
-		sc.mergeCallSuper(filename, lineNumber, cs1, this);
+		sc.mergeCallSuper(filename, lineNumber, cs1, this, context);
 		e2 = resolveProperties(sc, e2, context);
 		e2 = e2.checkToPointer(context);
 

@@ -1057,7 +1057,7 @@ public class VarDeclaration extends Declaration {
 						if (!context.isD1()) {
 						    /* Save scope for later use, to try again
 						     */
-						    scope = new Scope(sc, context);
+						    scope = new Scope(sc);
 						    scope.setNoFree();
 						}
 						
@@ -1095,7 +1095,7 @@ public class VarDeclaration extends Declaration {
 								/*
 								 * Save scope for later use, to try again
 								 */
-								scope = new Scope(sc, context);
+								scope = new Scope(sc);
 								scope.setNoFree();
 							}
 						}
