@@ -11,7 +11,7 @@ public class LocalVariableProposal_Test extends AbstractCompletionTest {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.LOCAL_VARIABLE_REF,
 				new int[] { TYPE_SIGNATURE, LABEL }, 
-				"wxyz", pos, pos, "i", "wxyz    int");
+				"wxyz", pos, pos, "i", "wxyz : int");
 	}
 	
 	public void testInEmptySome() throws Exception {
@@ -21,7 +21,7 @@ public class LocalVariableProposal_Test extends AbstractCompletionTest {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.LOCAL_VARIABLE_REF,
 				new int[] { TYPE_SIGNATURE, LABEL }, 
-				"wxyz", pos - 1, pos, "i", "wxyz    int");
+				"wxyz", pos - 1, pos, "i", "wxyz : int");
 	}
 	
 	public void testInAssignment() throws Exception {
@@ -31,7 +31,7 @@ public class LocalVariableProposal_Test extends AbstractCompletionTest {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.LOCAL_VARIABLE_REF,
 				new int[] { TYPE_SIGNATURE, LABEL }, 
-				"wxyz", pos, pos, "i", "wxyz    int");
+				"wxyz", pos, pos, "i", "wxyz : int");
 	}
 	
 	public void testInAssignmentSome() throws Exception {
@@ -41,7 +41,7 @@ public class LocalVariableProposal_Test extends AbstractCompletionTest {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.LOCAL_VARIABLE_REF,
 				new int[] { TYPE_SIGNATURE, LABEL }, 
-				"wxyz", pos - 1, pos, "i", "wxyz    int");
+				"wxyz", pos - 1, pos, "i", "wxyz : int");
 	}
 	
 	public void testInIf() throws Exception {
@@ -51,7 +51,7 @@ public class LocalVariableProposal_Test extends AbstractCompletionTest {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.LOCAL_VARIABLE_REF,
 				new int[] { TYPE_SIGNATURE, LABEL }, 
-				"wxyz", pos, pos, "i", "wxyz    int");
+				"wxyz", pos, pos, "i", "wxyz : int");
 	}
 	
 	public void testInIfSome() throws Exception {
@@ -61,7 +61,7 @@ public class LocalVariableProposal_Test extends AbstractCompletionTest {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.LOCAL_VARIABLE_REF,
 				new int[] { TYPE_SIGNATURE, LABEL }, 
-				"wxyz", pos - 1, pos, "i", "wxyz    int");
+				"wxyz", pos - 1, pos, "i", "wxyz : int");
 	}
 	
 	public void testDontSuggestAfterType() throws Exception {

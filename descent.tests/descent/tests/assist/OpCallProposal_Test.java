@@ -11,8 +11,8 @@ public class OpCallProposal_Test extends AbstractCompletionTest {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.OP_CALL,
 				new int[] { LABEL },
-				"Foo()", pos - 3, pos, "Foo(int x)  Foo - Foo",
-				"Foo()", pos - 3, pos, "Foo(int x, int y)  Foo - Foo"
+				"Foo()", pos - 3, pos, "Foo(int x) : Foo - Foo",
+				"Foo()", pos - 3, pos, "Foo(int x, int y) : Foo - Foo"
 				);
 	}
 	
@@ -23,8 +23,8 @@ public class OpCallProposal_Test extends AbstractCompletionTest {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.OP_CALL,
 				new int[] { LABEL },
-				"Foo()", pos - 3, pos, "Foo(int x)  Foo - Foo",
-				"Foo()", pos - 3, pos, "Foo(int x, int y)  Foo - Foo"
+				"Foo()", pos - 3, pos, "Foo(int x) : Foo - Foo",
+				"Foo()", pos - 3, pos, "Foo(int x, int y) : Foo - Foo"
 				);
 	}
 	
@@ -35,8 +35,8 @@ public class OpCallProposal_Test extends AbstractCompletionTest {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.OP_CALL,
 				new int[] { LABEL },
-				"var()", pos - 3, pos, "var(int x)  Foo - Foo",
-				"var()", pos - 3, pos, "var(int x, int y)  Foo - Foo"
+				"var()", pos - 3, pos, "var(int x) : Foo - Foo",
+				"var()", pos - 3, pos, "var(int x, int y) : Foo - Foo"
 				);
 	}
 	

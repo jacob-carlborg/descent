@@ -547,6 +547,8 @@ public class Lexer implements IProblemRequestor {
 					case '8': t.sourceString = charArray_8; break;
 					case '9': t.sourceString = charArray_9; break;
 					}
+				} else {
+					t.setString(input, t.ptr, t.sourceLen);
 				}
 				return;
 

@@ -218,6 +218,9 @@ public class StructLiteralExp extends Expression {
 	public Expression semantic(Scope sc, SemanticContext context) {
 		Expression e;
 	    int nfields = 0;
+
+		// Need to know the real fields, so unlazy here
+		sd = (StructDeclaration) sd.unlazy(context);
 	    
 	    if (context.isD2()) {
 	    	nfields = size(sd.fields) - (sd.isnested ? 1 : 0);
@@ -239,9 +242,6 @@ public class StructLiteralExp extends Expression {
 			elements.set(i, e);
 		}
 		expandTuples(elements, context);
-		
-		// Need to know the real fields, so unlazy here
-		sd = (StructDeclaration) sd.unlazy(context);
 		
 		int offset = 0;
 		for (int i = 0; i < elements.size(); i++) {

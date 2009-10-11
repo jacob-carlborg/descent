@@ -11,9 +11,9 @@ public class MethodProposal_Test extends AbstractCompletionTest {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.METHOD_REF,
 				new int[] { SIGNATURE, TYPE_SIGNATURE, DECLARATION_SIGNATURE, LABEL }, 
-				"foo()", pos, pos, "@4test[3fooFZi", "FZi", "@4test", "foo()  int - test",
-				"printf()", pos, pos, "@6object[6printfFPaYi", "FPaYi", "@6object", "printf(char* arg1, ...)  int - object",
-				"trace_term()", pos, pos, "@6object[10trace_termFZv", "FZv", "@6object", "trace_term()  void - object"
+				"foo()", pos, pos, "@4test[3fooFZi", "FZi", "@4test", "foo() : int - test",
+				"printf()", pos, pos, "@6object[6printfFPaYi", "FPaYi", "@6object", "printf(char* arg1, ...) : int - object",
+				"trace_term()", pos, pos, "@6object[10trace_termFZv", "FZv", "@6object", "trace_term() : void - object"
 				);
 	}
 	
@@ -26,9 +26,9 @@ public class MethodProposal_Test extends AbstractCompletionTest {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.METHOD_REF,
 				new int[] { LABEL }, 
-				"foo()", pos, pos, "foo()  int - one.two.test",
-				"printf()", pos, pos, "printf(char* arg1, ...)  int - object",
-				"trace_term()", pos, pos, "trace_term()  void - object"
+				"foo()", pos, pos, "foo() : int - one.two.test",
+				"printf()", pos, pos, "printf(char* arg1, ...) : int - object",
+				"trace_term()", pos, pos, "trace_term() : void - object"
 				);
 	}
 	
@@ -39,7 +39,7 @@ public class MethodProposal_Test extends AbstractCompletionTest {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.METHOD_REF,
 				new int[] { SIGNATURE, TYPE_SIGNATURE, DECLARATION_SIGNATURE, LABEL }, 
-				"foo()", pos - 1, pos, "@4test[3fooFZi", "FZi", "@4test", "foo()  int - test");
+				"foo()", pos - 1, pos, "@4test[3fooFZi", "FZi", "@4test", "foo() : int - test");
 	}
 	
 	public void testClassMethod() throws Exception {
@@ -49,14 +49,14 @@ public class MethodProposal_Test extends AbstractCompletionTest {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.METHOD_REF,
 				new int[] { LABEL },
-				"factory()", pos, pos, "factory(char[] classname)  Object - Object",
-				"notifyRegister()", pos, pos, "notifyRegister(void delegate(Object) dg)  void - Object",
-				"notifyUnRegister()", pos, pos, "notifyUnRegister(void delegate(Object) dg)  void - Object",
+				"factory()", pos, pos, "factory(char[] classname) : Object - Object",
+				"notifyRegister()", pos, pos, "notifyRegister(void delegate(Object) dg) : void - Object",
+				"notifyUnRegister()", pos, pos, "notifyUnRegister(void delegate(Object) dg) : void - Object",
 //				"opCmp()", pos, pos, "opCmp(Object o)  int - Object",
 //				"opEquals()", pos, pos, "opEquals(Object o)  int - Object",
-				"print()", pos, pos, "print()  void - Object",
-				"toHash()", pos, pos, "toHash()  hash_t - Object",
-				"toString()", pos, pos, "toString()  char[] - Object"
+				"print()", pos, pos, "print() : void - Object",
+				"toHash()", pos, pos, "toHash() : hash_t - Object",
+				"toString()", pos, pos, "toString() : char[] - Object"
 				);
 	}
 	
@@ -67,8 +67,8 @@ public class MethodProposal_Test extends AbstractCompletionTest {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.METHOD_REF,
 				new int[] { LABEL },
-				"notifyRegister()", pos - 1, pos, "notifyRegister(void delegate(Object) dg)  void - Object",
-				"notifyUnRegister()", pos - 1, pos, "notifyUnRegister(void delegate(Object) dg)  void - Object"
+				"notifyRegister()", pos - 1, pos, "notifyRegister(void delegate(Object) dg) : void - Object",
+				"notifyUnRegister()", pos - 1, pos, "notifyUnRegister(void delegate(Object) dg) : void - Object"
 				);
 	}
 	
@@ -79,8 +79,8 @@ public class MethodProposal_Test extends AbstractCompletionTest {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.METHOD_REF,
 				new int[] { LABEL },
-				"opCmp()", pos - 2, pos, "opCmp(Object o)  int - Object",
-				"opEquals()", pos - 2, pos, "opEquals(Object o)  int - Object"
+				"opCmp()", pos - 2, pos, "opCmp(Object o) : int - Object",
+				"opEquals()", pos - 2, pos, "opEquals(Object o) : int - Object"
 				);
 	}
 	
@@ -101,7 +101,7 @@ public class MethodProposal_Test extends AbstractCompletionTest {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.METHOD_REF,
 				new int[] { LABEL },
-				"Object()", pos - 6, pos, "Object()  Object - Object"
+				"Object()", pos - 6, pos, "Object() : Object - Object"
 				);
 	}
 	
@@ -112,8 +112,8 @@ public class MethodProposal_Test extends AbstractCompletionTest {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.METHOD_REF,
 				new int[] { LABEL },
-				"Foo()", pos - 3, pos, "Foo(int x)  Foo - Foo",
-				"Foo()", pos - 3, pos, "Foo(int x, int y)  Foo - Foo"
+				"Foo()", pos - 3, pos, "Foo(int x) : Foo - Foo",
+				"Foo()", pos - 3, pos, "Foo(int x, int y) : Foo - Foo"
 				);
 	}
 	

@@ -11,7 +11,7 @@ public class FieldProposal_Test extends AbstractCompletionTest  {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.FIELD_REF,
 				new int[] { SIGNATURE, TYPE_SIGNATURE, DECLARATION_SIGNATURE, LABEL }, 
-				"wxyz", pos, pos, "@4testB4wxyz", "i", "@4test", "wxyz    int - test");
+				"wxyz", pos, pos, "@4testB4wxyz", "i", "@4test", "wxyz : int - test");
 	}
 	
 	public void testVarWithBasicTypeInFunctionFQN() throws Exception {
@@ -23,7 +23,7 @@ public class FieldProposal_Test extends AbstractCompletionTest  {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.FIELD_REF,
 				new int[] { SIGNATURE, TYPE_SIGNATURE, DECLARATION_SIGNATURE, LABEL }, 
-				"wxyz", pos, pos, "@3one3two5threeB4wxyz", "i", "@3one3two5three", "wxyz    int - one.two.three");
+				"wxyz", pos, pos, "@3one3two5threeB4wxyz", "i", "@3one3two5three", "wxyz : int - one.two.three");
 	}
 	
 	public void testVarWithBasicTypeInFunctionSome() throws Exception {
@@ -33,7 +33,7 @@ public class FieldProposal_Test extends AbstractCompletionTest  {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.FIELD_REF,
 				new int[] { SIGNATURE, TYPE_SIGNATURE, DECLARATION_SIGNATURE, LABEL }, 
-				"zxyz", pos - 1, pos, "@4testB4zxyz", "i", "@4test", "zxyz    int - test");
+				"zxyz", pos - 1, pos, "@4testB4zxyz", "i", "@4test", "zxyz : int - test");
 	}
 	
 	public void testVarWithClassTypeInFunction() throws Exception {
@@ -43,7 +43,7 @@ public class FieldProposal_Test extends AbstractCompletionTest  {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.FIELD_REF,
 				new int[] { SIGNATURE, TYPE_SIGNATURE, DECLARATION_SIGNATURE, LABEL }, 
-				"wxyz", pos, pos, "@4testB4wxyz", "@4testC9SomeClass", "@4test", "wxyz    SomeClass - test");
+				"wxyz", pos, pos, "@4testB4wxyz", "@4testC9SomeClass", "@4test", "wxyz : SomeClass - test");
 	}
 	
 	public void testFieldInFunction() throws Exception {
@@ -53,14 +53,14 @@ public class FieldProposal_Test extends AbstractCompletionTest  {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.FIELD_REF,
 				new int[] { TYPE_SIGNATURE, DECLARATION_SIGNATURE, LABEL },
-				"alignof", pos, pos, "i", "@4testC9SomeClass", "alignof    int - SomeClass",
-				"classinfo", pos, pos, "@6objectC9ClassInfo", "@4testC9SomeClass", "classinfo    ClassInfo - SomeClass",
-				"init", pos, pos, "@4testC9SomeClass", "@4testC9SomeClass", "init    SomeClass - SomeClass",
-				"mangleof", pos, pos, "Aa", "@4testC9SomeClass", "mangleof    char[] - SomeClass",
-				"sizeof", pos, pos, "i", "@4testC9SomeClass", "sizeof    int - SomeClass",
-				"stringof", pos, pos, "Aa", "@4testC9SomeClass", "stringof    char[] - SomeClass",
-				"tupleof", pos, pos, "´1´i", "@4testC9SomeClass", "tupleof    Tuple!(int) - SomeClass",
-				"wxyz", pos, pos, "i", "@4testC9SomeClass", "wxyz    int - SomeClass"
+				"alignof", pos, pos, "i", "@4testC9SomeClass", "alignof : int - SomeClass",
+				"classinfo", pos, pos, "@6objectC9ClassInfo", "@4testC9SomeClass", "classinfo : ClassInfo - SomeClass",
+				"init", pos, pos, "@4testC9SomeClass", "@4testC9SomeClass", "init : SomeClass - SomeClass",
+				"mangleof", pos, pos, "Aa", "@4testC9SomeClass", "mangleof : char[] - SomeClass",
+				"sizeof", pos, pos, "i", "@4testC9SomeClass", "sizeof : int - SomeClass",
+				"stringof", pos, pos, "Aa", "@4testC9SomeClass", "stringof : char[] - SomeClass",
+				"tupleof", pos, pos, "´1´i", "@4testC9SomeClass", "tupleof : Tuple!(int) - SomeClass",
+				"wxyz", pos, pos, "i", "@4testC9SomeClass", "wxyz : int - SomeClass"
 				);
 	}
 	
@@ -71,7 +71,7 @@ public class FieldProposal_Test extends AbstractCompletionTest  {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.FIELD_REF,
 				new int[] { SIGNATURE, TYPE_SIGNATURE, DECLARATION_SIGNATURE, LABEL },
-				"wxyz", pos - 1, pos, "@4testC9SomeClassB4wxyz", "i", "@4testC9SomeClass", "wxyz    int - SomeClass"
+				"wxyz", pos - 1, pos, "@4testC9SomeClassB4wxyz", "i", "@4testC9SomeClass", "wxyz : int - SomeClass"
 				);
 	}
 	
@@ -84,7 +84,7 @@ public class FieldProposal_Test extends AbstractCompletionTest  {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.FIELD_REF,
 				new int[] { LABEL }, 
-				"wxyz", pos, pos, "wxyz    SomeClass* - test");
+				"wxyz", pos, pos, "wxyz : SomeClass* - test");
 	}
 	
 	public void testShortLabelForStaticArray() throws Exception {
@@ -96,7 +96,7 @@ public class FieldProposal_Test extends AbstractCompletionTest  {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.FIELD_REF,
 				new int[] { LABEL }, 
-				"wxyz", pos, pos, "wxyz    SomeClass[] - test");
+				"wxyz", pos, pos, "wxyz : SomeClass[] - test");
 	}
 	
 	public void testShortLabelForAssociativeArray() throws Exception {
@@ -108,7 +108,7 @@ public class FieldProposal_Test extends AbstractCompletionTest  {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.FIELD_REF,
 				new int[] { LABEL }, 
-				"wxyz", pos, pos, "wxyz    SomeClass[Object] - test");
+				"wxyz", pos, pos, "wxyz : SomeClass[Object] - test");
 	}
 	
 	public void testVarWithTemplateInstanceTypeInFunction() throws Exception {
@@ -118,7 +118,7 @@ public class FieldProposal_Test extends AbstractCompletionTest  {
 		
 		assertCompletions(null, "test.d", s, pos, CompletionProposal.FIELD_REF,
 				new int[] { SIGNATURE, TYPE_SIGNATURE, DECLARATION_SIGNATURE, LABEL }, 
-				"wxyz", pos, pos, "@4testB4wxyz", "@4test<9SomeClass#'!^i'", "@4test", "wxyz    SomeClass!(int) - test");
+				"wxyz", pos, pos, "@4testB4wxyz", "@4test<9SomeClass#'!^i'", "@4test", "wxyz : SomeClass!(int) - test");
 	}
 	
 	public void testVarWithBasicTypeInModuleScope() throws Exception {
