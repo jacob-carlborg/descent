@@ -1,9 +1,4 @@
-/**
- * 
- */
 package mmrnmhrm.ui.wizards;
-
-import java.util.Observable;
 
 import mmrnmhrm.core.model.DeeNature;
 import mmrnmhrm.ui.preferences.pages.DeeCompilersPreferencePage;
@@ -14,8 +9,6 @@ import org.eclipse.swt.widgets.Composite;
 
 public class DeeProjectWizardPage1 extends ProjectWizardFirstPage {
 
-	DeeInterpreterGroup fInterpreterGroup;
-	
 	final class DeeInterpreterGroup extends AbstractInterpreterGroup {
 		
 		public DeeInterpreterGroup(Composite composite) {
@@ -35,28 +28,19 @@ public class DeeProjectWizardPage1 extends ProjectWizardFirstPage {
     };
 
     @Override
-	protected void createInterpreterGroup(Composite parent) {
-		fInterpreterGroup = new DeeInterpreterGroup(parent);
+	protected IInterpreterGroup createInterpreterGroup(Composite parent) {
+		return new DeeInterpreterGroup(parent);
 	}
 
-    @Override
-	protected Observable getInterpreterGroupObservable() {
-		return fInterpreterGroup;
-	}
 	
 	@Override
-	protected boolean supportInterpreter() {
-		return true;
-	}
-
-	@Override
 	protected IInterpreterInstall getInterpreter() {
-		return fInterpreterGroup.getSelectedInterpreter();
+		return getInterpreterGroup().getSelectedInterpreter();
 	}
 
 	@Override
 	protected void handlePossibleInterpreterChange() {
-		fInterpreterGroup.handlePossibleInterpreterChange();
+		getInterpreterGroup().handlePossibleInterpreterChange();
 	}
 
 	@Override

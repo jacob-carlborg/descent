@@ -1,7 +1,6 @@
 package mmrnmhrm.core.dltk.search;
 
 import static melnorme.miscutil.Assert.assertFail;
-import static melnorme.miscutil.Assert.assertFailTODO;
 
 import melnorme.miscutil.ArrayUtil;
 import melnorme.miscutil.StringUtil;

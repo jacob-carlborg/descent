@@ -42,23 +42,24 @@ public final class ArrayUtil_Test {
 	}
 	
 	@Test
+	@SuppressWarnings("unused")
 	public void test_createFrom() {
 	
-		ArrayUtil.createFrom(list(OBJECT), Object.class);
+		Object[]  obj01 = ArrayUtil.createFrom(list(OBJECT), Object.class);
 		
-		ArrayUtil.createFrom(list(STRING), Object.class);
-		ArrayUtil.createFrom(list(STRING), String.class);
+		Object[]  obj02 = ArrayUtil.createFrom(list(STRING), Object.class);
+		String[]  obj03 = ArrayUtil.createFrom(list(STRING), String.class);
 		
-		ArrayUtil.createFrom(list(LIST_FOO), Object.class);
-		ArrayUtil.createFrom(list(LIST_FOO), List.class);
-		ArrayUtil.createFrom(list(LIST_FOO), klass(LIST_FOO));
-		ArrayUtil.createFrom(list(LIST_X_FOO), Object.class);
-		ArrayUtil.createFrom(list(LIST_X_FOO), List.class);
-		ArrayUtil.createFrom(list(LIST_X_), Object.class);
-		ArrayUtil.createFrom(list(LIST_X_), List.class);
-		ArrayUtil.createFrom(list(LIST), Object.class);
-		ArrayUtil.createFrom(list(LIST), List.class);
-		ArrayUtil.createFrom(list(LIST), klass(LIST));
+		Object[]  obj04 = ArrayUtil.createFrom(list(LIST_FOO), Object.class);
+		List<?>[] obj05 = ArrayUtil.createFrom(list(LIST_FOO), List.class);
+		List<?>[] obj06 = ArrayUtil.createFrom(list(LIST_FOO), klass(LIST_FOO));
+		Object[]  obj07 = ArrayUtil.createFrom(list(LIST_X_FOO), Object.class);
+		List<?>[] obj08 = ArrayUtil.createFrom(list(LIST_X_FOO), List.class);
+		Object[]  obj09 = ArrayUtil.createFrom(list(LIST_X_), Object.class);
+		List<?>[] obj10 = ArrayUtil.createFrom(list(LIST_X_), List.class);
+		Object[]  obj11 = ArrayUtil.createFrom(list(LIST), Object.class);
+		List<?>[] obj12 = ArrayUtil.createFrom(list(LIST), List.class);
+		List<?>[] obj13 = ArrayUtil.createFrom(list(LIST), klass(LIST));
 
 		// The following must be tested manually
 		// uncomment to make sure each line causes a compilation error
@@ -73,7 +74,8 @@ public final class ArrayUtil_Test {
 //		ArrayUtil.createFrom(list(LIST_X_), klass(LIST_OBJ));
 //		ArrayUtil.createFrom(list(LIST_X_), klass(LIST_X_));
 //		ArrayUtil.createFrom(list(LIST_X_FOO), klass(LIST_X_FOO));
-
+//		String[] objX1 = ArrayUtil.createFrom(list(STRING), Object.class);
+//		List[] objX2 = ArrayUtil.createFrom(list(STRING), Object.class);
 	}
 	
 	public final Integer[] EMPTY_INTEGER_ARRAY = array();

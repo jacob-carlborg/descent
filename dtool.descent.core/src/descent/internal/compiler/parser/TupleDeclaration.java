@@ -34,7 +34,7 @@ public class TupleDeclaration extends Declaration {
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			melnorme.miscutil.Assert.failTODO(); // what is
+			melnorme.miscutil.CoreUtil.assertTODO(); // what is this
 			TreeVisitor.acceptChildren(visitor, type);
 			TreeVisitor.acceptChildren(visitor, ident);
 			TreeVisitor.acceptChildren(visitor, objects);

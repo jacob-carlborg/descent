@@ -53,28 +53,28 @@ public class CoreUtil /* extends Assert */ {
 		return elems;
 	}
 	
-	public static boolean[] array(boolean... elems) {
+	public static boolean[] arrayP(boolean... elems) {
 		return elems;
 	}
-	public static byte[] array(byte... elems) {
+	public static byte[] arrayP(byte... elems) {
 		return elems;
 	}
-	public static short[] array(short... elems) {
+	public static short[] arrayP(short... elems) {
 		return elems;
 	}
-	public static int[] array(int... elems) {
+	public static int[] arrayP(int... elems) {
 		return elems;
 	}
-	public static long[] array(long... elems) {
+	public static long[] arrayP(long... elems) {
 		return elems;
 	}
-	public static float[] array(float... elems) {
+	public static float[] arrayP(float... elems) {
 		return elems;
 	}
-	public static double[] array(double... elems) {
+	public static double[] arrayP(double... elems) {
 		return elems;
 	}
-	public static char[] array(char... elems) {
+	public static char[] arrayP(char... elems) {
 		return elems;
 	}
 	

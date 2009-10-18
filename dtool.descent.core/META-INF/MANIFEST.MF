@@ -6,7 +6,8 @@ Bundle-Version: 0.3.0.qualifier
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.text
+ org.eclipse.text,
+ org.junit4;resolution:=optional
 Bundle-ActivationPolicy: lazy
 Export-Package: descent.core,
  descent.core.compiler,
@@ -20,4 +21,4 @@ Export-Package: descent.core,
  melnorme.miscutil.tree
 Eclipse-BuddyPolicy: registered
 Bundle-ClassPath: .
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

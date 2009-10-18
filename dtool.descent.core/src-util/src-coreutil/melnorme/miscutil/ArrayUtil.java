@@ -139,7 +139,7 @@ public class ArrayUtil {
     /** Create an array from the given list, with the given run-time component type.
      * If the list is null, a zero-length array is created. */
 	@SuppressWarnings("unchecked")
-	public static <T> T[] createFrom(Collection<T> list, Class<? super T> cpType) {
+	public static <T> T[] createFrom(Collection<? extends T> list, Class<T> cpType) {
 		if(list == null)
 			return (T[]) Array.newInstance(cpType, 0);
 		else
