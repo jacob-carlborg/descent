@@ -540,6 +540,7 @@ final class ProblemMessages extends NLS {
 	public static String CannotImplicitlyConvertToImmutable;
 	public static String CannotHaveConstInvariantOutParameterOfType;
 	public static String OverloadSetNotAllowedInStructDeclaration;
+	public static String CannotPerformArrayOperationsOnVoidArrays;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ProblemMessages.class);

@@ -565,7 +565,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		
 		ASTConverter converter = new ASTConverter(project != null, monitor);
 		converter.setAST(ast);
-		if (project != null) {
+		if (project != null && parseResult.context != null) {
 			BindingTables tables = new BindingTables();
 			converter.ast.setBindingResolver(new DefaultBindingResolver(project, parseResult.context, owner, tables));
 		} else {

@@ -118,6 +118,9 @@ class DefaultBindingResolver extends BindingResolver {
 	 */
 	DefaultBindingResolver(IJavaProject project, SemanticContext context,
 			WorkingCopyOwner workingCopyOwner, BindingTables bindingTables) {
+		if (context == null)
+			throw new IllegalArgumentException("context was null");
+		
 		this.javaProject = project;
 		this.context = context;
 		this.bindingsToAstNodes = new HashMap();
@@ -125,7 +128,7 @@ class DefaultBindingResolver extends BindingResolver {
 		this.workingCopyOwner = workingCopyOwner;
 		this.newAstToOldAst = new HashMap();
 		this.internalSignature = new InternalSignature(javaProject);
-		this.apiLevel = context == null ? (javaProject == null ? AST.D2 : javaProject.getApiLevel()) : context.apiLevel;
+		this.apiLevel = context.apiLevel;
 		this.evaluator = new Evaluator(javaProject, context);
 		
 //		try {

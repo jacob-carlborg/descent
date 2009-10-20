@@ -1191,6 +1191,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.CannotHaveConstInvariantOutParameterOfType, arguments[0]);
 		case OverloadSetNotAllowedInStructDeclaration:
 			return String.format(ProblemMessages.OverloadSetNotAllowedInStructDeclaration, arguments[0], arguments[1]);
+		case CannotPerformArrayOperationsOnVoidArrays:
+			return String.format(ProblemMessages.CannotPerformArrayOperationsOnVoidArrays);
 		default:
 			return "";
 		}

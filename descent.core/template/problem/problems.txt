@@ -1588,6 +1588,9 @@ CannotHaveConstInvariantOutParameterOfType
 OverloadSetNotAllowedInStructDeclaration
 	formatString=Overload set for %1$s.%2$s not allowed in struct declaration
 	numArgs=2
+CannotPerformArrayOperationsOnVoidArrays
+	formatString=Cannot perform array operations on void[] arrays
+	numArgs=0
 	
 	
 	

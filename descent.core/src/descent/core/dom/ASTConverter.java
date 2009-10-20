@@ -96,6 +96,11 @@ public class ASTConverter {
 	 * Must be called after setAST in order for binding resolution to work.
 	 */
 	public void init(IJavaProject project, SemanticContext context, WorkingCopyOwner owner) {
+		if (context == null) {
+			ast.setBindingResolver(new BindingResolver());
+			return;
+		}
+		
 		BindingTables tables = new BindingTables();
 		ast.setBindingResolver(new DefaultBindingResolver(project, context, owner, tables));
 	}

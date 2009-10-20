@@ -88,6 +88,13 @@ public abstract class BinExp extends Expression {
 	}
 	
 	public Expression arrayOp(Scope sc, SemanticContext context) {
+		if (type.toBasetype(context).nextOf().toBasetype(context).ty == Tvoid) {
+			if (context.acceptsErrors()) {
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotPerformArrayOperationsOnVoidArrays, this));
+			}
+			return new ErrorExp();
+		}
+	    
 		Expressions arguments = new Expressions(3);
 
 		/*
@@ -179,6 +186,8 @@ public abstract class BinExp extends Expression {
 				sc.stc = 0;
 				sc.linkage = LINKc;
 				fd.semantic(sc, context);
+				fd.semantic2(sc, context);
+				fd.semantic3(sc, context);
 				sc.pop();
 			} else { /*
 						 * In library, refer to it.

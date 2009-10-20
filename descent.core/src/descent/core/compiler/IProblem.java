@@ -739,5 +739,6 @@ public interface IProblem {
 	int CannotImplicitlyConvertToImmutable = 528;
 	int CannotHaveConstInvariantOutParameterOfType = 529;
 	int OverloadSetNotAllowedInStructDeclaration = 530;
+	int CannotPerformArrayOperationsOnVoidArrays = 531;
 
 }

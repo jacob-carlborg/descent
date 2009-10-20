@@ -5,8 +5,13 @@ Last DMD 2.x ported version: 2.030
 
 -o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-
 
+Remaining from DMD 1.050 vs. 1050
+----------------------------------
+attrib.c
+v
+
 Remaining from DMD 2.031 vs. 2.030
-------------------------------
+----------------------------------
  * attrib.c
  * attrib.h
  * cast.c
