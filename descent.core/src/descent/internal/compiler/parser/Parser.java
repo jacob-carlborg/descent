@@ -2163,7 +2163,7 @@ public class Parser extends Lexer {
 					} else {
 						type = parseType(ident, null);
 						if (id != null || memtype != null) {
-							error(IProblem.TypeOnlyAllowedIfAnonymousEnumAndNoEnumType, memtype == null ? id.start : memtype.start, memtype == null ? id.length : memtype.length, memtype == null ? id.getLineNumber() : memtype.getLineNumber());
+							error(IProblem.TypeOnlyAllowedIfAnonymousEnumAndNoEnumType, memtype == null ? id.getLineNumber() : memtype.getLineNumber(), memtype == null ? id.start : memtype.start, memtype == null ? id.length : memtype.length);
 						}
 					}
 					
@@ -2180,7 +2180,11 @@ public class Parser extends Lexer {
 					
 					lastComments = getLastComments();
 					
-				    em = newEnumMember(filename, lineNumber, ident[0], value, type);
+					if (ident[0] == null) {
+						nextToken();
+					} else {
+						em = newEnumMember(filename, lineNumber, ident[0], value, type);
+					}
 				} else {
 					if (token.value == TOKidentifier) {
 						Expression value;

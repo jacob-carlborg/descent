@@ -423,5 +423,19 @@ public class Bugs_Test extends Parser_Test {
 		Module m = getParseResult(s, AST.D2).module;
 		assertNotNull(m);
 	}
+	
+	public void testPrivateEnumMemberJavaHeapSapceD1() {
+		String s = 
+			"enum Color { private UNINITIALIZED = -1, RED, GREEN, BLUE }";
+		
+		getParseResult(s, AST.D1);
+	}
+	
+	public void testPrivateEnumMemberJavaHeapSapceD2() {
+		String s = 
+			"enum Color { private UNINITIALIZED = -1, RED, GREEN, BLUE }";
+		
+		getParseResult(s, AST.D2);
+	}
 
 }
