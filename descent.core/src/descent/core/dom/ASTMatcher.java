@@ -3201,6 +3201,7 @@ public class ASTMatcher {
 			safeSubtreeListMatch(node.preDDocs(), o.preDDocs())
 			&& safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& safeSubtreeMatch(node.getType(), o.getType())
+			&& safeSubtreeMatch(node.arguments(), o.arguments())
 			&& safeSubtreeMatch(node.getName(), o.getName())
 			&& safeSubtreeMatch(node.getPostDDoc(), o.getPostDDoc())
 			);

@@ -118,4 +118,30 @@ public class FormatForeachStatement_Test extends AbstractFormatBraceWithSingleIn
 				);
 	}
 	
+	public void testArgumentModifier() throws Exception {
+		Map options = new HashMap();
+		assertFormat(
+				"foreach(inout int x; z) {\r\n" +
+				"}\r\n",
+				
+				"foreach(inout int x; z) {\r\n" +
+				"}",
+				
+				options
+				);
+	}
+	
+	public void testArgumentModifierTypeInference() throws Exception {
+		Map options = new HashMap();
+		assertFormat(
+				"foreach(inout x; z) {\r\n" +
+				"}\r\n",
+				
+				"foreach(inout x; z) {\r\n" +
+				"}",
+				
+				options
+				);
+	}
+	
 }

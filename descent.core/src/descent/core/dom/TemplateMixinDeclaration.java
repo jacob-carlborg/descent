@@ -9,7 +9,7 @@ import java.util.List;
  * 
  * <pre>
  * TemplateMixinDeclaration:
- *    { Modifier } <b>mixin</b> Type [ SimpleName ] <b>;</b>
+ *    { Modifier } <b>mixin</b> Type [ <b>!(</b> [ ASTNode { <b>,</b> ASTNode } ] <b>)</b> ] [ SimpleName ] <b>;</b>
  * </pre>
  */
 public class TemplateMixinDeclaration extends Declaration {
@@ -31,6 +31,12 @@ public class TemplateMixinDeclaration extends Declaration {
 	 */
 	public static final ChildPropertyDescriptor TYPE_PROPERTY =
 		new ChildPropertyDescriptor(TemplateMixinDeclaration.class, "type", Type.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
+	
+	/**
+	 * The "arguments" structural property of this node type.
+	 */
+	public static final ChildListPropertyDescriptor ARGUMENTS_PROPERTY =
+		new ChildListPropertyDescriptor(TemplateMixinDeclaration.class, "arguments", ASTNode.class, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "name" structural property of this node type.
@@ -58,6 +64,7 @@ public class TemplateMixinDeclaration extends Declaration {
 		addProperty(MODIFIERS_PROPERTY, properyList);
 		addProperty(TYPE_PROPERTY, properyList);
 		addProperty(NAME_PROPERTY, properyList);
+		addProperty(ARGUMENTS_PROPERTY, properyList);
 		addProperty(POST_D_DOC_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
@@ -81,6 +88,14 @@ public class TemplateMixinDeclaration extends Declaration {
 	 * The type.
 	 */
 	private Type type;
+	
+	/**
+	 * The arguments
+	 * (element type: <code>ASTNode</code>).
+	 * Defaults to an empty list.
+	 */
+	private ASTNode.NodeList arguments =
+		new ASTNode.NodeList(ARGUMENTS_PROPERTY);
 
 	/**
 	 * The name.
@@ -150,6 +165,9 @@ public class TemplateMixinDeclaration extends Declaration {
 		if (property == MODIFIERS_PROPERTY) {
 			return modifiers();
 		}
+		if (property == ARGUMENTS_PROPERTY) {
+			return arguments();
+		}
 		// allow default implementation to flag the error
 		return super.internalGetChildListProperty(property);
 	}
@@ -185,6 +203,7 @@ public class TemplateMixinDeclaration extends Declaration {
 		result.preDDocs.addAll(ASTNode.copySubtrees(target, preDDocs()));
 		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
 		result.setType((Type) getType().clone(target));
+		result.arguments.addAll(ASTNode.copySubtrees(target, arguments()));
 	result.setName((SimpleName) ASTNode.copySubtree(target, getName()));
 	result.setPostDDoc((DDocComment) ASTNode.copySubtree(target, getPostDDoc()));
 		return result;
@@ -253,6 +272,17 @@ public class TemplateMixinDeclaration extends Declaration {
 		this.type = type;
 		postReplaceChild(oldChild, type, TYPE_PROPERTY);
 	}
+	
+	/**
+	 * Returns the live ordered list of arguments for this
+	 * template type.
+	 * 
+	 * @return the live list of template type
+	 *    (element type: <code>ASTNode</code>)
+	 */ 
+	public List<ASTNode> arguments() {
+		return this.arguments;
+	}
 
 	/**
 	 * Returns the name of this template mixin declaration.
@@ -297,6 +327,7 @@ public class TemplateMixinDeclaration extends Declaration {
 			+ (this.preDDocs.listSize())
 			+ (this.modifiers.listSize())
 			+ (this.type == null ? 0 : getType().treeSize())
+			+ (this.arguments.listSize())
 			+ (this.name == null ? 0 : getName().treeSize())
 			+ (this.postDDoc == null ? 0 : getPostDDoc().treeSize())
 	;

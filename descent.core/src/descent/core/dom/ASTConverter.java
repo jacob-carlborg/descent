@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
-import descent.core.ICompilationUnit;
 import descent.core.IJavaProject;
 import descent.core.ITypeRoot;
 import descent.core.WorkingCopyOwner;
@@ -992,10 +991,17 @@ public class ASTConverter {
 		if (a.sourceIdent != null) {
 			b.setName((SimpleName) convert(a.sourceIdent));
 		}
-		
 		descent.core.dom.Type convertedType = convertTemplateMixin(a.typeStart, a.typeLength, a.tqual, a.idents, a.sourceTiargs);
 		if (convertedType != null) {
 			b.setType(convertedType);
+		}
+		if (a.sourceTiargs != null) {
+			for(ASTDmdNode node : a.sourceTiargs) {
+				ASTNode convertedNode = convert(node);
+				if (convertedNode != null) {
+					b.arguments().add(convertedNode);
+				}
+			}
 		}
 		fillDeclaration(b, a);
 		return b;

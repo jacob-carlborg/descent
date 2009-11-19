@@ -5180,6 +5180,7 @@ public class Parser extends Lexer {
 				// Larg:
 				if (at != null && ai != null) {
 					a = new Argument(storageClass, at, ai, null);
+					setModifiers(a, modifiers);
 					a.setSourceRange(argumentStart, prevToken.ptr + prevToken.sourceLen - argumentStart);
 					arguments.add(a);
 				}

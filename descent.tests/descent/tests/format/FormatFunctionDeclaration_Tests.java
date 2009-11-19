@@ -563,5 +563,15 @@ public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 				options
 				);
 	}
+	
+	public void testSemicolonAtTheEnd() throws Exception {
+		Map options = new HashMap();
+		assertFormat(
+				"void bla() {\r\n" +
+				"};",
+				"void   bla  (  )   {     }   ;",
+				options
+				);
+	}
 
 }

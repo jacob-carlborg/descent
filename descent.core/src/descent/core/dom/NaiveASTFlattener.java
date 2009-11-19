@@ -1176,6 +1176,7 @@ class NaiveASTFlattener extends ASTVisitor {
 		visitModifiers(node.modifiers());
 		this.buffer.append("mixin ");
 		node.getType().accept(this);
+		visitList(node.arguments(), ", ", "!(", ")");
 		if (node.getName() != null) {
 			this.buffer.append(" ");
 			node.getName().accept(this);

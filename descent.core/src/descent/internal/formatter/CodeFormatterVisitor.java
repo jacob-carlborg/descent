@@ -2170,6 +2170,33 @@ public class CodeFormatterVisitor extends ASTVisitor
 		scribe.printNextToken(TOK.TOKmixin);
 		scribe.space();
 		node.getType().accept(this);
+		
+		if (isNextToken(TOK.TOKnot)) {
+			scribe.printNextToken(TOK.TOKnot,
+					prefs.insert_space_before_exclamation_point_in_template_invocation);
+			if(prefs.insert_space_after_exclamation_point_in_template_invocation)
+				scribe.space();
+			scribe.printNextToken(TOK.TOKlparen);
+			
+			List<ASTNode> arguments = node.arguments();
+			if(null != arguments && !arguments.isEmpty())
+			{
+				if(prefs.insert_space_after_opening_paren_in_template_invocation)
+					scribe.space();
+				formatCSV(node.arguments(),
+						prefs.insert_space_before_comma_in_template_invocation,
+						prefs.insert_space_after_comma_in_template_invocation,
+						prefs.alignment_for_template_invocation_arguments);
+				if(prefs.insert_space_before_closing_paren_in_template_invocation)
+					scribe.space();
+			}
+			else if(prefs.insert_space_between_empty_parens_in_template_invocation)
+				scribe.space();
+			scribe.printNextToken(TOK.TOKrparen);
+		}
+		
+		
+		
 		SimpleName name = node.getName();
 		if(null != name)
 		{
@@ -2808,6 +2835,10 @@ public class CodeFormatterVisitor extends ASTVisitor
 		int len = declarations.size();
 		for (int i = 0; i < len; i++)
 		{
+			while (isNextToken(TOK.TOKsemicolon)) {
+				scribe.printNextToken(TOK.TOKsemicolon);
+			}
+			
 			Declaration cur = declarations.get(i);
 			
 			// Determine how many lines to put above this declararation
@@ -2847,6 +2878,10 @@ public class CodeFormatterVisitor extends ASTVisitor
 			
 			cur.accept(this);
 			prev = cur;
+		}
+		
+		while (isNextToken(TOK.TOKsemicolon)) {
+			scribe.printNextToken(TOK.TOKsemicolon);
 		}
 	}
 	

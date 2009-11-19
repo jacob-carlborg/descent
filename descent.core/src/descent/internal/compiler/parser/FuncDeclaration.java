@@ -1297,6 +1297,9 @@ public class FuncDeclaration extends Declaration {
 					Dsymbol s = cd.baseClass.search(filename, lineNumber, ident, 0, context);
 					if (s != null) {
 						FuncDeclaration f_ = s.isFuncDeclaration();
+						if (f_ == null) {
+							System.out.println(123456);
+						}
 						f_ = f_.overloadExactMatch(type, context);
 						if (f_ != null && f_.isFinal()
 								&& f_.prot() != PROTprivate) {
