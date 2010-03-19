@@ -1,0 +1,26 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Test Product
+Bundle-SymbolicName: testproduct;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Require-Bundle: org.eclipse.swt;bundle-version="3.4.0",
+ org.eclipse.jface;bundle-version="3.4.0",
+ org.eclipse.ui;bundle-version="3.4.0",
+ org.eclipse.core.runtime;bundle-version="3.4.0",
+ sampledep;bundle-version="1.0.0";resolution:=optional,
+ org.junit4;resolution:=optional,
+ org.apache.commons.lang;bundle-version="2.3.0",
+ org.eclipse.ui.forms;bundle-version="3.3.103",
+ org.apache.commons.logging;bundle-version="1.0.4",
+ org.hamcrest;bundle-version="1.1.0",
+ org.hamcrest.core;bundle-version="1.1.0",
+ org.hamcrest.integration;bundle-version="1.1.0",
+ org.hamcrest.library;bundle-version="1.1.0",
+ org.hamcrest.text;bundle-version="1.1.0",
+ org.eclipse.swtbot.swt.finder;bundle-version="2.0.0",
+ org.apache.log4j;bundle-version="1.2.13"
+Bundle-ClassPath: .,
+ lib/nattable-core-1.6.5.jar,
+ lib/net.java.dev.glazedlists.glazedlists_java15-1.7.0-001.jar
+Bundle-Activator: testproduct.TestProductPlugin
+Import-Package: melnorme.miscutil

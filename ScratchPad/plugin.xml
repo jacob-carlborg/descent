@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+   <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="testproduct.application"
+            name="Test Product Launch">
+         <property
+               name="appName"
+               value="Test Product Launch">
+         </property>
+         <property
+               name="aboutImage"
+               value="platform:/plugin/com.arcticlake.utils/resources/histogram.gif">
+         </property>
+         <property
+               name="aboutText"
+               value="About Dialog Text">
+         </property>
+      </product>
+   </extension>
+
+   <extension
+         id="application"
+         point="org.eclipse.core.runtime.applications">
+      <application>
+         <run
+               class="testproduct.TestProductApplication">
+         </run>
+      </application>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            name="Perspective"
+            class="testproduct.Perspective"
+            id="TestProduct.perspective">
+      </perspective>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            name="TestView"
+            class="testproduct.views.TestView"
+            id="TestProduct.testview">
+      </view>
+      <category
+            id="testproduct"
+            name="Sample Category">
+      </category>
+      <view
+            allowMultiple="true"
+            category="testproduct"
+            class="testproduct.views.SampleView"
+            icon="icons/sample.gif"
+            id="testproduct.views.SampleView"
+            name="Sample View">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            id="ScratchPad.actionSet"
+            label="Sample Action Set (deprecated?)"
+            visible="true">
+         <menu
+               id="sampleMenu"
+               label="Sample &amp;Menu">
+            <separator
+                  name="sampleGroup">
+            </separator>
+         </menu>
+         <action
+               class="scratchpad.actions.SampleAction"
+               icon="icons/sample.gif"
+               id="scratchpad.actions.SampleAction"
+               label="&amp;Sample Action"
+               menubarPath="sampleMenu/sampleGroup"
+               toolbarPath="sampleGroup"
+               tooltip="Hello, Eclipse world">
+         </action>
+      </actionSet>
+   </extension>
+   <extension
+         point="org.eclipse.help.contexts">
+      <contexts
+            file="contexts.xml">
+      </contexts>
+   </extension>
+
+
+</plugin>
