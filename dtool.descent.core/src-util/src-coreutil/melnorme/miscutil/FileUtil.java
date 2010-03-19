@@ -50,7 +50,7 @@ public final class FileUtil extends StreamUtil {
 			FileNotFoundException {
 		FileOutputStream fileOS = new FileOutputStream(file);
 		writeBytesToStream(bytes, fileOS);
-	}	
+	}
 	
 	/** Writes given chars array to given writer. 
 	 * Close writer afterwards. */

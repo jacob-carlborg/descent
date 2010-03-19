@@ -129,9 +129,9 @@ public class StreamUtil {
 	
 	/** Writes given bytes array to given outpuStream. 
 	 * Close outputStream afterwards. */
-	public static void writeBytesToStream(byte[] bytes, OutputStream outpuStream) throws IOException {
+	public static void writeBytesToStream(byte[] bytes, OutputStream outputStream) throws IOException {
 		// A BufferedOutputStream is likely not necessary since this is a one-time array write
-		BufferedOutputStream bos = new BufferedOutputStream(outpuStream);
+		BufferedOutputStream bos = new BufferedOutputStream(outputStream);
 		try {
 			bos.write(bytes);
 		} finally {
