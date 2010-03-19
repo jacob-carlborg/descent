@@ -1,10 +1,13 @@
 package melnorme.miscutil;
 
+import static melnorme.miscutil.Assert.assertTrue;
+
 
 public class NumUtil {
 
 	/** Caps given number betwen given min and max, inclusive. */
 	public static int capBetween(int min, int number, int max) {
+		assertTrue(min <= max);
 		return Math.min(max, Math.max(min, number));
 	}
 

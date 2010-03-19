@@ -12,6 +12,8 @@ package melnorme.miscutil;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -19,14 +21,12 @@ import java.util.List;
  */
 public class CollectionUtil {
 	
-	/** Creates a List copy of orig, with all elements except elements equal
-	 * to outElem. */
-	public static <T> List<T> copyExcept(T[] orig, T outElem) {
-		List<T> rejectedElements = 
-			new ArrayList<T>(orig.length);
-
+	/** Creates a List copy of orig, with all elements except elements equal to excludedElem. */
+	public static <T> List<T> copyExcept(T[] orig, T excludedElem) {
+		List<T> rejectedElements = new ArrayList<T>(orig.length);
+		
 		for (int i= 0; i < orig.length; i++) {
-			if (!orig[i].equals(outElem)) {
+			if (!orig[i].equals(excludedElem)) {
 				rejectedElements.add(orig[i]);
 			}
 		}
@@ -43,5 +43,26 @@ public class CollectionUtil {
 		}
 		return newColl;
 	}
-			
+	
+	/** Removes from given list the first element that matches given predicate. */
+	public static <T> void removeElement(List<? extends T> list, IPredicate<T> predicate) {
+		for (Iterator<? extends T> iter = list.iterator(); iter.hasNext(); ) {
+			T obj = iter.next();
+			if(predicate.evaluate(obj)) {
+				iter.remove();
+			}
+		}
+	}
+	
+	/** Sorts given list and returns it. */
+	public static <T extends Comparable<? super T>> List<T> sort(List<T> list) {
+		Collections.sort(list);
+		return list;
+	}
+	
+	/**/ static void test_sort_generics() {
+		List<? extends Integer> list = null;
+		sort(list);
+	}
+	
 }

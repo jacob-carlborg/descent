@@ -18,6 +18,19 @@ import java.util.List;
 
 public class ArrayUtil {
 	
+//	/** Returns true if both arrays have the same elements, ignoring order. False otherwise. */
+//	public static <T extends Comparable<? super T>> boolean arrayContainsSame(T[] arr1, T[] arr2) {
+//		List<T> list1 = Arrays.asList(arr1);
+//		List<T> list2 = Arrays.asList(arr2);
+//		return CollectionUtil.sort(list1).equals(CollectionUtil.sort(list2));
+//	}
+//	
+//	public static <T> boolean arrayContainsSame(T[] arr1, T[] arr2) {
+//		List<T> list1 = Arrays.asList(arr1);
+//		List<T> list2 = Arrays.asList(arr2);
+//		return new HashSet<T>(list1).equals(new HashSet<T>(list2));
+//	}
+	
 	/** Creates a new array of given length, and same component type as given compType. */
 	@SuppressWarnings("unchecked")
 	public static <T> T[] create(int length, T[] compType) {

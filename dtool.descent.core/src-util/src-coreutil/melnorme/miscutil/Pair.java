@@ -5,10 +5,14 @@ package melnorme.miscutil;
  * A Tuple of two elements
  */
 public final class Pair<T1, T2> {
-
+	
 	private final T1 first;
 	private final T2 second;
-
+	
+	public static <T1, T2> Pair<T1, T2> create(T1 first, T2 second) {
+		return new Pair<T1, T2>(first, second);
+	}
+	
 	public Pair(T1 first, T2 second) {
 		this.first = first;
 		this.second = second;
@@ -39,7 +43,7 @@ public final class Pair<T1, T2> {
 	public int hashCode() {
 		return MiscUtil.combineHashCodes(first.hashCode(), second.hashCode());
 	}
-
+	
 	@Override
 	public String toString() {
 		return "<" + getFirst() + "," + getSecond() + ">";

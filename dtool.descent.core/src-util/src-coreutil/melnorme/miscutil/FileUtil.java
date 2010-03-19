@@ -22,7 +22,8 @@ import java.io.OutputStreamWriter;
  */
 public final class FileUtil extends StreamUtil {
 	
-	/** Read all bytes of the given file. */
+	/** Read all bytes of the given file. 
+	 * @return the bytes that where read. */
 	public static byte[] readBytesFromFile(File file) throws IOException, FileNotFoundException {
 		long fileLength = file.length();
 		/*
@@ -35,6 +36,12 @@ public final class FileUtil extends StreamUtil {
 		
 		FileInputStream fis = new FileInputStream(file);
 		return readBytesFromStream(fis, (int) fileLength);
+	}
+	
+	/** Read all bytes of the given file.
+	 * @return a String created from given bytes, with given charsetName. */
+	public static String readStringFromFile(File file, String charsetName) throws IOException, FileNotFoundException {
+		return new String(readBytesFromFile(file), charsetName);
 	}
 	
 	
