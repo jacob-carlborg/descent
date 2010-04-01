@@ -10,7 +10,7 @@
 <booleanAttribute key="clearConfig" value="true"/>
 <booleanAttribute key="clearws" value="false"/>
 <booleanAttribute key="clearwslog" value="false"/>
-<stringAttribute key="configLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/Test.Application"/>
+<stringAttribute key="configLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/Test.Product"/>
 <booleanAttribute key="default" value="false"/>
 <booleanAttribute key="includeOptional" value="false"/>
 <stringAttribute key="location" value="${workspace_loc}/_runtime-ScratchPad"/>
@@ -19,9 +19,9 @@
 <stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="${workspace_loc}/_workingdir"/>
 <booleanAttribute key="pde.generated.config" value="false"/>
 <stringAttribute key="pde.version" value="3.3"/>
-<stringAttribute key="product" value="org.eclipse.platform.ide"/>
-<stringAttribute key="selected_target_plugins" value="com.ibm.icu,org.apache.commons.lang,org.apache.commons.logging,org.apache.log4j,org.eclipse.core.commands,org.eclipse.core.contenttype,org.eclipse.core.databinding,org.eclipse.core.expressions,org.eclipse.core.jobs,org.eclipse.core.runtime,org.eclipse.core.runtime.compatibility.registry,org.eclipse.equinox.app,org.eclipse.equinox.common,org.eclipse.equinox.preferences,org.eclipse.equinox.registry,org.eclipse.help,org.eclipse.jface,org.eclipse.jface.databinding,org.eclipse.osgi,org.eclipse.swt,org.eclipse.swt.win32.win32.x86,org.eclipse.swtbot.swt.finder,org.eclipse.ui,org.eclipse.ui.forms,org.eclipse.ui.views.log,org.eclipse.ui.workbench,org.hamcrest,org.hamcrest.core,org.hamcrest.integration,org.hamcrest.library,org.hamcrest.text,org.junit4"/>
-<stringAttribute key="selected_workspace_plugins" value="testproduct,com.arcticlake.utils,nattable16"/>
+<stringAttribute key="product" value="testproduct.product"/>
+<stringAttribute key="selected_target_plugins" value="org.hamcrest@default:default,org.eclipse.ant.core@default:default,org.eclipse.osgi@-1:true,org.eclipse.help.webapp@default:default,org.eclipse.core.databinding@default:default,org.junit4@default:default,org.eclipse.core.filesystem@default:default,org.eclipse.core.runtime@default:true,org.eclipse.core.resources.compatibility@default:false,org.eclipse.core.jobs@default:default,org.hamcrest.integration@default:default,org.apache.commons.lang@default:default,org.eclipse.help@default:default,org.eclipse.equinox.registry@default:default,javax.servlet.jsp@default:default,org.eclipse.core.resources@default:default,org.eclipse.equinox.jsp.jasper@default:default,org.mortbay.jetty@default:default,org.eclipse.core.commands@default:default,org.eclipse.ui@default:default,org.eclipse.ui.forms@default:default,org.apache.log4j@default:default,org.apache.jasper@default:default,org.apache.commons.logging@default:default,org.eclipse.ui.workbench@default:default,org.hamcrest.text@default:default,org.eclipse.core.runtime.compatibility.registry@default:false,org.eclipse.jface.databinding@default:default,org.eclipse.equinox.app@default:default,org.eclipse.swt@default:default,org.eclipse.equinox.jsp.jasper.registry@default:default,org.eclipse.equinox.preferences@default:default,org.eclipse.core.filesystem.win32.x86@default:false,org.apache.lucene@default:default,org.apache.lucene.analysis@default:default,org.eclipse.core.resources.win32.x86@default:false,org.eclipse.swt.win32.win32.x86@default:false,com.ibm.icu@default:default,org.eclipse.equinox.common@2:true,org.eclipse.help.ui@default:default,org.hamcrest.core@default:default,javax.servlet@default:default,org.eclipse.swtbot.swt.finder@default:default,org.eclipse.core.expressions@default:default,org.eclipse.core.variables@default:default,org.apache.commons.el@default:default,org.eclipse.core.contenttype@default:default,org.eclipse.jface@default:default,org.eclipse.equinox.http.registry@default:default,org.eclipse.osgi.services@default:default,org.eclipse.help.base@default:default,org.hamcrest.library@default:default"/>
+<stringAttribute key="selected_workspace_plugins" value="org.dsource.melnorme@default:default,testproduct@default:default,nattable16@default:default"/>
 <booleanAttribute key="show_selected_only" value="false"/>
 <booleanAttribute key="tracing" value="false"/>
 <mapAttribute key="tracingOptions">
@@ -257,6 +257,6 @@
 </mapAttribute>
 <booleanAttribute key="useDefaultConfig" value="true"/>
 <booleanAttribute key="useDefaultConfigArea" value="true"/>
-<booleanAttribute key="useProduct" value="false"/>
+<booleanAttribute key="useProduct" value="true"/>
 <booleanAttribute key="usefeatures" value="false"/>
 </launchConfiguration>

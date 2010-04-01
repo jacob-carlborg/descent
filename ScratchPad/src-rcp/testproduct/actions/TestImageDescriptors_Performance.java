@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import scratch.swt.SWTApp;
 import scratch.utils.ImageRegistryCache;
-import testproduct.TestProductPlugin;
+import testproduct.TestApplicationPlugin;
 
 public class TestImageDescriptors_Performance {
 
@@ -24,7 +24,7 @@ public class TestImageDescriptors_Performance {
 		public static final ImageRegistryCache imageRegistryCache = new ImageRegistryCache();
 
 		public static synchronized ImageDescriptor getImageDescriptor(String imagePath) {
-			return imageRegistryCache.getImageDescriptor(TestProductPlugin.PLUGIN_ID, imagePath);
+			return imageRegistryCache.getImageDescriptor(TestApplicationPlugin.PLUGIN_ID, imagePath);
 		}
 
 	}
@@ -92,7 +92,7 @@ public class TestImageDescriptors_Performance {
 			while(System.currentTimeMillis() - time < 1000) {
 				counter++;
 				
-				AbstractUIPlugin.imageDescriptorFromPlugin(TestProductPlugin.PLUGIN_ID, ICON_SAMPLE_CLONES + "sample00.gif");
+				AbstractUIPlugin.imageDescriptorFromPlugin(TestApplicationPlugin.PLUGIN_ID, ICON_SAMPLE_CLONES + "sample00.gif");
 			}
 			System.out.println("imageDescriptorFromPlugin: " + counter);
 	

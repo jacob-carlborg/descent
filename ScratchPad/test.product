@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?pde version="3.4"?>
+<?pde version="3.5"?>
 
-<product name="Test Product Launch" id="testproduct.product" application="testproduct.application" version="1.2.3" useFeatures="false">
+<product name="Test Product Launch" id="testproduct.product" application="testproduct.application" version="1.2.3" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
-      <image path="/com.arcticlake.utils/resources/histogram.gif"/>
       <text>
-         About Dialog Text
+         %aboutText
       </text>
    </aboutInfo>
 
@@ -26,12 +25,11 @@
       </win>
    </launcher>
 
+
    <vm>
    </vm>
 
    <plugins>
-      <plugin id="com.arcticlake.frontend.messaging"/>
-      <plugin id="com.arcticlake.utils"/>
       <plugin id="com.ibm.icu"/>
       <plugin id="javax.servlet"/>
       <plugin id="org.eclipse.core.commands"/>
@@ -65,5 +63,10 @@
       <plugin id="sampledep"/>
       <plugin id="testproduct"/>
    </plugins>
+
+   <features>
+      <feature id="test.feature" version="1.0.0"/>
+   </features>
+
 
 </product>

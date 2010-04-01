@@ -1,5 +1,11 @@
 package testproduct;
 
+import melnorme.miscutil.MiscUtil;
+
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ui.application.IWorkbenchConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchAdvisor;
@@ -24,4 +30,15 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 		configurer.setSaveAndRestore(true);
 	}
 	
+	@Override
+	public void postStartup() {
+		Job job = new Job("10 sec Job") {
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
+				MiscUtil.sleepUnchecked(10000);
+				return Status.OK_STATUS;
+			}
+		};
+		job.schedule();
+	}
 }

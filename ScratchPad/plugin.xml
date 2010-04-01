@@ -13,12 +13,12 @@
                value="Test Product Launch">
          </property>
          <property
-               name="aboutImage"
-               value="platform:/plugin/com.arcticlake.utils/resources/histogram.gif">
+               name="aboutText"
+               value="%aboutText">
          </property>
          <property
-               name="aboutText"
-               value="About Dialog Text">
+               name="preferenceCustomization"
+               value="preferences.ini">
          </property>
       </product>
    </extension>
@@ -89,6 +89,14 @@
       <contexts
             file="contexts.xml">
       </contexts>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="org.eclipse.ui.ExtensionFactory:keysPreferencePage"
+            id="ScratchPad.page1"
+            name="ScratchPad.page1">
+      </page>
    </extension>
 
 

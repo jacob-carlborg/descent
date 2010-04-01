@@ -5,6 +5,8 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 
+import testproduct.actions.EclipseScratchpad;
+
 /**
  * Our sample action implements workbench action delegate.
  * The action proxy will be created by the workbench and
@@ -30,7 +32,7 @@ public class SampleAction implements IWorkbenchWindowActionDelegate {
 	 */
 	@Override
 	public void run(IAction action) {
-		TestViews.test();
+		EclipseScratchpad.printPlatformInfo();
 	}
 	
 	/**

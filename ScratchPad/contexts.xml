@@ -8,5 +8,7 @@
 	     		</with>
 			</enablement>
 		</topic>
+		<topic href="/help/foo.htm" label="Foo Help">
+		</topic>
 	</context>
 </contexts>
