@@ -1,6 +1,3 @@
-/**
- * 
- */
 package mmrnmhrm.ui.wizards;
 
 import static melnorme.miscutil.Assert.assertFail;
@@ -15,23 +12,23 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.widgets.Composite;
 
 public class DeeProjectWizardPage3 extends WizardPage {
-
+	
 	private static final String PAGE_NAME = "DeeProjectWizardPage3";
 	protected ProjectWizardSecondPage fSecondPage;
 	protected DeeProjectOptionsBlock fProjCfg;
-
+	
 	public DeeProjectWizardPage3(ProjectWizardSecondPage secondPage) {
 		super(PAGE_NAME);
 		setPageComplete(false);
 		setTitle("Setup");
 		setDescription("");
-
+		
 		fSecondPage = secondPage;
 		fProjCfg = new DeeProjectOptionsBlock();
 	}
 	
-
-	//@Override
+	
+	@Override
 	public void createControl(Composite parent) {
 		setControl(fProjCfg.createControl(parent));
 	}
@@ -53,12 +50,11 @@ public class DeeProjectWizardPage3 extends WizardPage {
 	public boolean performOk() {
 		return fProjCfg.performOk();
 	}
-
+	
 	public void performCancel() {
 		IFile file = getProject().getFile(DeeProjectOptions.CFG_FILE_NAME);
 		if(file.exists())
 			assertFail();
 	}
-
-
+	
 }

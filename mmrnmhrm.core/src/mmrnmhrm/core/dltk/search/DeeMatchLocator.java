@@ -70,7 +70,7 @@ public class DeeMatchLocator extends MatchLocator {
 		//super.reportMatching(unit);
 		MatchingNodeSet nodeSet = currentPossibleMatch.nodeSet;
 		
-		if (true || BasicSearchEngine.VERBOSE) {
+		if (DeeCore.DEBUG_MODE || BasicSearchEngine.VERBOSE) {
 			System.out.println("Report matching: "); //$NON-NLS-1$
 			int size = nodeSet.matchingNodes == null ? 0
 					: nodeSet.matchingNodes.elementSize;

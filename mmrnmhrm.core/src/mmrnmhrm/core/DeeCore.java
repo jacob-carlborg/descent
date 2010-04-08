@@ -9,12 +9,12 @@ import org.osgi.framework.BundleContext;
 
 import dtool.refmodel.ReferenceResolver;
 
-
+/**
+ * Singleton class for D IDE Core.
+ */
 public class DeeCore extends LangCore {
-
-	/** The plug-in ID */
+	
 	public static final String PLUGIN_ID = "mmrnmhrm.core";
-	/** The builder ID */
 	public final static String BUILDER_ID = PLUGIN_ID + ".deebuilder";
 	
 	protected static DeeCore pluginInstance;
@@ -28,18 +28,16 @@ public class DeeCore extends LangCore {
 		return pluginInstance;
 	}
 	
-	// XXX: restore debug mode defaults
-	public static final boolean DEBUG_MODE = true || "true"
-			.equalsIgnoreCase(Platform.getDebugOption(PLUGIN_ID + "/debug/ResultCollector"));
-
-
+	public static final boolean DEBUG_MODE = "true".equalsIgnoreCase(Platform.getDebugOption(PLUGIN_ID + "/debug/ResultCollector"));
+	
+	
 	/** {@inheritDoc} */
 	@Override
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		initPlugin();
 	}
-
+	
 	/** {@inheritDoc} */
 	@Override
 	public void stop(BundleContext context) throws Exception {
@@ -47,7 +45,7 @@ public class DeeCore extends LangCore {
 		pluginInstance = null;
 		DeeModel.dispose();
 	}
-
+	
 	
 	public void initPlugin() throws CoreException {
 		//EntityResolver.initializeEntityResolver(DeeModel.getRoot());
@@ -56,9 +54,7 @@ public class DeeCore extends LangCore {
 		
 		DeeModel.initModel(); // Can we add a listener here?
 	}
-
-
+	
 	/* *********************************************** */
-
-
+	
 }
