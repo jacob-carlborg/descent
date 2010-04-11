@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import mmrnmhrm.core.model.DeeModel;
+import mmrnmhrm.core.model.DeeProjectOptions;
 import mmrnmhrm.tests.BasePluginExceptionWatcherTest;
 import mmrnmhrm.tests.CoreTestUtils;
 import mmrnmhrm.tests.ITestDataConstants;
@@ -17,12 +18,21 @@ import org.eclipse.dltk.core.IScriptProject;
 import org.junit.Test;
 
 public class Builder_Test extends BasePluginExceptionWatcherTest {
-
+	
+	protected IScriptProject createBuildProject() throws CoreException {
+		IScriptProject deeProj = CoreTestUtils.createAndOpenProject("__BuilderProject");
+		
+		DeeProjectOptions deeProjectInfo = DeeModel.getDeeProjectInfo(deeProj);
+		deeProjectInfo.compilerOptions.buildToolCmdLine = 
+			"D:/devel/D.tools/rebuild/" + deeProjectInfo.compilerOptions.buildToolCmdLine;
+		return deeProj;
+	}
+	
 	@Test
 	public void test() throws CoreException, URISyntaxException, IOException {
-		IScriptProject deeProj = CoreTestUtils.createAndOpenProject("__BuilderProject");
+		IScriptProject deeProj = createBuildProject();
 		IProject project = deeProj.getProject();
-
+		
 		try {
 			//UITestUtils.runEventLoop();
 			doProjectBuild(deeProj);
@@ -33,10 +43,10 @@ public class Builder_Test extends BasePluginExceptionWatcherTest {
 			
 			CoreTestUtils.createFolderInProject(project, ITestDataConstants.SAMPLE_SRC1, "src1", true);
 			doProjectBuild(deeProj);
-	
+			
 			CoreTestUtils.createFolderInProject(project, ITestDataConstants.SAMPLE_SRC3, "src3", true);
 			doProjectBuild(deeProj);
-	
+			
 			CoreTestUtils.createFolderInProject(project, ITestDataConstants.SAMPLE_SRC1, "src1-copy", true);
 			doProjectBuild(deeProj);
 			
@@ -49,9 +59,9 @@ public class Builder_Test extends BasePluginExceptionWatcherTest {
 	
 	@Test
 	public void test_OutputFolderInsideSrcFolder() throws CoreException, URISyntaxException, IOException {
-		IScriptProject deeProj = CoreTestUtils.createAndOpenProject("__BuilderProject");
+		IScriptProject deeProj = createBuildProject();
 		IProject project = deeProj.getProject();
-
+		
 		try {
 			//UITestUtils.runEventLoop();
 			doProjectBuild(deeProj);
@@ -64,7 +74,7 @@ public class Builder_Test extends BasePluginExceptionWatcherTest {
 			project.delete(true, null);
 		}
 	}
-
+	
 	private void doProjectBuild(IScriptProject deeProj) throws CoreException {
 		IProject project = deeProj.getProject();
 		project.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());

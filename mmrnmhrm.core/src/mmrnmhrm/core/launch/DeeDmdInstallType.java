@@ -1,5 +1,7 @@
 package mmrnmhrm.core.launch;
 
+import static melnorme.miscutil.Assert.assertFail;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,23 +27,27 @@ import org.eclipse.dltk.launching.LibraryLocation;
 public class DeeDmdInstallType extends AbstractInterpreterInstallType {
 	
 	public static final String INSTALLTYPE_ID = "mmrnmhrm.core.launching.deeDmdInstallType";
-
+	
 	private static final Path DMD_INSTALL_LIBRARY_PATH = new Path("src/phobos");
-
+	private static final Path DMD2_INSTALL_LIBRARY_PATH = new Path("src/druntime/import");
+	
 	public static class DeeLaunchingPlugin extends DeeCore {
 	}
 	private static String[] interpreterNames = { "dmd" };
 	
 	public static boolean isStandardLibraryEntry(IBuildpathEntry entry) {
-		int numSegs = entry.getPath().segmentCount();
-		return entry.isExternal() 
-			&& entry.getPath().isAbsolute()
-			&& entry.getPath().lastSegment().matches("phobos")
-			&& entry.getPath().segment(numSegs-2).matches("src");
+		// TODO: do this differently
+		IPath path = entry.getPath();
+		int numSegs = path.segmentCount();
+		return entry.isExternal() && path.isAbsolute()
+			&& (
+				(path.lastSegment().matches("phobos") && path.segment(numSegs-2).matches("src")) ||
+				(path.lastSegment().matches("import") && path.segment(numSegs-2).matches("druntime"))
+			);
 	}
 	
-
-	//@Override
+	
+	@Override
 	public String getNatureId() {
 		return DeeNature.NATURE_ID;
 	}
@@ -55,17 +61,17 @@ public class DeeDmdInstallType extends AbstractInterpreterInstallType {
 	protected ILog getLog() {
 		return DeeLaunchingPlugin.getInstance().getLog();
 	}
-
-	//@Override
+	
+	@Override
 	public String getName() {
-		return "DMD Install";
+		return "DMD";
 	}
-
+	
 	@Override
 	protected String[] getPossibleInterpreterNames() {
 		return interpreterNames;
 	}
-
+	
 	@Override
 	protected IInterpreterInstall doCreateInterpreterInstall(String id) {
 		return new DeeInstall(this, id);
@@ -75,31 +81,36 @@ public class DeeDmdInstallType extends AbstractInterpreterInstallType {
 	public synchronized LibraryLocation[] getDefaultLibraryLocations(IFileHandle installLocation,
 			EnvironmentVariable[] variables, IProgressMonitor monitor) {
 		//return super.getDefaultLibraryLocations(installLocation, variables, monitor);
-		/** Unlike the parent class, this InstallType does not find library paths by
+		/* Unlike the parent class, this InstallType does not find library paths by
 		 * running some kind of external executable, like Ruby or Python.
 		 * It just adds some predefined path. */
-
 		
-		List<LibraryLocation> locations = new ArrayList<LibraryLocation>();
+		List<LibraryLocation> locations = new ArrayList<LibraryLocation>(); 
 		addDefaultLibraryLocations(installLocation, locations); 
 		return locations.toArray(new LibraryLocation[0]);
 	}
 	
-	private void addDefaultLibraryLocations(IFileHandle installLocation, List<LibraryLocation> locs) {
-		IPath path = new Path(installLocation.getCanonicalPath());
-		path = path.removeLastSegments(2);
-		path = path.append(DMD_INSTALL_LIBRARY_PATH);
-		IEnvironment env = installLocation.getEnvironment();
+	private void addDefaultLibraryLocations(IFileHandle executableLocation, List<LibraryLocation> locs) {
+		IPath installPath = executableLocation.getPath().removeLastSegments(3);
+		IPath path = installPath.append(DMD2_INSTALL_LIBRARY_PATH);
+		if(path.toFile().exists() && path.toFile().isDirectory()) {
+			// Found a D2 DMD install
+		} else {
+			// Can only be a D1 DMD install
+			path = installPath.append(DMD_INSTALL_LIBRARY_PATH);
+		}
+		
+		IEnvironment env = executableLocation.getEnvironment();
 		LibraryLocation loc = new LibraryLocation(EnvironmentPathUtils.getFullPath(env, path));
 		locs.add(loc);
 	}
-
+	
 	
 	@Override
 	protected IPath createPathFile(IDeployment deployment) throws IOException {
 		Assert.fail("Does not run lookup executable"); return null;
 	}
-
+	
 	// Generating the InstallName not supported yet
 	/*
 	public String generateAutomaticInstallName(File installLocation) {
@@ -139,6 +150,6 @@ public class DeeDmdInstallType extends AbstractInterpreterInstallType {
 			br.close(); br.close();
 		}
 	}
-	*/
-
+	 */
+	
 }

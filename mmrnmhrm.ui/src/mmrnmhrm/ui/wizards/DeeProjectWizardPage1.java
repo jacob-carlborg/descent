@@ -23,6 +23,11 @@ public class DeeProjectWizardPage1 extends ProjectWizardFirstPage {
 		protected String getIntereprtersPreferencePageId() {
 			return DeeCompilersPreferencePage.PAGE_ID;
 		}
+		
+		@Override
+		protected boolean isTargetEnvironmentAllowed() {
+			return false;
+		}
     	
     };
 
@@ -33,7 +38,7 @@ public class DeeProjectWizardPage1 extends ProjectWizardFirstPage {
 	
 	@Override
 	protected boolean interpeterRequired() {
-		return true;
+		return false;
 	}
 	
 	@Override

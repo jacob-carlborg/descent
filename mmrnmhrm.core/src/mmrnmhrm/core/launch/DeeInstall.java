@@ -2,6 +2,7 @@ package mmrnmhrm.core.launch;
 
 import mmrnmhrm.core.model.DeeNature;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.dltk.core.environment.IFileHandle;
 import org.eclipse.dltk.launching.AbstractInterpreterInstall;
@@ -9,12 +10,12 @@ import org.eclipse.dltk.launching.IInterpreterInstallType;
 import org.eclipse.dltk.launching.IInterpreterRunner;
 
 public class DeeInstall extends AbstractInterpreterInstall {
-
+	
 	public DeeInstall(IInterpreterInstallType type, String id) {
 		super(type, id);
 	}
-
-	//@Override
+	
+	@Override
 	public String getNatureId() {
 		return DeeNature.NATURE_ID;
 	}
@@ -32,12 +33,16 @@ public class DeeInstall extends AbstractInterpreterInstall {
 		if (runner != null) {
 			return runner;
 		}
-
+		
 		if (mode.equals(ILaunchManager.RUN_MODE)) {
 			return new DeeInterpreterRunner(this);
 		}
-
+		
 		return null;
 	}
 
+	public IPath getCompilerPath() {
+		return getInstallLocation().getPath().removeLastSegments(1);
+	}
+	
 }

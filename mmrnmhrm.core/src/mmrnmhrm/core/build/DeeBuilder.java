@@ -1,6 +1,7 @@
 package mmrnmhrm.core.build;
 
 import static melnorme.miscutil.Assert.assertFail;
+import static melnorme.miscutil.Assert.assertNotNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -13,6 +14,7 @@ import java.util.Map;
 import melnorme.miscutil.StringUtil;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.launch.DeeDmdInstallType;
+import mmrnmhrm.core.launch.DeeInstall;
 import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.core.model.DeeNameRules;
 import mmrnmhrm.core.model.DeeProjectOptions;
@@ -28,6 +30,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.dltk.core.IBuildpathEntry;
 import org.eclipse.dltk.core.IScriptProject;
 import org.eclipse.dltk.core.environment.EnvironmentPathUtils;
+import org.eclipse.dltk.launching.IInterpreterInstall;
+import org.eclipse.dltk.launching.ScriptRuntime;
 
 import dtool.Logg;
 
@@ -69,7 +73,7 @@ public class DeeBuilder {
 	private List<String> folderEntries;
 	private List<String> buildModules;
 	private IPath compilerPath;
-	private IPath standardLibPath;
+//	private IPath standardLibPath;
 
 	public DeeBuilder() {
 		dontCollectModules = false;
@@ -87,12 +91,21 @@ public class DeeBuilder {
 
 	public void collectBuildUnits(IScriptProject deeProj, IProgressMonitor monitor) throws CoreException  {
 		
-		IBuildpathEntry[] buildpathEntries = deeProj.getResolvedBuildpath(true);
+		IInterpreterInstall install = ScriptRuntime.getInterpreterInstall(deeProj);
+		if(!(install instanceof DeeInstall)) {
+			throw DeeCore.createCoreException("Could not find a D compiler/interpreter associated to the project", null);
+		}
+		DeeInstall deeInstall = ((DeeInstall) install);
+		
+		compilerPath = deeInstall.getCompilerPath(); 
+		assertNotNull(compilerPath);
 
+		IBuildpathEntry[] buildpathEntries = deeProj.getResolvedBuildpath(true);
+		
 		for (int i = 0; i < buildpathEntries.length; i++) {
 			IBuildpathEntry entry = buildpathEntries[i];
 			Logg.builder.println("Builder:: In entry: " + entry);
-
+			
 			
 			if(entry.getEntryKind() == IBuildpathEntry.BPE_SOURCE) {
 				processSourceEntry(deeProj, entry, monitor);
@@ -101,20 +114,14 @@ public class DeeBuilder {
 			}
 		}
 		
-		if(compilerPath == null)
-			throw DeeCore.createCoreException("Could not find a D Compiler in the project path", null);
 	}
 
 	private void processLibraryEntry(IBuildpathEntry entry) throws CoreException {
-		
-		if(entry.getPath().matchingFirstSegments(IBuildpathEntry.BUILTIN_EXTERNAL_ENTRY) == 1) {
-			// XXX: This entry has the compiler path, but has a bug in which the path device is lost
-			//compilerPath = standardLibPath.removeLastSegments(2).append("bin");
+		if(IBuildpathEntry.BUILTIN_EXTERNAL_ENTRY.isPrefixOf(entry.getPath())) {
+			// Ignore builtin entry
 		} else if (DeeDmdInstallType.isStandardLibraryEntry(entry)) {
-			// FIXME: BUILDER: Support other kinds of install locations
-			standardLibPath = entry.getPath();
-			compilerPath = standardLibPath.removeLastSegments(2).append("bin");
-
+			// Identify StandardLib entry apart from other entries 
+//			standardLibPath = entry.getPath();
 		} else if(!entry.isExternal()) {
 			IPath projectBasedPath = entry.getPath().removeFirstSegments(1);
 			libraryEntries.add(projectBasedPath.toOSString());

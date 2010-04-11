@@ -27,8 +27,7 @@ public class DeeNavigatorContentProvider implements ITreeContentProvider, org.ec
 				return null;
 			}
 		}*/
-		
-		return null;
+		return IElement.NO_ELEMENTS;
 	}
 
 	public Object getParent(Object element) {

@@ -28,6 +28,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.dltk.core.DLTKCore;
 import org.eclipse.dltk.core.IBuildpathEntry;
 import org.eclipse.dltk.core.IScriptProject;
+import org.eclipse.dltk.launching.ScriptRuntime;
 import org.osgi.framework.Bundle;
 
 
@@ -78,14 +79,15 @@ public class CoreTestUtils {
 	
 	public static void createDeeProject(IProject project) throws CoreException {
 		ModelUtil.addNature(project, DeeNature.NATURE_ID);
-	
-		IBuildpathEntry entry = DLTKCore.newContainerEntry(new Path(
-				"org.eclipse.dltk.launching.INTERPRETER_CONTAINER/" +
-				DeeDmdInstallType.INSTALLTYPE_ID + "/" + BasePluginTest.DEFAULT_DMD2_INSTALL)
-		);
+		
+		IBuildpathEntry entry = DLTKCore.newContainerEntry(ScriptRuntime.newDefaultInterpreterContainerPath()
+				.append(DeeDmdInstallType.INSTALLTYPE_ID).append(BasePluginTest.DEFAULT_DMD2_INSTALL));
+		
 		
 		IScriptProject dltkProj = DLTKCore.create(project);
 		dltkProj.setRawBuildpath(new IBuildpathEntry[] {entry}, null);
+		
+		assertNotNull(ScriptRuntime.getInterpreterInstall(dltkProj));
 	}
 
 

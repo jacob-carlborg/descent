@@ -23,5 +23,5 @@ Require-Bundle: com.ibm.icu,
  org.eclipse.dltk.core,
  org.eclipse.dltk.launching,
  org.eclipse.debug.core
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
