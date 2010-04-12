@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <description name="Mmrnmhrm Update Site" url="http://svn.dsource.org/projects/descent/downloads/mmrnmhrm/update-site">
+      The Mmrnmhrm Update Site.
+   </description>
+   <feature url="features/org.dsource.mmrnmhrm_0.3.1.201003302002.jar" id="org.dsource.mmrnmhrm" version="0.3.1.201003302002">
+      <category name="ddt.category"/>
+   </feature>
+   <category-def name="ddt.category" label="Mmrnmhrm IDE"/>
+</site>
