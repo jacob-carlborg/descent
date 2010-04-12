@@ -20,7 +20,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
  * The root/base preference page for Dee 
  */
 public class DeeRootPreferencePage extends PreferencePage implements IWorkbenchPreferencePage{
-
+	
 	private Button fAdaptedMalformedAST;
 	private ComboDialogField fLangVersion;
 	private String[] labels;
@@ -31,7 +31,7 @@ public class DeeRootPreferencePage extends PreferencePage implements IWorkbenchP
 		setDescription("D root preference page.");
 	}
 	
-	/** {@inheritDoc} */
+	@Override
 	public void init(IWorkbench workbench) {
 		// Nothing to do
 	}
@@ -52,7 +52,7 @@ public class DeeRootPreferencePage extends PreferencePage implements IWorkbenchP
 		gd.horizontalSpan = 2;
 		fStrikethroughCheckBox.setLayoutData(gd);
 		*/
-
+		
 		GridComposite holder = new GridComposite(content, 2);
 		
 		fLangVersion = new ComboDialogField(SWT.READ_ONLY);
@@ -76,7 +76,8 @@ public class DeeRootPreferencePage extends PreferencePage implements IWorkbenchP
 	protected void performDefaults() {
 		fAdaptedMalformedAST.setSelection(DeeCorePreferences.getBoolean(
 				DeeCorePreferences.ADAPT_MALFORMED_DMD_AST));
-		int ix = ArrayUtil.getIndexOfEquals(labelValues, DeeCorePreferences.LANG_VERSION);
+		int ix = ArrayUtil.indexOfUsingEquals(labelValues, 
+				DeeCorePreferences.getString(DeeCorePreferences.LANG_VERSION));
 		fLangVersion.setTextWithoutUpdate(labels[ix]);
 		super.performDefaults();
 	}
@@ -86,7 +87,7 @@ public class DeeRootPreferencePage extends PreferencePage implements IWorkbenchP
 		DeeCorePreferences.setBoolean(DeeCorePreferences.ADAPT_MALFORMED_DMD_AST, 
 				fAdaptedMalformedAST.getSelection());
 
-		int ix = ArrayUtil.getIndexOfEquals(labels, fLangVersion.getText());
+		int ix = ArrayUtil.indexOfUsingEquals(labels, fLangVersion.getText());
 		DeeCorePreferences.setString(DeeCorePreferences.LANG_VERSION, 
 				labelValues[ix]);
 
