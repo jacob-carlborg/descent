@@ -19,31 +19,35 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-public class MiscUtil 
-	extends CoreUtil // This code-reuse extension is for backwards compatibility 
-{
+public class MiscUtil {
 	
 	public static <T> IPredicate<T> notNullPredicate() {
 		return new NotNullPredicate<T>();
 	}
 	
 	public static final class NotNullPredicate<T> implements IPredicate<T> {
+		@Override
 		public boolean evaluate(T obj) {
 			return obj != null;
 		}
 	}
 	
+	public static <T> IPredicate<T> isNullPredicate() {
+		return new IsNullPredicate<T>();
+	}
+	
 	public static final class IsNullPredicate<T> implements IPredicate<T> {
+		@Override
 		public boolean evaluate(T obj) {
 			return obj == null;
 		}
 	}
-
+	
 	/** Combines two hash codes to make a new one. */
 	public static int combineHashCodes(int hashCode1, int hashCode2) {
 		return hashCode1 * 17 + hashCode2;
 	}
-
+	
 	/** Runs a shell command as a Process and waits for it to terminate. 
 	 * Assumes the process does not read input. 
 	 * @return exit value of the process */
@@ -66,7 +70,7 @@ public class MiscUtil
 			throw melnorme.miscutil.ExceptionAdapter.unchecked(e);
 		}
 	}
-
+	
 	/** Counts the active flags in the given bitfield */
 	public static int countActiveFlags(int bitfield, int[] flags) {
 		int count = 0;
@@ -76,13 +80,13 @@ public class MiscUtil
 		}
 		return count;
 	}
-
+	
 	/** Convenience method for extracting the element of a single element collection . */
 	public static <T> T getSingleElement(Collection<T> singletonDefunits) {
 		assertTrue(singletonDefunits.size() == 1);
 		return singletonDefunits.iterator().next();
 	}
-
+	
 	/** Returns a copy of given collection, synchs on the given collection. */
 	public static <T> List<T> synchronizedCreateCopy(Collection<T> collection) {
 		ArrayList<T> newCollection;
