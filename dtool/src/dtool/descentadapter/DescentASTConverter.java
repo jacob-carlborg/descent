@@ -64,8 +64,12 @@ public class DescentASTConverter {
 		List<T> rets = new ArrayList<T>(children.size());
 		for (int i = 0; i < children.size(); ++i) {
 			ASTNode elem = children.get(i);
-			elem.accept(conv);
-			rets.add((T) conv.ret);
+			if(elem == null) {
+				rets.add(null);
+			} else {
+				elem.accept(conv);
+				rets.add((T) conv.ret);
+			}
 		}
 		return rets;
 	}

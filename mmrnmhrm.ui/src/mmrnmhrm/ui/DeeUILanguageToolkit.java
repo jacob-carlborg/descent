@@ -33,12 +33,6 @@ public class DeeUILanguageToolkit extends AbstractDLTKUILanguageToolkit implemen
 		return DeeLanguageToolkit.getDefault();
 	}
 	
-	//@Override
-	/** XXX: @deprecated DLTK orphan */
-	/*public IDialogSettings getDialogSettings() {
-		return DeePlugin.getInstance().getDialogSettings();
-	}*/
-	
 	@Override
 	public String getEditorId(Object inputElement) {
 		return DeeEditor.EDITOR_ID;

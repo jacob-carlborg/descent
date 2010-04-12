@@ -220,15 +220,6 @@ public class DeeBuilder {
 		while(StringUtil.replace(strb, "$DEEBUILDER.OUTPUTEXE", outputExe));
 		
 		
-/*		{
-		String optionsStr = "";
-		String[] extrasOpts = options.getBuildCommands().split("\r\n|\n");
-		for (String opt : extrasOpts) {
-			optionsStr += opt + "\n";
-		}
-		while(StringUtil.replace(strb, "$DEEBUILDER.EXTRAOPTS", optionsStr));
-		}
-*/
 		{
 		String srcLibs = "";
 		for (String srcLib : libraryEntries) {
@@ -253,6 +244,9 @@ public class DeeBuilder {
 		}
 		while(StringUtil.replace(strb, "$DEEBUILDER.SRCMODULES", srcModules));
 		}
+		
+		String localCompilerPath = EnvironmentPathUtils.getLocalPath(compilerPath).toOSString();
+		while(StringUtil.replace(strb, "$DEEBUILDER.COMPILERPATH", localCompilerPath));
 		
 		return strb.toString();
 	}
@@ -303,18 +297,20 @@ public class DeeBuilder {
 		if(compilerPath == null)
 			return;
 		Map<String, String> env = builder.environment();
-		String pathName = "PATH";
-		String pathStr = env.get(pathName);
+		String pathEnvKey = "PATH";
+		String pathStr = env.get(pathEnvKey);
 		if(pathStr == null) {
-			pathName = "Path";
-			pathStr = env.get(pathName);
+			pathEnvKey = "Path";
+			pathStr = env.get(pathEnvKey);
 		}
 		if(pathStr == null) {
-			pathName = "path";
-			pathStr = env.get(pathName);
+			pathEnvKey = "path";
+			pathStr = env.get(pathEnvKey);
 		}
-		pathStr = compilerPath.toOSString() + File.pathSeparator + pathStr;
-		env.put(pathName, pathStr);
+		String localCompilerPath = EnvironmentPathUtils.getLocalPath(compilerPath).toOSString();
+		pathStr = localCompilerPath + File.pathSeparator + pathStr;
+		pathStr = "";
+		env.put(pathEnvKey, pathStr);
 	}
 	
 }

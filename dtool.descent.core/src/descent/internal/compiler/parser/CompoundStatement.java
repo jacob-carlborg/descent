@@ -1,8 +1,12 @@
 package descent.internal.compiler.parser;
 
+import static melnorme.miscutil.Assert.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import melnorme.miscutil.CollectionUtil;
+import melnorme.miscutil.MiscUtil.IsNullPredicate;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -23,6 +27,12 @@ public class CompoundStatement extends Statement {
 		this.statements = statements;
 		if (statements != null) {
 			this.sourceStatements = new ArrayList<Statement>(statements);
+//			for (Statement statement : statements) {
+//				assertNotNull(statement);
+//			}
+//			this.sourceStatements = 
+//				CollectionUtil.filter(statements, new IsNullPredicate<Statement>());
+			
 		}
 	}
 
@@ -32,6 +42,9 @@ public class CompoundStatement extends Statement {
 		this.statements.add(s1);
 		this.statements.add(s2);
 		this.sourceStatements = new ArrayList<Statement>(statements);
+		this.sourceStatements = 
+			CollectionUtil.filter(statements, new IsNullPredicate<Statement>());
+
 	}
 
 	@Override

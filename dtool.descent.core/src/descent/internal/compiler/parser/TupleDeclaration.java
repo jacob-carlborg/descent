@@ -5,6 +5,7 @@ import static descent.internal.compiler.parser.STC.STCin;
 import java.util.ArrayList;
 import java.util.List;
 
+import melnorme.miscutil.CoreUtil;
 import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
@@ -31,10 +32,11 @@ public class TupleDeclaration extends Declaration {
 		return TUPLE_DECLARATION;
 	}
 
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			melnorme.miscutil.CoreUtil.assertTODO(); // what is this
+			CoreUtil.assertTODO(); // what is this
 			TreeVisitor.acceptChildren(visitor, type);
 			TreeVisitor.acceptChildren(visitor, ident);
 			TreeVisitor.acceptChildren(visitor, objects);

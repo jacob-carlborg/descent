@@ -46,7 +46,8 @@
             name="Dee (Mmrnmhrm)"/>
       <wizard
             category="mmrnmhrm.category"
-            class="mmrnmhrm.ui.wizards.DeeNewProjectCreationWizard"
+            class="mmrnmhrm.ui.wizards.DeeNewProjectWizard"
+            finalPerspective="mmrnmhrm.ui.deeperspective"
             icon="icons/obj16/dee_project.gif"
             id="mmrnmhrm.ui.wizards.deeProjectWizard"
             name="Dee Project"
@@ -133,6 +134,15 @@
             id="mmrnmhrm.ui.views.ASTViewer"
             name="D AST Viewer (Mmrnmhrm)"/>
    </extension>
+ <extension
+       point="org.eclipse.ui.perspectives">
+    <perspective
+          class="mmrnmhrm.ui.views.DeePerspective"
+          icon="icons/d_app.gif"
+          id="mmrnmhrm.ui.deeperspective"
+          name="D">
+    </perspective>
+ </extension>
    <extension
          point="org.eclipse.ui.contexts">
       <context
@@ -576,12 +586,12 @@
    </extension>
    <extension
          point="org.eclipse.dltk.ui.buildpathContainerPage">
-      <buildpathContainerPath
+      <buildpathContainerPage
             class="mmrnmhrm.ui.wizards.DeeCompilerContainerWizardPage"
             id="mmrnmrhm.core.launching.INTERPRETER_CONTAINER"
             name="D System Libraries"
             nature="mmrnmhrm.core.nature">
-      </buildpathContainerPath>
+      </buildpathContainerPage>
    </extension>
    <extension
          point="org.eclipse.debug.ui.launchConfigurationTabGroups">

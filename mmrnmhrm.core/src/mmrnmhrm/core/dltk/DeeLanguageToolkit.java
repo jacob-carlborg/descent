@@ -23,23 +23,28 @@ public class DeeLanguageToolkit extends AbstractLanguageToolkit  {
 	}
 	
 	@Override
-	public boolean languageSupportZIPBuildpath() {
-		return false;
-	}
-
-	//@Override
 	public String getLanguageName() {
 		return "D";
 	}
 
-	//@Override
+	@Override
 	public String getNatureId() {
 		return DeeNature.NATURE_ID;
 	}
 	
-	//@Override
+	@Override
 	public String getLanguageContentType() {
 		return DEE_LANGUAGE_CONTENT_DSOURCE;
+	}
+	
+	@Override
+	public String getPreferenceQualifier() {
+		return DeeCore.PLUGIN_ID;
+	}
+	
+	@Override
+	public boolean languageSupportZIPBuildpath() {
+		return false;
 	}
 	
 	@Override
