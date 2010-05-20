@@ -1,6 +1,3 @@
-/**
- * 
- */
 package mmrnmhrm.ui.preferences;
 
 import mmrnmhrm.ui.DeePlugin;

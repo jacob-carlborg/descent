@@ -52,6 +52,7 @@ public class DeeCommonActionProvider extends CommonActionProvider {
 		@Override
 		public void run() {
 			OperationsManager.executeOperation(new IWorkspaceRunnable() {
+				@Override
 				public void run(IProgressMonitor monitor) throws CoreException {
 					IDE.openEditor(page, file, DeeEditor.EDITOR_ID);
 				}

@@ -23,7 +23,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
  */
 public class AddSourceFolderHandler extends AbstractHandler {
 
-	//@Override
+	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 
 		ISelection selection = HandlerUtil.getCurrentSelection(event);
@@ -36,6 +36,7 @@ public class AddSourceFolderHandler extends AbstractHandler {
 		final IResource res = (IResource) sel.getFirstElement();
 		
 		final IWorkspaceRunnable op = new IWorkspaceRunnable() {
+			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 
 				IScriptProject project = DLTKCore.create(res.getProject());
@@ -48,6 +49,7 @@ public class AddSourceFolderHandler extends AbstractHandler {
 		};
 		
 		OperationsManager.executeOperation(new IWorkspaceRunnable() {
+			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 				DeeCore.run(op, null);
 			}

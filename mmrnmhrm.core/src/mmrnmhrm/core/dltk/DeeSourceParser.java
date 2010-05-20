@@ -27,7 +27,7 @@ public class DeeSourceParser extends AbstractSourceParser {
 			this.reporter = reporter;
 		}
 
-		//@Override
+		@Override
 		public void reportProblem(IProblem problem) {
 			try {
 				reporter.reportProblem(new DLTKDescentProblemWrapper(problem));
@@ -52,7 +52,7 @@ public class DeeSourceParser extends AbstractSourceParser {
 		return instance;
 	}
 	
-	//@Override
+	@Override
 	public ModuleDeclaration parse(char[] fileName, char[] source, IProblemReporter reporter) {
 		int langVersion = DeeCorePreferences.getInt(DeeCorePreferences.LANG_VERSION);
 		Parser parser = new Parser(langVersion, source);

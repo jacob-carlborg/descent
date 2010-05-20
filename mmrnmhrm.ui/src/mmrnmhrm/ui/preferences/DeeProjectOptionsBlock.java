@@ -63,7 +63,7 @@ public class DeeProjectOptionsBlock implements IDialogFieldListener  {
 		fArtifactName.setDialogFieldListener(this);
 		
 		fOutputDir = new StringButtonDialogField(new IStringButtonAdapter() {
-			//@Override
+			@Override
 			public void changeControlPressed(DialogField field) {
 				ProjectContainerSelectionDialog containerDialog;
 				containerDialog	= new ProjectContainerSelectionDialog(getShell(), fDeeProjOptions.getProject());
@@ -89,7 +89,7 @@ public class DeeProjectOptionsBlock implements IDialogFieldListener  {
 		fOutputDir.setDialogFieldListener(this);
 		
 		fCompilerTool = new StringButtonDialogField(new IStringButtonAdapter() {
-			//@Override
+			@Override
 			public void changeControlPressed(DialogField field) {
 				FileDialog dialog = new FileDialog(getShell());
 				dialog.setFilterPath(fCompilerTool.getText());
@@ -200,7 +200,7 @@ public class DeeProjectOptionsBlock implements IDialogFieldListener  {
 		updateBuildPreview();
 	}
 	
-	//@Override
+	@Override
 	public void dialogFieldChanged(DialogField field) {
 		DeeBuildOptions options = fOverlayOptions.compilerOptions;
 		options.buildType = fBuildType.getSelectedObject();
@@ -221,6 +221,7 @@ public class DeeProjectOptionsBlock implements IDialogFieldListener  {
 
 	public boolean performOk() {
 		return OperationsManager.executeOperation(new IWorkspaceRunnable() {
+			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 				fDeeProjOptions.compilerOptions = fOverlayOptions.compilerOptions;
 				fDeeProjOptions.saveProjectConfigFile();

@@ -30,11 +30,12 @@ public class DeeOutlinePage extends ScriptOutlinePage {
 	public final class DeeOutlinePageContentProvider extends DeeOutlineContentProvider {
 
 		private final class ElementChangedListener implements IElementChangedListener {
-			
+			@Override
 			public void elementChanged(org.eclipse.dltk.core.ElementChangedEvent event) {
 				if(getControl() == null || fOutlineViewer == null)
 					Assert.fail();
 				SWTUtilExt.runInSWTThread(new Runnable() {
+					@Override
 					public void run() {
 						if(getControl() == null || fOutlineViewer == null)
 							return; // may have been disposed meanwhile
@@ -116,13 +117,13 @@ public class DeeOutlinePage extends ScriptOutlinePage {
 	
 	public static class DeeOutlineLabelDecorator extends DeeOutlineLabelProvider
 		implements ILabelDecorator {
-
+		@Override
 		public Image decorateImage(Image image, Object element) {
 			if(element instanceof IElement)
 				return getImage(element);
 			return null;
 		}
-
+		@Override
 		public String decorateText(String text, Object element) {
 			if(element instanceof IElement)
 				return getText(element);

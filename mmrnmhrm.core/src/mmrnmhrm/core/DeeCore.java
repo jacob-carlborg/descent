@@ -31,14 +31,12 @@ public class DeeCore extends LangCore {
 	public static final boolean DEBUG_MODE = "true".equalsIgnoreCase(Platform.getDebugOption(PLUGIN_ID + "/debug/ResultCollector"));
 	
 	
-	/** {@inheritDoc} */
 	@Override
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		initPlugin();
 	}
 	
-	/** {@inheritDoc} */
 	@Override
 	public void stop(BundleContext context) throws Exception {
 		super.stop(context);

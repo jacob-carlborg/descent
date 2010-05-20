@@ -27,14 +27,14 @@ public class DLTKModuleResolver implements IModuleResolver {
 	
 	/** Finds the module with the given package and module name.
 	 * refModule is used to determine which project/build-path to search. */
-	//@Override
+	@Override
 	public Module findModule(Module sourceRefModule, String[] packages,
 			String modName) throws CoreException {
-
+		
 		//ScriptModelUtil.findType(module, qualifiedName, delimeter)
 		
 		ISourceModule sourceModule = (ISourceModule) sourceRefModule.getModuleUnit();
-
+		
 		IScriptProject deeproj = sourceModule.getScriptProject();
 		
 		if(deeproj == null || deeproj.exists() == false)
@@ -49,16 +49,16 @@ public class DLTKModuleResolver implements IModuleResolver {
 				for (int i = 0; i < DeeNameRules.VALID_EXTENSIONS.length; i++) {
 					String fileext = DeeNameRules.VALID_EXTENSIONS[i];
 					ISourceModule modUnit = pkgFrag.getSourceModule(modName+fileext);
-				 	if(exists(modUnit)) { 
-					 	DeeModuleDeclaration modDecl = DeeParserUtil.parseModule(modUnit);
-					 	return DeeParserUtil.getNeoASTModule(modDecl);
-				 	}
+					if(exists(modUnit)) { 
+						DeeModuleDeclaration modDecl = DeeParserUtil.parseModule(modUnit);
+						return DeeParserUtil.getNeoASTModule(modDecl);
+					}
 				}
 			}	
 		}
 		return null;
 	}
-
+	
 	private boolean exists(ISourceModule modUnit) {
 		return modUnit != null && modUnit.exists()
 		// XXX: DLTK bug workaround: 
@@ -67,7 +67,7 @@ public class DLTKModuleResolver implements IModuleResolver {
 			&& externalReallyExists(modUnit)
 		;
 	}
-
+	
 	private boolean externalReallyExists(ISourceModule modUnit) {
 		if(!(modUnit instanceof IExternalSourceModule))
 			return true;
@@ -75,26 +75,26 @@ public class DLTKModuleResolver implements IModuleResolver {
 		IPath localPath = EnvironmentPathUtils.getLocalPath(modUnit.getPath());
 		return new File(localPath.toOSString()).exists();
 	}
-
-	//@Override
+	
+	@Override
 	public String[] findModules(Module refSourceModule, String fqNamePrefix) throws ModelException {
 		ISourceModule sourceModule = (ISourceModule) refSourceModule.getModuleUnit();
-
+		
 		IScriptProject scriptProject = sourceModule.getScriptProject();
-
+		
 		List<String> strings = new ArrayList<String>();
 		
 		for (IProjectFragment srcFolder : scriptProject.getProjectFragments()) {
 			
 			for (IModelElement pkgFragElem : srcFolder.getChildren()) {
 				IScriptFolder pkgFrag = (IScriptFolder) pkgFragElem;
-			
+				
 				String pkgName = pkgFrag.getElementName();
 				if(!DeeNameRules.isValidPackagePathName(pkgName))
 					continue;
 				
 				pkgName = DeeNameRules.convertPackagePathName(pkgName);
-
+				
 				for (IModelElement srcUnitElem : pkgFrag.getChildren()) {
 					ISourceModule srcUnit = (ISourceModule) srcUnitElem;
 					String modName = srcUnit.getElementName();

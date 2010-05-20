@@ -9,13 +9,13 @@ public class DeeInterpreterRunner extends AbstractInterpreterRunner {
 	public DeeInterpreterRunner(IInterpreterInstall install) {
 		super(install);
 	}
-
+	
 	@Override
 	protected String getProcessType() {
 		return DeeLaunchConfigurationConstants.ID_DEE_PROCESS_TYPE;
 	}
 	
-
+	
 	@Override
 	protected String[] renderCommandLine(InterpreterConfig config) {
 		return super.renderCommandLine(config);

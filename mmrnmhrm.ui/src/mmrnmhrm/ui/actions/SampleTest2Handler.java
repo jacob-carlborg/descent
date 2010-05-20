@@ -52,7 +52,7 @@ public class SampleTest2Handler extends AbstractHandler {
 		return null;
 	}*/
 	
-	//@Override
+	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		/*try {
 			IWorkspaceRunnable op = new IWorkspaceRunnable() {

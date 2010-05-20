@@ -25,6 +25,7 @@ public abstract class BasePluginExceptionWatcherTest extends BasePluginTest {
 		exceptionThrown = false;
 		exception = null;
 		loglistener = new ILogListener() {
+			@Override
 			public void logging(IStatus status, String plugin) {
 				System.err.println(status);
 				//if(plugin.equals(DeePlugin.PLUGIN_ID) || plugin.equals(DeeCore.PLUGIN_ID))

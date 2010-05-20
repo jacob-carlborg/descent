@@ -7,8 +7,8 @@ import org.eclipse.debug.ui.ILaunchConfigurationTab;
 import org.eclipse.dltk.debug.ui.launchConfigurations.ScriptCommonTab;
 
 public class DeeTabGroup extends AbstractLaunchConfigurationTabGroup {
-
-	//@Override
+	
+	@Override
 	public void createTabs(ILaunchConfigurationDialog dialog, String mode) {
 		ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[] {
 				new DeeMainLaunchConfigurationTab(mode),

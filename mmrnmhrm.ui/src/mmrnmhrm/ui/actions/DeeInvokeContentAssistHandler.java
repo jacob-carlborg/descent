@@ -11,10 +11,11 @@ import org.eclipse.ui.handlers.HandlerUtil;
 
 public class DeeInvokeContentAssistHandler extends AbstractHandler {
 
-	//@Override
+	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		
 		OperationsManager.executeSimple(new ISimpleRunnable() {
+			@Override
 			public void run() throws CoreException {
 				IEditorPart editor = HandlerUtil.getActiveEditor(event);
 				

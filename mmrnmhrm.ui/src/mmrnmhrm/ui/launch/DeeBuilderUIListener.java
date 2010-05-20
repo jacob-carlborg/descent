@@ -24,7 +24,7 @@ public class DeeBuilderUIListener implements IDeeBuilderListener {
 	
 	private static final String CONSOLE_NAME = "mmrnmhrm Dee Build output:";
 
-
+	@Override
 	public void clear() {
 		final MessageConsole myConsole = ConsoleUtil.findConsole(CONSOLE_NAME);
 		myConsole.clearConsole();
@@ -36,7 +36,7 @@ public class DeeBuilderUIListener implements IDeeBuilderListener {
 		}
 	}
 	
-	//@Override
+	@Override
 	public void println(String line) {
 		// TODO synchronize?
 
@@ -60,7 +60,7 @@ public class DeeBuilderUIListener implements IDeeBuilderListener {
 		final String id = IConsoleConstants.ID_CONSOLE_VIEW;
 		
 		SWTUtilExt.runInSWTThread(new Runnable() {
-			//@Override
+			@Override
 			public void run() {
 				IConsoleView view;
 				IWorkbenchPage page = DeePlugin.getActivePage();

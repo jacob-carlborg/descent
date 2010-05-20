@@ -37,6 +37,7 @@ public class ASTViewerLabelProvider extends SimpleLabelProvider implements IColo
 	public void dispose() {
 	}
 	
+	@Override
 	public Image getImage(Object element) {
 		return DeeElementImageProvider.getElementImage((IASTNode) element);
 	}
@@ -45,7 +46,8 @@ public class ASTViewerLabelProvider extends SimpleLabelProvider implements IColo
 	public String getText(Object elem) {
 		return ((IASTNode) elem).toStringAsNode(true);
 	}
-
+	
+	@Override
 	public Color getBackground(Object element) {
 		IASTNode node = (IASTNode) element;
 		if(node.hasNoSourceRangeInfo())
@@ -61,7 +63,8 @@ public class ASTViewerLabelProvider extends SimpleLabelProvider implements IColo
 		
 		return null;
 	}
-
+	
+	@Override
 	public Color getForeground(Object element) {
 		if(element instanceof DefUnit) {
 			return cDefUnitColor;
@@ -71,7 +74,8 @@ public class ASTViewerLabelProvider extends SimpleLabelProvider implements IColo
 		}
 		return null;
 	}
-
+	
+	@Override
 	public Font getFont(Object element) {
 		return null;
 	}

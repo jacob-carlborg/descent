@@ -39,19 +39,23 @@ public class DeeCodeContentAssistProcessor implements IContentAssistProcessor {
 		this.assistant = assistant;
 		this.session = new CompletionSession();
 		assistant.addCompletionListener(new ICompletionListener() {
+			@Override
 			public void assistSessionStarted(ContentAssistEvent event) {
 			}
-
+			
+			@Override
 			public void assistSessionEnded(ContentAssistEvent event) {
 				session.errorMsg = null;
 				session.invokeNode = null;
 			}
-
+			
+			@Override
 			public void selectionChanged(ICompletionProposal proposal, boolean smartToggle) {
 			}
 		});
 	}
-
+	
+	@Override
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer,
 			final int offset) {
 		
@@ -72,11 +76,12 @@ public class DeeCodeContentAssistProcessor implements IContentAssistProcessor {
 		results = new ArrayList<ICompletionProposal>();
 		
 		IDefUnitMatchAccepter defUnitAccepter = new IDefUnitMatchAccepter() {
-
+			@Override
 			public Iterator<DefUnit> getResultsIterator() {
 				return defUnitResults.iterator();
 			};
 			
+			@Override
 			public void accept(DefUnit defUnit, PrefixSearchOptions searchOptions) {
 				String rplStr = defUnit.getName().substring(searchOptions.prefixLen);
 				defUnitResults.add(defUnit);
@@ -104,7 +109,7 @@ public class DeeCodeContentAssistProcessor implements IContentAssistProcessor {
 			return null;
 	}
 
-
+	@Override
 	public IContextInformation[] computeContextInformation(ITextViewer viewer,
 			int offset) {
 		IContextInformation[] result= new IContextInformation[5];
@@ -114,19 +119,23 @@ public class DeeCodeContentAssistProcessor implements IContentAssistProcessor {
 				"CompletionProcessor.ContextInfo.value.pattern"); //$NON-NLS-1$
 		return result; 
 	}
-
+	
+	@Override
 	public char[] getCompletionProposalAutoActivationCharacters() {
 		return new char[] { '.'};
 	}
-
+	
+	@Override
 	public char[] getContextInformationAutoActivationCharacters() {
 		return new char[] { };
 	}
-
+	
+	@Override
 	public IContextInformationValidator getContextInformationValidator() {
 		return null;
 	}
-
+	
+	@Override
 	public String getErrorMessage() {
 		return errorMsg;
 	}

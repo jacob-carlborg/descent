@@ -46,7 +46,7 @@ public class DeeModel implements IElementChangedListener {
 		deeInfos = new HashMap<IScriptProject, DeeProjectOptions>(); 
 	}
 	
-	//@Override
+	@Override
 	public void elementChanged(ElementChangedEvent event) {
 		IModelElementDelta delta= event.getDelta();
 		if (delta != null) {

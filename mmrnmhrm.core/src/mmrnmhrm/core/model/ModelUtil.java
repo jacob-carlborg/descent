@@ -7,6 +7,7 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.dltk.core.DLTKCore;
 import org.eclipse.dltk.core.IBuildpathEntry;
@@ -16,11 +17,12 @@ import org.eclipse.dltk.core.ISourceModule;
 
 
 public class ModelUtil {
-
-	public static IScriptProject getDeeProject(String name) {
-		return ModelUtil.getModel().getScriptProject(name);
+	
+	public static IScriptProject getDeeProject(String projectName) {
+		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+		return DLTKCore.create(project);
 	}
-
+	
 	/** Get's a sourceModule's file, apparently getUnderlyingResource()
 	 * doesn't work all the time. */
 	public static IFile getSourceModuleFile(ISourceModule srcModule) {
@@ -38,23 +40,17 @@ public class ModelUtil {
 		}
 		return fragment;
 	}
-
+	
 	/** Adds a nature to the given project if it doesn't exist already.*/
 	public static void addNature(IProject project, String natureID) throws CoreException {
 		IProjectDescription description = project.getDescription();
 		String[] natures = description.getNatureIds();
 		if(ArrayUtil.contains(natures, natureID))
 			return;
-	
+		
 		String[] newNatures = ArrayUtil.append(natures, natureID);
 		description.setNatureIds(newNatures);
 		project.setDescription(description, null); 
 	}
-
-	public static org.eclipse.dltk.internal.core.Model getModel() {
-		return org.eclipse.dltk.internal.core.ModelManager.
-		getModelManager().getModel();
-	}
-
-
+	
 }

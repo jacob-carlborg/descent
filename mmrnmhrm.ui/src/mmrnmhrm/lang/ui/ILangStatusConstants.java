@@ -13,11 +13,11 @@ package mmrnmhrm.lang.ui;
 /**
   */
 public interface ILangStatusConstants {
-
+	
 	// Java UI status constants start at 10000 to make sure that we don't
 	// collide with resource and java model constants.
 	
 	public static final int INTERNAL_ERROR= 10001;
 	
-
- }
+	
+}

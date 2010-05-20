@@ -14,8 +14,7 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.Region;
 
 // Based on RubyHeuristicScanner
-public class RubyHeuristicScanner extends ScriptHeuristicScanner implements
-		IDeeSymbols {
+public class RubyHeuristicScanner extends ScriptHeuristicScanner implements IDeeSymbols {
 	private static final int[] BLOCK_BEGINNING_KEYWORDS = { };
 
 	private static final int[] BLOCK_BEGINNING_SYMBOLS = { TokenLBRACE };

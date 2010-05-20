@@ -1,75 +1,72 @@
-/**
- * 
- */
 package mmrnmhrm.core.dltk;
 
 import descent.core.compiler.IProblem;
 
 final class DLTKDescentProblemWrapper implements
-		org.eclipse.dltk.compiler.problem.IProblem {
-
+org.eclipse.dltk.compiler.problem.IProblem {
+	
 	private IProblem problem;
-
+	
 	public DLTKDescentProblemWrapper(IProblem problem) {
 		this.problem = problem;
 	}
-
-	//@Override
+	
+	@Override
 	public String[] getArguments() {
 		return problem.getArguments();
 	}
-
-	//@Override
+	
+	@Override
 	public int getID() {
 		return problem.getID();
 	}
-
-	//@Override
+	
+	@Override
 	public String getMessage() {
 		return problem.getMessage();
 	}
-
-	//@Override
+	
+	@Override
 	public String getOriginatingFileName() {
 		return new String(problem.getOriginatingFileName());
 	}
-
-	//@Override
+	
+	@Override
 	public int getSourceEnd() {
 		return problem.getSourceEnd();
 	}
-
-	//@Override
+	
+	@Override
 	public int getSourceLineNumber() {
 		return problem.getSourceLineNumber();
 	}
-
-	//@Override
+	
+	@Override
 	public int getSourceStart() {
 		return problem.getSourceStart();
 	}
-
-	//@Override
+	
+	@Override
 	public boolean isError() {
 		return problem.isError();
 	}
-
-	//@Override
+	
+	@Override
 	public boolean isWarning() {
 		return problem.isWarning();
 	}
-
-	//@Override
+	
+	@Override
 	public void setSourceEnd(int sourceEnd) {
 		problem.setSourceEnd(sourceEnd);
 	}
-
-	//@Override
+	
+	@Override
 	public void setSourceLineNumber(int lineNumber) {
 		problem.setSourceLineNumber(lineNumber);
 	}
-
-	//@Override
+	
+	@Override
 	public void setSourceStart(int sourceStart) {
 		problem.setSourceStart(sourceStart);
 	}

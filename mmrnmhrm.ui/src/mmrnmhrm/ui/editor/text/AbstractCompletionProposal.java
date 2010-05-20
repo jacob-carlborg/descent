@@ -26,14 +26,13 @@ public abstract class AbstractCompletionProposal implements
 		ICompletionProposal
 		, ICompletionProposalExtension
 		, ICompletionProposalExtension2
-		, ICompletionProposalExtension3 
+		, ICompletionProposalExtension3
 		, ICompletionProposalExtension5
-		{
+{
 	
-
 	/** The CSS used to format javadoc information. */
 	private static String fgCSSStyles;
-
+	
 	
 	/** The string to be displayed in the completion proposal popup. */
 	protected String fDisplayString;
@@ -51,7 +50,7 @@ public abstract class AbstractCompletionProposal implements
 	protected IContextInformation fContextInformation;
 	
 	private IInformationControlCreator fCreator;
-
+	
 	/**
 	 * Creates a new completion proposal. All fields are initialized based on the provided information.
 	 *
@@ -72,7 +71,7 @@ public abstract class AbstractCompletionProposal implements
 		Assert.isTrue(replacementOffset >= 0);
 		Assert.isTrue(replacementLength >= 0);
 		Assert.isTrue(cursorPosition >= 0);
-
+		
 		fReplacementString= replacementString;
 		fReplacementOffset= replacementOffset;
 		fReplacementLength= replacementLength;
@@ -86,7 +85,7 @@ public abstract class AbstractCompletionProposal implements
 	public int getReplacementOffset() {
 		return fReplacementOffset;
 	}
-
+	
 	/** Sets the replacement offset. */
 	public void setReplacementOffset(int replacementOffset) {
 		Assert.isTrue(replacementOffset >= 0);
@@ -98,43 +97,43 @@ public abstract class AbstractCompletionProposal implements
 		Assert.isTrue(replacementLength >= 0);
 		fReplacementLength= replacementLength;
 	}
-
+	
 	/** Gets the replacement length. */
 	public int getReplacementLength() {
 		return fReplacementLength;
 	}
-
+	
 	/* --------------------------------- */
-
-
-	/** {@inheritDoc} */
+	
+	
+	@Override
 	public Point getSelection(IDocument document) {
 		return new Point(fReplacementOffset + fCursorPosition, 0);
 	}
-
-	/** {@inheritDoc} */
+	
+	@Override
 	public IContextInformation getContextInformation() {
 		return fContextInformation;
 	}
-
-	/** {@inheritDoc} */
+	
+	@Override
 	public Image getImage() {
 		return fImage;
 	}
-
-	/** {@inheritDoc} */
+	
+	@Override
 	public String getDisplayString() {
 		if (fDisplayString != null)
 			return fDisplayString;
 		return fReplacementString;
 	}
 	
-	/** {@inheritDoc} */
+	@Override
 	public String getAdditionalProposalInfo() {
 		return null;
 	}
-
-	/** {@inheritDoc} */
+	
+	@Override
 	public void apply(IDocument document) {
 		if(fReplacementLength == 0 && fReplacementString.length() == 0)
 			return;
@@ -144,29 +143,32 @@ public abstract class AbstractCompletionProposal implements
 			// ignore
 		}
 	}
-
+	
 	
 	public static char[] TRIGGER_CHARACTERS = new char[] { }; 
-
+	
+	@Override
 	public char[] getTriggerCharacters() {
 		return TRIGGER_CHARACTERS;
 	}
 	
+	@Override
 	public int getContextInformationPosition() {
 		return fReplacementOffset + fCursorPosition;
 	}
-
 	
+	@Override
 	public boolean isValidFor(IDocument document, int offset) {
 		return validate(document, offset, null);
 	}
-
+	
+	@Override
 	public void apply(IDocument document, char trigger, int offset) {
 		// So far, I don't think validation is necessary
 		apply(document);
 	}
-
-
+	
+	
 	/**
 	 * Returns the text in <code>document</code> from {@link #getReplacementOffset()} to
 	 * <code>offset</code>. Returns the empty string if <code>offset</code> is before the
@@ -181,55 +183,61 @@ public abstract class AbstractCompletionProposal implements
 		}
 		return ""; //$NON-NLS-1$
 	}
-
-
-
+	
+	
+	
 	public boolean isValidPrefix(String prefix) {
 		return fReplacementString.startsWith(prefix);
 	}
 	
+	@Override
 	public boolean validate(IDocument document, int offset, DocumentEvent event) {
-
+		
 		System.out.println("Validate" + offset +" "+ getReplacementOffset());
 		if (offset < getReplacementOffset())
 			return false;
 		
 		boolean validated= isValidPrefix(getPrefix(document, offset));
-
+		
 		if (validated && event != null) {
 			// adapt replacement range to document change
 			int delta= (event.fText == null ? 0 : event.fText.length()) - event.fLength;
 			final int newLength= Math.max(getReplacementLength() + delta, 0);
 			setReplacementLength(newLength);
 		}
-
+		
 		return validated;
 	}
-
+	
+	@Override
 	public void apply(ITextViewer viewer, char trigger, int stateMask, int offset) {
 		IDocument document= viewer.getDocument();
 		apply(document, trigger, offset);
 	}
-
+	
+	@Override
 	public void selected(ITextViewer viewer, boolean smartToggle) {
 		// Do nothing
 	}
-
+	
+	@Override
 	public void unselected(ITextViewer viewer) {
 		// Do nothing
 	}
-
+	
+	@Override
 	public int getPrefixCompletionStart(IDocument document, int completionOffset) {
 		return getReplacementOffset();
 	}
-
+	
+	@Override
 	public CharSequence getPrefixCompletionText(IDocument document,
 			int completionOffset) {
 		// Check camel case here
 		return fReplacementString;
 	}
 	
-
+	
 	/** Returns the style information for displaying HTML (Javadoc) content. */
 	protected String getCSSStyles() {
 		if (fgCSSStyles == null) {
@@ -239,6 +247,7 @@ public abstract class AbstractCompletionProposal implements
 	}
 	
 	@SuppressWarnings("restriction")
+	@Override
 	public IInformationControlCreator getInformationControlCreator() {
 		Shell shell = JavaPlugin.getActiveWorkbenchShell();
 		if (shell == null
@@ -248,7 +257,7 @@ public abstract class AbstractCompletionProposal implements
 		
 		if (fCreator == null) {
 			fCreator = new AbstractReusableInformationControlCreator() {
-
+				
 				@Override
 				public IInformationControl doCreateInformationControl(Shell parent) {
 					return new org.eclipse.dltk.internal.ui.BrowserInformationControl(
@@ -260,7 +269,7 @@ public abstract class AbstractCompletionProposal implements
 		return fCreator;
 	}
 	
-
+	@Override
 	public Object getAdditionalProposalInfo(IProgressMonitor monitor) {
 		//if (getProposalInfo() != null) {
 			String info= getProposalInfoString(monitor);
@@ -269,6 +278,6 @@ public abstract class AbstractCompletionProposal implements
 	}
 	
 	protected abstract String getProposalInfoString(IProgressMonitor monitor);
-
+	
 	
 }

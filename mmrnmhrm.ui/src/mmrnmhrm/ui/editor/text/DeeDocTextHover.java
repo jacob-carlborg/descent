@@ -26,11 +26,11 @@ public class DeeDocTextHover extends AbstractTextHover {
 		public NodeRegion(ASTNeoNode node) {
 			this.node = node;
 		}
-
+		@Override
 		public int getLength() {
 			return node.getLength();
 		}
-
+		@Override
 		public int getOffset() {
 			return node.getOffset();
 		}

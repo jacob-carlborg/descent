@@ -1,7 +1,5 @@
 package mmrnmhrm.core.launch;
 
-import static melnorme.miscutil.Assert.assertFail;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

@@ -48,6 +48,7 @@ public class DeeProjectWizardTest extends BaseUITest {
 	public void tearDown() throws Exception {
 		// Should undo all wizard actions
 		ResourcesPlugin.getWorkspace().run(new IWorkspaceRunnable() {
+			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 				/*DeeProject deeproj = ModelUtil.getDeeProject(NEWPROJNAME);
 				if(deeproj != null) {

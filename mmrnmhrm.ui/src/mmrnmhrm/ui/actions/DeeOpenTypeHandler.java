@@ -6,11 +6,11 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 
 public class DeeOpenTypeHandler extends AbstractHandler {
-
-	//@Override
+	
+	@Override
 	public Object execute(ExecutionEvent arg0) throws ExecutionException {
 		new DeeOpenTypeAction().run();
 		return null;
 	}
-
+	
 }

@@ -40,7 +40,7 @@ public class DeeInstall extends AbstractInterpreterInstall {
 		
 		return null;
 	}
-
+	
 	public IPath getCompilerPath() {
 		return getInstallLocation().getPath().removeLastSegments(1);
 	}

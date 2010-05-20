@@ -3,11 +3,9 @@ package mmrnmhrm.lang.ui;
 import mmrnmhrm.ui.ActualPlugin;
 import mmrnmhrm.ui.DeeUIMessages;
 
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.Job;
@@ -20,27 +18,11 @@ public class InitializeAfterLoadJob extends UIJob {
 			super(name);
 		}
 		
-		public void waitForAutoBuild() {
-			boolean wasInterrupted = false;
-			do {
-				try {
-					Job.getJobManager().join(ResourcesPlugin.FAMILY_AUTO_BUILD, null);
-					wasInterrupted = false;
-				} catch (OperationCanceledException e) {
-					e.printStackTrace();
-				} catch (InterruptedException e) {
-					wasInterrupted = true;
-				}
-			} while (wasInterrupted);
-		}
-		
 		@Override
 		protected IStatus run(IProgressMonitor monitor) {
 			monitor.beginTask("", 10); //$NON-NLS-1$
 			
 			try {
-				//waitForAutoBuild(); // DLTK Ruby code
-				//ActualCore.initializeAfterLoad(new SubProgressMonitor(monitor, 6));
 				ActualPlugin.initializeAfterLoad(new SubProgressMonitor(monitor, 4));
 			} catch (CoreException e) {
 				ActualPlugin.log(e);

@@ -7,7 +7,7 @@ import org.eclipse.ui.IContributorResourceAdapter;
 
 // not used anymore
 public class LangAdapterFactory implements IAdapterFactory, IContributorResourceAdapter {
-
+	
 	
 	private static final Class<?>[] ADAPTER_LIST= new Class[] {
 		IResource.class,
@@ -15,6 +15,7 @@ public class LangAdapterFactory implements IAdapterFactory, IContributorResource
 	};
 	
 	@SuppressWarnings("unchecked")
+	@Override
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
 		/*if (IResource.class.equals(adapterType)) {
 			return getResource((ILangElement) adaptableObject);
@@ -25,16 +26,18 @@ public class LangAdapterFactory implements IAdapterFactory, IContributorResource
 		}
 		return null;
 	}
-
+	
+	@Override
 	public Class<?>[] getAdapterList() {
 		return ADAPTER_LIST;
 	}
 	
+	@Override
 	public IResource getAdaptedResource(IAdaptable adaptable) {
-		/*if(adaptable instanceof ILangElement)
-			return ((ILangElement) adaptable).getUnderlyingResource();
-		*/
+//		if(adaptable instanceof ILangElement)
+//			return ((ILangElement) adaptable).getUnderlyingResource();
+//		
 		return null;
 	}
-
+	
 }

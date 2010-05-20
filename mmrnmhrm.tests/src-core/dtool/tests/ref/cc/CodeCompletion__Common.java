@@ -27,7 +27,7 @@ import dtool.refmodel.PrefixDefUnitSearch.CompletionSession;
 import dtool.refmodel.PrefixDefUnitSearch.IDefUnitMatchAccepter;
 
 public class CodeCompletion__Common implements ICodeCompletionTester {
-
+	
 	protected static IFile file;
 	protected static ISourceModule srcModule;
 	protected static ICodeCompletionTester ccTester;
@@ -39,18 +39,20 @@ public class CodeCompletion__Common implements ICodeCompletionTester {
 		ccTester = new CodeCompletion__Common();
 	}
 	
+	@Override
 	public void testComputeProposals(int repOffset,
 			int prefixLen, boolean removeObjectIntrinsics, String... expectedProposals) throws ModelException {
 		CodeCompletion__Common.testComputeProposalsWithRepLen(repOffset,
 				prefixLen, removeObjectIntrinsics, expectedProposals);
 	}
 	
+	@Override
 	public void testComputeProposalsWithRepLen(int repOffset, int prefixLen, 
 			int repLen, boolean removeObjectIntrinsics, String... expectedProposals) throws ModelException {
 		CodeCompletion__Common.testComputeProposalsWithRepLen(
 				repOffset, prefixLen, removeObjectIntrinsics, expectedProposals);
 	}
-
+	
 	
 	private static void testComputeProposalsWithRepLen(int repOffset, int prefixLen, boolean removeObjectIntrinsics, 
 			String... expectedProposals) throws ModelException {
@@ -60,10 +62,12 @@ public class CodeCompletion__Common implements ICodeCompletionTester {
 		//LinkedList<DefUnit> list;
 		
 		IDefUnitMatchAccepter defUnitAccepter = new IDefUnitMatchAccepter() {
+			@Override
 			public void accept(DefUnit defUnit, PrefixSearchOptions searchOptions) {
 				results.add(defUnit);
 			}
-
+			
+			@Override
 			public Iterator<DefUnit> getResultsIterator() {
 				return results.iterator();
 			}
@@ -72,9 +76,9 @@ public class CodeCompletion__Common implements ICodeCompletionTester {
 		
 		PrefixDefUnitSearch.doCompletionSearch(repOffset, 
 				srcModule, srcModule.getSource(), new CompletionSession(), defUnitAccepter);
-
+		
 		assertNotNull(results, "Code Completion Unavailable");
-
+		
 		// TODO can be improved for better accuracy
 		ArrayList<DefUnit> newResults = results;
 		if(removeObjectIntrinsics) {
@@ -82,7 +86,7 @@ public class CodeCompletion__Common implements ICodeCompletionTester {
 		}
 		checkProposals(prefixLen, newResults, expectedProposals);
 	}
-
+	
 	
 	public static String[] OBJECT_INTRINSIC_DEFUNITS = new String[] {
 		"bit", "size_t", "ptrdiff_t", "hash_t", "string", "wstring", "dstring",
@@ -108,12 +112,12 @@ public class CodeCompletion__Common implements ICodeCompletionTester {
 		}
 		return newResults;
 	}
-
+	
 	protected static void checkProposals(int prefixLen,
 			ArrayList<DefUnit> results, String... expectedProposals) {
 		int expectedLength = expectedProposals.length;
 		boolean[] proposalsMatched = new boolean[expectedLength];
-
+		
 		assertTrue(results.size() == expectedLength, 
 				"Size mismatch, expected: " + expectedLength
 				+" got: "+ results.size() + "{ \n" +
@@ -124,19 +128,19 @@ public class CodeCompletion__Common implements ICodeCompletionTester {
 		
 		for (int i = 0; i < results.size(); i++) {
 			String defName = results.get(i).toStringAsElement();
-
+			
 			String repStr;
 			// Find this proposal in the expecteds
 			int j = 0;
 			for (; true; j++) {
-
+				
 				repStr = expectedProposals[j];
 				// small repStr fix. Best solution is TODO: refactor testProposals
 //				if(repStr.indexOf('(') != -1)
 //					repStr = repStr.substring(0, repStr.indexOf('('));
 				if(defName.substring(prefixLen).equals(repStr))
 					break;
-
+				
 				// if end of cicle
 				if(j == expectedLength-1)
 					assertFail("Got Unmatched proposal:"+defName);
@@ -157,7 +161,7 @@ public class CodeCompletion__Common implements ICodeCompletionTester {
 	protected int getMarkerEndOffset(String marker) throws ModelException {
 		return srcModule.getSource().indexOf(marker) + marker.length();
 	}
-
+	
 	protected int getMarkerStartOffset(String marker) throws ModelException {
 		return srcModule.getSource().indexOf(marker);
 	}
@@ -165,5 +169,5 @@ public class CodeCompletion__Common implements ICodeCompletionTester {
 	protected IBuffer getDocument() throws ModelException {
 		return srcModule.getBuffer();
 	}
-
+	
 }

@@ -15,10 +15,10 @@ import dtool.ast.ASTNodeFinder;
 import dtool.ast.references.Reference;
 
 public class DeeHyperlinkDetector extends AbstractHyperlinkDetector {
-
-	public static final String DEE_EDITOR_TARGET = "mmrnmhrm.ui.texteditor.deeCodeTarget";
-
 	
+	public static final String DEE_EDITOR_TARGET = "mmrnmhrm.ui.texteditor.deeCodeTarget";
+	
+	@Override
 	public IHyperlink[] detectHyperlinks(ITextViewer textViewer,
 			IRegion region, boolean canShowMultipleHyperlinks) {
 		ITextEditor textEditor= (ITextEditor)getAdapter(ITextEditor.class);

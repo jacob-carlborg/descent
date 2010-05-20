@@ -13,9 +13,9 @@ import org.eclipse.dltk.core.IDLTKLanguageToolkit;
 import org.eclipse.dltk.core.environment.IEnvironment;
 
 public class DeeLanguageToolkit extends AbstractLanguageToolkit  {
-
+	
 	private static final String DEE_LANGUAGE_CONTENT_DSOURCE = "mmrnmhrm.core.content.dsource";
-
+	
 	private static final IDLTKLanguageToolkit instance = new DeeLanguageToolkit();
 	
 	public static IDLTKLanguageToolkit getDefault() {
@@ -62,5 +62,5 @@ public class DeeLanguageToolkit extends AbstractLanguageToolkit  {
 		return true;
 		//return DeeNameRules.isValidPackagePathName(path.toString());
 	}
-
+	
 }

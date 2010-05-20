@@ -81,7 +81,7 @@ public class DeeNavigatorContentProvider implements ITreeContentProvider, org.ec
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		this.viewer = viewer;
 	}
-
+	
 	@Override
 	public void elementChanged(org.eclipse.dltk.core.ElementChangedEvent event) {
 		SWTUtilExt.runInSWTThread(new Runnable() {

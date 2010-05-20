@@ -74,17 +74,17 @@ public abstract class DeeBaseEditor extends ScriptEditor {
 
 	private ISourceReference adaptNodeToReference(final ASTNeoNode node) {
 		return new org.eclipse.dltk.core.ISourceReference(){
-			//@Override
+			@Override
 			final public ISourceRange getSourceRange() {
 				return new ISourceRange() {
-					//@Override
+					@Override
 					final public int getOffset() {
 						if(node instanceof DefUnit)
 							return ((DefUnit)node).defname.getOffset();
 						return node.getOffset();
 					}
 				
-					//@Override
+					@Override
 					final public int getLength() {
 						if(node instanceof DefUnit)
 							return ((DefUnit)node).defname.getLength();
@@ -93,11 +93,11 @@ public abstract class DeeBaseEditor extends ScriptEditor {
 				
 				};
 			}
-			//@Override
+			@Override
 			final public boolean exists() {
 				return true;
 			}
-			//@Override
+			@Override
 			final public String getSource() throws ModelException {
 				return null;
 			}

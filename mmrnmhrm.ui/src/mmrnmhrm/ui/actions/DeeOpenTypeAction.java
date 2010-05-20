@@ -1,6 +1,3 @@
-/**
- * 
- */
 package mmrnmhrm.ui.actions;
 
 import mmrnmhrm.ui.DeeUILanguageToolkit;

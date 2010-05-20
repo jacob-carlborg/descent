@@ -34,6 +34,7 @@ public class OperationsManager {
 	
 	public static boolean executeOperation(final IWorkspaceRunnable action, String opName) {
 		ISimpleRunnable op = new ISimpleRunnable() {
+			@Override
 			public void run() throws CoreException {
 				DeeCore.run(action, null);
 			}

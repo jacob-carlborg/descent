@@ -43,23 +43,28 @@ public class DeeElementHyperlink implements IHyperlink {
 		fRegion= region;
 		fTextEditor= textEditor;
 	}
-
+	
+	@Override
 	public IRegion getHyperlinkRegion() {
 		return fRegion;
 	}
-
+	
+	@Override
 	public void open() {
 		OperationsManager.executeOperation(new IWorkspaceRunnable() {
+			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 				GoToDefinitionHandler.executeOperation(fTextEditor, true, offset);
 			}
 		}, "Open Element");
 	}
-
+	
+	@Override
 	public String getTypeLabel() {
 		return "Open Dee Definition";
 	}
-
+	
+	@Override
 	public String getHyperlinkText() {
 		return "Open Dee Definition";
 	}

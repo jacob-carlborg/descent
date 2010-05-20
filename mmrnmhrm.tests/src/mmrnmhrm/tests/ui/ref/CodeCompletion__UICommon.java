@@ -35,13 +35,14 @@ public class CodeCompletion__UICommon extends UITestWithEditor implements ICodeC
 		Assert.isTrue(editor.getScriptSourceViewer() != null);
 		ccTester = new CodeCompletion__UICommon();
 	}
-
-
+	
+	@Override
 	public void testComputeProposals(int repOffset,
 			int prefixLen, boolean removeObjectIntrinsics, String... expectedProposals) throws ModelException {
 		testComputeProposalsWithRepLen(repOffset, prefixLen, 0, removeObjectIntrinsics, expectedProposals);
 	}
 	
+	@Override
 	public void testComputeProposalsWithRepLen(int repOffset, int prefixLen, 
 			int repLen, boolean removeObjectIntrinsics, String... expectedProposals) throws ModelException {
 		ICompletionProposal[] proposals = DeeCodeContentAssistProcessor

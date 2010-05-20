@@ -117,7 +117,7 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 		selectionChanged(EditorUtil.getActiveEditor(), null);
 	}
 	
-	
+	@Override
 	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 		IWorkbenchPage page = getSite().getWorkbenchWindow().getActivePage();
 		if(page == null)
@@ -130,10 +130,12 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 		}
 	}
 	
+	@Override
 	public void documentAboutToBeChanged(DocumentEvent event) {
 		// Do nothing
 	}
-
+	
+	@Override
 	public void documentChanged(DocumentEvent event) {
 		refreshViewer();
 	}
@@ -210,6 +212,7 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 		MenuManager menuMgr = new MenuManager("#DeeASTViewerContext");
 		menuMgr.setRemoveAllWhenShown(true);
 		menuMgr.addMenuListener(new IMenuListener() {
+			@Override
 			public void menuAboutToShow(IMenuManager manager) {
 				ASTViewer.this.fillContextMenu(manager);
 			}
@@ -283,11 +286,12 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 	}
 
 
-
+	@Override
 	public void doubleClick(DoubleClickEvent event) {
 		GoToDefinitionHandler.executeChecked((AbstractTextEditor)fEditor, true);
 	}
-
+	
+	@Override
 	public void selectionChanged(SelectionChangedEvent event) {
 		if(fEditor == null)
 			return;

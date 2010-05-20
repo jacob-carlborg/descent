@@ -132,6 +132,11 @@ public class DeeSourceViewerConfiguration extends ScriptSourceViewerConfiguratio
 	}
 	
 	
+	@Override
+	protected String getCommentPrefix() {
+		return "//";
+	}
+	
 	
 	@SuppressWarnings("unchecked")
 	@Override 
@@ -221,6 +226,7 @@ public class DeeSourceViewerConfiguration extends ScriptSourceViewerConfiguratio
 
 	private IInformationControlCreator getHierarchyPresenterControlCreator() {
 		return new IInformationControlCreator() {
+			@Override
 			public IInformationControl createInformationControl(Shell parent) {
 				int shellStyle = SWT.RESIZE;
 				int treeStyle = SWT.V_SCROLL | SWT.H_SCROLL;
