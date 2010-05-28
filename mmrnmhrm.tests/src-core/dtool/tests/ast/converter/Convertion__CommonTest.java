@@ -4,7 +4,7 @@ import static melnorme.miscutil.Assert.assertTrue;
 
 import java.io.IOException;
 
-import mmrnmhrm.tests.BasePluginTest;
+import mmrnmhrm.tests.BaseDeePluginTest;
 import mmrnmhrm.tests.TestUtils;
 
 import org.eclipse.core.runtime.CoreException;
@@ -17,7 +17,7 @@ import dtool.ast.definitions.Module;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.refmodel.ParserAdapter;
 
-public abstract class Convertion__CommonTest extends BasePluginTest {
+public abstract class Convertion__CommonTest extends BaseDeePluginTest {
 
 	protected static final String TESTFILESDIR = "astparser/";
 

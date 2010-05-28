@@ -5,7 +5,7 @@ import java.net.URISyntaxException;
 
 import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.core.model.DeeProjectOptions;
-import mmrnmhrm.tests.BasePluginExceptionWatcherTest;
+import mmrnmhrm.tests.BasePluginTest;
 import mmrnmhrm.tests.CoreTestUtils;
 import mmrnmhrm.tests.ITestDataConstants;
 
@@ -17,7 +17,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.dltk.core.IScriptProject;
 import org.junit.Test;
 
-public class Builder_Test extends BasePluginExceptionWatcherTest {
+public class Builder_Test extends BasePluginTest {
 	
 	protected IScriptProject createBuildProject() throws CoreException {
 		IScriptProject deeProj = CoreTestUtils.createAndOpenProject("__BuilderProject");

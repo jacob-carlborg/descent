@@ -1,6 +1,6 @@
 package mmrnmhrm.ui.editor;
 
-import mmrnmhrm.tests.BaseUITest;
+import mmrnmhrm.tests.BaseDeePluginUITest;
 import mmrnmhrm.tests.SampleMainProject;
 import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.views.ASTViewer;
@@ -18,7 +18,7 @@ import org.junit.Test;
 
 import static melnorme.miscutil.Assert.assertTrue;
 
-public class DeeEditorTest extends BaseUITest {
+public class DeeEditorTest extends BaseDeePluginUITest {
 
 	public static IDocument getDocument(ScriptEditor editor) {
 		return editor.getScriptSourceViewer().getDocument();
@@ -66,7 +66,7 @@ public class DeeEditorTest extends BaseUITest {
 		//UITestUtils.runEventLoop(page.getActivePart().getSite().getShell());
 		//assertTrue(!(editor instanceof DeeEditorDLTK));
 		//assertTrue(exceptionThrown == true);
-		exceptionThrown = false;
+		logErrorListener.reset();
 	}
 
 }

@@ -20,7 +20,7 @@ import org.junit.AfterClass;
 /** 
  * Common test class for a UI test which works on a single editor.
  */
-public class UITestWithEditor extends BaseUITest {
+public class UITestWithEditor extends BaseDeePluginUITest {
 
 	protected static IFile file;
 	protected static ScriptEditor editor;

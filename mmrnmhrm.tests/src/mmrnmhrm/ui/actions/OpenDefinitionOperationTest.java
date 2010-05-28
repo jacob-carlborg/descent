@@ -2,7 +2,7 @@ package mmrnmhrm.ui.actions;
 
 import junit.framework.Assert;
 import mmrnmhrm.lang.ui.EditorUtil;
-import mmrnmhrm.tests.BaseUITest;
+import mmrnmhrm.tests.BaseDeePluginUITest;
 import mmrnmhrm.tests.SampleMainProject;
 import mmrnmhrm.tests.SampleNonDeeProject;
 import mmrnmhrm.ui.DeePlugin;
@@ -26,7 +26,7 @@ import org.junit.Test;
 
 import static melnorme.miscutil.Assert.assertTrue;
 
-public class OpenDefinitionOperationTest extends BaseUITest {
+public class OpenDefinitionOperationTest extends BaseDeePluginUITest {
 
 	private static final String TEST_SRCFILE = SampleMainProject.TEST_SRC1 + "/testGoToDefOp.d";
 	private static final String TEST_SRC_TARGETFILE = SampleMainProject.TEST_SRC3 +"/pack/sample.d";

@@ -4,7 +4,7 @@ import static melnorme.miscutil.Assert.assertTrue;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.ModelUtil;
 import mmrnmhrm.org.eclipse.dltk.ui.wizards.ProjectWizardFirstPage__Accessor;
-import mmrnmhrm.tests.BaseUITest;
+import mmrnmhrm.tests.BaseDeePluginUITest;
 import mmrnmhrm.tests.SampleMainProject;
 import mmrnmhrm.tests.adapters.TestAccessor_WizardDialog;
 import mmrnmhrm.ui.DeePlugin;
@@ -22,7 +22,7 @@ import org.junit.Test;
 
 
 
-public class DeeProjectWizardTest extends BaseUITest {
+public class DeeProjectWizardTest extends BaseDeePluginUITest {
 
 	private DeeNewProjectWizard wizard;
 	private TestAccessor_WizardDialog wizDialog;
@@ -176,14 +176,12 @@ public class DeeProjectWizardTest extends BaseUITest {
 	}*/
 	
 	protected boolean checkNoChanges() throws Throwable {
-		if(exceptionThrown)
-			throw exception;
+		logErrorListener.checkErrors();
 		return ModelUtil.getDeeProject(NEWPROJNAME).exists() == false;
 	}
 
 	protected boolean checkProjectCreated() throws Throwable {
-		if(exceptionThrown)
-			throw exception;
+		logErrorListener.checkErrors();
 		return ModelUtil.getDeeProject(NEWPROJNAME).exists();
 	}
 }

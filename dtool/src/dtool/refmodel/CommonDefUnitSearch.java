@@ -53,7 +53,7 @@ public abstract class CommonDefUnitSearch {
 
 	/** Indicate we are now searching the given new scope. */
 	public void enterNewScope(IScope scope) {
-		// TODO, keep only the named scopes?
+		// TODO: keep only the named scopes?
 		// how about partial scopes?
 		searchedScopes.add(scope);
 	}

@@ -81,7 +81,7 @@ public class CoreTestUtils {
 		ModelUtil.addNature(project, DeeNature.NATURE_ID);
 		
 		IBuildpathEntry entry = DLTKCore.newContainerEntry(ScriptRuntime.newDefaultInterpreterContainerPath()
-				.append(DeeDmdInstallType.INSTALLTYPE_ID).append(BasePluginTest.DEFAULT_DMD2_INSTALL));
+				.append(DeeDmdInstallType.INSTALLTYPE_ID).append(BaseDeePluginTest.DEFAULT_DMD2_INSTALL));
 		
 		
 		IScriptProject dltkProj = DLTKCore.create(project);
