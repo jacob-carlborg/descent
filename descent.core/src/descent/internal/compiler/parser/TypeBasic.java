@@ -117,7 +117,7 @@ public class TypeBasic extends Type {
 		case Tvoid:
 			if (context.isD2()) {
 				if (context.acceptsErrors()) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.VoidDoesNotHaveADefaiñtInitializer, this));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.VoidDoesNotHaveADefaultInitializer, this));
 				}
 				break;
 			}

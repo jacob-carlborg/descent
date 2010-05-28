@@ -1183,8 +1183,8 @@ public class Problem implements IProblem {
 			return String.format(ProblemMessages.SymbolIsNothrowYetMayThrow, arguments[0]);
 		case DefaultConstructorNotAllowedForStructs:
 			return String.format(ProblemMessages.DefaultConstructorNotAllowedForStructs);
-		case VoidDoesNotHaveADefaiñtInitializer:
-			return String.format(ProblemMessages.VoidDoesNotHaveADefaiñtInitializer);
+		case VoidDoesNotHaveADefaultInitializer:
+			return String.format(ProblemMessages.VoidDoesNotHaveADefaultInitializer);
 		case CannotImplicitlyConvertToImmutable:
 			return String.format(ProblemMessages.CannotImplicitlyConvertToImmutable, arguments[0]);
 		case CannotHaveConstInvariantOutParameterOfType:

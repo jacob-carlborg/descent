@@ -536,7 +536,7 @@ final class ProblemMessages extends NLS {
 	public static String SliceIsNotMutable;
 	public static String SymbolIsNothrowYetMayThrow;
 	public static String DefaultConstructorNotAllowedForStructs;
-	public static String VoidDoesNotHaveADefaiñtInitializer;
+	public static String VoidDoesNotHaveADefaultInitializer;
 	public static String CannotImplicitlyConvertToImmutable;
 	public static String CannotHaveConstInvariantOutParameterOfType;
 	public static String OverloadSetNotAllowedInStructDeclaration;

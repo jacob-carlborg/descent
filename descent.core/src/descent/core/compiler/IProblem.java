@@ -735,7 +735,7 @@ public interface IProblem {
 	int SliceIsNotMutable = 524;
 	int SymbolIsNothrowYetMayThrow = 525;
 	int DefaultConstructorNotAllowedForStructs = 526;
-	int VoidDoesNotHaveADefaiñtInitializer = 527;
+	int VoidDoesNotHaveADefaultInitializer = 527;
 	int CannotImplicitlyConvertToImmutable = 528;
 	int CannotHaveConstInvariantOutParameterOfType = 529;
 	int OverloadSetNotAllowedInStructDeclaration = 530;
