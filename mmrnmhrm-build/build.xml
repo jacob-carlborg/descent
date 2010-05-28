@@ -1,0 +1,86 @@
+<project name="Eclipse.build" default="build">
+	
+	<property name="projects.dir" location="${basedir}/.." />
+		
+	<property name="builder.pdebuild" location="${basedir}/eclipse.pdebuild" />
+	<property name="builder.targetplatform" location="${basedir}/target" />
+	<property name="java.jvm6.dir" location="${basedir}/jre" />
+	
+	<echo message="Base Dir: ${basedir}"/>
+	<echo message="projects.dir: ${projects.dir}"/>
+
+	
+	<!-- =============== Setup PDE Build host =============== -->
+	<property name="builder.pdebuild.launcher" location="${builder.pdebuild}/eclipse/plugins/org.eclipse.equinox.launcher_1.0.201.R35x_v20090715.jar" />
+	<property name="builder.pdebuild.home" location="${builder.pdebuild}/eclipse/plugins/org.eclipse.pde.build_3.5.2.R35x_20100114/" />
+	
+	<property name="builder.pdebuild.buildfile" location="${builder.pdebuild.home}/scripts/build.xml" />
+	
+	<!-- =============== Setup target platform =============== -->
+	<available property="builder.targetplatform.exists" file="${builder.targetplatform}/eclipse"/>
+	<echo message="builder.targetplatform.exists=${builder.targetplatform.exists}"/>
+	
+    <target name="prepareTargetPlatform" unless="builder.targetplatform.exists" description="unpacks the default target platform">
+    	<echo message="prepareTargetPlatform"/>
+    	<unzip dest="${builder.targetplatform}">
+    	    <patternset includes="eclipse/**" />
+    		<files includes="${buildertargetplatform}/*.zip" />
+    	</unzip>
+    	<!-- The Mylyn redist archive has a different format -->
+    	<unzip dest="${builder.targetplatform}/eclipse">
+    	    <patternset includes="plugins/**,features/**" />
+    		<files includes="${builder.targetplatform}/mylyn*.zip" />
+    	</unzip>
+    </target>
+	
+	<!-- =============== Main Build =============== -->
+	
+	
+	<property name="build.dir" location="${basedir}/build.dir" />
+
+	<fileset id="projects.plugins.fileset" dir="${projects.dir}/" 
+		includes="org.dsource.melnorme/**,mmrnmhrm*/**,dtool*/**," 
+		excludes="**/.metadata/,**/*.class,*-feature/**,mmrnmhrm.build/**,mmrnmhrm.update-site/**"
+	/>
+
+	<fileset id="projects.features.fileset" dir="${projects.dir}/" 
+		includes="*-feature/**" 
+	/>
+	
+	
+    <target name="clean" >
+    	<delete dir="${build.dir}" />
+    	<mkdir dir="${build.dir}"/>
+    </target>
+
+    <target name="prepareBuildDir" depends="clean">
+    	<pathconvert property="projects.plugins.fileset.prop" refid="projects.plugins.fileset" targetos="unix" pathsep="${line.separator}" />
+    	<echo message="${projects.plugins.fileset.prop}" level="debug" />
+    	
+    	<copy todir="${build.dir}/plugins" >
+    		<fileset refid="projects.plugins.fileset" />
+    	</copy>
+    	<copy todir="${build.dir}/features" >
+    		<fileset refid="projects.features.fileset" />
+			<!-- Remove the "-feature/" suffix -->
+			<regexpmapper from="^([^/]*)-feature/(.*)" to="\1/\2" handledirsep="true" />
+    	</copy>
+
+    </target>
+	
+	
+	<target name="build" depends="build.pdebuild" description="Builds the Eclipse artifacts">
+	</target>
+	
+	<target name="build.pdebuild" depends="prepareBuildDir" >
+		<java jar="${builder.pdebuild.launcher}" fork="true" failonerror="true" >
+			<arg line="-application org.eclipse.ant.core.antRunner" />
+			<arg line="-buildfile ${builder.pdebuild.buildfile}" />
+			<arg value="-Dbuilder=${basedir}/product.configdir" />
+			<arg value="-Dbuild.dir=${build.dir}" />
+			<arg value="-Declipse.targetplatform=${builder.targetplatform}" />
+			<arg value="-Djava.jvm6.dir=${java.jvm6.dir}" />
+		</java>
+	</target>
+	
+</project>
