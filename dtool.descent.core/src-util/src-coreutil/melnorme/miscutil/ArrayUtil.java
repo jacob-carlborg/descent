@@ -282,11 +282,6 @@ public class ArrayUtil {
 		return -1;
 	}
 	
-	@Deprecated
-	public static <T> int getIndexOfEquals(T[] array, T elem) {
-		return indexOfUsingEquals(array, elem);
-	}
-	
 	/** Returns the index in given array of the first element that equals given elem, 
 	 * or -1 if none is found. */
 	public static <T> int indexOfUsingEquals(T[] array, T elem) {

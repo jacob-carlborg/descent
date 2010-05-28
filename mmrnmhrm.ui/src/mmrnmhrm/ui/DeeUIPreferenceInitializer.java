@@ -54,6 +54,7 @@ public class DeeUIPreferenceInitializer extends AbstractPreferenceInitializer {
 		store.setDefault(PreferenceConstants.SEARCH_USE_REDUCED_MENU, true);
 
 		
+		store.setDefault(CodeFormatterConstants.FORMATTER_TAB_CHAR, CodeFormatterConstants.TAB);
 		store.setDefault(CodeFormatterConstants.FORMATTER_INDENTATION_SIZE, 4);
 		store.setDefault(CodeFormatterConstants.FORMATTER_TAB_SIZE, 4);
 

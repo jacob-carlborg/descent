@@ -8,7 +8,7 @@ Bundle-Localization: plugin
 Require-Bundle: dtool.descent.core;visibility:=reexport,
  org.eclipse.dltk.core,
  org.eclipse.core.runtime
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  libs/ini4j-0.3.2/ini4j-0.3.2.jar

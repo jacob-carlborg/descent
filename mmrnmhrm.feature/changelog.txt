@@ -1,11 +1,37 @@
 = Mmrnmhrm Change Log =
 
-== Mmrnmhrm 0.2.1 development stream (unreleased) ==
+== Mmrnmhrm 0.3.2 (devel) ==
+ * Fixed comment indentation character (was '#' instead of '//') on toggle comment actions 
+ * Fixed defaults bug in DeeRootPreferencePage and DeeEditorPreferencePage.
+ 
+ 
+== Mmrnmhrm 0.3.1 (2010-04-12) ==
+ * Updated IDE to latest DLTK version (1.0), fixed bugs related to DLTK version migration.
+ * Added Eclipse feature and update-site (so now supports automatic updating).
+ * Updated support for new folder layout in newer DMD compiler installations.
+ * Added D perspective.
+
+== Mmrnmhrm 0.3.0 (2008-10-09) ==
+ * Updated IDE to latest DLTK version (1.0M2), and also to Eclipse 3.4.
+ * Minor builder changes. Added $DEEBUILDER.COMPILERPATH builder flag for compiler executable location.
+ * Implemented initial DLTK Type Hierarchies implementation. Supertype hierarchy viewing should work ok, but subtype hierarchy is not, needs further work on part of DLTK. (Type Hierarchy View is available by pressing F4, Type Hierarchy Pop-up is available by pressing Ctrl-T).
+ * Minor fixes to the search engine (searching for classes and functions should work better now, as well as Open-Type)
+ * Added auto edit strategies: smarter indentation on enter presses, copy&paste, etc. There may still be some kinks.
+
+
+== Mmrnmhrm 0.2.2 (2007-11-13) ==
+ * Fixed dependency on the org.junit plugin, and consequently on JDT.
+ * Fixed SWT debug colors allways on.
+ * Fixed Source Coloring preference page "Basic types" entry bug.
+ * Removed unused DTLK project script builder (fix only takes effect on new projects).
+ * Rethought and implemented the integrated project builder, based on a simple IDE-managed response file. It should be ready for use now.
+
+== Mmrnmhrm 0.2.1 (2007-10-23) ==
  * Fixed major bug with document syntax highlighting and partitions.
  * Improved name lookup: statement blocks and enum bodies are now supported correctly (they don't see forward definitions anymore).
  * Improved Code completion: duplicates or occluded names are no longer presented.
  * Can now set, view, and remove Descent-compatible breakpoints in Mmrnmhrm's editor (these will work with Descent's debugger).
- * DDoc text and code completion hovers are now processed and presented as HTML instead of raw characters, thanks to Ary Mazana's Descent DDoc parser. ([http://svn.dsource.org/projects/descent/downloads/images/mmrnmhrm_html_ddoc_hover.png pic])
+ * DDoc text and code completion hovers are now processed and presented as HTML instead of raw characters, thanks to Ary Mazana's Descent DDoc parser. ([http://svn.dsource.org/projects/descent/downloads/images/mmrnmhrm_html_ddoc_hover2.png pic])
  * Fixed some Neo AST bugs.
  * Minor builder changes (builder still work in progress).
 

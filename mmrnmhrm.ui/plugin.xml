@@ -270,12 +270,6 @@
       </command>
       <command
             categoryId="mmrnmhrm.ui.commands.category1"
-            defaultHandler="mmrnmhrm.ui.actions.RefreshModelHandler"
-            id="mmrnmhrm.ui.commands.refreshModel"
-            name="Refresh Dee Model">
-      </command>
-      <command
-            categoryId="mmrnmhrm.ui.commands.category1"
             defaultHandler="mmrnmhrm.ui.actions.AddSourceFolderHandler"
             id="mmrnmhrm.ui.commands.buildPathAdd"
             name="Add as Folder Library">
@@ -380,17 +374,6 @@
          <toolbar
                id="mmrnmhrm.ui.toolbars.sampleToolbar">
             <command
-                  commandId="mmrnmhrm.ui.commands.refreshModel"
-                  icon="icons/action16e/declipse.gif"
-                  label="Refresh D Model"
-                  tooltip="Refresh D Model">
-               <visibleWhen>
-                  <equals
-                        value="false">
-                  </equals>
-               </visibleWhen>
-            </command>
-            <command
                   commandId="mmrnmhrm.ui.commands.sampleCommand2"
                   icon="icons/action16e/spathi.16.gif"
                   label="Sample Command2">
@@ -473,12 +456,6 @@
    </extension>
    <extension
          point="org.eclipse.ui.bindings">
-      <key
-            commandId="mmrnmhrm.ui.commands.refreshModel"
-            contextId="org.eclipse.ui.contexts.window"
-            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            sequence="ALT+F5">
-      </key>
       <key
             commandId="mmrnmhrm.ui.commands.openDefinition"
             contextId="mmrnmhrm.ui.contexts.DeeEditor"

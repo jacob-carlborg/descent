@@ -12,8 +12,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
 
-public class DeeEditorPreferencePage extends
-		AbstractConfigurationBlockPreferencePage {
+public class DeeEditorPreferencePage extends AbstractConfigurationBlockPreferencePage {
 	
 	public final static String PAGE_ID = "mmrnmhrm.ui.preferences.Editor";
 
@@ -39,8 +38,7 @@ public class DeeEditorPreferencePage extends
 	}
 
 	@Override
-	protected IPreferenceConfigurationBlock createConfigurationBlock(
-			OverlayPreferenceStore overlayPreferenceStore) {
-		return new DeeEditorConfigurationBlock(this, overlayPreferenceStore, true, true );
+	protected IPreferenceConfigurationBlock createConfigurationBlock(OverlayPreferenceStore overlayPreferenceStore) {
+		return new DeeEditorConfigurationBlock(this, overlayPreferenceStore, true, true);
 	}
 }
