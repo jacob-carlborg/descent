@@ -3,6 +3,8 @@ package descent.core.dom;
 import java.util.ArrayList;
 import java.util.List;
 
+import descent.core.compiler.IftypeDeclarationKind;
+
 
 /**
  * The <i>deprecated</i> iftype declaration AST node type.
@@ -13,18 +15,6 @@ import java.util.List;
  * </pre>
  */
 public class IftypeDeclaration extends ConditionalDeclaration {
-	
-	/**
-	 * The kind of comparison.
-	 */
-	public static enum Kind {
-		/** No comparison */
-		NONE,
-		/** Comparison made with <b>=</b> */
-		EQUALS,
-		/** Comparison made with <b>:</b> */
-		EXTENDS
-	}
 	
 	/**
 	 * The "preDDocs" structural property of this node type.
@@ -42,7 +32,7 @@ public class IftypeDeclaration extends ConditionalDeclaration {
 	 * The "kind" structural property of this node type.
 	 */
 	public static final SimplePropertyDescriptor KIND_PROPERTY =
-		new SimplePropertyDescriptor(IftypeDeclaration.class, "kind", Kind.class, OPTIONAL); //$NON-NLS-1$
+		new SimplePropertyDescriptor(IftypeDeclaration.class, "kind", IftypeDeclarationKind.class, OPTIONAL); //$NON-NLS-1$
 
 	/**
 	 * The "name" structural property of this node type.
@@ -120,7 +110,7 @@ public class IftypeDeclaration extends ConditionalDeclaration {
 	/**
 	 * The kind.
 	 */
-	private Kind kind = Kind.NONE;
+	private IftypeDeclarationKind kind = IftypeDeclarationKind.NONE;
 
 	/**
 	 * The name.
@@ -166,7 +156,7 @@ public class IftypeDeclaration extends ConditionalDeclaration {
 			if (get) {
 				return getKind();
 			} else {
-				setKind((Kind) value);
+				setKind((IftypeDeclarationKind) value);
 				return null;
 			}
 		}
@@ -316,7 +306,7 @@ public class IftypeDeclaration extends ConditionalDeclaration {
 	 * 
 	 * @return the kind
 	 */ 
-	public Kind getKind() {
+	public IftypeDeclarationKind getKind() {
 		return this.kind;
 	}
 
@@ -326,7 +316,7 @@ public class IftypeDeclaration extends ConditionalDeclaration {
 	 * @param kind the kind
 	 * @exception IllegalArgumentException if the argument is incorrect
 	 */ 
-	public void setKind(Kind kind) {
+	public void setKind(IftypeDeclarationKind kind) {
 		if (kind == null) {
 			throw new IllegalArgumentException();
 		}

@@ -318,12 +318,12 @@ public class Lexer implements IProblemRequestor {
 		reportProblem(Problem.newSyntaxError(id, line, node.start, node.length));
 	}
 
-	public void error(int id, int line, descent.core.dom.ASTNode node) {
-		if (muteErrors) return;
-		
-		reportProblem(Problem.newSyntaxError(id, line, node.getStartPosition(),
-				node.getLength()));
-	}
+//	public void error(int id, int line, descent.core.dom.ASTNode node) {
+//		if (muteErrors) return;
+//		
+//		reportProblem(Problem.newSyntaxError(id, line, node.getStartPosition(),
+//				node.getLength()));
+//	}
 
 	public void error(int id, Token token, String[] arguments) {
 		if (muteErrors) return;

@@ -8,6 +8,7 @@ import java.util.List;
 import descent.core.IJavaElement;
 import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
+import descent.internal.compiler.ILazyStructDeclaration__Marker;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.DsymbolTable;
 import descent.internal.compiler.parser.Dsymbols;
@@ -17,7 +18,7 @@ import descent.internal.compiler.parser.ScopeDsymbol;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.compiler.parser.StructDeclaration;
 
-public class LazyStructDeclaration extends StructDeclaration implements ILazyAggregate {
+public class LazyStructDeclaration extends StructDeclaration implements ILazyAggregate, ILazyStructDeclaration__Marker {
 
 	private final ModuleBuilder builder;
 	
@@ -39,6 +40,7 @@ public class LazyStructDeclaration extends StructDeclaration implements ILazyAgg
 		return isUnlazy;
 	}
 	
+	@Override
 	public StructDeclaration unlazy(char[] prefix, SemanticContext context) {
 		if (!isUnlazy) {
 			isUnlazy = true;

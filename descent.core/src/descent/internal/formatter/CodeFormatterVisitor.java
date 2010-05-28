@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.eclipse.text.edits.TextEdit;
 
+import descent.core.compiler.Linkage;
 import descent.core.dom.*;
 import descent.core.formatter.DefaultCodeFormatterConstants;
 import descent.internal.compiler.parser.Lexer;
@@ -961,12 +962,12 @@ public class CodeFormatterVisitor extends ASTVisitor
 		if(isNextToken(TOK.TOKlparen))
 		{
 			scribe.printNextToken(TOK.TOKlparen, prefs.insert_space_before_opening_paren_in_extern_declarations);
-			if(node.getLinkage() != ExternDeclaration.Linkage.DEFAULT)
+			if(node.getLinkage() != Linkage.DEFAULT)
 			{
 				if(prefs.insert_space_after_opening_paren_in_extern_declarations)
 					scribe.space();
 				scribe.printNextToken(TOK.TOKidentifier);
-				if (node.getLinkage() == ExternDeclaration.Linkage.CPP) {
+				if (node.getLinkage() == Linkage.CPP) {
 					scribe.printNextToken(TOK.TOKplusplus);
 				}
 				if(prefs.insert_space_before_closing_paren_in_extern_declarations)

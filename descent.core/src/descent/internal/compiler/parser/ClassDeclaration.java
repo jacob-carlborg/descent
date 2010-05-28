@@ -26,7 +26,6 @@ import org.eclipse.core.runtime.Assert;
 import descent.core.Signature;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
-import descent.internal.compiler.lookup.ModuleBuilder;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
@@ -58,8 +57,6 @@ public class ClassDeclaration extends AggregateDeclaration {
 	public List vtbl; // Array of FuncDeclaration's making up the vtbl[]
 	public List vtblFinal; // More FuncDeclaration's that aren't in vtbl[]
 	public boolean cpp;				// !=0 if this is a C++ interface
-	
-	public ModuleBuilder builder;
 	
 	// Scope used in the initializeSpecial method
 	private Scope specialInitializeScope;

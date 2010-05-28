@@ -31,11 +31,10 @@ import descent.internal.core.JavaModelStatus;
  * @see IJavaModelStatus
  * @see IJavaModelStatusConstants
  */
-public class JavaModelException extends CoreException {
+public class JavaModelException extends JavaModelException__Common {
 
 	private static final long serialVersionUID = -760398656505871287L; // backward compatible
 	
-	CoreException nestedCoreException;
 /**
  * Creates a Java model exception that wrappers the given <code>Throwable</code>.
  * The exception contains a Java-specific status object with severity
@@ -72,19 +71,6 @@ public JavaModelException(IJavaModelStatus status) {
 	super(status);
 }
 
-/**
- * Returns the underlying <code>Throwable</code> that caused the failure.
- *
- * @return the wrappered <code>Throwable</code>, or <code>null</code> if the
- *   direct case of the failure was at the Java model layer
- */
-public Throwable getException() {
-	if (this.nestedCoreException == null) {
-		return getStatus().getException();
-	} else {
-		return this.nestedCoreException;
-	}
-}
 /**
  * Returns the Java model status object for this exception.
  * Equivalent to <code>(IJavaModelStatus) getStatus()</code>.

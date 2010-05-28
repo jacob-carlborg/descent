@@ -1,6 +1,6 @@
 package descent.internal.compiler.parser;
 
-import descent.core.dom.ExternDeclaration.Linkage;
+import descent.core.compiler.Linkage;
 
 
 public enum LINK {

@@ -11,31 +11,16 @@
  *******************************************************************************/
 package descent.core;
 
+import descent.internal.compiler.IMethodVarArgsConstants;
+
 /**
  * Represents a method (or constructor) declared in a type.
  * <p>
  * This interface is not intended to be implemented by clients.
  * </p>
  */
-public interface IMethod extends IMember, ITemplated {
+public interface IMethod extends IMember, ITemplated, IMethodVarArgsConstants{
 	
-/**
- * Constant indicating the method has no varargs.
- */
-int VARARGS_NO = 0;
-
-/**
- * Constant indicating the method has varargs of undefined types. For example
- * like in a method <code>void foo(...)</code> or <code>void foo(int x, ...)<code>.
- */
-int VARARGS_UNDEFINED_TYPES = 1;
-
-/**
- * Constant indicating the method has varargs of the same type:
- * the one of the last argument of this method. For example
- * like in a method <code>void foo(int ...)</code> or <code>void foo(int x, char[] ...)<code>.
- */
-int VARARGS_SAME_TYPES = 2;
 
 /**
  * Returns the simple name of this method.

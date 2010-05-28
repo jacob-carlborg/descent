@@ -6,7 +6,7 @@ import static descent.internal.compiler.parser.TOK.TOKcolon;
 import static descent.internal.compiler.parser.TOK.TOKequal;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
-import descent.core.dom.IftypeDeclaration;
+import descent.core.compiler.IftypeDeclarationKind;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
@@ -42,14 +42,14 @@ public class IftypeCondition extends Condition {
 		return IFTYPE;
 	}
 
-	public IftypeDeclaration.Kind getKind() {
+	public IftypeDeclarationKind getKind() {
 		if (tok == TOK.TOKreserved) {
-			return IftypeDeclaration.Kind.NONE;
+			return IftypeDeclarationKind.NONE;
 		}
 		if (tok == TOK.TOKcolon) {
-			return IftypeDeclaration.Kind.EXTENDS;
+			return IftypeDeclarationKind.EXTENDS;
 		}
-		return IftypeDeclaration.Kind.EQUALS;
+		return IftypeDeclarationKind.EQUALS;
 	}
 
 	@Override

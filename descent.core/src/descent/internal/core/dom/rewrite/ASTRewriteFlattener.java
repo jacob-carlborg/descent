@@ -12,8 +12,9 @@ package descent.internal.core.dom.rewrite;
 
 import java.util.List;
 
+import descent.core.compiler.IftypeDeclarationKind;
+import descent.core.compiler.Linkage;
 import descent.core.dom.*;
-import descent.core.dom.ExternDeclaration.Linkage;
 import descent.core.dom.FunctionLiteralDeclarationExpression.Syntax;
 import descent.core.dom.IsTypeSpecializationExpression.TypeSpecialization;
 
@@ -611,7 +612,7 @@ public class ASTRewriteFlattener extends ASTVisitor {
 		visitList(node, ExternDeclaration.MODIFIERS_PROPERTY, " ", EMPTY, " ");
 		this.result.append("extern");
 		
-		ExternDeclaration.Linkage linkage = (Linkage) getAttribute(node, ExternDeclaration.LINKAGE_PROPERTY);
+		Linkage linkage = (Linkage) getAttribute(node, ExternDeclaration.LINKAGE_PROPERTY);
 		switch(linkage) {
 		case C: this.result.append("(C)"); break;
 		case CPP: this.result.append("(C++)"); break;
@@ -786,7 +787,7 @@ public class ASTRewriteFlattener extends ASTVisitor {
 		
 		ASTNode matchingType = getChildNode(node, IftypeDeclaration.MATCHING_TYPE_PROPERTY);
 		if (matchingType != null) {
-			IftypeDeclaration.Kind kind = (IftypeDeclaration.Kind) getAttribute(node, IftypeDeclaration.KIND_PROPERTY);
+			IftypeDeclarationKind kind = (IftypeDeclarationKind) getAttribute(node, IftypeDeclaration.KIND_PROPERTY);
 			switch(kind) {
 			case EQUALS: this.result.append(" = "); break;
 			case EXTENDS: this.result.append(" : "); break;
@@ -810,7 +811,7 @@ public class ASTRewriteFlattener extends ASTVisitor {
 		
 		ASTNode matchingType = getChildNode(node, IftypeStatement.MATCHING_TYPE_PROPERTY);
 		if (matchingType != null) {
-			IftypeDeclaration.Kind kind = (IftypeDeclaration.Kind) getAttribute(node, IftypeDeclaration.KIND_PROPERTY);
+			IftypeDeclarationKind kind = (IftypeDeclarationKind) getAttribute(node, IftypeDeclaration.KIND_PROPERTY);
 			switch(kind) {
 			case EQUALS: this.result.append(" = "); break;
 			case EXTENDS: this.result.append(" : "); break;

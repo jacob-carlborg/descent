@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Stack;
 
 import descent.core.compiler.CharOperation;
+import descent.internal.compiler.IMethodVarArgsConstants;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.STC;
 import descent.internal.compiler.parser.TypeBasic;
@@ -428,9 +429,9 @@ public final class Signature {
 	
 	/**
 	 * Character constant indicating a tuple type in a signature.
-	 * Value is <code>'´'</code>.
+	 * Value is <code>'ï¿½'</code>.
 	 */
-	public static final char C_TUPLE									= '´';
+	public static final char C_TUPLE									= 'ï¿½';
 	
 	/**
 	 * Character constant indicating a D linkage in a function signature.
@@ -2154,10 +2155,10 @@ public static int getVariadic(String signature) throws IllegalArgumentException 
 					case Signature.C_FUNCTION_PARAMTERS_BREAK:
 						break;
 					case Signature.C_FUNCTION_PARAMETERS_BREAK_VARARGS_UNKNOWN_TYPES:
-						variadic[0] = IMethod.VARARGS_UNDEFINED_TYPES;
+						variadic[0] = IMethodVarArgsConstants.VARARGS_UNDEFINED_TYPES;
 						break;
 					case Signature.C_FUNCTION_PARAMETERS_BREAK_VARARGS_SAME_TYPE:
-						variadic[0] = IMethod.VARARGS_SAME_TYPES;
+						variadic[0] = IMethodVarArgsConstants.VARARGS_SAME_TYPES;
 						break;
 					}
 				}

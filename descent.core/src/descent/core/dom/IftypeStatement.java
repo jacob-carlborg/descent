@@ -3,7 +3,8 @@ package descent.core.dom;
 import java.util.ArrayList;
 import java.util.List;
 
-import descent.core.dom.IftypeDeclaration.Kind;
+import descent.core.compiler.IftypeDeclarationKind;
+
 
 /**
  * The <i>deprecated</i> iftype statement AST node type.
@@ -19,7 +20,7 @@ public class IftypeStatement extends ConditionalStatement {
 	 * The "kind" structural property of this node type.
 	 */
 	public static final SimplePropertyDescriptor KIND_PROPERTY =
-		new SimplePropertyDescriptor(IftypeStatement.class, "kind", Kind.class, OPTIONAL); //$NON-NLS-1$
+		new SimplePropertyDescriptor(IftypeStatement.class, "kind", IftypeDeclarationKind.class, OPTIONAL); //$NON-NLS-1$
 
 	/**
 	 * The "name" structural property of this node type.
@@ -88,7 +89,7 @@ public class IftypeStatement extends ConditionalStatement {
 	/**
 	 * The kind.
 	 */
-	private Kind kind;
+	private IftypeDeclarationKind kind;
 
 	/**
 	 * The name.
@@ -134,7 +135,7 @@ public class IftypeStatement extends ConditionalStatement {
 			if (get) {
 				return getKind();
 			} else {
-				setKind((Kind) value);
+				setKind((IftypeDeclarationKind) value);
 				return null;
 			}
 		}
@@ -251,7 +252,7 @@ public class IftypeStatement extends ConditionalStatement {
 	 * 
 	 * @return the kind
 	 */ 
-	public Kind getKind() {
+	public IftypeDeclarationKind getKind() {
 		return this.kind;
 	}
 
@@ -261,7 +262,7 @@ public class IftypeStatement extends ConditionalStatement {
 	 * @param kind the kind
 	 * @exception IllegalArgumentException if the argument is incorrect
 	 */ 
-	public void setKind(Kind kind) {
+	public void setKind(IftypeDeclarationKind kind) {
 		if (kind == null) {
 			throw new IllegalArgumentException();
 		}

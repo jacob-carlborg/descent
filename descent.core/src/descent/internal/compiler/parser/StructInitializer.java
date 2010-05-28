@@ -7,7 +7,7 @@ import static descent.internal.compiler.parser.TY.Tstruct;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
-import descent.internal.compiler.lookup.LazyStructDeclaration;
+import descent.internal.compiler.ILazyStructDeclaration__Marker;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
@@ -73,8 +73,8 @@ public class StructInitializer extends Initializer {
 			
 			ad = ts.sym;
 			
-			if (ad instanceof LazyStructDeclaration) {
-				ts.sym =  ((LazyStructDeclaration) ad).unlazy(CharOperation.NO_CHAR, context);
+			if (ad instanceof ILazyStructDeclaration__Marker) {
+				ts.sym =  ((ILazyStructDeclaration__Marker) ad).unlazy(CharOperation.NO_CHAR, context);
 				ad = ts.sym;
 			}
 			

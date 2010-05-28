@@ -10,6 +10,7 @@ import descent.core.IJavaProject;
 import descent.core.ITypeRoot;
 import descent.core.WorkingCopyOwner;
 import descent.core.compiler.CharOperation;
+import descent.core.compiler.IftypeDeclarationKind;
 import descent.core.dom.DefaultBindingResolver.BindingTables;
 import descent.core.dom.FunctionLiteralDeclarationExpression.Syntax;
 import descent.core.dom.IsTypeSpecializationExpression.TypeSpecialization;
@@ -2280,13 +2281,13 @@ public class ASTConverter {
 			if (cond.tok != null) {
 				switch (cond.tok) {
 				case TOKreserved:
-					b.setKind(IftypeDeclaration.Kind.NONE);
+					b.setKind(IftypeDeclarationKind.NONE);
 					break;
 				case TOKequal:
-					b.setKind(IftypeDeclaration.Kind.EQUALS);
+					b.setKind(IftypeDeclarationKind.EQUALS);
 					break;
 				case TOKcolon:
-					b.setKind(IftypeDeclaration.Kind.EXTENDS);
+					b.setKind(IftypeDeclarationKind.EXTENDS);
 					break;
 				}
 			}
@@ -2360,13 +2361,13 @@ public class ASTConverter {
 				if (cond.tok != null) {
 					switch(cond.tok) {
 					case TOKreserved:
-						b.setKind(IftypeDeclaration.Kind.NONE);
+						b.setKind(IftypeDeclarationKind.NONE);
 						break;
 					case TOKequal:
-						b.setKind(IftypeDeclaration.Kind.EQUALS);
+						b.setKind(IftypeDeclarationKind.EQUALS);
 						break;
 					case TOKcolon:
-						b.setKind(IftypeDeclaration.Kind.EXTENDS);
+						b.setKind(IftypeDeclarationKind.EXTENDS);
 						break;
 					}
 				}
