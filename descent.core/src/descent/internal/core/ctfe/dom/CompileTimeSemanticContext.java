@@ -3,13 +3,11 @@ package descent.internal.core.ctfe.dom;
 import java.util.ArrayList;
 import java.util.List;
 
-import descent.core.IJavaProject;
 import descent.core.IProblemRequestor;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
 import descent.core.ctfe.IDebugger;
 import descent.internal.compiler.env.IModuleFinder;
-import descent.internal.compiler.env.INameEnvironment;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.ASTNodeEncoder;
 import descent.internal.compiler.parser.AliasDeclaration;
@@ -108,7 +106,6 @@ import descent.internal.compiler.parser.VolatileStatement;
 import descent.internal.compiler.parser.WhileStatement;
 import descent.internal.compiler.parser.WithStatement;
 import descent.internal.core.CompilerConfiguration;
-import descent.internal.core.ctfe.CompileTimeModuleFinder;
 
 public class CompileTimeSemanticContext extends SemanticContext {
 	
@@ -116,9 +113,9 @@ public class CompileTimeSemanticContext extends SemanticContext {
 	private int fDisabledStepping;
 
 	public CompileTimeSemanticContext(IProblemRequestor problemRequestor,
-			Module module, IJavaProject project, WorkingCopyOwner owner,
-			Global global, CompilerConfiguration config, ASTNodeEncoder encoder, IStringTableHolder holder, IDebugger debugger) throws JavaModelException {
-		super(problemRequestor, module, project, owner, global, config, encoder, holder);
+			Module module, WorkingCopyOwner owner, Global global,
+			CompilerConfiguration config, ASTNodeEncoder encoder, IStringTableHolder holder, IModuleFinder moduleFinder, int apiLevel, IDebugger debugger) throws JavaModelException {
+		super(problemRequestor, module, owner, global, config, encoder, holder, moduleFinder, apiLevel);
 		this.debugger = debugger;
 	}
 	
@@ -208,10 +205,6 @@ public class CompileTimeSemanticContext extends SemanticContext {
 		this.templateEvaluationStack = temp;
 	}
 	
-	@Override
-	protected IModuleFinder newModuleFinder(INameEnvironment env, CompilerConfiguration config, ASTNodeEncoder encoder2) {
-		return new CompileTimeModuleFinder(env, config, encoder2);
-	}
 	
 	@Override
 	protected Parser newParser(int apiLevel, char[] source) {

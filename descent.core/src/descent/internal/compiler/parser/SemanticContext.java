@@ -8,20 +8,13 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
 
-import descent.core.IJavaProject;
 import descent.core.IProblemRequestor;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
-import descent.core.dom.AST;
 import descent.internal.compiler.env.IModuleFinder;
-import descent.internal.compiler.env.INameEnvironment;
-import descent.internal.compiler.lookup.DescentModuleFinder;
-import descent.internal.core.CancelableNameEnvironment;
 import descent.internal.core.CompilerConfiguration;
-import descent.internal.core.JavaProject;
-import descent.internal.core.util.Util;
 
 public class SemanticContext implements IStringTableHolder {
 
@@ -41,7 +34,6 @@ public class SemanticContext implements IStringTableHolder {
 
 	public IProblemRequestor problemRequestor;
 	public final Global global;
-	public final IJavaProject project;
 	public final IModuleFinder moduleFinder;
 
 	// TODO file imports should be selectable in a dialog or something
@@ -146,26 +138,21 @@ public class SemanticContext implements IStringTableHolder {
 	public SemanticContext(
 			IProblemRequestor problemRequestor, 
 			Module module,
-			IJavaProject project,
 			WorkingCopyOwner owner,
 			Global global,
 			CompilerConfiguration config,
 			ASTNodeEncoder encoder,
-			IStringTableHolder stringTableHolder) throws JavaModelException {
+			IStringTableHolder stringTableHolder,
+			IModuleFinder moduleFinder, int apiLevel) throws JavaModelException {
 		this.problemRequestor = problemRequestor;
 		this.Module_rootModule = module;
 		this.global = global;
-		this.project = project;
-		this.moduleFinder = newModuleFinder(new CancelableNameEnvironment((JavaProject) project, owner, null), config, encoder);
+		this.moduleFinder = moduleFinder;
 		this.holder = stringTableHolder;
 		this.Type_tvoidptr = Type.tvoid.pointerTo(this);
 		this.encoder = encoder;
 		this.templateEvaluationStack = new LinkedList<ASTDmdNode>();
-		if (project == null) {
-			this.apiLevel = AST.D1;
-		} else {
-			this.apiLevel = Util.getApiLevel(project);
-		}
+		this.apiLevel = apiLevel; 
 		
 		if (config.semanticAnalysisLevel == 0) {
 			muteProblems++;
@@ -510,10 +497,6 @@ public class SemanticContext implements IStringTableHolder {
 	
 	public final boolean isD2() {
 		return apiLevel == Parser.D2;
-	}
-	
-	protected IModuleFinder newModuleFinder(INameEnvironment env, CompilerConfiguration config, ASTNodeEncoder encoder) {
-		return new DescentModuleFinder(env, config, encoder);
 	}
 	
 	public Parser newParser(char[] source) {

@@ -63,10 +63,10 @@ import descent.core.JavaModelException;
 import descent.core.Signature;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.CompilerUtil_Adapter;
 import descent.internal.compiler.parser.ast.ASTNode;
 import descent.internal.compiler.parser.ast.AstVisitorAdapter;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import descent.internal.core.util.Util;
 
 public class FuncDeclaration extends Declaration {
 
@@ -645,7 +645,7 @@ public class FuncDeclaration extends Declaration {
 	
 			return module.members.get(0);
 		} catch (JavaModelException e1) {
-			Util.log(e1);
+			CompilerUtil_Adapter.log(e1);
 			return null;
 		}
 	}

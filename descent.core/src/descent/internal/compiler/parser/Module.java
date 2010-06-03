@@ -9,8 +9,8 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.ICompilationUnit;
 import descent.core.Signature;
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.CompilerUtil_Adapter;
 import descent.internal.compiler.parser.ast.IASTVisitor;
-import descent.internal.core.util.Util;
 
 
 public class Module extends Package {
@@ -124,7 +124,7 @@ public class Module extends Package {
 			try {
 				templateSemantic(context);
 			} catch (Exception e) {
-				Util.log(e, "Exception in template semantic in module " + moduleName);
+				CompilerUtil_Adapter.log(e, "Exception in template semantic in module " + moduleName);
 			}
 		}
 	}	

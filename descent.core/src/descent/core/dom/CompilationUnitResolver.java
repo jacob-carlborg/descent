@@ -28,6 +28,7 @@ import descent.core.dom.DefaultBindingResolver.BindingTables;
 import descent.internal.compiler.ICompilerRequestor;
 import descent.internal.compiler.IErrorHandlingPolicy;
 import descent.internal.compiler.IProblemFactory;
+import descent.internal.compiler.SemanticContextFactory;
 import descent.internal.compiler.env.INameEnvironment;
 import descent.internal.compiler.impl.CompilerOptions;
 import descent.internal.compiler.parser.ASTNodeEncoder;
@@ -39,7 +40,6 @@ import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.SemanticContext;
 import descent.internal.core.CompilerConfiguration;
 import descent.internal.core.ctfe.dom.CompileTimeParser;
-import descent.internal.core.ctfe.dom.CompileTimeSemanticContext;
 import descent.internal.core.util.Util;
 
 public class CompilationUnitResolver extends descent.internal.compiler.Compiler {
@@ -510,13 +510,11 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		SemanticContext context;
 		
 		if (debugger == null) {
-			context = new SemanticContext(
-					problemRequestor, module, project, owner,
-					global, config, encoder, holder);
+			context = SemanticContextFactory.createSemanticContext(problemRequestor, module, project, owner, global, config, encoder,
+					holder);
 		} else {
-			context = new CompileTimeSemanticContext(
-					problemRequestor, module, project, owner,
-					global, config, encoder, holder, debugger);
+			context = SemanticContextFactory.createCompileTimeSemanticContext(problemRequestor, module, project, owner, global,
+					config, encoder, holder, debugger);
 		}
 		
 		return context;
