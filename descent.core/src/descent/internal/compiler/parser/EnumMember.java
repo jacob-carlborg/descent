@@ -1,7 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.core.IField;
+import descent.core.IField__Marker;
 import descent.core.Signature;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -11,7 +11,7 @@ public class EnumMember extends Dsymbol {
 	public Expression value, sourceValue;
 	public Type type, sourceType;
 	
-	private IField javaElement;
+	private IField__Marker javaElement;
 
 	public EnumMember(char[] filename, int lineNumber, IdentifierExp id, Expression value) {
 		this(filename, lineNumber, id, value, null);
@@ -115,12 +115,12 @@ public class EnumMember extends Dsymbol {
 		return Signature.C_ENUM_MEMBER;
 	}
 	
-	public void setJavaElement(IField field) {
+	public void setJavaElement(IField__Marker field) {
 		this.javaElement = field;
 	}
 	
 	@Override
-	public IField getJavaElement() {
+	public IField__Marker getJavaElement() {
 		return javaElement;
 	}
 

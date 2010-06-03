@@ -14,7 +14,7 @@ import static descent.internal.compiler.parser.TY.Tinstance;
 import static descent.internal.compiler.parser.TY.Tpointer;
 import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Tvoid;
-import descent.core.IJavaElement;
+import descent.core.IJavaElement__Marker;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -638,7 +638,7 @@ public class TypeClass extends Type {
 	}
 	
 	@Override
-	public IJavaElement getJavaElement() {
+	public IJavaElement__Marker getJavaElement() {
 		return sym.getJavaElement();
 	}
 	

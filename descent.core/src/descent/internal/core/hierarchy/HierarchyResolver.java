@@ -144,7 +144,7 @@ public class HierarchyResolver {
 	}
 
 	private IJavaElement getJavaElement(ClassDeclaration clazz, descent.core.ICompilationUnit cu) throws JavaModelException {
-		IJavaElement element = clazz.getJavaElement();
+		IJavaElement element = (IType) clazz.getJavaElement();
 		if (element == null) {
 			element = internalSignature.binarySearch(cu, clazz.start,
 					clazz.start + clazz.length);

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.core.ICompilationUnit;
+import descent.core.ICompilationUnit__Marker;
 import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.CompilerUtil_Adapter;
@@ -55,7 +55,7 @@ public class Module extends Package {
 	public String moduleName; // foo.bar 
 	public char[] moduleNameChars; // foo.bar
 	private String signature; // Descent signature
-	protected ICompilationUnit javaElement;
+	protected ICompilationUnit__Marker javaElement;
 	
 	// Comments associated to nodes (anot just ddoc)
 	private Map<ASTDmdNode, List<Comment>> preComments;
@@ -563,12 +563,12 @@ public class Module extends Package {
 		return moduleName;
 	}
 
-	public void setJavaElement(ICompilationUnit unit) {
+	public void setJavaElement(ICompilationUnit__Marker unit) {
 		this.javaElement = unit;
 	}
 	
 	@Override
-	public ICompilationUnit getJavaElement() {
+	public ICompilationUnit__Marker getJavaElement() {
 		return javaElement;
 	}
 	

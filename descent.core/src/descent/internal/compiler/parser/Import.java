@@ -2,7 +2,7 @@ package descent.internal.compiler.parser;
 
 import static descent.internal.compiler.parser.PROT.PROTprivate;
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.core.IJavaElement;
+import descent.core.IJavaElement__Marker;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -329,7 +329,7 @@ public class Import extends Dsymbol {
 	}
 	
 	@Override
-	public IJavaElement getJavaElement() {
+	public IJavaElement__Marker getJavaElement() {
 		if (mod != null && equals(mod.ident, ident)) {
 			return mod.getJavaElement();
 		}

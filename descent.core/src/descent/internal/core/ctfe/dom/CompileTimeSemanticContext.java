@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.IProblemRequestor;
-import descent.core.JavaModelException;
-import descent.core.WorkingCopyOwner;
+import descent.core.JavaModelException__Common;
 import descent.core.ctfe.IDebugger;
 import descent.internal.compiler.env.IModuleFinder;
 import descent.internal.compiler.parser.ASTDmdNode;
@@ -113,9 +112,9 @@ public class CompileTimeSemanticContext extends SemanticContext {
 	private int fDisabledStepping;
 
 	public CompileTimeSemanticContext(IProblemRequestor problemRequestor,
-			Module module, WorkingCopyOwner owner, Global global,
-			CompilerConfiguration config, ASTNodeEncoder encoder, IStringTableHolder holder, IModuleFinder moduleFinder, int apiLevel, IDebugger debugger) throws JavaModelException {
-		super(problemRequestor, module, owner, global, config, encoder, holder, moduleFinder, apiLevel);
+			Module module, Global global, CompilerConfiguration config,
+			ASTNodeEncoder encoder, IStringTableHolder holder, IModuleFinder moduleFinder, int apiLevel, IDebugger debugger) throws JavaModelException__Common {
+		super(problemRequestor, module, global, encoder, holder, moduleFinder, apiLevel, config.semanticAnalysisLevel);
 		this.debugger = debugger;
 	}
 	

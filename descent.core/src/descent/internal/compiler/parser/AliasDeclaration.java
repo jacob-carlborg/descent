@@ -7,7 +7,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
-import descent.core.IField;
+import descent.core.IField__Marker;
 import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
@@ -32,7 +32,7 @@ public class AliasDeclaration extends Declaration {
 	 */
 	public boolean isTemplateParameter;
 	
-	private IField javaElement;
+	private IField__Marker javaElement;
 
 	public AliasDeclaration(char[] filename, int lineNumber, IdentifierExp id, Dsymbol s) {
 		super(id);
@@ -363,12 +363,12 @@ public class AliasDeclaration extends Declaration {
 		return Signature.C_ALIAS;
 	}
 	
-	public void setJavaElement(IField field) {
+	public void setJavaElement(IField__Marker field) {
 		this.javaElement = field;
 	}
 	
 	@Override
-	public IField getJavaElement() {
+	public IField__Marker getJavaElement() {
 		return javaElement;
 	}
 

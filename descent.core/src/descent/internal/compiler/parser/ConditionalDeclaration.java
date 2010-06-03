@@ -4,14 +4,14 @@ import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
-import descent.core.IJavaElement;
+import descent.core.IJavaElement__Marker;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class ConditionalDeclaration extends AttribDeclaration {
 
 	public Condition condition;
 	public Dsymbols elsedecl;
-	private IJavaElement javaElement; 
+	private IJavaElement__Marker javaElement; 
 
 	public ConditionalDeclaration(Condition condition, Dsymbols decl,
 			Dsymbols elsedecl) {
@@ -105,12 +105,12 @@ public class ConditionalDeclaration extends AttribDeclaration {
 		return parent.getSignature(options);
 	}
 
-	public void setJavaElement(IJavaElement javaElement) {
+	public void setJavaElement(IJavaElement__Marker javaElement) {
 		this.javaElement = javaElement;
 	}
 	
 	@Override
-	public IJavaElement getJavaElement() {
+	public IJavaElement__Marker getJavaElement() {
 		return javaElement;
 	}
 

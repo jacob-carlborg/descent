@@ -5,7 +5,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
-import descent.core.IField;
+import descent.core.IField__Marker;
 import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
@@ -25,7 +25,7 @@ public class TypedefDeclaration extends Declaration {
 	// 2: semantic() has been run
 	// 3: semantic2() has been run
 	
-	private IField javaElement;
+	private IField__Marker javaElement;
 
 	public TypedefDeclaration(char[] filename, int lineNumber, IdentifierExp id, Type basetype,
 			Initializer init) {
@@ -169,12 +169,12 @@ public class TypedefDeclaration extends Declaration {
 		return Signature.C_TYPEDEF;
 	}
 	
-	public void setJavaElement(IField field) {
+	public void setJavaElement(IField__Marker field) {
 		this.javaElement = field;
 	}
 	
 	@Override
-	public IField getJavaElement() {
+	public IField__Marker getJavaElement() {
 		return javaElement;
 	}
 

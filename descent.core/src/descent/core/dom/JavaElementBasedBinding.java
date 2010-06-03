@@ -22,7 +22,7 @@ public abstract class JavaElementBasedBinding extends AbstractBinding implements
 		// TODO for local variables this returns the enclosing function,
 		// which is wrong!
 		if (element == null) {
-			element = node.getJavaElement();
+			element = (IJavaElement) node.getJavaElement();
 			if (element == null) {
 				element = bindingResolver.resolveBinarySearch(node);
 			}

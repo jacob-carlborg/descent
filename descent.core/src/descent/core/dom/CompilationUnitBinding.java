@@ -32,7 +32,7 @@ public class CompilationUnitBinding extends AbstractBinding implements ICompilat
 
 	public ICompilationUnit getJavaElement() {
 		if (element == null) {
-			element = module.getJavaElement();
+			element = (ICompilationUnit) module.getJavaElement();
 			if (element == null) {
 				element = bindingResolver.getCompilationUnit(module);
 			}

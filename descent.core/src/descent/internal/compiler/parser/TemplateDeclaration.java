@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.core.IJavaElement;
+import descent.core.IJavaElement__Marker;
 import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
@@ -50,7 +50,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 
 	public List<TemplateInstance> instances = new ArrayList<TemplateInstance>();
 	
-	private IJavaElement javaElement;
+	private IJavaElement__Marker javaElement;
 	
 	public TemplateDeclaration(char[] filename, int lineNumber, IdentifierExp id,
 			TemplateParameters parameters, Expression constraint, Dsymbols decldefs) {
@@ -1216,12 +1216,12 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		return true;
 	}
 	
-	public void setJavaElement(IJavaElement javaElement) {
+	public void setJavaElement(IJavaElement__Marker javaElement) {
 		this.javaElement = javaElement;
 	}
 	
 	@Override
-	public IJavaElement getJavaElement() {
+	public IJavaElement__Marker getJavaElement() {
 		return javaElement;
 	}
 

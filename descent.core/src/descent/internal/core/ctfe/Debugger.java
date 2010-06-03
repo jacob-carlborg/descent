@@ -523,7 +523,7 @@ public class Debugger implements IDebugger {
 	private ICompilationUnit getCompilationUnit(ASTDmdNode node) {
 		if (node instanceof Dsymbol) {
 			Dsymbol sym = (Dsymbol) node;
-			IJavaElement elem = sym.getJavaElement();
+			IJavaElement elem = (IJavaElement) sym.getJavaElement();
 			if (elem != null) {
 				ICompilationUnit unit = (ICompilationUnit) elem.getAncestor(IJavaElement.COMPILATION_UNIT);
 				if (unit == null) {

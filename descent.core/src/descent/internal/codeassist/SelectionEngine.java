@@ -7,6 +7,7 @@ import java.util.Stack;
 
 import descent.core.Flags;
 import descent.core.IJavaElement;
+import descent.core.IJavaElement__Marker;
 import descent.core.IJavaProject;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
@@ -413,7 +414,7 @@ public class SelectionEngine extends AstVisitorAdapter {
 			// Only allow selecting a reference to an import if it's an alias to it,
 			// not the first component
 			if (sym instanceof Import && ((Import) sym).aliasId == null
-					&& (sym.getJavaElement() == null || sym.getJavaElement().getElementType() != IJavaElement.COMPILATION_UNIT)) {
+					&& (sym.getJavaElement() == null || ((IJavaElement) sym.getJavaElement()).getElementType() != IJavaElement.COMPILATION_UNIT)) {
 				return false;
 			}
 			
@@ -731,9 +732,9 @@ public class SelectionEngine extends AstVisitorAdapter {
 		}
 	}
 
-	private void addJavaElement(IJavaElement element) {
+	private void addJavaElement(IJavaElement__Marker element) {
 		if (!selectedElements.contains(element)) {
-			selectedElements.add(element);
+			selectedElements.add((IJavaElement) element);
 		}
 	}
 

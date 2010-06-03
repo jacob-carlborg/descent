@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import descent.core.IJavaElement;
+import descent.core.IType;
 import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.ILazyStructDeclaration__Marker;
@@ -52,7 +53,7 @@ public class LazyStructDeclaration extends StructDeclaration implements ILazyAgg
 			if (!lazy.cancelLazyness) {
 				// We need to insert them in order, for struct initializers
 				try {
-					IJavaElement[] children = javaElement.getChildren();
+					IJavaElement[] children = ((IType) javaElement).getChildren();
 					final List<String> names = new ArrayList<String>();
 					for(IJavaElement child : children) {
 						names.add(child.getElementName());

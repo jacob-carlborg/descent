@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.IJavaElement;
+import descent.core.IParent;
 import descent.core.JavaModelException;
 import descent.internal.compiler.lookup.ModuleBuilder.FillResult;
 import descent.internal.compiler.parser.AttribDeclaration;
@@ -143,7 +144,7 @@ public class LazyAggregateDeclaration {
 		List<Dsymbol> publicImports = new ArrayList<Dsymbol>();
 		FillResult result = null ;
 		try {
-			result = lazy.builder().fillJavaElementMembersCache(lazy, lazy.getJavaElement().getChildren(), lazy.members(), context);
+			result = lazy.builder().fillJavaElementMembersCache(lazy, ((IParent) lazy.getJavaElement()).getChildren(), lazy.members(), context);
 			javaElementMembersCache = result.javaElementMembersCache;
 			privateImports = result.privateImports;
 			publicImports = result.publicImports;
@@ -162,7 +163,7 @@ public class LazyAggregateDeclaration {
 			cancelLazyness = true;
 			lazy.members(new Dsymbols());
 			try {
-				lazy.builder().fill(lazy.getModule(), lazy.members(), lazy.getJavaElement().getChildren(), null);
+				lazy.builder().fill(lazy.getModule(), lazy.members(), ((IParent) lazy.getJavaElement()).getChildren(), null);
 			} catch (JavaModelException e) {
 				Util.log(e);
 			}

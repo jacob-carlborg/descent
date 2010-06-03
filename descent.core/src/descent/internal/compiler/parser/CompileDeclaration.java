@@ -3,8 +3,8 @@ package descent.internal.compiler.parser;
 import static descent.internal.compiler.parser.TOK.TOKeof;
 import static descent.internal.compiler.parser.TOK.TOKstring;
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.core.IInitializer;
-import descent.core.IJavaElement;
+import descent.core.IInitializer__Marker;
+import descent.core.IJavaElement__Marker;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.ASTNode;
 import descent.internal.compiler.parser.ast.AstVisitorAdapter;
@@ -17,7 +17,7 @@ public class CompileDeclaration extends AttribDeclaration {
 	public ScopeDsymbol sd;
 	public boolean compiled;
 	
-	protected IInitializer javaElement;
+	protected IInitializer__Marker javaElement;
 	
 	public CompileDeclaration(char[] filename, int lineNumber, Expression exp) {
 		super(null);
@@ -140,11 +140,11 @@ public class CompileDeclaration extends AttribDeclaration {
 	}
 	
 	@Override
-	public IJavaElement getJavaElement() {
+	public IJavaElement__Marker getJavaElement() {
 		return javaElement;
 	}
 	
-	public void setJavaElement(IInitializer javaElement) {
+	public void setJavaElement(IInitializer__Marker javaElement) {
 		this.javaElement = javaElement;
 	}
 

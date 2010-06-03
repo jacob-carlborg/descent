@@ -1,6 +1,6 @@
 package descent.internal.compiler.lookup;
 
-import descent.core.IParent;
+import descent.core.IParent__Marker;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.DsymbolTable;
 import descent.internal.compiler.parser.Dsymbols;
@@ -15,7 +15,7 @@ public interface ILazyAggregate extends ILazy {
 
 	ModuleBuilder builder();
 
-	IParent getJavaElement();
+	IParent__Marker getJavaElement();
 
 	void members(Dsymbols dsymbols);
 

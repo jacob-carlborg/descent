@@ -25,7 +25,9 @@ import descent.core.IParent;
 import descent.core.ISourceManipulation;
 import descent.core.ISourceRange;
 import descent.core.ISourceReference;
+import descent.core.ISourceReference__Adapter;
 import descent.core.JavaModelException;
+import descent.core.JavaModelException__Common;
 import descent.core.WorkingCopyOwner;
 import descent.core.dom.ASTNode;
 import descent.core.dom.CompilationUnit;
@@ -36,7 +38,7 @@ import descent.internal.core.util.Messages;
 /**
  * Abstract class for Java elements which implement ISourceReference.
  */
-public abstract class SourceRefElement extends JavaElement implements ISourceReference {
+public abstract class SourceRefElement extends JavaElement implements ISourceReference, ISourceReference__Adapter {
 	/*
 	 * A count to uniquely identify this element in the case
 	 * that a duplicate named element exists. For example, if
@@ -194,6 +196,17 @@ public IPath getPath() {
 public IResource getResource() {
 	return this.getParent().getResource();
 }
+
+@Override
+public final String getSource__adapter() throws JavaModelException__Common {
+	return getSource();
+}
+
+@Override
+public final ISourceRange getSourceRange__adapter() throws JavaModelException__Common {
+	return getSourceRange();
+}
+
 /**
  * @see ISourceReference
  */

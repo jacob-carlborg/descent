@@ -14,7 +14,6 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
-import descent.core.ICompilationUnit;
 import descent.core.IJavaProject;
 import descent.core.IPackageFragmentRoot;
 import descent.core.IProblemRequestor;

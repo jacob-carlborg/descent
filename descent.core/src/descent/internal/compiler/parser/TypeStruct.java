@@ -11,7 +11,7 @@ import static descent.internal.compiler.parser.TOK.TOKtype;
 import static descent.internal.compiler.parser.TY.Tinstance;
 import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Tstruct;
-import descent.core.IJavaElement;
+import descent.core.IJavaElement__Marker;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -566,7 +566,7 @@ public class TypeStruct extends Type {
 	}
 	
 	@Override
-	public IJavaElement getJavaElement() {
+	public IJavaElement__Marker getJavaElement() {
 		return sym.getJavaElement();
 	}
 	

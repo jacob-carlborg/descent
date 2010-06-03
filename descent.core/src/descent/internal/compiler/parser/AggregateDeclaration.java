@@ -9,7 +9,7 @@ import static descent.internal.compiler.parser.TY.Tstruct;
 import java.util.ArrayList;
 import java.util.List;
 
-import descent.core.IType;
+import descent.core.IType__Marker;
 import descent.core.compiler.IProblem;
 
 public abstract class AggregateDeclaration extends ScopeDsymbol {
@@ -54,7 +54,7 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 	// Wether this aggregate is actually a templated aggregate 
 	public boolean templated;
 	
-	protected IType javaElement;
+	protected IType__Marker javaElement;
 	
 	// Descent: whether special members (aggNew, aggDelete, ctor, etc.) were initialized
 	protected boolean specialInitialized;
@@ -452,12 +452,12 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 		return templated;
 	}
 	
-	public void setJavaElement(IType javaElement) {
+	public void setJavaElement(IType__Marker javaElement) {
 		this.javaElement = javaElement;
 	}
 	
 	@Override
-	public IType getJavaElement() {
+	public IType__Marker getJavaElement() {
 		return javaElement;
 	}
 	

@@ -48,7 +48,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 
-import descent.core.IJavaElement;
+import descent.core.IJavaElement__Marker;
 import descent.core.Signature;
 import descent.core.compiler.IProblem;
 
@@ -2082,7 +2082,7 @@ public abstract class Type extends ASTDmdNode implements Cloneable {
 	 * Returns the java element associated with this type, if any,
 	 * or null. This method returns null, subclasses should implement.
 	 */
-	public IJavaElement getJavaElement() {
+	public IJavaElement__Marker getJavaElement() {
 		return null;
 	}
 

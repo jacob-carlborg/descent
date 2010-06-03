@@ -9,12 +9,10 @@ import java.util.Map;
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.IProblemRequestor;
-import descent.core.JavaModelException;
-import descent.core.WorkingCopyOwner;
+import descent.core.JavaModelException__Common;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.env.IModuleFinder;
-import descent.internal.core.CompilerConfiguration;
 
 public class SemanticContext implements IStringTableHolder {
 
@@ -138,12 +136,12 @@ public class SemanticContext implements IStringTableHolder {
 	public SemanticContext(
 			IProblemRequestor problemRequestor, 
 			Module module,
-			WorkingCopyOwner owner,
 			Global global,
-			CompilerConfiguration config,
 			ASTNodeEncoder encoder,
 			IStringTableHolder stringTableHolder,
-			IModuleFinder moduleFinder, int apiLevel) throws JavaModelException {
+			IModuleFinder moduleFinder,
+			int apiLevel,
+			int semanticAnalysisLevel) throws JavaModelException__Common {
 		this.problemRequestor = problemRequestor;
 		this.Module_rootModule = module;
 		this.global = global;
@@ -154,7 +152,7 @@ public class SemanticContext implements IStringTableHolder {
 		this.templateEvaluationStack = new LinkedList<ASTDmdNode>();
 		this.apiLevel = apiLevel; 
 		
-		if (config.semanticAnalysisLevel == 0) {
+		if (semanticAnalysisLevel == 0) {
 			muteProblems++;
 		}
 		

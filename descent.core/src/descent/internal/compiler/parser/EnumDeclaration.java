@@ -6,7 +6,7 @@ import java.math.BigInteger;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.Flags;
-import descent.core.IType;
+import descent.core.IType__Marker;
 import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
@@ -34,7 +34,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 	public Scope scope;
 	public boolean isdeprecated;
 	
-	private IType javaElement;
+	private IType__Marker javaElement;
 	
 	public EnumDeclaration(char[] filename, int lineNumber, IdentifierExp id, Type memtype) {
 		super(id);
@@ -618,12 +618,12 @@ public class EnumDeclaration extends ScopeDsymbol {
 		return Signature.C_ENUM;
 	}
 	
-	public void setJavaElement(IType javaElement) {
+	public void setJavaElement(IType__Marker javaElement) {
 		this.javaElement = javaElement;
 	}
 	
 	@Override
-	public IType getJavaElement() {
+	public IType__Marker getJavaElement() {
 		return javaElement;
 	}
 	

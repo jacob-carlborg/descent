@@ -42,7 +42,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
-import descent.core.IField;
+import descent.core.IField__Marker;
 import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
@@ -72,7 +72,7 @@ public class VarDeclaration extends Declaration {
 	public Object isym;
 	public Scope scope;		// !=NULL means context to use
 	
-	private IField javaElement;
+	private IField__Marker javaElement;
 	
 	public VarDeclaration(char[] filename, int lineNumber, Type type, char[] ident, Initializer init) {
 		this(filename, lineNumber, type, new IdentifierExp(ident), init);
@@ -1268,12 +1268,12 @@ public class VarDeclaration extends Declaration {
 		return Signature.C_VARIABLE;
 	}
 
-	public void setJavaElement(IField field) {
+	public void setJavaElement(IField__Marker field) {
 		this.javaElement = field;
 	}
 	
 	@Override
-	public IField getJavaElement() {
+	public IField__Marker getJavaElement() {
 		return javaElement;
 	}
 	

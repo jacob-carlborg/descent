@@ -5,7 +5,7 @@ import static descent.internal.compiler.parser.STC.STCdeprecated;
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.Flags;
-import descent.core.IJavaElement;
+import descent.core.IJavaElement__Marker;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -678,7 +678,7 @@ public class Dsymbol extends ASTDmdNode {
 		SemanticMixin.appendSignature(this, options, sb);
 	}
 	
-	public IJavaElement getJavaElement() {
+	public IJavaElement__Marker getJavaElement() {
 		return null;
 	}
 	

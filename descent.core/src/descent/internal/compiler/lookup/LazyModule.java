@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import descent.core.ICompilationUnit;
 import descent.core.IConditional;
 import descent.core.IInitializer;
 import descent.core.IJavaElement;
@@ -103,6 +104,11 @@ public class LazyModule extends Module implements ILazy {
 		return this;
 	}
 	
+	
+	public ICompilationUnit getJavaElement__true() {
+		return (ICompilationUnit) super.getJavaElement();
+	}
+	
 	@Override
 	protected void semanticScope(Scope sc) {
 		this.semanticScope = sc;
@@ -168,7 +174,7 @@ public class LazyModule extends Module implements ILazy {
 						javaElementMembersCache = new HashtableOfCharArrayAndObject();
 						FillResult result = null;
 						try {
-							result = builder.fillJavaElementMembersCache(this, this.javaElement.getChildren(), members, context);
+							result = builder.fillJavaElementMembersCache(this, getJavaElement__true().getChildren(), members, context);
 							javaElementMembersCache = result.javaElementMembersCache;
 							aligns = result.aligns;
 						} catch (JavaModelException e) {
@@ -217,7 +223,7 @@ public class LazyModule extends Module implements ILazy {
 			List<Dsymbol> privateImports = new ArrayList<Dsymbol>();
 			List<Dsymbol> publicImports = new ArrayList<Dsymbol>();
 			try {
-				builder.fillImports(this, this.javaElement.getChildren(), privateImports, publicImports, context, lastImportLocation);
+				builder.fillImports(this, getJavaElement__true().getChildren(), privateImports, publicImports, context, lastImportLocation);
 			} catch (JavaModelException e) {
 				Util.log(e);
 			}

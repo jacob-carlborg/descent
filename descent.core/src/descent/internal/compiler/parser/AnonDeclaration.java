@@ -9,7 +9,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
-import descent.core.IType;
+import descent.core.IType__Marker;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -19,7 +19,7 @@ public class AnonDeclaration extends AttribDeclaration {
 	public Scope scope; // !=NULL means context to use
 	public int sem; // 1 if successful semantic()
 	
-	private IType javaElement;
+	private IType__Marker javaElement;
 
 	public AnonDeclaration(char[] filename, int lineNumber, boolean isunion, Dsymbols decl) {
 		super(decl);
@@ -212,12 +212,12 @@ public class AnonDeclaration extends AttribDeclaration {
 		return parent.getSignature(options);
 	}
 	
-	public void setJavaElement(IType javaElement) {
+	public void setJavaElement(IType__Marker javaElement) {
 		this.javaElement = javaElement;
 	}
 	
 	@Override
-	public IType getJavaElement() {
+	public IType__Marker getJavaElement() {
 		return javaElement;
 	}
 

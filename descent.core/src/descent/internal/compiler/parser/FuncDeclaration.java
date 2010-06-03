@@ -58,8 +58,8 @@ import melnorme.miscutil.tree.TreeVisitor;
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.Flags;
-import descent.core.IMethod;
-import descent.core.JavaModelException;
+import descent.core.IMethod__Marker;
+import descent.core.JavaModelException__Common;
 import descent.core.Signature;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
@@ -129,7 +129,7 @@ public class FuncDeclaration extends Declaration {
 	// Wether this function is actually a templated function
 	public boolean templated;
 
-	protected IMethod javaElement;
+	protected IMethod__Marker javaElement;
 	private FuncDeclaration materialized; // in case the body is yet unknown
 
 	// Diet data
@@ -623,7 +623,7 @@ public class FuncDeclaration extends Declaration {
 	
 	private Dsymbol internalMaterialize(SemanticContext context) {
 		try {
-			String source = javaElement.getSource();
+			String source = javaElement.getSource__adapter();
 			// TODO api level
 			Parser parser = context.newParser(source.toCharArray(), 0, source
 					.length(), false, false, false, false, context.apiLevel,
@@ -636,15 +636,15 @@ public class FuncDeclaration extends Declaration {
 				@Override
 				public void preVisit(ASTNode node) {
 					try {
-						node.start += javaElement.getSourceRange().getOffset();
-					} catch (JavaModelException e) {
+						node.start += javaElement.getSourceRange__adapter().getOffset();
+					} catch (JavaModelException__Common e) {
 						e.printStackTrace();
 					}
 				}
 			});
 	
 			return module.members.get(0);
-		} catch (JavaModelException e1) {
+		} catch (JavaModelException__Common e1) {
 			CompilerUtil_Adapter.log(e1);
 			return null;
 		}
@@ -2697,12 +2697,12 @@ public class FuncDeclaration extends Declaration {
 		return templated;
 	}
 
-	public void setJavaElement(IMethod javaElement) {
+	public void setJavaElement(IMethod__Marker javaElement) {
 		this.javaElement = javaElement;
 	}
 
 	@Override
-	public IMethod getJavaElement() {
+	public IMethod__Marker getJavaElement() {
 		return javaElement;
 	}
 	

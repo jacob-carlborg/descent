@@ -3,6 +3,7 @@ package descent.internal.compiler;
 import descent.core.IJavaProject;
 import descent.core.IProblemRequestor;
 import descent.core.JavaModelException;
+import descent.core.JavaModelException__Common;
 import descent.core.WorkingCopyOwner;
 import descent.core.ctfe.IDebugger;
 import descent.core.dom.AST;
@@ -26,16 +27,24 @@ public class SemanticContextFactory {
 	public static SemanticContext createSemanticContext(IProblemRequestor problemRequestor, Module module,
 			IJavaProject project, WorkingCopyOwner owner, Global global, CompilerConfiguration config,
 			ASTNodeEncoder encoder, IStringTableHolder stringTableHolder) throws JavaModelException {
-		return new SemanticContext(problemRequestor, module, owner, global, config, encoder, stringTableHolder, 
-				newModuleFinder(new CancelableNameEnvironment((JavaProject) project, owner, null), config, encoder), getAPILevel(project));
+		try {
+			return new SemanticContext(problemRequestor, module, global, encoder, stringTableHolder, newModuleFinder(new CancelableNameEnvironment((JavaProject) project, owner, null), config, encoder), getAPILevel(project), 
+					config.semanticAnalysisLevel);
+		} catch (JavaModelException__Common e) {
+			throw (JavaModelException) e; 
+		}
 	}
 	
 	
 	public static CompileTimeSemanticContext createCompileTimeSemanticContext(IProblemRequestor problemRequestor,
 			Module module, IJavaProject project, WorkingCopyOwner owner, Global global, CompilerConfiguration config,
 			ASTNodeEncoder encoder, IStringTableHolder holder, IDebugger debugger) throws JavaModelException {
-		return new CompileTimeSemanticContext(problemRequestor, module, owner, global, config, encoder, holder,
-				newModuleFinder_CT(new CancelableNameEnvironment((JavaProject) project, owner, null), config, encoder), getAPILevel(project), debugger);
+		try {
+			return new CompileTimeSemanticContext(problemRequestor, module, global, config, encoder, holder, newModuleFinder_CT(new CancelableNameEnvironment((JavaProject) project, owner, null), config, encoder),
+					getAPILevel(project), debugger);
+		} catch (JavaModelException__Common e) {
+			throw (JavaModelException) e;
+		}
 	}
 	
 	private static int getAPILevel(IJavaProject project) {
