@@ -3,7 +3,7 @@ package descent.internal.compiler;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
-import descent.core.JavaCore;
+import descent.core.DescentCompilerPlugin;
 import descent.core.JavaModelException__Common;
 
 public class CompilerUtil_Adapter {
@@ -23,10 +23,10 @@ public class CompilerUtil_Adapter {
 		}
 		IStatus status= new Status(
 			IStatus.ERROR, 
-			JavaCore.PLUGIN_ID, 
+			DescentCompilerPlugin.PLUGIN_ID, 
 			IStatus.ERROR, 
 			message, 
 			e); 
-		JavaCore.getPlugin().getLog().log(status);
+		DescentCompilerPlugin.getInstance().getLog().log(status);
 	}
 }

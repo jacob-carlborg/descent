@@ -1,40 +1,24 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
-Bundle-SymbolicName: descent.core;singleton:=true
-Bundle-Version: 0.5.6.20091119
-Bundle-Activator: descent.core.JavaCore
+Bundle-SymbolicName: descent.compiler
+Bundle-Version: 0.5.6.qualifier
+Bundle-Activator: descent.core.DescentCompilerPlugin
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.core.resources,
- org.eclipse.core.filesystem,
- org.eclipse.text,
- org.eclipse.ui,
- org.eclipse.ui.console,
- org.eclipse.ant.core,
- org.apache.ant,
- org.eclipse.core.expressions,
- org.eclipse.debug.core
-Eclipse-LazyStart: true
+Require-Bundle: org.eclipse.core.runtime
+Bundle-ActivationPolicy: lazy
+Eclipse-BuddyPolicy: registered
+Bundle-ClassPath: .
 Export-Package: descent.core,
  descent.core.compiler,
- descent.core.ctfe,
- descent.core.ddoc,
- descent.core.dom,
- descent.core.dom.rewrite,
- descent.core.formatter,
- descent.core.search,
- descent.core.trace,
- descent.internal.compiler;x-friends:="descent.tests",
- descent.internal.compiler.env;x-friends:="descent.tests",
- descent.internal.compiler.impl;x-friends:="descent.tests",
- descent.internal.compiler.lookup;x-friends:="descent.tests",
- descent.internal.compiler.parser;x-friends:="descent.tests",
- descent.internal.compiler.parser.ast;x-friends:="descent.tests",
- descent.internal.core;x-friends:="descent.tests",
+ descent.internal.compiler,
+ descent.internal.compiler.ast,
+ descent.internal.compiler.env,
+ descent.internal.compiler.parser,
+ descent.internal.compiler.parser.ast,
+ descent.internal.core,
  melnorme.miscutil,
  melnorme.miscutil.log,
  melnorme.miscutil.tree
-Eclipse-BuddyPolicy: registered
-Bundle-ClassPath: .
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

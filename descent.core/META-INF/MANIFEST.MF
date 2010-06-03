@@ -15,7 +15,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ant.core,
  org.apache.ant,
  org.eclipse.core.expressions,
- org.eclipse.debug.core
+ org.eclipse.debug.core,
+ descent.compiler
 Eclipse-LazyStart: true
 Export-Package: descent.core,
  descent.core.compiler,
@@ -30,11 +31,6 @@ Export-Package: descent.core,
  descent.internal.compiler.env;x-friends:="descent.tests",
  descent.internal.compiler.impl;x-friends:="descent.tests",
  descent.internal.compiler.lookup;x-friends:="descent.tests",
- descent.internal.compiler.parser;x-friends:="descent.tests",
- descent.internal.compiler.parser.ast;x-friends:="descent.tests",
- descent.internal.core;x-friends:="descent.tests",
- melnorme.miscutil,
- melnorme.miscutil.log,
- melnorme.miscutil.tree
+ descent.internal.core;x-friends:="descent.tests"
 Eclipse-BuddyPolicy: registered
 Bundle-ClassPath: .
