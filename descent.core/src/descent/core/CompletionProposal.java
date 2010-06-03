@@ -1808,7 +1808,7 @@ public final class CompletionProposal extends InternalCompletionProposal {
 		if (node instanceof Dsymbol) {
 			Dsymbol sym = (Dsymbol) node;
 			if (sym.getJavaElement() != null) {
-				return sym.getJavaElement();
+				return (IJavaElement) sym.getJavaElement();
 			} else {
 				Module mod = sym.getModule();
 				ICompilationUnit unit = completionEngine.internalSignature.getCompilationUnit(mod.moduleName);

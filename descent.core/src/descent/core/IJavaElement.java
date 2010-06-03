@@ -31,7 +31,7 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
  * This interface is not intended to be implemented by clients.
  * </p>
  */
-public interface IJavaElement extends IAdaptable {
+public interface IJavaElement extends IAdaptable, IJavaElement__Marker {
 
 	/**
 	 * Constant representing a Java model (workspace level object).

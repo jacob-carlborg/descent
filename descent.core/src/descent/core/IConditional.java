@@ -1,6 +1,6 @@
 package descent.core;
 
-public interface IConditional extends IMember {
+public interface IConditional extends IMember, IJavaElement__Marker {
 	
 	IJavaElement[] getThenChildren() throws JavaModelException;
 	

@@ -17,7 +17,7 @@ package descent.core;
  * This interface is not intended to be implemented by clients.
  * </p>
  */
-public interface IField extends IMember {
+public interface IField extends IMember, IField__Marker {
 /**
  * Returns the constant value associated with this field
  * or <code>null</code> if this field has none. The field needs to be static and final to have

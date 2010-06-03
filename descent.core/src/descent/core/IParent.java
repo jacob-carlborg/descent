@@ -16,7 +16,7 @@ package descent.core;
  * This interface is not intended to be implemented by clients.
  * </p>
  */
-public interface IParent {
+public interface IParent extends IParent__Marker {
 /**
  * Returns the immediate children of this element.
  * Unless otherwise specified by the implementing element,

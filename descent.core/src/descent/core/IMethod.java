@@ -19,7 +19,7 @@ import descent.internal.compiler.IMethodVarArgsConstants;
  * This interface is not intended to be implemented by clients.
  * </p>
  */
-public interface IMethod extends IMember, ITemplated, IMethodVarArgsConstants{
+public interface IMethod extends IMember, ITemplated, IMethodVarArgsConstants, IMethod__Marker {
 	
 
 /**

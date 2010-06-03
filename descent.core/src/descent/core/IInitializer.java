@@ -16,7 +16,7 @@ package descent.core;
  * This interface is not intended to be implemented by clients.
  * </p>
  */
-public interface IInitializer extends IMember {
+public interface IInitializer extends IMember, IInitializer__Marker {
 	
 	/**
 	 * Returns whether this initializer represents a static constructor.

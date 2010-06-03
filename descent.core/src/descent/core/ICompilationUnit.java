@@ -31,7 +31,7 @@ import descent.core.dom.CompilationUnit;
  * This interface is not intended to be implemented by clients.
  * </p>
  */
-public interface ICompilationUnit extends ITypeRoot, IWorkingCopy, ISourceManipulation , ICodeAssist
+public interface ICompilationUnit extends ITypeRoot, IWorkingCopy, ISourceManipulation , ICodeAssist, ICompilationUnit__Marker
 {
 /**
  * Constant indicating that a reconcile operation should not return an AST.
