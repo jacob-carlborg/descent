@@ -1,0 +1,1601 @@
+UnterminatedBlockComment
+	formatString=Unterminated block comment
+	numArgs=0
+UnterminatedPlusBlockComment
+	formatString=Unterminated plus block comment
+	numArgs=0
+IncorrectNumberOfHexDigitsInEscapeSequence
+	formatString=Escape hex sequence has %1$s digits instead of %2$s
+	numArgs=2
+UndefinedEscapeHexSequence
+	formatString=Undefined escape hex sequence
+	numArgs=0
+UnterminatedStringConstant
+	formatString=Unterminated string constant
+	numArgs=0
+OddNumberOfCharactersInHexString
+	formatString=Odd number (%1$s) of hex characters in hex string
+	numArgs=1
+NonHexCharacter
+	formatString=Non-hex character: %1$s
+	numArgs=1
+UnterminatedCharacterConstant
+	formatString=Unterminated character constant
+	numArgs=0
+BinaryDigitExpected
+	formatString=Binary digit expected
+	numArgs=0
+OctalDigitExpected
+	formatString=Octal digit expected
+	numArgs=0
+HexDigitExpected
+	formatString=Hex digit expected
+	numArgs=0
+UnsupportedCharacter
+	formatString=Unsupported char: %1$s
+	numArgs=1
+InvalidUtfCharacter
+	formatString=Invalid UTF character: \\U%1$s
+	numArgs=1
+ThreeEqualsIsNoLongerLegal
+	formatString='===' is no longer legal, use 'is' instead
+	numArgs=0
+NotTwoEqualsIsNoLongerLegal
+	formatString='!==' is no longer legal, use 'is' instead
+	numArgs=0
+LSuffixDeprecated
+	formatString='l' suffix is deprecated, use 'L' instead
+	numArgs=0
+InvalidPragmaSyntax
+	formatString=Invalid pragma syntax
+	numArgs=0
+UnrecognizedCharacterEntity
+	formatString=Unrecognized character entity
+	numArgs=0
+UnterminatedNamedEntity
+	formatString=Unterminated named entity
+	numArgs=0
+UndefinedEscapeSequence
+	formatString=Undefined escape sequence
+	numArgs=0
+InvalidUtf8Sequence
+	formatString=Invalid input sequence
+	numArgs=0
+IntegerOverflow
+	formatString=Integer overflow
+	numArgs=0
+SignedIntegerOverflow
+	formatString=Signed integer overflow
+	numArgs=0
+UnrecognizedToken
+	formatString=Unrecognized token
+	numArgs=0
+BinaryExponentPartRequired
+	formatString=Binary-exponent-part required
+	numArgs=0
+ExponentExpected
+	formatString=Exponent expected
+	numArgs=0
+ISuffixDeprecated
+	formatString='I' suffix is deprecated, use 'i' instead
+	numArgs=0
+ParsingErrorInsertTokenAfter
+	formatString=Syntax error on token "%1$s", %2$s expected after this token
+	numArgs=2
+ParsingErrorDeleteToken
+	formatString=Syntax error on token "%1$s", delete this token
+	numArgs=1
+ParsingErrorInsertToComplete
+	formatString=Syntax error, insert "%1$s" to complete %2$s
+	numArgs=2
+EnumDeclarationIsInvalid
+	formatString=Enum declaration is invalid
+	numArgs=0
+MismatchedStringLiteralPostfixes
+	formatString=Mismatched string literal postfixes '%1$s' and '%2$s'
+	numArgs=2
+NoIdentifierForDeclarator
+	formatString=No identifier for declarator
+	numArgs=0
+AliasCannotHaveInitializer
+	formatString=Alias cannot have initializer
+	numArgs=0
+CStyleCastIllegal
+	formatString=C style cast illegal, use cast(...)
+	numArgs=0
+InvalidLinkageIdentifier
+	formatString=Valid linkage identifiers are D, C, C++, Pascal, Windows
+	numArgs=0
+VariadicArgumentCannotBeOutOrRef
+	formatString=Variadic argument cannot be out or ref
+	numArgs=0
+VariadicNotAllowedInDelete
+	formatString=... not allowed in delete function parameter list
+	numArgs=0
+NoIdentifierForTemplateValueParameter
+	formatString=No identifier for template value parameter
+	numArgs=0
+UnexpectedIdentifierInDeclarator
+	formatString=Unexpected identifier in declarator
+	numArgs=0
+RedundantStorageClass
+	formatString=Redundant storage class
+	numArgs=0
+RedundantProtectionAttribute
+	formatString=Redundant protection attribute
+	numArgs=0
+UseBracesForAnEmptyStatement
+	formatString=Use '{ }' for an empty statement, not a ';'
+	numArgs=0
+MultipleDeclarationsMustHaveTheSameType
+	formatString=Multiple declarations must have the same type
+	numArgs=0
+RedundantInStatement
+	formatString=Redundant 'in' statement
+	numArgs=0
+RedundantOutStatement
+	formatString=Redundant 'out' statement
+	numArgs=0
+StatementExpectedToBeCurlies
+	formatString=Statement expected to be { }
+	numArgs=0
+InvalidScopeIdentifier
+	formatString=Valid scope identifiers are exit, failure, or success
+	numArgs=0
+OnScopeDeprecated
+	formatString=%1$s is deprecated, use scope
+	numArgs=1
+DollarInvalidOutsideBrackets
+	formatString='$' is valid only inside [] of index or slice
+	numArgs=0
+IftypeDeprecated
+	formatString=iftype(condition) is deprecated, use static if (is(condition))
+	numArgs=0
+IfAutoDeprecated
+	formatString=if (v; e) is deprecated, use if (auto v = e)
+	numArgs=0
+VariadicTemplateParameterMustBeTheLastOne
+	formatString=Variadic template parameter must be last one
+	numArgs=0
+NeedSizeOfRightmostArray
+	formatString=Need size of rightmost array
+	numArgs=0
+ConflictingStorageClass
+	formatString=Conflicting storage class
+	numArgs=0
+ValueIsLargerThanAByte
+	formatString=%1$s is larger than a byte
+	numArgs=1
+UnterminatedTokenStringConstant
+	formatString=Unterminated token string constant
+	numArgs=0
+HeredocRestOfLineShouldBeBlank
+	formatString=Heredoc rest of line should be blank
+	numArgs=0
+IdentifierExpectedForHeredoc
+	formatString=Identifier expected for heredoc
+	numArgs=0
+DelimitedStringMustEndInValue
+	formatString=Delimited string must end in %1$s
+	numArgs=1
+TypeOnlyAllowedIfAnonymousEnumAndNoEnumType
+	formatString=Type only allowed if anonymous enum and no enum type
+	numArgs=0
+IfTypeThereMustBeAnInitializer
+	formatString=If type, there must be an initializer
+	numArgs=0
+InvariantAsAttributeIsOnlySupportedInD2
+	formatString=invariant as attribute is only supported in D 2.x. Make sure you set the project's compiler version to 2.x.
+	numArgs=0
+ConstAsAttributeIsOnlySupportedInD2
+	formatString=const as attribute is only supported in D 2.x. Make sure you set the project's compiler version to 2.x.
+	numArgs=0
+OnlyOneCaseAllowedForStartOfCaseRange
+	formatString=Only one case allowed for start of case range
+	numArgs=0
+SymbolConflictsWithSymbolAtLocation
+	formatString=%1$s conflicts with %2$s %3$s at %4$s
+	numArgs=4
+SymbolAtLocationConflictsWithSymbolAtLocation
+	formatString=%1$s at %2$s conflicts with %3$s at %4$s
+	numArgs=4
+PropertyCanNotBeRedefined
+	formatString=Property %1$s cannot be redefined
+	numArgs=1
+CircularDefinition
+	formatString=%1$s circular definition
+	numArgs=1
+EnumValueOverflow
+	formatString=Overflow of enum value
+	numArgs=0
+EnumMustHaveAtLeastOneMember
+	formatString=Enum must have at least one member
+	numArgs=0
+EnumBaseTypeMustBeOfIntegralType
+	formatString=Base type must be of integral type
+	numArgs=0
+ForwardReferenceOfSymbol
+	formatString=Forward reference of %1$s
+	numArgs=1
+ForwardReferenceOfEnumSymbolDotSymbol
+	formatString=Forward reference of enum %1$s.%2$s
+	numArgs=2
+ForwardReferenceWhenLookingFor
+	formatString=%1$s is forward reference when looking for %2$s
+	numArgs=2
+BaseEnumIsForwardReference
+	formatString=Base enum is forward reference
+	numArgs=0
+CannotResolveForwardReference
+	formatString=Cannot resolve forward reference
+	numArgs=0
+EnumIsForwardReference
+	formatString=Enum is forward reference
+	numArgs=0
+IntegerConstantExpressionExpected
+	formatString=Integer constant expression expected
+	numArgs=0
+ThisNotInClassOrStruct
+	formatString='this' is not in a struct or class scope
+	numArgs=0
+ThisOnlyAllowedInNonStaticMemberFunctions
+	formatString='this' is only allowed in non-static member functions
+	numArgs=0
+SuperOnlyAllowedInNonStaticMemberFunctions
+	formatString='super' is only allowed in non-static member functions
+	numArgs=0
+SuperNotInClass
+	formatString='super' is not in a class scope
+	numArgs=0
+ClassHasNoSuper
+	formatString=Class %1$s has no 'super'
+	numArgs=1
+BaseTypeMustBeInterface
+	formatString=Base type must be interface
+	numArgs=0
+MemberIsPrivate
+	formatString=%1$s is private
+	numArgs=1
+UsedAsAType
+	formatString=%1$s cannot be resolved to a type
+	numArgs=1
+ExternSymbolsCannotHaveInitializers
+	formatString=Extern symbols cannot have initializers
+	numArgs=0
+VoidsHaveNoValue
+	formatString=Voids have no value
+	numArgs=0
+CannotInferTypeFromThisArrayInitializer
+	formatString=Cannot infer type from this array initializer
+	numArgs=0
+NoDefinition
+	formatString=No definition of struct %1$s
+	numArgs=1
+DuplicatedInterfaceInheritance
+	formatString=Duplicated interface %1$s for the type %2$s
+	numArgs=2
+BaseTypeMustBeClassOrInterface
+	formatString=Base type must be class or interface
+	numArgs=0
+FieldsNotAllowedInInterfaces
+	formatString=Fields are not allowed in interfaces
+	numArgs=0
+UndefinedIdentifier
+	formatString=Undefined identifier %1$s
+	numArgs=1
+NotAMember
+	formatString=Template identifier %1$s is not a member of this module
+	numArgs=1
+NewAllocatorsOnlyForClassOrStruct
+	formatString=New allocators only are for class or struct definitions
+	numArgs=0
+DeleteDeallocatorsOnlyForClassOrStruct
+	formatString=Delete deallocators only are for class or struct definitions
+	numArgs=0
+ConstructorsOnlyForClass
+	formatString=Constructors only are for class definitions
+	numArgs=0
+ConstructorsOnlyForClassOrStruct
+	formatString=Constructors only are for class or struct definitions
+	numArgs=0
+DestructorsOnlyForClass
+	formatString=Destructors only are for class definitions
+	numArgs=0
+InvariantsOnlyForClassStructUnion
+	formatString=Invariants are only for struct/union/class definitions
+	numArgs=0
+FunctionDoesNotOverrideAny
+	formatString=The function %1$s of type %2$s must override a superclass method
+	numArgs=2
+CannotOverrideFinalFunctions
+	formatString=Cannot override the final function %1$s from %2$s
+	numArgs=2
+OverrideOnlyForClassMemberFunctions
+	formatString=Override only applies to class member functions
+	numArgs=0
+FunctionMustReturnAResultOfType
+	formatString=Function must return a result of type %1$s
+	numArgs=1
+MoreThanOneInvariant
+	formatString=More than one invariant for %1$s
+	numArgs=1
+ParameterMultiplyDefined
+	formatString=Parameter '%1$s' multiply defined
+	numArgs=1
+SymbolNotFound
+	formatString=Symbol %1$s not found
+	numArgs=1
+StatementIsNotReachable
+	formatString=Statement is not reachable
+	numArgs=0
+VoidFunctionsHaveNoResult
+	formatString=Void functions have no result
+	numArgs=0
+ReturnStatementsCannotBeInContracts
+	formatString=Return statements cannot be in contracts
+	numArgs=0
+NotAnAggregateType
+	formatString=%1$s is not an aggregate type
+	numArgs=1
+UnrecognizedPragma
+	formatString=Unrecognized pragma
+	numArgs=0
+AnonCanOnlyBePartOfAnAggregate
+	formatString=Anonymous unions can only be part of an aggregate
+	numArgs=0
+PragmaIsMissingClosingSemicolon
+	formatString=pragma is missing closing ';'
+	numArgs=0
+CannotImplicitlyConvert
+	formatString=Cannot implicitly convert expression (%1$s) of type %2$s to %3$s
+	numArgs=3
+ForbiddenReference
+	formatString=Forbidden reference
+	numArgs=0
+DiscouragedReference
+	formatString=Discouraged reference
+	numArgs=0
+Task
+	formatString=%1$s
+	numArgs=1
+UndefinedType
+	formatString=TODO: remove
+	numArgs=0
+IsClassPathCorrect
+	formatString=TODO: remove
+	numArgs=0
+FunctionsCannotBeConstOrAuto
+	formatString=Functions cannot be const or auto
+	numArgs=0
+FunctionsCannotBeScopeOrAuto
+	formatString=Functions cannot be scope or auto
+	numArgs=0
+NonVirtualFunctionsCannotBeAbstract
+	formatString=Non-virtual functions cannot be abstract
+	numArgs=0
+CannotBeBothAbstractAndFinal
+	formatString=Cannot be both abstract and final
+	numArgs=0
+ModifierCannotBeAppliedToVariables
+	formatString=%1$s cannot be applied to variables
+	numArgs=1
+StructsCannotBeAbstract
+	formatString=structs cannot be abstract
+	numArgs=0
+UnionsCannotBeAbstract
+	formatString=unions cannot be abstract
+	numArgs=0
+AliasCannotBeConst
+	formatString=alias cannot be const
+	numArgs=0
+OneArgumentOfTypeExpected
+	formatString=One argument of type %1$s expected
+	numArgs=1
+IllegalMainParameters
+	formatString=Parameters must be main() or main(char[][] args)
+	numArgs=0
+MustReturnIntOrVoidFromMainFunction
+	formatString=Must return int or void from main function
+	numArgs=0
+AtLeastOneArgumentOfTypeExpected
+	formatString=At least one argument of type %1$s expected
+	numArgs=1
+FirstArgumentMustBeOfType
+	formatString=First argument must be of type %1$s
+	numArgs=1
+StringExpectedForPragmaMsg
+	formatString=String expected for message
+	numArgs=0
+LibPragmaMustRecieveASingleArgumentOfTypeString
+	formatString=lib pragma must recieve a single argument of type string
+	numArgs=0
+StringExpectedForPragmaLib
+	formatString=String expected for library name
+	numArgs=0
+CannotHaveOutOrInoutParameterOfTypeStaticArray
+	formatString=Cannot have out or inout parameter of type static array
+	numArgs=0
+CannotHaveParameterOfTypeVoid
+	formatString=Cannot have parameter of type void
+	numArgs=0
+FunctionsCannotReturnStaticArrays
+	formatString=Functions cannot return static arrays
+	numArgs=0
+UnrecongnizedTrait
+	formatString=Unrecongnized trait: %1$s
+	numArgs=1
+CanOnlyConcatenateArrays
+	formatString=Can only concatenate arrays, not %1$s and %2$s
+	numArgs=2
+ArrayIndexOutOfBounds
+	formatString=Array index %1$s is out of bounds [0..%2$s]; 
+	numArgs=2
+ArrayIndexOutOfBounds2
+	formatString=Array index %1$su is out of bounds %2$s[0 .. %3$su]
+	numArgs=3
+AssertionFailed
+	formatString=Assertion failed: %1$s
+	numArgs=1
+AssertionFailedNoMessage
+	formatString=assert(%1$s) failed
+	numArgs=1
+ExpressionIsNotEvaluatableAtCompileTime
+	formatString=%1$s is not evaluatable at compile time
+	numArgs=1
+UndefinedProperty
+	formatString=No property '%1$s' for type '%2$s'
+	numArgs=2
+DeprecatedProperty
+	formatString=The property '%1$s' is deprecated: use '%2$s' instead
+	numArgs=2
+FileNameMustBeString
+	formatString=File name argument must be a string, not (%1$s)
+	numArgs=1
+FileImportsMustBeSpecified
+	formatString=File %1$s must be specified as a file import
+	numArgs=1
+FileNotFound
+	formatString=File %1$s not found
+	numArgs=1
+ErrorReadingFile
+	formatString=Could not read file : %1$s
+	numArgs=1
+ExpressionHasNoEffect
+	formatString=Expression has no effect
+	numArgs=0
+ConstantIsNotAnLValue
+	formatString=Constant %1$s is not an lvalue
+	numArgs=1
+VersionIdentifierReserved
+	formatString=Version identifier '%1$s' is reserved and cannot be set
+	numArgs=1
+CannotPutCatchStatementInsideFinallyBlock
+	formatString=Cannot put catch statement inside finally block
+	numArgs=0
+ExpressionDoesNotGiveABooleanResult
+	formatString=Expression does not give a boolean result
+	numArgs=0
+BreakIsNotInsideALoopOrSwitch
+	formatString=break is not inside a loop or switch statement
+	numArgs=0
+CaseIsNotInSwitch
+	formatString=case is not inside a switch statement
+	numArgs=0
+VersionDeclarationMustBeAtModuleLevel
+	formatString=version declaration must be at module level
+	numArgs=0
+DebugDeclarationMustBeAtModuleLevel
+	formatString=debug declaration must be at module level
+	numArgs=0
+GotoCaseNotInSwitch
+	formatString=goto case is not inside a switch statement
+	numArgs=0
+GotoDefaultNotInSwitch
+	formatString=goto default is not inside a switch statement
+	numArgs=0
+LazyVariablesCannotBeLvalues
+	formatString=lazy variables cannot be lvalues
+	numArgs=0
+DivisionByZero
+	formatString=Division by zero
+	numArgs=0
+DefaultNotInSwitch
+	formatString=default is not inside a switch statement
+	numArgs=0
+SwitchAlreadyHasDefault
+	formatString=switch statement already has a default
+	numArgs=0
+ContinueNotInLoop
+	formatString=continue is not inside a loop
+	numArgs=0
+ForeachIndexCannotBeRef
+	formatString=foreach: index cannot be ref
+	numArgs=0
+ParametersDoesNotMatchParameterTypes
+	formatString=%1$s does not match parameter types (%2$s)
+	numArgs=2
+IncompatibleParameterStorageClass
+	formatString=incompatible parameter storage class
+	numArgs=0
+OutCannotBeConst
+	formatString=out cannot be const
+	numArgs=0
+OutCannotBeInvariant
+	formatString=out cannot be invariant
+	numArgs=0
+ScopeCannotBeRefOrOut
+	formatString=scope cannot be ref or out
+	numArgs=0
+IncompatibleTypesForOperator
+	formatString=Types %1$s and %2$s are incompatible for %3$s
+	numArgs=3
+IncompatibleTypesForMinus
+	formatString=Incompatible types for minus
+	numArgs=0
+SymbolNotDefined
+	formatString=%1$s is not defined
+	numArgs=1
+SymbolNotATemplate
+	formatString=%1$s is not a template
+	numArgs=1
+CannotDeleteType
+	formatString=Cannot delete type %1$s
+	numArgs=1
+NotAnLvalue
+	formatString=%1$s is not an lvalue
+	numArgs=1
+CannotAliasAnExpression
+	formatString=Cannot alias an expression %1$s
+	numArgs=1
+CannotAssignToStaticArray
+	formatString=Cannot assign to static array %1$s
+	numArgs=1
+CannotChangeReferenceToStaticArray
+	formatString=Cannot change reference to static array %1$s
+	numArgs=1
+CannotModifyParameterInContract
+	formatString=Cannot modify parameter '%1$s' in contract
+	numArgs=1
+BothOverloadsMuchArgumentList
+	formatString=Overloads %1$s and %2$s both match argument list for %3$s
+	numArgs=3
+ExpressionHasNoType
+	formatString=Expression (%1$s) has no type
+	numArgs=1
+SymbolNotAnExpression
+	formatString=%1$s is not an expression
+	numArgs=1
+SymbolHasNoValue
+	formatString=%1$s has no value
+	numArgs=1
+TooManyInitializers
+	formatString=Too many initializers for %1$s
+	numArgs=1
+SymbolNotAStaticAndCannotHaveStaticInitializer
+	formatString=%1$s is not a static and cannot have static initializer
+	numArgs=1
+SymbolNotAType
+	formatString=%1$s is not a type
+	numArgs=1
+IncompleteMixinDeclaration
+	formatString=incomplete mixin declaration (%1$s)
+	numArgs=1
+SymbolNotATemplateItIs
+	formatString=%1$s is not a template, it is %2$s
+	numArgs=2
+SymbolCannotBeDeclaredToBeAFunction
+	formatString=%1$s cannot be declared to be a function
+	numArgs=1
+CannotHaveArrayOfType	
+	formatString=Cannot have array of %1$s
+	numArgs=1
+SymbolDoesNotMatchAnyTemplateDeclaration
+	formatString=%1$s does not match any template declaration
+	numArgs=1
+SymbolDoesNotMatchTemplateDeclaration
+	formatString=%1$s does not match template declaration %2$s
+	numArgs=2
+SymbolDoesNotMatchAnyFunctionTemplateDeclaration
+	formatString=%1$s does not match any function template declaration
+	numArgs=1
+IndexOverflowForStaticArray
+	formatString=Index %1$s overflow for static array
+	numArgs=1
+UnknownSize
+	formatString=Unknown size
+	numArgs=0
+NoSizeYetForForwardReference
+	formatString=No size yet for forward reference
+	numArgs=0	
+SymbolMatchesMoreThanOneTemplateDeclaration
+	formatString=%1$s matches more than one template declaration, $2%s and $3%s
+	numArgs=3
+ExpressionLeadsToStackOverflowAtCompileTime
+	formatString=%1$s leads to stack overflow at compile time
+	numArgs=1
+StringIndexOutOfBounds
+	formatString=String index %1$su is out of bounds [0 .. %2$su]
+	numArgs=2
+CannotCreateInstanceOfAbstractClass
+	formatString=Cannot create instance of abstract class %1$s
+	numArgs=1
+CannotCreateInstanceOfInterface
+	formatString=Cannot create instance of interface %1$s
+	numArgs=1
+WithExpressionsMustBeClassObject
+	formatString=With expressions must be class objects, not '%1$s'
+	numArgs=1
+DeclarationIsAlreadyDefined
+	formatString=Declaration %1$s is already defined
+	numArgs=1
+DeclarationIsAlreadyDefinedInAnotherScope
+	formatString=Declaration %1$s is already defined in another scope in %2$s
+	numArgs=2
+VersionDefinedAfterUse
+	formatString=Version %1$s defined after use
+	numArgs=1
+DebugDefinedAfterUse
+	formatString=Debug %1$s defined after use
+	numArgs=1	
+NotEnoughArguments
+	formatString=Not enough arguments
+	numArgs=0
+CanOnlySynchronizeOnClassObjects
+	formatString=Can only synchronize on class objects, not '%1$s'
+	numArgs=1
+CannotDeduceTemplateFunctionFromArgumentTypes
+	formatString=Cannot deduce template function from argument types (%1$s)
+	numArgs=1
+CannotDeduceTemplateFunctionFromArgumentTypes2
+	formatString=Cannot deduce template function from argument types !(%1$s)(%2$s)
+	numArgs=2
+ArrayDimensionExceedsMax
+	formatString=Array dimension %1$s exceeds max of %2$su
+	numArgs=2
+AStructIsNotAValidInitializerFor
+	formatString=A struct is not a valid initializer for a %1$s
+	numArgs=1
+CannotUseArrayToInitialize
+	formatString=Cannot use array to initialize %1$s
+	numArgs=1
+CircularReferenceTo
+	formatString=Circular reference to '%1$s'
+	numArgs=1
+ParameterIsAlreadyDefined
+	formatString=Parameter %1$s.%2$s is already defined
+	numArgs=2
+MemberIsNotAccessible
+	formatString=Member %1$s is not accessible
+	numArgs=1
+SymbolIsNotAccessible
+	formatString=%1$s %2$s.%3$s is not accessible from %4$s
+	numArgs=4
+ThisForSymbolNeedsToBeType
+	formatString=this for %1$s needs to be type %2$s not type %3$s
+	numArgs=3
+SymbolHasForwardReferences
+	formatString=%1$s has forward references
+	numArgs=1
+CannotHaveAssociativeArrayOfKey
+	formatString=Cannot have associative array key of %1$s
+	numArgs=1
+CannotHaveAssociativeArrayOf
+	formatString=Cannot have associative array of %1$s
+	numArgs=1
+CannotHaveArrayOfAuto
+	formatString=Cannot have array of auto %1$s
+	numArgs=1	
+EnclosingLabelForBreakNotFound
+	formatString=Enclosing label '%1$s' for break not found
+	numArgs=1
+EnclosingLabelForContinueNotFound
+	formatString=Enclosing label '%1$s' for continue not found
+	numArgs=1
+CannotAppendTypeToType
+	formatString=Cannot append type %1$s to type %2$s
+	numArgs=2
+CannotAppendToStaticArray
+	formatString=Cannot append to static array %1$s
+	numArgs=1
+ExpressionIsVoidAndHasNoValue
+	formatString=Expression %1$s is void and has no value
+	numArgs=1
+NeedMemberFunctionOpCmpForSymbolToCompare
+	formatString=Need member function opCmp() for %1$s %2$s to compare
+	numArgs=2
+CompareNotDefinedForComplexOperands
+	formatString=Compare not defined for complex operands
+	numArgs=0
+NeedThisForAddressOfSymbol
+	formatString=Need 'this' for address of %1$s
+	numArgs=1
+RecursiveMixinInstantiation
+	formatString=Recursive mixin instantiation
+	numArgs=0
+SymbolIsNotOfIntegralType
+	formatString='%1$s' is not of integral type, it is a %2$s
+	numArgs=2
+DeleteAAKeyDeprecated
+	formatString=Delete aa[key] deprecated, use aa.remove(key)
+	numArgs=0
+SymbolIsDeprecated
+	formatString=%1$s is deprecated
+	numArgs=1
+ShadowingDeclarationIsDeprecated
+	formatString=Shadowing declaration %1$s is deprecated
+	numArgs=1
+ReturnStatementsCannotBeInFinallyScopeExitOrScopeSuccessBodies
+	formatString=Return statements cannot be in finally, scope(exit) or scope(success) bodies
+	numArgs=0
+CannotReturnExpressionFromConstructor
+	formatString=Cannot return expression from constructor
+	numArgs=0
+CaseNotFound
+	formatString=case %1$s not found
+	numArgs=1
+CircularInheritanceOfInterface
+	formatString=Circular inheritance of interface
+	numArgs=0
+ArgumentToMixinMustBeString
+	formatString=Argument to mixin must be a string, not (%1$s)
+	numArgs=1
+CannotAccessFrameOfFunction
+	formatString=Cannot access frame of function %1$s
+	numArgs=1	
+OperationNotAllowedOnBool
+	formatString=Operation not allowed on bool '%1$s'
+	numArgs=1
+SymbolIsNotAScalar
+	formatString='%1$s' is not a scalar, it is a %2$s
+	numArgs=2
+ImportCannotBeResolved
+	formatString=The import %1$s cannot be resolved
+	numArgs=1
+SymbolIsNotAVariable
+	formatString=%1$s '%2$s' is not a variable
+	numArgs=2
+CatchHidesCatch
+	formatString=catch at %1$s hides catch at %2$s
+	numArgs=2
+ArithmeticOrStringTypeExpectedForValueParameter
+	formatString=Arithmetic/string type expected for value-parameter, not %1$s
+	numArgs=1
+FunctionsCannotReturnAFunction
+	formatString=Functions cannot return a function
+	numArgs=0
+FunctionsCannotReturnATuple
+	formatString=Functions cannot return a tuple
+	numArgs=0
+FunctionsCannotReturnAuto
+	formatString=Functions cannot return auto %1$s
+	numArgs=1
+FunctionsCannotReturnScope
+	formatString=Functions cannot return scope %1$s
+	numArgs=1
+RecursiveType
+	formatString=Recursive type
+	numArgs=0
+VariadicFunctionsWithNonDLinkageMustHaveAtLeastOneParameter
+	formatString=Variadic functions with non-D linkage must have at least one parameter
+	numArgs=0
+SymbolMustBeAFunction
+	formatString=%1$s must be a function
+	numArgs=1
+FunctionExpectedBeforeCall
+	formatString=Function expected before (), not '%1$s'
+	numArgs=1
+FunctionExpectedBeforeCallNotSymbolOfType
+	formatString=Function expected before (), not '%1$s' of type %2$s
+	numArgs=2
+CircularReferenceOfTypedef
+	formatString=Circular reference of typedef %1$s
+	numArgs=1
+StringSliceIsOutOfBounds
+	formatString=String slice [%1$su .. %2$su] is out of bounds
+	numArgs=2
+ErrorInstantiating
+	formatString=Error instantiating
+	numArgs=0
+CaseMustBeAnIntegralOrStringConstant
+	formatString=Case must be a string or an integral constant, not %1$s
+	numArgs=1
+DuplicateCaseInSwitchStatement
+	formatString=Duplicate case %1$s in switch statement
+	numArgs=1
+SpecialMemberFunctionsNotAllowedForSymbol
+	formatString=Special member functions not allowed for %1$ss
+	numArgs=1
+SpecialFunctionsNotAllowedInInterface
+	formatString=Special function not allowed in interface %1$s
+	numArgs=1
+FunctionBodyIsNotAbstractInInterface
+	formatString=Function body is not abstract in interface %1$s
+	numArgs=1
+SuperClassConstructorCallMustBeInAConstructor
+	formatString=super class constructor call must be in a constructor
+	numArgs=0
+ClassConstructorCallMustBeInAConstructor
+	formatString=class constructor call must be in a constructor
+	numArgs=0
+NoSuperClassConstructor
+	formatString=No super class constructor for %1$s
+	numArgs=1
+ConstructorCallsNotAllowedInLoopsOrAfterLabels
+	formatString=Constructor calls not allowed in loops or after labels
+	numArgs=0
+MultipleConstructorCalls
+	formatString=Multiple constructor calls
+	numArgs=0
+ExpressionIsNotConstantOrDoesNotEvaluateToABool
+	formatString=Expression %1$s is not constant or does not evaluate to a bool
+	numArgs=1
+StaticIfConditionalCannotBeAtGlobalScope
+	formatString=static if conditional cannot be at global scope
+	numArgs=0
+CannotBreakOutOfFinallyBlock
+	formatString=Cannot break out of finally block
+	numArgs=0	
+LabelHasNoBreak
+	formatString=Label '%1$s' has no break
+	numArgs=1
+LabelHasNoContinue
+	formatString=Label '%1$s' has no continue
+	numArgs=1
+CannotGotoInOrOutOfFinallyBlock
+	formatString=Cannot goto in or out of finally block
+	numArgs=0
+CalledWithArgumentTypesMatchesBoth
+	formatString=Called with argument types: (%1$s) matches both:  %2$s%3$s and: %4$s%5$s
+	numArgs=5
+SymbolIsNotAnArithmeticType
+	formatString='%1$s' is not an arithmetic type
+	numArgs=1
+SymbolIsNotAnArithmeticTypeItIs
+	formatString='%1$s' is not an arithmetic type, it is '%2$s'
+	numArgs=2
+CannotPerformModuloComplexArithmetic
+	formatString=Cannot perform modulo complex arithmetic
+	numArgs=0
+OperatorNotAllowedOnBoolExpression
+	formatString=Operator not allowed on bool expression %1$s
+	numArgs=1
+ForeachKeyTypeMustBeIntOrUint
+	formatString=foreach: key type must be int or uint, not %1$s
+	numArgs=1
+ForeachKeyTypeMustBeIntOrUintLongOrUlong
+	formatString=foreach: key type must be int or uint, long or ulong, not %1$s
+	numArgs=1
+ForeachKeyCannotBeOutOrRef
+	formatString=foreach: key cannot be out or ref
+	numArgs=0
+NoReverseIterationOnAssociativeArrays
+	formatString=No reverse iteration on associative arrays
+	numArgs=0
+OnlyOneOrTwoArgumentsForAssociativeArrayForeach
+	formatString=Only one or two arguments for associative array foreach
+	numArgs=0
+OnlyOneOrTwoArgumentsForArrayForeach
+	formatString=Only one or two arguments for array foreach
+	numArgs=0
+ForeachTargetIsNotAnArrayOf
+	formatString=foreach: %1$s is not an array of %2$s
+	numArgs=2
+ForeachKeyCannotBeInout
+	formatString=foreach: key cannot be inout
+	numArgs=0
+ForeachValueOfUTFConversionCannotBeInout
+	formatString=foreach: value of UTF conversion cannot be inout
+	numArgs=0
+CannotInferTypeForSymbol
+	formatString=Cannot infer type for %1$s
+	numArgs=1
+CannotInferTypeFromInitializer
+	formatString=Cannot infer type from initializer
+	numArgs=0
+NoStorageClassForSymbol
+	formatString=no storage class for %1$s
+	numArgs=1
+OnlyOneValueOrTwoKeyValueArgumentsForTupleForeach
+	formatString=Only one (value) or two (key,value) arguments for tuple foreach
+	numArgs=0
+CannotUniquelyInferForeachArgumentTypes
+	formatString=Cannot uniquely infer foreach argument types
+	numArgs=0
+InvalidForeachAggregate
+	formatString=Invalid foreach aggregate %1$s
+	numArgs=1
+NotAnAssociativeArrayInitializer
+	formatString=Not an associative array initializer
+	numArgs=0
+ArrayInitializersAsExpressionsNotAllowed
+	formatString=Array initializers as expressions are not allowed
+	numArgs=0
+IftypeConditionCannotBeAtGlobalScope
+	formatString=Iftype conditional cannot be at global scope
+	numArgs=0
+SymbolIsNotAFieldOfSymbol
+	formatString=%1$s is not a field of %2$s
+	numArgs=2
+RecursiveTemplateExpansion
+	formatString=Recursive template expansion
+	numArgs=0
+RecursiveTemplateExpansionForTemplateArgument
+	formatString=Recursive template expansion for template argument %1$s
+	numArgs=1
+IndexIsNotATypeOrExpression
+	formatString=Index is not a type or an expression
+	numArgs=0
+CannotHavePointerToSymbol
+	formatString=Cannot have pointer to %1$s
+	numArgs=1
+SizeOfTypeIsNotKnown
+	formatString=Size of type %1$s is not known
+	numArgs=1
+CanOnlySliceTupleTypes
+	formatString=Can only slice tuple types, not %1$s
+	numArgs=1
+NoPropertyForTuple
+	formatString=no property '%1$s' for tuple '%2$s'
+	numArgs=2
+CannotResolveDotProperty
+	formatString=Cannot resolve .property for %1$s
+	numArgs=1
+CannotTakeAddressOfBitInArray
+	formatString=Cannot take address of bit in array
+	numArgs=0
+OnlyOneIndexAllowedToIndex
+	formatString=Only one index allowed to index %1$s
+	numArgs=1
+NoOpIndexOperatorOverloadForType
+	formatString=No [] operator overload for type %1$s
+	numArgs=1
+ArrayDimensionOverflow
+	formatString=Array dimension overflow
+	numArgs=0
+OperatorAssignmentOverloadWithOpIndexIllegal
+	formatString=Operator [] assignment overload with opIndex(i, value) illegal, use opIndexAssign(value, i)
+	numArgs=0
+CannotHaveOutOrInoutArgumentOfBitInArray
+	formatString=Cannot have out or inout argument of bit in array
+	numArgs=0
+SymbolIsAliasedToAFunction
+	formatString=%1$s is aliased to a function
+	numArgs=1
+LinkageDoesNotMatchInterfaceFunction
+	formatString=Linkage doesn't match interface function
+	numArgs=0
+InterfaceFunctionIsNotImplemented
+	formatString=Interface function %1$s.%2$s is not implemented
+	numArgs=2
+ExpectedKeyAsArgumentToRemove
+	formatString=Expected key as argument to aa.remove()
+	numArgs=0
+CyclicConstructorCall
+	formatString=Cyclic constructor call
+	numArgs=0
+MissingOrCurruptObjectDotD
+	formatString=Missing or corrupt object.d. Make sure you have an "object.d" or "object.di" module in your include path. The easiest way to solve this is to add "Phobos" or "Tango" to the include path.
+	numArgs=0
+CannotContinueOutOfFinallyBlock
+	formatString=Cannot continue out of finally block
+	numArgs=0	
+ForwardDeclaration
+	formatString=Forward declaration
+	numArgs=0
+CannotFormDelegateDueToCovariantReturnType
+	formatString=Cannot form delegate due to covariant return type
+	numArgs=0
+ForeachRangeKeyCannotHaveStorageClass
+	formatString=foreach range: key cannot have storage class
+	numArgs=0
+MultipleOverridesOfSameFunction
+	formatString=Multiple overrides of same function
+	numArgs=0
+IdentityAssignmentOperatorOverloadIsIllegal
+	formatString=Identity assignment operator overload is illegal
+	numArgs=0
+LiteralsCannotBeClassMembers
+	formatString=Literals cannot be class members
+	numArgs=0
+NoMatchForImplicitSuperCallInConstructor
+	formatString=No match for implicit super() call in constructor
+	numArgs=0
+NoReturnAtEndOfFunction
+	formatString=No return at end of function
+	numArgs=0
+CanOnlyDeclareTypeAliasesWithinStaticIfConditionals
+	formatString=Can only declare type aliases within static if conditionals
+	numArgs=0
+PackageAndModuleHaveTheSameName
+	formatString=Package and module have the same name
+	numArgs=0
+StringLiteralsAreImmutable
+	formatString=String literals are immutable
+	numArgs=0
+ExpressionDotNewIsOnlyForAllocatingNestedClasses
+	formatString=e.new is only for allocating nested classes
+	numArgs=0	
+TooManyArgumentsForArray
+	formatString=Too many arguments for array
+	numArgs=0
+ReturnExpressionExpected
+	formatString=Return expression expected
+	numArgs=0
+ReturnWithoutCallingConstructor
+	formatString=Return without calling constructor
+	numArgs=0
+ModuleIsInMultiplePackages
+	formatString=Is in multiple packages %s
+	numArgs=1
+ModuleIsInMultipleDefined
+	formatString=Is in multiple defined
+	numArgs=0
+NeedUpperAndLowerBoundToSlicePointer
+	formatString=Need upper and lower bound to slice pointer
+	numArgs=0
+NeedUpperAndLowerBoundToSliceTuple
+	formatString=Need upper and lower bound to slice tuple
+	numArgs=0
+CannotConvertStringLiteralToVoidPointer
+	formatString=Cannot convert string literal to void*
+	numArgs=0
+SymbolIsNotAPreInstanceInitializableField
+	formatString=%1$s is not a per-instance initializable field
+	numArgs=1
+NoCaseStatementFollowingGoto
+	formatString=No case statement following goto case;
+	numArgs=0
+SwitchStatementHasNoDefault
+	formatString=Switch statement has no default
+	numArgs=0
+SymbolIsNotAFunctionTemplate
+	formatString=%1$s is not a function template
+	numArgs=1
+TupleIsNotAValidTemplateValueArgument
+	formatString=Tuple is not a valid template value argument
+	numArgs=0
+IncompatibleArgumentsForTemplateInstantiation
+	formatString=Incompatible arguments for template instantiation
+	numArgs=0
+ThrowStatementsCannotBeInContracts
+	formatString=Throw statements cannot be in contracts
+	numArgs=0
+CanOnlyThrowClassObjects
+	formatString=Can only throw class objects, not type %1$s
+	numArgs=1
+StringExpectedAsSecondArgument
+	formatString=String expected as second argument
+	numArgs=0
+WrongNumberOfArguments
+	formatString=Wrong number of arguments %1$s
+	numArgs=1
+StringMustBeChars
+	formatString=String must be chars
+	numArgs=0
+InvalidFirstArgument
+	formatString=Invalid first argument
+	numArgs=0
+FirstArgumentIsNotAClass
+	formatString=First argument is not a class
+	numArgs=0
+ArgumentHasNoMembers
+	formatString=Argument has no members
+	numArgs=0
+SymbolHasNoMembers
+	formatString=%1$s has no members
+	numArgs=1
+KindSymbolHasNoMembers
+	formatString=%1$s %$2s has no members
+	numArgs=2
+DotOffsetDeprecated
+	formatString=.offset deprecated, use .offsetof
+	numArgs=0
+NoClassInfoForComInterfaceObjects
+	formatString=No .classinfo for COM interface objects
+	numArgs=0
+NoClassInfoForCppInterfaceObjects
+	formatString=No .classinfo for C++ interface objects
+	numArgs=0
+CannotMakeReferenceToABit
+	formatString=Cannot make reference to a bit
+	numArgs=0
+CannotFormTupleOfTuples
+	formatString=Cannot form tuple of tuples
+	numArgs=0
+MissingInitializerInStaticConstructorForConstVariable
+	formatString=Missing initializer in static constructor for const variable
+	numArgs=0
+GlobalsStaticsFieldsRefAndAutoParametersCannotBeAuto
+	formatString=Globals, statics, fields, ref and out parameters cannot be auto
+	numArgs=0	
+GlobalsStaticsFieldsManifestConstantsRefAndAutoParametersCannotBeScope
+	formatString=Globals, statics, fields, manifest constants, ref and out parameters cannot be scope
+	numArgs=0	
+ReferenceToScopeClassMustBeScope
+	formatString=Reference to scope class must be scop
+	numArgs=0
+NumberOfKeysMustMatchNumberOfValues
+	formatString=Number of keys is %1$s, must match number of values %2$s
+	numArgs=2
+ExpectedNumberArguments
+	formatString=Expected %1$s arguments, not %2$s
+	numArgs=2	
+ArraySliceIfOutOfBounds
+	formatString=Array slice [%1$su .. %2$su] is out of bounds
+	numArgs=2
+InvalidUCS32Char
+	formatString=Invalid UCS-32 char \U%1$s
+	numArgs=1
+TupleIndexExceedsBounds
+	formatString=Tuple index %1$su exceeds %2$s
+	numArgs=2
+SliceIsOutOfRange
+	formatString=Slice [%1$su..%2$su] is out of range of [0..%3$s]
+	numArgs=3
+CannotTakeAddressOf
+	formatString=Cannot take address of %1$s
+	numArgs=1
+VariableIsUsedBeforeInitialization
+	formatString=Variable %1$s is used before initialization
+	numArgs=1
+EscapingReferenceToLocal
+	formatString=Escaping reference to local %1$s
+	numArgs=1
+EscapingReferenceToAutoLocal
+	formatString=Escaping reference to auto local %1$s
+	numArgs=1
+EscapingReferenceToScopeLocal
+	formatString=Escaping reference to scope local %1$s
+	numArgs=1
+EscapingReferenceToLocalVariable
+	formatString=Escaping reference to local variable %1$s
+	numArgs=1
+EscapingReferenceToVariadicParameter
+	formatString=Escaping reference to variadic parameter %1$s
+	numArgs=1
+CanOnlyCatchClassObjects
+	formatString=Can only catch class objects, not '%1$s'
+	numArgs=1
+BaseClassIsForwardReferenced
+	formatString=Base class is forward referenced by %1$s
+	numArgs=1
+BaseIsForwardReferenced
+	formatString=Base %1$s is forward referenced
+	numArgs=1
+CannotInheritFromFinalClass
+	formatString=Cannot inherit from final class %1$s
+	numArgs=1
+StaticClassCannotInheritFromNestedClass
+	formatString=Static class cannot inherit from nested class %1$s
+	numArgs=1
+SuperClassIsNestedWithin
+	formatString=Class %1$s is nested within %2$s, but super class %3$s is nested within %4$s
+	numArgs=3
+SuperClassIsNotNestedWithin
+	formatString=Class %1$s is not nested, but super class %2$s is nested within %3$s
+	numArgs=3
+ArrayComparisonTypeMismatch
+	formatString=Array comparison type mismatch, %1$s vs %2$s
+	numArgs=2
+ConditionalExpressionIsNotAModifiableLvalue
+	formatString=Conditional expression %1$s is not a modifiable lvalue
+	numArgs=1
+CannotCastSymbolToSymbol
+	formatString=Cannot cast %1$s to %2$s
+	numArgs=2
+CannotDeleteInstanceOfComInterface
+	formatString=Cannot delete instance of COM interface %1$s
+	numArgs=1
+TemplateIsNotAMemberOf
+	formatString=Template %s is not a member of %1$s
+	numArgs=2
+TemplateIdentifierIsNotAMemberOf
+	formatString=Template identifier %1$s is not a member of %2$s %3$s
+	numArgs=3
+TemplateIdentifierIsNotAMemberOfUndefined
+	formatString=Template identifier %1$s is not a member of undefined %2$s
+	numArgs=2
+CanOnlyInitiailizeConstMemberInsideConstructor
+	formatString=Can only initialize %1$sconst member %2$s inside %3$sconstructor
+	numArgs=3
+SymbolIsNotAMember
+	formatString=%1$s is not a member
+	numArgs=1
+SymbolIsNotATemplate
+	formatString=%1$s is not a template, it is a %2$s
+	numArgs=2
+DSymbolHasNoSize
+	formatString=Dsymbol '%1$s' has no size
+	numArgs=1
+ExpressionOfTypeDoesNotHaveABooleanValue
+	formatString=Expression %1$s of type %2$s does not have a boolean value
+	numArgs=2
+ImplicitConversionCanCauseLossOfData
+	formatString=Implicit conversion of expression (%1$s) of type %2$s to %3$s can cause loss of data
+	numArgs=3
+ForwardReferenceToType
+	formatString=Forward reference to type %1$s
+	numArgs=1
+FloatingPointConstantExpressionExpected
+	formatString=Floating point constant expression expected instead of %1$s
+	numArgs=1
+ExpressionIsNotAValidTemplateValueArgument
+	formatString=Expression %1$s is not a valid template value argument
+	numArgs=1
+InvalidRangeLowerBound
+	formatString=Invalid range lower bound %1$s
+	numArgs=1
+InvalidRangeUpperBound
+	formatString=Invalid range uper bound %1$s
+	numArgs=1
+SymbolIsNotAScalarType
+	formatString=%1$s is not a scalar type
+	numArgs=1
+ForeachIndexMustBeType
+	formatString=foreach: index must be type %1$s, not %2$s
+	numArgs=2
+ForeachValueMustBeType
+	formatString=foreach: value must be type %1$s, not %2$s
+	numArgs=2
+OpApplyFunctionMustReturnAnInt
+	formatString=opApply() function for %1$s must return an int
+	numArgs=1
+FunctionOfTypeOverridesButIsNotCovariant
+	formatString=%1$s of type %2$s overrides but is not covariant with %3$s of type %4$s
+	numArgs=4
+CannotOverrideFinalFunction
+	formatString=Cannot override final function %1$s
+	numArgs=1
+IncompatibleCovariantTypes
+	formatString=Incompatible covariant types %1$s and %2$s
+	numArgs=2
+CannotUseTemplateToAddVirtualFunctionToClass
+	formatString=Cannot use template to add virtual function to class '%1$s'
+	numArgs=1
+OutResultIsAlreadyDefined
+	formatString=Out result %1$s is already defined
+	numArgs=1
+MissingInitializerForConstField
+	formatString=Missing initializer for const field %1$s
+	numArgs=1
+MissingInitializerForFinalField
+	formatString=Missing initializer for final field %1$s
+	numArgs=1
+ImportNotFound
+	formatString=%1$s not found
+	numArgs=1
+SymbolMustBeAnArrayOfPointerType
+	formatString=%1$s must be an array or pointer type, not %2$s
+	numArgs=2
+RvalueOfInExpressionMustBeAnAssociativeArray
+	formatString=rvalue of in expression must be an associative array, not %1$s
+	numArgs=1
+InterfaceInheritsFromDuplicateInterface
+	formatString=%1$s inherits from duplicate interface %2$s
+	numArgs=2
+LabelIsAlreadyDefined
+	formatString=Label '%1$s' already defined
+	numArgs=1
+CannotSubtractPointerFromSymbol
+	formatString=Cannot subtract pointer from %1$s
+	numArgs=1
+ThisForNestedClassMustBeAClassType
+	formatString='this' for nested class must be a class type, not %1$s
+	numArgs=1
+CanOnlyDereferenceAPointer
+	formatString=Can only * a pointer, not a '%1$s'
+	numArgs=1
+OuterClassThisNeededToNewNestedClass
+	formatString=Outer class %1$s 'this' needed to 'new' nested class %2$s
+	numArgs=2
+ThisForNestedClassMustBeOfType
+	formatString='this' for nested class must be of type %1$s, not %2$s
+	numArgs=2
+NoConstructorForSymbol
+	formatString=No constructor for %1$s
+	numArgs=1
+NoAllocatorForSymbol
+	formatString=No allocator for %1$s
+	numArgs=1
+NegativeArrayIndex
+	formatString=Negative array index %1$s
+	numArgs=1
+NewCanOnlyCreateStructsDynamicArraysAndClassObjects
+	formatString=new can only create structs, dynamic arrays or class objects, not %1$s's
+	numArgs=1
+MismatchedFunctionReturnTypeInference
+	formatString=Mismatched function return type inference of %1$s and %2$s
+	numArgs=2
+ShiftLeftExceeds
+	formatString=Shift left by %1$sd exceeds %2$su
+	numArgs=2
+SymbolCannotBeSlicedWithBrackets
+	formatString=%1$s cannot be sliced with []
+	numArgs=1
+SliceExpressionIsNotAModifiableLvalue
+	formatString=Slice expression %1$s is not a modifiable lvalue
+	numArgs=1
+SymbolIsNotAMemberOf
+	formatString='%1$s' is not a member of '%2$s'
+	numArgs=2
+MoreInitiailizersThanFields
+	formatString=More initializers than fields of %1$s
+	numArgs=1
+OverlappingInitiailization
+	formatString=Overlapping initialization for %1$s
+	numArgs=1
+CannotMakeExpressionOutOfInitializer
+	formatString=Cannot make expression out of initializer for %1$s
+	numArgs=1
+NoDefaultOrCaseInSwitchStatement
+	formatString=No default or case for %1$s in switch statement
+	numArgs=1
+SymbolIsNotASymbol
+	formatString=%1$s is not a symbol
+	numArgs=1
+ForwardReferenceToTemplate
+	formatString=Forward reference to template %1$s
+	numArgs=1
+ForwardReferenceToTemplateDeclaration
+	formatString=Forward reference to template declaration %1$s
+	numArgs=1
+SpecializationNotAllowedForDeducedParameter
+	formatString=Specialization not allowed for deduced parameter %1$s
+	numArgs=1
+CannotDeclareTemplateAtFunctionScope
+	formatString=Cannot declare template at function scope %1$s
+	numArgs=1
+TemplateHasNoValue
+	formatString=Template %1$s has no value
+	numArgs=1
+CannotUseLocalAsTemplateParameter
+	formatString=Cannot use local '%1$s' as template parameter
+	numArgs=1
+NoSizeForType
+	formatString=No size for type %1$s
+	numArgs=1
+SymbolDotSymbolIsNotADeclaration
+	formatString=%1$s.%2$s is not a declaration
+	numArgs=2
+ThisIsRequiredButIsNotABaseClassOf
+	formatString='this' is required, but %1$s is not a base class of %2$s
+	numArgs=2
+ForwardReferenceToSymbol
+	formatString=forward reference to '%1$s'
+	numArgs=1
+IdentifierOfSymbolIsNotDefined
+	formatString=Identifier '%1$s' of '%2$s' is not defined
+	numArgs=2
+StructIsForwardReferenced
+	formatString=struct %1$s is forward referenced
+	numArgs=1
+CannotUseTemplateToAddFieldToAggregate
+	formatString=Cannot use template to add field to aggregate '%1$s'
+	numArgs=1
+CannotModifyFinalVariable
+	formatString=Cannot modify final variable '%1$s'
+	numArgs=1
+InvalidUtf8Sequence2
+	formatString=Invalid UTF-8 Sequence
+	numArgs=0
+Utf16HighValuePastEndOfString
+	formatString=Surrogate UTF-16 high value past end of string
+	numArgs=0
+Utf16LowValueOutOfRange
+	formatString=Surrogate UTF-16 low value out of range
+	numArgs=0
+UnpairedUtf16Value
+	formatString=Unpaired surrogate UTF-16 value
+	numArgs=0
+IllegalUtf16Value
+	formatString=Illegal UTF-16 Value
+	numArgs=0
+StaticConstructorCanOnlyBePartOfStructClassModule
+	formatString=Static constructor can only be part of struct/class/module
+	numArgs=0
+ShiftAssignIsOutsideTheRange
+	formatString=Shift assign by %1$s is outside the range 0..%2$s
+	numArgs=2
+TemplateTupleParameterMustBeLastOne
+	formatString=Template tuple parameter must be last one
+	numArgs=0
+SymbolIsNestedInBoth
+	formatString=%1$s is nested in both %2$s and %3$s
+	numArgs=3
+FunctionIsAbstract
+	formatString=Function %1$s is abstract
+	numArgs=1
+KindSymbolDoesNotOverload
+	formatString=%1$s %2$s does not overload ()
+	numArgs=2
+MismatchedTupleLengths
+	formatString=Mismatched tuple lengths, %1$s and %2$s
+	numArgs=2
+DoNotUseNullWhenComparingClassTypes
+	formatString=Do not use null when comparing class types
+	numArgs=0
+UseTokenInsteadOfTokenWhenComparingWithNull
+	formatString=Use '%1$s' instead of '%2$s' when comparing with null
+	numArgs=2
+VoidDoesNotHaveAnInitializer
+	formatString=void does not have an initializer
+	numArgs=0
+FunctionNameExpectedForStartAddress
+	formatString=Function name expected for start address
+	numArgs=0
+TypeofReturnMustBeInsideFunction
+	formatString=typeof(return) must be inside function
+	numArgs=0
+PostBlitsAreOnlyForStructUnionDefinitions
+	formatString=Post blits are only for struct/union definitions
+	numArgs=0
+CannotHaveEDotTuple
+	formatString=Cannot have e.tuple
+	numArgs=0
+CannotCreateCppClasses
+	formatString=Cannot create C++ classes
+	numArgs=0
+SwitchAndCaseAreInDifferentFinallyBlocks
+	formatString=switch and case are in different finally blocks
+	numArgs=0
+SwitchAndDefaultAreInDifferentFinallyBlocks
+	formatString=switch and default are in different finally blocks
+	numArgs=0
+CannotHaveFieldWithSameStructType
+	formatString=Cannot have field with same struct type
+	numArgs=0
+WithoutThisCannotBeConstInvariant
+	formatString=Without 'this' cannot be const/invariant
+	numArgs=0
+CannotModifySymbol
+	formatString=Cannot modify %1$s
+	numArgs=1
+CannotCallPublicExportFunctionFromImmutable
+	formatString=Cannot call public/export function %1$s from immutable
+	numArgs=1
+TemplateMemberFunctionNotAllowedInInterface
+	formatString=Template member function not allowed in interface %1$s
+	numArgs=1
+ArgumentToTypeofIsNotAnExpression
+	formatString=Argument %1$s to typeof is not an expression
+	numArgs=1
+CannotInferTypeFromOverloadedFunctionSymbol
+	formatString=Cannot infer type from overloaded function symbol %1$s
+	numArgs=1
+SymbolIsNotMutable
+	formatString=%1$s is not mutable
+	numArgs=1
+SymbolForSymbolNeedsToBeType
+	formatString=%1$s for %2$s needs to be type %3$s not type %4$s
+	numArgs=4
+CannotModifyConstImmutable
+	formatString=cannot modify const/immutable %1$s
+	numArgs=1
+SymbolCanOnlyBeCalledOnAnInvariantObject
+	formatString=%1$s can only be called on an invariant object
+	numArgs=1
+SymbolCanOnlyBeCalledOnAMutableObject
+	formatString=%1$s can only be called on a mutable object, not $2%s
+	numArgs=2
+CannotCallMutableMethodOnFinalStruct
+	formatString=Cannot call mutable method on final struct
+	numArgs=0
+ForwardReferenceOfImport
+	formatString=Forward reference of improt %1$s
+	numArgs=1
+TemplateDoesNotHaveProperty
+	formatString=Template %1$s does not have property %2$s
+	numArgs=2
+ExpressionDoesNotHaveProperty
+	formatString=Expression %1$s does not have property %2$s
+	numArgs=2
+RecursiveOpCmpExpansion
+	formatString=Recursive opCmp expansion
+	numArgs=0
+CtorIsReservedForConstructors
+	formatString=_ctor is reserved for constructors
+	numArgs=0
+FunctionOverridesBaseClassFunctionButIsNotMarkedWithOverride
+	formatString=$1%s overrides base class function %$2s, but is not marked with 'override'
+	numArgs=2
+ForwardReferenceOfTypeDotMangleof
+	formatString=forward reference of type %1$s.mangleof
+	numArgs=1
+ArrayLengthHidesOtherLengthNameInOuterScope
+	formatString=Array 'length' hides other 'length' name in outer scope
+	numArgs=0
+OnePathSkipsConstructor
+	formatString=One path skips constructor
+	numArgs=0
+PragmaLibNotAllowedAsStatement
+	formatString=pragma(lib) not allowed as statement
+	numArgs=0
+ThereCanBeOnlyOneAliasThis
+	formatString=There can be only one alias this
+	numArgs=0
+AliasThisCanOnlyAppearInStructOrClassDeclaration
+	formatString=alias this can only appear in struct or class declaration, not %1$s
+	numArgs=1
+FunctionIsOverloaded
+	formatString=Function %1$s is overloaded
+	numArgs=1
+PureFunctionCannotCallImpure
+	formatString=Pure function '%1$s' cannot call impure %2$s '%3$s'
+	numArgs=2
+PureFunctionCannotAccessMutableStaticData
+	formatString=Pure function '%1$s' cannot access mutable static data '%2$s'
+	numArgs=2
+PureNestedFunctionCannotAccessMutableData
+	formatString=Pure nested function '%1$s' cannot access mutable data '%2$s'
+	numArgs=2
+ConstraintIsNotConstantOrDoesNotEvaluateToABool
+	formatString=Constraint %1$s is not constant or does not evaluate to a bool
+	numArgs=1
+EscapeStringLiteralDeprecated
+	formatString=Escape String literal is deprecated, use double quoted string literal instead
+	numArgs=0
+DelimiterCannotBeWhitespace
+	formatString=Delimiter cannot be whitespace
+	numArgs=0
+ArrayEqualityComparisonTypeMismatch
+	formatString=Array equality comparison type mismatch, %1$s vs %2$s
+	numArgs=2
+GsharedNotAllowedInSafeMode
+	formatString=__gshared not allowed in safe mode; use shared
+	numArgs=0	
+InnerStructCannotBeAField
+	formatString=inner struct %1$s cannot be a field
+	numArgs=1
+OnlyParametersOfForeachDeclarationsCanBeRef
+	formatString=Only parameters or foreach declarations can be ref
+	numArgs=0
+ManifestConstantsMustHaveInitializers
+	formatString=Manifest constants must have initializers
+	numArgs=0
+ForwardReferenceToInferredReturnTypeOfFunctionCall
+	formatString=Forward reference to inferred return type of function call %1$s
+	numArgs=1
+CaseRangesNotAllowedInFinalSwitch
+	formatString=case ranges not allowed in final switch
+	numArgs=0
+MoreThan256CasesInCaseRange
+	formatString=More than 256 cases in case range
+	numArgs=0
+CannotCastTuple
+	formatString=Cannot cast tuple
+	numArgs=0
+CastNotAllowedInSafeMode
+	formatString=Cast from %1$s to %2$s not allowed in safe mode
+	numArgs=2
+SliceIsNotMutable
+	formatString=Slice %1$s is not mutable
+	numArgs=1
+SymbolIsNothrowYetMayThrow
+	formatString='%1$s' is nothrow yet may throw
+	numArgs=1
+DefaultConstructorNotAllowedForStructs
+	formatString=Default constructor not allowed for structs
+	numArgs=0
+VoidDoesNotHaveADefaiñtInitializer
+	formatString=void does not have a default initializer
+	numArgs=0
+CannotImplicitlyConvertToImmutable
+	formatString=Cannot implicitly convert element type %1$s to immutable
+	numArgs=1
+CannotHaveConstInvariantOutParameterOfType
+	formatString=Cannot have const/invariant out parameter of type %1$s
+	numArgs=1
+OverloadSetNotAllowedInStructDeclaration
+	formatString=Overload set for %1$s.%2$s not allowed in struct declaration
+	numArgs=2
+CannotPerformArrayOperationsOnVoidArrays
+	formatString=Cannot perform array operations on void[] arrays
+	numArgs=0
+	
+	
+	
+	
+	
+	
+	
+	

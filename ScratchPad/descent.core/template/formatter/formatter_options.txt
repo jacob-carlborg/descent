@@ -1,0 +1,2197 @@
+# This file contains the definitions used to create the options used by the code
+# formatter (and autocomplete, and a few other things). The file is fed into
+# formatter_options.pl, which generates the options by processing inlined Perl
+# in the template files. Here are the templates currently in use:
+#
+# DefaultCodeFormatterConstants2.template.java -> ../src/descent/core/formatter/DefaultCodeFormatterConstants2.java
+# DefaultCodeFormatterOptions2.template.java -> ../src/descent/internal/formatter/DefaultCodeFormatterOptions2.java
+# FormatterMessages.template.java -> ../../descent.ui/src/descent/internal/ui/preferences/formatter/FormatterMessages.java
+# FormatterMessages.template.properties -> ../../descent.ui/src/descent/internal/ui/preferences/formatter/FormatterMessages.properties
+# WhiteSpaceOptions.template.java -> ../../descent.ui/src/descent/internal/ui/preferences/formatter/WhiteSpaceOptions.java
+#
+# The syntax for inlined perl in the template files is fairly strict - to
+# evaluate a block of Perl for each option encountered in this file, start a
+# block comment with "/* EVAL-FOR-EACH", which must be on the same line.
+# Any lines until a line containing "*/" that start with a "* " (note the space)
+# will be evaled as perl. This implies that the line with the "*/" on it is not
+# evaled. It's a bit hackish, but it works, right?
+#
+# The syntax of this file is also pretty strict. If a line starts with a #, that
+# line is ignored (or if the line is blank), otherwise it is processed. Lines
+# without an "=" are treated as the beginnings of definitions, lines with an "="
+# are treated as parts of the definition, with name=value pairings. The first
+# line of the definition (the one without the "=" is considered the option name,
+# accessed with the key "optName". There's also "constName", which is the
+# uppercase version of "optName", with "FORMAT_" appended.
+#
+# In the inlined Perl, DST is the destination file handle, and $_ is a hash
+# reference to the settings for that option. So, $$_{'optName') is the option
+# name and if the option definition had a "type" property, $$_{'type'} is used
+# to access it.
+#
+# There's also an EVAL-ONCE now, which forces something to be evaluated only
+# when it is encountered. For this, if you need to access a particular option,
+# use the @options array of hash references (so $$options[0]{'optName'} is the
+# option name. Don't forget to "our" any variables you plan to use again.
+#
+# Hopefully that isn't too hard to understand (you know, I probably spent longer
+# typing this up than it would have taken me to fix the damn script).
+#
+# For options, these are the meanings of the various hash keys used so far:
+#     optName       The name of the option used in an instance of DefaultCodeFormatterOptions
+#     constName     The name of the constant string for Java map keys used in DefaultCodeFormatterConstants
+#     type          The type of the option in DefaultCodeFormatterOptions
+#     default       The default value (we may want to have multiple profiles...?)
+#     wsDElem       The name of the D element a white space option refers to (i.e. for_loops, etc.)
+#     wsSynElem     The name of the syntax element a white space options refers to (i.e. before_semicolon)
+#     wsDElemEx     The D element name displayed in the syntax element tree (defaults to wsDElem)
+#     wsSynElemEx   The Syntax element name displayed in the D element tree (defaults to wsSynElem)
+#     wsPreview     The preview used for the syntax element
+#     javaDefault   Defaults similar to the Java conventions
+#     csDefault     Defaults similar to the C# Conventions
+#
+# The "default" is the "Descent Defaults" option and is also propagated to the
+# other defaults if no explicit alternate is given. This means that alternatives
+# only need to be defined if they're actually different than the Descent
+# default. Java Defaults should conform to the Java Style Guide located at:
+# http://java.sun.com/docs/codeconv/html/CodeConvTOC.doc.html
+# ... as much as possible (so constructs that appear in Java should be identical
+# and D-only constructs should use what would logically follow or the Descent
+# defaults). C# defaults are defined similarly, using the conventions here:
+# http://blogs.msdn.com/brada/articles/361363.aspx
+# Note that that is an incomplete guide for C#, so only more so for D, and thus
+# should be adapted as closely as possible.
+#
+# wsSynElem and wsDElem are meant to be used in tandem - for example, if an
+# option is insert_space_before_semicolon_in_for_loops, wsDElem = "for_loops"
+# and wsSynElem = "before_semicolon". The names used here refer to the messages
+# in FormatterMessages.java. wsPreview is the name of the preview snippet in
+# WhiteSpaceOptions.java. wsSynElemEx is the name of the syntax element
+# displayed on the by-D-element tree, and is not required. Similarly, wsDElemeEx
+# is the name displayed on the by-syntax-element tree and is also not required.
+# Usually, if one of wsDElem or wsSynElem is used, the other is needed as well.
+# These default to wsSynElem and wsDElem, respectively, if not specified.
+#
+# Note: there may be more options that those really "needed". For those
+# ones, instead of deleting the preference, just set a default and
+# don't show them in the UI. If later in time users request that
+# option, show them in the UI. :-)
+
+
+
+
+# Brace Positioning
+brace_position_for_function_declaration
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+	csDefault=BracePosition.NEXT_LINE
+	tab=BracesTabPage
+	uiText=Function Declarations
+brace_position_for_postblit_declaration
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+	csDefault=BracePosition.NEXT_LINE
+	tab=BracesTabPage
+	uiText=Postblit Declarations
+brace_position_for_type_declaration
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+	csDefault=BracePosition.NEXT_LINE
+	tab=BracesTabPage
+	uiText=Type Declarations
+brace_position_for_enum_declaration
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+	csDefault=BracePosition.NEXT_LINE
+	tab=BracesTabPage
+	uiText=Enum Declarations
+brace_position_for_template_declaration
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+	csDefault=BracePosition.NEXT_LINE
+	tab=BracesTabPage
+	uiText=Template Declarations
+brace_position_for_conditional_declaration
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+	csDefault=BracePosition.NEXT_LINE
+	tab=BracesTabPage
+	uiText='version'/'debug' Declarations
+brace_position_for_align_declaration
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+	csDefault=BracePosition.NEXT_LINE
+	tab=BracesTabPage
+	uiText=Align Declarations
+brace_position_for_conditional_statement
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+	csDefault=BracePosition.NEXT_LINE
+	tab=BracesTabPage
+	uiText='if' Statements
+brace_position_for_loop_statement
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+	csDefault=BracePosition.NEXT_LINE
+	tab=BracesTabPage
+	uiText=Loop Statements
+brace_position_for_function_literal
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+	csDefault=BracePosition.NEXT_LINE
+	tab=BracesTabPage
+	uiText=Function Literals
+brace_position_for_anonymous_type
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+	csDefault=BracePosition.NEXT_LINE
+	tab=BracesTabPage
+	uiText=Anonymous Types
+brace_position_for_switch_statement
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+	csDefault=BracePosition.NEXT_LINE
+	tab=BracesTabPage
+	uiText='switch' Statements
+brace_position_for_switch_case
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+	csDefault=BracePosition.NEXT_LINE
+	tab=BracesTabPage
+	uiText=Switch Cases
+brace_position_for_try_catch_finally
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+	csDefault=BracePosition.NEXT_LINE
+	tab=BracesTabPage
+	uiText='try'/'catch'/'finally' Blocks
+brace_position_for_modifiers
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+	csDefault=BracePosition.NEXT_LINE
+	tab=BracesTabPage
+	uiText=Grouped Modifiers
+brace_position_for_synchronized_statement
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+	csDefault=BracePosition.NEXT_LINE
+	tab=BracesTabPage
+	uiText='synchronized'/'volatile' Blocks
+brace_position_for_with_statement
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+	csDefault=BracePosition.NEXT_LINE
+	tab=BracesTabPage
+	uiText='with' Statements
+brace_position_for_scope_statement
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+	csDefault=BracePosition.NEXT_LINE
+	tab=BracesTabPage
+	uiText='scope' Blocks
+brace_position_for_pragmas
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+	csDefault=BracePosition.NEXT_LINE
+	tab=BracesTabPage
+	uiText=Pragmas
+brace_position_for_unittest
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+	csDefault=BracePosition.NEXT_LINE
+	tab=BracesTabPage
+	uiText=Unit tests
+brace_position_for_class_invariant
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+	csDefault=BracePosition.NEXT_LINE
+	tab=BracesTabPage
+	uiText=Class invariants
+
+
+
+
+
+
+# White Space Options - Spaces Before Opening Parenthesis 
+insert_space_before_opening_paren_in_function_declaration_parameters
+	type=boolean
+	default=false
+	wsDElem=function_decl_params
+	wsDElemEx=function_decl_params_ex
+	wsSynElem=before_opening_paren
+	wsPreview=FUNCTION_DECL_PREVIEW
+insert_space_before_opening_paren_in_function_template_args
+	type=boolean
+	default=false
+	wsDElem=function_template_params
+	wsDElemEx=function_template_params_ex
+	wsSynElem=before_opening_paren
+	wsPreview=FUNCTION_DECL_PREVIEW
+insert_space_before_opening_paren_in_function_invocation
+	type=boolean
+	default=false
+	wsDElem=function_invocation_args
+	wsSynElem=before_opening_paren
+	wsDElemEx=function_invocation_argument_list
+	wsPreview=FUNCTION_CALL_PREVIEW
+insert_space_before_opening_paren_in_catch
+	type=boolean
+	default=false
+	wsDElem=catch_statement
+	wsSynElem=before_opening_paren
+	wsPreview=TRY_CATCH_FINALLY_PREVIEW
+insert_space_before_opening_paren_in_for_loops
+	type=boolean
+	default=false
+	wsDElem=for_statement
+	wsSynElem=before_opening_paren
+	wsPreview=FOR_PREVIEW
+insert_space_before_opening_paren_in_while_loops
+	type=boolean
+	default=false
+	wsDElem=while_statement
+	wsSynElem=before_opening_paren
+	wsPreview=WHILE_PREVIEW
+insert_space_before_opening_paren_in_foreach_loops
+	type=boolean
+	default=false
+	wsDElem=foreach_statement
+	wsSynElem=before_opening_paren
+	wsPreview=FOR_PREVIEW
+insert_space_before_opening_paren_in_out_declaration
+	type=boolean
+	default=false
+	wsDElem=out_declaration
+	wsSynElem=before_opening_paren
+	wsPreview=FUNCTION_DECL_PREVIEW
+insert_space_before_opening_paren_in_synchronized_statement
+	type=boolean
+	default=false
+	wsDElem=synchronized_statement
+	wsSynElem=before_opening_paren
+	wsPreview=SYNCHRONIZED_PREVIEW
+insert_space_before_opening_paren_in_switch_statements
+	type=boolean
+	default=false
+	wsDElem=switch_statement
+	wsSynElem=before_opening_paren
+	wsPreview=SWITCH_PREVIEW
+insert_space_before_opening_paren_in_align_declarations
+	type=boolean
+	default=false
+	wsDElem=align_declaration
+	wsSynElem=before_opening_paren
+	wsPreview=ALIGN_PREVIEW
+insert_space_before_opening_paren_in_class_template_params
+	type=boolean
+	default=false
+	wsDElem=aggregate_template_params
+	wsDElemEx=aggregate_template_params_ex
+	wsSynElem=before_opening_paren
+	wsPreview=AGGREGATE_PREVIEW
+insert_space_before_opening_paren_in_assert_statements
+	type=boolean
+	default=false
+	wsDElem=assert_statement
+	wsSynElem=before_opening_paren
+	wsPreview=ASSERT_PREVIEW
+insert_space_before_opening_paren_in_version_debug
+	type=boolean
+	default=false
+	wsDElem=version_debug
+	wsSynElem=before_opening_paren
+	wsPreview=VERSION_DEBUG_PREVIEW
+insert_space_before_opening_paren_in_mixins
+	type=boolean
+	default=false
+	wsDElem=mixin
+	wsSynElem=before_opening_paren
+	wsPreview=MIXIN_PREVIEW
+insert_space_before_opening_paren_in_pragmas
+	type=boolean
+	default=false
+	wsDElem=pragma
+	wsSynElem=before_opening_paren
+	wsPreview=PRAGMA_PREVIEW
+insert_space_before_opening_paren_in_scope_statements
+	type=boolean
+	default=false
+	wsDElem=scope_statement
+	wsSynElem=before_opening_paren
+	wsPreview=SCOPE_PREVIEW
+insert_space_before_opening_paren_in_with_statements
+	type=boolean
+	default=false
+	wsDElem=with_statement
+	wsSynElem=before_opening_paren
+	wsPreview=WITH_PREVIEW
+insert_space_before_opening_paren_in_typeof_statements
+	type=boolean
+	default=false
+	wsDElem=typeof
+	wsSynElem=before_opening_paren
+	wsPreview=TYPEOF_PREVIEW
+insert_space_before_opening_paren_in_typeid_statements
+	type=boolean
+	default=false
+	wsDElem=typeid
+	wsSynElem=before_opening_paren
+	wsPreview=TYPEID_PREVIEW
+insert_space_before_opening_paren_in_delegate
+	type=boolean
+	default=false
+	wsDElem=function_delegate_type
+	wsSynElem=before_opening_paren
+	wsPreview=DELEGATE_PREVIEW
+insert_space_before_opening_paren_in_c_style_fp
+	type=boolean
+	default=true
+	wsDElem=c_style_function_pointer
+	wsSynElem=before_opening_paren
+	wsPreview=DELEGATE_PREVIEW
+insert_space_before_opening_paren_in_new_arguments
+	type=boolean
+	default=false
+	wsDElem=new_params
+	wsSynElem=before_opening_paren
+	wsPreview=CONSTRUCTOR_PREVIEW
+insert_space_before_opening_paren_in_extern_declarations
+	type=boolean
+	default=false
+	wsDElem=extern_declarations
+	wsSynElem=before_opening_paren
+	wsPreview=EXTERN_PREVIEW
+insert_space_before_opening_paren_in_file_imports
+	type=boolean
+	default=false
+	wsDElem=file_import_declarations
+	wsSynElem=before_opening_paren
+	wsPreview=FILE_IMPORT_PREVIEW
+insert_space_before_opening_paren_in_if_statements
+	type=boolean
+	default=false
+	wsDElem=if_statements
+	wsSynElem=before_opening_paren
+	wsPreview=IF_PREVIEW
+insert_space_before_opening_paren_in_is_expressions
+	type=boolean
+	default=false
+	wsDElem=is_expressions
+	wsSynElem=before_opening_paren
+	wsPreview=IS_PREVIEW
+insert_space_before_opening_paren_in_casts
+	type=boolean
+	default=false
+	wsDElem=casts
+	wsSynElem=before_opening_paren
+	wsPreview=CAST_PREVIEW
+insert_space_before_opening_paren_in_template_declarations
+	type=boolean
+	default=false
+	wsDElem=template_declaration
+	wsSynElem=before_opening_paren
+	wsPreview=TEMPLATE_DECLARATION_PREVIEW
+insert_space_before_opening_paren_in_parenthesized_expressions
+	type=boolean
+	default=false
+	wsDElem=parenthesized_expressions
+	wsSynElem=before_opening_paren
+	wsPreview=EXPRESSION_PREVIEW
+insert_space_before_opening_paren_in_class_invariants
+	type=boolean
+	default=false
+	wsDElem=class_invariants
+	wsSynElem=before_opening_paren
+	wsPreview=CLASS_INVARIANT_PREVIEW
+insert_space_before_opening_paren_in_traits_expression
+	type=boolean
+	default=false
+	wsDElem=traits_expression
+	wsSynElem=before_opening_paren
+	wsPreview=TRAITS_PREVIEW
+insert_space_before_opening_paren_in_modified_type
+	type=boolean
+	default=false
+	wsDElem=modified_type
+	wsSynElem=before_opening_paren
+	wsPreview=CONST_PREVIEW
+
+
+
+
+
+# White Space Options - Spaces After Opening Parenthesis
+insert_space_after_opening_paren_in_function_declaration_parameters
+	type=boolean
+	default=false
+	wsDElem=function_decl_params
+	wsDElemEx=function_decl_params_ex
+	wsSynElem=after_opening_paren
+	wsPreview=FUNCTION_DECL_PREVIEW
+insert_space_after_opening_paren_in_function_template_args
+	type=boolean
+	default=false
+	wsDElem=function_template_params
+	wsDElemEx=function_template_params_ex
+	wsSynElem=after_opening_paren
+	wsPreview=FUNCTION_DECL_PREVIEW
+insert_space_after_opening_paren_in_function_invocation
+	type=boolean
+	default=false
+	wsDElem=function_invocation_args
+	wsSynElem=after_opening_paren
+	wsDElemEx=function_invocation_argument_list
+	wsPreview=FUNCTION_CALL_PREVIEW
+insert_space_after_opening_paren_in_catch
+	type=boolean
+	default=false
+	wsDElem=catch_statement
+	wsSynElem=after_opening_paren
+	wsPreview=TRY_CATCH_FINALLY_PREVIEW
+insert_space_after_opening_paren_in_for_loops
+	type=boolean
+	default=false
+	wsDElem=for_statement
+	wsSynElem=after_opening_paren
+	wsPreview=FOR_PREVIEW
+insert_space_after_opening_paren_in_while_loops
+	type=boolean
+	default=false
+	wsDElem=while_statement
+	wsSynElem=after_opening_paren
+	wsPreview=WHILE_PREVIEW
+insert_space_after_opening_paren_in_foreach_loops
+	type=boolean
+	default=false
+	wsDElem=foreach_statement
+	wsSynElem=after_opening_paren
+	wsPreview=FOR_PREVIEW
+insert_space_after_opening_paren_in_out_declaration
+	type=boolean
+	default=false
+	wsDElem=out_declaration
+	wsSynElem=after_opening_paren
+	wsPreview=FUNCTION_DECL_PREVIEW
+insert_space_after_opening_paren_in_synchronized_statement
+	type=boolean
+	default=false
+	wsDElem=synchronized_statement
+	wsSynElem=after_opening_paren
+	wsPreview=SYNCHRONIZED_PREVIEW
+insert_space_after_opening_paren_in_switch_statements
+	type=boolean
+	default=false
+	wsDElem=switch_statement
+	wsSynElem=after_opening_paren
+	wsPreview=SWITCH_PREVIEW
+insert_space_after_opening_paren_in_align_declarations
+	type=boolean
+	default=false
+	wsDElem=align_declaration
+	wsSynElem=after_opening_paren
+	wsPreview=ALIGN_PREVIEW
+insert_space_after_opening_paren_in_class_template_params
+	type=boolean
+	default=false
+	wsDElem=aggregate_template_params
+	wsDElemEx=aggregate_template_params_ex
+	wsSynElem=after_opening_paren
+	wsPreview=AGGREGATE_PREVIEW
+insert_space_after_opening_paren_in_assert_statements
+	type=boolean
+	default=false
+	wsDElem=assert_statement
+	wsSynElem=after_opening_paren
+	wsPreview=ASSERT_PREVIEW
+insert_space_after_opening_paren_in_version_debug
+	type=boolean
+	default=false
+	wsDElem=version_debug
+	wsSynElem=after_opening_paren
+	wsPreview=VERSION_DEBUG_PREVIEW
+insert_space_after_opening_paren_in_mixins
+	type=boolean
+	default=false
+	wsDElem=mixin
+	wsSynElem=after_opening_paren
+	wsPreview=MIXIN_PREVIEW
+insert_space_after_opening_paren_in_pragmas
+	type=boolean
+	default=false
+	wsDElem=pragma
+	wsSynElem=after_opening_paren
+	wsPreview=PRAGMA_PREVIEW
+insert_space_after_opening_paren_in_scope_statements
+	type=boolean
+	default=false
+	wsDElem=scope_statement
+	wsSynElem=after_opening_paren
+	wsPreview=SCOPE_PREVIEW
+insert_space_after_opening_paren_in_with_statements
+	type=boolean
+	default=false
+	wsDElem=with_statement
+	wsSynElem=after_opening_paren
+	wsPreview=WITH_PREVIEW
+insert_space_after_opening_paren_in_typeof_statements
+	type=boolean
+	default=false
+	wsDElem=typeof
+	wsSynElem=after_opening_paren
+	wsPreview=TYPEOF_PREVIEW
+insert_space_after_opening_paren_in_typeid_statements
+	type=boolean
+	default=false
+	wsDElem=typeid
+	wsSynElem=after_opening_paren
+	wsPreview=TYPEID_PREVIEW
+insert_space_after_opening_paren_in_delegate
+	type=boolean
+	default=false
+	wsDElem=function_delegate_type
+	wsSynElem=after_opening_paren
+	wsPreview=DELEGATE_PREVIEW
+insert_space_after_opening_paren_in_c_style_fp
+	type=boolean
+	default=false
+	wsDElem=c_style_function_pointer
+	wsSynElem=after_opening_paren
+	wsPreview=DELEGATE_PREVIEW
+insert_space_after_opening_paren_in_new_arguments
+	type=boolean
+	default=false
+	wsDElem=new_params
+	wsSynElem=after_opening_paren
+	wsPreview=CONSTRUCTOR_PREVIEW
+insert_space_after_opening_paren_in_extern_declarations
+	type=boolean
+	default=false
+	wsDElem=extern_declarations
+	wsSynElem=after_opening_paren
+	wsPreview=EXTERN_PREVIEW
+insert_space_after_opening_paren_in_file_imports
+	type=boolean
+	default=false
+	wsDElem=file_import_declarations
+	wsSynElem=after_opening_paren
+	wsPreview=FILE_IMPORT_PREVIEW
+insert_space_after_opening_paren_in_if_statements
+	type=boolean
+	default=false
+	wsDElem=if_statements
+	wsSynElem=after_opening_paren
+	wsPreview=IF_PREVIEW
+insert_space_after_opening_paren_in_is_expressions
+	type=boolean
+	default=false
+	wsDElem=is_expressions
+	wsSynElem=after_opening_paren
+	wsPreview=IS_PREVIEW
+insert_space_after_opening_paren_in_casts
+	type=boolean
+	default=false
+	wsDElem=casts
+	wsSynElem=after_opening_paren
+	wsPreview=CAST_PREVIEW
+insert_space_after_opening_paren_in_template_declarations
+	type=boolean
+	default=false
+	wsDElem=template_declaration
+	wsSynElem=after_opening_paren
+	wsPreview=TEMPLATE_DECLARATION_PREVIEW
+insert_space_after_opening_paren_in_parenthesized_expressions
+	type=boolean
+	default=false
+	wsDElem=parenthesized_expressions
+	wsSynElem=after_opening_paren
+	wsPreview=EXPRESSION_PREVIEW
+insert_space_after_opening_paren_in_template_invocation
+	type=boolean
+	default=false
+	wsDElem=template_invocation
+	wsSynElem=after_opening_paren
+	wsPreview=TEMPLATE_INVOCATION_PREVIEW
+insert_space_after_opening_paren_in_traits_expression
+	type=boolean
+	default=false
+	wsDElem=traits_expression
+	wsSynElem=after_opening_paren
+	wsPreview=TRAITS_PREVIEW
+insert_space_after_opening_paren_in_modified_type
+	type=boolean
+	default=false
+	wsDElem=modified_type
+	wsSynElem=after_opening_paren
+	wsPreview=CONST_PREVIEW
+
+
+
+
+# White Space Options - Spaces Before Closing Parentheses
+insert_space_before_closing_paren_in_function_declaration_parameters
+	type=boolean
+	default=false
+	wsDElem=function_decl_params
+	wsDElemEx=function_decl_params_ex
+	wsSynElem=before_closing_paren
+	wsPreview=FUNCTION_DECL_PREVIEW
+insert_space_before_closing_paren_in_function_template_args
+	type=boolean
+	default=false
+	wsDElem=function_template_params
+	wsDElemEx=function_template_params_ex
+	wsSynElem=before_closing_paren
+	wsPreview=FUNCTION_DECL_PREVIEW
+insert_space_before_closing_paren_in_function_invocation
+	type=boolean
+	default=false
+	wsDElem=function_invocation_args
+	wsSynElem=before_closing_paren
+	wsDElemEx=function_invocation_argument_list
+	wsPreview=FUNCTION_CALL_PREVIEW
+insert_space_before_closing_paren_in_catch
+	type=boolean
+	default=false
+	wsDElem=catch_statement
+	wsSynElem=before_closing_paren
+	wsPreview=TRY_CATCH_FINALLY_PREVIEW
+insert_space_before_closing_paren_in_for_loops
+	type=boolean
+	default=false
+	wsDElem=for_statement
+	wsSynElem=before_closing_paren
+	wsPreview=FOR_PREVIEW
+insert_space_before_closing_paren_in_while_loops
+	type=boolean
+	default=false
+	wsDElem=while_statement
+	wsSynElem=before_closing_paren
+	wsPreview=WHILE_PREVIEW
+insert_space_before_closing_paren_in_foreach_loops
+	type=boolean
+	default=false
+	wsDElem=foreach_statement
+	wsSynElem=before_closing_paren
+	wsPreview=FOR_PREVIEW
+insert_space_before_closing_paren_in_out_declaration
+	type=boolean
+	default=false
+	wsDElem=out_declaration
+	wsSynElem=before_closing_paren
+	wsPreview=FUNCTION_DECL_PREVIEW
+insert_space_before_closing_paren_in_synchronized_statement
+	type=boolean
+	default=false
+	wsDElem=synchronized_statement
+	wsSynElem=before_closing_paren
+	wsPreview=SYNCHRONIZED_PREVIEW
+insert_space_before_closing_paren_in_switch_statements
+	type=boolean
+	default=false
+	wsDElem=switch_statement
+	wsSynElem=before_closing_paren
+	wsPreview=SWITCH_PREVIEW
+insert_space_before_closing_paren_in_align_declarations
+	type=boolean
+	default=false
+	wsDElem=align_declaration
+	wsSynElem=before_closing_paren
+	wsPreview=ALIGN_PREVIEW
+insert_space_before_closing_paren_in_class_template_params
+	type=boolean
+	default=false
+	wsDElem=aggregate_template_params
+	wsDElemEx=aggregate_template_params_ex
+	wsSynElem=before_closing_paren
+	wsPreview=AGGREGATE_PREVIEW
+insert_space_before_closing_paren_in_assert_statements
+	type=boolean
+	default=false
+	wsDElem=assert_statement
+	wsSynElem=before_closing_paren
+	wsPreview=ASSERT_PREVIEW
+insert_space_before_closing_paren_in_version_debug
+	type=boolean
+	default=false
+	wsDElem=version_debug
+	wsSynElem=before_closing_paren
+	wsPreview=VERSION_DEBUG_PREVIEW
+insert_space_before_closing_paren_in_mixins
+	type=boolean
+	default=false
+	wsDElem=mixin
+	wsSynElem=before_closing_paren
+	wsPreview=MIXIN_PREVIEW
+insert_space_before_closing_paren_in_pragmas
+	type=boolean
+	default=false
+	wsDElem=pragma
+	wsSynElem=before_closing_paren
+	wsPreview=PRAGMA_PREVIEW
+insert_space_before_closing_paren_in_scope_statements
+	type=boolean
+	default=false
+	wsDElem=scope_statement
+	wsSynElem=before_closing_paren
+	wsPreview=SCOPE_PREVIEW
+insert_space_before_closing_paren_in_with_statements
+	type=boolean
+	default=false
+	wsDElem=with_statement
+	wsSynElem=before_closing_paren
+	wsPreview=WITH_PREVIEW
+insert_space_before_closing_paren_in_typeof_statements
+	type=boolean
+	default=false
+	wsDElem=typeof
+	wsSynElem=before_closing_paren
+	wsPreview=TYPEOF_PREVIEW
+insert_space_before_closing_paren_in_typeid_statements
+	type=boolean
+	default=false
+	wsDElem=typeid
+	wsSynElem=before_closing_paren
+	wsPreview=TYPEID_PREVIEW
+insert_space_before_closing_paren_in_delegate
+	type=boolean
+	default=false
+	wsDElem=function_delegate_type
+	wsSynElem=before_closing_paren
+	wsPreview=DELEGATE_PREVIEW
+insert_space_before_closing_paren_in_c_style_fp
+	type=boolean
+	default=false
+	wsDElem=c_style_function_pointer
+	wsSynElem=before_closing_paren
+	wsPreview=DELEGATE_PREVIEW
+insert_space_before_closing_paren_in_new_arguments
+	type=boolean
+	default=false
+	wsDElem=new_params
+	wsSynElem=before_closing_paren
+	wsPreview=CONSTRUCTOR_PREVIEW
+insert_space_before_closing_paren_in_extern_declarations
+	type=boolean
+	default=false
+	wsDElem=extern_declarations
+	wsSynElem=before_closing_paren
+	wsPreview=EXTERN_PREVIEW
+insert_space_before_closing_paren_in_file_imports
+	type=boolean
+	default=false
+	wsDElem=file_import_declarations
+	wsSynElem=before_closing_paren
+	wsPreview=FILE_IMPORT_PREVIEW
+insert_space_before_closing_paren_in_if_statements
+	type=boolean
+	default=false
+	wsDElem=if_statements
+	wsSynElem=before_closing_paren
+	wsPreview=IF_PREVIEW
+insert_space_before_closing_paren_in_is_expressions
+	type=boolean
+	default=false
+	wsDElem=is_expressions
+	wsSynElem=before_closing_paren
+	wsPreview=IS_PREVIEW
+insert_space_before_closing_paren_in_casts
+	type=boolean
+	default=false
+	wsDElem=casts
+	wsSynElem=before_closing_paren
+	wsPreview=CAST_PREVIEW
+insert_space_before_closing_paren_in_template_declarations
+	type=boolean
+	default=false
+	wsDElem=template_declaration
+	wsSynElem=before_closing_paren
+	wsPreview=TEMPLATE_DECLARATION_PREVIEW
+insert_space_before_closing_paren_in_parenthesized_expressions
+	type=boolean
+	default=false
+	wsDElem=parenthesized_expressions
+	wsSynElem=before_closing_paren
+	wsPreview=EXPRESSION_PREVIEW
+insert_space_before_closing_paren_in_template_invocation
+	type=boolean
+	default=false
+	wsDElem=template_invocation
+	wsSynElem=before_closing_paren
+	wsPreview=TEMPLATE_INVOCATION_PREVIEW
+insert_space_before_closing_paren_in_traits_expression
+	type=boolean
+	default=false
+	wsDElem=traits_expression
+	wsSynElem=before_closing_paren
+	wsPreview=TRAITS_PREVIEW
+insert_space_before_closing_paren_in_modified_type
+	type=boolean
+	default=false
+	wsDElem=modified_type
+	wsSynElem=before_closing_paren
+	wsPreview=CONST_PREVIEW
+
+
+
+
+
+
+# White Space Options - Spaces Between Empty Parentheses
+insert_space_between_empty_parens_in_function_declaration_parameters
+	type=boolean
+	default=false
+	wsDElem=function_decl_params
+	wsDElemEx=function_decl_params_ex
+	wsSynElem=between_empty_parens
+	wsPreview=FUNCTION_DECL_PREVIEW
+insert_space_between_empty_parens_in_function_template_args
+	type=boolean
+	default=false
+	wsDElem=function_template_params
+	wsDElemEx=function_template_params_ex
+	wsSynElem=between_empty_parens
+	wsPreview=FUNCTION_DECL_PREVIEW
+insert_space_between_empty_parens_in_function_invocation
+	type=boolean
+	default=false
+	wsDElem=function_invocation_args
+	wsSynElem=between_empty_parens
+	wsDElemEx=function_invocation_argument_list
+	wsPreview=FUNCTION_CALL_PREVIEW
+insert_space_between_empty_parens_in_out_declaration
+	type=boolean
+	default=false
+	wsDElem=out_declaration
+	wsSynElem=between_empty_parens
+	wsPreview=FUNCTION_DECL_PREVIEW
+insert_space_between_empty_parens_in_class_template_params
+	type=boolean
+	default=false
+	wsDElem=aggregate_template_params
+	wsDElemEx=aggregate_template_params_ex
+	wsSynElem=between_empty_parens
+	wsPreview=AGGREGATE_PREVIEW
+insert_space_between_empty_parens_in_delegate
+	type=boolean
+	default=false
+	wsDElem=function_delegate_type
+	wsSynElem=between_empty_parens
+	wsPreview=DELEGATE_PREVIEW
+insert_space_between_empty_parens_in_new_arguments
+	type=boolean
+	default=false
+	wsDElem=new_params
+	wsSynElem=between_empty_parens
+	wsPreview=CONSTRUCTOR_PREVIEW
+insert_space_between_empty_parens_in_extern_declarations
+	type=boolean
+	default=false
+	wsDElem=extern_declarations
+	wsSynElem=between_empty_parens
+	wsPreview=EXTERN_PREVIEW
+insert_space_between_empty_parens_in_template_declarations
+	type=boolean
+	default=false
+	wsDElem=template_declaration
+	wsSynElem=between_empty_parens
+	wsPreview=TEMPLATE_DECLARATION_PREVIEW
+insert_space_between_empty_parens_in_template_invocation
+	type=boolean
+	default=false
+	wsDElem=template_invocation
+	wsSynElem=between_empty_parens
+	wsPreview=TEMPLATE_INVOCATION_PREVIEW
+insert_space_between_empty_parens_in_class_invariants
+	type=boolean
+	default=false
+	wsDElem=class_invariants
+	wsSynElem=between_empty_parens
+	wsPreview=CLASS_INVARIANT_PREVIEW
+
+
+
+
+
+
+# White Space Options - Spaces Between Adjacent Parentheses
+insert_space_between_name_and_args_in_c_style_fp
+	type=boolean
+	default=false
+	wsDElem=c_style_function_pointer
+	wsSynElem=between_adjacent_parens
+	wsDElemEx=name_and_arg_parens_in_c_style_fp
+	wsSynElemEx=between_name_and_arg_parens
+	wsPreview=DELEGATE_PREVIEW
+insert_space_between_template_and_arg_parens_in_function_declaration
+	type=boolean
+	default=false
+	wsDElem=function_declaration
+	wsSynElem=between_adjacent_parens
+	wsDElemEx=template_and_function_params_in_function_declaration
+	wsSynElemEx=between_template_and_arg_parens
+	wsPreview=FUNCTION_DECL_PREVIEW
+insert_space_between_template_args_and_function_args
+	type=boolean
+	default=false
+	wsDElem=function_invocation
+	wsSynElem=between_adjacent_parens
+	wsDElemEx=template_and_function_args_in_function_invocation
+	wsSynElemEx=between_template_args_and_function_args
+	wsPreview=FUNCTION_CALL_PREVIEW
+insert_space_between_succesive_opcalls
+	type=boolean
+	default=false
+	wsDElem=function_invocation
+	wsSynElem=between_adjacent_parens
+	wsSynElemEx=between_succesive_opcalls
+	wsDElemEx=successive_opcalls
+	wsPreview=OPCALL_PREVIEW
+
+
+
+
+
+# White Space Options - Spaces before comma
+insert_space_before_comma_in_base_class_lists
+	type=boolean
+	default=false
+	wsDElem=aggregate_declaration
+	wsDElemEx=base_class_lists
+	wsSynElem=before_comma
+	wsSynElemEx=before_comma_in_base_class_lists
+	wsPreview=AGGREGATE_PREVIEW
+insert_space_before_comma_in_array_literal
+	type=boolean
+	default=false
+	wsDElem=array_literal
+	wsSynElem=before_comma
+	wsPreview=ARRAY_INITIALIZER_PREVIEW
+insert_space_before_comma_in_function_invocation_arguments
+	type=boolean
+	default=false
+	wsDElem=function_invocation_args
+	wsSynElem=before_comma
+	wsPreview=FUNCTION_CALL_PREVIEW
+insert_space_before_comma_in_function_declaration_parameters
+	type=boolean
+	default=false
+	wsDElem=function_decl_params
+	wsDElemEx=function_decl_params_ex
+	wsSynElem=before_comma
+	wsPreview=FUNCTION_DECL_PREVIEW
+insert_space_before_comma_in_function_template_parameters
+	type=boolean
+	default=false
+	wsDElem=function_template_params
+	wsDElemEx=function_template_params_ex
+	wsSynElem=before_comma
+	wsPreview=FUNCTION_DECL_PREVIEW
+insert_space_before_comma_in_aggregate_template_parameters
+	type=boolean
+	default=false
+	wsDElem=aggregate_template_params
+	wsDElemEx=aggregate_template_params_ex
+	wsSynElem=before_comma
+	wsPreview=AGGREGATE_PREVIEW
+insert_space_before_comma_in_foreach_statement
+	type=boolean
+	default=false
+	wsDElem=foreach_statement
+	wsSynElem=before_comma
+	wsPreview=FOR_PREVIEW
+insert_space_before_comma_in_multiple_imports
+	type=boolean
+	default=false
+	wsDElem=import_declaration
+	wsDElemEx=multiple_imports
+	wsSynElem=before_comma
+	wsSynElemEx=before_comma_in_multiple_imports
+	wsPreview=IMPORT_PREVIEW
+insert_space_before_comma_in_selective_imports
+	type=boolean
+	default=false
+	wsDElem=import_declaration
+	wsDElemEx=selective_imports
+	wsSynElem=before_comma
+	wsSynElemEx=before_comma_in_selective_imports
+	wsPreview=IMPORT_PREVIEW
+insert_space_before_comma_in_pragmas
+	type=boolean
+	default=false
+	wsDElem=pragma
+	wsSynElem=before_comma
+	wsPreview=PRAGMA_PREVIEW
+insert_space_before_comma_in_struct_initializer
+	type=boolean
+	default=false
+	wsDElem=struct_initalizer
+	wsSynElem=before_comma
+	wsPreview=STRUCT_INITIALIZER_PREVIEW
+insert_space_before_comma_in_template_declaration
+	type=boolean
+	default=false
+	wsDElem=template_declaration
+	wsSynElem=before_comma
+	wsPreview=TEMPLATE_DECLARATION_PREVIEW
+insert_space_before_comma_in_template_invocation
+	type=boolean
+	default=false
+	wsDElem=template_invocation
+	wsSynElem=before_comma
+	wsPreview=TEMPLATE_INVOCATION_PREVIEW
+insert_space_before_comma_in_multiple_field_declarations
+	type=boolean
+	default=false
+	wsDElem=variable_declaration
+	wsSynElem=before_comma
+	wsPreview=MULT_LOCAL_PREVIEW
+insert_space_before_comma_in_array_access
+	type=boolean
+	default=false
+	wsDElem=array_slice
+	wsSynElem=before_comma
+	wsPreview=ARRAY_ACCESS_PREVIEW
+insert_space_before_comma_in_delegates
+	type=boolean
+	default=false
+	wsDElem=function_delegate_type
+	wsSynElem=before_comma
+	wsPreview=DELEGATE_PREVIEW
+insert_space_before_comma_in_new_arguments
+	type=boolean
+	default=false
+	wsDElem=new_params
+	wsSynElem=before_comma
+	wsPreview=CONSTRUCTOR_PREVIEW
+insert_space_before_trailing_comma_in_array_initializer
+	type=boolean
+	default=false
+	wsDElem=array_literal
+	wsDElemEx=trailing_comma_in_array_literal
+	wsSynElem=before_comma
+	wsSynElemEx=before_trailing_comma
+	wsPreview=ARRAY_INITIALIZER_PREVIEW
+insert_space_before_comma_in_assert_statements
+	type=boolean
+	default=false
+	wsDElem=assert_statement
+	wsSynElem=before_comma
+	wsPreview=ASSERT_PREVIEW
+insert_space_before_comma_in_enum_member_lists
+	type=boolean
+	default=false
+	wsDElem=enums
+	wsSynElem=before_comma
+	wsPreview=ENUM_PREVIEW
+insert_space_before_comma_in_traits_expression
+	type=boolean
+	default=false
+	wsDElem=traits_expression
+	wsSynElem=before_comma
+	wsPreview=TRAITS_PREVIEW
+
+
+
+
+# White Space Options - Spaces after comma
+insert_space_after_comma_in_base_class_lists
+	type=boolean
+	default=true
+	wsDElem=aggregate_declaration
+	wsDElemEx=base_class_lists
+	wsSynElem=after_comma
+	wsSynElemEx=after_comma_in_base_class_lists
+	wsPreview=AGGREGATE_PREVIEW
+insert_space_after_comma_in_array_literal
+	type=boolean
+	default=true
+	wsDElem=array_literal
+	wsSynElem=after_comma
+	wsPreview=ARRAY_INITIALIZER_PREVIEW
+insert_space_after_comma_in_function_invocation_arguments
+	type=boolean
+	default=true
+	wsDElem=function_invocation_args
+	wsSynElem=after_comma
+	wsPreview=FUNCTION_CALL_PREVIEW
+insert_space_after_comma_in_function_declaration_parameters
+	type=boolean
+	default=true
+	wsDElem=function_decl_params
+	wsDElemEx=function_decl_params_ex
+	wsSynElem=after_comma
+	wsPreview=FUNCTION_DECL_PREVIEW
+insert_space_after_comma_in_function_template_parameters
+	type=boolean
+	default=true
+	wsDElem=function_template_params
+	wsDElemEx=function_template_params_ex
+	wsSynElem=after_comma
+	wsPreview=FUNCTION_DECL_PREVIEW
+insert_space_after_comma_in_aggregate_template_parameters
+	type=boolean
+	default=true
+	wsDElem=aggregate_template_params
+	wsDElemEx=aggregate_template_params_ex
+	wsSynElem=after_comma
+	wsPreview=AGGREGATE_PREVIEW
+insert_space_after_comma_in_foreach_statement
+	type=boolean
+	default=true
+	wsDElem=foreach_statement
+	wsSynElem=after_comma
+	wsPreview=FOR_PREVIEW
+insert_space_after_comma_in_multiple_imports
+	type=boolean
+	default=true
+	wsDElem=import_declaration
+	wsDElemEx=multiple_imports
+	wsSynElem=after_comma
+	wsSynElemEx=after_comma_in_multiple_imports
+	wsPreview=IMPORT_PREVIEW
+insert_space_after_comma_in_selective_imports
+	type=boolean
+	default=true
+	wsDElem=import_declaration
+	wsDElemEx=selective_imports
+	wsSynElem=after_comma
+	wsSynElemEx=after_comma_in_selective_imports
+	wsPreview=IMPORT_PREVIEW
+insert_space_after_comma_in_pragmas
+	type=boolean
+	default=true
+	wsDElem=pragma
+	wsSynElem=after_comma
+	wsPreview=PRAGMA_PREVIEW
+insert_space_after_comma_in_struct_initializer
+	type=boolean
+	default=true
+	wsDElem=struct_initalizer
+	wsSynElem=after_comma
+	wsPreview=STRUCT_INITIALIZER_PREVIEW
+insert_space_after_comma_in_template_declaration
+	type=boolean
+	default=true
+	wsDElem=template_declaration
+	wsSynElem=after_comma
+	wsPreview=TEMPLATE_DECLARATION_PREVIEW
+insert_space_after_comma_in_template_invocation
+	type=boolean
+	default=true
+	wsDElem=template_invocation
+	wsSynElem=after_comma
+	wsPreview=TEMPLATE_INVOCATION_PREVIEW
+insert_space_after_comma_in_multiple_field_declarations
+	type=boolean
+	default=true
+	wsDElem=variable_declaration
+	wsSynElem=after_comma
+	wsPreview=MULT_LOCAL_PREVIEW
+insert_space_after_comma_in_array_access
+	type=boolean
+	default=true
+	wsDElem=array_slice
+	wsSynElem=after_comma
+	wsPreview=ARRAY_ACCESS_PREVIEW
+insert_space_after_comma_in_delegates
+	type=boolean
+	default=true
+	wsDElem=function_delegate_type
+	wsSynElem=after_comma
+	wsPreview=DELEGATE_PREVIEW
+insert_space_after_comma_in_new_arguments
+	type=boolean
+	default=true
+	wsDElem=new_params
+	wsSynElem=after_comma
+	wsPreview=CONSTRUCTOR_PREVIEW
+insert_space_after_trailing_comma_in_array_initializer
+	type=boolean
+	default=true
+	wsDElem=array_literal
+	wsDElemEx=trailing_comma_in_array_literal
+	wsSynElem=after_comma
+	wsSynElemEx=after_trailing_comma
+	wsPreview=ARRAY_INITIALIZER_PREVIEW
+insert_space_after_comma_in_assert_statements
+	type=boolean
+	default=true
+	wsDElem=assert_statement
+	wsSynElem=after_comma
+	wsPreview=ASSERT_PREVIEW
+insert_space_after_comma_in_traits_expression
+	type=boolean
+	default=true
+	wsDElem=traits_expression
+	wsSynElem=after_comma
+	wsPreview=TRAITS_PREVIEW
+
+
+
+# White Space  Options - Spaces before operator
+insert_space_before_assignment_operator
+	type=boolean
+	default=true
+	wsDElem=operators
+	wsDElemEx=assignment_operator
+	wsSynElem=before_operator
+	wsSynElemEx=before_assignment_operator
+	wsPreview=OPERATOR_PREVIEW
+insert_space_before_prefix_operator
+	type=boolean
+	default=false
+	wsDElem=operators
+	wsDElemEx=prefix_operator
+	wsSynElem=before_operator
+	wsSynElemEx=before_prefix_operator
+	wsPreview=OPERATOR_PREVIEW
+insert_space_before_infix_operator
+	type=boolean
+	default=true
+	wsDElem=operators
+	wsDElemEx=binary_operator
+	wsSynElem=before_operator
+	wsSynElemEx=before_binary_operator
+	wsPreview=OPERATOR_PREVIEW
+insert_space_before_postfix_operator
+	type=boolean
+	default=false
+	wsDElem=operators
+	wsDElemEx=postfix_operator
+	wsSynElem=before_operator
+	wsSynElemEx=before_postfix_operator
+	wsPreview=OPERATOR_PREVIEW
+
+
+
+
+
+# White Space Options - Spaces After Operator
+insert_space_after_assignment_operator
+	type=boolean
+	default=true
+	wsDElem=operators
+	wsDElemEx=assignment_operator
+	wsSynElem=after_operator
+	wsSynElemEx=after_assignment_operator
+	wsPreview=OPERATOR_PREVIEW
+insert_space_after_prefix_operator
+	type=boolean
+	default=false
+	wsDElem=operators
+	wsDElemEx=prefix_operator
+	wsSynElem=after_operator
+	wsSynElemEx=after_prefix_operator
+	wsPreview=OPERATOR_PREVIEW
+insert_space_after_infix_operator
+	type=boolean
+	default=true
+	wsDElem=operators
+	wsDElemEx=binary_operator
+	wsSynElem=after_operator
+	wsSynElemEx=after_binary_operator
+	wsPreview=OPERATOR_PREVIEW
+insert_space_after_postfix_operator
+	type=boolean
+	default=false
+	wsDElem=operators
+	wsDElemEx=postfix_operator
+	wsSynElem=after_operator
+	wsSynElemEx=after_postfix_operator
+	wsPreview=OPERATOR_PREVIEW
+
+
+
+
+# White space options - !
+insert_space_before_exclamation_point_in_template_invocation
+	type=boolean
+	default=false
+	wsDElem=template_invocation
+	wsSynElem=before_exclamation_point
+	wsPreview=TEMPLATE_INVOCATION_PREVIEW
+insert_space_after_exclamation_point_in_template_invocation
+	type=boolean
+	default=false
+	wsDElem=template_invocation
+	wsSynElem=after_exclamation_point
+	wsPreview=TEMPLATE_INVOCATION_PREVIEW
+
+
+
+
+
+# White Space Options - Spaces After Closing Parenthesis
+insert_space_after_closing_paren_in_casts
+	type=boolean
+	default=true
+	wsDElem=casts
+	wsSynElem=after_closing_paren
+	wsPreview=CAST_PREVIEW
+
+
+
+
+
+# White Space Options - .
+insert_space_before_dot_in_qualified_names
+	type=boolean
+	default=false
+	wsDElem=qualified_names
+	wsSynElem=before_dot
+	wsPreview=DOT_PREVIEW
+insert_space_after_dot_in_qualified_names
+	type=boolean
+	default=false
+	wsDElem=qualified_names
+	wsSynElem=after_dot
+	wsPreview=DOT_PREVIEW
+
+
+
+
+
+# White Space Options - ..
+insert_space_before_slice_operator
+	type=boolean
+	default=true
+	wsDElem=array_slice
+	wsSynElem=before_slice_operator
+	wsPreview=ARRAY_ACCESS_PREVIEW
+insert_space_after_slice_operator
+	type=boolean
+	default=true
+	wsDElem=array_slice
+	wsSynElem=after_slice_operator
+	wsPreview=ARRAY_ACCESS_PREVIEW
+insert_space_before_slice_operator_in_foreach_range_statement
+	type=boolean
+	default=true
+	wsDElem=foreach_statement
+	wsSynElem=before_slice_operator
+	wsSynElemEx=before_slice_operator_in_foreach_range_statement
+	wsPreview=FOR_PREVIEW
+insert_space_after_slice_operator_in_foreach_range_statement
+	type=boolean
+	default=true
+	wsDElem=foreach_statement
+	wsSynElem=after_slice_operator
+	wsSynElemEx=after_slice_operator_in_foreach_range_statement
+	wsPreview=FOR_PREVIEW
+
+
+
+
+
+# White space options - ...
+insert_space_before_elipsis_in_function_varargs
+	type=boolean
+	default=false
+	wsDElem=function_decl_params
+	wsDElemEx=function_varargs
+	wsSynElem=before_elipsis
+	wsSynElemEx=before_elipsis_in_varargs
+	wsPreview=FUNCTION_DECL_PREVIEW
+insert_space_before_elipsis_in_tuples
+	type=boolean
+	default=false
+	wsDElem=template_declaration
+	wsDElemEx=tuple_parameters
+	wsSynElem=before_elipsis
+	wsSynElemEx=before_elipsis_in_tuple_parameters
+	wsPreview=TEMPLATE_DECLARATION_PREVIEW
+insert_space_after_elipsis_in_function_varargs
+	type=boolean
+	default=false
+	wsDElem=function_decl_params
+	wsDElemEx=function_varargs
+	wsSynElem=after_elipsis
+	wsSynElemEx=after_elipsis_in_varargs
+	wsPreview=FUNCTION_DECL_PREVIEW
+insert_space_after_elipsis_in_tuples
+	type=boolean
+	default=false
+	wsDElem=template_declaration
+	wsDElemEx=tuple_parameters
+	wsSynElem=after_elipsis
+	wsSynElemEx=after_elipsis_in_tuple_parameters
+	wsPreview=TEMPLATE_DECLARATION_PREVIEW
+
+
+
+
+# White Space Options - Between Empty Brackets
+insert_space_between_empty_brackets_in_slice
+	type=boolean
+	default=false
+	wsDElem=array_slice
+	wsSynElem=between_empty_brackets
+	wsPreview=ARRAY_ACCESS_PREVIEW
+insert_space_between_empty_brackets_in_dynamic_array_type
+	type=boolean
+	default=false
+	wsDElem=dynamic_arrays
+	wsSynElem=between_empty_brackets
+	wsPreview=ARRAYS_PREVIEW
+
+
+
+#White Space Options - Between Adjacent Brackets
+insert_space_between_adjacent_brackets_in_multidimensional_arrays
+	type=boolean
+	default=false
+	wsDElem=multidimensional_arrays
+	wsSynElem=between_adjacent_brackets
+	wsPreview=ARRAYS_PREVIEW
+
+
+
+
+
+# White Space Options - Before Opening Bracket
+insert_space_before_opening_bracket_in_array_access
+	type=boolean
+	default=false
+	wsDElem=array_access
+	wsSynElem=before_opening_bracket
+	wsPreview=ARRAY_ACCESS_PREVIEW
+insert_space_before_opening_bracket_in_slices
+	type=boolean
+	default=false
+	wsDElem=array_slice
+	wsSynElem=before_opening_bracket
+	wsPreview=ARRAY_ACCESS_PREVIEW
+insert_space_before_opening_bracket_in_array_constructors
+	type=boolean
+	default=false
+	wsDElem=array_constructor
+	wsSynElem=before_opening_bracket
+	wsPreview=ARRAY_CONSTRUCTOR_PREVIEW
+insert_space_before_opening_bracket_in_dynamic_arrays
+	type=boolean
+	default=false
+	wsDElem=dynamic_arrays
+	wsSynElem=before_opening_bracket
+	wsPreview=ARRAYS_PREVIEW
+insert_space_before_opening_bracket_in_associative_arrays
+	type=boolean
+	default=false
+	wsDElem=associative_array
+	wsSynElem=before_opening_bracket
+	wsPreview=ARRAYS_PREVIEW
+insert_space_before_opening_bracket_in_static_arrays
+	type=boolean
+	default=false
+	wsDElem=static_array
+	wsSynElem=before_opening_bracket
+	wsPreview=ARRAYS_PREVIEW
+
+
+
+
+# White Space Options - After Opening Bracket
+insert_space_after_opening_bracket_in_array_access
+	type=boolean
+	default=false
+	wsDElem=array_access
+	wsSynElem=after_opening_bracket
+	wsPreview=ARRAY_ACCESS_PREVIEW
+insert_space_after_opening_bracket_in_slices
+	type=boolean
+	default=false
+	wsDElem=array_slice
+	wsSynElem=after_opening_bracket
+	wsPreview=ARRAY_ACCESS_PREVIEW
+insert_space_after_opening_bracket_in_array_literals
+	type=boolean
+	default=false
+	wsDElem=array_literal
+	wsSynElem=after_opening_bracket
+	wsPreview=ARRAY_INITIALIZER_PREVIEW
+insert_space_after_opening_bracket_in_array_constructors
+	type=boolean
+	default=false
+	wsDElem=array_constructor
+	wsSynElem=after_opening_bracket
+	wsPreview=ARRAY_CONSTRUCTOR_PREVIEW
+insert_space_after_opening_bracket_in_associative_arrays
+	type=boolean
+	default=false
+	wsDElem=associative_array
+	wsSynElem=after_opening_bracket
+	wsPreview=ARRAYS_PREVIEW
+insert_space_after_opening_bracket_in_static_arrays
+	type=boolean
+	default=false
+	wsDElem=static_array
+	wsSynElem=after_opening_bracket
+	wsPreview=ARRAYS_PREVIEW
+
+
+
+
+# White Space Options - Before Closing Bracket
+insert_space_before_closing_bracket_in_array_access
+	type=boolean
+	default=false
+	wsDElem=array_access
+	wsSynElem=before_closing_bracket
+	wsPreview=ARRAY_ACCESS_PREVIEW
+insert_space_before_closing_bracket_in_slices
+	type=boolean
+	default=false
+	wsDElem=array_slice
+	wsSynElem=before_closing_bracket
+	wsPreview=ARRAY_ACCESS_PREVIEW
+insert_space_before_closing_bracket_in_array_literals
+	type=boolean
+	default=false
+	wsDElem=array_literal
+	wsSynElem=before_closing_bracket
+	wsPreview=ARRAY_INITIALIZER_PREVIEW
+insert_space_before_closing_bracket_in_array_constructors
+	type=boolean
+	default=false
+	wsDElem=array_constructor
+	wsSynElem=before_closing_bracket
+	wsPreview=ARRAY_CONSTRUCTOR_PREVIEW
+insert_space_before_closing_bracket_in_associative_arrays
+	type=boolean
+	default=false
+	wsDElem=associative_array
+	wsSynElem=before_closing_bracket
+	wsPreview=ARRAYS_PREVIEW
+insert_space_before_closing_bracket_in_static_arrays
+	type=boolean
+	default=false
+	wsDElem=static_array
+	wsSynElem=before_closing_bracket
+	wsPreview=ARRAYS_PREVIEW
+
+
+
+
+# White Space Options - Before Colon
+insert_space_before_colon_in_base_class_lists
+	type=boolean
+	default=false
+	wsDElem=aggregate_declaration
+	wsDElemEx=base_class_lists
+	wsSynElem=before_colon
+	wsSynElemEx=before_colon_in_base_class_lists
+	wsPreview=AGGREGATE_PREVIEW
+insert_space_before_colon_in_template_specific_type
+	type=boolean
+	default=false
+	wsDElem=template_declaration
+	wsDElemEx=template_parameter_sepcialization
+	wsSynElem=before_colon
+	wsSynElemEx=before_colon_in_parameter_specialization
+	wsPreview=TEMPLATE_DECLARATION_PREVIEW
+insert_space_before_colon_in_array_initializer
+	type=boolean
+	default=false
+	wsDElem=array_literal
+	wsSynElem=before_colon
+	wsPreview=ARRAY_INITIALIZER_PREVIEW
+insert_space_before_colon_in_struct_initializer
+	type=boolean
+	default=false
+	wsDElem=struct_initalizer
+	wsSynElem=before_colon
+	wsPreview=STRUCT_INITIALIZER_PREVIEW
+insert_space_before_colon_in_case_default_statement
+	type=boolean
+	default=false
+	wsDElem=switch_statement
+	wsDElemEx=case_default_label
+	wsSynElem=before_colon
+	wsSynElemEx=before_colon_in_case_default_labels
+	wsPreview=SWITCH_PREVIEW
+insert_space_before_colon_in_selective_imports
+	type=boolean
+	default=false
+	wsDElem=import_declaration
+	wsDElemEx=selective_imports
+	wsSynElem=before_colon
+	wsSynElemEx=before_colon_in_selective_imports
+	wsPreview=IMPORT_PREVIEW
+insert_space_before_colon_in_conditional_expressions
+	type=boolean
+	default=true
+	wsDElem=conditional_expression
+	wsSynElem=before_colon
+	wsPreview=CONDITIONAL_EXPRESSION_PREVIEW
+insert_space_before_colon_in_statement_labels
+	type=boolean
+	default=false
+	wsDElem=statements
+	wsDElemEx=labels
+	wsSynElem=before_colon
+	wsSynElemEx=before_colon_in_labeled_statements
+	wsPreview=LABEL_PREVIEW
+insert_space_before_colon_in_modifiers
+	type=boolean
+	default=false
+	wsDElem=modifier_blocks
+	wsSynElem=before_colon
+	wsPreview=EXTERN_PREVIEW
+
+
+
+
+# White Space Options - After Colon
+insert_space_after_colon_in_base_class_lists
+	type=boolean
+	default=true
+	wsDElem=aggregate_declaration
+	wsDElemEx=base_class_lists
+	wsSynElem=after_colon
+	wsSynElemEx=after_colon_in_base_class_lists
+	wsPreview=AGGREGATE_PREVIEW
+insert_space_after_colon_in_template_specific_type
+	type=boolean
+	default=true
+	wsDElem=template_declaration
+	wsDElemEx=template_parameter_sepcialization
+	wsSynElem=after_colon
+	wsSynElemEx=after_colon_in_parameter_specialization
+	wsPreview=TEMPLATE_DECLARATION_PREVIEW
+insert_space_after_colon_in_array_initializer
+	type=boolean
+	default=true
+	wsDElem=array_literal
+	wsSynElem=after_colon
+	wsPreview=ARRAY_INITIALIZER_PREVIEW
+insert_space_after_colon_in_struct_initializer
+	type=boolean
+	default=true
+	wsDElem=struct_initalizer
+	wsSynElem=after_colon
+	wsPreview=STRUCT_INITIALIZER_PREVIEW
+insert_space_after_colon_in_case_default_statement
+	type=boolean
+	default=true
+	wsDElem=switch_statement
+	wsDElemEx=case_default_label
+	wsSynElem=after_colon
+	wsSynElemEx=after_colon_in_case_default_labels
+	wsPreview=SWITCH_PREVIEW
+insert_space_after_colon_in_selective_imports
+	type=boolean
+	default=true
+	wsDElem=import_declaration
+	wsDElemEx=selective_imports
+	wsSynElem=after_colon
+	wsSynElemEx=after_colon_in_selective_imports
+	wsPreview=IMPORT_PREVIEW
+insert_space_after_colon_in_conditional_expressions
+	type=boolean
+	default=true
+	wsDElem=conditional_expression
+	wsSynElem=after_colon
+	wsPreview=CONDITIONAL_EXPRESSION_PREVIEW
+insert_space_after_colon_in_statement_labels
+	type=boolean
+	default=true
+	wsDElem=statements
+	wsDElemEx=labels
+	wsSynElem=after_colon
+	wsSynElemEx=after_colon_in_labeled_statements
+	wsPreview=LABEL_PREVIEW
+
+
+
+
+# White Space Options - Before Semicolon
+insert_space_before_semicolon
+	type=boolean
+	default=false
+	wsDElem=statements
+	wsSynElem=before_semicolon
+	wsPreview=SEMICOLON_PREVIEW
+insert_space_before_semicolon_in_for_statement
+	type=boolean
+	default=false
+	wsDElem=for_statement
+	wsSynElem=before_semicolon
+	wsPreview=FOR_PREVIEW
+insert_space_before_semicolon_in_foreach_statement
+	type=boolean
+	default=false
+	wsDElem=foreach_statement
+	wsSynElem=before_semicolon
+	wsPreview=FOR_PREVIEW
+
+
+
+
+
+# White space Options - After Semicolon
+insert_space_after_semicolon_in_foreach_statement
+	type=boolean
+	default=true
+	wsDElem=foreach_statement
+	wsSynElem=after_semicolon
+	wsPreview=FOR_PREVIEW
+insert_space_after_semicolon_in_for_statement
+	type=boolean
+	default=true
+	wsDElem=for_statement
+	wsSynElem=after_semicolon
+	wsPreview=FOR_PREVIEW
+
+
+
+# White Space Options - ?
+insert_space_before_question_mark_in_conditional_expressions
+	type=boolean
+	default=true
+	wsDElem=conditional_expression
+	wsSynElem=before_question_mark
+	wsPreview=CONDITIONAL_EXPRESSION_PREVIEW
+insert_space_after_question_mark_in_conditional_expressions
+	type=boolean
+	default=true
+	wsDElem=conditional_expression
+	wsSynElem=after_question_mark
+	wsPreview=CONDITIONAL_EXPRESSION_PREVIEW
+
+
+# White Space Options - Before =
+insert_space_before_equals_in_renamed_imports
+	type=boolean
+	default=true
+	wsDElem=import_declaration
+	wsDElemEx=renamed_imports
+	wsSynElem=before_equals
+	wsSynElemEx=before_equals_in_renamed_imports
+	wsPreview=IMPORT_PREVIEW
+insert_space_before_equals_in_default_function_arguments
+	type=boolean
+	default=true
+	wsDElem=function_decl_params
+	wsSynElem=before_equals
+	wsSynElemEx=before_equals_for_default_values
+	wsPreview=FUNCTION_DECL_PREVIEW
+insert_space_before_equals_in_default_template_arguments
+	type=boolean
+	default=true
+	wsDElem=template_declaration
+	wsSynElem=before_equals
+	wsSynElemEx=before_equals_for_default_values
+	wsPreview=TEMPLATE_DECLARATION_PREVIEW
+insert_space_before_equals_in_version_debug_assignment
+	type=boolean
+	default=true
+	wsDElem=version_debug_assignment
+	wsSynElem=before_equals
+	wsPreview=VERSION_DEBUG_PREVIEW
+insert_space_before_equals_in_enum_constants
+	type=boolean
+	default=true
+	wsDElem=enums
+	wsSynElem=before_equals
+	wsPreview=ENUM_PREVIEW
+insert_space_before_equals_in_variable_inits
+	type=boolean
+	default=true
+	wsDElem=variable_declaration
+	wsSynElem=before_equals
+	wsPreview=MULT_LOCAL_PREVIEW
+
+
+
+
+
+# White Space Options - After =
+insert_space_after_equals_in_renamed_imports
+	type=boolean
+	default=true
+	wsDElem=import_declaration
+	wsDElemEx=renamed_imports
+	wsSynElem=after_equals
+	wsSynElemEx=after_equals_in_renamed_imports
+	wsPreview=IMPORT_PREVIEW
+insert_space_after_equals_in_default_function_arguments
+	type=boolean
+	default=true
+	wsDElem=function_decl_params
+	wsSynElem=after_equals
+	wsSynElemEx=after_equals_for_default_values
+	wsPreview=FUNCTION_DECL_PREVIEW
+insert_space_after_equals_in_default_template_arguments
+	type=boolean
+	default=true
+	wsDElem=template_declaration
+	wsSynElem=after_equals
+	wsSynElemEx=after_equals_for_default_values
+	wsPreview=TEMPLATE_DECLARATION_PREVIEW
+insert_space_after_equals_in_version_debug_assignment
+	type=boolean
+	default=true
+	wsDElem=version_debug_assignment
+	wsSynElem=after_equals
+	wsPreview=VERSION_DEBUG_PREVIEW
+insert_space_after_equals_in_enum_constants
+	type=boolean
+	default=true
+	wsDElem=enums
+	wsSynElem=after_equals
+	wsPreview=ENUM_PREVIEW
+insert_space_after_equals_in_variable_inits
+	type=boolean
+	default=true
+	wsDElem=variable_declaration
+	wsSynElem=after_equals
+	wsPreview=MULT_LOCAL_PREVIEW
+
+
+
+
+# White Space Options - *
+insert_space_after_star_in_c_style_fp
+	type=boolean
+	default=false
+	wsDElem=c_style_function_pointer
+	wsSynElem=after_asterisk
+	wsPreview=DELEGATE_PREVIEW
+insert_space_before_asterisk_for_pointer_types
+	type=boolean
+	default=false
+	wsDElem=pointer_type
+	wsSynElem=before_asterisk
+	wsPreview=ASTERISK_PREVIEW
+
+
+
+
+# Blank Line Options
+blank_lines_before_module
+	type=int
+	default=0
+	tab=BlankLinesTabPage
+	uiText=Before 'module' declaration:
+blank_lines_after_module
+	type=int
+	default=1
+	tab=BlankLinesTabPage
+	uiText=After 'module' declaration:
+number_of_empty_lines_to_preserve
+	type=int
+	default=1
+	tab=BlankLinesTabPage
+	uiText=Number of blank lines to preserve:
+
+# New Line Options
+insert_new_line_before_else_statement
+	type=boolean
+	default=false
+	tab=NewLinesTabPage
+	uiText=Insert new line before 'else' in if
+insert_new_line_before_else_declaration
+	type=boolean
+	default=false
+	tab=NewLinesTabPage
+	uiText=Insert new line before 'else' in version/debug
+insert_new_line_before_catch
+	type=boolean
+	default=false
+	tab=NewLinesTabPage
+	uiText=Insert new line before 'catch'
+insert_new_line_before_finally
+	type=boolean
+	default=false
+	tab=NewLinesTabPage
+	uiText=Insert new line before 'finally'
+insert_new_line_before_while_in_do_statement
+	type=boolean
+	default=false
+	tab=NewLinesTabPage
+	uiText=Insert new line before 'while' in 'do' statement
+insert_new_line_after_case_or_default_statement
+	type=boolean
+	default=true
+	tab=NewLinesTabPage
+	uiText=Insert new line after 'case' or 'default' statement
+insert_new_line_after_label
+	type=boolean
+	default=true
+	tab=NewLinesTabPage
+	uiText=Insert new line after label
+keep_else_conditional_on_one_line
+	type=boolean
+	default=true
+	tab=NewLinesTabPage
+	uiText=Keep 'else if' on one line
+keep_else_version_debug_on_one_line
+	type=boolean
+	default=true
+	tab=NewLinesTabPage
+	uiText=Keep 'else version/debug' on one line
+insert_new_line_at_end_of_file_if_missing
+	type=boolean
+	default=false
+	tab=NewLinesTabPage
+	uiText=Insert new line at end of file if missing
+
+
+
+
+
+# Statements and declarations on same line
+keep_simple_then_declaration_on_same_line
+	type=boolean
+	default=false
+	tab=ShortSyntaxTabPage
+	uiText=Then Declarations
+keep_simple_else_declaration_on_same_line
+	type=boolean
+	default=false
+	tab=ShortSyntaxTabPage
+	uiText=Else Declarations
+keep_simple_then_statement_on_same_line
+	type=boolean
+	default=false
+	tab=ShortSyntaxTabPage
+	uiText=Then Statements
+keep_simple_else_statement_on_same_line
+	type=boolean
+	default=false
+	tab=ShortSyntaxTabPage
+	uiText=Else Statements
+keep_simple_try_statement_on_same_line
+	type=boolean
+	default=false
+	tab=ShortSyntaxTabPage
+	uiText='try' Statements
+keep_simple_catch_statement_on_same_line
+	type=boolean
+	default=false
+	tab=ShortSyntaxTabPage
+	uiText='catch' Statements
+keep_simple_finally_statement_on_same_line
+	type=boolean
+	default=false
+	tab=ShortSyntaxTabPage
+	uiText='finally' Statements
+keep_simple_loop_statement_on_same_line
+	type=boolean
+	default=false
+	tab=ShortSyntaxTabPage
+	uiText=Loops
+keep_simple_scope_statement_on_same_line
+	type=boolean
+	default=false
+	tab=ShortSyntaxTabPage
+	uiText='scope' Statements
+keep_simple_synchronized_statement_on_same_line
+	type=boolean
+	default=false
+	tab=ShortSyntaxTabPage
+	uiText='synchronzied'/'volatile' Statements
+keep_simple_with_statement_on_same_line
+	type=boolean
+	default=false
+	tab=ShortSyntaxTabPage
+	uiText='with' Statements
+keep_functions_with_no_statement_in_one_line
+	type=boolean
+	default=false
+	tab=ShortSyntaxTabPage
+	uiText=Functions with no statement
+keep_functions_with_one_statement_in_one_line
+	type=boolean
+	default=false
+	tab=ShortSyntaxTabPage
+	uiText=Functions with one statement
+
+
+
+
+
+# Indent
+indentation_size
+	type=int
+	default=4
+	tab=IndentationTabPage
+	uiText=Indentation Size:
+continuation_indentation
+	type=int
+	default=2
+	tab=LineWrappingTabPage
+	uiText=Default indentation for wrapped lines
+indentation_style_compare_to_modifier_header
+	type=IndentationType
+	default=IndentationType.INDENT_NORMAL
+	tab=IndentationTabPage
+	uiText=Indentation for modifiers
+indent_empty_lines
+	type=boolean
+	default=false
+	tab=IndentationTabPage
+	uiText=Empty Lines
+indent_body_declarations_compare_to_type_header
+	type=boolean
+	default=true
+	tab=IndentationTabPage
+	uiText=Declarations within type
+indent_body_declarations_compare_to_template_header
+	type=boolean
+	default=true
+	tab=IndentationTabPage
+	uiText=Declarations within template
+indent_body_declarations_compare_to_align_header
+	type=boolean
+	default=true
+	tab=IndentationTabPage
+	uiText=Declarations within align
+indent_statements_compare_to_function_header
+	type=boolean
+	default=true
+	tab=IndentationTabPage
+	uiText=Statements within function
+indent_in_out_body_compare_to_function_header
+	type=boolean
+	default=false
+	tab=IndentationTabPage
+	uiText='in'/'out'/'body' under function
+indent_statements_compare_to_function_in_header
+	type=boolean
+	default=true
+	tab=IndentationTabPage
+	uiText=Statements within 'in'
+indent_statements_compare_to_function_out_header
+	type=boolean
+	default=true
+	tab=IndentationTabPage
+	uiText=Statements within 'out'
+indent_statements_compare_to_function_body_header
+	type=boolean
+	default=true
+	tab=IndentationTabPage
+	uiText=Statements within 'body'
+indent_enum_members_compare_to_enum_header
+	type=boolean
+	default=true
+	tab=IndentationTabPage
+	uiText=Enum members
+indent_cases_compare_to_switch
+	type=boolean
+	default=true
+	tab=IndentationTabPage
+	uiText='case'/'default' statements within 'switch'
+	javaDefault=false
+indent_break_compare_to_switch
+	type=boolean
+	default=false
+	tab=IndentationTabPage
+	uiText='break' under switch
+	javaDefault=true
+	csDefault=true
+indent_statements_compare_to_case
+	type=boolean
+	default=true
+	tab=IndentationTabPage
+	uiText=Statements within 'switch'/'default'
+indent_body_declarations_compare_to_pragma_header
+	type=boolean
+	default=true
+	tab=IndentationTabPage
+	uiText=Declarations 'pragma'
+
+
+
+
+# Alignment
+alignment_for_multiple_variable_declarations
+	type=int
+	default=DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY
+	tab=LineWrappingTabPage
+	uiText=Multiple variable declarations
+alignment_for_function_declaration_parameters
+	type=int
+	default=DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY
+	tab=LineWrappingTabPage
+	uiText=Function declaration parameters
+alignment_for_template_declaration_parameters
+	type=int
+	default=DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY
+	tab=LineWrappingTabPage
+	uiText=Template declaration parameters
+alignment_for_function_invocation_arguments
+	type=int
+	default=DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY
+	tab=LineWrappingTabPage
+	uiText=Function invocation parameters
+alignment_for_template_invocation_arguments
+	type=int
+	default=DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY
+	tab=LineWrappingTabPage
+	uiText=Template invocation parameters
+alignment_for_array_literals
+	type=int
+	default=DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY
+	tab=LineWrappingTabPage
+	uiText=Array literals
+alignment_for_base_class_lists
+	type=int
+	default=DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY
+	tab=LineWrappingTabPage
+	uiText=Base class lists
+alignment_for_selective_imports
+	type=int
+	default=DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY
+	tab=LineWrappingTabPage
+	uiText=Multiple/Selective imports
+alignment_for_struct_initializer
+	type=int
+	default=DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY
+	tab=LineWrappingTabPage
+	uiText=Struct initializers
+
+
+
+# Tabs
+tab_char
+	type=TabChar
+	default=TabChar.TAB
+	tab=IndentationTabPage
+	uiText=Tab polic&y:
+tab_size
+	type=int
+	default=4
+	tab=IndentationTabPage
+	uiText=Tab &size:
+use_tabs_only_for_leading_indentations
+	type=boolean
+	default=false
+
+
+
+
+
+# Comments
+never_indent_block_comments_on_first_column
+	type=boolean
+	default=false
+never_indent_line_comments_on_first_column
+	type=boolean
+	default=false
+
+
+
+
+
+# Other
+line_split
+	type=int
+	default=80
+page_width
+	type=int
+	default=80
+	tab=LineWrappingTabPage
+	uiText=Maximum line width
+
+

@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+<!-- =================================================================================== -->
+<!-- Extension Point: Initializers of Classpath Variables                                -->
+<!-- =================================================================================== -->
+
+<extension-point name="%classpathVariableInitializersName" 
+	id="classpathVariableInitializer"
+	schema="schema/classpathVariableInitializer.exsd"/>
+  
+<!-- =================================================================================== -->
+<!-- Extension Point: Initializers of Classpath Containers                               -->
+<!-- =================================================================================== -->
+
+<extension-point name="%classpathContainerInitializersName" 
+	id="classpathContainerInitializer" 
+	schema="schema/classpathContainerInitializer.exsd"/>
+
+<!-- =================================================================================== -->
+<!-- Extensions                                                                          -->
+<!-- =================================================================================== -->
+
+	<!--
+   <extension
+         point="org.eclipse.ant.core.antTasks">
+      <antTask
+            class="descent.ant.tasks.BinToD"
+            library="ant_tasks/descent-ant.jar"
+            name="descent.ant.tasks.BinToD"/>
+      <antTask
+            class="descent.ant.tasks.D"
+            library="ant_tasks/descent-ant.jar"
+            name="descent.ant.tasks.D"/>
+      <antTask
+            class="descent.ant.tasks.DModuleBuildNumber"
+            library="ant_tasks/descent-ant.jar"
+            name="descent.ant.tasks.DModuleBuildNumber"/>
+   </extension>
+   -->
+   <extension
+         point="org.eclipse.ant.core.extraClasspathEntries">
+      <extraClasspathEntry library="ant_tasks/descent-ant.jar"/>
+   </extension>
+
+   <extension
+         id="dnature"
+         name="%javaNatureName"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run class="descent.internal.core.JavaProject"/>
+      </runtime>
+   </extension>   
+
+   <extension
+         point="org.eclipse.core.runtime.contentTypes">
+      <content-type
+            base-type="org.eclipse.core.runtime.text"
+            file-extensions="d, di"
+            id="dSource"
+            name="%javaSourceName"
+            priority="high"/>
+      <content-type
+            base-type="org.eclipse.core.runtime.text"
+            file-names="trace.log"
+            id="dTraceLog"
+            name="D Trace Log"
+            priority="high"/>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer class="descent.internal.core.JavaCorePreferenceInitializer"/>
+      <modifier class="descent.internal.core.JavaCorePreferenceModifyListener"/>
+   </extension>
+   <extension
+         id="problem"
+         name="%javaProblemName"
+         point="org.eclipse.core.resources.markers">
+      <super type="org.eclipse.core.resources.problemmarker"/>
+      <super type="org.eclipse.core.resources.textmarker"/>
+      <persistent value="true"/>
+      <attribute name="id"/>
+      <attribute name="flags"/>
+      <attribute name="arguments"/>
+      <attribute name="categoryId"/>
+   </extension>
+   <extension
+         id="task"
+         name="D task"
+         point="org.eclipse.core.resources.markers">
+      <super type="org.eclipse.core.resources.taskmarker"/>
+      <persistent value="true"/>
+   </extension>
+   
+   <extension
+         id="dbuilder"
+         name="%javaBuilderName"
+         point="org.eclipse.core.resources.builders">
+      <builder >
+         <run class="descent.internal.core.builder.JavaBuilder"/>
+      </builder>
+   </extension>
+   
+   <!-- =================================================================================== -->
+	<!-- Extension: User Library Container                                                   -->
+	<!-- =================================================================================== -->
+	<extension
+	      point="descent.core.classpathContainerInitializer">
+	      <classpathContainerInitializer
+	            class="descent.internal.core.UserLibraryClasspathContainerInitializer"
+	            id="descent.USER_LIBRARY">
+	      </classpathContainerInitializer>
+	   </extension>
+	
+	
+	<extension point="org.eclipse.core.expressions.propertyTesters">
+      <propertyTester
+            class="descent.internal.core.DLaunchableTester"
+            id="descent.launching.DLaunchableTester"
+            namespace="descent.launching"
+            properties="hasProjectNature, isExecutable"
+            type="org.eclipse.core.runtime.IAdaptable"/>            
+   </extension>
+   
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="descent.internal.core.ctfe.DescentLaunchConfigurationDelegate"
+            id="descent.debug.ctfe.application"
+            modes="debug"
+            name="D CTFE Application"
+            sourceLocatorId="descent.debug.ctfe.descentCtfeSourceLookupDirector"
+            sourcePathComputerId="descent.debug.ctfe.descentCtfeSourcePathComputer"/>
+   </extension>
+   <extension
+         point="org.eclipse.debug.core.sourceLocators">
+      <sourceLocator
+            class="descent.internal.core.ctfe.DescentSourceLookupDirector"
+            id="descent.debug.ctfe.descentCtfeSourceLookupDirector"
+            name="Descent CTFE Source Lookup Director"/>
+   </extension>
+   <extension
+         point="org.eclipse.debug.core.sourcePathComputers">
+      <sourcePathComputer
+            class="descent.internal.core.ctfe.DescentSourcePathComputerDelegate"
+            id="descent.debug.ctfe.descentCtfeSourcePathComputer"/>
+   </extension>
+   <extension
+         point="org.eclipse.debug.core.watchExpressionDelegates">
+      <watchExpressionDelegate
+            debugModel="descent.debug.ctfe.model"
+            delegateClass="descent.internal.core.ctfe.DescentWatchExpressionDelegate"/>
+   </extension>
+</plugin>

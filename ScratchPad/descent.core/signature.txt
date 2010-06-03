@@ -1,0 +1,64 @@
+This document explains the signature of types and symbols in Descent.
+
+ * Signatures for primitive types remain the same.
+ * For symbols:
+     - For modules, the symbol @ is used: @4some6module
+     - For classes, the letter C is used: C3Foo
+     - For structs, the letter S is used: S3Foo
+     - For interfaces, the symbol | is used: |3Foo
+     - For unions, the symbol & is used: &3Foo
+     - For enums, the symbol E is used: E3Foo
+     - For enum members, the symbol ~ is used: ~3Foo
+     - For variables, the symbol / is used: /3Foo
+     - For aliases, the symbol = is used: =3Foo
+     - For typedefs, the letter T is used: T3Foo
+     - For functions, the symbol [ is used, followed by the TypeFunction
+       signature: [3fooFZv.
+     - For an identifier, the symbol ? is used, and then like a module
+       ?4some2Id
+     - For a typeof, the symbol > is used, and then comes the length
+       of the expression to evaluate, then > again, and then the expression.
+     - For a slice, the symbol is ¬, then comes the type, then comes
+       the length of of the lwr expression, then > again, then the lwr expression,
+       and in the same way the upr expression.
+
+For example:
+
+ @4test3fooC3Bar --> class Bar in module test.foo
+ @4test[3fooF@4testC3BarZv --> function foo in module test,
+ 	taking class Bar in module test as the first argument, and returning
+ 	void
+ @test[3fooFZvCBar --> class Bar in function foo in module test
+  
+For symbols local to functions,
+it's the signature of the enclosing function followed by a single $, followed
+by the absolute start position of the symbol, folloed by the normal type signature. For example:
+
+  ...$50C3Bar   --> class Bar declared in the function, at absolute position 50
+  
+For invariants, unittests, static ctors and static dtors, it's the 
+signature of the enclosing symbol, followed by $,
+the position of it in the source file, and }.
+
+For templates, the symbol used is {. Following are the template parameters, followed by ':
+ - For an alias parameter, it's ]. If a " comes, the specific type comes.
+ - For a tuple parameter, it's %.
+ - For a type parameter, it's #. If a + comes, the specific type comes.
+ - For a value parameter, it's "," and then follows the type. If a number follows, 
+   it's the length of the specific value expression, whose start is marked by
+   another ",".
+   
+For a templated class, the symbol used is <. Following are the template parameters.
+
+For a templated function, the symbol used is >. Following is the function type, then come
+the template parameters.
+
+For a template instance, the symbol used is !. Then follows the parameters of
+the instance, then '.
+ - For a type parameter, the symbol used is ^, the comes the type.
+ - For an expression parameter, the symbol - is used, the comes the length,
+   then - again, then the expression. 
+ - For a symbol, the symbol * is used. Then comes the symbol's signature.
+ - TODO: tuples
+ 
+Template instances always follows a template.
