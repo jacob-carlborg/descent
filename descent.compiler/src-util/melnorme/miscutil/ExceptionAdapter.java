@@ -1,24 +1,35 @@
+/*******************************************************************************
+ * Copyright (c) 2007 DSource.org and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ * 		Bruce Eckel - initial ideia
+ *		Bruno Medeiros - modifications
+ *******************************************************************************/
 package melnorme.miscutil;
+
+import static melnorme.miscutil.Assert.assertNotNull;
 
 import java.io.IOException;
 
 
 /**
- * Excepetion adapter to make checked exceptions less annoying. 
+ * Exception adapter to make checked exceptions less annoying. 
  * Based on Bruce Eckel's article:
  * http://www.mindview.net/Etc/Discussions/CheckedExceptions
  */
 @SuppressWarnings("serial")
 public class ExceptionAdapter extends RuntimeException {
 
-	// The original checked exception
-	private Exception originalException;
 	// Number of frames that originalException traveled while checked
-	private int checkedLength; 
+	protected int checkedLength; 
 
-	public ExceptionAdapter(Exception e) {
-		super(e.toString());
-		originalException = e;
+	protected ExceptionAdapter(Exception e) {
+		super(e);
+		assertNotNull(e);
 		
 		// Determine checkedLength based on the difference to this stack trace
 		StackTraceElement[] est = e.getStackTrace();
@@ -37,7 +48,7 @@ public class ExceptionAdapter extends RuntimeException {
         synchronized(pr) {
             try {
 				pr.append(this.toString());
-	            StackTraceElement[] trace = originalException.getStackTrace();
+	            StackTraceElement[] trace = getCause().getStackTrace();
 	            for (int i=0; i < trace.length; i++) {
 	                pr.append("\tat " + trace[i]);
 	            	if(i == checkedLength)
@@ -60,16 +71,19 @@ public class ExceptionAdapter extends RuntimeException {
 		printStackTraceAppendable(pw);
 	}
 
+	@Override
+	public Exception getCause() {
+		return (Exception) super.getCause();
+	}
 
 	public void rethrow() throws Exception {
-		throw originalException;
+		throw getCause();
 	}
 
 	@Override
 	public String toString() {
-        //String name = getClass().getName();
-        //return name + "\n>> " + getLocalizedMessage();
-        return "[UE] " + getLocalizedMessage();
+        String className = getClass().getSimpleName();
+        return "["+className+"] " + getLocalizedMessage() + "\n";
 	}
 	
 	/** Creates an unchecked Throwable, if not unchecked already. */

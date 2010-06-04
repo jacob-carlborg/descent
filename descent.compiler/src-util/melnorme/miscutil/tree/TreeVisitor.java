@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2007 DSource.org and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Bruno Medeiros - initial implementation
+ *******************************************************************************/
 package melnorme.miscutil.tree;
 
 import java.lang.reflect.InvocationTargetException;
@@ -38,7 +48,7 @@ public abstract class TreeVisitor {
 		}
 	}
 
-	/** Same as {@link #acceptChild(CommonASTVisitor, TreeNode) } */
+	/** Same as {@link #acceptChild(Object, IVisitable) } */
 	public static <T> void acceptChildren(T visitor, IVisitable<T> child) {
 		TreeVisitor.acceptChild(visitor, child);
 	}

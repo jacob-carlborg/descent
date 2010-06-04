@@ -19,6 +19,5 @@ Export-Package: descent.core,
  descent.internal.compiler.parser.ast,
  descent.internal.core,
  melnorme.miscutil,
- melnorme.miscutil.log,
  melnorme.miscutil.tree
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

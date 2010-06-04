@@ -1,82 +1,73 @@
+/*******************************************************************************
+ * Copyright (c) 2007 DSource.org and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Bruno Medeiros - initial implementation
+ *******************************************************************************/
 package melnorme.miscutil;
 
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.OutputStreamWriter;
+
 /**
- * Miscelleanous file utilities 
- * XXX: what about closing the streams?
+ * Miscellaneous file utilities. 
  */
-public final class FileUtil {
-
-	/** Read all chars available in the given File. */
-	public static char[] readCharsFromFile(File file) throws IOException {
-
-		long length = file.length();
-	    /*
+public final class FileUtil extends StreamUtil {
+	
+	/** Read all bytes of the given file. 
+	 * @return the bytes that where read. */
+	public static byte[] readBytesFromFile(File file) throws IOException, FileNotFoundException {
+		long fileLength = file.length();
+		/*
 		 * You cannot create an array using a long type. It needs to be an
-		 * int type. // Before converting to an int type, check to ensure
+		 * int type. Before converting to an int type, check to ensure
 		 * that file is not larger than Integer.MAX_VALUE.
 		 */
-	    if (length > Integer.MAX_VALUE) 
-	    	throw new ExceptionAdapter(new IOException("File is too large"));
-	    
-		FileReader fr = new java.io.FileReader(file);
-	
-	    // Create the char array to hold the data
-	    char[] chars = new char[(int)length];
-	
-	    // Read in the chars
-	    int offset = 0;
-	    int numRead = 0;
-	    while (offset < chars.length
-	           && (numRead = fr.read(chars, offset, chars.length-offset)) >= 0) {
-	        offset += numRead;
-	    }
-	
-	    // Ensure all the bytes have been read in
-	    if (offset < chars.length) {
-	        throw new IOException("Could not completely read file "+file.getName());
-	    }
-	
-	    fr.close();
-	    return chars;
-	}
-
-	/** Read all chars available in the given File, returns a String */
-	public static String readStringFromFile(File file) throws IOException {
-		return new String(readCharsFromFile(file));
-	}
-
-
-	/** Read all chars available in the given Reader. */
-	public static char[] readCharsFromReader(Reader reader) throws IOException {
-	    char[] buffer = new char[1024];
-	
-	    // Read in the bytes
-	    char[] chars = new char[0];
-	    int offset = 0;
-
-	    int numRead = 0;
-	    while ( (numRead = reader.read(buffer, 0, 1024)) >= 0) {
-	    	chars = ArrayUtil.createNew(chars, offset + numRead);
-	    	System.arraycopy(buffer, 0, chars, offset, numRead);
-	    	offset += numRead;
-	    }
-	    
-	    return chars;
+		if (fileLength > Integer.MAX_VALUE) 
+			throw new IOException("File is too large, size is bigger than " + Integer.MAX_VALUE);
+		
+		FileInputStream fis = new FileInputStream(file);
+		return readBytesFromStream(fis, (int) fileLength);
 	}
 	
-	/** Read all chars available in the given Reader, returns a String. */
-	public static String readStringFromReader(Reader reader) throws IOException {
-		return new String(readCharsFromReader(reader));
+	/** Read all bytes of the given file.
+	 * @return a String created from given bytes, with given charsetName. */
+	public static String readStringFromFile(File file, String charsetName) throws IOException, FileNotFoundException {
+		return new String(readBytesFromFile(file), charsetName);
 	}
-
-	/** Read all chars available in the given InputStream, returns a String. */
-	public static String readStringFromStream(InputStream inputStream) throws IOException {
-		return readStringFromReader(new InputStreamReader(inputStream));
+	
+	
+	/** Write the given array of bytes to given file */
+	public static void writeBytesToFile(byte[] bytes, File file) throws IOException,
+			FileNotFoundException {
+		FileOutputStream fileOS = new FileOutputStream(file);
+		writeBytesToStream(bytes, fileOS);
 	}
+	
+	/** Writes given chars array to given writer. 
+	 * Close writer afterwards. */
+	public static void writeCharsToFile(char[] chars, File file, String charsetName) 
+			throws IOException, FileNotFoundException {
+		FileOutputStream fileOS = new FileOutputStream(file);
+		OutputStreamWriter osWriter = new OutputStreamWriter(fileOS, charsetName);
+		writeCharsToWriter(chars, osWriter);
+	}
+	
+	/** Writes given string to given writer. 
+	 * Close writer afterwards. */
+	public static void writeStringToFile(String string, File file, String charsetName) 
+			throws IOException, FileNotFoundException {
+		FileOutputStream fileOS = new FileOutputStream(file);
+		OutputStreamWriter osWriter = new OutputStreamWriter(fileOS, charsetName);
+		writeStringToWriter(string, osWriter);
+	}
+	
 }
