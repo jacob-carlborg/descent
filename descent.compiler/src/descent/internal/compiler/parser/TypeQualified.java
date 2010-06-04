@@ -292,6 +292,7 @@ public abstract class TypeQualified extends Type {
 		return lineNumber;
 	}
 	
+	@Override
 	public void setLineNumber(int lineNumber) {
 		this.lineNumber = lineNumber;
 	}

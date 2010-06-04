@@ -53,6 +53,7 @@ public class TraitsExp extends Expression {
 		else if (equals(ident, Id.isFloating)) {
 			// ISTYPE(t.isfloating())
 			return isType(new ISTYPE_Conditional() {
+				@Override
 				public boolean check(Type t) {
 					return t.isfloating();
 				}
@@ -62,6 +63,7 @@ public class TraitsExp extends Expression {
 		else if (equals(ident, Id.isIntegral)) {
 			// ISTYPE(t.isintegral())
 			return isType(new ISTYPE_Conditional() {
+				@Override
 				public boolean check(Type t) {
 					return t.isintegral();
 				}
@@ -71,6 +73,7 @@ public class TraitsExp extends Expression {
 		else if (equals(ident, Id.isScalar)) {
 			// ISTYPE(t.isscalar())
 			return isType(new ISTYPE_Conditional() {
+				@Override
 				public boolean check(Type t) {
 					return t.isscalar(context);
 				}
@@ -80,6 +83,7 @@ public class TraitsExp extends Expression {
 		else if (equals(ident, Id.isUnsigned)) {
 			// ISTYPE(t.isunsigned())
 			return isType(new ISTYPE_Conditional() {
+				@Override
 				public boolean check(Type t) {
 					return t.isunsigned();
 				}
@@ -89,6 +93,7 @@ public class TraitsExp extends Expression {
 		else if (equals(ident, Id.isAssociativeArray)) {
 			// ISTYPE(t.toBasetype().ty == Taarray)
 			return isType(new ISTYPE_Conditional() {
+				@Override
 				public boolean check(Type t) {
 					return t.toBasetype(context).ty == TY.Taarray;
 				}
@@ -98,6 +103,7 @@ public class TraitsExp extends Expression {
 		else if (equals(ident, Id.isStaticArray)) {
 			// ISTYPE(t.toBasetype().ty == Tsarray)
 			return isType(new ISTYPE_Conditional() {
+				@Override
 				public boolean check(Type t) {
 					return t.toBasetype(context).ty == TY.Tsarray;
 				}
@@ -108,6 +114,7 @@ public class TraitsExp extends Expression {
 			// ISTYPE(t.toBasetype().ty == Tclass && ((TypeClass
 			// *)t.toBasetype()).sym.isAbstract())
 			return isType(new ISTYPE_Conditional() {
+				@Override
 				public boolean check(Type t) {
 					return t.toBasetype(context).ty == TY.Tclass
 							&& ((TypeClass) t.toBasetype(context)).sym
@@ -120,6 +127,7 @@ public class TraitsExp extends Expression {
 			// ISTYPE(t.toBasetype().ty == Tclass && ((TypeClass
 			// *)t.toBasetype()).sym.storage_class & STCfinal)
 			return isType(new ISTYPE_Conditional() {
+				@Override
 				public boolean check(Type t) {
 					return t.toBasetype(context).ty == TY.Tclass
 							&& ((((TypeClass) t.toBasetype(context)).sym.storage_class & STC.STCfinal) != 0);
@@ -130,6 +138,7 @@ public class TraitsExp extends Expression {
 		else if (equals(ident, Id.isAbstractFunction)) {
 			// ISDSYMBOL((f = s.isFuncDeclaration()) != NULL && f.isAbstract())
 			return isDSymbol(new ISDSYMBOL_Conditional() {
+				@Override
 				public boolean check(Dsymbol s) {
 					FuncDeclaration f = s.isFuncDeclaration();
 					return null != f && f.isAbstract();
@@ -140,6 +149,7 @@ public class TraitsExp extends Expression {
 		else if (equals(ident, Id.isVirtualFunction)) {
 			// ISDSYMBOL((f = s.isFuncDeclaration()) != NULL && f.isVirtual())
 			return isDSymbol(new ISDSYMBOL_Conditional() {
+				@Override
 				public boolean check(Dsymbol s) {
 					FuncDeclaration f = s.isFuncDeclaration();
 					return null != f && f.isVirtual(context);
@@ -150,6 +160,7 @@ public class TraitsExp extends Expression {
 		else if (equals(ident, Id.isFinalFunction)) {
 			// ISDSYMBOL((f = s.isFuncDeclaration()) != NULL && f.isFinal())
 			return isDSymbol(new ISDSYMBOL_Conditional() {
+				@Override
 				public boolean check(Dsymbol s) {
 					FuncDeclaration f = s.isFuncDeclaration();
 					return null != f && f.isFinal();

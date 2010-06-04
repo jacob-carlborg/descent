@@ -1201,51 +1201,62 @@ public class Problem implements IProblem {
 	public int getLength() {
 		return sourceEnd;
 	}
-
+	@Override
 	public int getSourceStart() {
 		return sourceStart;
 	}
 	
+	@Override
 	public int getSourceEnd() {
 		return sourceEnd;
 	}
 	
+	@Override
 	public boolean isError() {
 		return isError;
 	}
 	
+	@Override
 	public boolean isWarning() {
 		return !isError;
 	}
 	
+	@Override
 	public int getSourceLineNumber() {
 		return sourceLineNumber;
 	}
 	
+	@Override
 	public int getCategoryID() {
 		return categoryId;
 	}
 	
+	@Override
 	public String getMarkerType() {
 		return "descent.core.problem";
 	}
 	
+	@Override
 	public String[] getArguments() {
 		return CharOperation.NO_STRINGS;
 	}
 	
+	@Override
 	public char[] getOriginatingFileName() {
 		return CharOperation.NO_CHAR;
 	}
 
+	@Override
 	public void setSourceEnd(int sourceEnd) {
 		this.sourceEnd = sourceEnd;
 	}
 
+	@Override
 	public void setSourceLineNumber(int lineNumber) {
 		this.sourceLineNumber = lineNumber;
 	}
 
+	@Override
 	public void setSourceStart(int sourceStart) {
 		this.sourceStart = sourceStart;
 	}
@@ -1271,6 +1282,7 @@ public class Problem implements IProblem {
 	 * and thus could be used to override defaults.
 	 * @return the names of the corresponding marker attributes
 	 */
+	@Override
 	public String[] getExtraMarkerAttributeNames() {
 		return CharOperation.NO_STRINGS;
 	}
@@ -1282,6 +1294,7 @@ public class Problem implements IProblem {
 	 * The values must be eligible for marker creation, as defined by <code>IMarker#setAttributes(String[], Object[])</code>.
 	 * @return the values of the corresponding extra marker attributes
 	 */
+	@Override
 	public Object[] getExtraMarkerAttributeValues() {
 		return NO_OBJECTS;
 	}

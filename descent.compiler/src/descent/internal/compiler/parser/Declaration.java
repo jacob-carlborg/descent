@@ -241,7 +241,7 @@ public abstract class Declaration extends Dsymbol {
 		buf.data = null;
 		return p;
 	}
-	
+	@Override
 	public Type type() {
 		return type;
 	}

@@ -165,6 +165,7 @@ public class TypedefDeclaration extends Declaration {
 		buf.writenl();
 	}
 	
+	@Override
 	public char getSignaturePrefix() {
 		return Signature.C_TYPEDEF;
 	}

@@ -5,8 +5,10 @@ import descent.internal.compiler.parser.*;
 import descent.internal.compiler.parser.Package;
 
 public interface IASTVisitor extends ITreeVisitor<ASTNode> {
-
+	
+	@Override
 	void preVisit(ASTNode node);
+	@Override
 	void postVisit(ASTNode node);
 	
 	//boolean visit(IASTNode node);

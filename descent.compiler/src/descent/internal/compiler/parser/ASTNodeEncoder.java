@@ -20,6 +20,7 @@ public class ASTNodeEncoder {
 				char[] filename);
 		
 		IParserFactory Default = new IParserFactory() {
+			@Override
 			public Parser newParser(char[] source, int offset, int length,
 					boolean tokenizeComments, boolean tokenizePragmas, boolean tokenizeWhiteSpace, boolean recordLineSeparator,
 					int apiLevel, char[][] taskTags, char[][] taskPriorities, boolean isTaskCaseSensitive,

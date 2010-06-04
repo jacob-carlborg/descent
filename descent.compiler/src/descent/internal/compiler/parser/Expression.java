@@ -720,7 +720,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 	public int getLineNumber() {
 		return lineNumber;
 	}
-
+	@Override
 	public void setLineNumber(int lineNumber) {
 		this.lineNumber = lineNumber;
 	}

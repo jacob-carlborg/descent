@@ -772,6 +772,7 @@ public class TypeFunction extends TypeNext implements Cloneable {
 		inuse--;
 	}
 	
+	@Override
 	public TypeFunction copy() {
 		try {
 			return (TypeFunction) clone();

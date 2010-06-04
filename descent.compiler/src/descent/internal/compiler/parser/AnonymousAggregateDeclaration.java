@@ -18,7 +18,7 @@ public class AnonymousAggregateDeclaration extends AggregateDeclaration {
 	public AnonymousAggregateDeclaration isAnonymousAggregateDeclaration() {
 		return this;
 	}
-	
+	@Override
 	public char getSignaturePrefix() {
 		// TODO Descent signature
 		return 0;

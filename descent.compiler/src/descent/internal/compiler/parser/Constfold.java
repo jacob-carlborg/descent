@@ -46,6 +46,7 @@ public class Constfold {
 	}
 
 	public static final UnaExp_fp Neg = new UnaExp_fp() {
+		@Override
 		public Expression call(Type type, Expression e1, SemanticContext context) {
 			Expression e;
 			char[] filename = e1.filename;
@@ -67,6 +68,7 @@ public class Constfold {
 	};
 
 	public static final UnaExp_fp Com = new UnaExp_fp() {
+		@Override
 		public Expression call(Type type, Expression e1, SemanticContext context) {
 			Expression e;
 			char[] filename = e1.filename;
@@ -79,6 +81,7 @@ public class Constfold {
 	};
 
 	public static final UnaExp_fp Not = new UnaExp_fp() {
+		@Override
 		public Expression call(Type type, Expression e1, SemanticContext context) {
 			Expression e;
 			char[] filename = e1.filename;
@@ -91,6 +94,7 @@ public class Constfold {
 	};
 
 	public static final UnaExp_fp Ptr = new UnaExp_fp() {
+		@Override
 		public Expression call(Type type, Expression e1, SemanticContext context) {
 			if (e1.op == TOKadd) {
 				AddExp ae = (AddExp) e1;
@@ -112,6 +116,7 @@ public class Constfold {
 	};
 
 	public static final UnaExp_fp Bool = new UnaExp_fp() {
+		@Override
 		public Expression call(Type type, Expression e1, SemanticContext context) {
 			Expression e;
 			char[] filename = e1.filename;
@@ -124,6 +129,7 @@ public class Constfold {
 	};
 
 	public static final UnaExp_fp ArrayLength = new UnaExp_fp() {
+		@Override
 		public Expression call(Type type, Expression e1, SemanticContext context) {
 			Expression e;
 			char[] filename = e1.filename;
@@ -153,6 +159,7 @@ public class Constfold {
 	};
 
 	public static final UnaExp_fp expType = new UnaExp_fp() {
+		@Override
 		public Expression call(Type type, Expression e, SemanticContext context) {
 			if (!type.equals(e.type)) {
 				e = e.copy();
@@ -169,6 +176,7 @@ public class Constfold {
 	}
 
 	public static final BinExp_fp Add = new BinExp_fp() {
+		@Override
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context) {
 			Expression e;
@@ -268,6 +276,7 @@ public class Constfold {
 	};
 
 	public static final BinExp_fp Min = new BinExp_fp() {
+		@Override
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context) {
 			Expression e;
@@ -366,6 +375,7 @@ public class Constfold {
 	};
 
 	public static final BinExp_fp Mul = new BinExp_fp() {
+		@Override
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context) {
 			Expression e;
@@ -418,6 +428,7 @@ public class Constfold {
 	};
 
 	public static final BinExp_fp Div = new BinExp_fp() {
+		@Override
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context) {
 			Expression e;
@@ -485,6 +496,7 @@ public class Constfold {
 	};
 
 	public static final BinExp_fp Mod = new BinExp_fp() {
+		@Override
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context) {
 			Expression e;
@@ -543,6 +555,7 @@ public class Constfold {
 	};
 
 	public static final BinExp_fp Shl = new BinExp_fp() {
+		@Override
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context) {
 			Expression e;
@@ -558,6 +571,7 @@ public class Constfold {
 	};
 
 	public static final BinExp_fp Shr = new BinExp_fp() {
+		@Override
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context) {
 			Expression e;
@@ -603,6 +617,7 @@ public class Constfold {
 	};
 
 	public static final BinExp_fp Ushr = new BinExp_fp() {
+		@Override
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context) {
 			Expression e;
@@ -642,6 +657,7 @@ public class Constfold {
 	};
 
 	public static final BinExp_fp And = new BinExp_fp() {
+		@Override
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context) {
 			Expression e;
@@ -655,6 +671,7 @@ public class Constfold {
 	};
 
 	public static final BinExp_fp Or = new BinExp_fp() {
+		@Override
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context) {
 			Expression e;
@@ -667,6 +684,7 @@ public class Constfold {
 	};
 
 	public static final BinExp_fp Xor = new BinExp_fp() {
+		@Override
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context) {
 			Expression e;
@@ -679,6 +697,7 @@ public class Constfold {
 	};
 
 	public static final BinExp_fp Index = new BinExp_fp() {
+		@Override
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context) {
 			Expression e = EXP_CANT_INTERPRET;
@@ -759,6 +778,7 @@ public class Constfold {
 	};
 
 	public static final BinExp_fp Cat = new BinExp_fp() {
+		@Override
 		public Expression call(Type type, Expression e1, Expression e2,
 				SemanticContext context) {
 			Expression e = EXP_CANT_INTERPRET;
@@ -1003,6 +1023,7 @@ public class Constfold {
 	}
 
 	public static final BinExp_fp2 Equal = new BinExp_fp2() {
+		@Override
 		public Expression call(TOK op, Type type, Expression e1, Expression e2,
 				SemanticContext context) {
 			Expression e;
@@ -1178,6 +1199,7 @@ public class Constfold {
 	};
 
 	public static final BinExp_fp2 Cmp = new BinExp_fp2() {
+		@Override
 		public Expression call(TOK op, Type type, Expression e1, Expression e2,
 				SemanticContext context) {
 			Expression e;
@@ -1433,6 +1455,7 @@ public class Constfold {
 	};
 
 	public static final BinExp_fp2 Identity = new BinExp_fp2() {
+		@Override
 		public Expression call(TOK op, Type type, Expression e1, Expression e2,
 				SemanticContext context) {
 			char[] filename = e1.filename;

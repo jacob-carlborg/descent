@@ -4,6 +4,7 @@ public final class StringTableHolder implements IStringTableHolder {
 	
 	private StringTable stringTable;
 
+	@Override
 	public StringTable getStringTable() {
 		if (stringTable == null) {
 			stringTable = new StringTable();

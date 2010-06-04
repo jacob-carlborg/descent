@@ -361,6 +361,7 @@ public class VarDeclaration extends Declaration {
 		return false;
 	}
 
+	@Override
 	public boolean isIn() {
 		return (storage_class & STCin) != 0;
 	}
@@ -1208,6 +1209,7 @@ public class VarDeclaration extends Declaration {
 		return lineNumber;
 	}
 	
+	@Override
 	public void setLineNumber(int lineNumber) {
 		this.lineNumber = lineNumber;
 	}
@@ -1264,6 +1266,7 @@ public class VarDeclaration extends Declaration {
 		this.nestedref = nestedref;
 	}
 	
+	@Override
 	public char getSignaturePrefix() {
 		return Signature.C_VARIABLE;
 	}

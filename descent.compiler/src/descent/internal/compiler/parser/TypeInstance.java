@@ -328,6 +328,7 @@ public class TypeInstance extends TypeQualified {
 		toCBuffer2Helper(buf, hgs, context);
 	}
 	
+	@Override
 	public Dsymbol toDsymbol(Scope sc, SemanticContext context)
 	{
 	    Type[] t = { null };

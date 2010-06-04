@@ -85,6 +85,7 @@ public abstract class Initializer extends ASTDmdNode {
 		return lineNumber;
 	}
 	
+	@Override
 	public void setLineNumber(int lineNumber) {
 		this.lineNumber = lineNumber;
 	}

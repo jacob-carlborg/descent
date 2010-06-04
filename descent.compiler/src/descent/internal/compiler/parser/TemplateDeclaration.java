@@ -1212,6 +1212,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 	/**
 	 * We can overload templates.
 	 */
+	@Override
 	public boolean isOverloadable() {
 		return true;
 	}

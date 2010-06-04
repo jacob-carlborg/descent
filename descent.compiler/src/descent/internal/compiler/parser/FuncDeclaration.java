@@ -2586,6 +2586,7 @@ public class FuncDeclaration extends Declaration {
 	 * otherwise return NULL.
 	 */
 	public final static OverloadApply_fp fpunique = new OverloadApply_fp() {
+		@Override
 		public int call(Object param, FuncDeclaration f, SemanticContext context) {
 			FuncDeclaration[] pf = (FuncDeclaration[]) param;
 			if (pf[0] != null) {

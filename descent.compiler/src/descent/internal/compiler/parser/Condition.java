@@ -25,7 +25,7 @@ public abstract class Condition extends ASTRangeLessNode {
 	public int getLineNumber() {
 		return lineNumber;
 	}
-	
+	@Override
 	public void setLineNumber(int lineNumber) {
 		this.lineNumber = lineNumber;
 	}

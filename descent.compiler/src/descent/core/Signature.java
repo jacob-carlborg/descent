@@ -1242,17 +1242,17 @@ public static int getParameterCount(String signature) throws IllegalArgumentExce
 	SignatureProcessor.process(signature, false /* don't want sub-signatures */,
 		new SignatureRequestorAdapter() {		
 			private int functionTypeCount = 0;
-			
+			@Override
 			public void acceptArgumentModifier(int stc) { 
 				if (functionTypeCount == 1) {
 					count[0]++;
 				}
 			}
-	
+			@Override
 			public void enterFunctionType() {
 				functionTypeCount++;
 			}
-	
+			@Override
 			public void exitFunctionType(LINK link, char argumentBreak, String signature) {
 				functionTypeCount--;
 			}
@@ -1563,6 +1563,7 @@ public static String getReturnType(String methodSignature) throws IllegalArgumen
 			public void acceptStaticArray(char[] dimension, String signature) {
 				copy(signature);
 			}
+			@Override
 			public void acceptTuple(String signature, int numberOfTypes) {
 				copy(signature);
 			}
@@ -1792,6 +1793,7 @@ public static String toString(final String signature, final boolean fqn, final b
 				
 				st.push(sb);
 			}
+			@Override
 			public void acceptTuple(String signature, int numberOfTypes) {
 				Stack<StringBuilder> st = stack.peek();
 				
@@ -2393,6 +2395,7 @@ public static int getTypeSignatureKind(String signature) {
 		public void acceptIdentifier(char[][] compoundName, String signature) {
 			kind[0] = IDENTIFIER_TYPE_SIGNATURE;
 		}
+		@Override
 		public void acceptTuple(String signature, int numberOftypes) {
 			kind[0] = TUPLE_TYPE_SIGNATURE;
 		}

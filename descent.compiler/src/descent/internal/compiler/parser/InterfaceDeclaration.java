@@ -370,6 +370,7 @@ public class InterfaceDeclaration extends ClassDeclaration {
 		return cpp;
 	}
 	
+	@Override
 	public char getSignaturePrefix() {
 		if (templated) {
 			return Signature.C_TEMPLATED_INTERFACE;

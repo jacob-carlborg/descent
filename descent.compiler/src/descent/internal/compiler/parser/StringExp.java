@@ -587,6 +587,7 @@ public class StringExp extends Expression {
 		return e;
 	}
 
+	@Override
 	public boolean equals(Object obj, SemanticContext context) {
 		if (!(obj instanceof ASTDmdNode)) {
 			return false;

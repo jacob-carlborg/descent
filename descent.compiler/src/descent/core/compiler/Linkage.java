@@ -43,6 +43,7 @@ public enum Linkage {
 	 * 
 	 * @return the character sequence for the linkage
 	 */
+	@Override
 	public String toString() {
 		return token;
 	}

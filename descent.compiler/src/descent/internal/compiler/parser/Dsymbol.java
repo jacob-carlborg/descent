@@ -656,7 +656,7 @@ public class Dsymbol extends ASTDmdNode {
 	public int getLineNumber() {
 		return lineNumber;
 	}
-	
+	@Override
 	public void setLineNumber(int lineNumber) {
 		this.lineNumber = lineNumber;
 	}

@@ -286,7 +286,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 	public boolean isCPPinterface() {
 		return false;
 	}
-
+	@Override
 	public boolean isNested() {
 		return isnested;
 	}
@@ -868,6 +868,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 	}
 	
 	public final static OverloadApply_fp isf = new OverloadApply_fp() {
+		@Override
 		public int call(Object param, FuncDeclaration f, SemanticContext context) {
 			return isf(param, f);
 		}

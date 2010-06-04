@@ -73,6 +73,7 @@ public class UnionDeclaration extends StructDeclaration {
 		return 5; // "union".length()
 	}
 	
+	@Override
 	public char getSignaturePrefix() {
 		if (templated) {
 			return Signature.C_TEMPLATED_UNION;

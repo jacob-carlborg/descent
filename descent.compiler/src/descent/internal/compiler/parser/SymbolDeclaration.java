@@ -17,6 +17,7 @@ public class SymbolDeclaration extends Declaration {
 		storage_class |= STCconst;
 	}
 
+	@Override
 	public SymbolDeclaration isSymbolDeclaration() {
 		return this;
 	}

@@ -359,6 +359,7 @@ public class AliasDeclaration extends Declaration {
 		buf.writenl();
 	}
 	
+	@Override
 	public char getSignaturePrefix() {
 		return Signature.C_ALIAS;
 	}

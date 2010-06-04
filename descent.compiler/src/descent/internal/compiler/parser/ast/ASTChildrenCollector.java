@@ -21,18 +21,18 @@ public class ASTChildrenCollector extends ASTHomoVisitor {
 	public static ASTNode[] getChildrenArray(ASTNode elem){
 		return getChildrenList(elem).toArray(ASTNode.NO_ELEMENTS);
 	}	
-	
+	@Override
 	public boolean enterNode(ASTNode elem) {
 		if(visitingParent == true) {
 			visitingParent = false;
 			return true; // visit children
 		}
-
+		
 		// visiting children
 		childrenLst.add(elem);
 		return false;
 	}
-
+	@Override
 	protected void leaveNode(ASTNode elem) {
 		// Do nothing
 	}

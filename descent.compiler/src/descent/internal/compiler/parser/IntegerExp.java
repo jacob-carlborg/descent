@@ -78,6 +78,7 @@ public class IntegerExp extends Expression {
 		return num;
 	}
 
+	@Override
 	public boolean equals(Object o, SemanticContext context) {
 		if (this == o) {
 			return true;

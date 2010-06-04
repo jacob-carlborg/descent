@@ -132,6 +132,7 @@ public abstract class Statement extends ASTDmdNode {
 		return lineNumber;
 	}
 	
+	@Override
 	public void setLineNumber(int lineNumber) {
 		this.lineNumber = lineNumber;
 	}	

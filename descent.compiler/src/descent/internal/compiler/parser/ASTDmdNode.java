@@ -1516,7 +1516,7 @@ public abstract class ASTDmdNode extends ASTNode {
 	}
 	
 	public final static OverloadApply_fp fp1 = new OverloadApply_fp() {
-
+		@Override
 		public int call(Object param, FuncDeclaration f, SemanticContext context) {
 			Param1 p = (Param1) param;
 			Type t = p.t;
@@ -1547,7 +1547,7 @@ public abstract class ASTDmdNode extends ASTNode {
 	};
 
 	public final static OverloadApply_fp fp2 = new OverloadApply_fp() {
-
+		@Override
 		public int call(Object param, FuncDeclaration f, SemanticContext context) {
 			Param2 p = (Param2) param;
 			Match m = p.m;

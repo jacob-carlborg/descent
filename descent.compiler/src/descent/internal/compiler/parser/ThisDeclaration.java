@@ -9,6 +9,7 @@ public class ThisDeclaration extends VarDeclaration {
 		super(filename, lineNumber, type, Id.This, null);
 	}
 	
+	@Override
 	public ThisDeclaration isThisDeclaration() {
 		return this;
 	}

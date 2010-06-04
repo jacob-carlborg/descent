@@ -61,6 +61,7 @@ public class IdentifierExp extends Expression {
 		return DYNCAST.DYNCAST_IDENTIFIER;
 	}
 
+	@Override
 	public boolean equals(Object o, SemanticContext context) {
 		if (o instanceof char[]) {
 			char[] c = (char[]) o;

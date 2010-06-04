@@ -163,6 +163,7 @@ public class SemanticContext implements IStringTableHolder {
 		afterParse(module);
 	}
 	
+	@Override
 	public StringTable getStringTable() {
 		return holder.getStringTable();
 	}

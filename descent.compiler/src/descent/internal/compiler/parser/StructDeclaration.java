@@ -704,6 +704,7 @@ public class StructDeclaration extends AggregateDeclaration {
 		return 6; // "struct".length()
 	}
 	
+	@Override
 	public char getSignaturePrefix() {
 		if (templated) {
 			return Signature.C_TEMPLATED_STRUCT;

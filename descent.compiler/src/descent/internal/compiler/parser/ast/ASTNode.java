@@ -1,7 +1,6 @@
 package descent.internal.compiler.parser.ast;
 
 import melnorme.miscutil.Assert;
-import melnorme.miscutil.AssertIn;
 import melnorme.miscutil.tree.IElement;
 import melnorme.miscutil.tree.IVisitable;
 import descent.internal.compiler.parser.ASTDmdNode;
@@ -12,7 +11,7 @@ public abstract class ASTNode
 	public static final ASTDmdNode[] NO_ELEMENTS = new ASTDmdNode[0]; 
 	
 	/** AST node parent, null if the node is the tree root. */
-//	public ASTNode parentBruno = null;
+	public ASTNode parentBruno = null;
 	
 	/** A character index into the original source string, 
 	 * or <code>-1</code> if no source position information is available
@@ -24,37 +23,41 @@ public abstract class ASTNode
 	 */
 	public int length = 0;
 
-	/** {@inheritDoc} */
-//	public ASTNode getParentBruno() {
-//		return parentBruno;
-//	}
+	@Override
+	public ASTNode getParent() {
+		return parentBruno;
+	}
 	
 	/** Set the parent of this node. Can be null. */
-//	public void setParentBruno(ASTNode parent) {
-//		this.parentBruno = parent;
-//	}
+	public void setParent(ASTNode parent) {
+		this.parentBruno = parent;
+	}
 	
 	/** Gets the source range start position, aka offset. */
+	@Override
 	public final int getStartPos() {
 		return start;
 	}
 	/** Gets the source range start position, aka offset. */
+	@Override
 	public final int getOffset() {
 		return start;
 	}
 	/** Gets the source range length. */
+	@Override
 	public final int getLength() {
 		return length;
 	}
 	
 	/** Gets the source range end position (start position + length). */
+	@Override
 	public final int getEndPos() {
 		Assert.isTrue(start != -1);
 		return start+length;
 	}
 	/** Sets the source range end position (start position + length). */
 	public final void setEndPos(int endPos) {
-		AssertIn.isTrue(endPos >= start);
+		Assert.isTrue(endPos >= start);
 		Assert.isTrue(start != -1);
 		length = endPos - start ;
 	}
@@ -72,21 +75,23 @@ public abstract class ASTNode
 	}
 	
 	/** Checks if the node has no defined source range info. */
+	@Override
 	public final boolean hasNoSourceRangeInfo() {
 		return start == -1;
 	}
 	
-	/** {@inheritDoc} */
+	@Override
 	public boolean hasChildren() {
 		return getChildren().length > 0;
 	}
 	
 	/** Returns the node's children, ordered. */
+	@Override
 	public ASTNode[] getChildren() {
 		return (ASTNode[]) ASTChildrenCollector.getChildrenArray(this);
 	}
 	
-	/** {@inheritDoc} */
+	@Override
 	public final void accept(IASTVisitor visitor) {
 		// begin with the generic pre-visit
 		visitor.preVisit(this);
@@ -115,6 +120,7 @@ public abstract class ASTNode
 
 
 	/** Returns a simple string representation of the node. */
+	@Override
 	public String toString() {
 		StringBuffer buffer = new StringBuffer();
 		int p = buffer.length();
@@ -180,6 +186,7 @@ public abstract class ASTNode
 	}
 	
 	/** Gets an extended String representation of given node. (for debugging) */
+	@Override
 	public String toStringAsNode(boolean printRangeInfo) {
 		String str = toStringClassName();
 

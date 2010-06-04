@@ -25,6 +25,7 @@ public class CaseRangeStatement extends Statement {
 			    return s;
 	}
 	
+	@Override
 	public Statement semantic(Scope sc, SemanticContext context) {
 		SwitchStatement sw = sc.sw;
 
