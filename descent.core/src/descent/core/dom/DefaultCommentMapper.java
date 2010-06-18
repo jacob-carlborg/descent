@@ -15,6 +15,7 @@ import java.util.HashMap;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.ITerminalSymbols;
 import descent.core.compiler.InvalidInputException;
+import descent.core.compiler.PublicScanner;
 
 /**
  * Internal class for associating comments with AST nodes.

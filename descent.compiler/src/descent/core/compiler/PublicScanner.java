@@ -1,7 +1,5 @@
-package descent.core.dom;
+package descent.core.compiler;
 
-import descent.core.compiler.IScanner;
-import descent.core.compiler.InvalidInputException;
 import descent.internal.compiler.parser.TOK;
 
 /**
@@ -26,7 +24,8 @@ public class PublicScanner implements IScanner {
 		this.recordLineSeparator = recordLineSeparator;
 		this.apiLevel = apiLevel;
 	}
-
+	
+	@Override
 	public int getCurrentTokenEndPosition() {
 		if (lexer.token.value == TOK.TOKeof) {
 			return lexer.token.ptr + lexer.token.sourceLen;
@@ -34,7 +33,8 @@ public class PublicScanner implements IScanner {
 			return lexer.token.ptr + lexer.token.sourceLen - 1;
 		}
 	}
-
+	
+	@Override
 	public int getCurrentTokenStartPosition() {
 		return lexer.token.ptr;
 	}
@@ -44,45 +44,54 @@ public class PublicScanner implements IScanner {
 	public int getCurrentPosition() {
 		return getCurrentTokenEndPosition() + 1;
 	}
-
+	
+	@Override
 	public int getLineEnd(int lineNumber) {
 		return lexer.getLineEnd(lineNumber);
 	}
-
+	
+	@Override
 	public int[] getLineEnds() {
 		return lexer.getLineEnds();
 	}
-
+	
+	@Override
 	public int getLineNumber(int position) {
 		return lexer.getLineNumber(position);
 	}
-
+	
+	@Override
 	public int getLineStart(int lineNumber) {
 		return lexer.getLineStart(lineNumber);
 	}
-
+	
+	@Override
 	public int getNextToken() throws InvalidInputException {
 		return lexer.nextToken().terminalSymbol;
 	}
-
+	
+	@Override
 	public char[] getRawTokenSource() {
 		return lexer.token.getRawTokenSource();
 	}
 	
-
+	@Override
 	public char[] getCurrentTokenSource() {
 		// TODO replace unicode sequences
 		return lexer.token.getRawTokenSource();
 	}
 	
+	@Override
 	public String getRawTokenSourceAsString() {
 		return lexer.token.getRawTokenSourceAsString();
 	}
-
+	
+	@Override
 	public char[] getSource() {
 		return source;
 	}
-
+	
+	@Override
 	public void resetTo(int startPosition, int endPosition) {
 		if (this.lexer == null) {
 			this.lexer = new descent.internal.compiler.parser.Lexer(source, startPosition, endPosition - startPosition, tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator, apiLevel);
@@ -90,7 +99,8 @@ public class PublicScanner implements IScanner {
 			this.lexer.reset(startPosition, endPosition - startPosition);
 		}
 	}
-
+	
+	@Override
 	public void setSource(char[] source) {
 		this.source = source;
 		if (this.lexer == null) {

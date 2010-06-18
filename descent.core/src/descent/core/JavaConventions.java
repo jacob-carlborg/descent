@@ -20,11 +20,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import descent.core.compiler.CharOperation;
-import descent.core.compiler.IScanner;
-import descent.core.compiler.ITerminalSymbols;
-import descent.core.compiler.InvalidInputException;
 import descent.internal.compiler.lookup.TypeConstants;
-import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.ScannerHelper;
 import descent.internal.compiler.util.SuffixConstants;
 import descent.internal.core.ClasspathEntry;
@@ -38,11 +34,10 @@ import descent.internal.core.util.Messages;
  * instantiated or subclassed by clients.
  * </p>
  */
-public final class JavaConventions {
+public final class JavaConventions extends JavaConventions_Common {
 
 	private final static char DOT= '.';
 	private static final String PACKAGE_INFO = new String(TypeConstants.PACKAGE_INFO_NAME);
-	private final static IScanner SCANNER = ToolFactory.createScanner(true, true, true, false, Parser.DEFAULT_LEVEL);
 
 	private JavaConventions() {
 		// Not instantiable
@@ -75,42 +70,6 @@ public final class JavaConventions {
 		return rootPath1.isPrefixOf(rootPath2) || rootPath2.isPrefixOf(rootPath1);
 	}
 
-	/*
-	 * Returns the current identifier extracted by the scanner (without unicode
-	 * escapes) from the given id.
-	 * Returns <code>null</code> if the id was not valid
-	 */
-	private static synchronized char[] scannedIdentifier(String id) {
-		if (id == null) {
-			return null;
-		}
-		String trimmed = id.trim();
-		if (!trimmed.equals(id)) {
-			return null;
-		}
-		try {
-			SCANNER.setSource(id.toCharArray());
-			int token = SCANNER.getNextToken();
-			char[] currentIdentifier;
-			try {
-				currentIdentifier = SCANNER.getRawTokenSource();
-			} catch (ArrayIndexOutOfBoundsException e) {
-				return null;
-			}
-			int nextToken= SCANNER.getNextToken();
-			if (token == ITerminalSymbols.TokenNameIdentifier 
-				&& nextToken == ITerminalSymbols.TokenNameEOF
-				&& SCANNER.getCurrentTokenEndPosition() == id.length()) { // to handle case where we had an ArrayIndexOutOfBoundsException 
-																     // while reading the last token
-				return currentIdentifier;
-			} else {
-				return null;
-			}
-		}
-		catch (InvalidInputException e) {
-			return null;
-		}
-	}
 
 	/**
 	 * Validate the given compilation unit name.

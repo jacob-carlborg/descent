@@ -11,6 +11,7 @@ import org.eclipse.text.edits.TextEdit;
 
 import descent.core.ITypeRoot;
 import descent.core.compiler.IProblem;
+import descent.core.compiler.PublicScanner;
 
 /**
  * Compilation unit AST node.

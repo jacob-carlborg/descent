@@ -12,6 +12,7 @@ Eclipse-BuddyPolicy: registered
 Bundle-ClassPath: .
 Export-Package: descent.core,
  descent.core.compiler,
+ descent.core.ddoc,
  descent.internal.compiler,
  descent.internal.compiler.ast,
  descent.internal.compiler.env,

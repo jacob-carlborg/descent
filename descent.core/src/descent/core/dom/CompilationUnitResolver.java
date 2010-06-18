@@ -22,6 +22,7 @@ import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
 import descent.core.compiler.IProblem;
+import descent.core.compiler.PublicScanner;
 import descent.core.ctfe.IDebugger;
 import descent.core.dom.DefaultBindingResolver.BindingTables;
 import descent.internal.compiler.ICompilerRequestor;

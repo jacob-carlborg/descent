@@ -10,11 +10,9 @@
  *******************************************************************************/
 package descent.core;
 
-import java.util.Map;
-
 import descent.core.compiler.IScanner;
-import descent.core.formatter.CodeFormatter;
-import descent.internal.formatter.DefaultCodeFormatter;
+import descent.core.compiler.PublicScanner;
+import descent.internal.compiler.parser.Parser;
 
 /**
  * Factory for creating various compiler tools, such as scanners.
@@ -22,7 +20,7 @@ import descent.internal.formatter.DefaultCodeFormatter;
  *  This class provides static methods only; it is not intended to be instantiated or subclassed by clients.
  * </p>
  */
-public class ToolFactory {
+public class ParserToolFactory {
 
 	/**
 	 * Create a scanner, indicating the level of detail requested for tokenizing. The scanner can then be
@@ -52,7 +50,7 @@ public class ToolFactory {
 	 * @see descent.core.compiler.IScanner
 	 */
 	public static IScanner createScanner(boolean tokenizeComments, boolean tokenizePragmas, boolean tokenizeWhiteSpace, boolean recordLineSeparator, int apiLevel) {
-		return ParserToolFactory.createScanner(tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator, apiLevel);
+		return new PublicScanner(tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator, apiLevel);
 	}
 	
 
@@ -84,27 +82,7 @@ public class ToolFactory {
 	 * @see descent.core.compiler.IScanner
 	 */
 	public static IScanner createScanner(boolean tokenizeComments, boolean tokenizePragmas, boolean tokenizeWhiteSpace, boolean recordLineSeparator) {
-		return ParserToolFactory.createScanner(tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator);
-	}
-	
-	/**
-	 * Create an instance of the built-in code formatter.
-	 * <p>The given options should at least provide the source level ({@link JavaCore#COMPILER_SOURCE}),
-	 * the  compiler compliance level ({@link JavaCore#COMPILER_COMPLIANCE}) and the target platform
-	 * ({@link JavaCore#COMPILER_CODEGEN_TARGET_PLATFORM}).
-	 * Without these options, it is not possible for the code formatter to know what kind of source it needs to format.
-	 * </p>
-	 * @param options - the options map to use for formatting with the default code formatter. Recognized options
-	 * 	are documented on <code>JavaCore#getDefaultOptions()</code>. If set to <code>null</code>, then use 
-	 * 	the current settings from <code>JavaCore#getOptions</code>.
-	 * @return an instance of the built-in code formatter
-	 * @see CodeFormatter
-	 * @see JavaCore#getOptions()
-	 * @since 3.0
-	 */
-	public static CodeFormatter createCodeFormatter(Map options){
-		if (options == null) options = JavaCore.getOptions();
-		return new DefaultCodeFormatter(options);
+		return new PublicScanner(tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator, Parser.DEFAULT_LEVEL);
 	}
 	
 }

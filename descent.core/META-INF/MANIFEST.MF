@@ -21,7 +21,6 @@ Eclipse-LazyStart: true
 Export-Package: descent.core,
  descent.core.compiler,
  descent.core.ctfe,
- descent.core.ddoc,
  descent.core.dom,
  descent.core.dom.rewrite,
  descent.core.formatter,

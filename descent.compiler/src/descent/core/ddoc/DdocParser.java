@@ -6,7 +6,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import descent.core.JavaConventions;
+import descent.core.JavaConventions_Common;
 import descent.core.ddoc.DdocSection.Parameter;
 
 /**
@@ -115,7 +115,7 @@ public class DdocParser {
 			}
 			
 			int colonIndex = getColonOfSectionIndex(line);
-			if (colonIndex != -1 && JavaConventions.validateIdentifier(line.substring(0, colonIndex).trim()).isOK()) {
+			if (colonIndex != -1 && JavaConventions_Common.isValidIdentifier(line.substring(0, colonIndex).trim())) {
 				if (currentSectionType == DdocSection.CODE_SECTION) {
 					currentSectionType = DdocSection.NORMAL_SECTION;
 				}
