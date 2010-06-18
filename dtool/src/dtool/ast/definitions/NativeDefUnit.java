@@ -20,22 +20,24 @@ public abstract class NativeDefUnit extends DefUnit implements INativeDefUnit, I
 
 		public NativesScope() {
 		}
-
+		
+		@Override
 		public Iterator<? extends IASTNode> getMembersIterator() {
 			// TODO: put intrinsics here?
 			return IteratorUtil.getEMPTY_ITERATOR();
 		}
-
+		
+		@Override
 		public IScope getModuleScope() {
 			return this;
 		}
-
-		//@Override
+		
+		@Override
 		public List<IScope> getSuperScopes() {
 			return null;
 		}
 		
-		//@Override
+		@Override
 		public boolean hasSequentialLookup() {
 			return false;
 		}
@@ -45,17 +47,18 @@ public abstract class NativeDefUnit extends DefUnit implements INativeDefUnit, I
 			return "<natives>";
 		}
 
-		//@Override
+		@Override
 		public String toStringAsElement() {
 			return toString();
 		}
 	}
 	
 	private static final class UndeterminedReference implements IDefUnitReference {
+		@Override
 		public Collection<DefUnit> findTargetDefUnits(boolean findFirstOnly) {
 			return null;
 		}
-		//@Override
+		@Override
 		public String toStringAsElement() {
 			return "<unknown>";
 		}
@@ -84,6 +87,7 @@ public abstract class NativeDefUnit extends DefUnit implements INativeDefUnit, I
 	@Override
 	public abstract IScopeNode getMembersScope();
 	
+	@Override
 	public boolean hasSequentialLookup() {
 		return false;
 	}

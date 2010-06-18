@@ -31,7 +31,7 @@ public class MixinContainer extends ASTNeoNode implements IStatement, INonScoped
 		visitor.endVisit(this);
 	}
 	
-
+	@Override
 	public Iterator<ASTNode> getMembersIterator() {
 		return IteratorUtil.getEMPTY_ITERATOR();
 		// TODO: mixin container

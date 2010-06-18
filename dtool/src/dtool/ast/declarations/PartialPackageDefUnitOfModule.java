@@ -18,7 +18,8 @@ public class PartialPackageDefUnitOfModule extends PartialPackageDefUnit {
 	public PartialPackageDefUnitOfModule(Symbol name) {
 		super(name);
 	}
-
+	
+	@Override
 	public Iterator<? extends ASTNeoNode> getMembersIterator() {
 		if(module != null)
 			return Collections.singleton(module).iterator();

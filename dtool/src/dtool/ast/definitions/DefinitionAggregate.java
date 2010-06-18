@@ -42,12 +42,14 @@ public abstract class DefinitionAggregate extends Definition implements IScopeNo
 		return this;
 	}
 	
+	@Override
 	public Iterator<ASTNode> getMembersIterator() {
 		if(members == null)
 			return IteratorUtil.getEMPTY_ITERATOR();
 		return members.iterator();
 	}
 	
+	@Override
 	public boolean hasSequentialLookup() {
 		return false;
 	}

@@ -9,6 +9,7 @@ import dtool.refmodel.IDefUnitReferenceNode;
 public abstract class Resolvable extends ASTNeoNode 
 	implements IDefUnitReferenceNode {
 
+	@Override
 	public abstract Collection<DefUnit> findTargetDefUnits(boolean findFirstOnly);
 	
 	public DefUnit findTargetDefUnit() {
@@ -18,5 +19,4 @@ public abstract class Resolvable extends ASTNeoNode
 		return defunits.iterator().next();
 	}
 	
-
 }

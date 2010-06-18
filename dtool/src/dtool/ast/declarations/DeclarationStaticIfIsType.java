@@ -74,15 +74,18 @@ public class DeclarationStaticIfIsType extends DeclarationConditional {
 			}
 			visitor.endVisit(this);
 		}
-
+		
+		@Override
 		public Iterator<? extends IASTNode> getMembersIterator() {
 			return IteratorUtil.singletonIterator(defUnit);
 		}
-
+		
+		@Override
 		public List<IScope> getSuperScopes() {
 			return null;
 		}
 		
+		@Override
 		public boolean hasSequentialLookup() {
 			return false;
 		}

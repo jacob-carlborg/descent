@@ -57,11 +57,11 @@ public class BlockStatement extends Statement implements IScopeNode {
 	public Iterator<ASTNode> getMembersIterator() {
 		return (Iterator) statements.iterator();
 	}
-
+	@Override
 	public List<IScope> getSuperScopes() {
 		return null;
 	}
-	
+	@Override
 	public boolean hasSequentialLookup() {
 		return true;
 	}

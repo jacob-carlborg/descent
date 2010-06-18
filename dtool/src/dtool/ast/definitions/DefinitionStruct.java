@@ -31,7 +31,7 @@ public class DefinitionStruct extends DefinitionAggregate {
 		visitor.endVisit(this);
 	}
 
-
+	@Override
 	public List<IScope> getSuperScopes() {
 		return null;
 	}

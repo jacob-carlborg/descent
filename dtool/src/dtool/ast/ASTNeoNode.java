@@ -27,7 +27,7 @@ public abstract class ASTNeoNode extends ASTNode
 	/** AST node parent, null if the node is the tree root. */
 	public ASTNeoNode parent = null;
 	
-	/** {@inheritDoc} */
+	@Override
 	public ASTNeoNode getParent() {
 		return parent;
 	}
@@ -38,14 +38,19 @@ public abstract class ASTNeoNode extends ASTNode
 	}
 	
 	/** Gets the source range start position, aka offset. */
+	@Override
 	public final int getStartPos() {
 		return sourceStart();
 	}
+	
 	/** Gets the source range start position, aka offset. */
+	@Override
 	public final int getOffset() {
 		return getStartPos();
 	}
+	
 	/** Gets the source range length. */
+	@Override
 	public final int getLength() {
 		Assert.isTrue(sourceStart() != -1);
 		return getEndPos() - getStartPos();
@@ -56,6 +61,7 @@ public abstract class ASTNeoNode extends ASTNode
 	}
 	
 	/** Gets the source range end position (start position + length). */
+	@Override
 	public final int getEndPos() {
 		return sourceEnd();
 	}
@@ -85,11 +91,12 @@ public abstract class ASTNeoNode extends ASTNode
 	}
 	
 	/** Checks if the node has no defined source range info. */
+	@Override
 	public final boolean hasNoSourceRangeInfo() {
 		return sourceStart() == -1;
 	}
 	
-	/** {@inheritDoc} */
+	@Override
 	public boolean hasChildren() {
 		return getChildren().length > 0;
 	}
@@ -99,11 +106,12 @@ public abstract class ASTNeoNode extends ASTNode
 	
 	/** All Neo nodes return the same type 
 	 * (until a need arise for otherwise). */
+	@Override
 	public int getElementType() {
 		return 0; 
 	}
 
-	//@Override
+	@Override
 	public ASTNeoNode[] getChildren() {
 		return (ASTNeoNode[]) ASTNeoChildrenCollector.getChildrenArray(this);
 	}
@@ -123,6 +131,7 @@ public abstract class ASTNeoNode extends ASTNode
 	 * Same as ASTNode.accept but makes sub-elements accept0 use ASTNeoVisitor.
 	 * This is a temporary adapting solution.
 	 */
+	@Override
 	public final void accept(IASTVisitor visitor) {
 		if (visitor == null) {
 			throw new IllegalArgumentException();
@@ -179,6 +188,7 @@ public abstract class ASTNeoNode extends ASTNode
 
 	/** Gets the node's classname striped of package qualifier,
 	 * plus optional range info. */
+	@Override
 	public final String toStringAsNode(boolean printRangeInfo) {
 		String str = toStringClassName();
 

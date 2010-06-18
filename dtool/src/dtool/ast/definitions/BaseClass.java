@@ -1,6 +1,3 @@
-/**
- * 
- */
 package dtool.ast.definitions;
 
 import melnorme.miscutil.tree.TreeVisitor;

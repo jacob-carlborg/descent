@@ -44,8 +44,7 @@ public abstract class CommonRefSingle extends NamedReference {
 	
 	@Override
 	public Collection<DefUnit> findTargetDefUnits(boolean findOneOnly) {
-		DefUnitSearch search = new DefUnitSearch(name, this, this.getOffset(),
-				findOneOnly);
+		DefUnitSearch search = new DefUnitSearch(name, this, this.getOffset(), findOneOnly);
 		CommonRefSingle.doSearchForPossiblyQualifiedSingleRef(search, this);
 		return search.getMatchDefUnits();
 	}

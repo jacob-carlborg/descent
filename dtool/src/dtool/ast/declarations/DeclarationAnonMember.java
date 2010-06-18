@@ -29,7 +29,8 @@ public class DeclarationAnonMember extends ASTNeoNode implements INonScopedBlock
 		}
 		visitor.endVisit(this);
 	}
-
+	
+	@Override
 	public Iterator<ASTNeoNode> getMembersIterator() {
 		return Arrays.asList(body.nodes).iterator();
 	}

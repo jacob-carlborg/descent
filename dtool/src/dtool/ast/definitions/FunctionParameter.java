@@ -86,17 +86,17 @@ public class FunctionParameter extends DefUnit implements IFunctionParameter {
 				+ NodeUtil.getOuterDefUnit(this).toStringAsElement();
 	}
 
-	//@Override
+	@Override
 	public String toStringAsFunctionSignaturePart() {
 		return type.toStringAsElement() + " " + getName();
 	}
 	
-	//@Override
+	@Override
 	public String toStringAsFunctionSimpleSignaturePart() {
 		return type.toStringAsElement();
 	}
 
-	//@Override
+	@Override
 	public String toStringInitializer() {
 		if(defaultValue == null)
 			return null;

@@ -70,10 +70,12 @@ public abstract class PartialPackageDefUnit extends DefUnit implements IScopeNod
 		return this;
 	}
 	
+	@Override
 	public List<IScope> getSuperScopes() {
 		return null;
 	}
 	
+	@Override
 	public boolean hasSequentialLookup() {
 		return false;
 	}

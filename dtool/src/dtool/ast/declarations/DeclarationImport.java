@@ -88,7 +88,8 @@ public class DeclarationImport extends ASTNeoNode implements INonScopedBlock {
 	public ASTNeoNode[] getMembers() {
 		return imports;
 	}
-
+	
+	@Override
 	public Iterator<? extends ASTNeoNode> getMembersIterator() {
 		return Arrays.asList(getMembers()).iterator();
 	}

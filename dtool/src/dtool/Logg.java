@@ -1,7 +1,10 @@
 package dtool;
 
 
-/** dtool's and upwards log streams */
+/** 
+ * dtool's and upwards log streams
+ * TODO BM: use a proper logging system
+ */
 public class Logg {
 
 	public static SimpleLogger nolog = new SimpleLogger(false);

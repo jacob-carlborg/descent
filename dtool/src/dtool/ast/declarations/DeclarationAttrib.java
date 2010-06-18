@@ -37,7 +37,8 @@ public abstract class DeclarationAttrib extends ASTNeoNode implements INonScoped
 			}
 		}
 	}
-
+	
+	@Override
 	public Iterator<ASTNeoNode> getMembersIterator() {
 		if(body == null)
 			return IteratorUtil.getEMPTY_ITERATOR();

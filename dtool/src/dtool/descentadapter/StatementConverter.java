@@ -65,138 +65,172 @@ import dtool.ast.statements.StatementWith;
 
 public final class StatementConverter extends ExpressionConverter {
 	
+	@Override
 	public boolean visit(ForeachRangeStatement node) {
 		return endAdapt(new StatementForeachRange(node));
 	}
 	
+	@Override
 	public boolean visit(AsmBlock node) {
 		return endAdapt(new BlockStatement(node));
 	}
 
+	@Override
 	public boolean visit(descent.internal.compiler.parser.CompoundStatement elem) {
 		return endAdapt(new BlockStatement(elem));
 	}
 	
+	@Override
 	public boolean visit(AsmStatement element) {
 		return endAdapt(new StatementAsm(element));
 	}
 	
+	@Override
 	public boolean visit(BreakStatement element) {
 		return endAdapt(new StatementBreak(element));
 	}
 
+	@Override
 	public boolean visit(CaseStatement element) {
 		return endAdapt(new StatementCase(element));
 	}
 	
+	@Override
 	public boolean visit(ConditionalStatement element) {
 		return endAdapt(DeclarationConditional.create(element));
 	}
 
+	@Override
 	public boolean visit(ContinueStatement element) {
 		return endAdapt(new StatementContinue(element));
 	}
 
+	@Override
 	public boolean visit(DeclarationStatement element) {
 		return visit((DeclarationExp) element.exp);
 	}
 
+	@Override
 	public boolean visit(DefaultStatement element) {
 		return endAdapt(new StatementDefault(element));
 	}
 
+	@Override
 	public boolean visit(DoStatement element) {
 		return endAdapt(new StatementDo(element));
 	}
 	
+	@Override
 	public boolean visit(ExpStatement element) {
 		return endAdapt(new StatementExp(element));
 	}
 	
+	@Override
 	public boolean visit(ForeachStatement element) {
 		return endAdapt(new StatementForeach(element));
 	}
 
+	@Override
 	public boolean visit(ForStatement element) {
 		return endAdapt(new StatementFor(element));
 	}
 
+	@Override
 	public boolean visit(GotoCaseStatement element) {
 		return endAdapt(new StatementGotoCase(element));
 	}
 
+	@Override
 	public boolean visit(GotoDefaultStatement element) {
 		return endAdapt(new StatementGotoDefault(element));
 	}
 
+	@Override
 	public boolean visit(GotoStatement element) {
 		return endAdapt(new StatementGoto(element));
 	}
 
+	@Override
 	public boolean visit(IfStatement element) {
 		return endAdapt(new StatementIf(element));
 	}
 
+	@Override
 	public boolean visit(LabelStatement element) {
 		return endAdapt(new StatementLabel(element));
 	}
 
+	@Override
 	public boolean visit(OnScopeStatement element) {
 		return endAdapt(new StatementOnScope(element));
 	}
 
+	@Override
 	public boolean visit(PragmaStatement element) {
 		return endAdapt(new DeclarationPragma(element));
 	}
 
+	@Override
 	public boolean visit(ReturnStatement element) {
 		return endAdapt(new StatementReturn(element));
 	}
 
+	@Override
 	public boolean visit(ScopeStatement element) {
 		return endAdapt(new BlockStatement(element));
 	}
 
+	@Override
 	public boolean visit(StaticAssertStatement element) {
 		return endAdapt(new DeclarationStaticAssert(element));
 	}
 
+	@Override
 	public boolean visit(SwitchStatement element) {
 		return endAdapt(new StatementSwitch(element));
 	}
 
+	@Override
 	public boolean visit(SynchronizedStatement element) {
 		return endAdapt(new StatementSynchronized(element));
 	}
 
+	@Override
 	public boolean visit(ThrowStatement element) {
 		return endAdapt(new StatementThrow(element));
 	}
 
+	@Override
 	public boolean visit(TryCatchStatement element) {
 		return endAdapt(new StatementTry(element));
 	}
 
+	@Override
 	public boolean visit(TryFinallyStatement element) {
 		return endAdapt(new StatementTry(element));
 	}
 
+	@Override
 	public boolean visit(VolatileStatement element) {
 		return endAdapt(new StatementVolatile(element));
 	}
 
+	@Override
 	public boolean visit(WhileStatement element) {
 		return endAdapt(new StatementWhile(element));
 	}
 
+	@Override
 	public boolean visit(WithStatement element) {
 		return endAdapt(new StatementWith(element));
 	}
 	
+	@Override
 	public boolean visit(Catch element) {
 		return endAdapt(new StatementTry.CatchClause(element));
 	}
 
+	@Override
 	public boolean visit(DeclarationExp node) {
 		return endAdapt((ASTNeoNode) dtool.ast.declarations.Declaration.convert(node.declaration));
 	}

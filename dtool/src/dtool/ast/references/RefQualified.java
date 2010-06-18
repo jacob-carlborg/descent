@@ -37,13 +37,13 @@ public class RefQualified extends CommonRefQualified {
 			this.subref = CommonRefSingle.convertToSingleRef(id);
 		}
 	}
-
+	
 	public RefQualified(Reference rootRef, CommonRefSingle subRef) {
 		setSourceRange(rootRef.getStartPos(), subRef.getEndPos());
 		this.root = rootRef;
 		this.subref = subRef;
 	}
-
+	
 	@Override
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);

@@ -31,7 +31,8 @@ public class EnumContainer extends ASTNeoNode implements IStatement, INonScopedB
 	public ASTNode[] getMembers() {
 		return members.toArray(ASTNode.NO_ELEMENTS);
 	}
-
+	
+	@Override
 	public Iterator<EnumMember> getMembersIterator() {
 		return members.iterator();
 	}

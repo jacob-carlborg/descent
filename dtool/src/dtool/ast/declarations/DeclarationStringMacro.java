@@ -36,7 +36,8 @@ public class DeclarationStringMacro extends ASTNeoNode implements IStatement, IN
 		}
 		visitor.endVisit(this);
 	}
-
+	
+	@Override
 	public Iterator<? extends ASTNode> getMembersIterator() {
 		// TODO: parse the exp string
 		return IteratorUtil.getEMPTY_ITERATOR();

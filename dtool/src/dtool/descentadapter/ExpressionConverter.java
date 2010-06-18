@@ -119,30 +119,37 @@ import dtool.ast.expressions.Resolvable;
 
 abstract class ExpressionConverter extends DeclarationConverter {
 	
+	@Override
 	public boolean visit(FileExp node) {
 		return endAdapt(new ExpLiteralImportedString(node));
 	}
 	
+	@Override
 	public boolean visit(MultiStringExp node) {
 		return endAdapt(new ExpLiteralString(node));		
 	}
 
+	@Override
 	public boolean visit(TraitsExp node) {
 		return endAdapt(new ExpTraits(node));
 	}
 	
+	@Override
 	public boolean visit(AssocArrayLiteralExp node) {
 		return endAdapt(new ExpLiteralMapArray(node));
 	}
 
+	@Override
 	public boolean visit(CompileDeclaration node) {
 		return endAdapt(new DeclarationStringMacro(node));
 	}
 
+	@Override
 	public boolean visit(CompileExp node) {
 		return endAdapt(new ExpStringMacro(node));
 	}
 
+	@Override
 	public boolean visit(CompileStatement node) {
 		return endAdapt(new DeclarationStringMacro(node));
 	}
@@ -150,57 +157,70 @@ abstract class ExpressionConverter extends DeclarationConverter {
 	
 	/* Initializers */
 	
+	@Override
 	public boolean visit(ArrayInitializer element) {
 		return endAdapt(new InitializerArray(element));
 	}
 
+	@Override
 	public boolean visit(ExpInitializer element) {
 		return endAdapt(new InitializerExp(element));
 	}
 
+	@Override
 	public boolean visit(StructInitializer element) {
 		return endAdapt(new InitializerStruct(element));
 	}
 
+	@Override
 	public boolean visit(VoidInitializer element) {
 		return endAdapt(new InitializerVoid(element));
 	}
 
 	
 	/* ===================== Special ===================== */
+	@Override
 	public boolean visit(ArrayExp element) {
 		return endAdapt(new ExpArrayIndex(element));
 	}
 	
+	@Override
 	public boolean visit(ArrayLiteralExp element) {
 		return endAdapt(new ExpArrayLiteral(element));
 	}
 	
+	@Override
 	public boolean visit(AssertExp element) {
 		return endAdapt(new ExpAssert(element));
 	}
 	
+	@Override
 	public boolean visit(CallExp element) {
 		return endAdapt(new ExpCall(element));
 	}
 	
+	@Override
 	public boolean visit(CastExp element) {
 		return endAdapt(new ExpCast(element));
 	}
 	
+	@Override
 	public boolean visit(CondExp element) {
 		return endAdapt(new ExpCond(element));
 	}
 	
+	@Override
 	public boolean visit(DeleteExp element) {
 		return endAdapt(new ExpDelete(element));
 	}
 	
+	@Override
 	public boolean visit(DollarExp element) {
 		return endAdapt(new ExpDollar(element));
 	}
 
 	
+	@Override
 	public boolean visit(FuncExp element) {
 		return endAdapt(new ExpLiteralFunc(element));
 	}
@@ -210,22 +230,27 @@ abstract class ExpressionConverter extends DeclarationConverter {
 		return endAdapt(new ExpReference(element));
 	}
 	
+	@Override
 	public boolean visit(IftypeExp element) {
 		return endAdapt(new ExpIftype(element));
 	}
 	
+	@Override
 	public boolean visit(IntegerExp element) {
 		return endAdapt(ExpLiteralInteger.convertIntegerExp(element));
 	}
 	
+	@Override
 	public boolean visit(NewAnonClassExp element) {
 		return endAdapt(new ExpLiteralNewAnonClass(element));
 	}
 	
+	@Override
 	public boolean visit(NewExp element) {
 		return endAdapt(new ExpNew(element));
 	}
 	
+	@Override
 	public boolean visit(NullExp element) {
 		return endAdapt(new ExpLiteralNull(element));
 	}
@@ -234,35 +259,43 @@ abstract class ExpressionConverter extends DeclarationConverter {
 		return endAdapt(new ExpParenthesized(element));
 	}
 	
+	@Override
 	public boolean visit(RealExp element) {
 		return endAdapt(new ExpLiteralReal(element));
 	}
 	
+	@Override
 	public boolean visit(ScopeExp element) {
 		return endAdapt(new ExpReference(element));
 	}
 	
+	@Override
 	public boolean visit(SliceExp element) {
 		return endAdapt(new ExpSlice(element));
 	}
 	
+	@Override
 	public boolean visit(StringExp element) {
 		return endAdapt(new ExpLiteralString(element));
 	}
 	
 
+	@Override
 	public boolean visit(SuperExp element) {
 		return endAdapt(new ExpSuper(element));
 	}
 	
+	@Override
 	public boolean visit(ThisExp element) {
 		return endAdapt(new ExpThis(element));
 	}
 	
+	@Override
 	public boolean visit(TypeDotIdExp element) {
 		return endAdapt(new ExpReference(element));
 	}	
 	
+	@Override
 	public boolean visit(TypeidExp element) {
 		return endAdapt(new ExpTypeid(element));
 	}	
@@ -270,54 +303,66 @@ abstract class ExpressionConverter extends DeclarationConverter {
 	/* ===================== Unary ===================== */
 	
 
+	@Override
 	public boolean visit(UnaExp element) {
 		return assertFailABSTRACT_NODE();
 	}
 	
+	@Override
 	public boolean visit(AddrExp element) {
 		return endAdapt(new PrefixExpression(element, PrefixExpression.Type.ADDRESS));
 	}
 	
+	@Override
 	public boolean visit(ComExp element) {
 		return endAdapt(new PrefixExpression(element, PrefixExpression.Type.INVERT));
 	}	
 	
+	@Override
 	public boolean visit(NegExp element) {
 		return endAdapt(new PrefixExpression(element, PrefixExpression.Type.NEGATIVE));
 	}
 	
+	@Override
 	public boolean visit(NotExp element) {
 		return endAdapt(new PrefixExpression(element, PrefixExpression.Type.NOT));
 	}	
 
 	
+	@Override
 	public boolean visit(IndexExp node) {
 		return assertFailFAKENODE();
 	}
 
+	@Override
 	public boolean visit(PostExp node) {
 		return endAdapt(new PostfixExpression(node));
 	}
 
+	@Override
 	public boolean visit(PtrExp element) {
 		return endAdapt(new PrefixExpression(element, PrefixExpression.Type.POINTER));
 	}
 	
+	@Override
 	public boolean visit(UAddExp element) {
 		return endAdapt(new PrefixExpression(element, PrefixExpression.Type.POSITIVE));
 	}	
 
 	/* ===================== Binary ===================== */
 	
+	@Override
 	public boolean visit(BinExp element) {
 		Assert.fail("Error visited abstract class."); return false;
 	}
 
+	@Override
 	public boolean visit(AddAssignExp element) {
 		Resolvable newelem = new InfixExpression(element, InfixExpression.Type.ADD_ASSIGN);
 		return endAdapt(newelem);
 	}
 	
+	@Override
 	public boolean visit(IncrementExp node) {
 		Resolvable newelem = new PrefixExpression(node, PrefixExpression.Type.PRE_INCREMENT);
 		return endAdapt(newelem);
@@ -325,68 +370,83 @@ abstract class ExpressionConverter extends DeclarationConverter {
 
 	
 
+	@Override
 	public boolean visit(MinAssignExp element) {
 		Resolvable newelem = new InfixExpression(element, InfixExpression.Type.MIN_ASSIGN);
 		return endAdapt(newelem);
 	}
 	
 	
+	@Override
 	public boolean visit(DecrementExp node) {
 		return endAdapt(new PrefixExpression(node, PrefixExpression.Type.PRE_DECREMENT));
 	}
 	
+	@Override
 	public boolean visit(AddExp element) {
 		return endAdapt(new InfixExpression(element, InfixExpression.Type.ADD));
 	}
 	
+	@Override
 	public boolean visit(AndAndExp element) {
 
 		return endAdapt(new InfixExpression(element, InfixExpression.Type.AND_AND));
 	}
 	
+	@Override
 	public boolean visit(AndAssignExp element) {
 		return endAdapt(new InfixExpression(element, InfixExpression.Type.AND_ASSIGN));
 	}
 	
+	@Override
 	public boolean visit(AndExp element) {
 
 		return endAdapt(new InfixExpression(element, InfixExpression.Type.AND));
 	}
 	
+	@Override
 	public boolean visit(AssignExp element) {
 
 		return endAdapt(new InfixExpression(element, InfixExpression.Type.ASSIGN));
 	}
 	
+	@Override
 	public boolean visit(CatAssignExp element) {
 
 		return endAdapt(new InfixExpression(element, InfixExpression.Type.CAT_ASSIGN));
 	}
 	
+	@Override
 	public boolean visit(CatExp element) {
 		return endAdapt(new InfixExpression(element, InfixExpression.Type.CAT));
 	}
 	
+	@Override
 	public boolean visit(CmpExp element) {
 		return endAdapt(new InfixExpression(element, InfixExpression.Type.CMP));
 	}
 	
+	@Override
 	public boolean visit(CommaExp element) {
 		return endAdapt(new InfixExpression(element, InfixExpression.Type.COMMA));
 	}
 	
+	@Override
 	public boolean visit(DivAssignExp element) {
 		return endAdapt(new InfixExpression(element, InfixExpression.Type.DIV_ASSIGN));
 	}
 	
+	@Override
 	public boolean visit(DivExp element) {
 		return endAdapt(new InfixExpression(element, InfixExpression.Type.DIV));
 	}
 	
+	@Override
 	public boolean visit(EqualExp element) {
 		return endAdapt(new InfixExpression(element, InfixExpression.Type.EQUAL));
 	}
 	
+	@Override
 	public boolean visit(IdentityExp element) {
 		if(element.op == TOK.TOKis)
 			return endAdapt(new InfixExpression(element, InfixExpression.Type.IDENTITY));
@@ -396,70 +456,87 @@ abstract class ExpressionConverter extends DeclarationConverter {
 		Assert.fail(); return false;
 	}
 	
+	@Override
 	public boolean visit(InExp element) {
 		return endAdapt(new InfixExpression(element, InfixExpression.Type.IN));
 	}
 	
+	@Override
 	public boolean visit(MinExp element) {
 		return endAdapt(new InfixExpression(element, InfixExpression.Type.MIN));
 	}
 	
+	@Override
 	public boolean visit(ModAssignExp element) {
 		return endAdapt(new InfixExpression(element, InfixExpression.Type.MOD_ASSIGN));
 	}
 	
+	@Override
 	public boolean visit(ModExp element) {
 		return endAdapt(new InfixExpression(element, InfixExpression.Type.MOD));
 	}
 	
+	@Override
 	public boolean visit(MulAssignExp element) {
 		return endAdapt(new InfixExpression(element, InfixExpression.Type.MUL_ASSIGN));
 	}
 	
+	@Override
 	public boolean visit(MulExp element) {
 		return endAdapt(new InfixExpression(element, InfixExpression.Type.MUL));
 	}
 	
+	@Override
 	public boolean visit(OrAssignExp element) {
 		return endAdapt(new InfixExpression(element, InfixExpression.Type.OR_ASSIGN));
 	}
 	
+	@Override
 	public boolean visit(OrExp element) {
 		return endAdapt(new InfixExpression(element, InfixExpression.Type.OR));
 	}
 	
+	@Override
 	public boolean visit(OrOrExp element) {
 		return endAdapt(new InfixExpression(element, InfixExpression.Type.OR_OR));
 	}
 	
+	@Override
 	public boolean visit(ShlAssignExp element) {
 		return endAdapt(new InfixExpression(element, InfixExpression.Type.SHIFT_LEFT_ASSIGN));
 	}
 	
+	@Override
 	public boolean visit(ShlExp element) {
 		return endAdapt(new InfixExpression(element, InfixExpression.Type.SHIFT_LEFT));
 	}
 	
+	@Override
 	public boolean visit(ShrAssignExp element) {
 		return endAdapt(new InfixExpression(element, InfixExpression.Type.SHIFT_RIGHT_ASSIGN));
 	}
 	
+	@Override
 	public boolean visit(ShrExp element) {
 		return endAdapt(new InfixExpression(element, InfixExpression.Type.SHIFT_RIGHT));
 	}
 	
+	@Override
 	public boolean visit(UshrAssignExp element) {
 		return endAdapt(new InfixExpression(element, InfixExpression.Type.UNSIGNED_SHIFT_RIGHT_ASSIGN));
 	}
 	
+	@Override
 	public boolean visit(UshrExp element) {
 		return endAdapt(new InfixExpression(element, InfixExpression.Type.UNSIGNED_SHIFT_RIGHT));
 	}
 	
+	@Override
 	public boolean visit(XorAssignExp element) {
 		return endAdapt(new InfixExpression(element, InfixExpression.Type.XOR_ASSIGN));
 	}
 	
+	@Override
 	public boolean visit(XorExp element) {
 		return endAdapt(new InfixExpression(element, InfixExpression.Type.XOR));
 	}

@@ -61,16 +61,18 @@ public class DefinitionEnum extends Definition implements IScopeNode, IStatement
 		return this;
 	}
 	
-	
+	@Override
 	public List<IScope> getSuperScopes() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	
+	@Override
 	public boolean hasSequentialLookup() {
 		return true;
 	}
-
+	
+	@Override
 	public Iterator<EnumMember> getMembersIterator() {
 		return members.iterator();
 	}

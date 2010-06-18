@@ -15,6 +15,7 @@ public class PartialPackageDefUnitOfPackage extends PartialPackageDefUnit  {
 		super(defname);
 	}
 	
+	@Override
 	public Iterator<? extends ASTNeoNode> getMembersIterator() {
 		return Collections.singleton(child).iterator();
 	}

@@ -46,17 +46,17 @@ public class StatementTry extends Statement {
 			}
 			visitor.endVisit(this);
 		}
-
+		@Override
 		public Iterator<? extends IASTNode> getMembersIterator() {
 			if(param != null)
 				return IteratorUtil.singletonIterator(param);
 			return IteratorUtil.getEMPTY_ITERATOR();
 		}
-
+		@Override
 		public List<IScope> getSuperScopes() {
 			return null;
 		}
-		
+		@Override
 		public boolean hasSequentialLookup() {
 			return false;
 		}

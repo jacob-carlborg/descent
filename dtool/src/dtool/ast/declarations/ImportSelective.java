@@ -99,6 +99,7 @@ public class ImportSelective extends ImportFragment implements INonScopedBlock {
 		visitor.endVisit(this);
 	
 	}
+	@Override
 	public Iterator<? extends ASTNeoNode> getMembersIterator() {
 		return Arrays.asList(impSelFrags).iterator();
 	}

@@ -30,7 +30,8 @@ public class DefinitionUnion extends DefinitionAggregate {
 		acceptNodeChildren(visitor, children);
 		visitor.endVisit(this);
 	}
-
+	
+	@Override
 	public List<IScope> getSuperScopes() {
 		return null;
 	}

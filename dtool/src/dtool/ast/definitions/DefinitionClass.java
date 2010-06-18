@@ -42,7 +42,8 @@ public class DefinitionClass extends DefinitionAggregate {
 			TreeVisitor.acceptChildren(visitor, members);
 		}
 	}
-
+	
+	@Override
 	public List<IScope> getSuperScopes() {
 		if(baseClasses == null || baseClasses.size() < 0)
 			return null;

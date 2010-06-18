@@ -70,12 +70,12 @@ public class TypeDelegate extends CommonRefNative {
 			// TODO Auto-generated method stub
 			return null;
 		}
-
+		@Override
 		public List<IScope> getSuperScopes() {
 			// TODO Auto-generated method stub
 			return null;
 		}
-
+		@Override
 		public Iterator<? extends ASTNode> getMembersIterator() {
 			// TODO Auto-generated method stub
 			return null;

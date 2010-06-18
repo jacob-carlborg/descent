@@ -12,13 +12,11 @@ public interface IModuleResolver {
 	 * @param sourceRefModule The module where the reference originates.
 	 * @param packageNames The name of packages of the module to find.
 	 * @param module The name of the modules to find. */
-	Module findModule(Module sourceRefModule, String[] packages, String module)
-			throws Exception;
+	Module findModule(Module sourceRefModule, String[] packages, String module) throws Exception;
 
 	
 	/** Determines a list of names of modules whose FQ-name starts with the
 	 * given FQ-name. */
-	String[] findModules(Module refSourceModule, String fqName) 
-		throws Exception;
+	String[] findModules(Module refSourceModule, String fqName) throws Exception;
  
 }

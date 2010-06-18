@@ -63,7 +63,8 @@ public abstract class DeclarationConditional extends ASTNeoNode implements IStat
 		
 		return ArrayUtil.concat(thendecls.nodes, elsedecls.nodes);
 	}
-
+	
+	@Override
 	public Iterator<ASTNeoNode> getMembersIterator() {
 		return Arrays.asList(getMembers()).iterator();
 	}

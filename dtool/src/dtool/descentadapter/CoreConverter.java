@@ -9,174 +9,212 @@ import descent.internal.compiler.parser.ast.IASTNode;
 @SuppressWarnings("unused")
 public abstract class CoreConverter extends ASTCommonConverter {
 
-	
+	@Override
 	public boolean visit(BoolExp node) {
 		return assertFailFAKENODE();
 	}
-	
+	@Override
 	public boolean visit(DotExp node) {
 		return assertFailFAKENODE();
 	}
-	
+	@Override
 	public boolean visit(DotTemplateExp node) {
 		return assertFailFAKENODE();
 	}
-	
+	@Override
 	public boolean visit(ComplexExp node) {
 		return assertFailFAKENODE();
 	}
-
-
+	
+	
+	@Override
 	public boolean visit(DotVarExp node) {
 		return assertFailFAKENODE();
 	}
 
+	@Override
 	public boolean visit(DsymbolExp node) {
 		return assertFailFAKENODE();
 	}
 	
+	@Override
 	public boolean visit(TupleExp node) {
 		return assertFailFAKENODE();
 	}
 	
+	@Override
 	public boolean visit(DotTypeExp node) {
 		return assertFailFAKENODE();
 	}
 	
+	@Override
 	public boolean visit(AnonymousAggregateDeclaration node) {
 		return assertFailFAKENODE();
 	}
 
+	@Override
 	public boolean visit(LabelDsymbol node) {
 		return assertFailFAKENODE();
 	}
 
 
+	@Override
 	public boolean visit(FuncAliasDeclaration node) {
 		return assertFailFAKENODE();
 	}
 	
+	@Override
 	public boolean visit(ArrayScopeSymbol node) {
 		return assertFailFAKENODE();
 	}
 
+	@Override
 	public boolean visit(ClassInfoDeclaration node) {
 		return assertFailFAKENODE();
 	}
 
+	@Override
 	public boolean visit(DelegateExp node) {
 		return assertFailFAKENODE();
 	}
 
 
 
+	@Override
 	public boolean visit(TupleDeclaration node) {
 		return assertFailFAKENODE();
 	}
+	@Override
 	public boolean visit(TemplateExp node) {
 		return assertFailFAKENODE();
 	}
 	
+	@Override
 	public boolean visit(ThisDeclaration node) {
 		return assertFailFAKENODE();
 	}
 	
+	@Override
 	public boolean visit(Tuple node) {
 		return assertFailFAKENODE();
 	}
 	
+	@Override
 	public boolean visit(TypeTypedef node) {
 		return assertFailFAKENODE();
 	}
 	
+	@Override
 	public boolean visit(TypeClass node) {
 		return assertFailFAKENODE();
 	}
 
+	@Override
 	public boolean visit(TypeEnum node) {
 		return assertFailFAKENODE();
 	}
 
+	@Override
 	public boolean visit(TypeTuple node) {
 		return assertFailFAKENODE();
 	}
 	
+	@Override
 	public boolean visit(descent.internal.compiler.parser.TypeStruct elem) {
 		return assertFailFAKENODE();
 	}
 	
+	@Override
 	public boolean visit(RemoveExp node) {
 		return assertFailFAKENODE();
 	}
 
+	@Override
 	public boolean visit(SymOffExp node) {
 		return assertFailFAKENODE();
 	}
 	
+	@Override
 	public boolean visit(WithScopeSymbol node) {
 		return assertFailFAKENODE();
 	}
 
+	@Override
 	public boolean visit(VarExp node) {
 		return assertFailFAKENODE();
 	}
+	@Override
 	public boolean visit(HaltExp node) {
 		return assertFailFAKENODE();
 	}
 	
+	@Override
 	public boolean visit(UnrolledLoopStatement node) {
 		return assertFailFAKENODE();
 	}
 	
+	@Override
 	public boolean visit(ModuleInfoDeclaration node) {
 		return assertFailFAKENODE();
 	}
 
 	
+	@Override
 	public boolean visit(TypeInfoArrayDeclaration node) {
 		return assertFailFAKENODE();
 	}
 
+	@Override
 	public boolean visit(TypeInfoAssociativeArrayDeclaration node) {
 		return assertFailFAKENODE();
 	}
 
+	@Override
 	public boolean visit(TypeInfoClassDeclaration node) {
 		return assertFailFAKENODE();
 	}
 
+	@Override
 	public boolean visit(TypeInfoDeclaration node) {
 		return assertFailFAKENODE();
 	}
 
+	@Override
 	public boolean visit(TypeInfoDelegateDeclaration node) {
 		return assertFailFAKENODE();
 	}
 
+	@Override
 	public boolean visit(TypeInfoEnumDeclaration node) {
 		return assertFailFAKENODE();
 	}
 
+	@Override
 	public boolean visit(TypeInfoFunctionDeclaration node) {
 		return assertFailFAKENODE();
 	}
 
+	@Override
 	public boolean visit(TypeInfoInterfaceDeclaration node) {
 		return assertFailFAKENODE();
 	}
 
+	@Override
 	public boolean visit(TypeInfoPointerDeclaration node) {
 		return assertFailFAKENODE();
 	}
 
+	@Override
 	public boolean visit(TypeInfoStaticArrayDeclaration node) {
 		return assertFailFAKENODE();
 	}
 
+	@Override
 	public boolean visit(TypeInfoStructDeclaration node) {
 		return assertFailFAKENODE();
 	}
 
+	@Override
 	public boolean visit(TypeInfoTypedefDeclaration node) {
 		return assertFailFAKENODE();
 	}
@@ -190,1244 +228,1260 @@ public abstract class CoreConverter extends ASTCommonConverter {
 	public void endVisit(IASTNode node) {
 	}
 	
+	@Override
 	public boolean visit(ASTNode elem) {
 		return assertFailABSTRACT_NODE();
 	}
+	@Override
 	public void endVisit(ASTNode node) {
 	}
 	
+	@Override
 	public boolean visit(ASTDmdNode elem) {
 		return assertFailABSTRACT_NODE();
 	}
+	
 	
 	public boolean visit(ASTRangeLessNode elem) {
 		return assertFailABSTRACT_NODE();
 	}
 
 
+	@Override
 	public boolean visit(Dsymbol elem) {
 		return assertFailABSTRACT_NODE();
 	}
 
+	@Override
 	public boolean visit(Declaration elem) {
 		return assertFailABSTRACT_NODE();
 	}
 
+	@Override
 	public boolean visit(Initializer elem) {
 		return assertFailABSTRACT_NODE();
 	}
 
+	@Override
 	public boolean visit(AggregateDeclaration elem) {
 		return assertFailABSTRACT_NODE();
 	}
 
+	@Override
 	public boolean visit(Statement elem) {
 		return assertFailABSTRACT_NODE();
 	}
 
+	@Override
 	public boolean visit(Type elem) {
 		return assertFailABSTRACT_NODE();
 	}
 
+	@Override
 	public boolean visit(Expression elem) {
 		return assertFailABSTRACT_NODE();
 	}
 
 
+	@Override
 	public boolean visit(ModuleDeclaration elem) {
 		return assertFailABSTRACT_NODE();
 	}
 
+	@Override
 	public boolean visit(ScopeDsymbol elem) {
 		return assertFailABSTRACT_NODE();
 	}
 
+	@Override
 	public boolean visit(TypeQualified elem) {
 		return assertFailABSTRACT_NODE();
 	}
 
+	@Override
 	public boolean visit(Package elem) {
 		return assertFailABSTRACT_NODE();
 	}
 	
+	@Override
 	public boolean visit(Condition node) {
 		return assertFailABSTRACT_NODE();
 	}
 	/* === */
 	
-	//@Override
+	@Override
 	public void endVisit(AddAssignExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(AddExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(AddrExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(AggregateDeclaration node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(AliasDeclaration node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(AlignDeclaration node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(AndAndExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(AndAssignExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(AndExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(AnonDeclaration node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(AnonymousAggregateDeclaration node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(Argument node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(ArrayExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(ArrayInitializer node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(ArrayLiteralExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(ArrayScopeSymbol node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(AsmBlock node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(AsmStatement node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(AssertExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(AssignExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(AssocArrayLiteralExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(AttribDeclaration node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(BaseClass node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(BinExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(BoolExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(BreakStatement node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(CallExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(CaseStatement node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(CastExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(CatAssignExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(Catch node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(CatExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(ClassDeclaration node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(ClassInfoDeclaration node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(CmpExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(ComExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(CommaExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(CompileDeclaration node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(CompileExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(CompileStatement node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(ComplexExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(CompoundStatement node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(CondExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(Condition node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(ConditionalDeclaration node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(ConditionalStatement node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(ContinueStatement node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(CtorDeclaration node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(DebugCondition node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(DebugSymbol node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(Declaration node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(DeclarationExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(DeclarationStatement node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(DecrementExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(DefaultStatement node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(DelegateExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(DeleteDeclaration node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(DeleteExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(DivAssignExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(DivExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(DollarExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(DoStatement node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(DotExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(DotIdExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(DotTemplateExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(DotTemplateInstanceExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(DotTypeExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(DotVarExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(Dsymbol node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(DsymbolExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(DtorDeclaration node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(EnumDeclaration node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(EnumMember node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(EqualExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(ExpInitializer node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(Expression node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(ExpStatement node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(FileExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(ForeachRangeStatement node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(ForeachStatement node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(ForStatement node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(FuncAliasDeclaration node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(FuncDeclaration node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(FuncExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(FuncLiteralDeclaration node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(GotoCaseStatement node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(GotoDefaultStatement node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(GotoStatement node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(HaltExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(IdentifierExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(IdentityExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(IfStatement node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(IftypeCondition node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(IftypeExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(Import node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(IncrementExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(IndexExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(InExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(Initializer node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(IntegerExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(InterfaceDeclaration node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(InvariantDeclaration node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(LabelDsymbol node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(LabelStatement node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(LinkDeclaration node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(MinAssignExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(MinExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(ModAssignExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(ModExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(Modifier node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(Module node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(ModuleDeclaration node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(ModuleInfoDeclaration node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(MulAssignExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(MulExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(MultiImport node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(MultiStringExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(NegExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(NewAnonClassExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(NewDeclaration node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(NewExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(NotExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(NullExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(OnScopeStatement node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(OrAssignExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(OrExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(OrOrExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(Package node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(ParenExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(PostExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(PragmaDeclaration node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(PragmaStatement node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(ProtDeclaration node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(PtrExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(RealExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(RemoveExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(ReturnStatement node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(ScopeDsymbol node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(ScopeExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(ScopeStatement node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(ShlAssignExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(ShlExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(ShrAssignExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(ShrExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(SliceExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(Statement node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(StaticAssert node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(StaticAssertStatement node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(StaticCtorDeclaration node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(StaticDtorDeclaration node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(StaticIfCondition node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(StaticIfDeclaration node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(StorageClassDeclaration node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(StringExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(StructDeclaration node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(StructInitializer node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(SuperExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(SwitchStatement node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(SymOffExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(SynchronizedStatement node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TemplateAliasParameter node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TemplateDeclaration node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TemplateExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TemplateInstance node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TemplateInstanceWrapper node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TemplateMixin node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TemplateParameter node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TemplateTupleParameter node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TemplateTypeParameter node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TemplateValueParameter node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(ThisDeclaration node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(ThisExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(ThrowStatement node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TraitsExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TryCatchStatement node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TryFinallyStatement node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(Tuple node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TupleDeclaration node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TupleExp node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(Type node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TypeAArray node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TypeBasic node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TypeClass node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TypeDArray node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TypedefDeclaration node) {
 
 		
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TypeDelegate node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TypeDotIdExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TypeEnum node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TypeExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TypeFunction node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TypeIdentifier node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TypeidExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TypeInfoArrayDeclaration node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TypeInfoAssociativeArrayDeclaration node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TypeInfoClassDeclaration node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TypeInfoDeclaration node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TypeInfoDelegateDeclaration node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TypeInfoEnumDeclaration node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TypeInfoFunctionDeclaration node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TypeInfoInterfaceDeclaration node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TypeInfoPointerDeclaration node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TypeInfoStaticArrayDeclaration node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TypeInfoStructDeclaration node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TypeInfoTypedefDeclaration node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TypeInstance node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TypePointer node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TypeQualified node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TypeSArray node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TypeSlice node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TypeStruct node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TypeTuple node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TypeTypedef node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(TypeTypeof node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(UAddExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(UnaExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(UnionDeclaration node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(UnitTestDeclaration node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(UnrolledLoopStatement node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(UshrAssignExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(UshrExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(VarDeclaration node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(VarExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(Version node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(VersionCondition node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(VersionSymbol node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(VoidInitializer node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(VolatileStatement node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(WhileStatement node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(WithScopeSymbol node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(WithStatement node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(XorAssignExp node) {
 	}
 
-	//@Override
+	@Override
 	public void endVisit(XorExp node) {
 	}
 

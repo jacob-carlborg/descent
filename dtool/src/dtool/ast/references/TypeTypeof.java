@@ -1,6 +1,3 @@
-/**
- * 
- */
 package dtool.ast.references;
 
 import java.util.Collection;

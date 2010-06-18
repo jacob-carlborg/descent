@@ -100,21 +100,22 @@ public class DefinitionFunction extends Definition implements IScopeNode, IState
 		return this;
 	}
 
-	
+	@Override
 	public List<IScope> getSuperScopes() {
 		// TODO: function super
 		return null;
 	}
 	
+	@Override
 	public boolean hasSequentialLookup() {
 		return false;
 	}
 	
-
+	@Override
 	public Iterator<IFunctionParameter> getMembersIterator() {
 		return params.iterator();
 	}
-
+	
 	
 	public static String toStringParametersForSignature(
 			List<IFunctionParameter> params, int varargs) {

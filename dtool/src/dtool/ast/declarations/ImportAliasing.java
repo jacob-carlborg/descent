@@ -78,7 +78,8 @@ public class ImportAliasing extends ImportFragment implements INonScopedBlock {
 		// Do nothing. Aliasing imports do not contribute secondary-space DefUnits
 		// TODO: this is a bug in D, it's not according to spec.
 	}
-
+	
+	@Override
 	public Iterator<? extends IASTNode> getMembersIterator() {
 		return IteratorUtil.singletonIterator(aliasDefUnit);
 	}

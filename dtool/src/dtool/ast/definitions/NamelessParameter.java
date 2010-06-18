@@ -49,17 +49,17 @@ public class NamelessParameter extends ASTNeoNode implements IFunctionParameter 
 	}
 	
 	
-	//@Override
+	@Override
 	public String toStringAsFunctionSignaturePart() {
 		return type.toStringAsElement();
 	}
 
-	//@Override
+	@Override
 	public String toStringAsFunctionSimpleSignaturePart() {
 		return type.toStringAsElement();
 	}
 
-	//@Override
+	@Override
 	public String toStringInitializer() {
 		if(defaultValue == null)
 			return null;
