@@ -1,6 +1,5 @@
 package dtool.refmodel;
 
-import descent.core.dom.AST;
 import descent.internal.compiler.parser.Lexer;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Parser;
@@ -25,7 +24,7 @@ public class ParserAdapter {
 	public static Token tokenizeSource(String str) {
 		Token tokenList = null;
 		Token tokenListEnd = null; 
-		Lexer lexer = new Lexer(str, 0, str.length(), true, true, false, false, AST.D2);
+		Lexer lexer = new Lexer(str, true, true, false, false, Parser.D2);
 		do {
 			lexer.nextToken();
 		    Token newtoken = new Token(lexer.token);

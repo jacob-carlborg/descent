@@ -1,12 +1,7 @@
 package mmrnmhrm.core;
 
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.dltk.core.PreferencesLookupDelegate;
-
-import descent.core.dom.AST;
 
 public class DeeCorePreferences {
 	

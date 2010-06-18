@@ -4,9 +4,9 @@ package mmrnmhrm.core;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.jface.preference.IPreferenceStore;
 
-import descent.core.dom.AST;
+import descent.internal.compiler.parser.Parser;
+
 
 public class DeeCorePreferenceInitializer extends AbstractPreferenceInitializer {
 	
@@ -18,7 +18,7 @@ public class DeeCorePreferenceInitializer extends AbstractPreferenceInitializer 
 		IEclipsePreferences defaults = (new DefaultScope()).getNode(DeeCore.PLUGIN_ID);
 		
 		defaults.putBoolean(DeeCorePreferences.ADAPT_MALFORMED_DMD_AST, true);
-		defaults.putInt(DeeCorePreferences.LANG_VERSION, AST.D2);
+		defaults.putInt(DeeCorePreferences.LANG_VERSION, Parser.D2);
 	}
 	
 //	private static IPreferenceStore preferenceStore = null;
