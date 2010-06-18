@@ -227,7 +227,7 @@ public abstract class DeclarationConverter extends RefConverter {
 	
 	@Override
 	public boolean visit(descent.internal.compiler.parser.VarDeclaration elem) {
-		return endAdapt(new DefinitionVariable(elem));
+		return endAdapt(DefinitionVariable.convert(elem));
 	}	
 	
 	@Override

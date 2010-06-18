@@ -105,8 +105,8 @@ public abstract class ReferenceConverter {
 		Expression expTemp = Expression.convert(elem.e1);
 		if(expTemp instanceof ExpReference) {
 			rootent = ((ExpReference) expTemp).ref;
-
-			if(rootent == null) {
+			
+			if(rootent == null || elem.e1.length == 0) {
 				return new RefModuleQualified(elem.ident);
 			}
 		} else {

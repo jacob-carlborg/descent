@@ -3,7 +3,9 @@ package dtool.ast.definitions;
 import java.util.Collection;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import dtool.ast.ASTNeoNode;
 import dtool.ast.IASTNeoVisitor;
+import dtool.ast.declarations.InvalidSyntaxDeclaration;
 import dtool.ast.expressions.Initializer;
 import dtool.ast.references.Reference;
 import dtool.ast.references.ReferenceConverter;
@@ -15,6 +17,14 @@ import dtool.refmodel.IScopeNode;
  * A definition of a variable
  */
 public class DefinitionVariable extends Definition implements IStatement {
+	
+	public static ASTNeoNode convert(descent.internal.compiler.parser.VarDeclaration elem) {
+		if(elem.ident == null) {
+			return new InvalidSyntaxDeclaration(elem, ReferenceConverter.convertType(elem.type), Initializer.convert(elem.init));
+		}  else {
+			return new DefinitionVariable(elem);
+		}
+	}
 	
 	public Reference type;
 	public Initializer init;

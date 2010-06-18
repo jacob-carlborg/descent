@@ -22,8 +22,7 @@ public class TemplateParamType extends TemplateParameter {
 	}
 	
 	public TemplateParamType(TemplateThisParameter elem) {
-		this((TemplateTypeParameter) elem);
-		assertFail("TODO"); // TODO: TODO
+		this((TemplateTypeParameter) elem); // TODO: TODO
 	}
 	
 

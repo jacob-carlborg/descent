@@ -54,15 +54,15 @@ public abstract class CommonRefQualified extends NamedReference
 		findDefUnitInMultipleDefUnitScopes(defunits, search);
 	}
 	
-	public static void findDefUnitInMultipleDefUnitScopes(
-			Collection<DefUnit> defunits, CommonDefUnitSearch search) {
+	public static void findDefUnitInMultipleDefUnitScopes(Collection<DefUnit> defunits, CommonDefUnitSearch search) {
 		if(defunits == null)
 			return;
 		
 		for (DefUnit unit : defunits) {
 			IScopeNode scope = unit.getMembersScope();
-			if(scope != null)
+			if(scope != null) {
 				ReferenceResolver.findDefUnitInScope(scope, search);
+			}
 			if(search.isFinished())
 				return;
 		}

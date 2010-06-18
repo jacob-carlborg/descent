@@ -40,13 +40,14 @@ public abstract class DefUnit extends ASTNeoNode {
 	
 	public DefUnit(Dsymbol elem/*, descent.internal.compiler.parser.Module module*/) {
 		convertNode(elem, false);
+		assertNotNull(elem.ident);
 		this.defname = new DefSymbol(elem.ident, this);
 		int size = 0; 
 		Module module = elem.getModule();
-		List<Comment> preDdocs = module.getPreComments(elem);
-		Comment postDdoc = module.getPostComment(elem);
-//		List<Comment> preDdocs = module == null ? null : module.getPreComments(elem);
-//		Comment postDdoc = module == null ? null : module.getPostComment(elem);
+//		List<Comment> preDdocs = module.getPreComments(elem);
+//		Comment postDdoc = module.getPostComment(elem);
+		List<Comment> preDdocs = module == null ? null : module.getPreComments(elem);
+		Comment postDdoc = module == null ? null : module.getPostComment(elem);
 		if(preDdocs != null)
 			size = preDdocs.size();
 		if(postDdoc != null)
