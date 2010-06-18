@@ -7,7 +7,7 @@ import melnorme.miscutil.IteratorUtil;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.IdentifierExp;
-import descent.internal.compiler.parser.IftypeExp;
+import descent.internal.compiler.parser.IsExp;
 import descent.internal.compiler.parser.TOK;
 import descent.internal.compiler.parser.ast.IASTNode;
 import dtool.ast.ASTNeoNode;
@@ -99,18 +99,17 @@ public class DeclarationStaticIfIsType extends DeclarationConditional {
 	public TOK tok;
 	public Reference specType;
 	
-	public DeclarationStaticIfIsType(ASTDmdNode  elem,
-			IftypeExp iftypeExp, NodeList thendecls, NodeList elsedecls) {
+	public DeclarationStaticIfIsType(ASTDmdNode  elem, IsExp isExp, NodeList thendecls, NodeList elsedecls) {
 		convertNode(elem);
-		this.arg = ReferenceConverter.convertType(iftypeExp.targ);
-		this.defUnit = new IsTypeDefUnit(iftypeExp.id);
-		this.tok = iftypeExp.tok;
-		this.specType = ReferenceConverter.convertType(iftypeExp.tspec);
+		this.arg = ReferenceConverter.convertType(isExp.targ);
+		this.defUnit = new IsTypeDefUnit(isExp.id);
+		this.tok = isExp.tok;
+		this.specType = ReferenceConverter.convertType(isExp.tspec);
 		this.thendecls = thendecls;
 		this.elsedecls = elsedecls;
 		this.thendeclsScope = new IsTypeScope(thendecls);
-		this.thendeclsScope.setSourceRange(iftypeExp.getStartPos(), 
-				elem.getEndPos() - iftypeExp.getStartPos());
+		this.thendeclsScope.setSourceRange(isExp.getStartPos(), 
+				elem.getEndPos() - isExp.getStartPos());
 	}
 
 	@Override

@@ -87,7 +87,7 @@ public class Module extends DefUnit implements IScopeNode {
 	public static Module createModule(descent.internal.compiler.parser.Module elem) {
 		ModuleDefSymbol defname;
 		DeclarationModule md;
-		Comment[] preComments = null;
+		Comment[] comments = null;
 
 		ASTNeoNode[] members = Declaration.convertMany(elem.members);
 		
@@ -104,9 +104,9 @@ public class Module extends DefUnit implements IScopeNode {
 				md.packages[i] = new String(elem.md.packages.get(i).ident);
 			}
 
-			preComments = elem.md.preDdocs.toArray(new Comment[elem.md.preDdocs.size()]);
+			comments = elem.comments;
 		}
-		return new Module(defname, preComments, md, members, elem);
+		return new Module(defname, comments, md, members, elem);
 	}
 	
 	public Module(ModuleDefSymbol defname, Comment[] preComments, DeclarationModule md,

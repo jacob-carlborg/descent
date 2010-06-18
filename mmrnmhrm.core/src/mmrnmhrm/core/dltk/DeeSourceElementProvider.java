@@ -206,7 +206,7 @@ public final class DeeSourceElementProvider extends ASTNeoUpTreeVisitor {
 	private static int getProtectionFlags(Definition elem, int modifiers) {
 		// default:
 		
-		switch(elem.protection) {
+		switch(elem.getEffectiveProtection()) {
 		case PROTprivate: modifiers |= Modifiers.AccPrivate; break;
 		case PROTpublic: modifiers |= Modifiers.AccPublic; break;
 		case PROTprotected: modifiers |= Modifiers.AccProtected; break;

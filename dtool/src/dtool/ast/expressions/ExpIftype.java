@@ -1,7 +1,7 @@
 package dtool.ast.expressions;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.compiler.parser.IftypeExp;
+import descent.internal.compiler.parser.IsExp;
 import descent.internal.compiler.parser.TOK;
 import dtool.ast.IASTNeoVisitor;
 import dtool.ast.references.Reference;
@@ -13,7 +13,7 @@ public class ExpIftype extends Expression {
 	public TOK tok;
 	public Reference specType;
 	
-	public ExpIftype(IftypeExp node) {
+	public ExpIftype(IsExp node) {
 		convertNode(node);
 		//Assert.isNull(node.id); //Can occur in error in illegal D code
 		this.tok = node.tok;

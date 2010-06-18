@@ -26,6 +26,7 @@ public abstract class Expression extends Resolvable implements IDefUnitReference
 	/* ---------------- Conversion Funcs ---------------- */
 	
 	public static Expression convert(descent.internal.compiler.parser.Expression exp) {
+		// TODO: AST: convert Exp parenthesis?
 		return (Expression) DescentASTConverter.convertElem(exp);
 	}
 

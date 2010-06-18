@@ -1,6 +1,8 @@
 package dtool.ast.definitions;
 
+import static melnorme.miscutil.Assert.assertFail;
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.TemplateThisParameter;
 import descent.internal.compiler.parser.TemplateTypeParameter;
 import dtool.ast.IASTNeoVisitor;
 import dtool.ast.references.Reference;
@@ -18,6 +20,12 @@ public class TemplateParamType extends TemplateParameter {
 		this.specType = ReferenceConverter.convertType(elem.specType);
 		this.defaultType = ReferenceConverter.convertType(elem.defaultType);
 	}
+	
+	public TemplateParamType(TemplateThisParameter elem) {
+		this((TemplateTypeParameter) elem);
+		assertFail("TODO"); // TODO: TODO
+	}
+	
 
 	@Override
 	public EArcheType getArcheType() {

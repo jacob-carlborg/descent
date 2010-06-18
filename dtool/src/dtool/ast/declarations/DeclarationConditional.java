@@ -9,7 +9,7 @@ import descent.internal.compiler.parser.Condition;
 import descent.internal.compiler.parser.ConditionalDeclaration;
 import descent.internal.compiler.parser.ConditionalStatement;
 import descent.internal.compiler.parser.DVCondition;
-import descent.internal.compiler.parser.IftypeExp;
+import descent.internal.compiler.parser.IsExp;
 import descent.internal.compiler.parser.StaticIfCondition;
 import dtool.ast.ASTNeoNode;
 import dtool.ast.statements.IStatement;
@@ -45,8 +45,8 @@ public abstract class DeclarationConditional extends ASTNeoNode implements IStat
 			return new DeclarationConditionalDV(elem, (DVCondition) condition, thendecls, elsedecls);
 		}
 		StaticIfCondition stIfCondition = (StaticIfCondition) condition;
-		if(stIfCondition.exp instanceof IftypeExp && ((IftypeExp) stIfCondition.exp).id != null) {
-			return new DeclarationStaticIfIsType(elem, (IftypeExp) stIfCondition.exp, thendecls, elsedecls);
+		if(stIfCondition.exp instanceof IsExp && ((IsExp) stIfCondition.exp).id != null) {
+			return new DeclarationStaticIfIsType(elem, (IsExp) stIfCondition.exp, thendecls, elsedecls);
 		} else { 
 			return new DeclarationStaticIf(elem, stIfCondition, thendecls, elsedecls);
 		}

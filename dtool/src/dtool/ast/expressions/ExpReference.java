@@ -7,12 +7,10 @@ import descent.internal.compiler.parser.DotIdExp;
 import descent.internal.compiler.parser.DotTemplateInstanceExp;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.ScopeExp;
-import descent.internal.compiler.parser.TypeDotIdExp;
 import descent.internal.compiler.parser.TypeExp;
 import dtool.ast.IASTNeoVisitor;
 import dtool.ast.definitions.DefUnit;
 import dtool.ast.references.CommonRefSingle;
-import dtool.ast.references.RefQualified;
 import dtool.ast.references.Reference;
 import dtool.ast.references.ReferenceConverter;
 import dtool.descentadapter.DescentASTConverter;
@@ -42,15 +40,6 @@ public class ExpReference extends Expression {
 	public ExpReference(DotTemplateInstanceExp elem) {
 		convertNode(elem);
 		this.ref = ReferenceConverter.convertDotTemplateIdexp(elem);
-	}
-	
-	public ExpReference(TypeDotIdExp elem) {
-		convertNode(elem);
-		this.ref = new RefQualified(
-				ReferenceConverter.convertType(elem.type),
-				CommonRefSingle.convertToSingleRef(elem.ident)
-				);
-		//this.baseEntity = new BaseEntityRef.ValueConstraint(qent);
 	}
 	
 	public ExpReference(ScopeExp elem) {

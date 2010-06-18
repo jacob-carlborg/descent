@@ -20,8 +20,7 @@ public class RefTemplateInstance extends CommonRefSingle {
 
 	public RefTemplateInstance(
 			descent.internal.compiler.parser.TemplateInstance elem) {
-		this(elem, elem.idents.get(0), elem.tiargs);
-		Assert.isTrue(elem.idents.size() == 1);
+		this(elem, elem.name, elem.tiargs);
 	}
 
 	public RefTemplateInstance(TemplateInstance elem, IdentifierExp tplIdent,

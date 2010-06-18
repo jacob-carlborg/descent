@@ -281,8 +281,12 @@ public abstract class CoreConverter extends ASTCommonConverter {
 	public boolean visit(Expression elem) {
 		return assertFailABSTRACT_NODE();
 	}
-
-
+	
+	@Override
+	public boolean visit(DefaultInitExp elem) {
+		return assertFailABSTRACT_NODE();
+	}
+	
 	@Override
 	public boolean visit(ModuleDeclaration elem) {
 		return assertFailABSTRACT_NODE();
@@ -328,6 +332,10 @@ public abstract class CoreConverter extends ASTCommonConverter {
 	@Override
 	public void endVisit(AliasDeclaration node) {
 	}
+	
+	@Override
+	public void endVisit(AliasThis node) {
+	}
 
 	@Override
 	public void endVisit(AlignDeclaration node) {
@@ -364,7 +372,11 @@ public abstract class CoreConverter extends ASTCommonConverter {
 	@Override
 	public void endVisit(ArrayInitializer node) {
 	}
-
+	
+	@Override
+	public void endVisit(ArrayLengthExp node) {
+	}
+	
 	@Override
 	public void endVisit(ArrayLiteralExp node) {
 	}
@@ -420,7 +432,11 @@ public abstract class CoreConverter extends ASTCommonConverter {
 	@Override
 	public void endVisit(CaseStatement node) {
 	}
-
+	
+	@Override
+	public void endVisit(CaseRangeStatement node) {
+	}
+	
 	@Override
 	public void endVisit(CastExp node) {
 	}
@@ -520,9 +536,9 @@ public abstract class CoreConverter extends ASTCommonConverter {
 	@Override
 	public void endVisit(DeclarationStatement node) {
 	}
-
+	
 	@Override
-	public void endVisit(DecrementExp node) {
+	public void endVisit(DefaultInitExp node) {
 	}
 
 	@Override
@@ -651,8 +667,10 @@ public abstract class CoreConverter extends ASTCommonConverter {
 
 	@Override
 	public void endVisit(FileExp node) {
-
-		
+	}
+	
+	@Override
+	public void endVisit(FileInitExp node) {
 	}
 
 	@Override
@@ -746,20 +764,12 @@ public abstract class CoreConverter extends ASTCommonConverter {
 	}
 
 	@Override
-	public void endVisit(IftypeExp node) {
-
+	public void endVisit(IsExp node) {
 		
 	}
 
 	@Override
 	public void endVisit(Import node) {
-
-		
-	}
-
-	@Override
-	public void endVisit(IncrementExp node) {
-
 		
 	}
 
@@ -807,8 +817,10 @@ public abstract class CoreConverter extends ASTCommonConverter {
 
 	@Override
 	public void endVisit(LabelStatement node) {
-
-		
+	}
+	
+	@Override
+	public void endVisit(LineInitExp node) {
 	}
 
 	@Override
@@ -878,18 +890,6 @@ public abstract class CoreConverter extends ASTCommonConverter {
 	}
 
 	@Override
-	public void endVisit(MultiImport node) {
-
-		
-	}
-
-	@Override
-	public void endVisit(MultiStringExp node) {
-
-		
-	}
-
-	@Override
 	public void endVisit(NegExp node) {
 
 		
@@ -951,14 +951,10 @@ public abstract class CoreConverter extends ASTCommonConverter {
 
 	@Override
 	public void endVisit(Package node) {
-
-		
 	}
 
 	@Override
-	public void endVisit(ParenExp node) {
-
-		
+	public void endVisit(PostBlitDeclaration node) {
 	}
 
 	@Override
@@ -1185,8 +1181,10 @@ public abstract class CoreConverter extends ASTCommonConverter {
 
 	@Override
 	public void endVisit(TemplateParameter node) {
-
-		
+	}
+	
+	@Override
+	public void endVisit(TemplateThisParameter node) {
 	}
 
 	@Override
@@ -1302,10 +1300,6 @@ public abstract class CoreConverter extends ASTCommonConverter {
 	}
 
 	@Override
-	public void endVisit(TypeDotIdExp node) {
-	}
-
-	@Override
 	public void endVisit(TypeEnum node) {
 	}
 
@@ -1383,6 +1377,10 @@ public abstract class CoreConverter extends ASTCommonConverter {
 
 	@Override
 	public void endVisit(TypeQualified node) {
+	}
+	
+	@Override
+	public void endVisit(TypeReturn node) {
 	}
 
 	@Override

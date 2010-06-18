@@ -1,9 +1,13 @@
 package dtool.ast.definitions;
 
 import static melnorme.miscutil.Assert.assertNotNull;
+
+import java.util.List;
+
 import descent.internal.compiler.parser.Comment;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.IdentifierExp;
+import descent.internal.compiler.parser.Module;
 import dtool.ast.ASTNeoNode;
 import dtool.refmodel.IScopeNode;
 
@@ -34,25 +38,30 @@ public abstract class DefUnit extends ASTNeoNode {
 	public final Symbol defname;
 	public EArcheType archeType;
 	
-	public DefUnit(Dsymbol elem) {
+	public DefUnit(Dsymbol elem/*, descent.internal.compiler.parser.Module module*/) {
 		convertNode(elem, false);
 		this.defname = new DefSymbol(elem.ident, this);
 		int size = 0; 
-		if(elem.preDdocs != null)
-			size = elem.preDdocs.size();
-		if(elem.postDdoc != null)
+		Module module = elem.getModule();
+		List<Comment> preDdocs = module.getPreComments(elem);
+		Comment postDdoc = module.getPostComment(elem);
+//		List<Comment> preDdocs = module == null ? null : module.getPreComments(elem);
+//		Comment postDdoc = module == null ? null : module.getPostComment(elem);
+		if(preDdocs != null)
+			size = preDdocs.size();
+		if(postDdoc != null)
 			size = size+1;
 		
 		if(size != 0)
 			this.preComments = new Comment[size];
 		
-		if(elem.preDdocs != null) {
-			for (int i = 0; i < elem.preDdocs.size(); i++) {
-				this.preComments[i] = elem.preDdocs.get(i);
+		if(preDdocs != null) {
+			for (int i = 0; i < preDdocs.size(); i++) {
+				this.preComments[i] = preDdocs.get(i);
 			}
 		}
-		if(elem.postDdoc != null)
-			this.preComments[size-1] = elem.postDdoc;
+		if(postDdoc != null)
+			this.preComments[size-1] = postDdoc;
 	}
 
 	public DefUnit(IdentifierExp id) {

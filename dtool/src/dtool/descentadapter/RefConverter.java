@@ -9,6 +9,7 @@ import descent.internal.compiler.parser.TypeExp;
 import descent.internal.compiler.parser.TypeInstance;
 import dtool.ast.expressions.ExpReference;
 import dtool.ast.references.RefIdentifier;
+import dtool.ast.references.RefReturn;
 import dtool.ast.references.RefTypeSlice;
 import dtool.ast.references.ReferenceConverter;
 import dtool.ast.references.TypeDelegate;
@@ -87,7 +88,12 @@ abstract class RefConverter extends CoreConverter {
 	public boolean visit(descent.internal.compiler.parser.TypeTypeof elem) {
 		return endAdapt(ReferenceConverter.convertTypeTypeOf(elem));
 	}
-
+	
+	@Override
+	public boolean visit(descent.internal.compiler.parser.TypeReturn elem) {
+		return endAdapt(new RefReturn(elem));
+	}
+	
 	
 	@Override
 	public boolean visit(descent.internal.compiler.parser.TypeAArray elem) {

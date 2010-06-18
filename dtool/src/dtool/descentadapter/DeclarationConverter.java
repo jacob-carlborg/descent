@@ -9,15 +9,16 @@ import descent.internal.compiler.parser.DebugCondition;
 import descent.internal.compiler.parser.DebugSymbol;
 import descent.internal.compiler.parser.IftypeCondition;
 import descent.internal.compiler.parser.Modifier;
-import descent.internal.compiler.parser.MultiImport;
 import descent.internal.compiler.parser.StaticIfCondition;
 import descent.internal.compiler.parser.TemplateAliasParameter;
+import descent.internal.compiler.parser.TemplateThisParameter;
 import descent.internal.compiler.parser.TemplateTupleParameter;
 import descent.internal.compiler.parser.TemplateTypeParameter;
 import descent.internal.compiler.parser.TemplateValueParameter;
 import descent.internal.compiler.parser.Version;
 import descent.internal.compiler.parser.VersionCondition;
 import descent.internal.compiler.parser.VersionSymbol;
+import dtool.ast.declarations.DeclarationAliasThis;
 import dtool.ast.declarations.DeclarationAlign;
 import dtool.ast.declarations.DeclarationAnonMember;
 import dtool.ast.declarations.DeclarationConditional;
@@ -38,6 +39,7 @@ import dtool.ast.definitions.DefinitionCtor;
 import dtool.ast.definitions.DefinitionEnum;
 import dtool.ast.definitions.DefinitionFunction;
 import dtool.ast.definitions.DefinitionInterface;
+import dtool.ast.definitions.DefinitionPostBlit;
 import dtool.ast.definitions.DefinitionStruct;
 import dtool.ast.definitions.DefinitionTemplate;
 import dtool.ast.definitions.DefinitionTypedef;
@@ -113,18 +115,9 @@ public abstract class DeclarationConverter extends RefConverter {
 	}
 	
 	@Override
-	public boolean visit(descent.internal.compiler.parser.Import elem) {
-		Assert.fail(); return false;
-	}
-	
-	@Override
 	public boolean visit(descent.internal.compiler.parser.BaseClass elem) {
 		return endAdapt(new BaseClass(elem));
 	}
-	
-	/*public boolean visit(descent.internal.compiler.parser.TypeSpecialization elem) {
-		Assert.fail(); return false; // singleuse
-	}*/
 	
 	@Override
 	public boolean visit(descent.internal.compiler.parser.TemplateParameter elem) {
@@ -143,10 +136,10 @@ public abstract class DeclarationConverter extends RefConverter {
 	public boolean visit(descent.internal.compiler.parser.ConditionalDeclaration elem) {
 		return endAdapt(DeclarationConditional.create(elem));
 	}
-
+	
 	@Override
-	public boolean visit(MultiImport node) {
-		return endAdapt(new DeclarationImport(node));
+	public boolean visit(descent.internal.compiler.parser.Import elem) {
+		return endAdapt(new DeclarationImport(elem));
 	}
 	
 	@Override
@@ -200,6 +193,11 @@ public abstract class DeclarationConverter extends RefConverter {
 	@Override
 	public boolean visit(descent.internal.compiler.parser.StaticIfDeclaration elem) {
 		return endAdapt(DeclarationConditional.create(elem));
+	}
+	
+	@Override
+	public boolean visit(descent.internal.compiler.parser.AliasThis elem) {
+		return endAdapt(new DeclarationAliasThis(elem));
 	}
 
 	
@@ -283,6 +281,10 @@ public abstract class DeclarationConverter extends RefConverter {
 		return endAdapt(new DefinitionCtor(elem));
 	}
 	@Override
+	public boolean visit(descent.internal.compiler.parser.PostBlitDeclaration elem) {
+		return endAdapt(new DefinitionPostBlit(elem));
+	}
+	@Override
 	public boolean visit(descent.internal.compiler.parser.DtorDeclaration elem) {
 		return endAdapt(new DefinitionCtor(elem));
 	}
@@ -319,6 +321,11 @@ public abstract class DeclarationConverter extends RefConverter {
 	
 	@Override
 	public boolean visit(TemplateTypeParameter elem) {
+		return endAdapt(new TemplateParamType(elem));
+	}
+	
+	@Override
+	public boolean visit(TemplateThisParameter elem) {
 		return endAdapt(new TemplateParamType(elem));
 	}
 	

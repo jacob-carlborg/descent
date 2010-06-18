@@ -1,12 +1,12 @@
 package dtool.ast.declarations;
 
+import static melnorme.miscutil.Assert.assertTrue;
+
 import java.util.Arrays;
 import java.util.Iterator;
 
-import melnorme.miscutil.Assert;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.Import;
-import descent.internal.compiler.parser.MultiImport;
 import dtool.ast.ASTNeoNode;
 import dtool.ast.IASTNeoVisitor;
 import dtool.ast.definitions.DefUnit;
@@ -25,18 +25,24 @@ public class DeclarationImport extends ASTNeoNode implements INonScopedBlock {
 	public boolean isStatic;
 	public boolean isTransitive; // aka public imports
 	
-	public DeclarationImport(MultiImport elem) {
+	public DeclarationImport(Import elem) {
 		convertNode(elem);
 		this.isStatic = elem.isstatic;
 		//this.isTransitive is adapted in post conversion;
-		Assert.isNull(elem.modifiers);
-
-		int importsNum = elem.imports == null ? 0 : elem.imports.size(); 
-
+		
+		
+		int importsNum = 1;
+		Import imprt = elem;
+		while(imprt.next != null) {
+			imprt = imprt.next;
+			importsNum++;
+		}
+		
 		// Selective import are at the end		
 		this.imports = new ImportFragment[importsNum];
-		for(int i = 0; i < importsNum; i++) {
-			Import imprt = elem.imports.get(i); 
+		imprt = elem;
+		for(int i = 0; i < importsNum; i++, imprt = imprt.next) {
+			
 			ImportFragment imprtFragment = null;
 			if(elem.isstatic) {
 				imprtFragment = new ImportStatic(imprt);
@@ -45,15 +51,15 @@ public class DeclarationImport extends ASTNeoNode implements INonScopedBlock {
 			} else if(imprt.aliasId != null) {
 				imprtFragment = new ImportAliasing(imprt);
 			} else if(imprt.names != null) {
-				Assert.isTrue(imprt.names.size() == imprt.aliases.size());
-				Assert.isTrue(imprt.names.size() > 0 );
+				assertTrue(imprt.names.size() == imprt.aliases.size());
+				assertTrue(imprt.names.size() > 0 );
 				imprtFragment = new ImportSelective(imprt);
 			} else {
 				imprtFragment = new ImportContent(imprt);
 			}
 			imports[i] = imprtFragment;
 		}
-		
+		assertTrue(imprt == null);
 	}
 	
 	@Override

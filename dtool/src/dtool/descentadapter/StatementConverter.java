@@ -3,6 +3,7 @@ package dtool.descentadapter;
 import descent.internal.compiler.parser.AsmBlock;
 import descent.internal.compiler.parser.AsmStatement;
 import descent.internal.compiler.parser.BreakStatement;
+import descent.internal.compiler.parser.CaseRangeStatement;
 import descent.internal.compiler.parser.CaseStatement;
 import descent.internal.compiler.parser.Catch;
 import descent.internal.compiler.parser.ConditionalStatement;
@@ -41,6 +42,7 @@ import dtool.ast.statements.BlockStatement;
 import dtool.ast.statements.StatementAsm;
 import dtool.ast.statements.StatementBreak;
 import dtool.ast.statements.StatementCase;
+import dtool.ast.statements.StatementCaseRange;
 import dtool.ast.statements.StatementContinue;
 import dtool.ast.statements.StatementDefault;
 import dtool.ast.statements.StatementDo;
@@ -93,6 +95,11 @@ public final class StatementConverter extends ExpressionConverter {
 	@Override
 	public boolean visit(CaseStatement element) {
 		return endAdapt(new StatementCase(element));
+	}
+	
+	@Override
+	public boolean visit(CaseRangeStatement element) {
+		return endAdapt(new StatementCaseRange(element));
 	}
 	
 	@Override

@@ -20,18 +20,27 @@ public abstract class Definition extends DefUnit  {
 	public Definition(Dsymbol elem) {
 		super(elem);
 		this.protection = elem.prot();
-		if(elem.modifiers != null && elem.modifiers.size() != 0) {
-			this.modifiers = elem.modifiers.toArray(
-					new Modifier[elem.modifiers.size()]);
-			for (int i = 0; i < this.modifiers.length; i++) {
-				effectiveModifiers |= STC.fromTOK(modifiers[i].tok);
-			}
+		if(false) {
+//		if(elem.modifiers != null && elem.modifiers.size() != 0) {
+//			this.modifiers = elem.modifiers.toArray(
+//					new Modifier[elem.modifiers.size()]);
+//			for (int i = 0; i < this.modifiers.length; i++) {
+//				effectiveModifiers |= STC.fromTOK(modifiers[i].tok);
+//			}
 		} else {
 			this.modifiers = NOMODIFIERS;
+			this.effectiveModifiers = 0;
 		}
 	}
 	
 	public static Definition convert(Dsymbol elem) {
 		return (Definition) DescentASTConverter.convertElem(elem);
+	}
+	
+	public PROT getEffectiveProtection() {
+		if(protection == null || protection == PROT.PROTundefined) {
+			return PROT.PROTpublic;
+		}
+		return protection;
 	}
 }

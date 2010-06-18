@@ -30,12 +30,9 @@ public abstract class ReferenceConverter {
 		return entity;
 	}
 
-	private static Reference convertTypeQualified(TypeQualified elem,
-			Reference rootRef) {
-		if(elem.idents != null){
-			assertTrue(elem.idents.size() > 0);
-			return createQualifiedRefFromIdents(elem.start, rootRef,
-					elem.idents, elem.idents.size());
+	private static Reference convertTypeQualified(TypeQualified elem, Reference rootRef) {
+		if(elem.idents != null && elem.idents.size() > 0){
+			return createQualifiedRefFromIdents(elem.start, rootRef, elem.idents, elem.idents.size());
 		} else {
 			return rootRef;
 		}
@@ -98,21 +95,8 @@ public abstract class ReferenceConverter {
 	}
 	
 	public static Reference convertTemplateInstance(TemplateInstance tplInstance, List<ASTDmdNode> tiargs) {
-		List<IdentifierExp> idents = tplInstance.idents;
-		int numIdents = idents.size();
-		IdentifierExp tplIdent = idents.get(numIdents-1);
-		RefTemplateInstance refTpl = new RefTemplateInstance(tplInstance, tplIdent, tiargs);
-
-		if(numIdents == 1) {
-			return refTpl;
-		} else {
-			RefQualified qref = new RefQualified();
-			Reference rootent = CommonRefSingle.convertToSingleRef(idents.get(0));
-			qref.root = createQualifiedRefFromIdents(tplInstance.start,
-					rootent, idents, numIdents - 1);
-			qref.subref = refTpl;
-			return qref;
-		}
+		IdentifierExp tplIdent = tplInstance.name;
+		return new RefTemplateInstance(tplInstance, tplIdent, tiargs);
 	}
 	
 	public static Reference convertDotIdexp(DotIdExp elem) {
@@ -156,7 +140,7 @@ public abstract class ReferenceConverter {
 			rootent = ((ExpReference) expTemp).ref;
 
 			if(rootent == null) {
-				return new RefModuleQualified(elem.ti.idents.get(0));
+				return new RefModuleQualified(elem.ti.name);
 			}
 		} else {
 			rootent = expTemp;

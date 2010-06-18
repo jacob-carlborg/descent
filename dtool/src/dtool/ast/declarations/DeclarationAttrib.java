@@ -25,17 +25,15 @@ public abstract class DeclarationAttrib extends ASTNeoNode implements INonScoped
 		convertNode(elem);
 		this.body = NodeList.createNodeList(bodydecls);
 		// XXX: AST: Convertion ugly hack (due to parser bug?)
-		if (elem.preDdocs != null && elem.preDdocs.size() > 0
-				&& this.body != null && this.body.nodes.length > 0) {
-			ASTNeoNode node = this.body.nodes[0];
-			if(node instanceof Definition) {
-				Definition def = (Definition) node;
-				if(def.preComments == null || def.preComments.length == 0) {
-					def.preComments = elem.preDdocs.toArray(
-							new Comment[elem.preDdocs.size()]);
-				}
-			}
-		}
+//		if (elem.preDdocs != null && elem.preDdocs.size() > 0 && this.body != null && this.body.nodes.length > 0) {
+//			ASTNeoNode node = this.body.nodes[0];
+//			if(node instanceof Definition) {
+//				Definition def = (Definition) node;
+//				if(def.preComments == null || def.preComments.length == 0) {
+//					def.preComments = elem.preDdocs.toArray(new Comment[elem.preDdocs.size()]);
+//				}
+//			}
+//		}
 	}
 	
 	@Override

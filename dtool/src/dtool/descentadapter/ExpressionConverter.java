@@ -9,6 +9,7 @@ import descent.internal.compiler.parser.AndAssignExp;
 import descent.internal.compiler.parser.AndExp;
 import descent.internal.compiler.parser.ArrayExp;
 import descent.internal.compiler.parser.ArrayInitializer;
+import descent.internal.compiler.parser.ArrayLengthExp;
 import descent.internal.compiler.parser.ArrayLiteralExp;
 import descent.internal.compiler.parser.AssertExp;
 import descent.internal.compiler.parser.AssignExp;
@@ -25,7 +26,6 @@ import descent.internal.compiler.parser.CompileDeclaration;
 import descent.internal.compiler.parser.CompileExp;
 import descent.internal.compiler.parser.CompileStatement;
 import descent.internal.compiler.parser.CondExp;
-import descent.internal.compiler.parser.DecrementExp;
 import descent.internal.compiler.parser.DeleteExp;
 import descent.internal.compiler.parser.DivAssignExp;
 import descent.internal.compiler.parser.DivExp;
@@ -33,21 +33,21 @@ import descent.internal.compiler.parser.DollarExp;
 import descent.internal.compiler.parser.EqualExp;
 import descent.internal.compiler.parser.ExpInitializer;
 import descent.internal.compiler.parser.FileExp;
+import descent.internal.compiler.parser.FileInitExp;
 import descent.internal.compiler.parser.FuncExp;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.IdentityExp;
-import descent.internal.compiler.parser.IftypeExp;
 import descent.internal.compiler.parser.InExp;
-import descent.internal.compiler.parser.IncrementExp;
 import descent.internal.compiler.parser.IndexExp;
 import descent.internal.compiler.parser.IntegerExp;
+import descent.internal.compiler.parser.IsExp;
+import descent.internal.compiler.parser.LineInitExp;
 import descent.internal.compiler.parser.MinAssignExp;
 import descent.internal.compiler.parser.MinExp;
 import descent.internal.compiler.parser.ModAssignExp;
 import descent.internal.compiler.parser.ModExp;
 import descent.internal.compiler.parser.MulAssignExp;
 import descent.internal.compiler.parser.MulExp;
-import descent.internal.compiler.parser.MultiStringExp;
 import descent.internal.compiler.parser.NegExp;
 import descent.internal.compiler.parser.NewAnonClassExp;
 import descent.internal.compiler.parser.NewExp;
@@ -56,7 +56,6 @@ import descent.internal.compiler.parser.NullExp;
 import descent.internal.compiler.parser.OrAssignExp;
 import descent.internal.compiler.parser.OrExp;
 import descent.internal.compiler.parser.OrOrExp;
-import descent.internal.compiler.parser.ParenExp;
 import descent.internal.compiler.parser.PostExp;
 import descent.internal.compiler.parser.PtrExp;
 import descent.internal.compiler.parser.RealExp;
@@ -72,7 +71,6 @@ import descent.internal.compiler.parser.SuperExp;
 import descent.internal.compiler.parser.TOK;
 import descent.internal.compiler.parser.ThisExp;
 import descent.internal.compiler.parser.TraitsExp;
-import descent.internal.compiler.parser.TypeDotIdExp;
 import descent.internal.compiler.parser.TypeidExp;
 import descent.internal.compiler.parser.UAddExp;
 import descent.internal.compiler.parser.UnaExp;
@@ -83,11 +81,13 @@ import descent.internal.compiler.parser.XorAssignExp;
 import descent.internal.compiler.parser.XorExp;
 import dtool.ast.declarations.DeclarationStringMacro;
 import dtool.ast.expressions.ExpArrayIndex;
+import dtool.ast.expressions.ExpArrayLength;
 import dtool.ast.expressions.ExpArrayLiteral;
 import dtool.ast.expressions.ExpAssert;
 import dtool.ast.expressions.ExpCall;
 import dtool.ast.expressions.ExpCast;
 import dtool.ast.expressions.ExpCond;
+import dtool.ast.expressions.ExpDefaultInit;
 import dtool.ast.expressions.ExpDelete;
 import dtool.ast.expressions.ExpDollar;
 import dtool.ast.expressions.ExpIftype;
@@ -100,7 +100,6 @@ import dtool.ast.expressions.ExpLiteralNull;
 import dtool.ast.expressions.ExpLiteralReal;
 import dtool.ast.expressions.ExpLiteralString;
 import dtool.ast.expressions.ExpNew;
-import dtool.ast.expressions.ExpParenthesized;
 import dtool.ast.expressions.ExpReference;
 import dtool.ast.expressions.ExpSlice;
 import dtool.ast.expressions.ExpStringMacro;
@@ -124,11 +123,6 @@ abstract class ExpressionConverter extends DeclarationConverter {
 		return endAdapt(new ExpLiteralImportedString(node));
 	}
 	
-	@Override
-	public boolean visit(MultiStringExp node) {
-		return endAdapt(new ExpLiteralString(node));		
-	}
-
 	@Override
 	public boolean visit(TraitsExp node) {
 		return endAdapt(new ExpTraits(node));
@@ -185,6 +179,11 @@ abstract class ExpressionConverter extends DeclarationConverter {
 	}
 	
 	@Override
+	public boolean visit(ArrayLengthExp element) {
+		return endAdapt(new ExpArrayLength(element));
+	}
+	
+	@Override
 	public boolean visit(ArrayLiteralExp element) {
 		return endAdapt(new ExpArrayLiteral(element));
 	}
@@ -218,7 +217,16 @@ abstract class ExpressionConverter extends DeclarationConverter {
 	public boolean visit(DollarExp element) {
 		return endAdapt(new ExpDollar(element));
 	}
-
+	
+	@Override
+	public boolean visit(FileInitExp element) {
+		return endAdapt(new ExpDefaultInit(element));
+	}
+	
+	@Override
+	public boolean visit(LineInitExp element) {
+		return endAdapt(new ExpDefaultInit(element));
+	}
 	
 	@Override
 	public boolean visit(FuncExp element) {
@@ -231,7 +239,7 @@ abstract class ExpressionConverter extends DeclarationConverter {
 	}
 	
 	@Override
-	public boolean visit(IftypeExp element) {
+	public boolean visit(IsExp element) {
 		return endAdapt(new ExpIftype(element));
 	}
 	
@@ -253,10 +261,6 @@ abstract class ExpressionConverter extends DeclarationConverter {
 	@Override
 	public boolean visit(NullExp element) {
 		return endAdapt(new ExpLiteralNull(element));
-	}
-	
-	final public boolean visit(ParenExp element) {
-		return endAdapt(new ExpParenthesized(element));
 	}
 	
 	@Override
@@ -289,11 +293,6 @@ abstract class ExpressionConverter extends DeclarationConverter {
 	public boolean visit(ThisExp element) {
 		return endAdapt(new ExpThis(element));
 	}
-	
-	@Override
-	public boolean visit(TypeDotIdExp element) {
-		return endAdapt(new ExpReference(element));
-	}	
 	
 	@Override
 	public boolean visit(TypeidExp element) {
@@ -358,29 +357,21 @@ abstract class ExpressionConverter extends DeclarationConverter {
 
 	@Override
 	public boolean visit(AddAssignExp element) {
-		Resolvable newelem = new InfixExpression(element, InfixExpression.Type.ADD_ASSIGN);
+		Resolvable newelem = element.isPreIncrement ?
+				new PrefixExpression(element, PrefixExpression.Type.PRE_INCREMENT) :
+				new InfixExpression(element, InfixExpression.Type.ADD_ASSIGN);
 		return endAdapt(newelem);
 	}
-	
-	@Override
-	public boolean visit(IncrementExp node) {
-		Resolvable newelem = new PrefixExpression(node, PrefixExpression.Type.PRE_INCREMENT);
-		return endAdapt(newelem);
-	}
-
 	
 
 	@Override
 	public boolean visit(MinAssignExp element) {
-		Resolvable newelem = new InfixExpression(element, InfixExpression.Type.MIN_ASSIGN);
+		Resolvable newelem = element.isPreDecrement ?
+				new PrefixExpression(element, PrefixExpression.Type.PRE_DECREMENT) :
+				new InfixExpression(element, InfixExpression.Type.MIN_ASSIGN);
 		return endAdapt(newelem);
 	}
 	
-	
-	@Override
-	public boolean visit(DecrementExp node) {
-		return endAdapt(new PrefixExpression(node, PrefixExpression.Type.PRE_DECREMENT));
-	}
 	
 	@Override
 	public boolean visit(AddExp element) {
