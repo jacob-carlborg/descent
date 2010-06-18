@@ -1,4 +1,4 @@
-package descent.internal.ddoc;
+package descent.core.ddoc;
 
 import java.util.ArrayList;
 import java.util.List;

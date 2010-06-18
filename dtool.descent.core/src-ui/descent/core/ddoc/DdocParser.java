@@ -1,4 +1,4 @@
-package descent.internal.ddoc;
+package descent.core.ddoc;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.DeeConventions;
-import descent.internal.ddoc.DdocSection.Parameter;
+import descent.core.ddoc.DdocSection.Parameter;
 
 public class DdocParser {
 	

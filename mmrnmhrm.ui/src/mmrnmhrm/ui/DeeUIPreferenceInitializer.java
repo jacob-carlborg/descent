@@ -10,7 +10,7 @@ import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.ui.editors.text.EditorsUI;
 
-import descent.internal.ddoc.IDeeDocColorConstants;
+import dtool.IDeeDocColorConstants;
 
 public class DeeUIPreferenceInitializer extends AbstractPreferenceInitializer {
 	

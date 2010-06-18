@@ -20,8 +20,8 @@ import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.RGB;
 import org.osgi.framework.Bundle;
 
-import descent.internal.ddoc.Ddoc;
-import descent.internal.ddoc.IDeeDocColorConstants;
+import descent.core.ddoc.Ddoc;
+import dtool.IDeeDocColorConstants;
 import dtool.DeeDocAccessor;
 import dtool.ast.definitions.DefUnit;
 

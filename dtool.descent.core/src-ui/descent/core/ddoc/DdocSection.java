@@ -1,4 +1,4 @@
-package descent.internal.ddoc;
+package descent.core.ddoc;
 
 
 public class DdocSection {

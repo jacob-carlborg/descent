@@ -101,6 +101,8 @@ public class Lexer implements IProblemRequestor {
 	public final static int D1 = 1;
 	public final static int D2 = 2;
 	
+	public final static int DEFAULT_LEVEL = D1;
+	
 	private static final int[] EMPTY_LINE_ENDS = new int[0];
 	
 	private final static boolean IN_COMMENT = true;

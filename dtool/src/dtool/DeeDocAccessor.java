@@ -5,17 +5,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import descent.core.ToolFactory;
+import descent.core.ParserToolFactory;
 import descent.core.compiler.IScanner;
 import descent.core.compiler.ITerminalSymbols;
 import descent.internal.compiler.parser.Comment;
-import descent.internal.ddoc.Ddoc;
-import descent.internal.ddoc.DdocMacros;
-import descent.internal.ddoc.DdocParser;
-import descent.internal.ddoc.DdocSection;
-import descent.internal.ddoc.HTMLPrinterUtils;
-import descent.internal.ddoc.IDeeDocColorConstants;
-import descent.internal.ddoc.DdocSection.Parameter;
+import descent.core.ddoc.Ddoc;
+import descent.core.ddoc.DdocMacros;
+import descent.core.ddoc.DdocParser;
+import descent.core.ddoc.DdocSection;
+import descent.core.ddoc.HTMLPrinterUtils;
+import descent.core.ddoc.DdocSection.Parameter;
 import dtool.ast.definitions.DefUnit;
 
 public class DeeDocAccessor {
@@ -155,7 +154,7 @@ public class DeeDocAccessor {
 		} catch (Exception e) {
 		}*/
 		
-		IScanner scanner = ToolFactory.createScanner(true, true, true, false);
+		IScanner scanner = ParserToolFactory.createScanner(true, true, true, false);
 		scanner.setSource(text.toCharArray());
 		
 		int token;

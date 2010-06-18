@@ -11,12 +11,12 @@ Require-Bundle: org.eclipse.core.runtime,
 Bundle-ActivationPolicy: lazy
 Export-Package: descent.core,
  descent.core.compiler,
+ descent.core.ddoc,
  descent.core.dom,
  descent.core.formatter,
  descent.internal.compiler,
  descent.internal.compiler.parser,
  descent.internal.compiler.parser.ast,
- descent.internal.ddoc,
  melnorme.miscutil,
  melnorme.miscutil.tree
 Eclipse-BuddyPolicy: registered

@@ -1,4 +1,4 @@
-package descent.internal.ddoc;
+package dtool;
 
 
 public interface IDeeDocColorConstants {

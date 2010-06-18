@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package descent.internal.ddoc;
+package descent.core.ddoc;
 
 
 import java.io.IOException;
