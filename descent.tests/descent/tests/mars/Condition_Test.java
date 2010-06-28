@@ -1,5 +1,6 @@
 package descent.tests.mars;
 
+import descent.core.compiler.IftypeDeclarationKind;
 import descent.core.dom.AST;
 import descent.core.dom.ASTNode;
 import descent.core.dom.BooleanLiteral;
@@ -93,7 +94,7 @@ public class Condition_Test extends Parser_Test {
 		IftypeDeclaration d = (IftypeDeclaration) getSingleDeclarationWithProblems(s, 1, AST.D0); // iftype deprecated
 		assertEquals(ASTNode.IFTYPE_DECLARATION, d.getNodeType());
 		
-		assertEquals(IftypeDeclaration.Kind.NONE, d.getKind());
+		assertEquals(IftypeDeclarationKind.NONE, d.getKind());
 		assertEquals("x", ((SimpleType) d.getTestType()).getName().getFullyQualifiedName());
 		assertNull(d.getName());
 		assertNull(d.getMatchingType());
@@ -106,7 +107,7 @@ public class Condition_Test extends Parser_Test {
 		IftypeDeclaration d = (IftypeDeclaration) getSingleDeclarationWithProblems(s, 1, AST.D0); // iftype deprecated
 		assertEquals(ASTNode.IFTYPE_DECLARATION, d.getNodeType());
 		
-		assertEquals(IftypeDeclaration.Kind.EQUALS, d.getKind());
+		assertEquals(IftypeDeclarationKind.EQUALS, d.getKind());
 		assertEquals("x", ((SimpleType) d.getTestType()).getName().getFullyQualifiedName());
 		assertNull(d.getName());
 		assertEquals("y", ((SimpleType) d.getMatchingType()).getName().getFullyQualifiedName());
@@ -119,7 +120,7 @@ public class Condition_Test extends Parser_Test {
 		IftypeDeclaration d = (IftypeDeclaration) getSingleDeclarationWithProblems(s, 1, AST.D0); // iftype deprecated
 		assertEquals(ASTNode.IFTYPE_DECLARATION, d.getNodeType());
 		
-		assertEquals(IftypeDeclaration.Kind.EXTENDS, d.getKind());
+		assertEquals(IftypeDeclarationKind.EXTENDS, d.getKind());
 		assertEquals("x", ((SimpleType) d.getTestType()).getName().getFullyQualifiedName());
 		assertNull(d.getName());
 		assertEquals("y", ((SimpleType) d.getMatchingType()).getName().getFullyQualifiedName());		
@@ -131,7 +132,7 @@ public class Condition_Test extends Parser_Test {
 		IftypeDeclaration d = (IftypeDeclaration) getSingleDeclarationWithProblems(s, 1, AST.D0); // iftype deprecated
 		assertEquals(ASTNode.IFTYPE_DECLARATION, d.getNodeType());
 		
-		assertEquals(IftypeDeclaration.Kind.EXTENDS, d.getKind());
+		assertEquals(IftypeDeclarationKind.EXTENDS, d.getKind());
 		assertEquals("int", d.getTestType().toString());
 		assertEquals("x", d.getName().getIdentifier());
 		assertPosition(d.getName(), 12, 1);

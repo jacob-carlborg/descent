@@ -1,5 +1,6 @@
 package descent.tests.mars;
 
+import descent.core.compiler.Linkage;
 import descent.core.dom.ASTNode;
 import descent.core.dom.ExternDeclaration;
 
@@ -7,12 +8,12 @@ public class Link_Test extends Parser_Test {
 	
 	public void test() {
 		Object[][] links = {
-				{ "", ExternDeclaration.Linkage.DEFAULT },
-				{ "D", ExternDeclaration.Linkage.D  },
-				{ "C", ExternDeclaration.Linkage.C  },
-				{ "C++", ExternDeclaration.Linkage.CPP  },
-				{ "Windows", ExternDeclaration.Linkage.WINDOWS  },
-				{ "Pascal", ExternDeclaration.Linkage.PASCAL },
+				{ "", Linkage.DEFAULT },
+				{ "D", Linkage.D  },
+				{ "C", Linkage.C  },
+				{ "C++", Linkage.CPP  },
+				{ "Windows", Linkage.WINDOWS  },
+				{ "Pascal", Linkage.PASCAL },
 				
 		};
 		

@@ -4,7 +4,7 @@ import descent.core.dom.ExternDeclaration;
 import descent.core.dom.Modifier;
 import descent.core.dom.PrimitiveType;
 import descent.core.dom.VariableDeclaration;
-import descent.core.dom.ExternDeclaration.Linkage;
+import descent.core.compiler.Linkage;
 
 public class RewriteExternDeclarationTest extends AbstractRewriteTest {
 	
