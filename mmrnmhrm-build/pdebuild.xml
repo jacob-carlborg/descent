@@ -6,7 +6,6 @@
 	<property name="java.jvm5.dir" location="${java.jvm6.dir}" />
 	
 	<echo message="Base Dir: ${basedir}"/>
-	<echo message="projects.dir: ${projects.dir}"/>
 	
 	<tstamp />
 	<property name="build.qualifier" value="${DSTAMP}${TSTAMP}" />
