@@ -2,7 +2,7 @@
 <feature
       id="org.dsource.mmrnmhrm"
       label="%featureName"
-      version="0.3.1.qualifier"
+      version="0.4.0.qualifier"
       provider-name="%providerName"
       plugin="mmrnmhrm.ui">
 
@@ -32,28 +32,28 @@
          id="mmrnmhrm.core"
          download-size="0"
          install-size="0"
-         version="0.3.1.qualifier"
+         version="0.4.0.qualifier"
          unpack="false"/>
 
    <plugin
          id="mmrnmhrm.ui"
          download-size="0"
          install-size="0"
-         version="0.3.1.qualifier"
-         unpack="false"/>
-
-   <plugin
-         id="dtool.descent.core"
-         download-size="0"
-         install-size="0"
-         version="0.3.1.qualifier"
+         version="0.4.0.qualifier"
          unpack="false"/>
 
    <plugin
          id="dtool"
          download-size="0"
          install-size="0"
-         version="0.3.1.qualifier"
+         version="0.4.0.qualifier"
+         unpack="false"/>
+
+   <plugin
+         id="descent.compiler"
+         download-size="0"
+         install-size="0"
+         version="0.6.0.qualifier"
          unpack="false"/>
 
 </feature>
