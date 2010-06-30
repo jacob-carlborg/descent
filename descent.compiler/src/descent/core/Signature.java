@@ -431,7 +431,7 @@ public final class Signature {
 	 * Character constant indicating a tuple type in a signature.
 	 * Value is <code>'�'</code>.
 	 */
-	public static final char C_TUPLE									= '�';
+	public static final char C_TUPLE									= '\uFFFD'; // BM: I hope I got this codepoint right, see javadoc
 	
 	/**
 	 * Character constant indicating a D linkage in a function signature.
