@@ -1,0 +1,5 @@
+    	<move todir="${build.dir}/features" >
+    		<fileset refid="projects.features.fileset" />
+			<!-- Remove the "-feature/" suffix -->
+			<regexpmapper from="^([^/]*)-feature/(.*)" to="\1/\2" handledirsep="true" />
+    	</move>

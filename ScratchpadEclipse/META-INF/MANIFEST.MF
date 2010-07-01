@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Test Product
-Bundle-SymbolicName: testproduct;singleton:=true
+Bundle-Name: Scratchpad Application
+Bundle-SymbolicName: scratchpad.app;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.swt;bundle-version="3.4.0",

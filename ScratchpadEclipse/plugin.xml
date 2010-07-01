@@ -98,6 +98,17 @@
             name="ScratchPad.page1">
       </page>
    </extension>
+   <extension
+         point="org.eclipse.ui.splashHandlers">
+      <splashHandler
+            class="testproduct.splashHandlers.InteractiveSplashHandler"
+            id="testproduct.splashHandlers.interactive">
+      </splashHandler>
+      <splashHandlerProductBinding
+            productId="testproduct.product"
+            splashId="testproduct.splashHandlers.interactive">
+      </splashHandlerProductBinding>
+   </extension>
 
 
 </plugin>

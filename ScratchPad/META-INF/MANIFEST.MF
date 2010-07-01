@@ -15,5 +15,6 @@ Bundle-ClassPath: .,
  lib/net.java.dev.glazedlists.glazedlists_java15-1.7.0-001.jar
 Import-Package: melnorme.miscutil
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Export-Package: scratch.swt,
+Export-Package: scratch,
+ scratch.swt,
  scratch.utils
