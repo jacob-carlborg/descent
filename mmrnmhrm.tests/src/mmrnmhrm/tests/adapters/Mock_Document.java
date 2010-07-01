@@ -144,6 +144,7 @@ public class Mock_Document implements IDocument {
 		throw new UnsupportedOperationException();
 	}
 	
+	@Override
 	public int getLineOffset(int line) throws BadLocationException {
 		throw new UnsupportedOperationException();
 		

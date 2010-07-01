@@ -198,6 +198,7 @@ public class DeeSourceViewerConfiguration extends ScriptSourceViewerConfiguratio
 	protected IInformationControlCreator getOutlinePresenterControlCreator(
 			ISourceViewer sourceViewer, final String commandId) {
 		return new IInformationControlCreator() {
+			@Override
 			public IInformationControl createInformationControl(Shell parent) {
 				int shellStyle = SWT.RESIZE;
 				int treeStyle = SWT.V_SCROLL | SWT.H_SCROLL;
@@ -268,6 +269,7 @@ public class DeeSourceViewerConfiguration extends ScriptSourceViewerConfiguratio
 	@Override
 	public IInformationControlCreator getInformationControlCreator(ISourceViewer sourceViewer) {
 		return new IInformationControlCreator() {
+			@Override
 			@SuppressWarnings("restriction")
 			public IInformationControl createInformationControl(Shell parent) {
 				return new DefaultInformationControl(parent,

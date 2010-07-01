@@ -53,7 +53,8 @@ public class BlockStatement extends Statement implements IScopeNode {
 	}
 
 
-	@SuppressWarnings("unchecked")
+	@Override
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Iterator<ASTNode> getMembersIterator() {
 		return (Iterator) statements.iterator();
 	}

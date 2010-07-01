@@ -58,10 +58,12 @@ public class ItemSelectionListField extends DialogField {
 	/** Content provider for the selection items and categories. */
 	private class SelectionListContentProvider implements ITreeContentProvider {
 
+		@Override
 		public Object[] getElements(Object inputElement) {
 			return catRoot;
 		}
 		
+		@Override
 		public Object[] getChildren(Object parentElement) {
 			if (parentElement instanceof SelectionListCategory) {
 				SelectionListCategory elem = (SelectionListCategory) parentElement;
@@ -70,18 +72,22 @@ public class ItemSelectionListField extends DialogField {
 			return null;
 		}
 
+		@Override
 		public Object getParent(Object element) {
 			return null;
 		}
 
+		@Override
 		public boolean hasChildren(Object element) {
 			return element instanceof SelectionListCategory;
 		}
 
 
+		@Override
 		public void dispose() {
 		}
 
+		@Override
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		}
 	}
@@ -142,6 +148,7 @@ public class ItemSelectionListField extends DialogField {
 		    fTreeViewer.setLabelProvider(new LabelProvider());
 		    fTreeViewer.setContentProvider(new SelectionListContentProvider());
 		    fTreeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+				@Override
 				public void selectionChanged(SelectionChangedEvent event) {
 					dialogFieldChanged();
 				}

@@ -56,6 +56,7 @@ implements ITextHoverExtension {
 		// TODO: remove this?
 		if(false)
 		return new IInformationControlCreator() {
+			@Override
 			public IInformationControl createInformationControl(Shell parent) {
 				return new DefaultInformationControl(parent, "TODO",  
 						//new	org.eclipse.jface.internal.text.html.HTMLTextPresenter(true),

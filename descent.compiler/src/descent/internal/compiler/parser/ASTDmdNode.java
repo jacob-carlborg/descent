@@ -1232,6 +1232,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		throw new IllegalStateException("Problem reporting not implemented");
 	}
 
+	@Override
 	public final int getElementType() {
 		return getNodeType();
 	}

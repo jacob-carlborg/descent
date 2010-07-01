@@ -91,6 +91,7 @@ public abstract class FindAction extends SelectionDispatchAction {
 
 	protected void runOperation(final DefUnit defUnit) {
 		OperationsManager.executeOperation(new IWorkspaceRunnable() {
+			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 				performNewSearch(defUnit);
 			}

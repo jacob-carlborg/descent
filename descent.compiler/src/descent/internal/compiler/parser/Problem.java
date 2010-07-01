@@ -125,10 +125,12 @@ public class Problem implements IProblem {
 		return p;
 	}
 	
+	@Override
 	public int getID() {
 		return id;
 	}
 
+	@Override
 	public String getMessage() {
 		switch(id) {
 		case UnterminatedBlockComment:

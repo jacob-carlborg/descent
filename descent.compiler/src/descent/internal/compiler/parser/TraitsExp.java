@@ -44,6 +44,7 @@ public class TraitsExp extends Expression {
 		if (equals(ident, Id.isArithmetic)) {
 			// ISTYPE(t.isintegral() || t.isfloating())
 			return isType(new ISTYPE_Conditional() {
+				@Override
 				public boolean check(Type t) {
 					return t.isintegral() || t.isfloating();
 				}

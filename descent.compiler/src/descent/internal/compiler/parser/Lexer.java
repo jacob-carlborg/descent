@@ -5977,17 +5977,21 @@ public class Lexer implements IProblemRequestor {
 
 	// IProblemRequestor members:
 
+	@Override
 	public void acceptProblem(IProblem problem) {
 		problems.add(problem);
 	}
 
+	@Override
 	public boolean isActive() {
 		return true;
 	}
 
+	@Override
 	public void beginReporting() {
 	}
 
+	@Override
 	public void endReporting() {
 	}
 

@@ -32,18 +32,21 @@ public class ChainedIterator<T> implements Iterator<T> {
     	//currentIter = firstIter;
     }
 
-    public boolean hasNext() {
+    @Override
+	public boolean hasNext() {
     	return firstIter.hasNext() || secondIter.hasNext();
 
     }
 
-    public T next() {
+    @Override
+	public T next() {
     	if(firstIter.hasNext())
     		return firstIter.next();
     	return secondIter.next();
 
     }
-    public void remove() {
+    @Override
+	public void remove() {
         throw new UnsupportedOperationException();
     }
 
