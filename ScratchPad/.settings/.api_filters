@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<component id="scratchpad" version="2">
+    <resource path="src/scratch/ScratchpadAPITest.java" type="scratch.ScratchpadAPITest">
+        <filter id="643842064">
+            <message_arguments>
+                <message_argument value="Xpto"/>
+                <message_argument value="ScratchpadAPITest"/>
+                <message_argument value="getSomeXpto()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+</component>
