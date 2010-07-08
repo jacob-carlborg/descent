@@ -89,16 +89,22 @@ public class DeeDmdInstallType extends AbstractInterpreterInstallType {
 	}
 	
 	private void addDefaultLibraryLocations(IFileHandle executableLocation, List<LibraryLocation> locs) {
+		IEnvironment env = executableLocation.getEnvironment();
 		IPath installPath = executableLocation.getPath().removeLastSegments(3);
 		IPath path = installPath.append(DMD2_INSTALL_LIBRARY_PATH);
 		if(path.toFile().exists() && path.toFile().isDirectory()) {
 			// Found a D2 DMD install
+			addLibraryLocationFromPath(locs, env, path);
+			addLibraryLocationFromPath(locs, env, installPath.append("src/phobos"));
 		} else {
 			// Can only be a D1 DMD install
 			path = installPath.append(DMD_INSTALL_LIBRARY_PATH);
+			addLibraryLocationFromPath(locs, env, path);
 		}
-		
-		IEnvironment env = executableLocation.getEnvironment();
+	}
+	
+	
+	private static void addLibraryLocationFromPath(List<LibraryLocation> locs, IEnvironment env, IPath path) {
 		LibraryLocation loc = new LibraryLocation(EnvironmentPathUtils.getFullPath(env, path));
 		locs.add(loc);
 	}
