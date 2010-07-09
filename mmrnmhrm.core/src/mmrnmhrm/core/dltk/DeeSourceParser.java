@@ -1,14 +1,13 @@
 package mmrnmhrm.core.dltk;
 
 import static melnorme.miscutil.Assert.assertTrue;
-import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.DeeCorePreferences;
 import mmrnmhrm.core.LangCore;
 
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.dltk.ast.declarations.ModuleDeclaration;
 import org.eclipse.dltk.ast.parser.AbstractSourceParser;
+import org.eclipse.dltk.ast.parser.IModuleDeclaration;
 import org.eclipse.dltk.ast.parser.ISourceParser;
+import org.eclipse.dltk.compiler.env.IModuleSource;
 import org.eclipse.dltk.compiler.problem.IProblemReporter;
 
 import descent.core.compiler.IProblem;
@@ -29,13 +28,7 @@ public class DeeSourceParser extends AbstractSourceParser {
 
 		@Override
 		public void reportProblem(IProblem problem) {
-			try {
-				reporter.reportProblem(new DLTKDescentProblemWrapper(problem));
-				if(false) throw new CoreException(null);
-			} catch (CoreException e) {
-				DeeCore.log(e);
-				// TODO: throw e ?
-			}
+			reporter.reportProblem(new DLTKDescentProblemWrapper(problem));
 		}
 
 		public static descent.internal.compiler.parser.ast.IProblemReporter create(
@@ -53,8 +46,9 @@ public class DeeSourceParser extends AbstractSourceParser {
 	}
 	
 	@Override
-	public ModuleDeclaration parse(char[] fileName, char[] source, IProblemReporter reporter) {
+	public IModuleDeclaration parse(IModuleSource input, IProblemReporter reporter) {
 		int langVersion = DeeCorePreferences.getInt(DeeCorePreferences.LANG_VERSION);
+		char[] source = input.getContentsAsCharArray();
 		Parser parser = new Parser(langVersion, source);
 		parser.setProblemReporter(DescentProblemAdapter.create(reporter));
 		Module dmdModule = null;
@@ -64,6 +58,7 @@ public class DeeSourceParser extends AbstractSourceParser {
 			LangCore.log(e);
 			throw e;
 		}
+		
 		assertTrue(dmdModule.length == source.length);
 		DeeModuleDeclaration deeModuleDecl = new DeeModuleDeclaration(dmdModule);
 		if(dmdModule.hasSyntaxErrors()

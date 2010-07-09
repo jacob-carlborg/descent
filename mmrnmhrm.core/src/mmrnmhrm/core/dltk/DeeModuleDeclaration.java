@@ -1,12 +1,14 @@
 package mmrnmhrm.core.dltk;
 
 import org.eclipse.dltk.ast.declarations.ModuleDeclaration;
+import org.eclipse.dltk.ast.parser.IModuleDeclaration;
 
 import static melnorme.miscutil.Assert.assertFail;
+import static melnorme.miscutil.Assert.assertTrue;
 
 import dtool.ast.definitions.Module;
 
-public class DeeModuleDeclaration extends ModuleDeclaration {
+public class DeeModuleDeclaration extends ModuleDeclaration implements IModuleDeclaration {
 
 	public static interface EModelStatus {
 		int OK = 0;
@@ -42,5 +44,7 @@ public class DeeModuleDeclaration extends ModuleDeclaration {
 	public void setNeoModule(Module neoModule) {
 		this.neoModule = neoModule;
 		getStatements().add(neoModule);
+		assertTrue(neoModule.hasNoSourceRangeInfo() 
+				|| (neoModule.getStartPos() == 0 && neoModule.getEndPos() == dmdModule.getEndPos()));
 	}
 }

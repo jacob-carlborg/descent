@@ -1,7 +1,9 @@
 package mmrnmhrm.ui.preferences.pages;
 
+import mmrnmhrm.core.dltk.DeeLanguageToolkit;
 import mmrnmhrm.ui.preferences.DeeBuildpathsBlock;
 
+import org.eclipse.dltk.core.IDLTKLanguageToolkit;
 import org.eclipse.dltk.ui.preferences.BuildPathsPropertyPage;
 import org.eclipse.dltk.ui.util.BusyIndicatorRunnableContext;
 import org.eclipse.dltk.ui.wizards.BuildpathsBlock;
@@ -16,5 +18,10 @@ public class DeeBuildPathPropertyPage extends BuildPathsPropertyPage implements 
 	protected BuildpathsBlock createBuildPathBlock(IWorkbenchPreferenceContainer pageContainer) {
 		return new DeeBuildpathsBlock(new BusyIndicatorRunnableContext(), 
 				this, getSettings().getInt(INDEX), false, pageContainer);
+	}
+	
+	@Override
+	public IDLTKLanguageToolkit getLanguageToolkit() {
+		return DeeLanguageToolkit.getDefault();
 	}
 }

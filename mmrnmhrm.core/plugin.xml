@@ -112,6 +112,10 @@
             class="mmrnmhrm.core.dltk.search.DeeSearchFactory"
             nature="mmrnmhrm.core.nature">
       </seachFactory>
+      <matchLocator
+            class="mmrnmhrm.core.dltk.search.DeeMatchLocator"
+            nature="mmrnmhrm.core.nature">
+      </matchLocator>
    </extension>
    <extension
          point="org.eclipse.dltk.launching.interpreterInstallTypes">

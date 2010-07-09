@@ -1,15 +1,15 @@
 package mmrnmhrm.ui.wizards;
 
-import mmrnmhrm.ui.preferences.DeeCompilersComboBlock;
+import mmrnmhrm.core.model.DeeNature;
 
-import org.eclipse.dltk.internal.debug.ui.interpreters.AbstractInterpreterComboBlock;
 import org.eclipse.dltk.internal.debug.ui.interpreters.AbstractInterpreterContainerWizardPage;
 
 
 public class DeeCompilerContainerWizardPage extends AbstractInterpreterContainerWizardPage {
-
+	
 	@Override
-	protected AbstractInterpreterComboBlock getInterpreterBlock() {
-		return new DeeCompilersComboBlock(null);
+	public String getScriptNature() {
+		return DeeNature.NATURE_ID; 
 	}
+	
 }

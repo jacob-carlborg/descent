@@ -78,7 +78,7 @@ public class DeeSearchPatterProcessor implements ISearchPatternProcessor {
 		char[] rawTypeQualification = extractRawTypeQualification(pattern);
 		if(rawTypeQualification == null)
 			return null;
-		// Have no ideia why this '$' substitution is made
+		// BM: Have no ideia why this '$' substitution is made
 		return CharOperation.replace(rawTypeQualification, TYPE_DELIMITER.toCharArray(),
 				new char[] { '$' });
 	}

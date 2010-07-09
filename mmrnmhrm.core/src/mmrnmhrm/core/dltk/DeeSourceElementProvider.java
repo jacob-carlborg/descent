@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.eclipse.dltk.ast.Modifiers;
 import org.eclipse.dltk.compiler.ISourceElementRequestor;
-import org.eclipse.dltk.compiler.ISourceElementRequestor.FieldInfo;
-import org.eclipse.dltk.compiler.ISourceElementRequestor.TypeInfo;
+import org.eclipse.dltk.compiler.IElementRequestor.FieldInfo;
+import org.eclipse.dltk.compiler.IElementRequestor.TypeInfo;
 
 import descent.internal.compiler.parser.STC;
 import dtool.ast.ASTNeoUpTreeVisitor;
@@ -42,8 +42,9 @@ public final class DeeSourceElementProvider extends ASTNeoUpTreeVisitor {
 		
 		requestor.enterModule();
 
-		if(neoModule != null)
+		if(neoModule != null) {
 			neoModule.accept(this);
+		}
 		
 		requestor.exitModule(moduleDecl.dmdModule.getEndPos());
 	}
@@ -130,30 +131,29 @@ public final class DeeSourceElementProvider extends ASTNeoUpTreeVisitor {
 	
 	@Override
 	public boolean visit(DefinitionEnum elem) {
-		requestor.acceptFieldReference(elem.getName().toCharArray(), elem.sourceStart());
+		requestor.acceptFieldReference(elem.getName(), elem.sourceStart());
 		return true;
 	}
 	
 	@Override
 	public boolean visit(DefinitionTypedef elem) {
-		requestor.acceptFieldReference(elem.getName().toCharArray(), elem.sourceStart());
+		requestor.acceptFieldReference(elem.getName(), elem.sourceStart());
 		return true;
 	}
 	
 	@Override
 	public boolean visit(DefinitionAlias elem) {
-		requestor.acceptFieldReference(elem.getName().toCharArray(), elem.sourceStart());
+		requestor.acceptFieldReference(elem.getName(), elem.sourceStart());
 		return true;
 	}
 	
 
 	@Override
 	public boolean visit(NamedReference elem) {
-		requestor.acceptTypeReference(elem.toStringAsElement().toCharArray(), 
-				elem.sourceStart() /*-1*/);
+		requestor.acceptTypeReference(elem.toStringAsElement(), elem.sourceStart() /*-1*/);
 		return true;
 	}
-
+	
 	/* ================================== */
 
 	

@@ -17,7 +17,7 @@ public class DeeMainLaunchConfigurationTab extends MainLaunchConfigurationTab {
 	}
 	
 	@Override
-	protected String getNatureID() {
+	public String getNatureID() {
 		return DeeNature.NATURE_ID;
 	}
 	

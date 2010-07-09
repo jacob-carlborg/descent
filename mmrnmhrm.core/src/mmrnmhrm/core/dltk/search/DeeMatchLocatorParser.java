@@ -15,9 +15,6 @@ import org.eclipse.dltk.core.search.matching.MatchLocatorParser;
 import org.eclipse.dltk.core.search.matching.PossibleMatch;
 
 import dtool.ast.definitions.DefUnit;
-import dtool.ast.definitions.DefinitionAggregate;
-import dtool.ast.definitions.DefinitionClass;
-import dtool.ast.definitions.Module;
 import dtool.ast.references.NamedReference;
 
 public class DeeMatchLocatorParser extends MatchLocatorParser {
@@ -29,10 +26,8 @@ public class DeeMatchLocatorParser extends MatchLocatorParser {
 	@Override
 	public ModuleDeclaration parse(PossibleMatch possibleMatch) {
 		ISourceModule sourceModule = (ISourceModule) possibleMatch.getModelElement();
-		ModuleDeclaration module = SourceParserUtil.getModuleDeclaration(
-				sourceModule, null);
-		DeeModuleDeclaration deeModuleDecl = DeeParserUtil.getFixedDeeModuleDeclaration(module,
-				sourceModule);
+		ModuleDeclaration module = SourceParserUtil.getModuleDeclaration( sourceModule, null);
+		DeeModuleDeclaration deeModuleDecl = DeeParserUtil.getFixedDeeModuleDeclaration(module, sourceModule);
 		if(deeModuleDecl != null)
 			return deeModuleDecl;
 		return module;

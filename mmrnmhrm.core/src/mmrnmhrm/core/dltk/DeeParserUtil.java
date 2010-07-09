@@ -1,6 +1,7 @@
 package mmrnmhrm.core.dltk;
 
 import org.eclipse.dltk.ast.declarations.ModuleDeclaration;
+import org.eclipse.dltk.ast.parser.IModuleDeclaration;
 import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.dltk.core.SourceParserUtil;
 
@@ -29,7 +30,7 @@ public abstract class DeeParserUtil {
 	/** If a moduleDeclaration is a DeeModuleDeclaration, fixes it (set sourceModule) and returns 
 	 * it, otherwise return null. */
 	public static DeeModuleDeclaration getFixedDeeModuleDeclaration(
-			ModuleDeclaration moduleDeclaration, ISourceModule sourceModule) {
+			IModuleDeclaration moduleDeclaration, ISourceModule sourceModule) {
 		if (moduleDeclaration instanceof DeeModuleDeclaration) {
 			DeeModuleDeclaration deeModuleDecl = (DeeModuleDeclaration) moduleDeclaration;
 			if (deeModuleDecl.neoModule != null)

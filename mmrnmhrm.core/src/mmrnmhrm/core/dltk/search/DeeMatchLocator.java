@@ -4,14 +4,12 @@ import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.SourceModelUtil;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.dltk.ast.declarations.ModuleDeclaration;
 import org.eclipse.dltk.core.IMember;
 import org.eclipse.dltk.core.search.BasicSearchEngine;
 import org.eclipse.dltk.core.search.IDLTKSearchScope;
 import org.eclipse.dltk.core.search.SearchMatch;
 import org.eclipse.dltk.core.search.SearchPattern;
-import org.eclipse.dltk.core.search.SearchRequestor;
 import org.eclipse.dltk.core.search.indexing.IIndexConstants;
 import org.eclipse.dltk.core.search.matching.MatchLocator;
 import org.eclipse.dltk.core.search.matching.PatternLocator;
@@ -27,11 +25,15 @@ import org.eclipse.dltk.internal.core.search.matching.TypeReferencePattern;
 import dtool.ast.ASTNeoNode;
 
 public class DeeMatchLocator extends MatchLocator {
-
 	
-	public DeeMatchLocator(SearchPattern pattern, SearchRequestor requestor,
-			IDLTKSearchScope scope, IProgressMonitor progressMonitor) {
-		super(pattern, requestor, scope, progressMonitor);
+	
+	public DeeMatchLocator() {
+	}
+	
+	@Override
+	public void initialize(SearchPattern pattern, IDLTKSearchScope scope) {
+		super.initialize(pattern, scope);
+		this.patternLocator = PatternLocator.patternLocator(this.pattern, scope.getLanguageToolkit());
 		this.patternLocator = neoCreatePatternLocator(this.pattern);
 		this.matchContainer = this.patternLocator.matchContainer();
 	}
@@ -47,16 +49,16 @@ public class DeeMatchLocator extends MatchLocator {
 		}
 		
 		switch (((InternalSearchPattern) pattern).kind) {
-			case IIndexConstants.TYPE_REF_PATTERN:
-				return new DeeNodePatternMatcher((TypeReferencePattern) pattern);
-			case IIndexConstants.TYPE_DECL_PATTERN:
-				return new DeeNodePatternMatcher((TypeDeclarationPattern) pattern);
-			case IIndexConstants.FIELD_PATTERN:
-				 return new DeeNodePatternMatcher((FieldPattern) pattern);
-			case IIndexConstants.METHOD_PATTERN:
-				return new DeeNodePatternMatcher((MethodPattern) pattern);
-			case IIndexConstants.OR_PATTERN:
-				return new OrLocator((OrPattern) pattern);
+		case IIndexConstants.TYPE_REF_PATTERN:
+			return new DeeNodePatternMatcher((TypeReferencePattern) pattern);
+		case IIndexConstants.TYPE_DECL_PATTERN:
+			return new DeeNodePatternMatcher((TypeDeclarationPattern) pattern);
+		case IIndexConstants.FIELD_PATTERN:
+			return new DeeNodePatternMatcher((FieldPattern) pattern);
+		case IIndexConstants.METHOD_PATTERN:
+			return new DeeNodePatternMatcher((MethodPattern) pattern);
+		case IIndexConstants.OR_PATTERN:
+			return new OrLocator((OrPattern) pattern);
 		}
 		return null;
 	}
@@ -78,7 +80,7 @@ public class DeeMatchLocator extends MatchLocator {
 			size = nodeSet.possibleMatchingNodesSet == null ? 0
 					: nodeSet.possibleMatchingNodesSet.elementSize;
 			System.out.println(", possible=" + size); //$NON-NLS-1$			
-
+			
 		}
 		// All matches already correctly determined
 		for (int i = 0; i < nodeSet.matchingNodes.keyTable.length; i++) {
@@ -96,9 +98,9 @@ public class DeeMatchLocator extends MatchLocator {
 				report(match);
 			}
 		}
-				
+		
 		super.reportMatching(unit);
 	}
 	
-
+	
 }

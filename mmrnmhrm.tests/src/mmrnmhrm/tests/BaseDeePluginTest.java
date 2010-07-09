@@ -12,7 +12,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.dltk.core.internal.environment.LocalEnvironment;
 import org.eclipse.dltk.core.search.indexing.IndexManager;
 import org.eclipse.dltk.internal.core.ModelManager;
-import org.eclipse.dltk.internal.launching.LazyFileHandle;
+import org.eclipse.dltk.core.internal.environment.LazyFileHandle;
 import org.eclipse.dltk.launching.IInterpreterInstallType;
 import org.eclipse.dltk.launching.InterpreterStandin;
 import org.eclipse.dltk.launching.ScriptRuntime;
