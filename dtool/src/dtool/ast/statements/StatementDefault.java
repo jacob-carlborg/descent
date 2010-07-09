@@ -3,14 +3,15 @@ package dtool.ast.statements;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.DefaultStatement;
 import dtool.ast.IASTNeoVisitor;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
 public class StatementDefault extends Statement {
 
 	public IStatement st;
 	
-	public StatementDefault(DefaultStatement elem) {
+	public StatementDefault(DefaultStatement elem, ASTConversionContext convContext) {
 		convertNode(elem);
-		this.st = Statement.convert(elem.statement);
+		this.st = Statement.convert(elem.statement, convContext);
 	}
 
 	@Override

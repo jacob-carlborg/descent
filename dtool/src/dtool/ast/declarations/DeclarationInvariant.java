@@ -6,14 +6,15 @@ import dtool.ast.ASTNeoNode;
 import dtool.ast.IASTNeoVisitor;
 import dtool.ast.statements.BlockStatement;
 import dtool.ast.statements.Statement;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
 public class DeclarationInvariant extends ASTNeoNode {
 
 	public BlockStatement body;
 	
-	public DeclarationInvariant(InvariantDeclaration elem) {
+	public DeclarationInvariant(InvariantDeclaration elem, ASTConversionContext convContext) {
 		setSourceRange(elem);
-		this.body = (BlockStatement) Statement.convert(elem.fbody);
+		this.body = (BlockStatement) Statement.convert(elem.fbody, convContext);
 	}
 
 	@Override

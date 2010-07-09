@@ -65,21 +65,21 @@ import dtool.ast.statements.StatementVolatile;
 import dtool.ast.statements.StatementWhile;
 import dtool.ast.statements.StatementWith;
 
-public final class StatementConverter extends ExpressionConverter {
+public class StatementConverter extends ExpressionConverter {
 	
 	@Override
-	public boolean visit(ForeachRangeStatement node) {
-		return endAdapt(new StatementForeachRange(node));
+	public boolean visit(ForeachRangeStatement elem) {
+		return endAdapt(new StatementForeachRange(elem, convContext));
 	}
 	
 	@Override
-	public boolean visit(AsmBlock node) {
-		return endAdapt(new BlockStatement(node));
+	public boolean visit(AsmBlock elem) {
+		return endAdapt(new BlockStatement(elem, convContext));
 	}
 
 	@Override
 	public boolean visit(descent.internal.compiler.parser.CompoundStatement elem) {
-		return endAdapt(new BlockStatement(elem));
+		return endAdapt(new BlockStatement(elem, convContext));
 	}
 	
 	@Override
@@ -94,17 +94,17 @@ public final class StatementConverter extends ExpressionConverter {
 
 	@Override
 	public boolean visit(CaseStatement element) {
-		return endAdapt(new StatementCase(element));
+		return endAdapt(new StatementCase(element, convContext));
 	}
 	
 	@Override
 	public boolean visit(CaseRangeStatement element) {
-		return endAdapt(new StatementCaseRange(element));
+		return endAdapt(new StatementCaseRange(element, convContext));
 	}
 	
 	@Override
 	public boolean visit(ConditionalStatement element) {
-		return endAdapt(DeclarationConditional.create(element));
+		return endAdapt(DeclarationConditional.create(element, convContext));
 	}
 
 	@Override
@@ -119,32 +119,32 @@ public final class StatementConverter extends ExpressionConverter {
 
 	@Override
 	public boolean visit(DefaultStatement element) {
-		return endAdapt(new StatementDefault(element));
+		return endAdapt(new StatementDefault(element, convContext));
 	}
 
 	@Override
 	public boolean visit(DoStatement element) {
-		return endAdapt(new StatementDo(element));
+		return endAdapt(new StatementDo(element, convContext));
 	}
 	
 	@Override
 	public boolean visit(ExpStatement element) {
-		return endAdapt(new StatementExp(element));
+		return endAdapt(new StatementExp(element, convContext));
 	}
 	
 	@Override
 	public boolean visit(ForeachStatement element) {
-		return endAdapt(new StatementForeach(element));
+		return endAdapt(new StatementForeach(element, convContext));
 	}
 
 	@Override
 	public boolean visit(ForStatement element) {
-		return endAdapt(new StatementFor(element));
+		return endAdapt(new StatementFor(element, convContext));
 	}
 
 	@Override
 	public boolean visit(GotoCaseStatement element) {
-		return endAdapt(new StatementGotoCase(element));
+		return endAdapt(new StatementGotoCase(element, convContext));
 	}
 
 	@Override
@@ -159,7 +159,7 @@ public final class StatementConverter extends ExpressionConverter {
 
 	@Override
 	public boolean visit(IfStatement element) {
-		return endAdapt(new StatementIf(element));
+		return endAdapt(new StatementIf(element, convContext));
 	}
 
 	@Override
@@ -169,77 +169,77 @@ public final class StatementConverter extends ExpressionConverter {
 
 	@Override
 	public boolean visit(OnScopeStatement element) {
-		return endAdapt(new StatementOnScope(element));
+		return endAdapt(new StatementOnScope(element, convContext));
 	}
 
 	@Override
 	public boolean visit(PragmaStatement element) {
-		return endAdapt(new DeclarationPragma(element));
+		return endAdapt(new DeclarationPragma(element, convContext));
 	}
 
 	@Override
 	public boolean visit(ReturnStatement element) {
-		return endAdapt(new StatementReturn(element));
+		return endAdapt(new StatementReturn(element, convContext));
 	}
 
 	@Override
 	public boolean visit(ScopeStatement element) {
-		return endAdapt(new BlockStatement(element));
+		return endAdapt(new BlockStatement(element, convContext));
 	}
 
 	@Override
 	public boolean visit(StaticAssertStatement element) {
-		return endAdapt(new DeclarationStaticAssert(element));
+		return endAdapt(new DeclarationStaticAssert(element, convContext));
 	}
 
 	@Override
 	public boolean visit(SwitchStatement element) {
-		return endAdapt(new StatementSwitch(element));
+		return endAdapt(new StatementSwitch(element, convContext));
 	}
 
 	@Override
 	public boolean visit(SynchronizedStatement element) {
-		return endAdapt(new StatementSynchronized(element));
+		return endAdapt(new StatementSynchronized(element, convContext));
 	}
 
 	@Override
 	public boolean visit(ThrowStatement element) {
-		return endAdapt(new StatementThrow(element));
+		return endAdapt(new StatementThrow(element, convContext));
 	}
 
 	@Override
 	public boolean visit(TryCatchStatement element) {
-		return endAdapt(new StatementTry(element));
+		return endAdapt(new StatementTry(element, convContext));
 	}
 
 	@Override
 	public boolean visit(TryFinallyStatement element) {
-		return endAdapt(new StatementTry(element));
+		return endAdapt(new StatementTry(element, convContext));
 	}
 
 	@Override
 	public boolean visit(VolatileStatement element) {
-		return endAdapt(new StatementVolatile(element));
+		return endAdapt(new StatementVolatile(element, convContext));
 	}
 
 	@Override
 	public boolean visit(WhileStatement element) {
-		return endAdapt(new StatementWhile(element));
+		return endAdapt(new StatementWhile(element, convContext));
 	}
 
 	@Override
 	public boolean visit(WithStatement element) {
-		return endAdapt(new StatementWith(element));
+		return endAdapt(new StatementWith(element, convContext));
 	}
 	
 	@Override
 	public boolean visit(Catch element) {
-		return endAdapt(new StatementTry.CatchClause(element));
+		return endAdapt(new StatementTry.CatchClause(element, convContext));
 	}
 
 	@Override
-	public boolean visit(DeclarationExp node) {
-		return endAdapt((ASTNeoNode) dtool.ast.declarations.Declaration.convert(node.declaration));
+	public boolean visit(DeclarationExp elem) {
+		return endAdapt((ASTNeoNode) dtool.ast.declarations.Declaration.convert(elem.declaration, convContext));
 	}
 
 }

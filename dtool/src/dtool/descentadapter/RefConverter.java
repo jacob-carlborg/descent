@@ -34,25 +34,25 @@ abstract class RefConverter extends CoreConverter {
 	
 	@Override
 	public boolean visit(TypeExp node) {
-		return endAdapt(new ExpReference(node));
+		return endAdapt(new ExpReference(node, convContext));
 	}
 	
 	
 	@Override
 	public boolean visit(DotIdExp node) {
-		return endAdapt(new ExpReference(node));
+		return endAdapt(new ExpReference(node, convContext));
 	}
 		
 	@Override
 	public boolean visit(DotTemplateInstanceExp node) {
-		return endAdapt(new ExpReference(node));
+		return endAdapt(new ExpReference(node, convContext));
 	}
 
 	/* ---- References & co. --- */
 	
 	@Override
 	public boolean visit(TemplateInstanceWrapper node) {
-		return endAdapt(new ExpReference(node));
+		return endAdapt(new ExpReference(node, convContext));
 	}
 
 	@Override
@@ -60,8 +60,8 @@ abstract class RefConverter extends CoreConverter {
 		/*if(elem.ident.equals("")) {
 			return endAdapt(null);
 		}*/
-		//return endAdapt(new RefIdentifier(elem));
-		return endAdapt(new ExpReference(elem));
+		//return endAdapt(new RefIdentifier(elem, convContext));
+		return endAdapt(new ExpReference(elem, convContext));
 	}
 	
 	@Override
@@ -71,22 +71,22 @@ abstract class RefConverter extends CoreConverter {
 	
 	@Override
 	public boolean visit(descent.internal.compiler.parser.TemplateInstance elem) {
-		return endAdapt(ReferenceConverter.convertTemplateInstance(elem));
+		return endAdapt(ReferenceConverter.convertTemplateInstance(elem, convContext));
 	}
 	
 	@Override
 	public boolean visit(descent.internal.compiler.parser.TypeIdentifier elem) {
-		return endAdapt(ReferenceConverter.convertTypeIdentifier(elem));
+		return endAdapt(ReferenceConverter.convertTypeIdentifier(elem, convContext));
 	}
 
 	@Override
 	public boolean visit(TypeInstance elem) {
-		return endAdapt(ReferenceConverter.convertTypeInstance(elem));
+		return endAdapt(ReferenceConverter.convertTypeInstance(elem, convContext));
 	}
 	
 	@Override
 	public boolean visit(descent.internal.compiler.parser.TypeTypeof elem) {
-		return endAdapt(ReferenceConverter.convertTypeTypeOf(elem));
+		return endAdapt(ReferenceConverter.convertTypeTypeOf(elem, convContext));
 	}
 	
 	@Override
@@ -97,38 +97,38 @@ abstract class RefConverter extends CoreConverter {
 	
 	@Override
 	public boolean visit(descent.internal.compiler.parser.TypeAArray elem) {
-		return endAdapt(new TypeMapArray(elem));
+		return endAdapt(new TypeMapArray(elem, convContext));
 	}
 	
 	@Override
 	public boolean visit(descent.internal.compiler.parser.TypeDArray elem) {
-		return endAdapt(new TypeDynArray(elem));
+		return endAdapt(new TypeDynArray(elem, convContext));
 	}
 	
 	@Override
 	public boolean visit(descent.internal.compiler.parser.TypeSArray elem) {
-		return endAdapt(new TypeStaticArray(elem));
+		return endAdapt(new TypeStaticArray(elem, convContext));
 	}
 	
 	
 	@Override
 	public boolean visit(descent.internal.compiler.parser.TypeDelegate elem) {
-		return endAdapt(new TypeDelegate(elem));
+		return endAdapt(new TypeDelegate(elem, convContext));
 	}
 	
 	@Override
 	public boolean visit(descent.internal.compiler.parser.TypeFunction elem) {
-		return endAdapt(new TypeFunction(elem));
+		return endAdapt(new TypeFunction(elem, convContext));
 	}
 	
 	@Override
 	public boolean visit(descent.internal.compiler.parser.TypePointer elem) {
-		return endAdapt(TypePointer.convertTypePointer(elem));
+		return endAdapt(TypePointer.convertTypePointer(elem, convContext));
 	}
 	
 	@Override
 	public boolean visit(descent.internal.compiler.parser.TypeSlice elem) {
-		return endAdapt(new RefTypeSlice(elem));
+		return endAdapt(new RefTypeSlice(elem, convContext));
 	}
 
 

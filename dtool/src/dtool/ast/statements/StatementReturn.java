@@ -5,14 +5,15 @@ import descent.internal.compiler.parser.ReturnStatement;
 import dtool.ast.IASTNeoVisitor;
 import dtool.ast.expressions.Expression;
 import dtool.ast.expressions.Resolvable;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
 public class StatementReturn extends Statement {
 
 	public Resolvable exp;
 
-	public StatementReturn(ReturnStatement element) {
+	public StatementReturn(ReturnStatement element, ASTConversionContext convContext) {
 		convertNode(element);
-		this.exp = Expression.convert(element.exp);
+		this.exp = Expression.convert(element.exp, convContext);
 	}
 
 	@Override

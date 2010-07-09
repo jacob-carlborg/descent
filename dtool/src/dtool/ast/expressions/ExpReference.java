@@ -14,6 +14,7 @@ import dtool.ast.references.CommonRefSingle;
 import dtool.ast.references.Reference;
 import dtool.ast.references.ReferenceConverter;
 import dtool.descentadapter.DescentASTConverter;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
 /**
  * An Expression wrapping a Reference
@@ -22,29 +23,29 @@ public class ExpReference extends Expression {
 	
 	public Reference ref;
 	
-	public ExpReference(IdentifierExp elem) {
+	public ExpReference(IdentifierExp elem, ASTConversionContext convContext) {
 		convertNode(elem);
-		this.ref = CommonRefSingle.convertToSingleRef(elem);
+		this.ref = CommonRefSingle.convertToSingleRef(elem, convContext);
 	}
 
-	public ExpReference(TypeExp elem) {
+	public ExpReference(TypeExp elem, ASTConversionContext convContext) {
 		convertNode(elem);
-		this.ref = ReferenceConverter.convertType(elem.type);
+		this.ref = ReferenceConverter.convertType(elem.type, convContext);
 	}
 	
-	public ExpReference(DotIdExp elem) {
+	public ExpReference(DotIdExp elem, ASTConversionContext convContext) {
 		convertNode(elem);
-		this.ref = ReferenceConverter.convertDotIdexp(elem);
+		this.ref = ReferenceConverter.convertDotIdexp(elem, convContext);
 	}
 	
-	public ExpReference(DotTemplateInstanceExp elem) {
+	public ExpReference(DotTemplateInstanceExp elem, ASTConversionContext convContext) {
 		convertNode(elem);
-		this.ref = ReferenceConverter.convertDotTemplateIdexp(elem);
+		this.ref = ReferenceConverter.convertDotTemplateIdexp(elem, convContext);
 	}
 	
-	public ExpReference(ScopeExp elem) {
+	public ExpReference(ScopeExp elem, ASTConversionContext convContext) {
 		convertNode(elem);
-		this.ref = (Reference) DescentASTConverter.convertElem(elem.sds);
+		this.ref = (Reference) DescentASTConverter.convertElem(elem.sds, convContext);
 	}
 
 

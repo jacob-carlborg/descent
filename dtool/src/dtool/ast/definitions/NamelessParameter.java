@@ -8,6 +8,7 @@ import dtool.ast.expressions.Expression;
 import dtool.ast.expressions.Resolvable;
 import dtool.ast.references.Reference;
 import dtool.ast.references.ReferenceConverter;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
 import static melnorme.miscutil.Assert.assertNotNull;
 
@@ -22,18 +23,19 @@ public class NamelessParameter extends ASTNeoNode implements IFunctionParameter 
 	public final int storageClass;
 	public final Resolvable defaultValue;
 
-	protected NamelessParameter(descent.internal.compiler.parser.Argument elem) {
+	protected NamelessParameter(descent.internal.compiler.parser.Argument elem
+			, ASTConversionContext convContext) {
 		convertNode(elem);
-		this.type = ReferenceConverter.convertType(elem.type);
+		this.type = ReferenceConverter.convertType(elem.type, convContext);
 		assertNotNull(elem.type);
 		this.storageClass = elem.storageClass;
-		this.defaultValue = Expression.convert(elem.defaultArg);
+		this.defaultValue = Expression.convert(elem.defaultArg, convContext);
 			
 	}
 	
-	public NamelessParameter(Type type) {
+	public NamelessParameter(Type type, ASTConversionContext convContext) {
 		convertNode(type);
-		this.type = ReferenceConverter.convertType(type);
+		this.type = ReferenceConverter.convertType(type, convContext);
 		this.storageClass = 0;
 		this.defaultValue = null;
 	}

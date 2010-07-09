@@ -5,13 +5,14 @@ import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.LinkDeclaration;
 import dtool.ast.IASTNeoVisitor;
 import dtool.ast.statements.IStatement;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
 public class DeclarationLinkage extends DeclarationAttrib implements IStatement {
 
 	public LINK linkage;
 	
-	public DeclarationLinkage(LinkDeclaration elem) {
-		super(elem, elem.decl);
+	public DeclarationLinkage(LinkDeclaration elem, ASTConversionContext convContex) {
+		super(elem, elem.decl, convContex);
 		this.linkage = elem.linkage;
 	}
 

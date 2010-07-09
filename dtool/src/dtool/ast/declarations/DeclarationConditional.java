@@ -13,6 +13,7 @@ import descent.internal.compiler.parser.IsExp;
 import descent.internal.compiler.parser.StaticIfCondition;
 import dtool.ast.ASTNeoNode;
 import dtool.ast.statements.IStatement;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.INonScopedBlock;
 
 public abstract class DeclarationConditional extends ASTNeoNode implements IStatement, INonScopedBlock {
@@ -20,35 +21,36 @@ public abstract class DeclarationConditional extends ASTNeoNode implements IStat
 	public NodeList thendecls;
 	public NodeList elsedecls;
 
-	public static DeclarationConditional create(ConditionalDeclaration elem) {
-		NodeList thendecls = NodeList.createNodeList(elem.decl); 
-		NodeList elsedecls = NodeList.createNodeList(elem.elsedecl);
+	public static DeclarationConditional create(ConditionalDeclaration elem, ASTConversionContext convContext) {
+		NodeList thendecls = NodeList.createNodeList(elem.decl, convContext); 
+		NodeList elsedecls = NodeList.createNodeList(elem.elsedecl, convContext);
 
 		//assertTrue(!(thendecls == null && elsedecls == null));
 		Condition condition = elem.condition;
-		return createConditional(elem, thendecls, elsedecls, condition);		
+		return createConditional(elem, thendecls, elsedecls, condition, convContext);
 	}
 	
-	public static DeclarationConditional create(ConditionalStatement elem) {
-		NodeList thendecls = NodeList.createNodeList(elem.ifbody); 
-		NodeList elsedecls = NodeList.createNodeList(elem.elsebody);
+	public static DeclarationConditional create(ConditionalStatement elem, ASTConversionContext convContext) {
+		NodeList thendecls = NodeList.createNodeList(elem.ifbody, convContext); 
+		NodeList elsedecls = NodeList.createNodeList(elem.elsebody, convContext);
 
 		//assertTrue(!(thendecls == null && elsedecls == null));
 		Condition condition = elem.condition;
-		return createConditional(elem, thendecls, elsedecls, condition);	
+		return createConditional(elem, thendecls, elsedecls, condition, convContext);
 	}
 
 	private static DeclarationConditional createConditional(
 			ASTDmdNode elem, NodeList thendecls,
-			NodeList elsedecls, Condition condition) {
+			NodeList elsedecls, Condition condition
+			, ASTConversionContext convContext) {
 		if(condition instanceof DVCondition) {
 			return new DeclarationConditionalDV(elem, (DVCondition) condition, thendecls, elsedecls);
 		}
 		StaticIfCondition stIfCondition = (StaticIfCondition) condition;
 		if(stIfCondition.exp instanceof IsExp && ((IsExp) stIfCondition.exp).id != null) {
-			return new DeclarationStaticIfIsType(elem, (IsExp) stIfCondition.exp, thendecls, elsedecls);
+			return new DeclarationStaticIfIsType(elem, (IsExp) stIfCondition.exp, thendecls, elsedecls, convContext);
 		} else { 
-			return new DeclarationStaticIf(elem, stIfCondition, thendecls, elsedecls);
+			return new DeclarationStaticIf(elem, stIfCondition, thendecls, elsedecls, convContext);
 		}
 	}
 

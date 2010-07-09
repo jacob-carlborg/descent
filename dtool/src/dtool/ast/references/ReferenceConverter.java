@@ -1,7 +1,5 @@
 package dtool.ast.references;
 
-import static melnorme.miscutil.Assert.assertTrue;
-
 import java.util.List;
 
 import melnorme.miscutil.Assert;
@@ -17,6 +15,7 @@ import descent.internal.compiler.parser.TypeQualified;
 import dtool.ast.expressions.ExpReference;
 import dtool.ast.expressions.Expression;
 import dtool.descentadapter.DescentASTConverter;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.IDefUnitReferenceNode;
 
 
@@ -25,36 +24,38 @@ import dtool.refmodel.IDefUnitReferenceNode;
  */
 public abstract class ReferenceConverter {
 
-	public static Reference convertType(Type type) {
-		Reference entity = (Reference) DescentASTConverter.convertElem(type);
+	public static Reference convertType(Type type, ASTConversionContext convContext) {
+		Reference entity = (Reference) DescentASTConverter.convertElem(type, convContext);
 		return entity;
 	}
 
-	private static Reference convertTypeQualified(TypeQualified elem, Reference rootRef) {
+	private static Reference convertTypeQualified(TypeQualified elem, Reference rootRef
+			, ASTConversionContext convContext) {
 		if(elem.idents != null && elem.idents.size() > 0){
-			return createQualifiedRefFromIdents(elem.start, rootRef, elem.idents, elem.idents.size());
+			return createQualifiedRefFromIdents(elem.start, rootRef, elem.idents, elem.idents.size(), convContext);
 		} else {
 			return rootRef;
 		}
 	}
 
-	public static Reference convertTypeIdentifier(TypeIdentifier elem) {
-		Reference rootRef = ReferenceConverter.convertTypeIdentifier_ToRoot(elem);
-		return convertTypeQualified(elem, rootRef);
+	public static Reference convertTypeIdentifier(TypeIdentifier elem, ASTConversionContext convContext) {
+		Reference rootRef = ReferenceConverter.convertTypeIdentifier_ToRoot(elem, convContext);
+		return convertTypeQualified(elem, rootRef, convContext);
 	}
 	
-	public static Reference convertTypeInstance(TypeInstance elem) {
-		Reference rootRef = convertTemplateInstance(elem.tempinst);
-		return convertTypeQualified(elem, rootRef);
+	public static Reference convertTypeInstance(TypeInstance elem, ASTConversionContext convContext) {
+		Reference rootRef = convertTemplateInstance(elem.tempinst, convContext);
+		return convertTypeQualified(elem, rootRef, convContext);
 	}
 	
-	public static Reference convertTypeTypeOf(descent.internal.compiler.parser.TypeTypeof elem) {
-		Reference rootRef = new TypeTypeof(elem);
-		return convertTypeQualified(elem, rootRef);
+	public static Reference convertTypeTypeOf(descent.internal.compiler.parser.TypeTypeof elem
+			, ASTConversionContext convContext) {
+		Reference rootRef = new TypeTypeof(elem, convContext);
+		return convertTypeQualified(elem, rootRef, convContext);
 	}
 	
 	static Reference createQualifiedRefFromIdents(int startPos, Reference rootRef,
-			List<IdentifierExp> idents, int endix) {
+			List<IdentifierExp> idents, int endix, ASTConversionContext convContext) {
 		Assert.isTrue(endix >= 0);
 
 		if( endix == 0 ) {
@@ -63,12 +64,12 @@ public abstract class ReferenceConverter {
 		
 		CommonRefQualified ref;
 		if(endix == 1 && rootRef == null) {
-			RefModuleQualified entroot = new RefModuleQualified(idents.get(endix-1));
+			RefModuleQualified entroot = new RefModuleQualified(idents.get(endix-1), convContext);
 			ref = entroot;
 		} else {
 			RefQualified qref = new RefQualified();
-			qref.root = createQualifiedRefFromIdents(startPos, rootRef, idents, endix-1);
-			qref.subref = CommonRefSingle.convertToSingleRef(idents.get(endix-1));
+			qref.root = createQualifiedRefFromIdents(startPos, rootRef, idents, endix-1, convContext);
+			qref.subref = CommonRefSingle.convertToSingleRef(idents.get(endix-1), convContext);
 			ref = qref;
 		}
 		ref.setStart(startPos);
@@ -77,7 +78,7 @@ public abstract class ReferenceConverter {
 		
 	}
 
-	public static Reference convertTypeIdentifier_ToRoot(TypeIdentifier elem) {
+	public static Reference convertTypeIdentifier_ToRoot(TypeIdentifier elem, ASTConversionContext convContext) {
 		Reference rootent;
 		if(elem.ident.ident.length == 0) { 
 			/*rootent = new EntModuleRoot();
@@ -85,29 +86,30 @@ public abstract class ReferenceConverter {
 			rootent.setEndPos(rootent.startPos+1);*/
 			rootent = null;
 		} else {
-			rootent = CommonRefSingle.convertToSingleRef(elem.ident);
+			rootent = CommonRefSingle.convertToSingleRef(elem.ident, convContext);
 		}
 		return rootent;
 	}
 	
-	public static Reference convertTemplateInstance(TemplateInstance tplInstance) {
-		return convertTemplateInstance(tplInstance, tplInstance.tiargs);
+	public static Reference convertTemplateInstance(TemplateInstance tplInstance, ASTConversionContext convContext) {
+		return convertTemplateInstance(tplInstance, tplInstance.tiargs, convContext);
 	}
 	
-	public static Reference convertTemplateInstance(TemplateInstance tplInstance, List<ASTDmdNode> tiargs) {
+	public static Reference convertTemplateInstance(TemplateInstance tplInstance, List<ASTDmdNode> tiargs
+			, ASTConversionContext convContext) {
 		IdentifierExp tplIdent = tplInstance.name;
-		return new RefTemplateInstance(tplInstance, tplIdent, tiargs);
+		return new RefTemplateInstance(tplInstance, tplIdent, tiargs, convContext);
 	}
 	
-	public static Reference convertDotIdexp(DotIdExp elem) {
+	public static Reference convertDotIdexp(DotIdExp elem, ASTConversionContext convContext) {
 		
 		IDefUnitReferenceNode rootent;
-		Expression expTemp = Expression.convert(elem.e1);
+		Expression expTemp = Expression.convert(elem.e1, convContext);
 		if(expTemp instanceof ExpReference) {
 			rootent = ((ExpReference) expTemp).ref;
 			
 			if(rootent == null || elem.e1.length == 0) {
-				return new RefModuleQualified(elem.ident);
+				return new RefModuleQualified(elem.ident, convContext);
 			}
 		} else {
 			rootent = expTemp;
@@ -117,7 +119,7 @@ public abstract class ReferenceConverter {
 		RefQualified newelem = new RefQualified();
 		newelem.setSourceRange(elem);
 		newelem.root = rootent;
-		newelem.subref = CommonRefSingle.convertToSingleRef(elem.ident);
+		newelem.subref = CommonRefSingle.convertToSingleRef(elem.ident, convContext);
 
 		// Fix some DMD missing ranges 
 		if(newelem.hasNoSourceRangeInfo()) {
@@ -132,15 +134,15 @@ public abstract class ReferenceConverter {
 		return newelem;
 	}
 	
-	public static Reference convertDotTemplateIdexp(DotTemplateInstanceExp elem) {
+	public static Reference convertDotTemplateIdexp(DotTemplateInstanceExp elem, ASTConversionContext convContext) {
 		
 		IDefUnitReferenceNode rootent;
-		Expression expTemp = Expression.convert(elem.e1);
+		Expression expTemp = Expression.convert(elem.e1, convContext);
 		if(expTemp instanceof ExpReference) {
 			rootent = ((ExpReference) expTemp).ref;
 
 			if(rootent == null) {
-				return new RefModuleQualified(elem.ti.name);
+				return new RefModuleQualified(elem.ti.name, convContext);
 			}
 		} else {
 			rootent = expTemp;
@@ -150,7 +152,7 @@ public abstract class ReferenceConverter {
 		RefQualified newelem = new RefQualified();
 		newelem.setSourceRange(elem);
 		newelem.root = rootent;
-		newelem.subref = new RefTemplateInstance(elem.ti);
+		newelem.subref = new RefTemplateInstance(elem.ti, convContext);
 
 		return newelem;
 	}

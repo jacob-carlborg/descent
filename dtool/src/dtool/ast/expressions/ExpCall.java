@@ -9,6 +9,7 @@ import descent.internal.compiler.parser.CallExp;
 import dtool.ast.IASTNeoVisitor;
 import dtool.ast.definitions.DefUnit;
 import dtool.ast.definitions.DefinitionFunction;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.DefUnitSearch;
 import dtool.refmodel.ReferenceResolver;
 
@@ -17,10 +18,10 @@ public class ExpCall extends Expression {
 	public Expression callee;
 	public Resolvable[] args;
 	
-	public ExpCall(CallExp elem) {
+	public ExpCall(CallExp elem, ASTConversionContext convContext) {
 		convertNode(elem);
-		this.callee = Expression.convert(elem.e1); 
-		this.args = Expression.convertMany(elem.arguments);
+		this.callee = Expression.convert(elem.e1, convContext); 
+		this.args = Expression.convertMany(elem.arguments, convContext);
 	}
 
 	@Override

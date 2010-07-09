@@ -2,6 +2,7 @@ package dtool.ast.definitions;
 
 import descent.internal.compiler.parser.InterfaceDeclaration;
 import dtool.ast.IASTNeoVisitor;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
 /**
  * A definition of an interface aggregate. 
@@ -9,8 +10,8 @@ import dtool.ast.IASTNeoVisitor;
 public class DefinitionInterface extends DefinitionClass {
 
 	
-	public DefinitionInterface(InterfaceDeclaration elem) {
-		super(elem);
+	public DefinitionInterface(InterfaceDeclaration elem, ASTConversionContext convContext) {
+		super(elem, convContext);
 	}
 	
 	@Override

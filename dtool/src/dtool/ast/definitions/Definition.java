@@ -5,6 +5,7 @@ import descent.internal.compiler.parser.Modifier;
 import descent.internal.compiler.parser.PROT;
 import descent.internal.compiler.parser.STC;
 import dtool.descentadapter.DescentASTConverter;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
 /**
  * Abstract classe for all declaration-based DefUnits. 
@@ -17,8 +18,8 @@ public abstract class Definition extends DefUnit  {
 	public PROT protection; // fixme, should be node
 	public int effectiveModifiers;
 
-	public Definition(Dsymbol elem) {
-		super(elem);
+	public Definition(Dsymbol elem, ASTConversionContext convContext) {
+		super(elem, convContext);
 		this.protection = elem.prot();
 		if(false) {
 //		if(elem.modifiers != null && elem.modifiers.size() != 0) {
@@ -33,8 +34,8 @@ public abstract class Definition extends DefUnit  {
 		}
 	}
 	
-	public static Definition convert(Dsymbol elem) {
-		return (Definition) DescentASTConverter.convertElem(elem);
+	public static Definition convert(Dsymbol elem, ASTConversionContext convContext) {
+		return (Definition) DescentASTConverter.convertElem(elem, convContext);
 	}
 	
 	public PROT getEffectiveProtection() {

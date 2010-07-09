@@ -6,14 +6,15 @@ import dtool.ast.ASTNeoNode;
 import dtool.ast.IASTNeoVisitor;
 import dtool.ast.statements.IStatement;
 import dtool.ast.statements.Statement;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
 public class DefinitionPostBlit extends ASTNeoNode {
 	
 	public IStatement fbody;
 	
-	public DefinitionPostBlit(PostBlitDeclaration elem) {
+	public DefinitionPostBlit(PostBlitDeclaration elem, ASTConversionContext convContext) {
 		convertNode(elem);
-		this.fbody = Statement.convert(elem.fbody);
+		this.fbody = Statement.convert(elem.fbody, convContext);
 	}
 	
 	@Override

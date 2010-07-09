@@ -10,6 +10,7 @@ import dtool.ast.expressions.Initializer;
 import dtool.ast.references.Reference;
 import dtool.ast.references.ReferenceConverter;
 import dtool.ast.statements.IStatement;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.IDefUnitReference;
 import dtool.refmodel.IScopeNode;
 
@@ -18,21 +19,22 @@ import dtool.refmodel.IScopeNode;
  */
 public class DefinitionVariable extends Definition implements IStatement {
 	
-	public static ASTNeoNode convert(descent.internal.compiler.parser.VarDeclaration elem) {
+	public static ASTNeoNode convert(descent.internal.compiler.parser.VarDeclaration elem, ASTConversionContext convContext) {
 		if(elem.ident == null) {
-			return new InvalidSyntaxDeclaration(elem, ReferenceConverter.convertType(elem.type), Initializer.convert(elem.init));
+			return new InvalidSyntaxDeclaration(elem, 
+					ReferenceConverter.convertType(elem.type, convContext), Initializer.convert(elem.init, convContext));
 		}  else {
-			return new DefinitionVariable(elem);
+			return new DefinitionVariable(elem, convContext);
 		}
 	}
 	
 	public Reference type;
 	public Initializer init;
 
-	public DefinitionVariable(descent.internal.compiler.parser.VarDeclaration elem) {
-		super(elem);
-		this.type = ReferenceConverter.convertType(elem.type);
-		this.init = Initializer.convert(elem.init);
+	public DefinitionVariable(descent.internal.compiler.parser.VarDeclaration elem, ASTConversionContext convContext) {
+		super(elem, convContext);
+		this.type = ReferenceConverter.convertType(elem.type, convContext);
+		this.init = Initializer.convert(elem.init, convContext);
 	}
 	
 	@Override

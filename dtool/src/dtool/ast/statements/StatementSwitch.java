@@ -5,16 +5,17 @@ import descent.internal.compiler.parser.SwitchStatement;
 import dtool.ast.IASTNeoVisitor;
 import dtool.ast.expressions.Expression;
 import dtool.ast.expressions.Resolvable;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
 public class StatementSwitch extends Statement {
 
 	public Resolvable exp;
 	public IStatement body;
 
-	public StatementSwitch(SwitchStatement elem) {
+	public StatementSwitch(SwitchStatement elem, ASTConversionContext convContext) {
 		convertNode(elem);
-		this.exp = Expression.convert(elem.condition);
-		this.body = Statement.convert(elem.body);
+		this.exp = Expression.convert(elem.condition, convContext);
+		this.body = Statement.convert(elem.body, convContext);
 	}
 
 	@Override

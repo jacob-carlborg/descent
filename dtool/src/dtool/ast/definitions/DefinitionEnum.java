@@ -12,6 +12,7 @@ import dtool.ast.references.Reference;
 import dtool.ast.references.ReferenceConverter;
 import dtool.ast.statements.IStatement;
 import dtool.descentadapter.DescentASTConverter;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
 
@@ -20,21 +21,21 @@ public class DefinitionEnum extends Definition implements IScopeNode, IStatement
 	public List<EnumMember> members;
 	public Reference type;
 	
-	public DefinitionEnum(Dsymbol elem) {
-		super(elem);
+	public DefinitionEnum(Dsymbol elem, ASTConversionContext convContext) {
+		super(elem, convContext);
 	}
 	
-	public static ASTNeoNode convertEnumDecl(EnumDeclaration elem) {
+	public static ASTNeoNode convertEnumDecl(EnumDeclaration elem, ASTConversionContext convContext) {
 		if(elem.ident != null) {
-			DefinitionEnum defEnum = new DefinitionEnum(elem);
-			defEnum.members = DescentASTConverter.convertManyL(elem.members, defEnum.members) ;
-			defEnum.type = ReferenceConverter.convertType(elem.memtype); 
+			DefinitionEnum defEnum = new DefinitionEnum(elem, convContext);
+			defEnum.members = DescentASTConverter.convertManyL(elem.members, defEnum.members, convContext) ;
+			defEnum.type = ReferenceConverter.convertType(elem.memtype, convContext); 
 			return defEnum;
 		} else {
 			EnumContainer enumContainer = new EnumContainer();
 			enumContainer.setSourceRange(elem);
-			enumContainer.members = DescentASTConverter.convertManyL(elem.members, enumContainer.members) ;
-			enumContainer.type = ReferenceConverter.convertType(elem.memtype); 
+			enumContainer.members = DescentASTConverter.convertManyL(elem.members, enumContainer.members, convContext) ;
+			enumContainer.type = ReferenceConverter.convertType(elem.memtype, convContext); 
 			return enumContainer;
 		}
 	}

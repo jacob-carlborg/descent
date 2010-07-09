@@ -11,6 +11,7 @@ import dtool.ast.expressions.Expression;
 import dtool.ast.expressions.Resolvable;
 import dtool.ast.references.Reference;
 import dtool.ast.references.ReferenceConverter;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.IScopeNode;
 import dtool.refmodel.NodeUtil;
 
@@ -23,7 +24,8 @@ public class FunctionParameter extends DefUnit implements IFunctionParameter {
 	public int storageClass;
 	public Resolvable defaultValue;
 	
-	protected FunctionParameter(descent.internal.compiler.parser.Argument elem) {
+	protected FunctionParameter(descent.internal.compiler.parser.Argument elem
+			, ASTConversionContext convContext) {
 		super(elem.ident);
 		setSourceRange(elem);
 		
@@ -32,18 +34,18 @@ public class FunctionParameter extends DefUnit implements IFunctionParameter {
 			assertFail();
 			this.type = null;
 		} else 
-			this.type = ReferenceConverter.convertType(elem.type);
+			this.type = ReferenceConverter.convertType(elem.type, convContext);
 		assertNotNull(this.type);
 		this.storageClass = elem.storageClass;
-		this.defaultValue = Expression.convert(elem.defaultArg);
+		this.defaultValue = Expression.convert(elem.defaultArg, convContext);
 			
 	}
 	
-	public FunctionParameter(Type type, IdentifierExp id) {
+	public FunctionParameter(Type type, IdentifierExp id, ASTConversionContext convContext) {
 		super(id);
 		setSourceRange(type.getStartPos(), id.getEndPos() - type.getStartPos());
 		
-		this.type = ReferenceConverter.convertType(type);
+		this.type = ReferenceConverter.convertType(type, convContext);
 	}
 
 	

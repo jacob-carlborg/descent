@@ -8,33 +8,36 @@ import descent.internal.compiler.parser.Modifier;
 import descent.internal.compiler.parser.TOK;
 import dtool.ast.ASTNeoNode;
 import dtool.descentadapter.DescentASTConverter;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.IScope;
 
 public abstract class Declaration {
 
 
-	public static ASTNeoNode[] convertMany(descent.internal.compiler.parser.Declaration[] declarationDefinitions) {
+	public static ASTNeoNode[] convertMany(descent.internal.compiler.parser.Declaration[] declarationDefinitions
+			, ASTConversionContext convContext) {
 		ASTNeoNode[] decls = new ASTNeoNode[declarationDefinitions.length];
 		for(int i = 0; i < declarationDefinitions.length;i++) {
-			decls[i] = convert(declarationDefinitions[i]);
+			decls[i] = convert(declarationDefinitions[i], convContext);
 		}
 		return decls;
 	}
 
-	public static ASTNeoNode[] convertMany(List<Dsymbol> declarationDefinitions) {
+	public static ASTNeoNode[] convertMany(List<Dsymbol> declarationDefinitions
+			, ASTConversionContext convContext) {
 		ASTNeoNode[] decls = new ASTNeoNode[declarationDefinitions.size()];
 		for(int i = 0; i < declarationDefinitions.size();i++) {
-			decls[i] = convert(declarationDefinitions.get(i));
+			decls[i] = convert(declarationDefinitions.get(i), convContext);
 		}
 		return decls;
 	}
 
-	public static ASTNeoNode convert(descent.internal.compiler.parser.Declaration decl) {
-		return (ASTNeoNode) DescentASTConverter.convertElem(decl);
+	public static ASTNeoNode convert(descent.internal.compiler.parser.Declaration decl, ASTConversionContext convContext) {
+		return (ASTNeoNode) DescentASTConverter.convertElem(decl, convContext);
 	}
 
-	public static ASTNeoNode convert(Dsymbol decl) {
-		return (ASTNeoNode) DescentASTConverter.convertElem(decl);
+	public static ASTNeoNode convert(Dsymbol decl, ASTConversionContext convContext) {
+		return (ASTNeoNode) DescentASTConverter.convertElem(decl, convContext);
 	}
 
 	public static int hasModifier(List<Modifier> modifiers, TOK tok) {

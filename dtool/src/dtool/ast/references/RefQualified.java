@@ -8,6 +8,7 @@ import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.ast.IASTNode;
 import dtool.ast.IASTNeoVisitor;
 import dtool.ast.definitions.DefUnit;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.IDefUnitReferenceNode;
 
 /**
@@ -21,20 +22,20 @@ public class RefQualified extends CommonRefQualified {
 	protected RefQualified() {
 	}
 	
-	public RefQualified(List<IdentifierExp> packages, IdentifierExp id) {
+	public RefQualified(List<IdentifierExp> packages, IdentifierExp id, ASTConversionContext convContext) {
 		if(packages == null || packages.size() == 0) {
 		}
 		
 		if(packages.size() == 1) {
 			IdentifierExp rootId = packages.get(0);
 			setSourceRange(rootId.start, id.getEndPos());
-			this.root = CommonRefSingle.convertToSingleRef(rootId);
-			this.subref = CommonRefSingle.convertToSingleRef(id);
+			this.root = CommonRefSingle.convertToSingleRef(rootId, convContext);
+			this.subref = CommonRefSingle.convertToSingleRef(id, convContext);
 		} else {
 			setSourceRange(packages.get(0).start, id.getEndPos());
 			packages.remove(packages.size()-1);
-			this.root = new RefQualified(packages, id); 
-			this.subref = CommonRefSingle.convertToSingleRef(id);
+			this.root = new RefQualified(packages, id, convContext); 
+			this.subref = CommonRefSingle.convertToSingleRef(id, convContext);
 		}
 	}
 	

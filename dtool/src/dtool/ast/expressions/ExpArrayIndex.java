@@ -3,16 +3,17 @@ package dtool.ast.expressions;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ArrayExp;
 import dtool.ast.IASTNeoVisitor;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
 public class ExpArrayIndex extends Expression {
 
 	public Resolvable array;
 	public Resolvable[] args;
 	
-	public ExpArrayIndex(ArrayExp elem) {
+	public ExpArrayIndex(ArrayExp elem, ASTConversionContext convContext) {
 		convertNode(elem);
-		this.array = Expression.convert(elem.e1);
-		this.args = Expression.convertMany(elem.arguments);
+		this.array = Expression.convert(elem.e1, convContext);
+		this.args = Expression.convertMany(elem.arguments, convContext);
 	}
 
 	@Override

@@ -5,6 +5,7 @@ import descent.internal.compiler.parser.BinExp;
 import descent.internal.compiler.parser.UnaExp;
 import dtool.ast.IASTNeoVisitor;
 import dtool.descentadapter.DescentASTConverter;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
 public class PrefixExpression extends Expression {
 	
@@ -25,15 +26,15 @@ public class PrefixExpression extends Expression {
 	public int kind;
 
 
-	public PrefixExpression(UnaExp elem, int kind) {
+	public PrefixExpression(UnaExp elem, int kind, ASTConversionContext convContext) {
 		convertNode(elem);
-		this.exp = (Resolvable) DescentASTConverter.convertElem(elem.e1);
+		this.exp = (Resolvable) DescentASTConverter.convertElem(elem.e1, convContext);
 		this.kind = kind;
 	}
 
-	public PrefixExpression(BinExp elem, int kind) {
+	public PrefixExpression(BinExp elem, int kind, ASTConversionContext convContext) {
 		setSourceRange(elem);
-		this.exp = (Resolvable) DescentASTConverter.convertElem(elem.e1);
+		this.exp = (Resolvable) DescentASTConverter.convertElem(elem.e1, convContext);
 		this.kind = kind;
 	}
 	

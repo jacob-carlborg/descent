@@ -10,6 +10,7 @@ import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.ast.IASTNeoVisitor;
 import dtool.ast.definitions.DefUnit;
 import dtool.ast.definitions.NativeDefUnit;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.DefUnitSearch;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
@@ -17,9 +18,9 @@ import dtool.refmodel.IScopeNode;
 public class TypeDynArray extends CommonRefNative {
 	public Reference elemtype;
 
-	public TypeDynArray(TypeDArray elem) {
+	public TypeDynArray(TypeDArray elem, ASTConversionContext convContext) {
 		setSourceRange(elem);
-		this.elemtype = ReferenceConverter.convertType(elem.next);
+		this.elemtype = ReferenceConverter.convertType(elem.next, convContext);
 	}
 
 	@Override

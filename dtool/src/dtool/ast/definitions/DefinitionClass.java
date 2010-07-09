@@ -7,6 +7,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ClassDeclaration;
 import dtool.ast.IASTNeoVisitor;
 import dtool.descentadapter.DescentASTConverter;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.IScope;
 
 /**
@@ -16,11 +17,11 @@ public class DefinitionClass extends DefinitionAggregate {
 
 	public List<BaseClass> baseClasses;
 	
-	public DefinitionClass(ClassDeclaration elem) {
-		super(elem);
+	public DefinitionClass(ClassDeclaration elem, ASTConversionContext convContext) {
+		super(elem, convContext);
 		if(elem.members != null)
-			this.members = DescentASTConverter.convertManyL(elem.members, this.members);
-		this.baseClasses = DescentASTConverter.convertManyL(elem.sourceBaseclasses, this.baseClasses);
+			this.members = DescentASTConverter.convertManyL(elem.members, this.members, convContext);
+		this.baseClasses = DescentASTConverter.convertManyL(elem.sourceBaseclasses, this.baseClasses, convContext);
 		// TODO: where did template Parameters go
 		//if(elem.templateParameters != null)
 		//	this.templateParams = TemplateParameter.convertMany(elem.templateParameters);

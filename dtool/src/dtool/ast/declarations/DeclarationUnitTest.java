@@ -6,14 +6,15 @@ import dtool.ast.ASTNeoNode;
 import dtool.ast.IASTNeoVisitor;
 import dtool.ast.statements.BlockStatement;
 import dtool.ast.statements.Statement;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
 public class DeclarationUnitTest extends ASTNeoNode {
 
 	public BlockStatement body;
 	
-	public DeclarationUnitTest(UnitTestDeclaration elem) {
+	public DeclarationUnitTest(UnitTestDeclaration elem, ASTConversionContext convContext) {
 		convertNode(elem);
-		this.body = (BlockStatement) Statement.convert(elem.fbody);
+		this.body = (BlockStatement) Statement.convert(elem.fbody, convContext);
 	}
 
 	@Override

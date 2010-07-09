@@ -5,6 +5,7 @@ import descent.internal.compiler.parser.IfStatement;
 import dtool.ast.IASTNeoVisitor;
 import dtool.ast.expressions.Expression;
 import dtool.ast.expressions.Resolvable;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
 public class StatementIf extends Statement {
 
@@ -12,11 +13,11 @@ public class StatementIf extends Statement {
 	public IStatement thenbody;
 	public IStatement elsebody;
 
-	public StatementIf(IfStatement elem) {
+	public StatementIf(IfStatement elem, ASTConversionContext convContext) {
 		convertNode(elem);
-		this.pred = Expression.convert(elem.condition);
-		this.thenbody = Statement.convert(elem.ifbody);
-		this.elsebody = Statement.convert(elem.elsebody);
+		this.pred = Expression.convert(elem.condition, convContext);
+		this.thenbody = Statement.convert(elem.ifbody, convContext);
+		this.elsebody = Statement.convert(elem.elsebody, convContext);
 	}
 
 	@Override

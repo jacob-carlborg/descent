@@ -8,6 +8,7 @@ import descent.internal.compiler.parser.IdentifierExp;
 import dtool.ast.IASTNeoVisitor;
 import dtool.ast.definitions.DefUnit;
 import dtool.ast.definitions.Module;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.IDefUnitReferenceNode;
 import dtool.refmodel.NodeUtil;
 
@@ -16,9 +17,9 @@ import dtool.refmodel.NodeUtil;
  */
 public class RefModuleQualified extends CommonRefQualified {
 
-	public RefModuleQualified(IdentifierExp elem) {
+	public RefModuleQualified(IdentifierExp elem, ASTConversionContext convContext) {
 		convertNode(elem);
-		subref = CommonRefSingle.convertToSingleRef(elem);
+		subref = CommonRefSingle.convertToSingleRef(elem, convContext);
 	}
 	
 	@Override

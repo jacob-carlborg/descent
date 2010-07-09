@@ -94,7 +94,7 @@ public abstract class DeclarationConverter extends RefConverter {
 
 	@Override
 	public boolean visit(AnonDeclaration node) {
-		return endAdapt(new DeclarationAnonMember(node));
+		return endAdapt(new DeclarationAnonMember(node, convContext));
 	}
 
 	@Override
@@ -116,7 +116,7 @@ public abstract class DeclarationConverter extends RefConverter {
 	
 	@Override
 	public boolean visit(descent.internal.compiler.parser.BaseClass elem) {
-		return endAdapt(new BaseClass(elem));
+		return endAdapt(new BaseClass(elem, convContext));
 	}
 	
 	@Override
@@ -129,12 +129,12 @@ public abstract class DeclarationConverter extends RefConverter {
 
 	@Override
 	public boolean visit(descent.internal.compiler.parser.AlignDeclaration elem) {
-		return endAdapt(new DeclarationAlign(elem));
+		return endAdapt(new DeclarationAlign(elem, convContext));
 	}
 
 	@Override
 	public boolean visit(descent.internal.compiler.parser.ConditionalDeclaration elem) {
-		return endAdapt(DeclarationConditional.create(elem));
+		return endAdapt(DeclarationConditional.create(elem, convContext));
 	}
 	
 	@Override
@@ -144,22 +144,22 @@ public abstract class DeclarationConverter extends RefConverter {
 	
 	@Override
 	public boolean visit(descent.internal.compiler.parser.InvariantDeclaration elem) {
-		return endAdapt(new DeclarationInvariant(elem));
+		return endAdapt(new DeclarationInvariant(elem, convContext));
 	}
 
 	@Override
 	public boolean visit(descent.internal.compiler.parser.LinkDeclaration elem) {
-		return endAdapt(new DeclarationLinkage(elem));
+		return endAdapt(new DeclarationLinkage(elem, convContext));
 	}
 
 	@Override
 	public boolean visit(descent.internal.compiler.parser.PragmaDeclaration elem) {
-		return endAdapt(new DeclarationPragma(elem));
+		return endAdapt(new DeclarationPragma(elem, convContext));
 	}
 
 	@Override
 	public boolean visit(descent.internal.compiler.parser.ProtDeclaration elem) {
-		return endAdapt(new DeclarationProtection(elem));
+		return endAdapt(new DeclarationProtection(elem, convContext));
 	}
 
 	@Override
@@ -170,7 +170,7 @@ public abstract class DeclarationConverter extends RefConverter {
 
 	@Override
 	public boolean visit(descent.internal.compiler.parser.StorageClassDeclaration elem) {
-		return endAdapt(new DeclarationStorageClass(elem));
+		return endAdapt(new DeclarationStorageClass(elem, convContext));
 	}
 	
 	@Override
@@ -181,18 +181,18 @@ public abstract class DeclarationConverter extends RefConverter {
 
 	@Override
 	public boolean visit(descent.internal.compiler.parser.UnitTestDeclaration elem) {
-		return endAdapt(new DeclarationUnitTest(elem));
+		return endAdapt(new DeclarationUnitTest(elem, convContext));
 	}
 
 
 	@Override
 	public boolean visit(descent.internal.compiler.parser.StaticAssert elem) {
-		return endAdapt(new DeclarationStaticAssert(elem));
+		return endAdapt(new DeclarationStaticAssert(elem, convContext));
 	}
 
 	@Override
 	public boolean visit(descent.internal.compiler.parser.StaticIfDeclaration elem) {
-		return endAdapt(DeclarationConditional.create(elem));
+		return endAdapt(DeclarationConditional.create(elem, convContext));
 	}
 	
 	@Override
@@ -206,38 +206,38 @@ public abstract class DeclarationConverter extends RefConverter {
 
 	@Override
 	public final boolean visit(descent.internal.compiler.parser.AliasDeclaration elem) {
-		return endAdapt(new DefinitionAlias(elem));
+		return endAdapt(new DefinitionAlias(elem, convContext));
 	}	
 
 	
 	@Override
 	public boolean visit(descent.internal.compiler.parser.TemplateDeclaration elem) {
-		return endAdapt(new DefinitionTemplate(elem));
+		return endAdapt(new DefinitionTemplate(elem, convContext));
 	}	
 	
 	@Override
 	public boolean visit(descent.internal.compiler.parser.TemplateMixin elem) {
-		return endAdapt(NamedMixin.convertMixinInstance(elem));
+		return endAdapt(NamedMixin.convertMixinInstance(elem, convContext));
 	}	
 	
 	@Override
 	public boolean visit(descent.internal.compiler.parser.TypedefDeclaration elem) {
-		return endAdapt(new DefinitionTypedef(elem));
+		return endAdapt(new DefinitionTypedef(elem, convContext));
 	}	
 	
 	@Override
 	public boolean visit(descent.internal.compiler.parser.VarDeclaration elem) {
-		return endAdapt(DefinitionVariable.convert(elem));
+		return endAdapt(DefinitionVariable.convert(elem, convContext));
 	}	
 	
 	@Override
 	public boolean visit(descent.internal.compiler.parser.EnumDeclaration elem) {
-		return endAdapt(DefinitionEnum.convertEnumDecl(elem));
+		return endAdapt(DefinitionEnum.convertEnumDecl(elem, convContext));
 	}	
 	
 	@Override
 	public boolean visit(descent.internal.compiler.parser.EnumMember elem) {
-		return endAdapt(new EnumMember(elem));
+		return endAdapt(new EnumMember(elem, convContext));
 	}
 
 	/* agregates */
@@ -245,22 +245,22 @@ public abstract class DeclarationConverter extends RefConverter {
 	
 	@Override
 	public boolean visit(descent.internal.compiler.parser.ClassDeclaration elem) {
-		return endAdapt(new DefinitionClass(elem));
+		return endAdapt(new DefinitionClass(elem, convContext));
 	}	
 	
 	@Override
 	public boolean visit(descent.internal.compiler.parser.InterfaceDeclaration elem) {
-		return endAdapt(new DefinitionInterface(elem));
+		return endAdapt(new DefinitionInterface(elem, convContext));
 	}	
 	
 	@Override
 	public boolean visit(descent.internal.compiler.parser.StructDeclaration elem) {
-		return endAdapt(new DefinitionStruct(elem));
+		return endAdapt(new DefinitionStruct(elem, convContext));
 	}	
 	
 	@Override
 	public boolean visit(descent.internal.compiler.parser.UnionDeclaration elem) {
-		return endAdapt(new DefinitionUnion(elem));
+		return endAdapt(new DefinitionUnion(elem, convContext));
 	}	
 	
 	
@@ -268,42 +268,42 @@ public abstract class DeclarationConverter extends RefConverter {
 
 	@Override
 	public boolean visit(descent.internal.compiler.parser.FuncDeclaration elem) {
-		return endAdapt(new DefinitionFunction(elem));
+		return endAdapt(new DefinitionFunction(elem, convContext));
 	}
 	@Override
 	public boolean visit(Argument elem) {
-		return endAdapt(DefinitionFunction.convertFunctionParameter(elem));
+		return endAdapt(DefinitionFunction.convertFunctionParameter(elem, convContext));
 	}
 	
 
 	@Override
 	public boolean visit(descent.internal.compiler.parser.CtorDeclaration elem) {
-		return endAdapt(new DefinitionCtor(elem));
+		return endAdapt(new DefinitionCtor(elem, convContext));
 	}
 	@Override
 	public boolean visit(descent.internal.compiler.parser.PostBlitDeclaration elem) {
-		return endAdapt(new DefinitionPostBlit(elem));
+		return endAdapt(new DefinitionPostBlit(elem, convContext));
 	}
 	@Override
 	public boolean visit(descent.internal.compiler.parser.DtorDeclaration elem) {
-		return endAdapt(new DefinitionCtor(elem));
+		return endAdapt(new DefinitionCtor(elem, convContext));
 	}
 	@Override
 	public boolean visit(descent.internal.compiler.parser.StaticCtorDeclaration elem) {
-		return endAdapt(new DefinitionCtor(elem));
+		return endAdapt(new DefinitionCtor(elem, convContext));
 	}	
 	@Override
 	public boolean visit(descent.internal.compiler.parser.StaticDtorDeclaration elem) {
-		return endAdapt(new DefinitionCtor(elem));
+		return endAdapt(new DefinitionCtor(elem, convContext));
 	}
 
 	@Override
 	public boolean visit(descent.internal.compiler.parser.NewDeclaration elem) {
-		return endAdapt(new DefinitionCtor(elem));
+		return endAdapt(new DefinitionCtor(elem, convContext));
 	}
 	@Override
 	public boolean visit(descent.internal.compiler.parser.DeleteDeclaration elem) {
-		return endAdapt(new DefinitionCtor(elem));
+		return endAdapt(new DefinitionCtor(elem, convContext));
 	}
 
 	/* ---- other ---- */
@@ -321,17 +321,17 @@ public abstract class DeclarationConverter extends RefConverter {
 	
 	@Override
 	public boolean visit(TemplateTypeParameter elem) {
-		return endAdapt(new TemplateParamType(elem));
+		return endAdapt(new TemplateParamType(elem, convContext));
 	}
 	
 	@Override
 	public boolean visit(TemplateThisParameter elem) {
-		return endAdapt(new TemplateParamType(elem));
+		return endAdapt(new TemplateParamType(elem, convContext));
 	}
 	
 	@Override
 	public boolean visit(TemplateValueParameter elem) {
-		return endAdapt(new TemplateParamValue(elem));
+		return endAdapt(new TemplateParamValue(elem, convContext));
 	}
 
 }

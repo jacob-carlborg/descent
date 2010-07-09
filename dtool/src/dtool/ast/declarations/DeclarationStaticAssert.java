@@ -8,20 +8,21 @@ import dtool.ast.IASTNeoVisitor;
 import dtool.ast.expressions.Expression;
 import dtool.ast.expressions.Resolvable;
 import dtool.ast.statements.IStatement;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
 public class DeclarationStaticAssert extends ASTNeoNode implements IStatement {
 
 	public Resolvable pred;
 	public Resolvable msg;
 	
-	public DeclarationStaticAssert(StaticAssert elem) {
+	public DeclarationStaticAssert(StaticAssert elem, ASTConversionContext convContext) {
 		convertNode(elem);
-		this.pred = Expression.convert(elem.exp);
-		this.msg = Expression.convert(elem.msg);
+		this.pred = Expression.convert(elem.exp, convContext);
+		this.msg = Expression.convert(elem.msg, convContext);
 	}
 	
-	public DeclarationStaticAssert(StaticAssertStatement elem) {
-		this(elem.sa);
+	public DeclarationStaticAssert(StaticAssertStatement elem, ASTConversionContext convContext) {
+		this(elem.sa, convContext);
 	}
 
 	@Override

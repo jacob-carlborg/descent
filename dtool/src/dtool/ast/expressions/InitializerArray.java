@@ -3,6 +3,7 @@ package dtool.ast.expressions;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ArrayInitializer;
 import dtool.ast.IASTNeoVisitor;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
 public class InitializerArray extends Initializer {
 
@@ -10,10 +11,10 @@ public class InitializerArray extends Initializer {
 	public Initializer[] values;
 
 		
-	public InitializerArray(ArrayInitializer elem) {
+	public InitializerArray(ArrayInitializer elem, ASTConversionContext convContext) {
 		convertNode(elem);
-		this.indexes = Expression.convertMany(elem.index); 
-		this.values = Initializer.convertMany(elem.value);
+		this.indexes = Expression.convertMany(elem.index, convContext); 
+		this.values = Initializer.convertMany(elem.value, convContext);
 	}
 
 	@Override

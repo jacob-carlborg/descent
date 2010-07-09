@@ -3,14 +3,15 @@ package dtool.ast.expressions;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ExpInitializer;
 import dtool.ast.IASTNeoVisitor;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
 public class InitializerExp extends Initializer {
 	
 	public Resolvable exp;
 
-	public InitializerExp(ExpInitializer elem) {
+	public InitializerExp(ExpInitializer elem, ASTConversionContext convContext) {
 		convertNode(elem);
-		this.exp = Expression.convert(elem.exp); 
+		this.exp = Expression.convert(elem.exp, convContext); 
 	}
 
 	@Override

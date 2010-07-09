@@ -13,18 +13,19 @@ import dtool.ast.ASTNeoNode;
 import dtool.ast.ASTPrinter;
 import dtool.ast.IASTNeoVisitor;
 import dtool.descentadapter.DescentASTConverter;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
 public class RefTemplateInstance extends CommonRefSingle {
 
 	public final ASTNeoNode[] tiargs;
 
-	public RefTemplateInstance(
-			descent.internal.compiler.parser.TemplateInstance elem) {
-		this(elem, elem.name, elem.tiargs);
+	public RefTemplateInstance(descent.internal.compiler.parser.TemplateInstance elem
+			, ASTConversionContext convContext) {
+		this(elem, elem.name, elem.tiargs, convContext);
 	}
 
 	public RefTemplateInstance(TemplateInstance elem, IdentifierExp tplIdent,
-			List<ASTDmdNode> tiargs) {
+			List<ASTDmdNode> tiargs, ASTConversionContext convContext) {
 		if(elem.hasNoSourceRangeInfo()) {
 			setSourceRange(tplIdent);
 			assertTrue(!tplIdent.hasNoSourceRangeInfo());
@@ -37,7 +38,7 @@ public class RefTemplateInstance extends CommonRefSingle {
 		if (tiargs == null)
 			this.tiargs = ASTNeoNode.NO_ELEMENTS;
 		else
-			this.tiargs = DescentASTConverter.convertMany(tiargs);
+			this.tiargs = DescentASTConverter.convertMany(tiargs, convContext);
 	}
 
 	@Override

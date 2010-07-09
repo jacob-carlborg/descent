@@ -3,14 +3,15 @@ package dtool.ast.expressions;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.CompileExp;
 import dtool.ast.IASTNeoVisitor;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
 public class ExpStringMacro extends Expression {
 
 	public final Resolvable exp;
 
-	public ExpStringMacro(CompileExp node) {
+	public ExpStringMacro(CompileExp node, ASTConversionContext convContext) {
 		convertNode(node);
-		this.exp = Expression.convert(node.e1);
+		this.exp = Expression.convert(node.e1, convContext);
 	}
 	
 	@Override

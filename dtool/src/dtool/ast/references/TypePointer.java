@@ -10,28 +10,31 @@ import dtool.ast.ASTNeoNode;
 import dtool.ast.IASTNeoVisitor;
 import dtool.ast.definitions.DefUnit;
 import dtool.ast.definitions.NativeDefUnit;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.DefUnitSearch;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
 
 public class TypePointer extends CommonRefNative {
 	
-	public static ASTNeoNode convertTypePointer(descent.internal.compiler.parser.TypePointer elem) {
+	public static ASTNeoNode convertTypePointer(descent.internal.compiler.parser.TypePointer elem
+			, ASTConversionContext convContext) {
 		if(elem.next instanceof descent.internal.compiler.parser.TypeFunction) {
-			ASTNeoNode node= new TypeFunction((descent.internal.compiler.parser.TypeFunction)elem.next);
+			ASTNeoNode node= new TypeFunction((descent.internal.compiler.parser.TypeFunction)elem.next, convContext);
 			node.setSourceRange(elem);
 			return node;
 		}
 		else
-			return new TypePointer(elem);
+			return new TypePointer(elem, convContext);
 	}
 
 
 	public Reference elemtype;
 	
-	private TypePointer(descent.internal.compiler.parser.TypePointer elem) {
+	private TypePointer(descent.internal.compiler.parser.TypePointer elem
+			, ASTConversionContext convContext) {
 		setSourceRange(elem);
-		this.elemtype = ReferenceConverter.convertType(elem.next);
+		this.elemtype = ReferenceConverter.convertType(elem.next, convContext);
 	}
 
 	@Override

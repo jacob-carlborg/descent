@@ -7,6 +7,7 @@ import dtool.ast.IASTNeoVisitor;
 import dtool.ast.declarations.Declaration;
 import dtool.ast.definitions.BaseClass;
 import dtool.descentadapter.DescentASTConverter;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
 public class ExpLiteralNewAnonClass extends Expression {
 	
@@ -16,13 +17,13 @@ public class ExpLiteralNewAnonClass extends Expression {
 	public ASTNeoNode[] members; 
 
 
-	public ExpLiteralNewAnonClass(NewAnonClassExp elem) {
+	public ExpLiteralNewAnonClass(NewAnonClassExp elem, ASTConversionContext convContext) {
 		convertNode(elem);
-		this.allocargs = Expression.convertMany(elem.newargs); 
-		this.args = Expression.convertMany(elem.arguments); 
+		this.allocargs = Expression.convertMany(elem.newargs, convContext); 
+		this.args = Expression.convertMany(elem.arguments, convContext); 
 		this.baseClasses = DescentASTConverter.convertMany(elem.cd.sourceBaseclasses.toArray(),
-				new BaseClass[elem.cd.sourceBaseclasses.size()]);
-		this.members = Declaration.convertMany(elem.cd.members);
+				new BaseClass[elem.cd.sourceBaseclasses.size()], convContext);
+		this.members = Declaration.convertMany(elem.cd.members, convContext);
 		
 	}
 

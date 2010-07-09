@@ -7,14 +7,15 @@ import descent.internal.compiler.parser.StorageClassDeclaration;
 import descent.internal.compiler.parser.ast.IASTNode;
 import dtool.ast.IASTNeoVisitor;
 import dtool.ast.definitions.Definition;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.INonScopedBlock;
 
 public class DeclarationStorageClass extends DeclarationAttrib {
 
 	public int stclass; // we assume there is only one storage class flag here
 	
-	public DeclarationStorageClass(StorageClassDeclaration elem) {
-		super(elem, elem.decl);
+	public DeclarationStorageClass(StorageClassDeclaration elem, ASTConversionContext convContex) {
+		super(elem, elem.decl, convContex);
 		this.stclass = elem.stc;
 	}
 

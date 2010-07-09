@@ -7,6 +7,7 @@ import dtool.ast.IASTNeoVisitor;
 import dtool.ast.references.Reference;
 import dtool.ast.statements.IStatement;
 import dtool.descentadapter.DescentASTConverter;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.IScopeNode;
 
 /**
@@ -16,9 +17,9 @@ public class DefinitionAlias extends Definition implements IStatement {
 	
 	public Reference target;
 	
-	public DefinitionAlias(AliasDeclaration elem) {
-		super(elem);
-		target = (Reference) DescentASTConverter.convertElem(elem.type);
+	public DefinitionAlias(AliasDeclaration elem, ASTConversionContext convContext) {
+		super(elem, convContext);
+		target = (Reference) DescentASTConverter.convertElem(elem.type, convContext);
 	}
 	
 	@Override

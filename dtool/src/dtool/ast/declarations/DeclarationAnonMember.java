@@ -9,16 +9,17 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.AnonDeclaration;
 import dtool.ast.ASTNeoNode;
 import dtool.ast.IASTNeoVisitor;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.INonScopedBlock;
 
 public class DeclarationAnonMember extends ASTNeoNode implements INonScopedBlock {
 
 	public NodeList body;
 
-	public DeclarationAnonMember(AnonDeclaration node) {
+	public DeclarationAnonMember(AnonDeclaration node, ASTConversionContext convContext) {
 		convertNode(node);
 		assertNotNull(node.decl);
-		this.body = NodeList.createNodeList(node.decl);
+		this.body = NodeList.createNodeList(node.decl, convContext);
 	}
 	
 	@Override

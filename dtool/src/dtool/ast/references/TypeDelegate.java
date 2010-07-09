@@ -13,6 +13,7 @@ import dtool.ast.definitions.DefinitionFunction;
 import dtool.ast.definitions.IFunctionParameter;
 import dtool.ast.definitions.NativeDefUnit;
 import dtool.descentadapter.DescentASTConverter;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.DefUnitSearch;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
@@ -26,12 +27,13 @@ public class TypeDelegate extends CommonRefNative {
 	public List<IFunctionParameter> params;
 	public int varargs;
 	
-	public TypeDelegate(descent.internal.compiler.parser.TypeDelegate elem) {
+	public TypeDelegate(descent.internal.compiler.parser.TypeDelegate elem
+			, ASTConversionContext convContext) {
 		setSourceRange(elem);
-		this.rettype = (Reference) DescentASTConverter.convertElem(elem.rto);
+		this.rettype = (Reference) DescentASTConverter.convertElem(elem.rto, convContext);
 		TypeFunction typeFunction = ((TypeFunction) elem.next);
 		this.varargs = DefinitionFunction.convertVarArgs(typeFunction.varargs);
-		this.params = DescentASTConverter.convertManyL(typeFunction.parameters, this.params); 
+		this.params = DescentASTConverter.convertManyL(typeFunction.parameters, this.params, convContext); 
 	}
 
 	@Override

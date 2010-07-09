@@ -5,6 +5,7 @@ import java.util.List;
 import descent.internal.compiler.parser.StructDeclaration;
 import dtool.ast.IASTNeoVisitor;
 import dtool.descentadapter.DescentASTConverter;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.IScope;
 
 /**
@@ -15,10 +16,10 @@ public class DefinitionStruct extends DefinitionAggregate {
 	public TemplateParameter[] templateParams; 
 	
 	
-	public DefinitionStruct(StructDeclaration elem) {
-		super(elem);
+	public DefinitionStruct(StructDeclaration elem, ASTConversionContext convContext) {
+		super(elem, convContext);
 		if(elem.members != null)
-			this.members = DescentASTConverter.convertManyL(elem.members, this.members);
+			this.members = DescentASTConverter.convertManyL(elem.members, this.members, convContext);
 		// TODO: where did template Parameters go
 		//if(elem.templateParameters != null)
 		//	this.templateParams = TemplateParameter.convertMany(elem.templateParameters);

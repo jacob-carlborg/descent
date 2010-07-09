@@ -12,20 +12,21 @@ import dtool.ast.IASTNeoVisitor;
 import dtool.ast.expressions.Expression;
 import dtool.ast.expressions.Resolvable;
 import dtool.ast.statements.IStatement;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.INonScopedBlock;
 
 public class DeclarationStringMacro extends ASTNeoNode implements IStatement, INonScopedBlock {
 	
 	public final Resolvable exp;
 
-	public DeclarationStringMacro(CompileDeclaration node) {
+	public DeclarationStringMacro(CompileDeclaration node, ASTConversionContext convContext) {
 		convertNode(node);
-		this.exp = Expression.convert(node.exp);
+		this.exp = Expression.convert(node.exp, convContext);
 	}
 
-	public DeclarationStringMacro(CompileStatement node) {
+	public DeclarationStringMacro(CompileStatement node, ASTConversionContext convContext) {
 		convertNode(node);
-		this.exp = Expression.convert(node.exp);
+		this.exp = Expression.convert(node.exp, convContext);
 	}
 
 	@Override

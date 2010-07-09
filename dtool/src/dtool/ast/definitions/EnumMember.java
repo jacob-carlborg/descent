@@ -5,16 +5,17 @@ import dtool.ast.IASTNeoVisitor;
 import dtool.ast.expressions.Expression;
 import dtool.ast.expressions.Resolvable;
 import dtool.ast.references.Reference;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.IScopeNode;
 
 public class EnumMember extends DefUnit {
 	
 	public Resolvable value;
 
-	public EnumMember(descent.internal.compiler.parser.EnumMember elem) {
-		super(elem);
+	public EnumMember(descent.internal.compiler.parser.EnumMember elem, ASTConversionContext convContext) {
+		super(elem, convContext);
 		convertNode(elem);
-		this.value = Expression.convert(elem.value);
+		this.value = Expression.convert(elem.value, convContext);
 	}
 
 	@Override

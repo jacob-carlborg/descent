@@ -13,6 +13,7 @@ import dtool.ast.definitions.DefinitionFunction;
 import dtool.ast.definitions.IFunctionParameter;
 import dtool.ast.definitions.NativeDefUnit;
 import dtool.descentadapter.DescentASTConverter;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.DefUnitSearch;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
@@ -27,10 +28,11 @@ public class TypeFunction extends CommonRefNative {
 	public int varargs;
 	public LINK linkage;
 
-	public TypeFunction(descent.internal.compiler.parser.TypeFunction elem) {
+	public TypeFunction(descent.internal.compiler.parser.TypeFunction elem
+			, ASTConversionContext convContext) {
 		setSourceRange(elem);
-		this.rettype = (Reference) DescentASTConverter.convertElem(elem.next);
-		this.params = DescentASTConverter.convertManyL(elem.parameters, this.params);
+		this.rettype = (Reference) DescentASTConverter.convertElem(elem.next, convContext);
+		this.params = DescentASTConverter.convertManyL(elem.parameters, this.params, convContext);
 		this.varargs = DefinitionFunction.convertVarArgs(elem.varargs);
 		this.linkage = elem.linkage;
 	}

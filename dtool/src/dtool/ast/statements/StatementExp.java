@@ -5,18 +5,19 @@ import descent.internal.compiler.parser.ExpStatement;
 import dtool.ast.IASTNeoVisitor;
 import dtool.ast.expressions.Expression;
 import dtool.ast.expressions.Resolvable;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
 public class StatementExp extends Statement {
 	
 	public Resolvable exp;
 
-	public StatementExp(ExpStatement element) {
+	public StatementExp(ExpStatement element, ASTConversionContext convContext) {
 		if(element.hasNoSourceRangeInfo() && element.exp != null)
 			setSourceRange(element.exp);
 		else
 			convertNode(element);
 		
-		this.exp = Expression.convert(element.exp);
+		this.exp = Expression.convert(element.exp, convContext);
 	}
 
 	@Override

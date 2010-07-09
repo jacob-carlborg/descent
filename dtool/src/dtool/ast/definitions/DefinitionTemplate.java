@@ -13,6 +13,7 @@ import descent.internal.compiler.parser.ast.IASTNode;
 import dtool.ast.ASTNeoNode;
 import dtool.ast.IASTNeoVisitor;
 import dtool.ast.declarations.Declaration;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
 
@@ -25,10 +26,10 @@ public class DefinitionTemplate extends Definition implements IScopeNode {
 	public final boolean wrapper;
 
 	
-	public DefinitionTemplate(TemplateDeclaration elem) {
-		super(elem);
-		this.decls = Declaration.convertMany(elem.members);
-		this.templateParams = TemplateParameter.convertMany(elem.parameters);
+	public DefinitionTemplate(TemplateDeclaration elem, ASTConversionContext convContext) {
+		super(elem, convContext);
+		this.decls = Declaration.convertMany(elem.members, convContext);
+		this.templateParams = TemplateParameter.convertMany(elem.parameters, convContext);
 		this.wrapper = elem.wrapper;
 		if(wrapper)
 			Assert.isTrue(decls.length == 1);

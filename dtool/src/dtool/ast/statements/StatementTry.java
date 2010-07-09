@@ -15,6 +15,7 @@ import dtool.ast.definitions.FunctionParameter;
 import dtool.ast.definitions.IFunctionParameter;
 import dtool.ast.definitions.NamelessParameter;
 import dtool.descentadapter.DescentASTConverter;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
 
@@ -25,15 +26,15 @@ public class StatementTry extends Statement {
 		public IFunctionParameter param;
 		public IStatement body;
 
-		public CatchClause(Catch elem) {
+		public CatchClause(Catch elem, ASTConversionContext convContext) {
 			convertNode(elem);
-			this.body = Statement.convert(elem.handler);
+			this.body = Statement.convert(elem.handler, convContext);
 			if(elem.type == null) {
 				this.param = null;
 			} else if(elem.ident == null) {
-				this.param = new NamelessParameter(elem.type);
+				this.param = new NamelessParameter(elem.type, convContext);
 			} else {
-				this.param = new FunctionParameter(elem.type, elem.ident);
+				this.param = new FunctionParameter(elem.type, elem.ident, convContext);
 			}
 		}
 
@@ -68,27 +69,26 @@ public class StatementTry extends Statement {
 	public IStatement finallybody;
 
 
-	public StatementTry(TryCatchStatement elem) {
+	public StatementTry(TryCatchStatement elem, ASTConversionContext convContext) {
 		convertNode(elem);
-		convertTryCatch(elem);
+		convertTryCatch(elem, convContext);
 	}
 
-	private void convertTryCatch(TryCatchStatement elem) {
+	private void convertTryCatch(TryCatchStatement elem, ASTConversionContext convContext) {
 		this.params = new CatchClause[elem.catches.size()];
-		DescentASTConverter.convertMany(
-				elem.catches.toArray(), this.params);
-		this.body = Statement.convert(elem.body);
+		DescentASTConverter.convertMany(elem.catches.toArray(), this.params, convContext);
+		this.body = Statement.convert(elem.body, convContext);
 	}
 	
-	public StatementTry(TryFinallyStatement elem) {
+	public StatementTry(TryFinallyStatement elem, ASTConversionContext convContext) {
 		convertNode(elem);
 		if(elem.body instanceof TryCatchStatement){
-			convertTryCatch((TryCatchStatement)elem.body);
+			convertTryCatch((TryCatchStatement)elem.body, convContext);
 		} else {
 			this.params = new CatchClause[0];
-			this.body = Statement.convert(elem.body);
+			this.body = Statement.convert(elem.body, convContext);
 		}
-		this.finallybody =  Statement.convert(elem.finalbody);
+		this.finallybody =  Statement.convert(elem.finalbody, convContext);
 	}
 
 	@Override

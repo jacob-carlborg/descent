@@ -9,6 +9,7 @@ import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Module;
 import dtool.ast.ASTNeoNode;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.IScopeNode;
 
 /**
@@ -38,16 +39,14 @@ public abstract class DefUnit extends ASTNeoNode {
 	public final Symbol defname;
 	public EArcheType archeType;
 	
-	public DefUnit(Dsymbol elem/*, descent.internal.compiler.parser.Module module*/) {
+	public DefUnit(Dsymbol elem, ASTConversionContext convContext) {
 		convertNode(elem, false);
 		assertNotNull(elem.ident);
 		this.defname = new DefSymbol(elem.ident, this);
 		int size = 0; 
-		Module module = elem.getModule();
-//		List<Comment> preDdocs = module.getPreComments(elem);
-//		Comment postDdoc = module.getPostComment(elem);
-		List<Comment> preDdocs = module == null ? null : module.getPreComments(elem);
-		Comment postDdoc = module == null ? null : module.getPostComment(elem);
+		Module module = convContext.module;
+		List<Comment> preDdocs = module.getPreComments(elem);
+		Comment postDdoc = module.getPostComment(elem);
 		if(preDdocs != null)
 			size = preDdocs.size();
 		if(postDdoc != null)

@@ -6,6 +6,7 @@ import descent.internal.compiler.parser.TOK;
 import dtool.ast.IASTNeoVisitor;
 import dtool.ast.references.Reference;
 import dtool.ast.references.ReferenceConverter;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
 public class ExpIftype extends Expression {
 
@@ -13,12 +14,12 @@ public class ExpIftype extends Expression {
 	public TOK tok;
 	public Reference specType;
 	
-	public ExpIftype(IsExp node) {
+	public ExpIftype(IsExp node, ASTConversionContext convContext) {
 		convertNode(node);
 		//Assert.isNull(node.id); //Can occur in error in illegal D code
 		this.tok = node.tok;
-		this.arg = ReferenceConverter.convertType(node.targ);
-		this.specType = ReferenceConverter.convertType(node.tspec);
+		this.arg = ReferenceConverter.convertType(node.targ, convContext);
+		this.specType = ReferenceConverter.convertType(node.tspec, convContext);
 	}
 
 	@Override

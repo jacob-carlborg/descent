@@ -7,6 +7,7 @@ import dtool.ast.expressions.Initializer;
 import dtool.ast.references.Reference;
 import dtool.ast.references.ReferenceConverter;
 import dtool.ast.statements.IStatement;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.IScopeNode;
 
 public class DefinitionTypedef extends Definition implements IStatement {
@@ -14,10 +15,10 @@ public class DefinitionTypedef extends Definition implements IStatement {
 	Reference type;
 	Initializer initializer;
 	
-	public DefinitionTypedef(TypedefDeclaration elem) {
-		super(elem);
-		this.type = ReferenceConverter.convertType(elem.sourceBasetype);
-		this.initializer = Initializer.convert(elem.init);
+	public DefinitionTypedef(TypedefDeclaration elem, ASTConversionContext convContext) {
+		super(elem, convContext);
+		this.type = ReferenceConverter.convertType(elem.sourceBasetype, convContext);
+		this.initializer = Initializer.convert(elem.init, convContext);
 	}
 
 	@Override

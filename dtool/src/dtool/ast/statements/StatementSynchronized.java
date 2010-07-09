@@ -5,16 +5,17 @@ import descent.internal.compiler.parser.SynchronizedStatement;
 import dtool.ast.IASTNeoVisitor;
 import dtool.ast.expressions.Expression;
 import dtool.ast.expressions.Resolvable;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
 public class StatementSynchronized extends Statement {
 
 	public Resolvable exp;
 	public IStatement body;
 
-	public StatementSynchronized(SynchronizedStatement elem) {
+	public StatementSynchronized(SynchronizedStatement elem, ASTConversionContext convContext) {
 		convertNode(elem);
-		this.exp = Expression.convert(elem.exp);
-		this.body = Statement.convert(elem.body);
+		this.exp = Expression.convert(elem.exp, convContext);
+		this.body = Statement.convert(elem.body, convContext);
 	}
 
 	@Override

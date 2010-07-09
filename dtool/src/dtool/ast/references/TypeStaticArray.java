@@ -12,6 +12,7 @@ import dtool.ast.definitions.DefUnit;
 import dtool.ast.definitions.NativeDefUnit;
 import dtool.ast.expressions.Expression;
 import dtool.ast.expressions.Resolvable;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.DefUnitSearch;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
@@ -20,10 +21,10 @@ public class TypeStaticArray extends CommonRefNative {
 	public Reference elemtype;
 	public Resolvable sizeexp;
 
-	public TypeStaticArray(TypeSArray elem) {
+	public TypeStaticArray(TypeSArray elem, ASTConversionContext convContext) {
 		setSourceRange(elem);
-		this.elemtype = ReferenceConverter.convertType(elem.next);
-		this.sizeexp = Expression.convert(elem.dim); 
+		this.elemtype = ReferenceConverter.convertType(elem.next, convContext);
+		this.sizeexp = Expression.convert(elem.dim, convContext); 
 	}
 
 	@Override

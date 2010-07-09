@@ -9,6 +9,7 @@ import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.Statement;
 import dtool.ast.ASTNeoNode;
 import dtool.descentadapter.DescentASTConverter;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
 /**
  * A helper class for AST nodes, 
@@ -24,23 +25,23 @@ public class NodeList  {
 		this.hasCurlies = hasCurlies;
 	}
 
-	public static NodeList createNodeList(Statement body) {
+	public static NodeList createNodeList(Statement body, ASTConversionContext convContext) {
 		if(body == null)
 			return null;
 		if(body instanceof CompoundStatement) {
 			CompoundStatement cst = (CompoundStatement) body;
-			ASTNeoNode[] neoNodes = DescentASTConverter.convertMany(cst.sourceStatements);
+			ASTNeoNode[] neoNodes = DescentASTConverter.convertMany(cst.sourceStatements, convContext);
 			return new NodeList(neoNodes, true);
 		} else {
-			ASTNeoNode[] neoNodes = new ASTNeoNode[] { DescentASTConverter.convertElem(body) };
+			ASTNeoNode[] neoNodes = new ASTNeoNode[] { DescentASTConverter.convertElem(body, convContext) };
 			return new NodeList(neoNodes, false);
 		}
 	}
 
-	public static NodeList createNodeList(Collection<Dsymbol> decl) {
+	public static NodeList createNodeList(Collection<Dsymbol> decl, ASTConversionContext convContext) {
 		if(decl == null)
 			return null;
-		ASTNeoNode[] neoNodes = DescentASTConverter.convertMany(decl);
+		ASTNeoNode[] neoNodes = DescentASTConverter.convertMany(decl, convContext);
 		return new NodeList(neoNodes, false);
 	}
 	

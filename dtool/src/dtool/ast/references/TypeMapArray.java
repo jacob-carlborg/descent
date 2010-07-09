@@ -10,6 +10,7 @@ import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.ast.IASTNeoVisitor;
 import dtool.ast.definitions.DefUnit;
 import dtool.ast.definitions.NativeDefUnit;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.DefUnitSearch;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
@@ -18,10 +19,10 @@ public class TypeMapArray extends CommonRefNative {
 	public Reference keytype;
 	public Reference valuetype;
 
-	public TypeMapArray(TypeAArray elem) {
+	public TypeMapArray(TypeAArray elem, ASTConversionContext convContext) {
 		setSourceRange(elem);
-		this.valuetype = ReferenceConverter.convertType(elem.next);
-		this.keytype = ReferenceConverter.convertType(elem.index);
+		this.valuetype = ReferenceConverter.convertType(elem.next, convContext);
+		this.keytype = ReferenceConverter.convertType(elem.index, convContext);
 	}
 
 	@Override

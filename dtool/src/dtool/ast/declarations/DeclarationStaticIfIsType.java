@@ -15,6 +15,7 @@ import dtool.ast.IASTNeoVisitor;
 import dtool.ast.definitions.DefUnit;
 import dtool.ast.references.Reference;
 import dtool.ast.references.ReferenceConverter;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
 
@@ -99,12 +100,13 @@ public class DeclarationStaticIfIsType extends DeclarationConditional {
 	public TOK tok;
 	public Reference specType;
 	
-	public DeclarationStaticIfIsType(ASTDmdNode  elem, IsExp isExp, NodeList thendecls, NodeList elsedecls) {
+	public DeclarationStaticIfIsType(ASTDmdNode  elem, IsExp isExp, NodeList thendecls, NodeList elsedecls
+			, ASTConversionContext convContext) {
 		convertNode(elem);
-		this.arg = ReferenceConverter.convertType(isExp.targ);
+		this.arg = ReferenceConverter.convertType(isExp.targ, convContext);
 		this.defUnit = new IsTypeDefUnit(isExp.id);
 		this.tok = isExp.tok;
-		this.specType = ReferenceConverter.convertType(isExp.tspec);
+		this.specType = ReferenceConverter.convertType(isExp.tspec, convContext);
 		this.thendecls = thendecls;
 		this.elsedecls = elsedecls;
 		this.thendeclsScope = new IsTypeScope(thendecls);

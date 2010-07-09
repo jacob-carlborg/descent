@@ -16,6 +16,7 @@ import dtool.ast.references.ReferenceConverter;
 import dtool.ast.statements.IStatement;
 import dtool.ast.statements.Statement;
 import dtool.descentadapter.DescentASTConverter;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
 import dtool.refmodel.NodeUtil;
@@ -40,30 +41,30 @@ public class DefinitionFunction extends Definition implements IScopeNode, IState
 	//public descent.internal.compiler.parser.TypeFunction type;
 
 
-	public DefinitionFunction(FuncDeclaration elem) {
-		super(elem);
-		this.frequire = Statement.convert(elem.frequire);
-		this.fensure = Statement.convert(elem.fensure);
-		this.fbody = Statement.convert(elem.fbody);
+	public DefinitionFunction(FuncDeclaration elem, ASTConversionContext convContext) {
+		super(elem, convContext);
+		this.frequire = Statement.convert(elem.frequire, convContext);
+		this.fensure = Statement.convert(elem.fensure, convContext);
+		this.fbody = Statement.convert(elem.fbody, convContext);
 		
 		TypeFunction elemTypeFunc = ((TypeFunction) elem.type);
 
 		/*if(elem.templateParameters != null)
 			this.templateParams = TemplateParameter.convertMany(elem.templateParameters);*/
 		Assert.isTrue(elem.parameters == null);
-		this.params = DescentASTConverter.convertManyL(elemTypeFunc.parameters, this.params); 
+		this.params = DescentASTConverter.convertManyL(elemTypeFunc.parameters, this.params, convContext); 
 
 		varargs = convertVarArgs(elemTypeFunc.varargs);
 		Assert.isNotNull(elemTypeFunc.next);
-		this.rettype = ReferenceConverter.convertType(elemTypeFunc.next);
+		this.rettype = ReferenceConverter.convertType(elemTypeFunc.next, convContext);
 		Assert.isNotNull(this.rettype);
 	}
 	
-	public static ASTNeoNode convertFunctionParameter(Argument elem) {
+	public static ASTNeoNode convertFunctionParameter(Argument elem, ASTConversionContext convContext) {
 		if(elem.ident != null)
-			return new FunctionParameter(elem);
+			return new FunctionParameter(elem, convContext);
 		else 
-			return new NamelessParameter(elem);
+			return new NamelessParameter(elem, convContext);
 	}
 	
 	public static int convertVarArgs(int varargs) {

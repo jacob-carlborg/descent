@@ -10,6 +10,7 @@ import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.ast.ASTPrinter;
 import dtool.ast.IASTNeoVisitor;
 import dtool.ast.statements.IStatement;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.IScopeNode;
 
 /**
@@ -20,8 +21,8 @@ public abstract class DefinitionAggregate extends Definition implements IScopeNo
 	public TemplateParameter[] templateParams; 
 	public List<ASTNode> members; // can be null. (bodyless aggregates)
 
-	public DefinitionAggregate(Dsymbol elem) {
-		super(elem);
+	public DefinitionAggregate(Dsymbol elem, ASTConversionContext convContext) {
+		super(elem, convContext);
 	}
 	
 	@Override

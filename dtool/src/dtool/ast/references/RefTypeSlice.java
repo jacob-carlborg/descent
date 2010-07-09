@@ -8,6 +8,7 @@ import dtool.ast.IASTNeoVisitor;
 import dtool.ast.definitions.DefUnit;
 import dtool.ast.expressions.Expression;
 import dtool.ast.expressions.Resolvable;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.IDefUnitReferenceNode;
 
 public class RefTypeSlice extends Reference {
@@ -16,10 +17,10 @@ public class RefTypeSlice extends Reference {
 	public Resolvable from;
 	public Resolvable to;
 	
-	public RefTypeSlice(TypeSlice elem) {
-		slicee = ReferenceConverter.convertType(elem.next);
-		from = Expression.convert(elem.lwr);
-		to = Expression.convert(elem.upr);
+	public RefTypeSlice(TypeSlice elem, ASTConversionContext convContext) {
+		slicee = ReferenceConverter.convertType(elem.next, convContext);
+		from = Expression.convert(elem.lwr, convContext);
+		to = Expression.convert(elem.upr, convContext);
 	}
 	
 

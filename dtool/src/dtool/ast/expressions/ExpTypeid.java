@@ -5,14 +5,15 @@ import descent.internal.compiler.parser.TypeidExp;
 import dtool.ast.IASTNeoVisitor;
 import dtool.ast.references.Reference;
 import dtool.ast.references.ReferenceConverter;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
 public class ExpTypeid extends Expression {
 
 	Reference type;
 	
-	public ExpTypeid(TypeidExp elem) {
+	public ExpTypeid(TypeidExp elem, ASTConversionContext convContext) {
 		convertNode(elem);
-		this.type = ReferenceConverter.convertType(elem.type);
+		this.type = ReferenceConverter.convertType(elem.type, convContext);
 	}
 
 	@Override

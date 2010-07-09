@@ -4,12 +4,15 @@ import melnorme.miscutil.Assert;
 import descent.internal.compiler.parser.ast.ASTNode;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import dtool.ast.ASTNeoNode;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
 /**
  * This class is a mixin. 
  * Do not use it, instead use it's subclass: {@link DeclarationConverter}
  */
 public abstract class ASTCommonConverter implements IASTVisitor {
+	
+	protected ASTConversionContext convContext;
 	
 	ASTNeoNode ret = null;
 	
@@ -24,7 +27,7 @@ public abstract class ASTCommonConverter implements IASTVisitor {
 	@Override
 	public void preVisit(ASTNode elem) {
 	}
-
+	
 	
 	/* ---- common adaptors ---- */
 	
@@ -32,7 +35,7 @@ public abstract class ASTCommonConverter implements IASTVisitor {
 		ret = newelem;
 		return false;
 	}
-
+	
 	protected boolean assertFailFAKENODE() {
 		Assert.fail("Fake Node"); return false;
 	}
@@ -43,5 +46,5 @@ public abstract class ASTCommonConverter implements IASTVisitor {
 		Assert.fail("This class is not converted directly by the visitor. ");
 		return true;
 	}
-
+	
 }

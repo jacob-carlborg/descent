@@ -19,6 +19,7 @@ import descent.internal.compiler.parser.ast.IASTNode;
 import dtool.ast.ASTNeoNode;
 import dtool.ast.IASTNeoVisitor;
 import dtool.ast.declarations.Declaration;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
 
@@ -84,12 +85,12 @@ public class Module extends DefUnit implements IScopeNode {
 	public final ASTNeoNode[] members;
 
 	
-	public static Module createModule(descent.internal.compiler.parser.Module elem) {
+	public static Module createModule(descent.internal.compiler.parser.Module elem, ASTConversionContext convContext) {
 		ModuleDefSymbol defname;
 		DeclarationModule md;
 		Comment[] comments = null;
 
-		ASTNeoNode[] members = Declaration.convertMany(elem.members);
+		ASTNeoNode[] members = Declaration.convertMany(elem.members, convContext);
 		
 		if(elem.md == null) {
 			defname = new ModuleDefSymbol("<unnamed>");

@@ -3,13 +3,14 @@ package dtool.ast.declarations;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.AlignDeclaration;
 import dtool.ast.IASTNeoVisitor;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
 public class DeclarationAlign extends DeclarationAttrib {
 	
 	public long alignnum;
 
-	public DeclarationAlign(AlignDeclaration elem) {
-		super(elem, elem.decl);
+	public DeclarationAlign(AlignDeclaration elem, ASTConversionContext convContex) {
+		super(elem, elem.decl, convContex);
 		this.alignnum = elem.salign;
 	}
 

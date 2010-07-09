@@ -3,14 +3,15 @@ package dtool.ast.expressions;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.FileExp;
 import dtool.ast.IASTNeoVisitor;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
 public class ExpLiteralImportedString extends Expression {
 	
 	final public Resolvable exp; 
 
-	public ExpLiteralImportedString(FileExp node) {
+	public ExpLiteralImportedString(FileExp node, ASTConversionContext convContext) {
 		convertNode(node);
-		this.exp = Expression.convert(node.e1); 
+		this.exp = Expression.convert(node.e1, convContext); 
 	}
 
 	@Override

@@ -7,6 +7,7 @@ import dtool.ast.IASTNeoVisitor;
 import dtool.ast.definitions.IFunctionParameter;
 import dtool.ast.expressions.Expression;
 import dtool.ast.expressions.Resolvable;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
 public class StatementForeachRange extends Statement {
 
@@ -16,14 +17,14 @@ public class StatementForeachRange extends Statement {
 	public final Resolvable upr;
 	public final IStatement body;
 
-	public StatementForeachRange(ForeachRangeStatement elem) {
+	public StatementForeachRange(ForeachRangeStatement elem, ASTConversionContext convContext) {
 		convertNode(elem);
 		// TODO: implement foreach parameters, and unittest them.
 		//this.param = (IFunctionParameter) DescentASTConverter.convertElem(elem.arg);
 		this.param = null;
-		this.lwr = Expression.convert(elem.lwr);
-		this.upr = Expression.convert(elem.upr);
-		this.body = Statement.convert(elem.body);
+		this.lwr = Expression.convert(elem.lwr, convContext);
+		this.upr = Expression.convert(elem.upr, convContext);
+		this.body = Statement.convert(elem.body, convContext);
 		this.reverse = elem.op == TOK.TOKforeach_reverse;
 	}
 

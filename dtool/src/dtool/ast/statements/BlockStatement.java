@@ -8,6 +8,7 @@ import descent.internal.compiler.parser.ScopeStatement;
 import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.ast.IASTNeoVisitor;
 import dtool.descentadapter.DescentASTConverter;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
 
@@ -19,25 +20,25 @@ public class BlockStatement extends Statement implements IScopeNode {
 	public List<IStatement> statements;
 	public boolean hasCurlyBraces; // syntax-structural?
 
-	public BlockStatement(descent.internal.compiler.parser.CompoundStatement elem) {
+	public BlockStatement(descent.internal.compiler.parser.CompoundStatement elem, ASTConversionContext convContext) {
 		convertNode(elem);
-		this.statements = DescentASTConverter.convertManyL(elem.statements, statements);
+		this.statements = DescentASTConverter.convertManyL(elem.statements, statements, convContext);
 		
 		for(@SuppressWarnings("unused")	IStatement decl : statements) {
 			// just check class cast
 		}
 	}
 
-	public BlockStatement(ScopeStatement elem) {
+	public BlockStatement(ScopeStatement elem, ASTConversionContext convContext) {
 		convertNode(elem);
 		if(elem.statement instanceof descent.internal.compiler.parser.CompoundStatement) {
 			descent.internal.compiler.parser.CompoundStatement compoundSt = 
 				(descent.internal.compiler.parser.CompoundStatement) elem.statement;
-			this.statements = DescentASTConverter.convertManyL(compoundSt.statements, statements);
+			this.statements = DescentASTConverter.convertManyL(compoundSt.statements, statements, convContext);
 			this.hasCurlyBraces = true;
 		} else {
 			this.statements = DescentASTConverter.convertManyL(
-					new ASTNode[] {elem.statement}, statements);
+					new ASTNode[] {elem.statement}, statements, convContext);
 			setSourceRange(elem.statement);
 		}
 	}

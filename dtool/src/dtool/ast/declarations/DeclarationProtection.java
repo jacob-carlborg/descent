@@ -11,6 +11,7 @@ import descent.internal.compiler.parser.ast.IASTNode;
 import dtool.ast.ASTNeoNode;
 import dtool.ast.IASTNeoVisitor;
 import dtool.ast.definitions.Definition;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.INonScopedBlock;
 
 public class DeclarationProtection extends DeclarationAttrib {
@@ -18,8 +19,8 @@ public class DeclarationProtection extends DeclarationAttrib {
 	public Modifier modifier;
 	public PROT prot;
 	
-	public DeclarationProtection(ProtDeclaration elem) {
-		super(elem, elem.decl);
+	public DeclarationProtection(ProtDeclaration elem, ASTConversionContext convContex) {
+		super(elem, elem.decl, convContex);
 		this.modifier = elem.modifier;
 		this.prot = elem.protection;
 		Assert.isTrue(PROT.fromTOK(this.modifier.tok) == this.prot);

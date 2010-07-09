@@ -5,17 +5,18 @@ import descent.internal.compiler.parser.TraitsExp;
 import dtool.ast.ASTNeoNode;
 import dtool.ast.IASTNeoVisitor;
 import dtool.descentadapter.DescentASTConverter;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
 public class ExpTraits extends Expression {
 
 	public final ASTNeoNode[] args;
 	public final char[] traitsKeyword;
 	
-	public ExpTraits(TraitsExp node) {
+	public ExpTraits(TraitsExp node, ASTConversionContext convContext) {
 		convertNode(node);
 		this.traitsKeyword = node.ident.ident;
 		this.args = new ASTNeoNode[node.args.size()];
-		DescentASTConverter.convertMany(node.args, this.args);
+		DescentASTConverter.convertMany(node.args, this.args, convContext);
 	}
 
 	@Override

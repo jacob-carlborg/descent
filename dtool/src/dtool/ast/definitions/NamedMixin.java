@@ -7,6 +7,7 @@ import dtool.ast.IASTNeoVisitor;
 import dtool.ast.references.Reference;
 import dtool.ast.references.ReferenceConverter;
 import dtool.ast.statements.IStatement;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.IScopeNode;
 
 /*
@@ -15,18 +16,18 @@ public class NamedMixin extends DefUnit implements IStatement {
 	
 	public Reference type;
 	
-	private NamedMixin(TemplateMixin elem, Reference tplInstance) {
-		super(elem);
+	private NamedMixin(TemplateMixin elem, Reference tplInstance, ASTConversionContext convContext) {
+		super(elem, convContext);
 		this.type = tplInstance;
 	}
 
-	public static ASTNeoNode convertMixinInstance(TemplateMixin elem) {
+	public static ASTNeoNode convertMixinInstance(TemplateMixin elem, ASTConversionContext convContext) {
 		if(elem.ident != null) {
-			Reference typeref = ReferenceConverter.convertTemplateInstance(elem, elem.tiargs);
-			return new NamedMixin(elem, typeref);
+			Reference typeref = ReferenceConverter.convertTemplateInstance(elem, elem.tiargs, convContext);
+			return new NamedMixin(elem, typeref, convContext);
  		} else {
  			elem.setSourceRange(elem.typeStart, elem.typeLength);
- 			Reference typeref = ReferenceConverter.convertTemplateInstance(elem, elem.tiargs);
+ 			Reference typeref = ReferenceConverter.convertTemplateInstance(elem, elem.tiargs, convContext);
 			return new MixinContainer(elem, typeref);
  		}
 	}

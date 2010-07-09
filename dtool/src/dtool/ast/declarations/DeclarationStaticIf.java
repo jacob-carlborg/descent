@@ -6,15 +6,16 @@ import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.ast.IASTNeoVisitor;
 import dtool.ast.expressions.Expression;
 import dtool.ast.expressions.Resolvable;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
 public class DeclarationStaticIf extends DeclarationConditional {
 	
 	public Resolvable exp;
 
-	public DeclarationStaticIf(ASTNode elem,
-			StaticIfCondition condition, NodeList thendecls, NodeList elsedecls) {
+	public DeclarationStaticIf(ASTNode elem, StaticIfCondition condition, NodeList thendecls, NodeList elsedecls
+			, ASTConversionContext convContext) {
 		convertNode(elem);
-		this.exp = Expression.convert(condition.exp);
+		this.exp = Expression.convert(condition.exp, convContext);
 		this.thendecls = thendecls; 
 		this.elsedecls = elsedecls;
 	}

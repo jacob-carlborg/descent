@@ -3,14 +3,15 @@ package dtool.ast.expressions;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ArrayLiteralExp;
 import dtool.ast.IASTNeoVisitor;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
 public class ExpArrayLiteral extends Expression {
 	
 	public Resolvable[] args;
 
-	public ExpArrayLiteral(ArrayLiteralExp elem) {
+	public ExpArrayLiteral(ArrayLiteralExp elem, ASTConversionContext convContext) {
 		convertNode(elem);
-		this.args = Expression.convertMany(elem.elements);
+		this.args = Expression.convertMany(elem.elements, convContext);
 	}
 
 	@Override

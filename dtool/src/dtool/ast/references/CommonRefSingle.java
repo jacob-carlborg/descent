@@ -8,6 +8,7 @@ import java.util.List;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.TemplateInstanceWrapper;
 import dtool.ast.definitions.DefUnit;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.CommonDefUnitSearch;
 import dtool.refmodel.DefUnitSearch;
 import dtool.refmodel.IScopeNode;
@@ -23,17 +24,18 @@ public abstract class CommonRefSingle extends NamedReference {
 
 	public String name;
 	
-	public static CommonRefSingle convertToSingleRef(descent.internal.compiler.parser.IdentifierExp elem) {
+	public static CommonRefSingle convertToSingleRef(descent.internal.compiler.parser.IdentifierExp elem
+			, ASTConversionContext convContext) {
 		if(elem instanceof TemplateInstanceWrapper)
-			return new RefTemplateInstance(((TemplateInstanceWrapper) elem).tempinst);
+			return new RefTemplateInstance(((TemplateInstanceWrapper) elem).tempinst, convContext);
 		else
 			return elem.ident.length == 0 ? null : new RefIdentifier(elem); 
 	}
 	
-	public static void convertManyToRefIdentifier(List<IdentifierExp> idents,
-			RefIdentifier[] rets) {
+	public static void convertManyToRefIdentifier(List<IdentifierExp> idents, RefIdentifier[] rets
+			, ASTConversionContext convContext) {
 		for(int i = 0; i < idents.size(); ++i) {
-			rets[i] = (RefIdentifier) convertToSingleRef(idents.get(i));
+			rets[i] = (RefIdentifier) convertToSingleRef(idents.get(i), convContext);
 		}
 	}
 	

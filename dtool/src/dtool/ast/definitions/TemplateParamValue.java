@@ -7,6 +7,7 @@ import dtool.ast.expressions.Expression;
 import dtool.ast.expressions.Resolvable;
 import dtool.ast.references.Reference;
 import dtool.ast.references.ReferenceConverter;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.IScopeNode;
 
 public class TemplateParamValue extends TemplateParameter {
@@ -15,12 +16,12 @@ public class TemplateParamValue extends TemplateParameter {
 	public Resolvable specvalue;
 	public Resolvable defaultvalue;
 
-	public TemplateParamValue(TemplateValueParameter elem) {
+	public TemplateParamValue(TemplateValueParameter elem, ASTConversionContext convContext) {
 		super(elem.ident);
 		convertNode(elem);
-		this.type = ReferenceConverter.convertType(elem.valType);
-		this.specvalue = Expression.convert(elem.specValue);
-		this.defaultvalue = Expression.convert(elem.defaultValue);
+		this.type = ReferenceConverter.convertType(elem.valType, convContext);
+		this.specvalue = Expression.convert(elem.specValue, convContext);
+		this.defaultvalue = Expression.convert(elem.defaultValue, convContext);
 	}
 
 	@Override

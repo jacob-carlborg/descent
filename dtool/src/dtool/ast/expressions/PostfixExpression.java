@@ -7,6 +7,7 @@ import descent.internal.compiler.parser.TOK;
 import descent.internal.compiler.parser.UnaExp;
 import dtool.ast.IASTNeoVisitor;
 import dtool.descentadapter.DescentASTConverter;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
 public class PostfixExpression extends Expression {
 	
@@ -20,15 +21,15 @@ public class PostfixExpression extends Expression {
 	public int kind;
 
 	
-	public PostfixExpression(UnaExp elem, int kind) {
+	public PostfixExpression(UnaExp elem, int kind, ASTConversionContext convContext) {
 		convertNode(elem);
-		this.exp = (Resolvable) DescentASTConverter.convertElem(elem.e1);
+		this.exp = (Resolvable) DescentASTConverter.convertElem(elem.e1, convContext);
 		this.kind = kind;
 	}
 
-	public PostfixExpression(BinExp elem) {
+	public PostfixExpression(BinExp elem, ASTConversionContext convContext) {
 		setSourceRange(elem);
-		this.exp = (Resolvable) DescentASTConverter.convertElem(elem.e1);
+		this.exp = (Resolvable) DescentASTConverter.convertElem(elem.e1, convContext);
 		if(elem.op == TOK.TOKplusplus) {
 			this.kind = Type.POST_INCREMENT;
 		} else if(elem.op == TOK.TOKminusminus) {

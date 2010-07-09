@@ -10,6 +10,7 @@ import dtool.ast.IASTNeoVisitor;
 import dtool.ast.statements.IStatement;
 import dtool.ast.statements.Statement;
 import dtool.descentadapter.DescentASTConverter;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
 public class DefinitionCtor extends ASTNeoNode {
 
@@ -19,17 +20,17 @@ public class DefinitionCtor extends ASTNeoNode {
 	public IStatement fbody;
 
 	
-	public DefinitionCtor(CtorDeclaration elem) {
+	public DefinitionCtor(CtorDeclaration elem, ASTConversionContext convContext) {
 		convertNode(elem);
-		this.params = DescentASTConverter.convertManyL(elem.parameters, this.params);
-		this.fbody = Statement.convert(elem.fbody);
+		this.params = DescentASTConverter.convertManyL(elem.parameters, this.params, convContext);
+		this.fbody = Statement.convert(elem.fbody, convContext);
 		varargs = DefinitionFunction.convertVarArgs(elem.varargs);
 	}
 	
-	public DefinitionCtor(FuncDeclaration elem) {
+	public DefinitionCtor(FuncDeclaration elem, ASTConversionContext convContext) {
 		convertNode(elem);
-		this.params = DescentASTConverter.convertManyL(elem.parameters, this.params);
-		this.fbody = Statement.convert(elem.fbody);
+		this.params = DescentASTConverter.convertManyL(elem.parameters, this.params, convContext);
+		this.fbody = Statement.convert(elem.fbody, convContext);
 	}
 
 

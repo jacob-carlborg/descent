@@ -9,40 +9,55 @@ import descent.internal.compiler.parser.ast.IASTNode;
 import dtool.ast.ASTNeoNode;
 import dtool.ast.definitions.Module;
 
-public class DescentASTConverter {
+public class DescentASTConverter extends StatementConverter {
 
-	public static StatementConverter converter = new StatementConverter();;
+	public DescentASTConverter(ASTConversionContext convContext) {
+		this.convContext = convContext;
+	}
+	
+	public static class ASTConversionContext {
+		
+		public ASTConversionContext(descent.internal.compiler.parser.Module module) {
+			this.module = module;
+		}
 
+		public final descent.internal.compiler.parser.Module module;
+	}
+	
+	
 	public static Module convertModule(ASTNode cumodule) {
-		Module module = Module.createModule((descent.internal.compiler.parser.Module) cumodule);
+		ASTConversionContext convContext = new ASTConversionContext((descent.internal.compiler.parser.Module) cumodule);
+		Module module = Module.createModule(convContext.module, convContext);
 		module.accept(new PostConvertionAdapter());
 		return module;
 	}
 	
-	public static ASTNeoNode convertElem(ASTNode elem) {
+	public static ASTNeoNode convertElem(ASTNode elem, ASTConversionContext convContext) {
 		if(elem == null) return null;
-		StatementConverter conv = new StatementConverter();
+		DescentASTConverter conv = new DescentASTConverter(convContext);
 		elem.accept(conv);
 		return conv.ret;
 	}
 	
-	public static ASTNeoNode[] convertMany(Collection<? extends IASTNode> children) {
+	public static ASTNeoNode[] convertMany(Collection<? extends IASTNode> children
+			, ASTConversionContext convContext) {
 		if(children == null) return null;
 		ASTNeoNode[] rets = new ASTNeoNode[children.size()];
-		convertMany(children.toArray(), rets);
+		convertMany(children.toArray(), rets, convContext);
 		return rets;
 	}
 	
-	public static void convertMany(List<? extends IASTNode> children, ASTNeoNode[] rets) {
+	public static void convertMany(List<? extends IASTNode> children, ASTNeoNode[] rets
+			, ASTConversionContext convContext) {
 		if(children == null) return;
-		convertMany(children.toArray(), rets);
+		convertMany(children.toArray(), rets, convContext);
 		return;
 	}
 	
 	
 	@SuppressWarnings("unchecked")
-	public static <T extends IASTNode> T[] convertMany(Object[] children, T[] rets) {
-		StatementConverter conv = new StatementConverter();
+	public static <T extends IASTNode> T[] convertMany(Object[] children, T[] rets, ASTConversionContext convContext) {
+		DescentASTConverter conv = new DescentASTConverter(convContext);
 		for(int i = 0; i < children.length; ++i) {
 			ASTNode elem = (ASTNode) children[i];
 			if(elem == null) {
@@ -57,8 +72,8 @@ public class DescentASTConverter {
 	
 	@SuppressWarnings("unchecked")
 	public static <T extends IASTNode> List<T> convertManyL(List<? extends ASTNode> children, 
-			@SuppressWarnings("unused")	List<T> dummy) {
-		StatementConverter conv = new StatementConverter();
+			@SuppressWarnings("unused")	List<T> dummy, ASTConversionContext convContext) {
+		DescentASTConverter conv = new DescentASTConverter(convContext);
 		if(children == null)
 			return null;
 		List<T> rets = new ArrayList<T>(children.size());
@@ -76,8 +91,8 @@ public class DescentASTConverter {
 	
 	@SuppressWarnings("unchecked")
 	public static <T extends IASTNode> List<T> convertManyL(ASTNode[] children, 
-			@SuppressWarnings("unused") List<T> dummy) {
-		StatementConverter conv = new StatementConverter();
+			@SuppressWarnings("unused") List<T> dummy, ASTConversionContext convContext) {
+		DescentASTConverter conv = new DescentASTConverter(convContext);
 		List<T> rets = new ArrayList<T>(children.length);
 		for (int i = 0; i < children.length; ++i) {
 			ASTNode elem = children[i];

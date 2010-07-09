@@ -5,16 +5,17 @@ import descent.internal.compiler.parser.CaseStatement;
 import dtool.ast.IASTNeoVisitor;
 import dtool.ast.expressions.Expression;
 import dtool.ast.expressions.Resolvable;
+import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
 public class StatementCase extends Statement {
 
 	public Resolvable exp;
 	public IStatement st;
 	
-	public StatementCase(CaseStatement elem) {
+	public StatementCase(CaseStatement elem, ASTConversionContext convContext) {
 		convertNode(elem);
-		this.exp = Expression.convert(elem.exp);
-		this.st = Statement.convert(elem.statement);
+		this.exp = Expression.convert(elem.exp, convContext);
+		this.st = Statement.convert(elem.statement, convContext);
 	}
 
 	@Override
