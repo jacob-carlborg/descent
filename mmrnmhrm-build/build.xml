@@ -8,13 +8,6 @@
 	<!-- =============== Setup PDE Build host =============== -->
 	
 	<!-- =============== Setup target platform =============== -->
-	<target name="prepareTargetPlatform.post" depends="PDEBuild.prepareTargetPlatform.post">
-		<!-- The Mylyn redist archive has a different format -->
-		<unzip dest="${builder.targetplatform}/eclipse">
-			<patternset includes="plugins/**,features/**" />
-			<files includes="${builder.targetplatform}/mylyn*.zip" />
-		</unzip>
-	</target>
 	
 	<!-- =============== Main Build =============== -->
 	

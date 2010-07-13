@@ -56,10 +56,10 @@
     	    <patternset includes="eclipse/**" />
     		<files includes="${builder.targetplatform}/*.zip" />
     	</unzip>
-    	<unzip dest="${builder.targetplatform}/eclipse/dropins">
-    	    <patternset includes="eclipse/**" />
-    		<files includes="${builder.targetplatform}/dropins-zips/*.zip" />
-    	</unzip>
+		<unzip dest="${builder.targetplatform}/eclipse/dropins">
+			<files includes="${builder.targetplatform}/dependencies/*.zip" />
+			<files includes="${builder.targetplatform}/dependencies.tests/*.zip" />
+		</unzip>
     </target>
 	
     <target name="prepareTargetPlatform.post">
