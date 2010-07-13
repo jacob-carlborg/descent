@@ -18,13 +18,12 @@ import org.eclipse.dltk.core.IBuffer;
 import org.eclipse.dltk.core.IScriptProject;
 import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.dltk.core.ModelException;
-import org.eclipse.ui.PartInitException;
 
 import dtool.ast.definitions.DefUnit;
 import dtool.refmodel.PrefixDefUnitSearch;
-import dtool.refmodel.PrefixSearchOptions;
 import dtool.refmodel.PrefixDefUnitSearch.CompletionSession;
 import dtool.refmodel.PrefixDefUnitSearch.IDefUnitMatchAccepter;
+import dtool.refmodel.PrefixSearchOptions;
 
 public class CodeCompletion__Common implements ICodeCompletionTester {
 	
@@ -32,7 +31,7 @@ public class CodeCompletion__Common implements ICodeCompletionTester {
 	protected static ISourceModule srcModule;
 	protected static ICodeCompletionTester ccTester;
 	
-	protected static void setupWithFile(IScriptProject deeProject, String path) throws PartInitException, CoreException {
+	protected static void setupWithFile(IScriptProject deeProject, String path) throws CoreException {
 		IProject project = deeProject.getProject();
 		file = project.getFile(path);
 		srcModule = DLTKCore.createSourceModuleFrom(file);

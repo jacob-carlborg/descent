@@ -39,7 +39,7 @@ public class CoreTestUtils {
 	/** FIXME: copy each file ourselfs, to prevent copying .svn files. */
 	static IContainer copyBundleDirToWorkspaceContainer(String srcpath, IContainer destParent, String destname)
 			throws CoreException, URISyntaxException, IOException {
-		Bundle bundle = Platform.getBundle(DeeTestsPlugin.PLUGIN_ID);
+		Bundle bundle = Platform.getBundle(DeeCore.PLUGIN_ID);
 		IPath bundlesrcpath = new Path(ITestDataConstants.TESTDATA + srcpath);
 		URL sourceURL = FileLocator.find(bundle, bundlesrcpath, null);
 		assertNotNull(sourceURL);

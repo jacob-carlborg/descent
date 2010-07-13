@@ -6,12 +6,14 @@ Bundle-Version: 0.4.0.qualifier
 Bundle-Vendor: %pluginProvider
 Bundle-Activator: mmrnmhrm.core.DeeCore
 Bundle-Localization: plugin
-Export-Package: mmrnmhrm.core,
+Export-Package: dtool.tests.ref.cc;x-friends:="mmrnmhrm.core",
+ mmrnmhrm.core,
  mmrnmhrm.core.build,
  mmrnmhrm.core.dltk,
  mmrnmhrm.core.dltk.search,
  mmrnmhrm.core.launch,
- mmrnmhrm.core.model
+ mmrnmhrm.core.model,
+ mmrnmhrm.tests;x-internal:=true
 Require-Bundle: dtool;visibility:=reexport,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
@@ -21,6 +23,7 @@ Require-Bundle: dtool;visibility:=reexport,
  org.eclipse.jface.text,
  org.eclipse.dltk.core,
  org.eclipse.dltk.launching,
- org.eclipse.debug.core
+ org.eclipse.debug.core,
+ org.junit;bundle-version="4.8.0";resolution:=optional
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
