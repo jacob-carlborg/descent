@@ -1,21 +1,23 @@
 <project name="Melnorme-Bundler" default="build">
 
-	<property file="bundler.properties"/>
+	<property file="build.properties"/>
+	<echo message="${source..}" />
 
 	<property name="projectdir" value="${basedir}"/>
 	<property name="tempdir" value="${basedir}/bin/temp"/>
 	<property name="results.library" value="${basedir}/org.dsource.melnorme.jar"/>
 	
+	<fileset id="src" dir="${projectdir}" includes="${source..}"/>
 	
 	<target name="build" depends="" description="Default build cmd.">
 		<delete dir="${tempdir}"/>
 		<mkdir dir="${tempdir}"/>
-		<javac debug="false" srcdir="${projectdir}/src" destdir="${tempdir}"
-			source="1.6" target="1.6" fork="true" includeantruntime="no" 
-		/>
+		<javac destdir="${tempdir}" srcdir="${projectdir}" includes="${source..}"
+			debug="false" source="1.6" target="1.6" includeantruntime="no" fork="true">
+		</javac>
 		<jar destfile="${results.library}" manifest="${projectdir}/META-INF/MANIFEST.MF" >
 			<fileset dir="${tempdir}"/>
-			<fileset dir="${projectdir}/src"/>
+			<fileset refid="src" />
 			<filename name="${projectdir}/about.html"/>
 		</jar>
 	</target>
