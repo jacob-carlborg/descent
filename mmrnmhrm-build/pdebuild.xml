@@ -63,9 +63,6 @@
     </target>
 	
     <target name="prepareTargetPlatform.post">
-    	<copy todir="${builder.targetplatform}/eclipse"  >
-    		<fileset dir="${builder.targetplatform}/extra-deps" />
-    	</copy>
     </target>
 	
     <target name="prepareTargetPlatform" unless="prepareTargetPlatform.dont" 
