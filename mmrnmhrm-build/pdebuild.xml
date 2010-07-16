@@ -42,8 +42,8 @@
     </target>
 
 	<!-- TODO, search for this automatically ? -->
-	<property name="builder.pdebuild.launcher" location="${builder.pdebuild}/eclipse/plugins/org.eclipse.equinox.launcher_1.0.201.R35x_v20090715.jar" />
-	<property name="builder.pdebuild.home" location="${builder.pdebuild}/eclipse/plugins/org.eclipse.pde.build_3.5.2.R35x_20100114/" />
+	<property name="builder.pdebuild.launcher" location="${builder.pdebuild}/eclipse/plugins/org.eclipse.equinox.launcher_1.1.0.v20100507.jar" />
+	<property name="builder.pdebuild.home" location="${builder.pdebuild}/eclipse/plugins/org.eclipse.pde.build_3.6.0.v20100603/" />
 	
 	<property name="builder.pdebuild.productbuildfile" location="${builder.pdebuild.home}/scripts/productBuild/productBuild.xml" />
 	<property name="builder.pdebuild.elementbuildfile" location="${builder.pdebuild.home}/scripts/build.xml" />
@@ -83,7 +83,7 @@
     	<copy todir="${build.dir}/features" >
     		<fileset refid="projects.features.fileset" />
     	</copy>
-    </target>
+	</target>
 	
     <target name="prepareBuildDir" depends="clean, prepareBuildDir.copyProjects">
 		<!-- Update build version qualifier -->
@@ -120,7 +120,7 @@
 	</target>
 	
 	<target name="-build.PDEBuild.do" >
-		<fail unless="build.buildlabel"/>
+		<fail unless="build.buildLabel"/>
 		<fail unless="build.archivePrefix"/>
 		<fail unless="builder.pdebuild.buildfile"/>
 		<fail unless="builder.pdebuild.configs"/>
@@ -132,7 +132,7 @@
 			<arg value="-Dbuilder=${basedir}/product.configdir" />
 			<arg value="-Dbuild.dir=${build.dir}" />
 			<arg value="-Dbuild.qualifier=${build.qualifier}" />
-			<arg value="-DbuildLabel=${build.buildlabel}" />
+			<arg value="-DbuildLabel=${build.buildLabel}" />
 			<arg value="-DarchivePrefix=${build.archivePrefix}" />
 			<arg value="-Dconfigs=${builder.pdebuild.configs}" />
 			<arg value="-Declipse.targetplatform=${builder.targetplatform}" />
@@ -140,7 +140,7 @@
 		</java>
 		
     	<move todir="${results.dir}" >
-    		<fileset dir="${build.dir}/${build.buildlabel}"/>
+    		<fileset dir="${build.dir}/${build.buildLabel}"/>
     	</move>
 	</target>
 	
@@ -174,6 +174,10 @@
 				<filter token="VERSION" value="${frontend.version}" />
 			</filterset>
 		</copy>
+		
+    	<move todir="${results.dir}" >
+    		<fileset dir="${build.dir}/Product" />
+    	</move>
 	</target>
 	
 </project>
