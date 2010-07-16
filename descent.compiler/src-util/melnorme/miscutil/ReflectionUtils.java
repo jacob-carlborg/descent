@@ -92,7 +92,19 @@ public class ReflectionUtils {
 	
 	/** Reads the field with given fieldName in given object. */
 	public static <T> Object readField(T object, String fieldName) {
-		Field field = getAvailableField(object.getClass(), fieldName);
+		return readAvailableField(object.getClass(), object, fieldName);
+	}
+	
+	/** Reads the static field with given fieldName in given klass. */
+	public static Object readStaticField(Class<?> klass, String fieldName) {
+		return readAvailableField(klass, null, fieldName);
+	}
+	
+	private static <T> Object readAvailableField(Class<?> klass, T object, String fieldName) {
+		Field field = getAvailableField(klass, fieldName);
+		if (field == null) 
+			throw melnorme.miscutil.ExceptionAdapter.unchecked(new NoSuchFieldException());
+		
 		try {
 			return field.get(object);
 		} catch (IllegalArgumentException e) {
@@ -102,21 +114,21 @@ public class ReflectionUtils {
 		}
 	}
 	
-	/** Reads the static field with given fieldName in given klass. */
-	public static Object readStaticField(Class<?> klass, String fieldName) {
-		Field field = getAvailableField(klass, fieldName);
-		try {
-			return (Object) field.get(null);
-		} catch (IllegalArgumentException e) {
-			throw melnorme.miscutil.ExceptionAdapter.unchecked(e);
-		} catch (IllegalAccessException e) {
-			throw melnorme.miscutil.ExceptionAdapter.unchecked(e);
-		}
+	/** Write the field with given fieldName in given object to given value. */
+	public static <T> void writeField(Object object, String fieldName, Object value) {
+		writeAvailableField(object.getClass(), object, fieldName, value);
 	}
 	
-	/** Write the field with given fieldName in given object to given value. */
-	public static <T> void writeField(T object, String fieldName, T value) {
-		Field field = getAvailableField(object.getClass(), fieldName);
+	/** Write the static field with given fieldName in given klass to given value. */
+	public static void writeStaticField(Class<?> klass, String fieldName, Object value) {
+		writeAvailableField(klass, null, fieldName, value);
+	}
+	
+	private static <T> void writeAvailableField(Class<?> klass, T object, String fieldName, T value) {
+		Field field = getAvailableField(klass, fieldName);
+		if (field == null) 
+			throw melnorme.miscutil.ExceptionAdapter.unchecked(new NoSuchFieldException());
+
 		try {
 			field.set(object, value);
 		} catch (IllegalArgumentException e) {

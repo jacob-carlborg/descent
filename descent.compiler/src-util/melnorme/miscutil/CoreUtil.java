@@ -56,7 +56,10 @@ public class CoreUtil /* extends Assert */ {
 	/** If possible casts and returns given obj as a type T, otherwise return null. */
 	public static <T> T tryCast(Object obj, Class<T> klass) {
 		if(klass.isAssignableFrom(obj.getClass())) {
-			return blindCast(obj);
+			return CoreUtil.<T>blindCast(obj);
+			// The next line should also work, but doesnt compile due to a JDK javac bug:
+			// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6302954
+			// return blindCast(obj); 
 		} else {
 			return null;
 		}

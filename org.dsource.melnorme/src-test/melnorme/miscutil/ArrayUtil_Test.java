@@ -27,7 +27,7 @@ public final class ArrayUtil_Test {
 	private static final List<InputStream> LIST_FOO = new ArrayList<InputStream>();
 	private static final List<? extends InputStream> LIST_X_FOO = new ArrayList<FileInputStream>();
 	private static final List<?> LIST_X_ = new ArrayList<Object>();
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	private static final List LIST = new ArrayList<Object>();
 
 	
