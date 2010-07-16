@@ -1,11 +1,11 @@
-package mmrnmhrm.tests.adapters;
+package mmrnmhrm.tests.ui.accessors;
 
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Shell;
 
-public class TestAccessor_WizardDialog extends WizardDialog {
-    public TestAccessor_WizardDialog(Shell parentShell, IWizard newWizard) {
+public class WizardDialog__Accessor extends WizardDialog {
+    public WizardDialog__Accessor(Shell parentShell, IWizard newWizard) {
     	super(parentShell, newWizard);
     }
     

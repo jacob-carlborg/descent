@@ -1,4 +1,4 @@
-package mmrnmhrm.tests;
+package mmrnmhrm.tests.ui;
 
 import static melnorme.miscutil.Assert.assertEquals;
 

@@ -1,7 +1,7 @@
 package mmrnmhrm.ui.editor;
 
-import mmrnmhrm.tests.BaseDeePluginUITest;
 import mmrnmhrm.tests.SampleMainProject;
+import mmrnmhrm.tests.ui.BaseDeePluginUITest;
 import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.views.ASTViewer;
 

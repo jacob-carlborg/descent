@@ -1,5 +1,6 @@
-package mmrnmhrm.tests;
+package mmrnmhrm.tests.ui;
 
+import mmrnmhrm.tests.BaseDeePluginTest;
 import mmrnmhrm.ui.DeePlugin;
 
 import org.eclipse.ui.IWorkbenchPage;

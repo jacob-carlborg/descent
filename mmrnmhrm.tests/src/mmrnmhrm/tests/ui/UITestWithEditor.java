@@ -1,4 +1,4 @@
-package mmrnmhrm.tests;
+package mmrnmhrm.tests.ui;
 
 import melnorme.miscutil.Assert;
 import mmrnmhrm.ui.DeePlugin;

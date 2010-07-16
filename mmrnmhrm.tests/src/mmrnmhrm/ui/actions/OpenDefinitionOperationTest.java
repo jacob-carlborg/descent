@@ -2,9 +2,9 @@ package mmrnmhrm.ui.actions;
 
 import junit.framework.Assert;
 import mmrnmhrm.lang.ui.EditorUtil;
-import mmrnmhrm.tests.BaseDeePluginUITest;
 import mmrnmhrm.tests.SampleMainProject;
 import mmrnmhrm.tests.SampleNonDeeProject;
+import mmrnmhrm.tests.ui.BaseDeePluginUITest;
 import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.editor.DeeEditor;
 

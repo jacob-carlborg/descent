@@ -1,4 +1,4 @@
-package mmrnmhrm.tests.ui.ref;
+package mmrnmhrm.ui.editor.ref;
 
 import mmrnmhrm.tests.SampleMainProject;
 

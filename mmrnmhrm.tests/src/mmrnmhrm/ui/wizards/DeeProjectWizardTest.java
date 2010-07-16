@@ -3,10 +3,10 @@ package mmrnmhrm.ui.wizards;
 import static melnorme.miscutil.Assert.assertTrue;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.ModelUtil;
-import mmrnmhrm.org.eclipse.dltk.ui.wizards.ProjectWizardFirstPage__Accessor;
-import mmrnmhrm.tests.BaseDeePluginUITest;
 import mmrnmhrm.tests.SampleMainProject;
-import mmrnmhrm.tests.adapters.TestAccessor_WizardDialog;
+import mmrnmhrm.tests.ui.BaseDeePluginUITest;
+import mmrnmhrm.tests.ui.accessors.ProjectWizardFirstPage__Accessor;
+import mmrnmhrm.tests.ui.accessors.WizardDialog__Accessor;
 import mmrnmhrm.ui.DeePlugin;
 
 import org.eclipse.core.resources.IProject;
@@ -25,7 +25,7 @@ import org.junit.Test;
 public class DeeProjectWizardTest extends BaseDeePluginUITest {
 
 	private DeeNewProjectWizard wizard;
-	private TestAccessor_WizardDialog wizDialog;
+	private WizardDialog__Accessor wizDialog;
 	
 	final static String NEWPROJNAME = "WizardCreationProject";
 	
@@ -38,7 +38,7 @@ public class DeeProjectWizardTest extends BaseDeePluginUITest {
 		wizard.init(window.getWorkbench(), null);
 		
         Shell parent = DeePlugin.getActiveWorkbenchShell();
-        wizDialog = new TestAccessor_WizardDialog(parent, wizard);
+        wizDialog = new WizardDialog__Accessor(parent, wizard);
         wizDialog.setBlockOnOpen(false);
 		wizDialog.open();
 	}
@@ -80,7 +80,7 @@ public class DeeProjectWizardTest extends BaseDeePluginUITest {
 	
 	@Test
 	public void test_P1Validation() throws Throwable {
-		ProjectWizardFirstPage__Accessor.access_fNameGroup(wizard.fFirstPage)._setName(SampleMainProject.SAMPLEPROJNAME);
+		ProjectWizardFirstPage__Accessor.access_fNameGroup(wizard.fFirstPage).setName(SampleMainProject.SAMPLEPROJNAME);
 		assertTrue(!wizard.canFinish());
 
 		simulatePressCancel();
@@ -90,7 +90,7 @@ public class DeeProjectWizardTest extends BaseDeePluginUITest {
 	@Test
 	public void test_P1_Finish() throws Throwable {
 		wizard.fFirstPage.getProjectName();
-		ProjectWizardFirstPage__Accessor.access_fNameGroup(wizard.fFirstPage)._setName(NEWPROJNAME);
+		ProjectWizardFirstPage__Accessor.access_fNameGroup(wizard.fFirstPage).setName(NEWPROJNAME);
 		assertTrue(wizard.canFinish());
 
 		simulatePressFinish();
@@ -118,7 +118,7 @@ public class DeeProjectWizardTest extends BaseDeePluginUITest {
 	
 	@Test
 	public void test_P1_P2_P1_Finish() throws Throwable {
-		ProjectWizardFirstPage__Accessor.access_fNameGroup(wizard.fFirstPage)._setName(NEWPROJNAME);
+		ProjectWizardFirstPage__Accessor.access_fNameGroup(wizard.fFirstPage).setName(NEWPROJNAME);
 		assertTrue(wizard.canFinish());
 		simulateEnterPage2();
 		
@@ -133,7 +133,7 @@ public class DeeProjectWizardTest extends BaseDeePluginUITest {
 	
 	@Test
 	public void test_P1_Cancel() throws Throwable {
-		ProjectWizardFirstPage__Accessor.access_fNameGroup(wizard.fFirstPage)._setName(NEWPROJNAME);
+		ProjectWizardFirstPage__Accessor.access_fNameGroup(wizard.fFirstPage).setName(NEWPROJNAME);
 		assertTrue(wizard.canFinish());
 		
 		

@@ -1,4 +1,4 @@
-package mmrnmhrm.tests.ui.ref;
+package mmrnmhrm.ui.editor.ref;
 
 import static melnorme.miscutil.Assert.assertFail;
 import static melnorme.miscutil.Assert.assertNotNull;
@@ -8,8 +8,8 @@ import java.util.ArrayList;
 
 import melnorme.miscutil.ArrayUtil;
 import melnorme.miscutil.Assert;
-import mmrnmhrm.tests.UITestWithEditor;
 import mmrnmhrm.tests.adapters.Mock_Document;
+import mmrnmhrm.tests.ui.UITestWithEditor;
 import mmrnmhrm.ui.editor.text.DeeCodeContentAssistProcessor;
 import mmrnmhrm.ui.editor.text.DeeCompletionProposal;
 
