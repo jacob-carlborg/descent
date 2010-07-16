@@ -19,7 +19,6 @@ public class DeeProjectWizardPage3 extends WizardPage {
 	
 	public DeeProjectWizardPage3(ProjectWizardSecondPage secondPage) {
 		super(PAGE_NAME);
-		setPageComplete(false);
 		setTitle("Setup");
 		setDescription("");
 		
@@ -54,7 +53,7 @@ public class DeeProjectWizardPage3 extends WizardPage {
 	public void performCancel() {
 		IFile file = getProject().getFile(DeeProjectOptions.CFG_FILE_NAME);
 		if(file.exists())
-			assertFail();
+			throw assertFail();
 	}
 	
 }
