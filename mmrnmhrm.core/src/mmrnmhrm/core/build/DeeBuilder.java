@@ -16,7 +16,6 @@ import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.launch.DeeDmdInstallType;
 import mmrnmhrm.core.launch.DeeInstall;
 import mmrnmhrm.core.model.DeeModel;
-import mmrnmhrm.core.model.DeeNameRules;
 import mmrnmhrm.core.model.DeeProjectOptions;
 
 import org.eclipse.core.resources.IContainer;
@@ -33,6 +32,7 @@ import org.eclipse.dltk.core.environment.EnvironmentPathUtils;
 import org.eclipse.dltk.launching.IInterpreterInstall;
 import org.eclipse.dltk.launching.ScriptRuntime;
 
+import dtool.DeeNamingRules;
 import dtool.Logg;
 
 public class DeeBuilder {
@@ -173,7 +173,7 @@ public class DeeBuilder {
 	protected void processResource(IFile file) {
 		String modUnitName = file.getName();
 		IPath projectRelativePath = file.getProjectRelativePath();
-		if(DeeNameRules.isValidCompilationUnitName(modUnitName)) {
+		if(DeeNamingRules.isValidCompilationUnitName(modUnitName)) {
 			String resourcePathStr = file.isLinked(IResource.CHECK_ANCESTORS) ?
 					file.getLocation().toOSString()
 					: projectRelativePath.toOSString();

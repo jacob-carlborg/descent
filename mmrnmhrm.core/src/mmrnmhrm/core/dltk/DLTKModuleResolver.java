@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import melnorme.miscutil.StringUtil;
-import mmrnmhrm.core.model.DeeNameRules;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -18,6 +17,7 @@ import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.dltk.core.ModelException;
 import org.eclipse.dltk.core.environment.EnvironmentPathUtils;
 
+import dtool.DeeNamingRules;
 import dtool.ast.definitions.Module;
 import dtool.refmodel.pluginadapters.IModuleResolver;
 
@@ -46,8 +46,8 @@ public class DLTKModuleResolver implements IModuleResolver {
 			
 			IScriptFolder pkgFrag = srcFolder.getScriptFolder(fullPackageName);
 			if(pkgFrag != null && pkgFrag.exists()) {
-				for (int i = 0; i < DeeNameRules.VALID_EXTENSIONS.length; i++) {
-					String fileext = DeeNameRules.VALID_EXTENSIONS[i];
+				for (int i = 0; i < DeeNamingRules.VALID_EXTENSIONS.length; i++) {
+					String fileext = DeeNamingRules.VALID_EXTENSIONS[i];
 					ISourceModule modUnit = pkgFrag.getSourceModule(modName+fileext);
 					if(exists(modUnit)) { 
 						DeeModuleDeclaration modDecl = DeeParserUtil.parseModule(modUnit);
@@ -90,10 +90,10 @@ public class DLTKModuleResolver implements IModuleResolver {
 				IScriptFolder pkgFrag = (IScriptFolder) pkgFragElem;
 				
 				String pkgName = pkgFrag.getElementName();
-				if(!DeeNameRules.isValidPackagePathName(pkgName))
-					continue;
+				pkgName = pkgName.replace("/", ".");
 				
-				pkgName = DeeNameRules.convertPackagePathName(pkgName);
+				if(!DeeNamingRules.isValidPackagePathName(pkgName))
+					continue;
 				
 				for (IModelElement srcUnitElem : pkgFrag.getChildren()) {
 					ISourceModule srcUnit = (ISourceModule) srcUnitElem;

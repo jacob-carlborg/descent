@@ -1,7 +1,6 @@
 package mmrnmhrm.core.dltk;
 
 import mmrnmhrm.core.DeeCore;
-import mmrnmhrm.core.model.DeeNameRules;
 import mmrnmhrm.core.model.DeeNature;
 
 import org.eclipse.core.resources.IResource;
@@ -11,6 +10,8 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.dltk.core.AbstractLanguageToolkit;
 import org.eclipse.dltk.core.IDLTKLanguageToolkit;
 import org.eclipse.dltk.core.environment.IEnvironment;
+
+import dtool.DeeNamingRules;
 
 public class DeeLanguageToolkit extends AbstractLanguageToolkit  {
 	
@@ -50,7 +51,7 @@ public class DeeLanguageToolkit extends AbstractLanguageToolkit  {
 	@Override
 	public IStatus validateSourceModule(IResource resource) {
 		String name = resource.getName();
-		if(DeeNameRules.isValidCompilationUnitName(name)) {
+		if(DeeNamingRules.isValidCompilationUnitName(name)) {
 			return Status.OK_STATUS;
 		} else {
 			return new Status(IStatus.ERROR, DeeCore.PLUGIN_ID, "Invalid resource name:" + name);

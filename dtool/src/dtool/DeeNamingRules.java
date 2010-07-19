@@ -1,12 +1,12 @@
-package mmrnmhrm.core.model;
+package dtool;
 
 
-public class DeeNameRules {
-
+public class DeeNamingRules {
+	
 	private static final String DEE_FILE_EXTENSION = ".d";
 	private static final String DEE_HEADERFILE_EXTENSION = ".di";
-	private static final String DEE_HEADERFILE_EXTENSION2 = ".dh";
-
+	private static final String DEE_HEADERFILE_EXTENSION2 = ".dh"; // IDE extension
+	
 	public static final String[] VALID_EXTENSIONS = new String[] {
 		".d", ".di", ".dh"
 	};
@@ -15,7 +15,7 @@ public class DeeNameRules {
 		
 		if(!(Character.isLetter(name.charAt(0)) || name.charAt(0) == '_'))
 			return false;
-	
+		
 		for(int i = 1; i < name.length(); ++i){
 			if(name.charAt(i) == '.') {
 				String fileext = name.substring(i);
@@ -30,13 +30,13 @@ public class DeeNameRules {
 		}
 		return false;
 	}
-
 	
-	public static boolean isValidPackagePathName(String pathname) {
-		if(pathname.equals(""))
+	
+	public static boolean isValidPackagePathName(String packageName) {
+		if(packageName.equals(""))
 			return true;
 		
-		String[] parts = pathname.split("/");
+		String[] parts = packageName.split(".");
 		for (int i = 0; i < parts.length; i++) {
 			if(!isValidPackageNamePart(parts[i]))
 				return false;
@@ -50,7 +50,7 @@ public class DeeNameRules {
 		
 		if(!(Character.isLetter(partname.charAt(0)) || partname.charAt(0) == '_'))
 			return false;
-	
+		
 		for(int i = 1; i < partname.length(); ++i){
 			
 			if(!Character.isLetterOrDigit(partname.charAt(i)))
@@ -58,10 +58,5 @@ public class DeeNameRules {
 		}
 		return true;
 	}
-
-	public static String convertPackagePathName(String pkgPathName) {
-		return pkgPathName.replace("/", ".");
-	}
-
-
+	
 }
