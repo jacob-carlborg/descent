@@ -57,13 +57,8 @@ public abstract class SampleNonDeeProject {
 	public static void fillSampleProj() throws CoreException, URISyntaxException, IOException {
 		// Watch out when changing these values, tests may depend on these paths
 		
-		//IFolder folder;
+		CoreTestUtils.copyDeeCoreDirToWorkspace("sampleSrc1", project.getFolder(TEST_OUT_SRC));
 		
-		CoreTestUtils.copyBundleDirToWorkspaceContainer("sampleSrc1",
-				project, TEST_OUT_SRC);
-		
-		
-		//UITestUtils.runEventLoop(DeePlugin.getActiveWorkbenchShell());
 	}
 
 	public static void commonTearDown() throws Exception {

@@ -24,7 +24,7 @@ import dtool.tests.DToolTests;
  * This classes creates a sample project 
  * in which tests can be based upon.
  */
-public abstract class SampleMainProject {
+public abstract class SampleMainProject extends CoreTestUtils {
 	
 
 	public static final String SAMPLEPROJNAME = "SampleProj";
@@ -63,29 +63,23 @@ public abstract class SampleMainProject {
 		IFolder folder;
 		
 		sampleNonExistantFile = project.getFile(new Path("nonexistant.d"));
-
-		folder = CoreTestUtils.createFolderInProject(project, 
-				ITestDataConstants.SAMPLE_SRC1, TEST_SRC1, false);
+		
+		folder = project.getFolder(TEST_SRC1);
+		copyDeeCoreDirToWorkspace(ITestDataConstants.SAMPLE_SRC1, folder);
 		sampleFile1 = folder.getFile("bigfile.d");
-
-		folder = CoreTestUtils.createFolderInProject(project, 
-				"sampleSrcOut", TEST_OUTSRC, false);
+		
+		folder = project.getFolder(TEST_OUTSRC);
+		copyDeeCoreDirToWorkspace("sampleSrcOut", folder);
 		sampleOutOfModelFile = folder.getFile("outfile.d");
 		
-		folder = CoreTestUtils.createFolderInProject(project, 
-				"refs", TEST_SRC_REFS, true);
+		createSrcFolderInProject("refs", project.getFolder(TEST_SRC_REFS));
+		
+		createSrcFolderInProject(ITestDataConstants.SAMPLE_SRC3, project.getFolder(TEST_SRC3));
+		
+		createSrcFolderInProject(TEST_SRC_PHOBOSHD, project.getFolder(TEST_SRC_PHOBOSHD));
+		createSrcFolderInProject(TEST_SRC_PHOBOSIMPL, project.getFolder(TEST_SRC_PHOBOSIMPL));
+		createSrcFolderInProject(TEST_SRC_TANGO, project.getFolder(TEST_SRC_TANGO));
 
-		folder = CoreTestUtils.createFolderInProject(project, 
-				ITestDataConstants.SAMPLE_SRC3, TEST_SRC3, true);
-
-		folder = CoreTestUtils.createFolderInProject(project, 
-				TEST_SRC_PHOBOSHD, TEST_SRC_PHOBOSHD, true);
-		folder = CoreTestUtils.createFolderInProject(project, 
-				TEST_SRC_PHOBOSIMPL, TEST_SRC_PHOBOSIMPL, true);
-		folder = CoreTestUtils.createFolderInProject(project, 
-				TEST_SRC_TANGO, TEST_SRC_TANGO, true);
-
-		//UITestUtils.runEventLoop(DeePlugin.getActiveWorkbenchShell());
 	}
 
 	

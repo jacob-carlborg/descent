@@ -37,17 +37,17 @@ public class Builder_Test extends BasePluginTest {
 			//UITestUtils.runEventLoop();
 			doProjectBuild(deeProj);
 			
-			CoreTestUtils.createFolderInProject(project, ITestDataConstants.BUILD_SRC, "buildSrc", true);
+			CoreTestUtils.createSrcFolderInProject(ITestDataConstants.BUILD_SRC, project.getFolder("buildSrc"));
 			doProjectBuild(deeProj);
 			
 			
-			CoreTestUtils.createFolderInProject(project, ITestDataConstants.SAMPLE_SRC1, "src1", true);
+			CoreTestUtils.createSrcFolderInProject(ITestDataConstants.SAMPLE_SRC1, project.getFolder("src1"));
 			doProjectBuild(deeProj);
 			
-			CoreTestUtils.createFolderInProject(project, ITestDataConstants.SAMPLE_SRC3, "src3", true);
+			CoreTestUtils.createSrcFolderInProject(ITestDataConstants.SAMPLE_SRC3, project.getFolder("src3"));
 			doProjectBuild(deeProj);
 			
-			CoreTestUtils.createFolderInProject(project, ITestDataConstants.SAMPLE_SRC1, "src1-copy", true);
+			CoreTestUtils.createSrcFolderInProject(ITestDataConstants.SAMPLE_SRC1, project.getFolder("src1-copy"));
 			doProjectBuild(deeProj);
 			
 			DeeModel.getDeeProjectInfo(deeProj).compilerOptions.outputDir = new Path("out");
@@ -63,11 +63,8 @@ public class Builder_Test extends BasePluginTest {
 		IProject project = deeProj.getProject();
 		
 		try {
-			//UITestUtils.runEventLoop();
 			doProjectBuild(deeProj);
-			
-			CoreTestUtils.createContainerInProject(
-					project, ITestDataConstants.BUILD_SRC, "", true);
+			CoreTestUtils.createSrcFolderInProject(ITestDataConstants.BUILD_SRC, project);
 			doProjectBuild(deeProj);
 			
 		} finally {

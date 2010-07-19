@@ -6,9 +6,7 @@ import java.net.URISyntaxException;
 
 import melnorme.miscutil.ExceptionAdapter;
 import mmrnmhrm.core.DeeCore;
-import mmrnmhrm.core.model.ModelUtil;
 
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;
@@ -57,20 +55,7 @@ public abstract class SamplePreExistingProject {
 
 	private static void fillPreExistingSampleProj() throws CoreException, URISyntaxException, IOException {
 		project = sampleDeeProj.getProject();
-		//IFolder folder;
-		
-		createFolderInProject("sampleSrc1", TEST_SRC1, true);
+		CoreTestUtils.createSrcFolderInProject("sampleSrc1", project.getFolder(TEST_SRC1));
 	}
 
-	private static IFolder createFolderInProject(String bundleDir, String destDir, boolean addSrcFolder) throws CoreException,
-			URISyntaxException, IOException {
-		IFolder folder;
-		folder = (IFolder) CoreTestUtils.copyBundleDirToWorkspaceContainer(bundleDir,
-				project, destDir);
-		if(addSrcFolder)
-			ModelUtil.createAddSourceFolder(sampleDeeProj, folder);
-
-		return folder;
-	}
-	
 }
