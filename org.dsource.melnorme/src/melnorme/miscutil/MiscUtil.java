@@ -10,6 +10,7 @@
  *******************************************************************************/
 package melnorme.miscutil;
 
+import static melnorme.miscutil.Assert.assertFail;
 import static melnorme.miscutil.Assert.assertTrue;
 
 import java.io.File;
@@ -40,6 +41,15 @@ public class MiscUtil {
 		@Override
 		public boolean evaluate(T obj) {
 			return obj == null;
+		}
+	}
+	
+	/** Loads given klass. */
+	public static void loadClass(Class<?> klass) {
+		try {
+			Class.forName(klass.getName());
+		} catch (ClassNotFoundException e) {
+			assertFail();
 		}
 	}
 	
