@@ -62,16 +62,15 @@ public class CoreUtils {
 					continue; // We should not copy a folder into itself, if the folder is the dest
 				}
 				
-				if(dstResource.getType() == IResource.FILE) {
-					dstResource.delete(true, monitor);
-					dstResource = null;
-				}
-				
 				IFolder dstFolder = destContainer.getFolder(new Path(srcFolder.getName()));
-				
+
 				if(dstResource == null) {
 					dstFolder.create(true, true, monitor);
-				}
+				} else if(dstResource.getType() == IResource.FILE) {
+					dstResource.delete(true, monitor);
+					dstFolder.create(true, true, monitor);
+				} 
+				
 				assertTrue(dstFolder.exists());
 				copyContentsOverwriting(srcFolder, dstFolder, filter, monitor);
 			}

@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import melnorme.miscutil.FileUtil;
 
-public class DToolBaseTest {
+public class DToolBaseTest extends DToolTestUtils {
 	
 	private static final String DEFAULT_TESTDATA_ENCODING = "UTF-8";
 
@@ -21,6 +21,5 @@ public class DToolBaseTest {
 			throw melnorme.miscutil.ExceptionAdapter.unchecked(e);
 		}
 	}
-
-
+	
 }

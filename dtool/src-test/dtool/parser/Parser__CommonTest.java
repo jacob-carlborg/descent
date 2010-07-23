@@ -18,7 +18,7 @@ import dtool.ast.definitions.Module;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.refmodel.ParserAdapter;
 import dtool.tests.DToolBaseTest;
-import dtool.tests.TestResources;
+import dtool.tests.DToolTestResources;
 
 public abstract class Parser__CommonTest extends DToolBaseTest {
 
@@ -35,14 +35,14 @@ public abstract class Parser__CommonTest extends DToolBaseTest {
 	}
 	
 	public static ASTNeoNode testConversionFromFile(String filename) throws CoreException, IOException {
-		return testDtoolASTConvertion(TestResources.getInstance().readTestDataFile(TESTFILESDIR+filename));
+		return testDtoolASTConvertion(DToolTestResources.getInstance().readTestDataFile(TESTFILESDIR+filename));
 	}
 	
 	public static void parseFolder(File folder, boolean recurseDirs) {
 		FilenameFilter filter = new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name) {
-				return DeeNamingRules_Test.isValidCompilationUnitName(name);
+				return dir.isDirectory() || DeeNamingRules_Test.isValidCompilationUnitName(name);
 			}
 		};
 		File[] children = folder.listFiles(filter);
@@ -59,6 +59,7 @@ public abstract class Parser__CommonTest extends DToolBaseTest {
 		assertTrue(file.isFile());
 		String source = readStringFromFileUnchecked(file);
 		testDtoolASTConvertion(source);
+		System.out.println("parsed: " + file);
 	}
 	
 	

@@ -30,6 +30,8 @@ public class BaseDeePluginTest extends BasePluginTest {
 	public static final String DEFAULT_DMD2_INSTALL = "defaultTestDMD2";
 
 	static {
+		DToolResourcesPluginAdapter.initialize();
+		
 		IndexManager indexManager = ModelManager.getModelManager().getIndexManager();
 		indexManager.disable();
 		//indexManager.shutdown();
@@ -47,15 +49,12 @@ public class BaseDeePluginTest extends BasePluginTest {
 		setupTestDMDInstall();
 		
 		SamplePreExistingProject.checkForExistanceOfPreExistingProject();
-		SampleMainProject.createAndSetupSampleProj();
 		SampleNonDeeProject.createAndSetupNonDeeProject();
 	}
 
 	private static void setupTestDMDInstall() {
-		IInterpreterInstallType deeDmdInstallType = ScriptRuntime
-				.getInterpreterInstallType(DeeDmdInstallType.INSTALLTYPE_ID);
-		InterpreterStandin install = new InterpreterStandin(
-				deeDmdInstallType, "defaultTestDMD2-id");
+		IInterpreterInstallType deeDmdInstallType = ScriptRuntime.getInterpreterInstallType(DeeDmdInstallType.INSTALLTYPE_ID);
+		InterpreterStandin install = new InterpreterStandin(deeDmdInstallType, "defaultTestDMD2-id");
 
 		install.setName(DEFAULT_DMD2_INSTALL);
 		install.setInstallLocation(new LazyFileHandle(LocalEnvironment.ENVIRONMENT_ID, new Path(DMD2_PATH)));

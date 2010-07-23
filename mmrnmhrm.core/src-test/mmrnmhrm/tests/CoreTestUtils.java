@@ -1,12 +1,15 @@
 package mmrnmhrm.tests;
 
+import static melnorme.miscutil.Assert.assertFail;
 import static melnorme.miscutil.Assert.assertNotNull;
 import static melnorme.miscutil.Assert.assertTrue;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import melnorme.miscutil.MiscUtil;
 import mmrnmhrm.core.CoreUtils;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.launch.DeeDmdInstallType;
@@ -38,8 +41,9 @@ public class CoreTestUtils {
 		
 		IProject project;
 		project = workspaceRoot.getProject(name);
-		if(project.exists())
+		if(project.exists()) {
 			project.delete(true, null);
+		}
 		project.create(null);
 		project.open(null);
 		setupDeeProject(project);
@@ -47,6 +51,8 @@ public class CoreTestUtils {
 	}
 	
 	public static void setupDeeProject(IProject project) throws CoreException {
+		MiscUtil.loadClass(BaseDeePluginTest.class); // TODO BM, improve these dependencies
+		
 		assertTrue(project.exists());
 		ModelUtil.addNature(project, DeeNature.NATURE_ID);
 		
@@ -63,9 +69,13 @@ public class CoreTestUtils {
 	public static void createSrcFolderInProject(String bundleDir, IContainer destFolder) 
 			throws CoreException, URISyntaxException, IOException, ModelException {
 		copyDeeCoreDirToWorkspace(bundleDir, destFolder);
+		createSrcFolder(destFolder);
+	}
+
+	public static void createSrcFolder(IContainer destFolder) throws CoreException, ModelException {
 		IScriptProject dltkProj = DLTKCore.create(destFolder.getProject());
 		ModelUtil.createAddSourceFolder(dltkProj, destFolder);
-		dltkProj.save(null, false);
+		//dltkProj.save(null, false);
 	}
 	
 	protected static IResourceVisitor vcsFilter = new IResourceVisitor() {
@@ -91,12 +101,26 @@ public class CoreTestUtils {
 //	}
 	
 	
-	private static void copyBundleDirToWorkspace(String bundleId, final IContainer destFolder, IPath bundlesrcpath) 
-			throws CoreException, URISyntaxException, IOException {
+	public static void copyBundleDirToWorkspace(String bundleId, final IContainer destFolder, IPath bundlesrcpath) 
+			throws CoreException, IOException {
 		URL sourceURL = FileLocator.find(Platform.getBundle(bundleId), bundlesrcpath, null);
 		assertNotNull(sourceURL);
 		
-		CoreUtils.copyURLResourceToWorkspace(FileLocator.toFileURL(sourceURL).toURI(), destFolder, vcsFilter);
+		URI uri = getURI_Assured(FileLocator.toFileURL(sourceURL));
+		CoreUtils.copyURLResourceToWorkspace(uri, destFolder, vcsFilter);
+	}
+	
+	/** Return a URI for given url, which must comply to RFC 2396. */
+	private static URI getURI_Assured(URL url) {
+		try {
+			return url.toURI();
+		} catch (URISyntaxException e) {
+			throw assertFail();
+		}
+	}
+	
+	public static void copyURLResourceToWorkspace(URI uri, final IContainer destFolder) throws CoreException {
+		CoreUtils.copyURLResourceToWorkspace(uri, destFolder, vcsFilter);
 	}
 	
 }
