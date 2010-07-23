@@ -13,7 +13,7 @@ Export-Package: dtool.tests.ref.cc;x-friends:="mmrnmhrm.core",
  mmrnmhrm.core.dltk.search,
  mmrnmhrm.core.launch,
  mmrnmhrm.core.model,
- mmrnmhrm.tests;x-internal:=true
+ mmrnmhrm.tests;x-friends:="mmrnmhrm.ui"
 Require-Bundle: dtool;visibility:=reexport,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,

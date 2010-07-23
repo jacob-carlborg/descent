@@ -27,7 +27,4 @@ Require-Bundle: mmrnmhrm.core,
  org.eclipse.debug.ui
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: %pluginProvider
-Export-Package: mmrnmhrm.org.eclipse.dltk.ui.wizards,
- mmrnmhrm.ui.editor,
- mmrnmhrm.ui.wizards
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import melnorme.miscutil.ExceptionAdapter;
+import melnorme.miscutil.MiscUtil;
 import mmrnmhrm.core.dltk.DeeParserUtil;
 import mmrnmhrm.core.model.CompilationUnit;
 
@@ -18,7 +19,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.dltk.core.IScriptProject;
 
 import dtool.ast.definitions.Module;
-import dtool.tests.DToolTests;
 
 /**
  * This classes creates a sample project 
@@ -37,7 +37,7 @@ public abstract class SampleMainProject extends CoreTestUtils {
 	public static final String TEST_SRC_PHOBOSIMPL = "phobos-internal";
 	public static final String TEST_SRC_TANGO = "tango";
 	
-	static { DToolTests.loadTestProjects(); }
+	static { MiscUtil.loadClass(BaseDeePluginTest.class); }
 
 	public static IProject project;
 	public static IScriptProject deeProj;

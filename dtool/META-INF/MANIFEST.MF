@@ -7,7 +7,8 @@ Bundle-Vendor: %pluginProvider
 Bundle-Localization: plugin
 Require-Bundle: descent.compiler;visibility:=reexport,
  org.eclipse.dltk.core,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ org.junit;bundle-version="4.8.0";resolution:=optional
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,

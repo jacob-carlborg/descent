@@ -20,7 +20,6 @@ public final class ErrorLogListener implements ILogListener {
 	@Override
 	public void logging(IStatus status, String plugin) {
 		System.err.println(status);
-		//if(plugin.equals(DeePlugin.PLUGIN_ID) || plugin.equals(DeeCore.PLUGIN_ID))
 		if(status.getSeverity() == IStatus.ERROR && errorOccurred == false) {
 			errorOccurred = true;
 			exception = status.getException();
