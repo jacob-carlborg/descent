@@ -23,18 +23,18 @@ import org.junit.Test;
 
 // A very basic test
 public final class FileUtil_Test {
-
+	
 	private static final int WRITE_REPEAT_COUNT = 100000;
 	private static final String WRITE_STRING = "0123456789";
 	private int FILE_LENGTH = WRITE_REPEAT_COUNT * WRITE_STRING.length();
-
+	
 	private static File tempFile;
-
+	
 	static {
 		try {
 			tempFile = File.createTempFile("test-" + FileUtil_Test.class.getSimpleName(), ".tmp");
 			tempFile.deleteOnExit();
-        
+			
 			FileOutputStream fos = new FileOutputStream(tempFile);
 			int count = WRITE_REPEAT_COUNT;
 			while(count-- > 0) {
@@ -47,10 +47,11 @@ public final class FileUtil_Test {
 	
 	@Test
 	public void test_read() throws FileNotFoundException, IOException {
+		byte[] bytes;
 		
-		byte[] bytes = FileUtil.readBytesFromFile(tempFile);
+		bytes = FileUtil.readBytesFromFile(tempFile);
 		assertTrue(bytes.length == FILE_LENGTH);
-
+		
 		String string;
 		
 		bytes = FileUtil.readAvailableBytesFromStream(new FileInputStream(tempFile));
@@ -61,7 +62,7 @@ public final class FileUtil_Test {
 		bytes = FileUtil.readBytesFromStream(new FileInputStream(tempFile), 1000);
 		assertTrue(bytes.length == 1000);
 		
-		
+
 		URL tempFileURL = tempFile.toURI().toURL();
 		
 		bytes = FileUtil.readAvailableBytesFromStream(tempFileURL.openStream());
@@ -71,7 +72,6 @@ public final class FileUtil_Test {
 		
 		bytes = FileUtil.readBytesFromStream(tempFileURL.openStream(), 1000);
 		assertTrue(bytes.length == 1000);
-		
 	}
 	
 }

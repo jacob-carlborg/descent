@@ -25,6 +25,12 @@ public class StreamUtil {
 	
 	protected static final int EOF = -1;
 	
+	private static IOException createFailedToReadExpected(int length, int totalRead) {
+		return new IOException("Failed to read requested amount of characters. " +
+				"Read: " + totalRead + " of total requested: " + length);
+	}
+	
+	
 	/** Reads and returns all bytes from given inputStream until an EOF is read. 
 	 * Closes inputStream afterwards. */
 	public static byte[] readAllBytesFromStream(InputStream inputStream) throws IOException {
@@ -71,48 +77,40 @@ public class StreamUtil {
 		return new String(readAllCharsFromReader(reader));
 	}
 	
-	@Deprecated
-	public static char[] readCharsFromReader(Reader reader) throws IOException {
-		return readAllCharsFromReader(reader);
-	}
-	
-	
-	/** Reads given count amount of bytes from given inputStream, and returns them. 
+	/** Reads given length amount of bytes from given inputStream, and returns them. 
 	 *  Closes inputStream afterwards. 
-	 *  @throws IOException if it fails to read given count amount of elements. */
-	public static byte[] readBytesFromStream(InputStream inputStream, int count) throws IOException {
+	 *  @throws IOException if it fails to read given requestLength amount of elements. */
+	public static byte[] readBytesFromStream(InputStream inputStream, int length) throws IOException {
 		try {
-			byte[] bytes = new byte[count];
+			byte[] bytes = new byte[length];
 			int totalRead = 0;
 			do {
-				int read = inputStream.read(bytes, totalRead, count - totalRead);
+				int read = inputStream.read(bytes, totalRead, length - totalRead);
 				if (read == -1) {
-					throw new IOException("Failed to read requested amount of characters. " +
-							"Read: " + totalRead + " of total requested: " + count);
+					throw createFailedToReadExpected(length, totalRead);
 				}
 				totalRead += read;
-			} while (totalRead != count);
+			} while (totalRead != length);
 			return bytes;
 		} finally {
 			inputStream.close(); 
 		}
 	}
 	
-	/** Reads given count amount of chars from given reader, and returns them. 
+	/** Reads given length amount of chars from given reader, and returns them. 
 	 *  Closes reader afterwards. 
-	 *  @throws IOException if it fails to read given count amount of elements. */
-	public static char[] readCharsFromStream(Reader reader, int count) throws IOException {
+	 *  @throws IOException if it fails to read given length amount of elements. */
+	public static char[] readCharsFromReader(Reader reader, int length) throws IOException {
 		try {
-			char[] chars = new char[count];
+			char[] chars = new char[length];
 			int totalRead = 0;
 			do {
-				int read = reader.read(chars, totalRead, count - totalRead);
+				int read = reader.read(chars, totalRead, length - totalRead);
 				if (read == -1) {
-					throw new IOException("Failed to read requested amount of characters. " +
-							"Read: " + totalRead + " of total requested: " + count);
+					throw createFailedToReadExpected(length, totalRead);
 				}
 				totalRead += read;
-			} while (totalRead != count);
+			} while (totalRead != length);
 			return chars;
 		} finally {
 			reader.close(); 
@@ -127,8 +125,8 @@ public class StreamUtil {
 		return readBytesFromStream(inputStream, availableToRead);
 	}
 	
-	/** Writes given bytes array to given outpuStream. 
-	 * Close outputStream afterwards. */
+	/** Writes given bytes array to given outputStream. 
+	 * Closes outputStream afterwards. */
 	public static void writeBytesToStream(byte[] bytes, OutputStream outputStream) throws IOException {
 		// A BufferedOutputStream is likely not necessary since this is a one-time array write
 		BufferedOutputStream bos = new BufferedOutputStream(outputStream);
@@ -160,6 +158,55 @@ public class StreamUtil {
 			bw.close();
 		}
 	}
+	
+	
+	/** Copies given length amount of bytes from given inputStream to given outputStream. 
+	 * Alternatively, if length == -1, copy all bytes in inputStream until EOF.
+	 * @throws IOException if it fails to read given length amount of elements. */
+	public static void copyBytesToStream(InputStream inputStream, OutputStream outputStream, int length)
+			throws IOException {
+		final int BUFFER_SIZE = 1024;
+		byte[] buffer = new byte[BUFFER_SIZE];
+		
+		int totalRead = 0;
+		do {
+			int readReqLen = (length == -1) ? BUFFER_SIZE : Math.min(BUFFER_SIZE, length - totalRead);
+			int read = inputStream.read(buffer, 0, readReqLen);
+			if (read == -1) {
+				if (length != -1) {
+					throw createFailedToReadExpected(length, totalRead);
+				} else {
+					return; // Nothing more to copy.
+				}
+			}
+			totalRead += read;
+			outputStream.write(buffer, 0, read);
+		} while (totalRead != length);
+	}
+
+	/** Copies all bytes in given inputStream (until EOF) to given outputStream. 
+	 * Closes inputStream and outputStream. */
+	public static void copyStream(InputStream inputStream, OutputStream outputStream) throws IOException {
+		copyStream(inputStream, outputStream, true);
+	}
+	
+	/** Copies all bytes in given inputStream (until EOF) to given outputStream. 
+	 * Closes inputStream and also outputStream if given closeOut is true. */
+	public static void copyStream(InputStream inputStream, OutputStream outputStream, boolean closeOut) 
+			throws IOException {
+		try {
+			copyBytesToStream(inputStream, outputStream, -1);
+		} finally {
+			try {
+				inputStream.close();
+			} finally {
+				if(closeOut) {
+					outputStream.close();
+				}
+			}
+		}
+	}
+	
 	
 	/** Closes given inputStream, either ignoring IOExceptions, 
 	 * or rethrowing them unchecked, according to given rethrowAsUnchecked. */

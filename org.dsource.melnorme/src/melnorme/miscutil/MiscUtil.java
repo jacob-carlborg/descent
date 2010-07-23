@@ -47,7 +47,9 @@ public class MiscUtil {
 	/** Loads given klass. */
 	public static void loadClass(Class<?> klass) {
 		try {
-			Class.forName(klass.getName());
+			// use klass.getClassLoader(), in case klass cannot be loaded in the current (caller) classloader
+			// it can happen in OSGi runtimes for example
+			Class.forName(klass.getName(), true, klass.getClassLoader());
 		} catch (ClassNotFoundException e) {
 			assertFail();
 		}
