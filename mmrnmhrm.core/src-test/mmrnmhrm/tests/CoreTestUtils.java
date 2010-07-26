@@ -69,15 +69,9 @@ public class CoreTestUtils {
 	public static void createSrcFolderInProject(String bundleDir, IContainer destFolder) 
 			throws CoreException, URISyntaxException, IOException, ModelException {
 		copyDeeCoreDirToWorkspace(bundleDir, destFolder);
-		createSrcFolder(destFolder);
+		ModelUtil.addSourceFolder(destFolder, null);
 	}
 
-	public static void createSrcFolder(IContainer destFolder) throws CoreException, ModelException {
-		IScriptProject dltkProj = DLTKCore.create(destFolder.getProject());
-		ModelUtil.createAddSourceFolder(dltkProj, destFolder);
-		//dltkProj.save(null, false);
-	}
-	
 	protected static IResourceVisitor vcsFilter = new IResourceVisitor() {
 		@Override
 		public boolean visit(IResource resource) throws CoreException {

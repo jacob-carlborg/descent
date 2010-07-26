@@ -11,6 +11,7 @@ import melnorme.miscutil.ExceptionAdapter;
 import melnorme.miscutil.MiscUtil;
 import mmrnmhrm.core.dltk.DeeParserUtil;
 import mmrnmhrm.core.model.CompilationUnit;
+import mmrnmhrm.core.model.ModelUtil;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -80,11 +81,11 @@ public abstract class SampleMainProject extends CoreTestUtils {
 		
 		
 		copyDToolCommonResource(Convertion_PhobosTest.TESTSRC_PHOBOS1_OLD);
-		createSrcFolder(project.getFolder(Convertion_PhobosTest.TESTSRC_PHOBOS1_OLD__HEADER));
-		createSrcFolder(project.getFolder(Convertion_PhobosTest.TESTSRC_PHOBOS1_OLD__INTERNAL));
+		ModelUtil.addSourceFolder(project.getFolder(Convertion_PhobosTest.TESTSRC_PHOBOS1_OLD__HEADER), null);
+		ModelUtil.addSourceFolder(project.getFolder(Convertion_PhobosTest.TESTSRC_PHOBOS1_OLD__INTERNAL), null);
 		
 		copyDToolCommonResource(Convertion_PhobosTest.TESTSRC_TANGO);
-		createSrcFolder(project.getFolder(Convertion_PhobosTest.TESTSRC_TANGO));
+		ModelUtil.addSourceFolder(project.getFolder(Convertion_PhobosTest.TESTSRC_TANGO), null);
 	}
 	
 	private static void copyDToolCommonResource(String resourcePath) throws CoreException {
