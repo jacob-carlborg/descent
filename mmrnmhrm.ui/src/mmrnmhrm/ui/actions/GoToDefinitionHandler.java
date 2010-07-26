@@ -40,7 +40,7 @@ import dtool.refmodel.NodeUtil;
 
 public class GoToDefinitionHandler extends AbstractHandler  {
 
-	public static final String COMMAND_ID = DeePlugin.PLUGIN_ID+".commands.openDefinition";
+	public static final String COMMAND_ID = DeePlugin.EXTENSIONS_IDPREFIX+"commands.openDefinition";
 	private static final String GO_TO_DEFINITION_OPNAME = "Go to Definition";
 
 	@Override

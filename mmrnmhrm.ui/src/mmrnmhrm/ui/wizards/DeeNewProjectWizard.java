@@ -2,6 +2,7 @@ package mmrnmhrm.ui.wizards;
 
 
 import mmrnmhrm.core.model.DeeNature;
+import mmrnmhrm.ui.DeePlugin;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
@@ -18,7 +19,7 @@ import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
  */
 public class DeeNewProjectWizard extends ProjectWizard implements IExecutableExtension {
 	
-	public static final String WIZARD_ID = "mmrnmhrm.ui.wizards.deeProjectWizard";
+	public static final String WIZARD_ID = DeePlugin.EXTENSIONS_IDPREFIX+"wizards.deeProjectWizard";
 	
 	protected ProjectWizardFirstPage fFirstPage;
 	protected ProjectWizardSecondPage fSecondPage;

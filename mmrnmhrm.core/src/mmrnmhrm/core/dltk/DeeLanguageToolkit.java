@@ -15,7 +15,7 @@ import dtool.DeeNamingRules;
 
 public class DeeLanguageToolkit extends AbstractLanguageToolkit  {
 	
-	private static final String DEE_LANGUAGE_CONTENT_DSOURCE = "mmrnmhrm.core.content.dsource";
+	private static final String DEE_LANGUAGE_CONTENT_DSOURCE = DeeCore.EXTENSIONS_IDPREFIX+"content.dsource";
 	
 	private static final IDLTKLanguageToolkit instance = new DeeLanguageToolkit();
 	

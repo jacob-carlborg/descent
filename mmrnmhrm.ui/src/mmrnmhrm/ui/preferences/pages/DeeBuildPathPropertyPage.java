@@ -1,6 +1,7 @@
 package mmrnmhrm.ui.preferences.pages;
 
 import mmrnmhrm.core.dltk.DeeLanguageToolkit;
+import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.preferences.DeeBuildpathsBlock;
 
 import org.eclipse.dltk.core.IDLTKLanguageToolkit;
@@ -12,7 +13,7 @@ import org.eclipse.ui.preferences.IWorkbenchPreferenceContainer;
 
 public class DeeBuildPathPropertyPage extends BuildPathsPropertyPage implements IWorkbenchPropertyPage {
 
-	public static final String PAGE_ID = "mmrnmhrm.ui.properties.DeeBuildPathProperties";  
+	public static final String PAGE_ID = DeePlugin.EXTENSIONS_IDPREFIX+"properties.DeeBuildPathProperties";  
 
 	@Override
 	protected BuildpathsBlock createBuildPathBlock(IWorkbenchPreferenceContainer pageContainer) {

@@ -15,7 +15,7 @@
             base-type="org.eclipse.core.runtime.text"
             default-charset="UTF-8"
             file-extensions="d, di, dh"
-            id="mmrnmhrm.core.content.dsource"
+            id="org.dsource.ddt.ide.core.content.dsource"
             name="D Source (Mmrnmhrm)"
             priority="high">
       </content-type>
@@ -30,25 +30,25 @@
          point="org.eclipse.dltk.core.language">
       <language
             class="mmrnmhrm.core.dltk.DeeLanguageToolkit"
-            nature="mmrnmhrm.core.nature">
+            nature="org.dsource.ddt.ide.core.nature">
       </language>
    </extension>
    <extension
          point="org.eclipse.dltk.core.sourceElementParsers">
       <parser
             class="mmrnmhrm.core.dltk.DeeSourceElementParser"
-            nature="mmrnmhrm.core.nature"
+            nature="org.dsource.ddt.ide.core.nature"
             priority="0">
       </parser>
    </extension>
    <extension
          point="org.eclipse.dltk.core.sourceParsers">
       <parserContribution
-            natureId="mmrnmhrm.core.nature">
+            natureId="org.dsource.ddt.ide.core.nature">
          <parser
                class="mmrnmhrm.core.dltk.DeeSourceParserFactory"
                description="%sourceParser.description"
-               id="mmrnmhrm.core.SourceParser"
+               id="org.dsource.ddt.ide.core.SourceParser"
                name="%sourceParser.name"
                priority="1">
          </parser>
@@ -77,22 +77,22 @@
    <extension
          point="org.eclipse.core.expressions.definitions">
       <definition
-            id="mmrnmhrm.core.expressions.isDeeNature">
+            id="org.dsource.ddt.ide.core.expressions.isDeeNature">
          <adapt
                type="org.eclipse.core.resources.IProject">
             <test
                   property="org.eclipse.core.resources.projectNature"
-                  value="mmrnmhrm.core.nature">
+                  value="org.dsource.ddt.ide.core.nature">
             </test>
          </adapt>
       </definition>
       <definition
-            id="mmrnmhrm.core.expressions.isDeeNatureContainer">
+            id="org.dsource.ddt.ide.core.expressions.isDeeNatureContainer">
          <adapt
                type="org.eclipse.core.resources.IContainer">
             <test
                   property="org.eclipse.core.resources.projectNature"
-                  value="mmrnmhrm.core.nature">
+                  value="org.dsource.ddt.ide.core.nature">
             </test>
          </adapt>
       </definition>
@@ -102,26 +102,26 @@
          point="org.eclipse.dltk.core.selectionEngine">
       <selectionEngine
             class="mmrnmhrm.core.codeassist.DeeSelectionEngine"
-            nature="mmrnmhrm.core.nature"
+            nature="org.dsource.ddt.ide.core.nature"
             priority="0">
       </selectionEngine>
    </extension>
    <extension
          point="org.eclipse.dltk.core.search">
-      <seachFactory
+      <searchFactory
             class="mmrnmhrm.core.dltk.search.DeeSearchFactory"
-            nature="mmrnmhrm.core.nature">
-      </seachFactory>
+            nature="org.dsource.ddt.ide.core.nature">
+      </searchFactory>
       <matchLocator
             class="mmrnmhrm.core.dltk.search.DeeMatchLocator"
-            nature="mmrnmhrm.core.nature">
+            nature="org.dsource.ddt.ide.core.nature">
       </matchLocator>
    </extension>
    <extension
          point="org.eclipse.dltk.launching.interpreterInstallTypes">
       <interpreterInstallType
             class="mmrnmhrm.core.launch.DeeDmdInstallType"
-            id="mmrnmhrm.core.launching.deeDmdInstallType">
+            id="org.dsource.ddt.ide.core.launching.deeDmdInstallType">
       </interpreterInstallType>
    </extension>
    <!--
@@ -129,7 +129,7 @@
          point="org.eclipse.dltk.core.builder">
       <builder
             class="mmrnmhrm.core.build.DeeDLTKScriptBuilder"
-            nature="mmrnmhrm.core.nature">
+            nature="org.dsource.ddt.ide.core.nature">
       </builder>
    </extension>
    -->
@@ -137,16 +137,17 @@
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
             delegate="mmrnmhrm.core.launch.DeeLaunchConfigurationDelegate"
-            id="mmrnmhrm.core.deeLaunchConfigurationType"
+            id="org.dsource.ddt.ide.core.deeLaunchConfigurationType"
             modes="run, debug"
             name="%localDeeApplication">
       </launchConfigurationType>
    </extension>
    <extension
+         id="org.dsource.ddt.ide.core.hierarchyResolverTODO"
          point="org.eclipse.dltk.core.fileHierarchyResolvers">
       <fileHierarchyResolver
             class="mmrnmhrm.core.dltk.search.DeeFileHierarchyResolver"
-            nature="mmrnmhrm.core.fileHierarchyResolver"
+            nature="org.dsource.ddt.ide.core.nature"
             priority="0">
       </fileHierarchyResolver>
    </extension>

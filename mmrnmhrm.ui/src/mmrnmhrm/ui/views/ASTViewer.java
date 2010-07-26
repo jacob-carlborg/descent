@@ -3,6 +3,7 @@ package mmrnmhrm.ui.views;
 import mmrnmhrm.core.dltk.DeeModuleDeclaration;
 import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.lang.ui.EditorUtil;
+import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.DeePluginImages;
 import mmrnmhrm.ui.actions.GoToDefinitionHandler;
 
@@ -51,7 +52,7 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 		IDocumentListener, ISelectionChangedListener, IDoubleClickListener {
 
 	
-	public static final String VIEW_ID = "mmrnmhrm.ui.views.ASTViewer";
+	public static final String VIEW_ID = DeePlugin.EXTENSIONS_IDPREFIX+"views.ASTViewer";
 	
 	private IWorkbenchWindow window;
 

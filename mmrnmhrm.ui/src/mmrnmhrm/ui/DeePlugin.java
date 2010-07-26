@@ -18,7 +18,9 @@ import dtool.Logg;
 
 public class DeePlugin extends LangPlugin {
 
-	public static final String PLUGIN_ID ="org.dsource.ddt.ide.ui";
+	public static final String PLUGIN_ID = "org.dsource.ddt.ide.ui";
+	// The convention for the id prefix for extensions contributed by this plugin
+	public static final String EXTENSIONS_IDPREFIX = PLUGIN_ID + "."; 
 
 	public static boolean initialized; 
 	protected static DeePlugin pluginInstance;

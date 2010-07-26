@@ -13,7 +13,7 @@ import org.eclipse.swt.widgets.Label;
 public class DeeSourceColoringPreferencePage extends
 		AbstractConfigurationBlockPreferencePage {
 	
-	public final static String PAGE_ID = "mmrnmhrm.ui.preferences.editor.SourceColoring";
+	public final static String PAGE_ID = DeePlugin.EXTENSIONS_IDPREFIX+"preferences.editor.SourceColoring";
 
 	@Override
 	protected String getHelpId() {

@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Label;
 
 public class DeeEditorPreferencePage extends AbstractConfigurationBlockPreferencePage {
 	
-	public final static String PAGE_ID = "mmrnmhrm.ui.preferences.Editor";
+	public final static String PAGE_ID = DeePlugin.EXTENSIONS_IDPREFIX+"preferences.Editor";
 
 	@Override
 	protected String getHelpId() {

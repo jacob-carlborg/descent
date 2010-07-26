@@ -13,7 +13,7 @@ import org.eclipse.jface.text.IDocument;
 
 public class DeeTemplatePreferencePage extends ScriptTemplatePreferencePage {
 	
-	public final static String PAGE_ID = "mmrnmhrm.ui.preferences.editor.CodeTemplates";
+	public final static String PAGE_ID = DeePlugin.EXTENSIONS_IDPREFIX+"preferences.editor.CodeTemplates";
 	
 	public DeeTemplatePreferencePage() {
 		super();

@@ -23,13 +23,14 @@ import dtool.Logg;
 
 public class DeeProjectBuilder extends IncrementalProjectBuilder {
 	
-	protected static IDeeBuilderListener buildListener = 
-		new IDeeBuilderListener.NullDeeBuilderListener();
+	public final static String BUILDER_ID = DeeCore.PLUGIN_ID + ".deebuilder";
+	
+	// TODO BM: reconsider how this is done
+	protected static IDeeBuilderListener buildListener = new IDeeBuilderListener.NullDeeBuilderListener();
 	
 	public static void setBuilderListener(IDeeBuilderListener listener) {
 		buildListener = listener;
 	}
-
 	
 	private IFolder outputFolder;
 	
@@ -37,7 +38,7 @@ public class DeeProjectBuilder extends IncrementalProjectBuilder {
 	protected void startupOnInitialize() {
 		assertTrue(getProject() != null);
 	}
-
+	
 	private IScriptProject getModelProject() throws CoreException {
 		IScriptProject scriptProject = DLTKCore.create(getProject());
 		if(!scriptProject.exists())
@@ -50,7 +51,7 @@ public class DeeProjectBuilder extends IncrementalProjectBuilder {
 		return DeeModel.getDeeProjectInfo(getModelProject());
 	}
 	
-
+	
 	@Override
 	protected void clean(IProgressMonitor monitor) throws CoreException {
 		IPath outputPath = getProjectOptions().compilerOptions.outputDir;
@@ -65,22 +66,21 @@ public class DeeProjectBuilder extends IncrementalProjectBuilder {
 	private IFolder prepOutputFolder(DeeProjectOptions options) throws CoreException {
 		IPath outputPath = options.compilerOptions.outputDir;
 		IFolder outputFolder = getProject().getFolder(outputPath);
-
+		
 		if(!outputFolder.exists())
 			outputFolder.create(IResource.DERIVED, true, null);
 		return outputFolder;
 	}
-
+	
 	@Override
-	protected IProject[] build(int kind, Map args, IProgressMonitor monitor)
-			throws CoreException {
+	protected IProject[] build(int kind, @SuppressWarnings("rawtypes") Map args, IProgressMonitor monitor) throws CoreException {
 		
 		IProject project = getProject();
 		Logg.builder.println("Doing build ", kind, " for project:", project);
-
+		
 		IScriptProject deeProj = getModelProject();
 		DeeBuilder deeBuilder = new DeeBuilder();
-
+		
 		monitor.beginTask("Building D project", 5);
 		
 		outputFolder = prepOutputFolder(getProjectOptions());
@@ -91,7 +91,7 @@ public class DeeProjectBuilder extends IncrementalProjectBuilder {
 		
 		deeBuilder.compileModules(deeProj);
 		monitor.worked(1);
-
+		
 		deeBuilder.runBuilder(deeProj, monitor);
 		monitor.worked(1);
 		
@@ -100,5 +100,4 @@ public class DeeProjectBuilder extends IncrementalProjectBuilder {
 		return null; // No deps
 	}
 
-	
 }

@@ -15,8 +15,9 @@ import dtool.refmodel.ReferenceResolver;
 public class DeeCore extends LangCore {
 	
 	public static final String PLUGIN_ID = "org.dsource.ddt.ide.core";
-	public final static String BUILDER_ID = PLUGIN_ID + ".deebuilder";
-	
+	// The convention for the id prefix for extensions contributed by this plugin
+	public static final String EXTENSIONS_IDPREFIX = PLUGIN_ID + "."; 
+
 	protected static DeeCore pluginInstance;
 	
 	public DeeCore() {

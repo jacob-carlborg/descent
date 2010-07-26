@@ -24,7 +24,7 @@ import org.eclipse.dltk.launching.LibraryLocation;
 
 public class DeeDmdInstallType extends AbstractInterpreterInstallType {
 	
-	public static final String INSTALLTYPE_ID = "mmrnmhrm.core.launching.deeDmdInstallType";
+	public static final String INSTALLTYPE_ID = DeeCore.EXTENSIONS_IDPREFIX+"launching.deeDmdInstallType";
 	
 	private static final Path DMD_INSTALL_LIBRARY_PATH = new Path("src/phobos");
 	private static final Path DMD2_INSTALL_LIBRARY_PATH = new Path("src/druntime/import");

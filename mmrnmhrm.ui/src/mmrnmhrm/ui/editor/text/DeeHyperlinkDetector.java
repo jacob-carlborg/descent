@@ -1,6 +1,7 @@
 package mmrnmhrm.ui.editor.text;
 
 import mmrnmhrm.lang.ui.EditorUtil;
+import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.editor.DeeEditor;
 
 import org.eclipse.jface.text.IRegion;
@@ -16,7 +17,7 @@ import dtool.ast.references.Reference;
 
 public class DeeHyperlinkDetector extends AbstractHyperlinkDetector {
 	
-	public static final String DEE_EDITOR_TARGET = "mmrnmhrm.ui.texteditor.deeCodeTarget";
+	public static final String DEE_EDITOR_TARGET = DeePlugin.EXTENSIONS_IDPREFIX+"texteditor.deeCodeTarget";
 	
 	@Override
 	public IHyperlink[] detectHyperlinks(ITextViewer textViewer,

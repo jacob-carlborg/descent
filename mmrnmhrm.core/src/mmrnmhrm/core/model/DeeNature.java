@@ -2,6 +2,7 @@ package mmrnmhrm.core.model;
 
 import melnorme.miscutil.ArrayUtil;
 import mmrnmhrm.core.DeeCore;
+import mmrnmhrm.core.build.DeeProjectBuilder;
 
 import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
@@ -19,14 +20,14 @@ public class DeeNature extends ScriptNature  {
 	@Override
 	public void configure() throws CoreException {
 		super.configure();
-		addToBuildSpec(getProject(), DeeCore.BUILDER_ID);
+		addToBuildSpec(getProject(), DeeProjectBuilder.BUILDER_ID);
 	}
 	
 	/** Remove the Dee nature from the project. */
 	@Override
 	public void deconfigure() throws CoreException {
 		super.configure();
-		removeFromBuildSpec(getProject(), DeeCore.BUILDER_ID);
+		removeFromBuildSpec(getProject(), DeeProjectBuilder.BUILDER_ID);
 	}
 	
 	/** Adds a builder to the build spec of this project, if the

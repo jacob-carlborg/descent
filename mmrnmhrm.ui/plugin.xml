@@ -7,21 +7,21 @@
        point="org.eclipse.dltk.ui.language">
     <language
           class="mmrnmhrm.ui.DeeUILanguageToolkit"
-          nature="mmrnmhrm.core.nature"
+          nature="org.dsource.ddt.ide.core.nature"
           priority="0"/>
  </extension>
    <extension
          id="DeeDocumentSetupParticipant"
-         name="Dee Document Setup Participant"
+         name="D Document Setup Participant"
          point="org.eclipse.core.filebuffers.documentSetup">
       <participant
             class="mmrnmhrm.ui.text.DeeDocumentSetupParticipant"
-            contentTypeId="mmrnmhrm.core.content.dsource">
+            contentTypeId="org.dsource.ddt.ide.core.content.dsource">
       </participant>
    </extension>
    <extension
          id="DeeDocumentSetupParticipant"
-         name="Dee Document Setup Participant"
+         name="D Document Setup Participant"
          point="org.eclipse.core.filebuffers.documentSetup">
       <participant
             class="mmrnmhrm.ui.text.DeeDocumentSetupParticipant"
@@ -36,21 +36,30 @@
          point="org.eclipse.ui.ide.projectNatureImages">
       <image
             icon="icons/ovr16/d-dark_ovr.gif"
-            id="mmrnmhrm.ui.deeProjectNatureImage"
-            natureId="mmrnmhrm.core.nature"/>
+            id="org.dsource.ddt.ide.ui.deeProjectNatureImage"
+            natureId="org.dsource.ddt.ide.core.nature"/>
    </extension>
+ <extension
+       point="org.eclipse.ui.perspectives">
+    <perspective
+          class="mmrnmhrm.ui.views.DeePerspective"
+          icon="icons/d_app.gif"
+          id="org.dsource.ddt.ide.ui.deeperspective"
+          name="DDT">
+    </perspective>
+ </extension>
    <extension
          point="org.eclipse.ui.newWizards">
       <category
-            id="mmrnmhrm.category"
-            name="Dee (Mmrnmhrm)"/>
+            id="org.dsource.ddt.ide.category"
+            name="DDT"/>
       <wizard
-            category="mmrnmhrm.category"
+            category="org.dsource.ddt.ide.category"
             class="mmrnmhrm.ui.wizards.DeeNewProjectWizard"
-            finalPerspective="mmrnmhrm.ui.deeperspective"
+            finalPerspective="org.dsource.ddt.ide.ui.deeperspective"
             icon="icons/obj16/dee_project.gif"
-            id="mmrnmhrm.ui.wizards.deeProjectWizard"
-            name="Dee Project"
+            id="org.dsource.ddt.ide.ui.wizards.deeProjectWizard"
+            name="D Project"
             project="true">
       </wizard>
    </extension>
@@ -58,21 +67,21 @@
          point="org.eclipse.ui.propertyPages">
       <page
             class="mmrnmhrm.ui.preferences.pages.DeeBuildPathPropertyPage"
-            id="mmrnmhrm.ui.properties.DeeBuildPathProperties"
-            name="D Build Path (Mmrnmhrm)">
+            id="org.dsource.ddt.ide.ui.properties.DeeBuildPathProperties"
+            name="D Build Path">
          <enabledWhen>
             <reference
-                  definitionId="mmrnmhrm.core.expressions.isDeeNature">
+                  definitionId="org.dsource.ddt.ide.core.expressions.isDeeNature">
             </reference>
          </enabledWhen>
       </page>
       <page
             class="mmrnmhrm.ui.preferences.pages.DeeProjectOptionsPropertyPage"
-            id="mmrnmhrm.ui.properties.DeeCompileOptionsProperties"
-            name="D Compile Options (Mmrnmhrm)">
+            id="org.dsource.ddt.ide.ui.properties.DeeCompileOptionsProperties"
+            name="D Compile Options">
          <enabledWhen>
             <reference
-                  definitionId="mmrnmhrm.core.expressions.isDeeNature">
+                  definitionId="org.dsource.ddt.ide.core.expressions.isDeeNature">
             </reference>
          </enabledWhen>
       </page>
@@ -81,29 +90,29 @@
          point="org.eclipse.ui.preferencePages">
       <page
             class="mmrnmhrm.ui.preferences.pages.DeeRootPreferencePage"
-            id="mmrnmhrm.ui.preferences.DeeRootPreferencePage"
+            id="org.dsource.ddt.ide.ui.preferences.DeeRootPreferencePage"
             name="%LangPreferencePage.name"/>
       	<page
-	          category="mmrnmhrm.ui.preferences.DeeRootPreferencePage"
+	          category="org.dsource.ddt.ide.ui.preferences.DeeRootPreferencePage"
 	          class="mmrnmhrm.ui.preferences.pages.DeeEditorPreferencePage"
-	          id="mmrnmhrm.ui.preferences.Editor"
+	          id="org.dsource.ddt.ide.ui.preferences.Editor"
 	          name="%LangEditorPreferencePage.name"/>
 	    <page
-	          category="mmrnmhrm.ui.preferences.Editor"
+	          category="org.dsource.ddt.ide.ui.preferences.Editor"
 	          class="mmrnmhrm.ui.preferences.pages.DeeSourceColoringPreferencePage"
-	          id="mmrnmhrm.ui.preferences.editor.SourceColoring"
+	          id="org.dsource.ddt.ide.ui.preferences.editor.SourceColoring"
 	          name="%LangEditorSyntaxColoringPreferencePage.name"/>
      	<page
-              category="mmrnmhrm.ui.preferences.Editor"
+              category="org.dsource.ddt.ide.ui.preferences.Editor"
               class="mmrnmhrm.ui.preferences.pages.DeeTemplatePreferencePage"
-              id="mmrnmhrm.ui.preferences.editor.CodeTemplates"
+              id="org.dsource.ddt.ide.ui.preferences.editor.CodeTemplates"
               name="%LangCodeTemplatesPreferencePage.name">      
             
       </page>
       <page
-            category="mmrnmhrm.ui.preferences.DeeRootPreferencePage"
+            category="org.dsource.ddt.ide.ui.preferences.DeeRootPreferencePage"
             class="mmrnmhrm.ui.preferences.pages.DeeCompilersPreferencePage"
-            id="mmrnmhrm.ui.preferences.DeeCompilers"
+            id="org.dsource.ddt.ide.ui.preferences.DeeCompilers"
             name="%LangCompilersPreferencePage.name">
       </page>
    </extension>
@@ -114,10 +123,10 @@
          contributorClass="mmrnmhrm.ui.editor.DeeEditorActionContributor"
          default="true"
          icon="icons/obj16/dee_file.gif"
-         id="mmrnmhrm.ui.editors.DeeEditor"
+         id="org.dsource.ddt.ide.ui.editors.DeeEditor"
          name="%LangEditor.name">
       <contentTypeBinding
-            contentTypeId="mmrnmhrm.core.content.dsource">
+            contentTypeId="org.dsource.ddt.ide.core.content.dsource">
       </contentTypeBinding>
       </editor>
          point="org.eclipse.ui.editors">
@@ -125,61 +134,52 @@
    <extension
          point="org.eclipse.ui.views">
       <category
-            id="mmrnmhrm"
-            name="Dee"/>
+            id="org.dsource.ddt.ide.ui"
+            name="DDT"/>
       <view
-            category="mmrnmhrm"
+            category="org.dsource.ddt.ide.ui"
             class="mmrnmhrm.ui.views.ASTViewer"
             icon="icons/sample.gif"
-            id="mmrnmhrm.ui.views.ASTViewer"
-            name="D AST Viewer (Mmrnmhrm)"/>
+            id="org.dsource.ddt.ide.ui.views.ASTViewer"
+            name="DDT AST Viewer"/>
    </extension>
- <extension
-       point="org.eclipse.ui.perspectives">
-    <perspective
-          class="mmrnmhrm.ui.views.DeePerspective"
-          icon="icons/d_app.gif"
-          id="mmrnmhrm.ui.deeperspective"
-          name="D">
-    </perspective>
- </extension>
    <extension
          point="org.eclipse.ui.contexts">
       <context
             name="%LangEditContext.name"
             description="%LangEditContext.description"
             parentId="org.eclipse.dltk.ui.scriptEditorScope"
-            id="mmrnmhrm.ui.contexts.DeeEditor">
+            id="org.dsource.ddt.ide.ui.contexts.DeeEditor">
       </context>
    </extension>
    <extension
          point="org.eclipse.core.expressions.definitions">
       <definition
-            id="mmrnmhrm.ui.expressions.activeEditorIsDeeEditor">
+            id="org.dsource.ddt.ide.ui.expressions.activeEditorIsDeeEditor">
          <with
                variable="activeEditorId">
             <equals
-                  value="mmrnmhrm.ui.editors.DeeEditor">
+                  value="org.dsource.ddt.ide.ui.editors.DeeEditor">
             </equals>
          </with>
       </definition>
             <definition
-            id="mmrnmhrm.ui.expressions.inView">
+            id="org.dsource.ddt.ide.ui.expressions.inView">
          <with
                variable="activePartId">
             <equals
-                  value="mmrnmhrm.ui.editors.DeeEditor">
+                  value="org.dsource.ddt.ide.ui.editors.DeeEditor">
             </equals>
          </with>
       </definition>
       <definition
-            id="mmrnmhrm.ui.expressions.inDeeActionSet">
+            id="org.dsource.ddt.ide.ui.expressions.inDeeActionSet">
          <with
                variable="activeContexts">
             <iterate
                   operator="or">
                <equals
-                     value="mmrnmhrm.ui.deeActionSet">
+                     value="org.dsource.ddt.ide.ui.deeActionSet">
                </equals>
             </iterate>
          </with>
@@ -203,13 +203,76 @@
           file="templates/templates.xml"
           translations="templates/templates.properties">
     </include> -->
- </extension>   
+ </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <category
+            description="DDT Command Category"
+            id="org.dsource.ddt.ide.ui.commands.category1"
+            name="DDT Command Category">
+      </category>
+      <command
+            categoryId="org.dsource.ddt.ide.ui.commands.category1"
+            defaultHandler="mmrnmhrm.ui.actions.SampleTest1Handler"
+            id="org.dsource.ddt.ide.ui.commands.sampleCommand"
+            name="Test Action">
+      </command>
+      <command
+            categoryId="org.dsource.ddt.ide.ui.commands.category1"
+            defaultHandler="mmrnmhrm.ui.actions.SampleTest2Handler"
+            id="org.dsource.ddt.ide.ui.commands.sampleCommand2"
+            name="Test Action2">
+      </command>
+      <command
+            categoryId="org.dsource.ddt.ide.ui.commands.category1"
+            defaultHandler="mmrnmhrm.ui.actions.AddSourceFolderHandler"
+            id="org.dsource.ddt.ide.ui.commands.buildPathAdd"
+            name="Add as Folder Library">
+      </command>
+	<command
+       categoryId="org.dsource.ddt.ide.ui.commands.category1"
+       id="org.dsource.ddt.ide.ui.commands.openDefinition"
+       name="Open Definition">
+      </command>
+ <command
+       categoryId="org.dsource.ddt.ide.ui.commands.category1"
+       defaultHandler="mmrnmhrm.ui.actions.DeeInvokeContentAssistHandler"
+       id="org.dsource.ddt.ide.ui.commands.invokeContentAssist"
+       name="Content Assist (DDT)">
+ </command>
+ <command
+       categoryId="org.dsource.ddt.ide.ui.commands.category1"
+       defaultHandler="mmrnmhrm.ui.actions.DeeOpenTypeHandler"
+       id="org.dsource.ddt.ide.ui.commands.openDeeType"
+       name="%OpenTypeAction.label">
+ </command>
+ 
+ <command
+       categoryId="org.dsource.ddt.ide.ui.commands.category1"
+       id="org.dsource.ddt.ide.ui.commands.openDeeTypeInHierarchy"
+       name="%OpenTypeInHierarchyAction.label">
+ </command>
+
+ <command
+       categoryId="org.dsource.ddt.ide.ui.commands.category1"
+       defaultHandler="mmrnmhrm.ui.actions.DeeOpenSearchPageHandler"
+       id="org.dsource.ddt.ide.ui.commands.openDeeSearchPage"
+       name="%OpenLangSearchPageAction.label">
+ </command>
+ <command
+       categoryId="org.dsource.ddt.ide.ui.commands.category1"
+       id="org.eclipse.dltk.ui.edit.text.script.search.references.in.workspace"
+       name="&quot;&lt;FNORD&gt;&quot;">
+ </command>
+ 
+ 
+   </extension>   
 
    <extension
          point="org.eclipse.ui.actionSets">
       <actionSet
-            id="mmrnmhrm.ui.deeActionSet"
-            label="Mmrnmhrm Dee Action Set"
+            id="org.dsource.ddt.ide.ui.deeActionSet"
+            label="DDT D Action Set"
             visible="true">
 
          <menu
@@ -221,7 +284,7 @@
             
          <action
                class="mmrnmhrm.ui.actions.DeeOpenSearchPageAction"
-               definitionId="mmrnmhrm.ui.commands.openDeeSearchPage"
+               definitionId="org.dsource.ddt.ide.ui.commands.openDeeSearchPage"
                icon="icons/search_obj.gif"
                id="deeOpenSearchPage"
                label="%OpenLangSearchPageAction.label"
@@ -229,7 +292,7 @@
          </action>
  
            <action
-               definitionId="mmrnmhrm.ui.commands.openDeeTypeInHierarchy"
+               definitionId="org.dsource.ddt.ide.ui.commands.openDeeTypeInHierarchy"
                label="%OpenTypeInHierarchyAction.label"
                tooltip="%OpenTypeInHierarchyAction.tooltip"
                class="mmrnmhrm.ui.actions.DeeOpenTypeInHierarchyAction"
@@ -238,7 +301,7 @@
          </action>
             
          <action
-            definitionId="mmrnmhrm.ui.commands.openDeeType"
+            definitionId="org.dsource.ddt.ide.ui.commands.openDeeType"
             class="mmrnmhrm.ui.actions.DeeOpenTypeAction"
             icon="icons/action16e/opentype.gif"
             id="openType"
@@ -250,67 +313,6 @@
       </actionSet>
    </extension>
    <extension
-         point="org.eclipse.ui.commands">
-      <category
-            description="Mmrnmhrm Command Category"
-            id="mmrnmhrm.ui.commands.category1"
-            name="Mmrnmhrm Command Category">
-      </category>
-      <command
-            categoryId="mmrnmhrm.ui.commands.category1"
-            defaultHandler="mmrnmhrm.ui.actions.SampleTest1Handler"
-            id="mmrnmhrm.ui.commands.sampleCommand"
-            name="Test Action">
-      </command>
-      <command
-            categoryId="mmrnmhrm.ui.commands.category1"
-            defaultHandler="mmrnmhrm.ui.actions.SampleTest2Handler"
-            id="mmrnmhrm.ui.commands.sampleCommand2"
-            name="Test Action2">
-      </command>
-      <command
-            categoryId="mmrnmhrm.ui.commands.category1"
-            defaultHandler="mmrnmhrm.ui.actions.AddSourceFolderHandler"
-            id="mmrnmhrm.ui.commands.buildPathAdd"
-            name="Add as Folder Library">
-      </command>
-	<command
-       categoryId="mmrnmhrm.ui.commands.category1"
-       id="mmrnmhrm.ui.commands.openDefinition"
-       name="Open Definition">
-      </command>
- <command
-       categoryId="mmrnmhrm.ui.commands.category1"
-       defaultHandler="mmrnmhrm.ui.actions.DeeInvokeContentAssistHandler"
-       id="mmrnmhrm.ui.commands.invokeContentAssist"
-       name="Content Assist (Mmrnmhrm)">
- </command>
- <command
-       categoryId="mmrnmhrm.ui.commands.category1"
-       defaultHandler="mmrnmhrm.ui.actions.DeeOpenTypeHandler"
-       id="mmrnmhrm.ui.commands.openDeeType"
-       name="%OpenTypeAction.label">
- </command>
- 
- <command
-       categoryId="mmrnmhrm.ui.commands.category1"
-       id="mmrnmhrm.ui.commands.openDeeTypeInHierarchy"
-       name="%OpenTypeInHierarchyAction.label">
- </command>
-
- <command
-       categoryId="mmrnmhrm.ui.commands.category1"
-       defaultHandler="mmrnmhrm.ui.actions.DeeOpenSearchPageHandler"
-       id="mmrnmhrm.ui.commands.openDeeSearchPage"
-       name="%OpenLangSearchPageAction.label">
- </command>
- <command
-       categoryId="mmrnmhrm.ui.commands.category1"
-       id="org.eclipse.dltk.ui.edit.text.script.search.references.in.workspace"
-       name="&quot;&lt;FNORD&gt;&quot;">
- </command>
-   </extension>
-   <extension
          point="org.eclipse.ui.handlers">
       <handler
             class="mmrnmhrm.ui.actions.SampleHandler"
@@ -319,7 +321,7 @@
            <with
                  variable="activePartId">
               <equals
-                    value="mmrnmhrm.ui.editors.DeeEditor">
+                    value="org.dsource.ddt.ide.ui.editors.DeeEditor">
               </equals>
            </with>
         </activeWhen>
@@ -327,7 +329,7 @@
       </handler>
       <handler
             class="mmrnmhrm.ui.actions.GoToDefinitionHandler"
-            commandId="mmrnmhrm.ui.commands.openDefinition">
+            commandId="org.dsource.ddt.ide.ui.commands.openDefinition">
          <enabledWhen>
             <with
                   variable="activePart">
@@ -345,25 +347,25 @@
       <menuContribution
             locationURI="toolbar:org.eclipse.ui.main.toolbar?before=additions">
          <toolbar
-               id="mmrnmhrm.ui.toolbars.sampleToolbar">
+               id="org.dsource.ddt.ide.ui.toolbars.sampleToolbar">
             <command
-                  commandId="mmrnmhrm.ui.commands.openDeeType"
+                  commandId="org.dsource.ddt.ide.ui.commands.openDeeType"
                   icon="icons/action16e/opentype.gif"
                   label="%OpenTypeAction.label"
                   tooltip="%OpenTypeAction.tooltip">
                <visibleWhen>
                   <reference
-                        definitionId="mmrnmhrm.ui.expressions.inDeeActionSet">
+                        definitionId="org.dsource.ddt.ide.ui.expressions.inDeeActionSet">
                   </reference>
                </visibleWhen>
             </command>
             <command
-                  commandId="mmrnmhrm.ui.commands.openDefinition"
+                  commandId="org.dsource.ddt.ide.ui.commands.openDefinition"
                   icon="icons/action16e/gotodef.gif"
                   label="Open Definition">
                <visibleWhen>
                   <reference
-                        definitionId="mmrnmhrm.ui.expressions.inDeeActionSet">
+                        definitionId="org.dsource.ddt.ide.ui.expressions.inDeeActionSet">
                   </reference>
                </visibleWhen>
             </command>
@@ -372,9 +374,9 @@
       <menuContribution
             locationURI="toolbar:org.eclipse.ui.main.toolbar?before=additions">
          <toolbar
-               id="mmrnmhrm.ui.toolbars.sampleToolbar">
+               id="org.dsource.ddt.ide.ui.toolbars.sampleToolbar">
             <command
-                  commandId="mmrnmhrm.ui.commands.sampleCommand2"
+                  commandId="org.dsource.ddt.ide.ui.commands.sampleCommand2"
                   icon="icons/action16e/spathi.16.gif"
                   label="Sample Command2">
                <visibleWhen>
@@ -392,7 +394,7 @@
                      label="Build Path Extras">
                      
                   <command
-                        commandId="mmrnmhrm.ui.commands.buildPathAdd"
+                        commandId="org.dsource.ddt.ide.ui.commands.buildPathAdd"
                         icon="icons/jar_l_obj.gif"
                         mnemonic="%contributions.view.edit.mnemonic">
                      <visibleWhen>
@@ -422,7 +424,7 @@
                   <iterate
                         operator="and">
                      <reference
-                           definitionId="mmrnmhrm.core.expressions.isDeeNatureContainer">
+                           definitionId="org.dsource.ddt.ide.core.expressions.isDeeNatureContainer">
                      </reference>
                   </iterate>
                </with>
@@ -434,7 +436,7 @@
             <menuContribution
                   locationURI="popup:org.eclipse.dltk.ui.buildpath.menu?before=buildpathGroup">
                <command
-                     commandId="mmrnmhrm.ui.commands.buildPathAdd"
+                     commandId="org.dsource.ddt.ide.ui.commands.buildPathAdd"
                      icon="icons/lcl16e/add_as_source_folder.gif"
                      mnemonic="%contributions.view.edit.mnemonic">
                   <visibleWhen>
@@ -457,32 +459,32 @@
    <extension
          point="org.eclipse.ui.bindings">
       <key
-            commandId="mmrnmhrm.ui.commands.openDefinition"
-            contextId="mmrnmhrm.ui.contexts.DeeEditor"
+            commandId="org.dsource.ddt.ide.ui.commands.openDefinition"
+            contextId="org.dsource.ddt.ide.ui.contexts.DeeEditor"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="F3">
       </key>
       <key
-            commandId="mmrnmhrm.ui.commands.invokeContentAssist"
-            contextId="mmrnmhrm.ui.contexts.DeeEditor"
+            commandId="org.dsource.ddt.ide.ui.commands.invokeContentAssist"
+            contextId="org.dsource.ddt.ide.ui.contexts.DeeEditor"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="Ctrl+Space">
       </key>
       <key
-            commandId="mmrnmhrm.ui.commands.openDeeType"
-            contextId="mmrnmhrm.ui.contexts.DeeEditor"
+            commandId="org.dsource.ddt.ide.ui.commands.openDeeType"
+            contextId="org.dsource.ddt.ide.ui.contexts.DeeEditor"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+M2+T">
       </key>
       <key
-            commandId="mmrnmhrm.ui.commands.openDeeSearchPage"
-            contextId="mmrnmhrm.ui.contexts.DeeEditor"
+            commandId="org.dsource.ddt.ide.ui.commands.openDeeSearchPage"
+            contextId="org.dsource.ddt.ide.ui.contexts.DeeEditor"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+M2+H">
       </key>
       <key
             commandId="org.eclipse.dltk.ui.edit.text.script.search.references.in.workspace"
-            contextId="mmrnmhrm.ui.contexts.DeeEditor"
+            contextId="org.dsource.ddt.ide.ui.contexts.DeeEditor"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+M2+G">
       </key>
@@ -496,7 +498,7 @@
             enabled="true"
             extensions="d,di,dh:90"
             icon="$nl$/icons/sample.gif"
-            id="mmrnmhrm.ui.DeeSearchPage"
+            id="org.dsource.ddt.ide.ui.DeeSearchPage"
             label="%LangSearchPage.label"
             showScopeSection="true"
             sizeHint="460,160">
@@ -507,7 +509,7 @@
          point="org.eclipse.ui.navigator.viewer">
       <viewerContentBinding viewerId="org.eclipse.ui.navigator.ProjectExplorer">
          <includes>
-            <contentExtension pattern="mmrnmhrm.ui.navigatorContent"/>
+            <contentExtension pattern="org.dsource.ddt.ide.ui.navigatorContent"/>
          </includes>
       </viewerContentBinding>
    </extension>
@@ -517,14 +519,14 @@
             activeByDefault="true"
             contentProvider="mmrnmhrm.ui.navigator.DeeNavigatorContentProvider"
             icon="icons/sample.gif"
-            id="mmrnmhrm.ui.navigatorContent"
+            id="org.dsource.ddt.ide.ui.navigatorContent"
             labelProvider="mmrnmhrm.ui.navigator.DeeNavigatorLabelProvider"
-            name="Dee Elements"
+            name="D Elements"
             priority="high">
          <triggerPoints>
             <or>
                <reference
-                     definitionId="mmrnmhrm.core.expressions.isDeeNature">
+                     definitionId="org.dsource.ddt.ide.core.expressions.isDeeNature">
                </reference>
             </or>
          </triggerPoints>
@@ -538,15 +540,15 @@
          </possibleChildren>
          <actionProvider
                class="mmrnmhrm.ui.navigator.DeeCommonActionProvider"
-               id="mmrnmhrm.ui.actions.navigatorActionProvider">
+               id="org.dsource.ddt.ide.ui.actions.navigatorActionProvider">
          </actionProvider>
       </navigatorContent>
    </extension>
    <extension
          point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectorTargets">
       <target
-            id="mmrnmhrm.ui.texteditor.deeCodeTarget"
-            name="Dee Code Target">
+            id="org.dsource.ddt.ide.ui.texteditor.deeCodeTarget"
+            name="D Code Target">
          <context
                type="org.eclipse.ui.texteditor.ITextEditor">
          </context>
@@ -556,18 +558,18 @@
          point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
       <hyperlinkDetector
             class="mmrnmhrm.ui.editor.text.DeeHyperlinkDetector"
-            id="mmrnmhrm.ui.editor.text.DeeHyperlinkDetector2"
-            name="Dee Element"
-            targetId="mmrnmhrm.ui.texteditor.deeCodeTarget">
+            id="org.dsource.ddt.ide.ui.editor.text.DeeHyperlinkDetector2"
+            name="D Element"
+            targetId="org.dsource.ddt.ide.ui.texteditor.deeCodeTarget">
       </hyperlinkDetector>
    </extension>
    <extension
          point="org.eclipse.dltk.ui.buildpathContainerPage">
       <buildpathContainerPage
             class="mmrnmhrm.ui.wizards.DeeCompilerContainerWizardPage"
-            id="mmrnmrhm.core.launching.INTERPRETER_CONTAINER"
+            id="org.dsource.ddt.ide.core.launching.INTERPRETER_CONTAINER"
             name="D System Libraries"
-            nature="mmrnmhrm.core.nature">
+            nature="org.dsource.ddt.ide.core.nature">
       </buildpathContainerPage>
    </extension>
    <extension
@@ -575,8 +577,8 @@
       <launchConfigurationTabGroup
             class="mmrnmhrm.ui.launch.DeeTabGroup"
             description="%LangTabGroup.description"
-            id="mmrnmhrm.ui.launchConfigurationTabGroup1"
-            type="mmrnmhrm.core.deeLaunchConfigurationType">
+            id="org.dsource.ddt.ide.ui.launchConfigurationTabGroup1"
+            type="org.dsource.ddt.ide.core.deeLaunchConfigurationType">
       </launchConfigurationTabGroup>
    </extension>
    <extension
@@ -585,7 +587,7 @@
             class="mmrnmhrm.ui.launch.DeeLaunchShortcut"
             description="%LangLaunchShortcut.description"
             icon="$nl$/icons/d_app.gif"
-            id="mmrnmhrm.ui.launch.launchShortcut"
+            id="org.dsource.ddt.ide.ui.launch.launchShortcut"
             label="%LangLaunchShortcut.name"
             modes="run, debug">
          <description
@@ -602,7 +604,7 @@
                 <count value="1"/>
                 <iterate>
                   <!--
-                  <test args="mmrnmhrm.core.nature"
+                  <test args="org.dsource.ddt.ide.core.nature"
                     property="org.eclipse.dltk.launching.hasProjectNature">
                   </test>
                   -->
@@ -612,7 +614,7 @@
                     </adapt>
                     <adapt type="org.eclipse.core.resources.IProject">
                       <test property="org.eclipse.core.resources.projectNature"
-                        value="mmrnmhrm.core.nature"/>
+                        value="org.dsource.ddt.ide.core.nature"/>
                     </adapt>
                	  </or>
                 </iterate>
@@ -632,17 +634,17 @@
    <extension
          point="org.eclipse.debug.ui.launchConfigurationTypeImages">
       <launchConfigurationTypeImage
-            configTypeID="mmrnmhrm.core.deeLaunchConfigurationType"
+            configTypeID="org.dsource.ddt.ide.core.deeLaunchConfigurationType"
             icon="$nl$/icons/d_app.gif"
-            id="mmrnmhrm.ui.launchConfigurationTypeImage1">
+            id="org.dsource.ddt.ide.ui.launchConfigurationTypeImage1">
       </launchConfigurationTypeImage>
    </extension>
    
    
    	<extension point="org.eclipse.ui.editorActions">
 		<editorContribution
-			targetID="mmrnmhrm.ui.editors.DeeEditor"
-			id="mmrnmhrm.ui.editor.DeeEditor.BreakpointRulerActions">
+			targetID="org.dsource.ddt.ide.ui.editors.DeeEditor"
+			id="org.dsource.ddt.ide.ui.editor.DeeEditor.BreakpointRulerActions">
 
 			<action label="%ToggleBreakpoint.label"
 				class="org.eclipse.debug.ui.actions.RulerToggleBreakpointActionDelegate"
@@ -653,31 +655,31 @@
 
 	<extension point="org.eclipse.ui.popupMenus">
 		<viewerContribution
-			id="mmrnmhrm.debug.ui.rulerContribution"
+			id="org.dsource.ddt.ide.debug.ui.rulerContribution"
 			targetID="#DeeRulerContext">
 
 			<action label="%EnableDisableBreakpoint.label"
-				id="mmrnmhrm.ui.actions.RulerEnableDisableBreakpointActionDelegate"
+				id="org.dsource.ddt.ide.ui.actions.RulerEnableDisableBreakpointActionDelegate"
 				class="org.eclipse.debug.ui.actions.RulerEnableDisableBreakpointActionDelegate"
 				menubarPath="debug">
 			</action>
 
 			<action label="%ToggleBreakpoint.label"
-				id="mmrnmhrm.ui.actions.RulerToggleBreakpointActionDelegate"
+				id="org.dsource.ddt.ide.ui.actions.RulerToggleBreakpointActionDelegate"
 				class="org.eclipse.debug.ui.actions.RulerToggleBreakpointActionDelegate"
 				menubarPath="debug">
 			</action>
 
 			<action
 				class="org.eclipse.dltk.debug.ui.actions.ScriptBreakpointPropertiesRulerActionDelegate"
-				id="mmrnmhrm.debug.ui.ScriptBreakpointPropertiesRulerActionDelegate"
+				id="org.dsource.ddt.ide.debug.ui.ScriptBreakpointPropertiesRulerActionDelegate"
 				label="%BreakpointProperties.label" 
 				menubarPath="group.properties" />
 		</viewerContribution>
 		
 		<viewerContribution 
 			targetID="#DeeEditorContext"
-			id="mmrnmhrm.ui.DebugPopupActions">
+			id="org.dsource.ddt.ide.ui.DebugPopupActions">
 			<visibility>
 				<and>
 					<systemProperty
@@ -692,21 +694,21 @@
 			<action label="%ScriptWatch.label"
 				class="org.eclipse.dltk.internal.debug.ui.actions.ScriptWatchAction"
 				menubarPath="additions"
-				id="mmrnmhrm.debug.ui.ScriptWatch">
+				id="org.dsource.ddt.ide.debug.ui.ScriptWatch">
 			</action>
 			<!-- icon="$nl$/icons/etool16/insp_sbook.gif" -->
 			<action label="%ScriptInspect.label"
 				definitionId="org.eclipse.dltk.debug.ui.commands.ScriptInspect"
 				class="org.eclipse.dltk.internal.debug.ui.actions.PopupScriptInspectAction"
 				menubarPath="additions"
-				id="mmrnmhrm.debug.ui.ScriptInspect">
+				id="org.dsource.ddt.ide.debug.ui.ScriptInspect">
 			</action>
 			<!-- icon="$nl$/icons/etool16/disp_sbook.gif" -->
 			<action label="%ScriptDisplay.label"
 				definitionId="org.eclipse.dltk.debug.ui.commands.ScriptDisplay"
 				class="org.eclipse.dltk.internal.debug.ui.actions.PopupScriptDisplayAction"
 				menubarPath="additions"
-				id="mmrnmhrm.debug.ui.ScriptDisplay">
+				id="org.dsource.ddt.ide.debug.ui.ScriptDisplay">
 			</action>
 		</viewerContribution>
 	</extension>
@@ -714,19 +716,19 @@
 	<extension point="org.eclipse.ui.actionSetPartAssociations">
 		<actionSetPartAssociation
 			targetID="org.eclipse.debug.ui.launchActionSet">
-			<part id="mmrnmhrm.ui.editors.DeeEditor" />
+			<part id="org.dsource.ddt.ide.ui.editors.DeeEditor" />
 		</actionSetPartAssociation>
 		<actionSetPartAssociation
 			targetID="org.eclipse.debug.ui.launchActionSet">
 			<part id="org.eclipse.dltk.ui.ScriptExplorer" />
-			<part id="mmrnmhrm.ui.editors.DeeEditor" />
+			<part id="org.dsource.ddt.ide.ui.editors.DeeEditor" />
 		</actionSetPartAssociation>
 	</extension>
 
 	<extension point="org.eclipse.dltk.debug.scriptDebugModel">
       <debugModel
             debugModelId="descent.debug.core.model"
-            natureId="mmrnmhrm.core.nature"
+            natureId="org.dsource.ddt.ide.core.nature"
             typeFactory="mmrnmhrm.ui.launch.RubyTypeFactory">
       </debugModel>
 	</extension>
@@ -734,8 +736,8 @@
        point="org.eclipse.dltk.ui.scriptDocumentationProviders">
     <provider
           class="mmrnmhrm.ui.editor.doc.DeeDocumentationProvider"
-          id="mmrnmhrm.ui.DeeDocumentationProvider"
-          nature="mmrnmhrm.core.nature">
+          id="org.dsource.ddt.ide.ui.DeeDocumentationProvider"
+          nature="org.dsource.ddt.ide.core.nature">
     </provider>
  </extension>
    

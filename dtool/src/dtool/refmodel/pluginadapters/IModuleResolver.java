@@ -4,7 +4,7 @@ import dtool.ast.definitions.Module;
 
 /** 
  * Adapter interface for plugin DTool to interface with a host plugin that 
- * knows how to find modules (such as mmrnmhrm.core's DeeModelRoot)
+ * knows how to find modules (used by the IDE plugins for example)
  */
 public interface IModuleResolver {
 
