@@ -1,9 +1,10 @@
 = Mmrnmhrm Change Log =
 
-== Mmrnmhrm 0.3.2 (devel) ==
+== DDT 0.4.0 (devel) ==
+ * Renamed project to DDT
+ * Updated IDE to latest DLTK version (2.0).
  * Fixed comment indentation character (was '#' instead of '//') on toggle comment actions 
  * Fixed defaults bug in DeeRootPreferencePage and DeeEditorPreferencePage.
- 
  
 == Mmrnmhrm 0.3.1 (2010-04-12) ==
  * Updated IDE to latest DLTK version (1.0), fixed bugs related to DLTK version migration.
