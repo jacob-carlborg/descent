@@ -1,6 +1,7 @@
 = Mmrnmhrm Change Log =
 
 == DDT 0.4.0 (devel) ==
+ * Added DEEBUILDER.COMPILEREXEPATH variable to builder, changed builder response file defaults.
  * Renamed project to DDT
  * Updated IDE to latest DLTK version (2.0).
  * Fixed comment indentation character (was '#' instead of '//') on toggle comment actions 

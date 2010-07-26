@@ -23,8 +23,8 @@ public class DeeBuildOptions {
 		buildType = EBuildTypes.EXECUTABLE;
 		artifactName = projname + getOSExtension();
 		outputDir = new Path(defaultOutputFolder());
-		buildToolCmdLine = "build -rfbuild.rf";
-		buildCommands = DeeBuilder.getDefaultRebuildBuildFileData();
+		buildToolCmdLine = DeeBuilder.getDefaultBuildToolCmdLine();
+		buildCommands = DeeBuilder.getDefaultBuildFileData();
 	}
 
 	private static String getOSExtension() {

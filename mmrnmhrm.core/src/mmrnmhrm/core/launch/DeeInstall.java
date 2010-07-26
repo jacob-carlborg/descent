@@ -41,8 +41,14 @@ public class DeeInstall extends AbstractInterpreterInstall {
 		return null;
 	}
 	
-	public IPath getCompilerPath() {
+	/** Get the path of the compiler directory */
+	public IPath getCompilerBasePath() {
 		return getInstallLocation().getPath().removeLastSegments(1);
+	}
+	
+	/** Get the full path of the compiler, including the executable */
+	public IPath getCompilerFullPath() {
+		return getInstallLocation().getPath();
 	}
 	
 }
