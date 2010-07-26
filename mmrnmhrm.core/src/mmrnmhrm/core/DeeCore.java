@@ -14,7 +14,7 @@ import dtool.refmodel.ReferenceResolver;
  */
 public class DeeCore extends LangCore {
 	
-	public static final String PLUGIN_ID = "mmrnmhrm.core";
+	public static final String PLUGIN_ID = "org.dsource.ddt.ide.core";
 	public final static String BUILDER_ID = PLUGIN_ID + ".deebuilder";
 	
 	protected static DeeCore pluginInstance;

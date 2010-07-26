@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.dsource.mmrnmhrm"
+      id="org.dsource.ddt"
       label="%featureName"
       version="0.4.0.qualifier"
       provider-name="%providerName"
-      plugin="mmrnmhrm.ui">
+      plugin="org.dsource.ddt.ide.ui">
 
-   <description url="http://www.dsource.org/projects/descent/wiki/Mmrnmhrm">
+   <description url="http://www.dsource.org/projects/ddt">
       %description
    </description>
 
@@ -29,21 +29,21 @@
    </requires>
 
    <plugin
-         id="mmrnmhrm.core"
+         id="org.dsource.ddt.ide.core"
          download-size="0"
          install-size="0"
          version="0.4.0.qualifier"
          unpack="false"/>
 
    <plugin
-         id="mmrnmhrm.ui"
+         id="org.dsource.ddt.ide.ui"
          download-size="0"
          install-size="0"
          version="0.4.0.qualifier"
          unpack="false"/>
 
    <plugin
-         id="dtool"
+         id="org.dsource.ddt.dtool"
          download-size="0"
          install-size="0"
          version="0.4.0.qualifier"

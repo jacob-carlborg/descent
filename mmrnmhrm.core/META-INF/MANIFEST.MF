@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
-Bundle-SymbolicName: mmrnmhrm.core;singleton:=true
+Bundle-SymbolicName: org.dsource.ddt.ide.core;singleton:=true
 Bundle-Version: 0.4.0.qualifier
 Bundle-Vendor: %pluginProvider
 Bundle-Activator: mmrnmhrm.core.DeeCore
@@ -13,8 +13,8 @@ Export-Package: dtool.tests.ref.cc;x-friends:="mmrnmhrm.core",
  mmrnmhrm.core.dltk.search,
  mmrnmhrm.core.launch,
  mmrnmhrm.core.model,
- mmrnmhrm.tests;x-friends:="mmrnmhrm.ui"
-Require-Bundle: dtool;visibility:=reexport,
+ mmrnmhrm.tests;x-friends:="org.dsource.ddt.ide.ui"
+Require-Bundle: org.dsource.ddt.dtool;visibility:=reexport,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.core.filebuffers,

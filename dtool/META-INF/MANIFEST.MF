@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
-Bundle-SymbolicName: dtool;singleton:=true
+Bundle-SymbolicName: org.dsource.ddt.dtool;singleton:=true
 Bundle-Version: 0.4.0.qualifier
 Bundle-Vendor: %pluginProvider
 Bundle-Localization: plugin
@@ -24,6 +24,6 @@ Export-Package: dtool,
  dtool.parser,
  dtool.refmodel,
  dtool.refmodel.pluginadapters,
- dtool.tests;x-friends:="mmrnmhrm.core,mmrnmhrm.ui",
+ dtool.tests;x-friends:="org.dsource.ddt.ide.core,org.dsource.ddt.ide.ui",
  org.ini4j,
  org.ini4j.addon

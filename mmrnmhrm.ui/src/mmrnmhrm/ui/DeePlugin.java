@@ -18,7 +18,7 @@ import dtool.Logg;
 
 public class DeePlugin extends LangPlugin {
 
-	public static final String PLUGIN_ID ="mmrnmhrm.ui";
+	public static final String PLUGIN_ID ="org.dsource.ddt.ide.ui";
 
 	public static boolean initialized; 
 	protected static DeePlugin pluginInstance;
