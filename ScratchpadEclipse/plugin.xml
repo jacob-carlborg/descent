@@ -6,7 +6,7 @@
          id="product"
          point="org.eclipse.core.runtime.products">
       <product
-            application="testproduct.application"
+            application="scratchpad.app.application"
             name="Test Product Launch">
          <property
                name="appName"

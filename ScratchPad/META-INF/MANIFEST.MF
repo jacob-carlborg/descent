@@ -3,19 +3,21 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Scratchpad
 Bundle-SymbolicName: scratchpad;singleton:=true
 Bundle-Version: 1.1.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.eclipse.swt;bundle-version="3.4.0",
  org.eclipse.jface;bundle-version="3.4.0",
  org.eclipse.core.runtime;bundle-version="3.4.0",
  org.apache.commons.lang;bundle-version="2.3.0";resolution:=optional,
  org.eclipse.swtbot.swt.finder;bundle-version="2.0.0";resolution:=optional,
  org.eclipse.ui.forms;bundle-version="3.3.0",
- org.junit4;bundle-version="4.5.0";resolution:=optional
+ org.junit4;bundle-version="4.5.0";resolution:=optional,
+ org.dsource.melnorme;bundle-version="1.4.1";visibility:=reexport
 Bundle-ClassPath: .,
  lib/nattable-core-1.6.5.jar,
  lib/net.java.dev.glazedlists.glazedlists_java15-1.7.0-001.jar
 Import-Package: melnorme.miscutil
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: foo;x-internal:=true,
  scratch,
  scratch.swt,
  scratch.utils
+Bundle-ActivationPolicy: lazy
