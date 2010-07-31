@@ -21,7 +21,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.dltk.core.IScriptProject;
 
 import dtool.ast.definitions.Module;
-import dtool.parser.Convertion_PhobosTest;
+import dtool.parser.MassParse__CommonTest;
 
 /**
  * This classes creates a sample project 
@@ -80,16 +80,16 @@ public abstract class SampleMainProject extends CoreTestUtils {
 		createSrcFolderInProject(ITestDataConstants.SAMPLE_SRC3, project.getFolder(TEST_SRC3));
 		
 		
-		copyDToolCommonResource(Convertion_PhobosTest.TESTSRC_PHOBOS1_OLD);
-		ModelUtil.addSourceFolder(project.getFolder(Convertion_PhobosTest.TESTSRC_PHOBOS1_OLD__HEADER), null);
-		ModelUtil.addSourceFolder(project.getFolder(Convertion_PhobosTest.TESTSRC_PHOBOS1_OLD__INTERNAL), null);
+		copyDToolCommonResource(MassParse__CommonTest.TESTSRC_PHOBOS1_OLD);
+		ModelUtil.addSourceFolder(project.getFolder(MassParse__CommonTest.TESTSRC_PHOBOS1_OLD__HEADER), null);
+		ModelUtil.addSourceFolder(project.getFolder(MassParse__CommonTest.TESTSRC_PHOBOS1_OLD__INTERNAL), null);
 		
-		copyDToolCommonResource(Convertion_PhobosTest.TESTSRC_TANGO_0_99);
-		ModelUtil.addSourceFolder(project.getFolder(Convertion_PhobosTest.TESTSRC_TANGO_0_99), null);
+		copyDToolCommonResource(MassParse__CommonTest.TESTSRC_TANGO_0_99);
+		ModelUtil.addSourceFolder(project.getFolder(MassParse__CommonTest.TESTSRC_TANGO_0_99), null);
 	}
 	
 	private static void copyDToolCommonResource(String resourcePath) throws CoreException {
-		File testFile = Convertion_PhobosTest.getCommonResource(resourcePath);
+		File testFile = MassParse__CommonTest.getCommonResource(resourcePath);
 		copyURLResourceToWorkspace(testFile.toURI(), project.getFolder(resourcePath));
 	}
 	
