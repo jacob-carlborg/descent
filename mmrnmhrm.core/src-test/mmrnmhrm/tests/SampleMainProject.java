@@ -84,8 +84,8 @@ public abstract class SampleMainProject extends CoreTestUtils {
 		ModelUtil.addSourceFolder(project.getFolder(Convertion_PhobosTest.TESTSRC_PHOBOS1_OLD__HEADER), null);
 		ModelUtil.addSourceFolder(project.getFolder(Convertion_PhobosTest.TESTSRC_PHOBOS1_OLD__INTERNAL), null);
 		
-		copyDToolCommonResource(Convertion_PhobosTest.TESTSRC_TANGO);
-		ModelUtil.addSourceFolder(project.getFolder(Convertion_PhobosTest.TESTSRC_TANGO), null);
+		copyDToolCommonResource(Convertion_PhobosTest.TESTSRC_TANGO_0_99);
+		ModelUtil.addSourceFolder(project.getFolder(Convertion_PhobosTest.TESTSRC_TANGO_0_99), null);
 	}
 	
 	private static void copyDToolCommonResource(String resourcePath) throws CoreException {
