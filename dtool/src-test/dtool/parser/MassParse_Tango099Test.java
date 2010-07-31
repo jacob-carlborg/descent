@@ -9,7 +9,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
-public class MassParse_Tango099Test extends Convertion_PhobosTest {
+public class MassParse_Tango099Test extends MassParse__CommonTest {
 	
 	
 	@Parameters

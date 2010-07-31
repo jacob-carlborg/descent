@@ -19,7 +19,7 @@ import dtool.tests.DToolTestUtils;
 /**
  * Test conversion of common sources (Phobos, Tango)
  */
-public abstract class Convertion_PhobosTest extends Parser__CommonTest {
+public abstract class MassParse__CommonTest extends Parser__CommonTest {
 	
 	public static final String COMMON = "common/";
 	private static final String COMMON_UNPACK = "_common-unpack/";
@@ -69,7 +69,7 @@ public abstract class Convertion_PhobosTest extends Parser__CommonTest {
 	
 	private final File file;
 	
-	public Convertion_PhobosTest(File file) {
+	public MassParse__CommonTest(File file) {
 		this.file = file;
 	}
 	

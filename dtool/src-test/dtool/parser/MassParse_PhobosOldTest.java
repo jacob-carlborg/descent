@@ -9,7 +9,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
-public class MassParse_PhobosOldTest extends Convertion_PhobosTest {
+public class MassParse_PhobosOldTest extends MassParse__CommonTest {
 	
 	@Parameters
 	public static Collection<Object[]> filesToParse() throws IOException {
