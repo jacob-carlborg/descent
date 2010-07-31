@@ -127,6 +127,7 @@
 		
 		<!-- Invoke PDE Build -->
 		<java jar="${builder.pdebuild.launcher}" fork="true" failonerror="true" >
+			<arg line="-data ${build.dir}/workspace" />
 			<arg line="-application org.eclipse.ant.core.antRunner" />
 			<arg line="-buildfile ${builder.pdebuild.buildfile}" />
 			<arg value="-Dbuilder=${basedir}/product.configdir" />
