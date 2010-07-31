@@ -55,12 +55,11 @@ public abstract class Assert {
 	 * @return <code>true</code> if the check passes (does not return
 	 *    if the check fails)
 	 */
-	public static boolean isTrue(boolean expression, String message) {
+	public static void isTrue(boolean expression, String message) {
 		if (!expression) {
 			expression = false;  // BREAKPOINT: dummy statement to allow breakpoint placement
 			throw new AssertionFailedException(message); //$NON-NLS-1$
 		}
-		return expression;
 	}
 	
 	/** Asserts that the given boolean is <code>true</code>. If this
@@ -70,18 +69,18 @@ public abstract class Assert {
 	 * @return <code>true</code> if the check passes (does not return
 	 *    if the check fails)
 	 */
-	public static boolean assertTrue(boolean expression, String message) {
-		return Assert.isTrue(expression, message);
+	public static void assertTrue(boolean expression, String message) {
+		Assert.isTrue(expression, message);
 	}
 	
 	/** Like {@link #isTrue(boolean, String)} with empty message
 	 */
-	public static boolean isTrue(boolean expression) {
-		return Assert.isTrue(expression, null); //$NON-NLS-1$
+	public static void isTrue(boolean expression) {
+		Assert.isTrue(expression, null); //$NON-NLS-1$
 	}
 	/** Like {@link #isTrue(boolean, String)} with empty message */
-	public static boolean assertTrue(boolean expression) {
-		return Assert.isTrue(expression, null); //$NON-NLS-1$
+	public static void assertTrue(boolean expression) {
+		Assert.isTrue(expression, null); //$NON-NLS-1$
 	}
 	
 	

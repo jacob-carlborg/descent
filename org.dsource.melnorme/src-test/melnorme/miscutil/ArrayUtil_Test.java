@@ -78,6 +78,19 @@ public final class ArrayUtil_Test {
 //		List[] objX2 = ArrayUtil.createFrom(list(STRING), Object.class);
 	}
 	
+	@Test
+	@SuppressWarnings("unused")
+	public void test_create() {
+		Object[]  obj01  = ArrayUtil.create(12, Object.class);
+		String[]  obj01x = (String[]) ArrayUtil.create(12, (Class<?>) String.class);
+		String[]  obj02  = ArrayUtil.create(16, new String[2]);
+		// Ensure proper runtime component type is created
+		String[]  obj02x  = (String[]) ArrayUtil.create(16, (Object[]) new String[2]);
+		
+		// The following must be tested manually
+		// uncomment to make sure each line causes a compilation error
+	}
+	
 	public final Integer[] EMPTY_INTEGER_ARRAY = array();
 
 	public static <T> T[] array(T... elems) {
@@ -89,6 +102,17 @@ public final class ArrayUtil_Test {
     	assertTrue(Arrays.equals(a, b));
     }
 
+	@Test
+	public void test_concat() {
+		Integer[] arr1 = array(0, 1, 2, 3, 4);
+		Integer[] arr2 = array(10, 11, 12, 13, 14);
+		
+		assertDeepEquals(ArrayUtil.concat(arr1, arr2), array(0, 1, 2, 3, 4, 10, 11, 12, 13, 14));
+		assertDeepEquals(ArrayUtil.concat(arr1, arr2, 0), array(0, 1, 2, 3, 4));
+		assertDeepEquals(ArrayUtil.concat(arr1, arr2, 2), array(0, 1, 2, 3, 4, 10, 11));
+		assertDeepEquals(ArrayUtil.concat(arr1, arr2, 5), array(0, 1, 2, 3, 4, 10, 11, 12, 13, 14));
+	}
+	
 	@Test
 	public void test_filter() {
 		Integer[] arr1 = array(0, 1, 2, 3, 4);
@@ -117,14 +141,39 @@ public final class ArrayUtil_Test {
 	}
 	
 	@Test
-	public void test_concat() {
-		Integer[] arr1 = array(0, 1, 2, 3, 4);
-		Integer[] arr2 = array(10, 11, 12, 13, 14);
+	public void test_map() {
+		List<String> list1 = Arrays.asList("a", "bc" , "Foo");
+		String[] arr1 = ArrayUtil.createFrom(list1, String.class);
+		Integer[] result1 = new Integer[] {1, 2, 3};
 		
-		assertDeepEquals(ArrayUtil.concat(arr1, arr2), array(0, 1, 2, 3, 4, 10, 11, 12, 13, 14));
-		assertDeepEquals(ArrayUtil.concat(arr1, arr2, 0), array(0, 1, 2, 3, 4));
-		assertDeepEquals(ArrayUtil.concat(arr1, arr2, 2), array(0, 1, 2, 3, 4, 10, 11));
-		assertDeepEquals(ArrayUtil.concat(arr1, arr2, 5), array(0, 1, 2, 3, 4, 10, 11, 12, 13, 14));
+		final Function<String, Integer> eval1 = new Function<String, Integer>() {
+			@Override
+			public Integer evaluate(String obj) {
+				return obj.length();
+			}
+		};
+		
+		ArrayUtil.map(list1, eval1);
+		ArrayUtil.map(list1, eval1, Integer.class);
+		ArrayUtil.map(list1, eval1, Number.class);
+		
+		ArrayUtil.map(arr1, eval1);
+		ArrayUtil.map(arr1, eval1, Integer.class);
+		ArrayUtil.map(arr1, eval1, Number.class);
+		
+		ArrayUtil.<String>map((String[])arr1, eval1);
+		ArrayUtil.<String, Integer>map(arr1, eval1, Integer.class);
+		ArrayUtil.<String, Number>map(arr1, eval1, Number.class);
+		
+		List<String> emptyList = CoreUtil.<List<String>>blindCast(Arrays.asList());
+		
+		asserArrayAreEqual(ArrayUtil.map(emptyList, eval1), new Object[0]);
+		asserArrayAreEqual(ArrayUtil.map(list1, eval1), result1);
+		asserArrayAreEqual(ArrayUtil.map(arr1, eval1), result1);
+	}
+
+	private void asserArrayAreEqual(Object[] arr1, Object[] arr2) {
+		assertTrue(CoreUtil.areArrayEqual(arr2, arr1));
 	}
 	
 }
