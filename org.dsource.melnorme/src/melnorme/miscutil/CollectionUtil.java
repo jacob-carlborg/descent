@@ -34,7 +34,7 @@ public class CollectionUtil {
 	}
 	
 	/** @return a new collection with all elements that match given predicate removed. */
-	public static <T> List<T> filter(Collection<? extends T> coll, IPredicate<T> predicate) {
+	public static <T> List<T> filter(Collection<? extends T> coll, Predicate<T> predicate) {
 		ArrayList<T> newColl = new ArrayList<T>();
 		for (T elem : coll) {
 			if(!predicate.evaluate(elem)) {
@@ -45,7 +45,7 @@ public class CollectionUtil {
 	}
 	
 	/** Removes from given list the first element that matches given predicate. */
-	public static <T> void removeElement(List<? extends T> list, IPredicate<T> predicate) {
+	public static <T> void removeElement(List<? extends T> list, Predicate<T> predicate) {
 		for (Iterator<? extends T> iter = list.iterator(); iter.hasNext(); ) {
 			T obj = iter.next();
 			if(predicate.evaluate(obj)) {

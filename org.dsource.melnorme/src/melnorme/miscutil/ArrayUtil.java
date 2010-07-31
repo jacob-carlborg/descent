@@ -243,7 +243,7 @@ public class ArrayUtil {
 	}
 	
 	/** Return true if array contains an element that matched given predicate */
-	public static <T> boolean search(T[] array, IPredicate<T> predicate) {
+	public static <T> boolean search(T[] array, Predicate<T> predicate) {
 		for(T elem: array) {
 			if(predicate.evaluate(elem))
 				return true;
@@ -284,7 +284,7 @@ public class ArrayUtil {
 	}
 	
 	/** Filters given array, using given predicate, creating a new array. */
-	public static <T> T[] filter(T[] array, IPredicate<T> predicate) {
+	public static <T> T[] filter(T[] array, Predicate<T> predicate) {
 		T[] newArray = create(array.length, array);
 		assertTrue(newArray.length <= array.length);
 		int newIx = 0, arrayIx = 0;

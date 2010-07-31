@@ -117,7 +117,7 @@ public final class ArrayUtil_Test {
 	public void test_filter() {
 		Integer[] arr1 = array(0, 1, 2, 3, 4);
 		
-		assertDeepEquals(ArrayUtil.filter(arr1, new IPredicate<Integer>() {
+		assertDeepEquals(ArrayUtil.filter(arr1, new Predicate<Integer>() {
 			@Override
 			public boolean evaluate(Integer obj) { 
 				return true; 
@@ -125,14 +125,14 @@ public final class ArrayUtil_Test {
 		}), array(0, 1, 2, 3, 4));
 		                                                            
 
-		assertDeepEquals(ArrayUtil.filter(arr1, new IPredicate<Integer>() {
+		assertDeepEquals(ArrayUtil.filter(arr1, new Predicate<Integer>() {
 			@Override
 			public boolean evaluate(Integer obj) { 
 				return obj.intValue() % 2 == 0; 
 			};
 		}), array(0, 2, 4));
 		
-		assertDeepEquals(ArrayUtil.filter(arr1, new IPredicate<Integer>() {
+		assertDeepEquals(ArrayUtil.filter(arr1, new Predicate<Integer>() {
 			@Override
 			public boolean evaluate(Integer obj) { 
 				return false; 

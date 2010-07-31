@@ -22,22 +22,22 @@ import java.util.List;
 
 public class MiscUtil {
 	
-	public static <T> IPredicate<T> notNullPredicate() {
+	public static <T> Predicate<T> notNullPredicate() {
 		return new NotNullPredicate<T>();
 	}
 	
-	public static final class NotNullPredicate<T> implements IPredicate<T> {
+	public static final class NotNullPredicate<T> implements Predicate<T> {
 		@Override
 		public boolean evaluate(T obj) {
 			return obj != null;
 		}
 	}
 	
-	public static <T> IPredicate<T> isNullPredicate() {
+	public static <T> Predicate<T> isNullPredicate() {
 		return new IsNullPredicate<T>();
 	}
 	
-	public static final class IsNullPredicate<T> implements IPredicate<T> {
+	public static final class IsNullPredicate<T> implements Predicate<T> {
 		@Override
 		public boolean evaluate(T obj) {
 			return obj == null;
