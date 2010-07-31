@@ -12,7 +12,7 @@ public class Convertion_MiscTest extends Parser__CommonTest {
 	
 	@Test
 	public void testFoo() throws CoreException {
-		testDtoolASTConvertion(
+		testDtoolParse(
 				"module foo;" +
 				"import pack.bar;" +
 				"public import std.stdio;"
@@ -22,11 +22,11 @@ public class Convertion_MiscTest extends Parser__CommonTest {
 	@Test
 	public void testRenamed() throws CoreException {
 		// RENAMED IMPORT, static import
-		testDtoolASTConvertion(
+		testDtoolParse(
 				"module pack.modul;" +
 				"import dee = std.stdio, lang = lang.string;"
 		);
-		testDtoolASTConvertion(
+		testDtoolParse(
 				"module pack.modul;" +
 				"private static import dee_io = std.stdio;"
 		);
@@ -35,14 +35,14 @@ public class Convertion_MiscTest extends Parser__CommonTest {
 	@Test
 	public void testSelective() throws CoreException {
 		// SELECTIVE IMPORT, static import
-		testDtoolASTConvertion(
+		testDtoolParse(
 				"module pack.modul;" +
 				"import std.stdio : writefln, foo = writef;"
 		);
-		testDtoolASTConvertion(	"module pack.modul;" +
+		testDtoolParse(	"module pack.modul;" +
 				"import langio = std.stdio : writefln, foo = writef; "
 		);
-		testDtoolASTConvertion(	"module pack.modul;" +
+		testDtoolParse(	"module pack.modul;" +
 				"private static import langio = std.stdio : writefln, foo = writef; "
 		);
 	}

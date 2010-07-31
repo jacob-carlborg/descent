@@ -4,8 +4,13 @@ import static melnorme.miscutil.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 
-import org.eclipse.core.runtime.CoreException;
+import melnorme.miscutil.ArrayUtil;
+import melnorme.miscutil.Function;
+
 import org.junit.Test;
 
 import dtool.tests.DToolTestResources;
@@ -14,7 +19,7 @@ import dtool.tests.DToolTestUtils;
 /**
  * Test conversion of common sources (Phobos, Tango)
  */
-public class Convertion_PhobosTest extends Parser__CommonTest {
+public abstract class Convertion_PhobosTest extends Parser__CommonTest {
 	
 	public static final String COMMON = "common/";
 	private static final String COMMON_UNPACK = "_common-unpack/";
@@ -23,17 +28,17 @@ public class Convertion_PhobosTest extends Parser__CommonTest {
 	public static final String TESTSRC_PHOBOS1_OLD = "phobos1-old";
 	public static final String TESTSRC_PHOBOS1_OLD__HEADER = TESTSRC_PHOBOS1_OLD + "phobos-header";
 	public static final String TESTSRC_PHOBOS1_OLD__INTERNAL = TESTSRC_PHOBOS1_OLD + "phobos-internal";
-	public static final String TESTSRC_TANGO = "tango-0.99";
+	public static final String TESTSRC_TANGO_0_99 = "tango-0.99";
 	
 	static {
 		unzipSource(TESTSRC_DRUNTIME_PHOBOS2);
 		unzipSource(TESTSRC_PHOBOS1_OLD);
-		unzipSource(TESTSRC_TANGO);
+		unzipSource(TESTSRC_TANGO_0_99);
 	}
-
+	
 	private static void unzipSource(String zipName) {
 		File zipFile = DToolTestResources.getTestFile(COMMON + zipName + ".zip");
-		File outDir = new File(DToolTestResources.getInstance().getWorkingDir(), "_common-unpack/" + zipName);
+		File outDir = new File(DToolTestResources.getInstance().getWorkingDir(), COMMON_UNPACK + zipName);
 		deleteDir(outDir);
 		try {
 			DToolTestUtils.unzipFile(zipFile, outDir);
@@ -46,25 +51,35 @@ public class Convertion_PhobosTest extends Parser__CommonTest {
 		return new File(DToolTestResources.getInstance().getWorkingDir(), COMMON_UNPACK + subPath);
 	}
 	
-	private void parseFolder(String testDataPath) {
-		File folder = getCommonResource(testDataPath);
+	public static Collection<Object[]> getParseFileParameterList(File folder) throws IOException {
 		assertTrue(folder.exists() && folder.isDirectory());
-		parseFolder(folder, true);
+		ArrayList<File> deeModuleList = getDeeModuleList(folder, true);
+		
+		Function<Object, Object[]> arrayWrap = new Function<Object, Object[]>() {
+			@Override
+			public Object[] evaluate(Object obj) {
+				return new Object[] { obj };
+			};
+		};
+		
+		return Arrays.asList(ArrayUtil.map(deeModuleList, arrayWrap, Object[].class));
+	}
+	
+	/* ------------------------------------ */
+	
+	private final File file;
+	
+	public Convertion_PhobosTest(File file) {
+		this.file = file;
 	}
 	
 	@Test
-	public void testPhobosDRuntime() throws CoreException {
-		parseFolder(TESTSRC_DRUNTIME_PHOBOS2);
+	public void testParseFile() throws IOException {
+		parseFile(file, failOnSyntaxErrors());
 	}
-	
-	@Test
-	public void testPhobosHeaders() throws CoreException {
-		parseFolder(TESTSRC_PHOBOS1_OLD);
-	}
-	
-	@Test
-	public void testTango() throws CoreException {
-		parseFolder(TESTSRC_TANGO);
+
+	protected boolean failOnSyntaxErrors() {
+		return true;
 	}
 	
 }

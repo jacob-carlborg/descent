@@ -3,11 +3,13 @@ package dtool.tests;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import melnorme.miscutil.Function;
 import melnorme.miscutil.StreamUtil;
 
 public class DToolTestUtils {
@@ -58,6 +60,24 @@ public class DToolTestUtils {
 		}
 		if(dir.delete() == false) {
 			throw new RuntimeException("Failed to delete dir");
+		}
+	}
+	
+	public static void traverseFiles(File folder, boolean recurseDirs, Function<File, Void> fileVisitor,
+			FilenameFilter filter)
+			throws IOException {
+		File[] children = folder.listFiles(filter);
+		
+		if(children == null)
+			throw new IOException("Failed to listFiles for folder: " + folder);
+		
+		for (File file : children) {
+			if(file.isDirectory() && recurseDirs) {
+				fileVisitor.evaluate(file);
+				traverseFiles(file, recurseDirs, fileVisitor, filter);
+			} else {
+				fileVisitor.evaluate(file);
+			}
 		}
 	}
 	
