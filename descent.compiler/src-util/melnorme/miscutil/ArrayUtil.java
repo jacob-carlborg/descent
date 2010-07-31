@@ -13,6 +13,7 @@ package melnorme.miscutil;
 import static melnorme.miscutil.Assert.assertTrue;
 
 import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -35,6 +36,11 @@ public class ArrayUtil {
 	@SuppressWarnings("unchecked")
 	public static <T> T[] create(int length, T[] compType) {
 		return (T[]) Array.newInstance(compType.getClass().getComponentType(), length);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> T[] create(int length, Class<T> klass) {
+		return (T[]) Array.newInstance(klass, length);
 	}
 	
 	/** Creates a new array with the given length, and of the same type as the given array. */
@@ -71,82 +77,19 @@ public class ArrayUtil {
 		return copyFrom(array, array.length);
 	}
 	
+	/** Creates a copy of given array, and of type T[]. */
+	public static <T> T[] copyFrom(T[] array) {
+		return Arrays.copyOf(array, array.length);
+	}
 	
-    /**
-     * Copies the specified range of the specified array into a new array.
-     * The initial index of the range (<tt>from</tt>) must lie between zero
-     * and <tt>original.length</tt>, inclusive.  The value at
-     * <tt>original[from]</tt> is placed into the initial element of the copy
-     * (unless <tt>from == original.length</tt> or <tt>from == to</tt>).
-     * Values from subsequent elements in the original array are placed into
-     * subsequent elements in the copy.  The final index of the range
-     * (<tt>to</tt>), which must be greater than or equal to <tt>from</tt>,
-     * may be greater than <tt>original.length</tt>, in which case
-     * <tt>null</tt> is placed in all elements of the copy whose index is
-     * greater than or equal to <tt>original.length - from</tt>.  The length
-     * of the returned array will be <tt>to - from</tt>.
-     * <p>
-     * The resulting array is of exactly the same class as the original array.
-     *
-     * @param original the array from which a range is to be copied
-     * @param from the initial index of the range to be copied, inclusive
-     * @param to the final index of the range to be copied, exclusive.
-     *     (This index may lie outside the array.)
-     * @return a new array containing the specified range from the original array,
-     *     truncated or padded with nulls to obtain the required length
-     * @throws ArrayIndexOutOfBoundsException if <tt>from &lt; 0</tt>
-     *     or <tt>from &gt; original.length()</tt>
-     * @throws IllegalArgumentException if <tt>from &gt; to</tt>
-     * @throws NullPointerException if <tt>original</tt> is null
-     * @since 1.6
-     */
-    @SuppressWarnings("unchecked")
+	@Deprecated
 	public static <T> T[] copyOfRange(T[] original, int from, int to) {
-        return copyOfRange(original, from, to, (Class<T[]>) original.getClass());
+        return Arrays.copyOfRange(original, from, to);
     }
-    
-    /**
-     * Copies the specified range of the specified array into a new array.
-     * The initial index of the range (<tt>from</tt>) must lie between zero
-     * and <tt>original.length</tt>, inclusive.  The value at
-     * <tt>original[from]</tt> is placed into the initial element of the copy
-     * (unless <tt>from == original.length</tt> or <tt>from == to</tt>).
-     * Values from subsequent elements in the original array are placed into
-     * subsequent elements in the copy.  The final index of the range
-     * (<tt>to</tt>), which must be greater than or equal to <tt>from</tt>,
-     * may be greater than <tt>original.length</tt>, in which case
-     * <tt>null</tt> is placed in all elements of the copy whose index is
-     * greater than or equal to <tt>original.length - from</tt>.  The length
-     * of the returned array will be <tt>to - from</tt>.
-     * The resulting array is of the class <tt>newType</tt>.
-     *
-     * @param original the array from which a range is to be copied
-     * @param from the initial index of the range to be copied, inclusive
-     * @param to the final index of the range to be copied, exclusive.
-     *     (This index may lie outside the array.)
-     * @param newType the class of the copy to be returned
-     * @return a new array containing the specified range from the original array,
-     *     truncated or padded with nulls to obtain the required length
-     * @throws ArrayIndexOutOfBoundsException if <tt>from &lt; 0</tt>
-     *     or <tt>from &gt; original.length()</tt>
-     * @throws IllegalArgumentException if <tt>from &gt; to</tt>
-     * @throws NullPointerException if <tt>original</tt> is null
-     * @throws ArrayStoreException if an element copied from
-     *     <tt>original</tt> is not of a runtime type that can be stored in
-     *     an array of class <tt>newType</tt>.
-     * @since 1.6
-     */
-    @SuppressWarnings("unchecked")
+	
+    @Deprecated
 	public static <T,U> T[] copyOfRange(U[] original, int from, int to, Class<? extends T[]> newType) {
-        int newLength = to - from;
-        if (newLength < 0)
-            throw new IllegalArgumentException(from + " > " + to);
-        T[] copy = ((Object)newType == (Object)Object[].class)
-            ? (T[]) new Object[newLength]
-            : (T[]) Array.newInstance(newType.getComponentType(), newLength);
-        System.arraycopy(original, from, copy, 0,
-                         Math.min(original.length - from, newLength));
-        return copy;
+    	return Arrays.copyOfRange(original, from, to, newType);
     }
     
     /** Create an array from the given list, with the given run-time component type.
@@ -168,7 +111,6 @@ public class ArrayUtil {
 		return array;
 	}
 	
-
 	/** Creates an array with the same size as the given list.
 	 * If the list is null, a zero-length array is created. */
 	@SuppressWarnings("unchecked")
@@ -192,7 +134,15 @@ public class ArrayUtil {
 		newArray[base.length] = element;
 		return newArray;
 	}
-
+	
+	/** Creates a new array with given first element prepended to given rest array. */
+	public static <T> T[] prepend(T first, T... rest) {
+		T[] newArray = ArrayUtil.create(rest.length + 1, rest);
+		newArray[0] = first;
+		System.arraycopy(rest, 0, newArray, 1, rest.length);
+		return newArray;
+	}
+	
 	/** Appends given array other to given array base, 
 	 * creating a new array of the same runtime type as original. */
 	public static <T> T[] concat(T[] base, T... other) {
@@ -206,7 +156,7 @@ public class ArrayUtil {
 		System.arraycopy(other, 0, newArray, base.length, appendCount);
 		return newArray;
 	}
-
+	
 	/** Appends appendCount number of elements of given array other to given array base */
 	public static byte[] concat(byte[] base, byte[] other, int appendCount) {
 		final int length = base.length;
@@ -293,7 +243,7 @@ public class ArrayUtil {
 	}
 	
 	/** Return true if array contains an element that matched given predicate */
-	public static <T> boolean search(T[] array, IPredicate<T> predicate) {
+	public static <T> boolean search(T[] array, Predicate<T> predicate) {
 		for(T elem: array) {
 			if(predicate.evaluate(elem))
 				return true;
@@ -301,8 +251,40 @@ public class ArrayUtil {
 		return false;
 	}
 	
+	/** Is {@link #map(Object[], Function, Class)}  with klass = Object.class */
+	public static <T> Object[] map(T[] array, Function<? super T, ? extends Object> evalFunction) {
+		return ArrayUtil.map(array, evalFunction, Object.class);
+	}
+	
+	/** Creates a new array, based on given array, whose elements are produced element-wise from the original 
+	 * array using given evalFunction. */
+	public static <T, R> R[] map(T[] array, Function<? super T, ? extends R> evalFunction, Class<R> klass) {
+		R[] newArray = create(array.length, klass);
+		for(int i = 0; i < newArray.length; i++) {
+			newArray[i] = evalFunction.evaluate(array[i]);
+		}
+		return newArray;
+	}
+	
+	/** Is {@link #map(Collection, IEvalFunc, Class klass)}, IEvalFunc, Class) with klass = Object.class */
+	public static <T> Object[] map(Collection<T> coll, Function<? super T, ? extends Object> evalFunction) {
+		return map(coll, evalFunction, Object.class);
+	}
+	
+	/** Creates a new array, based on given coll, whose elements are produced element-wise from the original 
+	 * coll using given evalFunction. */
+	public static <T, R> R[] map(Collection<T> coll, Function<? super T, ? extends R> evalFunction, Class<R> klass) {
+		R[] newArray = create(coll.size(), klass);
+		int i = 0;
+		for(T elem : coll) {
+			newArray[i] = evalFunction.evaluate(elem);
+			i++;
+		}
+		return newArray;
+	}
+	
 	/** Filters given array, using given predicate, creating a new array. */
-	public static <T> T[] filter(T[] array, IPredicate<T> predicate) {
+	public static <T> T[] filter(T[] array, Predicate<T> predicate) {
 		T[] newArray = create(array.length, array);
 		assertTrue(newArray.length <= array.length);
 		int newIx = 0, arrayIx = 0;
@@ -314,7 +296,7 @@ public class ArrayUtil {
 				arrayIx++;
 			}
 		}
-		return newIx == arrayIx ? newArray : ArrayUtil.copyOfRange(newArray, 0, newIx);
+		return newIx == arrayIx ? newArray : Arrays.copyOfRange(newArray, 0, newIx);
 	}
 	
 }
