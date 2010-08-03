@@ -1324,7 +1324,14 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 			buffer.append("auto");
 		}
 		this.buffer.append(" ");
-		node.ident.accept(this);
+		
+		// BM DDT BUGFIX: added null check for node.ident:
+		if(node.ident == null) {
+			this.buffer.append("<null>");
+		} else {
+			node.ident.accept(this);
+		}
+		
 		if (templateParameters != null) {
 			visitList(templateParameters, ", ", "(", ")");
 		}
@@ -1703,6 +1710,14 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 		case TOKenum: this.buffer.append("enum"); break;
 		case TOKpure: this.buffer.append("pure"); break;
 		case TOKnothrow: this.buffer.append("nothrow"); break;
+
+		// DDT BUGFIX: added some missing cases
+		case TOKshared: this.buffer.append("shared"); break;
+		case TOKgshared: this.buffer.append("__gshared"); break;
+		case TOKtls: this.buffer.append("__thread"); break;
+		// end of BUGFIX:
+
+		
 		default:
 			throw new IllegalStateException("Invalid modifier: " + node.tok);
 		}
@@ -2423,6 +2438,13 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 			if (wrappedSymbol.getNodeType() == ASTDmdNode.FUNC_DECLARATION) {
 				return visit((FuncDeclaration) wrappedSymbol, node.parameters);
 			} else {
+				// DDT BUGFIX: add check for case where wrappedSymbol !instanceof AggregateDeclaration 
+				if(!(wrappedSymbol instanceof AggregateDeclaration)) {
+					// dont know what to print, so just print something basic.
+					String simpleName = wrappedSymbol.getClass().getSimpleName();
+					this.buffer.append("<?? " + simpleName +" "+ wrappedSymbol.ident + ">");
+					return false;
+				}
 				return visit((AggregateDeclaration) wrappedSymbol, node.parameters);
 			}
 		}

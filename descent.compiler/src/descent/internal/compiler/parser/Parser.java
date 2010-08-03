@@ -3716,9 +3716,18 @@ public class Parser extends Lexer {
 				nextToken();
 				if (token.value == TOKrbracket) // []
 				{
-					ta = new TypeDArray(t);
-					ta.setSourceRange(t.start, token.ptr + token.sourceLen
-							- t.start);
+					
+					// BM DDT BUGFIX: added null check for t
+					if(t == null) {
+						// t can be null on certain files with syntax errors
+						// try to workaround by supplying a dummy type. Not sure this is correct.
+						ta = new TypeDArray(new TypeBasic(TY.Tvoid));
+						ta.setSourceRange(token.ptr, token.sourceLen);
+					} else {
+						ta = new TypeDArray(t);
+						ta.setSourceRange(t.start, token.ptr + token.sourceLen
+								- t.start);
+					}
 
 					nextToken();
 				} else if (isDeclaration(token, 0, TOKrbracket, null)) { // It's an associative array declaration
@@ -7047,7 +7056,13 @@ public class Parser extends Lexer {
 		case TOKfile: {
 			// Id.empty might happen if we are decoding an expression.
 			// TODO fix this (low priority)
+
+			/* BM DDT BUGFIX: added null check for module.ident
+			 * The false condition here shows the original code. */
+			if(false) {
 			char[] s = filename != null ? filename : (module != null ? module.ident.ident : Id.empty);
+			}
+			char[] s = filename != null ? filename : (module != null && module.ident != null? module.ident.ident : Id.empty);
 			e = new StringExp(filename, lineNumber, s, s.length, (char) 0);
 			nextToken();
 			break;
