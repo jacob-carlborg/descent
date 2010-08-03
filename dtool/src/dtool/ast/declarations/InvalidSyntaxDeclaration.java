@@ -10,6 +10,12 @@ public class InvalidSyntaxDeclaration extends ASTNeoNode implements IStatement {
 	
 	public ASTNeoNode[] genericChildren;
 	
+	public InvalidSyntaxDeclaration(ASTDmdNode elem) {
+		convertNode(elem);
+		this.genericChildren = null;
+	}
+	
+	
 	public InvalidSyntaxDeclaration(ASTDmdNode elem, ASTNeoNode... children) {
 		convertNode(elem);
 		this.genericChildren = children;

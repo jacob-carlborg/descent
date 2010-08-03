@@ -1,5 +1,7 @@
 package dtool.ast.statements;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -20,6 +22,11 @@ public class BlockStatement extends Statement implements IScopeNode {
 	public List<IStatement> statements;
 	public boolean hasCurlyBraces; // syntax-structural?
 
+	public BlockStatement(Collection<IStatement> statements, boolean hasCurlyBraces) {
+		this.statements = new ArrayList<IStatement>(statements); 
+		this.hasCurlyBraces = hasCurlyBraces;
+	}
+	
 	public BlockStatement(descent.internal.compiler.parser.CompoundStatement elem, ASTConversionContext convContext) {
 		convertNode(elem);
 		this.statements = DescentASTConverter.convertManyL(elem.statements, statements, convContext);

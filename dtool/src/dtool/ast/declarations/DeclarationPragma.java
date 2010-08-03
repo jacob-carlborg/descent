@@ -37,7 +37,7 @@ public class DeclarationPragma extends DeclarationAttrib implements IStatement {
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, ident);
 			TreeVisitor.acceptChildren(visitor, expressions);
-			TreeVisitor.acceptChildren(visitor, NodeList.getNodes(body));
+			acceptBodyChildren(visitor);
 		}
 		visitor.endVisit(this);
 	}

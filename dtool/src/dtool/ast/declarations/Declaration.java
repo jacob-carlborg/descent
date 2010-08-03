@@ -1,5 +1,7 @@
 package dtool.ast.declarations;
 
+import static melnorme.miscutil.Assert.assertNotNull;
+
 import java.util.Iterator;
 import java.util.List;
 
@@ -28,6 +30,7 @@ public abstract class Declaration {
 		ASTNeoNode[] decls = new ASTNeoNode[declarationDefinitions.size()];
 		for(int i = 0; i < declarationDefinitions.size();i++) {
 			decls[i] = convert(declarationDefinitions.get(i), convContext);
+			assertNotNull(decls[i]);
 		}
 		return decls;
 	}
@@ -37,6 +40,9 @@ public abstract class Declaration {
 	}
 
 	public static ASTNeoNode convert(Dsymbol decl, ASTConversionContext convContext) {
+		if(decl.ident == null) {
+			return new InvalidSyntaxDeclaration(decl);
+		}
 		return (ASTNeoNode) DescentASTConverter.convertElem(decl, convContext);
 	}
 

@@ -31,7 +31,6 @@ public class RefTemplateInstance extends CommonRefSingle {
 			assertTrue(!tplIdent.hasNoSourceRangeInfo());
 		} else {
 			setSourceRange(elem);
-			Assert.isTrue(elem.getStartPos() == tplIdent.getStartPos());
 		}
 		Assert.isTrue(tplIdent.ident != null);
 		this.name = new String(tplIdent.ident);

@@ -1,6 +1,5 @@
 package dtool.ast.declarations;
 
-import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.LINK;
 import descent.internal.compiler.parser.LinkDeclaration;
 import dtool.ast.IASTNeoVisitor;
@@ -20,7 +19,7 @@ public class DeclarationLinkage extends DeclarationAttrib implements IStatement 
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, body.nodes);
+			acceptBodyChildren(visitor);
 		}
 		visitor.endVisit(this);
 	}

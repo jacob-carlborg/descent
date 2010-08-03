@@ -24,21 +24,20 @@ public class FunctionParameter extends DefUnit implements IFunctionParameter {
 	public int storageClass;
 	public Resolvable defaultValue;
 	
-	protected FunctionParameter(descent.internal.compiler.parser.Argument elem
-			, ASTConversionContext convContext) {
+	protected FunctionParameter(descent.internal.compiler.parser.Argument elem, ASTConversionContext convContext) {
 		super(elem.ident);
 		setSourceRange(elem);
-		
+		assertNotNull(elem.type);
 		
 		if(elem.type instanceof TypeBasic && ((TypeBasic)elem.type).ty.name == null) {
 			assertFail();
 			this.type = null;
-		} else 
+		} else {
 			this.type = ReferenceConverter.convertType(elem.type, convContext);
+		}
 		assertNotNull(this.type);
 		this.storageClass = elem.storageClass;
 		this.defaultValue = Expression.convert(elem.defaultArg, convContext);
-			
 	}
 	
 	public FunctionParameter(Type type, IdentifierExp id, ASTConversionContext convContext) {

@@ -7,13 +7,17 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 
+import melnorme.miscutil.ArrayUtil;
+import melnorme.miscutil.Function;
 import melnorme.miscutil.VoidFunction;
 
-import org.eclipse.core.runtime.CoreException;
 import org.junit.After;
 import org.junit.BeforeClass;
 
+import descent.internal.compiler.parser.ast.NaiveASTFlattener;
 import dtool.DeeNamingRules_Test;
 import dtool.ast.ASTChecker;
 import dtool.ast.ASTNeoNode;
@@ -21,12 +25,12 @@ import dtool.ast.definitions.Module;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.refmodel.ParserAdapter;
 import dtool.tests.DToolBaseTest;
-import dtool.tests.DToolTestResources;
 import dtool.tests.DToolTestUtils;
 
 public abstract class Parser__CommonTest extends DToolBaseTest {
 
-	protected static final String TESTFILESDIR = "parser/";
+	public static final String COMMON = "common/";
+	
 
 	public static ASTNeoNode testDtoolParse(final String source) {
 		return testDtoolParse(source, true);
@@ -37,15 +41,14 @@ public abstract class Parser__CommonTest extends DToolBaseTest {
 		if(failOnSyntaxErrors) {
 			assertTrue(mod.problems.size() == 0, "Found syntax errors while parsing.");
 		}
+		NaiveASTFlattener naiveASTFlattener = new NaiveASTFlattener();
+		mod.accept(naiveASTFlattener); // Test NaiveASTFlattener
 		
 		Module neoModule = DescentASTConverter.convertModule(mod);
 		ASTChecker.checkConsistency(neoModule);
 		return neoModule;
 	}
 	
-	public static ASTNeoNode testConversionFromFile(String filename) throws CoreException, IOException {
-		return testDtoolParse(DToolTestResources.getInstance().readTestDataFile(TESTFILESDIR+filename));
-	}
 	
 	protected static ArrayList<File> getDeeModuleList(File folder, boolean recurseDirs) throws IOException {
 		final ArrayList<File> fileList = new ArrayList<File>();
@@ -68,6 +71,20 @@ public abstract class Parser__CommonTest extends DToolBaseTest {
 		};
 		DToolTestUtils.traverseFiles(folder, recurseDirs, fileParser, filter);
 		return fileList;
+	}
+	
+	public static Collection<Object[]> getParseFileParameterList(File folder) throws IOException {
+		assertTrue(folder.exists() && folder.isDirectory());
+		ArrayList<File> deeModuleList = getDeeModuleList(folder, true);
+		
+		Function<Object, Object[]> arrayWrap = new Function<Object, Object[]>() {
+			@Override
+			public Object[] evaluate(Object obj) {
+				return new Object[] { obj };
+			};
+		};
+		
+		return Arrays.asList(ArrayUtil.map(deeModuleList, arrayWrap, Object[].class));
 	}
 	
 	protected static void parseFile(File file, boolean failOnSyntaxErrors) {

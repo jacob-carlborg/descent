@@ -1,5 +1,6 @@
 package dtool.ast.definitions;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -55,16 +56,25 @@ public class DefinitionFunction extends Definition implements IScopeNode, IState
 		this.params = DescentASTConverter.convertManyL(elemTypeFunc.parameters, this.params, convContext); 
 
 		varargs = convertVarArgs(elemTypeFunc.varargs);
-		Assert.isNotNull(elemTypeFunc.next);
-		this.rettype = ReferenceConverter.convertType(elemTypeFunc.next, convContext);
+		if(elemTypeFunc.next == null) {
+			this.rettype = new AutoFunctionReturnReference();
+		} else {
+			this.rettype = ReferenceConverter.convertType(elemTypeFunc.next, convContext);
+		}
 		Assert.isNotNull(this.rettype);
 	}
 	
 	public static ASTNeoNode convertFunctionParameter(Argument elem, ASTConversionContext convContext) {
-		if(elem.ident != null)
-			return new FunctionParameter(elem, convContext);
-		else 
+		if(elem.ident != null) {
+			if(elem.type != null) {
+				return new FunctionParameter(elem, convContext);
+			} else {
+				// strange case, likely from a syntax error
+				return new NamelessParameter(elem, elem.ident, convContext);
+			}
+		} else {
 			return new NamelessParameter(elem, convContext);
+		}
 	}
 	
 	public static int convertVarArgs(int varargs) {
@@ -154,6 +164,30 @@ public class DefinitionFunction extends Definition implements IScopeNode, IState
 			+ toStringParametersForSignature(params, varargs) 
 			+ "  " + rettype.toStringAsElement()
 			+ " - " + NodeUtil.getOuterDefUnit(this).toStringAsElement();
+	}
+	
+	public static final class AutoFunctionReturnReference extends Reference {
+		@Override
+		public void accept0(IASTNeoVisitor visitor) {
+			boolean children = visitor.visit(this);
+			if (children) {
+			}
+			visitor.endVisit(this);					}
+		
+		@Override
+		public Collection<DefUnit> findTargetDefUnits(boolean findFirstOnly) {
+			return null;
+		}
+		
+		@Override
+		public String toStringAsElement() {
+			return "auto";
+		}
+		
+		@Override
+		public boolean canMatch(DefUnit defunit) {
+			return false;
+		}
 	}
 
 }

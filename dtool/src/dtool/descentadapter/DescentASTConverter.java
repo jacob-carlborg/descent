@@ -71,12 +71,12 @@ public class DescentASTConverter extends StatementConverter {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <T extends IASTNode> List<T> convertManyL(List<? extends ASTNode> children, 
+	public static <T extends IASTNode> ArrayList<T> convertManyL(List<? extends ASTNode> children, 
 			@SuppressWarnings("unused")	List<T> dummy, ASTConversionContext convContext) {
 		DescentASTConverter conv = new DescentASTConverter(convContext);
 		if(children == null)
 			return null;
-		List<T> rets = new ArrayList<T>(children.size());
+		ArrayList<T> rets = new ArrayList<T>(children.size());
 		for (int i = 0; i < children.size(); ++i) {
 			ASTNode elem = children.get(i);
 			if(elem == null) {

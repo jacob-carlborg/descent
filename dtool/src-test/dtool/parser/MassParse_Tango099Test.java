@@ -23,7 +23,7 @@ public class MassParse_Tango099Test extends MassParse__CommonTest {
 	
 	@Override
 	protected boolean failOnSyntaxErrors() {
-		// false because this is a D1 source.
+		// allow syntax errors, because this is a D1 source.
 		return false;
 	}
 	

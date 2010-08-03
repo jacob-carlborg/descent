@@ -1,11 +1,12 @@
 package dtool.ast.definitions;
 
+import static melnorme.miscutil.Assert.assertTrue;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
 import melnorme.miscutil.ArrayUtil;
-import melnorme.miscutil.Assert;
 import melnorme.miscutil.ChainedIterator;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.TemplateDeclaration;
@@ -13,13 +14,15 @@ import descent.internal.compiler.parser.ast.IASTNode;
 import dtool.ast.ASTNeoNode;
 import dtool.ast.IASTNeoVisitor;
 import dtool.ast.declarations.Declaration;
+import dtool.ast.statements.IStatement;
 import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
 
-/*
+/**
+ * Note, ATM only valid as a statement in the shorthand syntax for an eponymous template, like class(T) { ...
  */
-public class DefinitionTemplate extends Definition implements IScopeNode {
+public class DefinitionTemplate extends Definition implements IScopeNode, IStatement {
 
 	public final TemplateParameter[] templateParams; 
 	public final ASTNeoNode[] decls;
@@ -31,8 +34,9 @@ public class DefinitionTemplate extends Definition implements IScopeNode {
 		this.decls = Declaration.convertMany(elem.members, convContext);
 		this.templateParams = TemplateParameter.convertMany(elem.parameters, convContext);
 		this.wrapper = elem.wrapper;
-		if(wrapper)
-			Assert.isTrue(decls.length == 1);
+		if(wrapper) {
+			assertTrue(decls.length == 1);
+		}
 	}
 
 	@Override

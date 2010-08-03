@@ -1,6 +1,5 @@
 package dtool.ast.declarations;
 
-import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.AlignDeclaration;
 import dtool.ast.IASTNeoVisitor;
 import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
@@ -18,7 +17,7 @@ public class DeclarationAlign extends DeclarationAttrib {
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, body.nodes);
+			acceptBodyChildren(visitor);
 		}
 		visitor.endVisit(this);
 	}

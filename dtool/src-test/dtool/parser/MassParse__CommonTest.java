@@ -1,15 +1,7 @@
 package dtool.parser;
 
-import static melnorme.miscutil.Assert.assertTrue;
-
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-
-import melnorme.miscutil.ArrayUtil;
-import melnorme.miscutil.Function;
 
 import org.junit.Test;
 
@@ -21,7 +13,6 @@ import dtool.tests.DToolTestUtils;
  */
 public abstract class MassParse__CommonTest extends Parser__CommonTest {
 	
-	public static final String COMMON = "common/";
 	private static final String COMMON_UNPACK = "_common-unpack/";
 
 	public static final String TESTSRC_DRUNTIME_PHOBOS2 = "druntime_phobos-2.047-src";
@@ -51,23 +42,9 @@ public abstract class MassParse__CommonTest extends Parser__CommonTest {
 		return new File(DToolTestResources.getInstance().getWorkingDir(), COMMON_UNPACK + subPath);
 	}
 	
-	public static Collection<Object[]> getParseFileParameterList(File folder) throws IOException {
-		assertTrue(folder.exists() && folder.isDirectory());
-		ArrayList<File> deeModuleList = getDeeModuleList(folder, true);
-		
-		Function<Object, Object[]> arrayWrap = new Function<Object, Object[]>() {
-			@Override
-			public Object[] evaluate(Object obj) {
-				return new Object[] { obj };
-			};
-		};
-		
-		return Arrays.asList(ArrayUtil.map(deeModuleList, arrayWrap, Object[].class));
-	}
-	
 	/* ------------------------------------ */
 	
-	private final File file;
+	protected final File file;
 	
 	public MassParse__CommonTest(File file) {
 		this.file = file;

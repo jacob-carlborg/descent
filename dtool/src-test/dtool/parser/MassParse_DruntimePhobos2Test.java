@@ -22,7 +22,7 @@ public class MassParse_DruntimePhobos2Test extends MassParse__CommonTest {
 	
 	@Override
 	protected boolean failOnSyntaxErrors() {
-		// TODO: Should be true here, but the parser is not up to date with D2
+		// TODO: Should be true here, but the parser is not up to date with D2 yet
 		return false;
 	}
 	

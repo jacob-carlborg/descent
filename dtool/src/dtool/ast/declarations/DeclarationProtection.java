@@ -3,12 +3,10 @@ package dtool.ast.declarations;
 import java.util.Iterator;
 
 import melnorme.miscutil.Assert;
-import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.Modifier;
 import descent.internal.compiler.parser.PROT;
 import descent.internal.compiler.parser.ProtDeclaration;
 import descent.internal.compiler.parser.ast.IASTNode;
-import dtool.ast.ASTNeoNode;
 import dtool.ast.IASTNeoVisitor;
 import dtool.ast.definitions.Definition;
 import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
@@ -31,16 +29,11 @@ public class DeclarationProtection extends DeclarationAttrib {
 		boolean children = visitor.visit(this);
 		if (children) {
 			//TreeVisitor.acceptChildren(visitor, prot);
-			TreeVisitor.acceptChildren(visitor, body.nodes);
+			acceptBodyChildren(visitor);
 		}
 		visitor.endVisit(this);
 	}
 	
-	@Override
-	public Iterator<ASTNeoNode> getMembersIterator() {
-		return body.getNodeIterator();
-	}
-
 	@Override
 	public String toStringAsElement() {
 		return "["+modifier+"]";

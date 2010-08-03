@@ -4,11 +4,20 @@ import java.io.IOException;
 
 import org.eclipse.core.runtime.CoreException;
 import org.junit.Test;
+
+import dtool.ast.ASTNeoNode;
+import dtool.tests.DToolTestResources;
 /**
  * Misc convertion tests
  */
 public class Convertion_MiscTest extends Parser__CommonTest {
-
+	
+	protected static final String TESTFILESDIR = "parser/";
+	
+	public static ASTNeoNode testConversionFromFile(String filename) throws CoreException, IOException {
+		return testDtoolParse(DToolTestResources.getInstance().readTestDataFile(TESTFILESDIR+filename));
+	}
+	
 	
 	@Test
 	public void testFoo() throws CoreException {
@@ -47,6 +56,8 @@ public class Convertion_MiscTest extends Parser__CommonTest {
 		);
 	}
 	
+	// -- all the test below should probably go to common/miscCases
+	
 	@Test
 	public void testAll() throws IOException, CoreException {
 		testConversionFromFile("testNodes.d");
@@ -81,5 +92,5 @@ public class Convertion_MiscTest extends Parser__CommonTest {
 	public void testNewExp() throws IOException, CoreException {
 		testConversionFromFile("newExp.d");
 	}
-
+	
 }

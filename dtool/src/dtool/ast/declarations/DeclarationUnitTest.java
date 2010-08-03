@@ -1,10 +1,13 @@
 package dtool.ast.declarations;
 
+import java.util.Collections;
+
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.UnitTestDeclaration;
 import dtool.ast.ASTNeoNode;
 import dtool.ast.IASTNeoVisitor;
 import dtool.ast.statements.BlockStatement;
+import dtool.ast.statements.IStatement;
 import dtool.ast.statements.Statement;
 import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 
@@ -14,7 +17,14 @@ public class DeclarationUnitTest extends ASTNeoNode {
 	
 	public DeclarationUnitTest(UnitTestDeclaration elem, ASTConversionContext convContext) {
 		convertNode(elem);
-		this.body = (BlockStatement) Statement.convert(elem.fbody, convContext);
+		IStatement convert = Statement.convert(elem.fbody, convContext);
+		if (convert instanceof BlockStatement) {
+			this.body = (BlockStatement) convert;
+		} else {
+			// Syntax errors
+			this.body = new BlockStatement(Collections.singleton(convert) , false);
+			this.body.setSourceRange(elem);
+		}
 	}
 
 	@Override

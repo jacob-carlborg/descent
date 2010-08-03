@@ -1,11 +1,13 @@
 package dtool.ast.definitions;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Type;
 import dtool.ast.ASTNeoNode;
 import dtool.ast.IASTNeoVisitor;
 import dtool.ast.expressions.Expression;
 import dtool.ast.expressions.Resolvable;
+import dtool.ast.references.CommonRefSingle;
 import dtool.ast.references.Reference;
 import dtool.ast.references.ReferenceConverter;
 import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
@@ -30,7 +32,6 @@ public class NamelessParameter extends ASTNeoNode implements IFunctionParameter 
 		assertNotNull(elem.type);
 		this.storageClass = elem.storageClass;
 		this.defaultValue = Expression.convert(elem.defaultArg, convContext);
-			
 	}
 	
 	public NamelessParameter(Type type, ASTConversionContext convContext) {
@@ -40,6 +41,14 @@ public class NamelessParameter extends ASTNeoNode implements IFunctionParameter 
 		this.defaultValue = null;
 	}
 
+	public NamelessParameter(descent.internal.compiler.parser.Argument elem, 
+			IdentifierExp ident, ASTConversionContext convContext) {
+		convertNode(elem);
+		this.type = CommonRefSingle.convertToSingleRef(ident, convContext);
+		this.storageClass = 0;
+		this.defaultValue = null;
+	}
+	
 	@Override
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);

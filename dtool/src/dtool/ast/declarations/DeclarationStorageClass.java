@@ -2,7 +2,6 @@ package dtool.ast.declarations;
 
 import java.util.Iterator;
 
-import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.StorageClassDeclaration;
 import descent.internal.compiler.parser.ast.IASTNode;
 import dtool.ast.IASTNeoVisitor;
@@ -10,7 +9,7 @@ import dtool.ast.definitions.Definition;
 import dtool.descentadapter.DescentASTConverter.ASTConversionContext;
 import dtool.refmodel.INonScopedBlock;
 
-public class DeclarationStorageClass extends DeclarationAttrib {
+public final class DeclarationStorageClass extends DeclarationAttrib {
 
 	public int stclass; // we assume there is only one storage class flag here
 	
@@ -23,7 +22,7 @@ public class DeclarationStorageClass extends DeclarationAttrib {
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, body.nodes);
+			acceptBodyChildren(visitor);
 		}
 		visitor.endVisit(this);
 	}
