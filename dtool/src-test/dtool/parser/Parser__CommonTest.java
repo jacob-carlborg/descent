@@ -49,11 +49,16 @@ public abstract class Parser__CommonTest extends DToolBaseTest {
 		return neoModule;
 	}
 	
-	
 	protected static ArrayList<File> getDeeModuleList(File folder, boolean recurseDirs) throws IOException {
+		return getDeeModuleList(folder, recurseDirs, false);
+	}
+	protected static ArrayList<File> getDeeModuleList(File folder, boolean recurseDirs, final boolean validCUsOnly)
+			throws IOException {
+		
+		final boolean addInAnyFileName = !validCUsOnly;
 		final ArrayList<File> fileList = new ArrayList<File>();
 		
-		VoidFunction<File> fileParser = new VoidFunction<File>() {
+		VoidFunction<File> fileVisitor = new VoidFunction<File>() {
 			@Override
 			public Void evaluate(File file) {
 				if(file.isFile()) {
@@ -65,11 +70,18 @@ public abstract class Parser__CommonTest extends DToolBaseTest {
 		
 		FilenameFilter filter = new FilenameFilter() {
 			@Override
-			public boolean accept(File dir, String name) {
-				return dir.isDirectory() || DeeNamingRules_Test.isValidCompilationUnitName(name);
+			public boolean accept(File parent, String childName) {
+				System.out.println("dir:" + parent +" " + childName);
+				File childFile = new File(parent, childName);
+				if(childFile.isDirectory()) {
+					// exclude team private folder, like .svn, and other crap
+					return !childName.startsWith(".");
+				} else {
+					return addInAnyFileName || DeeNamingRules_Test.isValidCompilationUnitName(childName);
+				}
 			}
 		};
-		DToolTestUtils.traverseFiles(folder, recurseDirs, fileParser, filter);
+		DToolTestUtils.traverseFiles(folder, recurseDirs, fileVisitor, filter);
 		return fileList;
 	}
 	
@@ -90,8 +102,8 @@ public abstract class Parser__CommonTest extends DToolBaseTest {
 	protected static void parseFile(File file, boolean failOnSyntaxErrors) {
 		assertTrue(file.isFile());
 		String source = readStringFromFileUnchecked(file);
+		System.out.println("parsing: " + file);
 		testDtoolParse(source, failOnSyntaxErrors);
-		System.out.println("parsed: " + file);
 	}
 	
 	public static void parseFolder(File folder, boolean recurseDirs) throws IOException {
