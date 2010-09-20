@@ -1,19 +1,25 @@
 <project name="PDEBuild" default="help" >
 	
-	<property name="builder.pdebuild" location="${basedir}/eclipse.pdebuild" />
-	<property name="builder.targetplatform" location="${basedir}/target" />
+	<!-- Redefine properties as desired:  -->
+	
 	<property name="java.jvm6.dir" location="${basedir}/jre" />
 	<property name="java.jvm5.dir" location="${java.jvm6.dir}" />
 	
+	<property name="build.workdir" location="${basedir}/../_buildworkdir" />
+	
+	<property name="builder.pdebuild" location="${basedir}/eclipse.pdebuild" />
+	<property name="builder.targetplatform" location="${basedir}/target" />
+	
 	<echo message="Base Dir: ${basedir}"/>
 	
+	<property name="build.dir" location="${basedir}/build.dir" />
+	<property name="results.dir" location="${basedir}/results" />
+	
+	<!-- - - - - - - - - - - - - - - - - - - - -  -->
+
 	<tstamp />
 	<property name="build.qualifier" value="${DSTAMP}${TSTAMP}" />
 	<echo message="build.qualifier: ${build.qualifier}"/>
-	
-	<!-- - - - - - - - - - - - - - - - - - - - -  -->
-	<property name="build.dir" location="${basedir}/build.dir" />
-	<property name="results.dir" location="${basedir}/results" />
 	
     <target name="clean" description="Clean temporary and result files.">
     	<delete dir="${build.dir}"/>
@@ -124,6 +130,9 @@
 		<fail unless="build.archivePrefix"/>
 		<fail unless="builder.pdebuild.buildfile"/>
 		<fail unless="builder.pdebuild.configs"/>
+		<available file="${java.jvm6.dir}" property="java.jvm6.dir._exists"/>
+		<fail unless="java.jvm6.dir._exists"/>
+				
 		
 		<!-- Invoke PDE Build -->
 		<java jar="${builder.pdebuild.launcher}" fork="true" failonerror="true" >

@@ -12,15 +12,16 @@
 	<!-- =============== Main Build =============== -->
 	
 	<fileset id="projects.plugins.fileset" dir="${projects.dir}/" 
-		includes="org.dsource.melnorme/**,mmrnmhrm*/**,dtool*/**,descent.compiler/**" 
-		excludes="**/.metadata/,**/*.class,*-feature/**,mmrnmhrm-build/**,mmrnmhrm.update-site/**"
+		includes="org.dsource.melnorme/**,org.dsource.ddt.*/**,descent.compiler/**" 
+		excludes="**/.metadata/,**/*.class,*-feature/**,*-build/**,*.update-site/**"
 	/>
 	
 	<fileset id="projects.features.fileset" dir="${projects.dir}/" 
-		includes="org.dsource.mmrnmhrm*/**" 
+		includes="org.dsource.ddt-feature/**" 
 	/>
 	
 	<target name="prepareBuildDir.copyProjects" depends="PDEBuild.prepareBuildDir.copyProjects">
+	   	<move tofile="${build.dir}/features/org.dsource.ddt/" file="${build.dir}/features/org.dsource.ddt-feature/" />
 		<copy tofile="${build.dir}/default.product" file="${basedir}/products/rtgpack.product" />
 	</target>
     
