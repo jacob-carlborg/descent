@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Melnorme CoreUtil
-Bundle-SymbolicName: org.dsource.melnorme
-Bundle-Version: 2.0.0.qualifier
-Export-Package: melnorme.miscutil,
- melnorme.miscutil.tree
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.junit4;resolution:=optional
