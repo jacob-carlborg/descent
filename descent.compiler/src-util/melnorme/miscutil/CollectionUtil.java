@@ -11,10 +11,13 @@
 package melnorme.miscutil;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Utils for creation, query, and modification of Collection classes.
@@ -60,9 +63,30 @@ public class CollectionUtil {
 		return list;
 	}
 	
-	/**/ static void test_sort_generics() {
+	@SuppressWarnings("unused") 
+	private static void testCompile_sort_generics() {
 		List<? extends Integer> list = null;
 		sort(list);
+	}
+	
+	public static <T> List<T> createFixedList(T[] array) {
+		return Arrays.asList(array);
+	}
+	
+	public static <T> Collection<T> create(T[] array) {
+		return Arrays.asList(array);
+	}
+	
+	public static <T> HashSet<T> createHashSet(Collection<T> coll) {
+		return new HashSet<T>(coll);
+	}
+	
+	public static <T> HashSet<T> createHashSet(T[] array) {
+		return new HashSet<T>(Arrays.asList(array));
+	}
+
+	public static <T> Set<T> createUnmodifiableHashSet(T[] array) {
+		return Collections.unmodifiableSet(createHashSet(array));
 	}
 	
 }
