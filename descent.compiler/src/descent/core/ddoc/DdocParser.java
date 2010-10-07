@@ -71,7 +71,7 @@ public class DdocParser {
 		}
 		
 		firstLine = firstLine.trim();
-		if (firstLine.length() < 2) {
+		if (firstLine.length() < 3) {
 			return ddoc;
 		}
 		
