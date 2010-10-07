@@ -27,14 +27,8 @@ public class CoreUtil /* extends Assert */ {
 	
 	/** @return whether the two given arrays are the same (including null) or equal 
 	 * according to {@link Arrays#equals(Object[], Object[])}. */
-	public static boolean areArrayEqual(Object[] a1, Object[] a2) {
+	public static boolean areEqualArrays(Object[] a1, Object[] a2) {
 		return (a1 == a2) || (a1 != null && a2 != null && Arrays.equals(a1, a2));
-	}
-	
-	/** @return whether the two given arrays are the same (including null) or equal. 
-	 * according to {@link Arrays#deepEquals(Object[], Object[])}.*/
-	public static boolean areArrayDeepEqual(Object[] a1, Object[] a2) {
-		return (a1 == a2) || (a1 != null && a2 != null && Arrays.deepEquals(a1, a2));
 	}
 	
 	/** Returns the first element of objs array that is not null.

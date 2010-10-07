@@ -82,12 +82,12 @@ public class ArrayUtil {
 		return Arrays.copyOf(array, array.length);
 	}
 	
-	@Deprecated
+	/** Same as {@link Arrays#copyOfRange(Object[], int, int)} */
 	public static <T> T[] copyOfRange(T[] original, int from, int to) {
         return Arrays.copyOfRange(original, from, to);
     }
 	
-    @Deprecated
+	/** Same as {@link Arrays#copyOfRange(Object[], int, int, Class)} */
 	public static <T,U> T[] copyOfRange(U[] original, int from, int to, Class<? extends T[]> newType) {
     	return Arrays.copyOfRange(original, from, to, newType);
     }

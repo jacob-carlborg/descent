@@ -100,8 +100,8 @@ public class ExceptionAdapter extends RuntimeException {
 		}
 	}
 	
-	/** Same as unchecked() but stands for TO DO code. 
-	 * Uses the Deprecated annotation solely to cause a warning. */
+	/** Same as unchecked() but stands for TODO code. 
+	 * Uses the Deprecated annotation solely to cause a warning in IDEs. */
 	@Deprecated 
 	public static RuntimeException uncheckedTODO(Throwable e) {
 		return unchecked(e);
