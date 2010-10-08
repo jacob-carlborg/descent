@@ -4,7 +4,7 @@ import static descent.internal.compiler.parser.LINK.LINKd;
 import static descent.internal.compiler.parser.TOK.TOKdelegate;
 import static descent.internal.compiler.parser.TY.Tdelegate;
 import static descent.internal.compiler.parser.TY.Tstruct;
-import melnorme.miscutil.tree.TreeVisitor;
+import melnorme.utilbox.tree.TreeVisitor;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.ILazyStructDeclaration__Marker;

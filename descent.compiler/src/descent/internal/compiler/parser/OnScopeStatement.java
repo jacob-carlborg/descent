@@ -2,7 +2,7 @@ package descent.internal.compiler.parser;
 
 import static descent.internal.compiler.parser.BE.BEfallthru;
 import static descent.internal.compiler.parser.TOK.TOKon_scope_success;
-import melnorme.miscutil.tree.TreeVisitor;
+import melnorme.utilbox.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class OnScopeStatement extends Statement {

@@ -1,6 +1,6 @@
 package descent.internal.compiler.parser.ast;
 
-import melnorme.miscutil.tree.ITreeVisitor;
+import melnorme.utilbox.tree.ITreeVisitor;
 import descent.internal.compiler.parser.*;
 import descent.internal.compiler.parser.Package;
 

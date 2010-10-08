@@ -1,4 +1,4 @@
-package melnorme.miscutil;
+package melnorme.utilbox.core;
 
 public interface Function<T, R> {
 	

@@ -9,7 +9,7 @@
  * 	   IBM Corporation - initial API and implementation
  *     Bruno Medeiros - next implementation
  *******************************************************************************/
-package melnorme.miscutil;
+package melnorme.utilbox.core;
 
 
 /**

@@ -8,10 +8,10 @@
  * Contributors:
  *     Bruno Medeiros - initial implementation
  *******************************************************************************/
-package melnorme.miscutil;
+package melnorme.utilbox.misc;
 
-import static melnorme.miscutil.Assert.assertFail;
-import static melnorme.miscutil.Assert.assertTrue;
+import static melnorme.utilbox.core.Assert.assertFail;
+import static melnorme.utilbox.core.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+
+import melnorme.utilbox.core.Predicate;
 
 public class MiscUtil {
 	
@@ -79,7 +81,7 @@ public class MiscUtil {
 		try {
 			return process.waitFor();
 		} catch (InterruptedException e) {
-			throw melnorme.miscutil.ExceptionAdapter.unchecked(e);
+			throw melnorme.utilbox.core.ExceptionAdapter.unchecked(e);
 		}
 	}
 	
@@ -114,7 +116,7 @@ public class MiscUtil {
 		try {
 			Thread.sleep(millis);
 		} catch (InterruptedException e) {
-			throw melnorme.miscutil.ExceptionAdapter.unchecked(e);
+			throw melnorme.utilbox.core.ExceptionAdapter.unchecked(e);
 		}
 	}
 }

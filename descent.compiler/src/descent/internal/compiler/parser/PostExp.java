@@ -3,7 +3,7 @@ package descent.internal.compiler.parser;
 import static descent.internal.compiler.parser.Constfold.Add;
 import static descent.internal.compiler.parser.Constfold.Min;
 import static descent.internal.compiler.parser.TOK.TOKplusplus;
-import melnorme.miscutil.tree.TreeVisitor;
+import melnorme.utilbox.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 

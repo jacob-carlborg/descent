@@ -1,4 +1,6 @@
-package melnorme.miscutil;
+package melnorme.utilbox.misc;
+
+import melnorme.utilbox.core.CoreUtil;
 
 
 /**

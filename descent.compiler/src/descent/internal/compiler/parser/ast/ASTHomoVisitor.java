@@ -1,6 +1,6 @@
 package descent.internal.compiler.parser.ast;
 
-import melnorme.miscutil.tree.IVisitable;
+import melnorme.utilbox.tree.IVisitable;
 
 /** 
  * An abstract visitor that visits nodes in a homogeneous way, 

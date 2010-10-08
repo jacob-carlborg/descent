@@ -1,7 +1,7 @@
 package descent.internal.compiler.parser.ast;
 
-import melnorme.miscutil.tree.IElement;
-import melnorme.miscutil.tree.IVisitable;
+import melnorme.utilbox.tree.IElement;
+import melnorme.utilbox.tree.IVisitable;
 
 /**
  */

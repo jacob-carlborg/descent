@@ -1,8 +1,8 @@
 package descent.internal.compiler.parser.ast;
 
-import melnorme.miscutil.Assert;
-import melnorme.miscutil.tree.IElement;
-import melnorme.miscutil.tree.IVisitable;
+import melnorme.utilbox.core.Assert;
+import melnorme.utilbox.tree.IElement;
+import melnorme.utilbox.tree.IVisitable;
 import descent.internal.compiler.parser.ASTDmdNode;
 
 public abstract class ASTNode 

@@ -4,7 +4,7 @@ import static descent.internal.compiler.parser.BE.BEbreak;
 import static descent.internal.compiler.parser.BE.BEcontinue;
 import static descent.internal.compiler.parser.BE.BEfallthru;
 import static descent.internal.compiler.parser.BE.BEthrow;
-import melnorme.miscutil.tree.TreeVisitor;
+import melnorme.utilbox.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class DoStatement extends Statement {

@@ -3,7 +3,7 @@ package descent.internal.compiler.parser;
 import static descent.internal.compiler.parser.BE.BEbreak;
 import static descent.internal.compiler.parser.BE.BEcontinue;
 import static descent.internal.compiler.parser.BE.BEfallthru;
-import melnorme.miscutil.Assert;
+import melnorme.utilbox.core.Assert;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class UnrolledLoopStatement extends Statement {

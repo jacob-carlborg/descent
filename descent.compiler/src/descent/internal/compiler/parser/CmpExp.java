@@ -5,7 +5,7 @@ import static descent.internal.compiler.parser.MATCH.MATCHconst;
 import static descent.internal.compiler.parser.TOK.TOKnull;
 import static descent.internal.compiler.parser.TY.Tclass;
 import static descent.internal.compiler.parser.TY.Tvoid;
-import melnorme.miscutil.tree.TreeVisitor;
+import melnorme.utilbox.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 

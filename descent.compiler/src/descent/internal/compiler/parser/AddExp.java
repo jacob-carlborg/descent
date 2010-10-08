@@ -2,7 +2,7 @@ package descent.internal.compiler.parser;
 
 import static descent.internal.compiler.parser.Constfold.Add;
 import static descent.internal.compiler.parser.TOK.TOKsymoff;
-import melnorme.miscutil.tree.TreeVisitor;
+import melnorme.utilbox.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class AddExp extends BinExp {

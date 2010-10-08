@@ -4,7 +4,7 @@ import static descent.internal.compiler.parser.BE.BEgoto;
 
 import java.util.ArrayList;
 
-import melnorme.miscutil.tree.TreeVisitor;
+import melnorme.utilbox.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 

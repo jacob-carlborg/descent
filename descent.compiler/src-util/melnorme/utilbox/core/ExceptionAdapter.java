@@ -9,11 +9,12 @@
  * 		Bruce Eckel - initial ideia
  *		Bruno Medeiros - modifications
  *******************************************************************************/
-package melnorme.miscutil;
+package melnorme.utilbox.core;
 
-import static melnorme.miscutil.Assert.assertNotNull;
+import static melnorme.utilbox.core.Assert.assertNotNull;
 
 import java.io.IOException;
+
 
 
 /**
@@ -56,7 +57,7 @@ public class ExceptionAdapter extends RuntimeException {
 	                pr.append("\n");
 	            }
 			} catch (IOException e) {
-				melnorme.miscutil.Assert.assertFail();
+				melnorme.utilbox.core.Assert.assertFail();
 			}
         }
 	}

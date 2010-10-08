@@ -15,7 +15,7 @@ import static descent.internal.compiler.parser.TY.Tarray;
 import static descent.internal.compiler.parser.TY.Tdelegate;
 import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.Type.MODshared;
-import melnorme.miscutil.tree.TreeVisitor;
+import melnorme.utilbox.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class Argument extends ASTDmdNode implements Cloneable {

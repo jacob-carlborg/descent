@@ -5,7 +5,7 @@ import static descent.internal.compiler.parser.STC.STCgshared;
 import static descent.internal.compiler.parser.STC.STCscope;
 import static descent.internal.compiler.parser.STC.STCstatic;
 import static descent.internal.compiler.parser.STC.STCtls;
-import melnorme.miscutil.tree.TreeVisitor;
+import melnorme.utilbox.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 

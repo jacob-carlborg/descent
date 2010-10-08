@@ -4,7 +4,7 @@ import static descent.internal.compiler.parser.STC.STCdeprecated;
 
 import java.math.BigInteger;
 
-import melnorme.miscutil.tree.TreeVisitor;
+import melnorme.utilbox.tree.TreeVisitor;
 import descent.core.Flags;
 import descent.core.IType__Marker;
 import descent.core.Signature;

@@ -22,7 +22,7 @@ import static descent.internal.compiler.parser.TY.Tvoid;
 
 import java.util.ArrayList;
 
-import melnorme.miscutil.tree.TreeVisitor;
+import melnorme.utilbox.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
@@ -268,7 +268,7 @@ public class ReturnStatement extends Statement {
 					v.noauto = true;
 					v.semantic(scx, context);
 					if (scx.insert(v) == null) {
-						melnorme.miscutil.Assert.isTrue(false);
+						melnorme.utilbox.core.Assert.isTrue(false);
 					}
 					v.parent = fd;
 					fd.vresult = v;

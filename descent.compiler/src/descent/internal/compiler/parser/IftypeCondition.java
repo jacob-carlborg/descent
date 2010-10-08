@@ -4,7 +4,7 @@ import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 import static descent.internal.compiler.parser.TOK.TOKcolon;
 import static descent.internal.compiler.parser.TOK.TOKequal;
-import melnorme.miscutil.tree.TreeVisitor;
+import melnorme.utilbox.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.core.compiler.IftypeDeclarationKind;
 import descent.internal.compiler.parser.ast.IASTVisitor;

@@ -1,6 +1,6 @@
 package descent.internal.compiler.parser.ast;
 
-import melnorme.miscutil.ArrayUtil;
+import melnorme.utilbox.misc.ArrayUtil;
 import descent.internal.compiler.parser.TOK;
 
 public class TokenUtil {

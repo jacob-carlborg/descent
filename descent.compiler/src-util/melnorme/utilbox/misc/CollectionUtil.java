@@ -8,7 +8,7 @@
  * Contributors:
  *     Bruno Medeiros - initial implementation
  *******************************************************************************/
-package melnorme.miscutil;
+package melnorme.utilbox.misc;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,6 +17,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+
+import melnorme.utilbox.core.Predicate;
 
 /**
  * Utils for creation, query, and modification of Collection classes.

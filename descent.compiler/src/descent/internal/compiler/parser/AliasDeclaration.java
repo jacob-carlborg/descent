@@ -3,7 +3,7 @@ package descent.internal.compiler.parser;
 import static descent.internal.compiler.parser.STC.STCref;
 import static descent.internal.compiler.parser.TOK.TOKfunction;
 import static descent.internal.compiler.parser.TOK.TOKvar;
-import melnorme.miscutil.tree.TreeVisitor;
+import melnorme.utilbox.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 

@@ -8,10 +8,10 @@
  * Contributors:
  *     Bruno Medeiros - initial implementation
  *******************************************************************************/
-package melnorme.miscutil;
+package melnorme.utilbox.core;
 
 
-import static melnorme.miscutil.Assert.assertFail;
+import static melnorme.utilbox.core.Assert.assertFail;
 
 import java.util.Arrays;
 

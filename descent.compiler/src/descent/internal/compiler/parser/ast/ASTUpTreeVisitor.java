@@ -1,7 +1,7 @@
 package descent.internal.compiler.parser.ast;
 
-import melnorme.miscutil.Assert;
-import melnorme.miscutil.tree.TreeVisitor;
+import melnorme.utilbox.core.Assert;
+import melnorme.utilbox.tree.TreeVisitor;
 import descent.internal.compiler.parser.*;
 import descent.internal.compiler.parser.Package;
 

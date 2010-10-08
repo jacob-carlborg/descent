@@ -6,7 +6,7 @@ import static descent.internal.compiler.parser.BE.BEthrow;
 import static descent.internal.compiler.parser.TOK.TOKimport;
 import static descent.internal.compiler.parser.TOK.TOKtype;
 import static descent.internal.compiler.parser.TY.Tstruct;
-import melnorme.miscutil.tree.TreeVisitor;
+import melnorme.utilbox.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 

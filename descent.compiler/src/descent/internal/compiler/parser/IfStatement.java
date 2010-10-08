@@ -3,7 +3,7 @@ package descent.internal.compiler.parser;
 import static descent.internal.compiler.parser.BE.BEfallthru;
 import static descent.internal.compiler.parser.BE.BEnone;
 import static descent.internal.compiler.parser.BE.BEthrow;
-import melnorme.miscutil.tree.TreeVisitor;
+import melnorme.utilbox.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 

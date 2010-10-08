@@ -7,7 +7,7 @@ import static descent.internal.compiler.parser.TY.Tstruct;
 
 import java.math.BigInteger;
 
-import melnorme.miscutil.tree.TreeVisitor;
+import melnorme.utilbox.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 

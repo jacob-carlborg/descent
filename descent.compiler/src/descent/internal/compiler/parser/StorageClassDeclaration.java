@@ -42,7 +42,7 @@ import static descent.internal.compiler.parser.TOK.TOKscope;
 import static descent.internal.compiler.parser.TOK.TOKstatic;
 import static descent.internal.compiler.parser.TOK.TOKsynchronized;
 import static descent.internal.compiler.parser.TOK.TOKtls;
-import melnorme.miscutil.tree.TreeVisitor;
+import melnorme.utilbox.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class StorageClassDeclaration extends AttribDeclaration {

@@ -10,7 +10,7 @@ import static descent.internal.compiler.parser.Constfold.Min;
 import static descent.internal.compiler.parser.TOK.TOKforeach;
 import static descent.internal.compiler.parser.TOK.TOKgt;
 import static descent.internal.compiler.parser.TOK.TOKlt;
-import melnorme.miscutil.tree.TreeVisitor;
+import melnorme.utilbox.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 

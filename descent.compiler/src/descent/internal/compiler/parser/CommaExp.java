@@ -2,7 +2,7 @@ package descent.internal.compiler.parser;
 
 import static descent.internal.compiler.parser.TOK.TOKfloat64;
 import static descent.internal.compiler.parser.TOK.TOKint64;
-import melnorme.miscutil.tree.TreeVisitor;
+import melnorme.utilbox.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 

@@ -1,4 +1,4 @@
-package melnorme.miscutil;
+package melnorme.utilbox.misc;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -46,9 +46,9 @@ public class ReflectionUtils {
 		try {
 			return klass.getMethod(methodName, parameterTypes);
 		} catch (NoSuchMethodException e) {
-			throw melnorme.miscutil.ExceptionAdapter.unchecked(e);
+			throw melnorme.utilbox.core.ExceptionAdapter.unchecked(e);
 		} catch (SecurityException e) {
-			throw melnorme.miscutil.ExceptionAdapter.unchecked(e);
+			throw melnorme.utilbox.core.ExceptionAdapter.unchecked(e);
 		} 
 	}
 	
@@ -58,11 +58,11 @@ public class ReflectionUtils {
 		try {
 			return (T) method.invoke(obj, args);
 		} catch (IllegalArgumentException e) {
-			throw melnorme.miscutil.ExceptionAdapter.unchecked(e);
+			throw melnorme.utilbox.core.ExceptionAdapter.unchecked(e);
 		} catch (IllegalAccessException e) {
-			throw melnorme.miscutil.ExceptionAdapter.unchecked(e);
+			throw melnorme.utilbox.core.ExceptionAdapter.unchecked(e);
 		} catch (InvocationTargetException e) {
-			throw melnorme.miscutil.ExceptionAdapter.unchecked(e.getTargetException());
+			throw melnorme.utilbox.core.ExceptionAdapter.unchecked(e.getTargetException());
 		}
 	}	
 	
@@ -103,14 +103,14 @@ public class ReflectionUtils {
 	private static <T> Object readAvailableField(Class<?> klass, T object, String fieldName) {
 		Field field = getAvailableField(klass, fieldName);
 		if (field == null) 
-			throw melnorme.miscutil.ExceptionAdapter.unchecked(new NoSuchFieldException());
+			throw melnorme.utilbox.core.ExceptionAdapter.unchecked(new NoSuchFieldException());
 		
 		try {
 			return field.get(object);
 		} catch (IllegalArgumentException e) {
-			throw melnorme.miscutil.ExceptionAdapter.unchecked(e);
+			throw melnorme.utilbox.core.ExceptionAdapter.unchecked(e);
 		} catch (IllegalAccessException e) {
-			throw melnorme.miscutil.ExceptionAdapter.unchecked(e);
+			throw melnorme.utilbox.core.ExceptionAdapter.unchecked(e);
 		}
 	}
 	
@@ -127,14 +127,14 @@ public class ReflectionUtils {
 	private static <T> void writeAvailableField(Class<?> klass, T object, String fieldName, T value) {
 		Field field = getAvailableField(klass, fieldName);
 		if (field == null) 
-			throw melnorme.miscutil.ExceptionAdapter.unchecked(new NoSuchFieldException());
+			throw melnorme.utilbox.core.ExceptionAdapter.unchecked(new NoSuchFieldException());
 
 		try {
 			field.set(object, value);
 		} catch (IllegalArgumentException e) {
-			throw melnorme.miscutil.ExceptionAdapter.unchecked(e);
+			throw melnorme.utilbox.core.ExceptionAdapter.unchecked(e);
 		} catch (IllegalAccessException e) {
-			throw melnorme.miscutil.ExceptionAdapter.unchecked(e);
+			throw melnorme.utilbox.core.ExceptionAdapter.unchecked(e);
 		}
 	}
 	

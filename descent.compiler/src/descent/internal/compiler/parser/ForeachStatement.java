@@ -42,7 +42,7 @@ import static descent.internal.compiler.parser.TY.Twchar;
 
 import java.util.List;
 
-import melnorme.miscutil.tree.TreeVisitor;
+import melnorme.utilbox.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 

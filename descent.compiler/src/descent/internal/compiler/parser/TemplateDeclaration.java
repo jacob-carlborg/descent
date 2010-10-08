@@ -17,7 +17,7 @@ import static descent.internal.compiler.parser.TY.Tvoid;
 import java.util.ArrayList;
 import java.util.List;
 
-import melnorme.miscutil.tree.TreeVisitor;
+import melnorme.utilbox.tree.TreeVisitor;
 import descent.core.IJavaElement__Marker;
 import descent.core.Signature;
 import descent.core.compiler.IProblem;

@@ -1,7 +1,7 @@
 package descent.internal.compiler.parser;
 
 import static descent.internal.compiler.parser.PROT.PROTprivate;
-import melnorme.miscutil.tree.TreeVisitor;
+import melnorme.utilbox.tree.TreeVisitor;
 import descent.core.IJavaElement__Marker;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;

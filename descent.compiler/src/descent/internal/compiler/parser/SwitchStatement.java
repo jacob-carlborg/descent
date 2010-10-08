@@ -11,7 +11,7 @@ import static descent.internal.compiler.parser.TY.Tarray;
 import java.util.ArrayList;
 import java.util.List;
 
-import melnorme.miscutil.tree.TreeVisitor;
+import melnorme.utilbox.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 

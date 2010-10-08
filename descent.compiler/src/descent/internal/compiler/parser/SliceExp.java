@@ -5,7 +5,7 @@ import static descent.internal.compiler.parser.PREC.PREC_assign;
 import static descent.internal.compiler.parser.STC.STCconst;
 import static descent.internal.compiler.parser.TOK.TOKstring;
 import static descent.internal.compiler.parser.TY.Tarray;
-import melnorme.miscutil.tree.TreeVisitor;
+import melnorme.utilbox.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 

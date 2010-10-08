@@ -10,7 +10,7 @@ import static descent.internal.compiler.parser.TY.Ttuple;
 
 import java.util.List;
 
-import melnorme.miscutil.tree.TreeVisitor;
+import melnorme.utilbox.tree.TreeVisitor;
 import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;

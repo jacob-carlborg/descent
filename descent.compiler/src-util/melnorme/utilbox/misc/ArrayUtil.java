@@ -8,14 +8,17 @@
  * Contributors:
  *     Bruno Medeiros - initial implementation
  *******************************************************************************/
-package melnorme.miscutil;
+package melnorme.utilbox.misc;
 
-import static melnorme.miscutil.Assert.assertTrue;
+import static melnorme.utilbox.core.Assert.assertTrue;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+
+import melnorme.utilbox.core.Function;
+import melnorme.utilbox.core.Predicate;
 
 public class ArrayUtil {
 	

@@ -8,7 +8,7 @@
  * Contributors:
  *     Bruno Medeiros - initial implementation
  *******************************************************************************/
-package melnorme.miscutil;
+package melnorme.utilbox.misc;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
@@ -215,7 +215,7 @@ public class StreamUtil {
 			inStream.close();
 		} catch (IOException e) {
 			if(rethrowAsUnchecked)
-				throw melnorme.miscutil.ExceptionAdapter.unchecked(e);
+				throw melnorme.utilbox.core.ExceptionAdapter.unchecked(e);
 		}
 	}
 	
@@ -226,7 +226,7 @@ public class StreamUtil {
 			reader.close();
 		} catch (IOException e) {
 			if(rethrowAsUnchecked)
-				throw melnorme.miscutil.ExceptionAdapter.unchecked(e);
+				throw melnorme.utilbox.core.ExceptionAdapter.unchecked(e);
 		}
 	}
 	

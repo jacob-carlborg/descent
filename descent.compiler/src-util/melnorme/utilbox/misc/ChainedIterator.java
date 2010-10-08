@@ -8,7 +8,7 @@
  * Contributors:
  *     Bruno Medeiros - initial implementation
  *******************************************************************************/
-package melnorme.miscutil;
+package melnorme.utilbox.misc;
 
 import java.util.Iterator;
 

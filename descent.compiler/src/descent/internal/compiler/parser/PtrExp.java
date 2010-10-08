@@ -6,7 +6,7 @@ import static descent.internal.compiler.parser.TOK.TOKaddress;
 import static descent.internal.compiler.parser.TOK.TOKint64;
 import static descent.internal.compiler.parser.TOK.TOKstructliteral;
 import static descent.internal.compiler.parser.TOK.TOKsymoff;
-import melnorme.miscutil.tree.TreeVisitor;
+import melnorme.utilbox.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 

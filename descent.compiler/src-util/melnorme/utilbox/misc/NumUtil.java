@@ -1,6 +1,6 @@
-package melnorme.miscutil;
+package melnorme.utilbox.misc;
 
-import static melnorme.miscutil.Assert.assertTrue;
+import static melnorme.utilbox.core.Assert.assertTrue;
 
 
 public class NumUtil {

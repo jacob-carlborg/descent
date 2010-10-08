@@ -8,7 +8,7 @@
  * Contributors:
  *     Bruno Medeiros - initial implementation
  *******************************************************************************/
-package melnorme.miscutil.tree;
+package melnorme.utilbox.tree;
 
 public interface IVisitable<VISITOR> {
 

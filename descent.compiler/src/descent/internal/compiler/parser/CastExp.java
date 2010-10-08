@@ -21,7 +21,7 @@ import static descent.internal.compiler.parser.TY.Tvoid;
 import static descent.internal.compiler.parser.Type.MODconst;
 import static descent.internal.compiler.parser.Type.MODinvariant;
 import static descent.internal.compiler.parser.Type.MODshared;
-import melnorme.miscutil.tree.TreeVisitor;
+import melnorme.utilbox.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 

@@ -7,7 +7,7 @@ import static descent.internal.compiler.parser.STC.STCmanifest;
 import static descent.internal.compiler.parser.STC.STCtemplateparameter;
 import static descent.internal.compiler.parser.TOK.TOKdefault;
 import static descent.internal.compiler.parser.TOK.TOKvar;
-import melnorme.miscutil.tree.TreeVisitor;
+import melnorme.utilbox.tree.TreeVisitor;
 import descent.core.Signature;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;

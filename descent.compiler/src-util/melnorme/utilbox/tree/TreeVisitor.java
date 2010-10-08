@@ -8,13 +8,13 @@
  * Contributors:
  *     Bruno Medeiros - initial implementation
  *******************************************************************************/
-package melnorme.miscutil.tree;
+package melnorme.utilbox.tree;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import melnorme.miscutil.ExceptionAdapter;
+import melnorme.utilbox.core.ExceptionAdapter;
 
 /** Abstract visitor for a heterogenous tree with some utility methods. */
 public abstract class TreeVisitor {
