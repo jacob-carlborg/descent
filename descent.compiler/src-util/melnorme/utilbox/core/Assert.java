@@ -1,176 +1,186 @@
 /*******************************************************************************
- * Copyright (c) 2009 IBM Corporation and others.
+ * Copyright (c) 2010 DSource.org and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- * 	   IBM Corporation - initial API and implementation
- *     Bruno Medeiros - next implementation
+ *     Bruno Medeiros - initial implementation
  *******************************************************************************/
 package melnorme.utilbox.core;
 
 
 /**
- * <code>Assert</code> is util code for contract checking (assertions)
- * <p>
- * For each method in this class, such as 'isTrue', there is an identical method
- * with the 'assert' prefix, (ie, assertTrue). This is a convenience for the use of
- * Java's static imports.
- * </p>
+ * Contains utility methods for assertion contract checking .
+ * 
+ * Each method in this class, such as 'isTrue', has an identical method
+ * with the 'assert' prefix, (ie, assertTrue). These later methods are named this way so as to be
+ * use with Java's static imports, and are actually the preferred usage. 
+ * They are designed to be placed as a favorite in JDT's Content Assist preferences.
+ * 
+ * This class can be used without OSGi running.
  */
-/* This class is not intended to be instantiated. */
-public abstract class Assert {
-
-    
-    /** <code>AssertionFailedException</code> is a runtime exception thrown by
-	 * some of the methods in <code>Assert</code>.
-	 * <p>
-	 * This class is not declared public to prevent some misuses; programs that
-	 * catch or otherwise depend on assertion failures are susceptible to
-	 * unexpected breakage when assertions in the code are added or removed.
-	 * </p>
-	 */
-    @SuppressWarnings("serial")
-	private static class AssertionFailedException extends RuntimeException {
-    	// Note: it is quite useful to place a class creation breakpoint in this class.
-
-        public AssertionFailedException(String message) {
-            super(message);
-        }
-        
-        @Override
-        public String toString() {
-            String message = getLocalizedMessage();
-            return "AssertionFailedException" + ((message != null) ? (": " + message) : "");
-        }
-        
-    }
-    
-	/** Asserts that the given boolean is <code>true</code>. If this
-	 * is not the case, some kind of unchecked exception is thrown.
-	 * The given message is included in that exception, to aid debugging.
-	 *
-	 * @return <code>true</code> if the check passes (does not return
-	 *    if the check fails)
-	 */
-	public static void isTrue(boolean expression, String message) {
-		if (!expression) {
-			expression = false;  // BREAKPOINT: dummy statement to allow breakpoint placement
-			throw new AssertionFailedException(message); //$NON-NLS-1$
-		}
-	}
+public class Assert {
 	
-	/** Asserts that the given boolean is <code>true</code>. If this
-	 * is not the case, some kind of unchecked exception is thrown.
-	 * The given message is included in that exception, to aid debugging.
-	 *
-	 * @return <code>true</code> if the check passes (does not return
-	 *    if the check fails)
-	 */
-	public static void assertTrue(boolean expression, String message) {
-		Assert.isTrue(expression, message);
-	}
+	protected static final AssertHandler assertHandler; // Poor mans dependency injection
 	
-	/** Like {@link #isTrue(boolean, String)} with empty message
-	 */
-	public static void isTrue(boolean expression) {
-		Assert.isTrue(expression, null); //$NON-NLS-1$
-	}
-	/** Like {@link #isTrue(boolean, String)} with empty message */
-	public static void assertTrue(boolean expression) {
-		Assert.isTrue(expression, null); //$NON-NLS-1$
-	}
-	
-	
-	/** Asserts that the given object is not <code>null</code>. If this
-	 * is not the case, some kind of unchecked exception is thrown.
-	 * The given message is included in that exception, to aid debugging.
-	 */
-	public static void isNotNull(Object object, String message) {
-		Assert.isTrue(!(object == null), message);
-	}
-	/** Asserts that the given object is not <code>null</code>. If this
-	 * is not the case, some kind of unchecked exception is thrown.
-	 * The given message is included in that exception, to aid debugging.
-	 */
-	public static void assertNotNull(Object object, String message) {
-		Assert.isTrue(!(object == null), message);
-	}
-	
-	/** Like {@link #isNotNull(Object, String)} with empty message.	 */
-	public static void isNotNull(Object object) {
-		Assert.isTrue(!(object == null), null);
-	}
-	/** Like {@link #isNotNull(Object, String)} with empty message.	 */
-	public static void assertNotNull(Object object) {
-		Assert.isTrue(!(object == null), null);
-	}
-	
-	
-    /** Asserts that the given object is <code>null</code>. */
-	public static void isNull(Object object) {
-		Assert.isTrue(object == null);
-	}
-	/** Asserts that the given object is <code>null</code>. */
-	public static void assertIsNull(Object object) {
-		Assert.isTrue(object == null);
-	}
-	
-    /** Asserts that given object1 equals object2. */
-	public static void equals(Object object1, Object object2) {
-		Assert.isTrue(object1.equals(object2));
-	}
-    /** Asserts that given object1 equals object2. */
-	public static void assertEquals(Object object1, Object object2) {
-		Assert.isTrue(object1.equals(object2));
-	}
-
-	/** Asserts that given obj1 and obj2 are the same (including null) or are equal.
-	 * (also tests the equality simetrically) 
-	 */
-	public static void assertAreEqual(Object obj1, Object obj2) {
-		if(obj1 == obj2) {
-			return;
+	static {
+		String assertHandlerStr = System.getProperty(Assert.class.getName() + ".handler");
+		if(assertHandlerStr == null) {
+			assertHandler = new AssertHandler();
+		} else if(assertHandlerStr.equals("disable") || assertHandlerStr.equals("null")) {
+			assertHandler = null; // No op handler
 		} else {
-			assertTrue(obj1 != null && obj2 != null);
-			assertTrue(obj1.equals(obj2));
-			assertTrue(obj2.equals(obj1));
+			try {
+				final Class<?> klass = Class.forName(assertHandlerStr);
+				Object handler = klass.newInstance();
+				if(handler instanceof Runnable) {
+					final Runnable runnableHandler = (Runnable) handler;
+					assertHandler = new AssertHandler() {
+						@Override 
+						protected void handleAssert(String message) {
+							runnableHandler.run();
+						};
+					};
+				} else {
+					assertHandler = CoreUtil.blindCast(handler);
+				}
+			} catch(Exception e) {
+				throw new RuntimeException(e); // Yes, let our classloading fail.
+			}
 		}
 	}
 	
-	/** Causes an inconditional assertion failure, with given message. Never returns. */
+	/** Default implementation of the assert handler. */
+	public static class AssertHandler {
+		protected void handleAssert(String message) {
+			throw new AssertFailedException(message);
+		}
+	}
+	
+	/** 
+	 * The class thrown by the default assertion failure handler.
+	 * Clients should not expect this to be thrown.
+	 */
+	@SuppressWarnings("serial")
+	protected static class AssertFailedException extends RuntimeException {
+		
+		public AssertFailedException(String message) {
+			super(message);
+		}
+		
+		@Override
+		public String toString() {
+			String message = getLocalizedMessage();
+			return AssertFailedException.class.getSimpleName() 
+				+ ((message == null) ? "" : (": " + message));  //$NON-NLS-1$
+		}
+		
+	}
+	
+	
+	protected static void checkAssertion(boolean condition, String message) {
+		if(assertHandler != null && condition == false) {
+			assertHandler.handleAssert(message);  // USEFUL TIP: place Breakpoint here
+		}
+	}
+	
+	
+	/** Asserts if given condition is true or not. If it is not, call assert handler.
+	 * Default handler behavior is to throw an {@link AssertFailedException} with given message.
+	 */
+	public static void isTrue(boolean condition, String message) {
+		checkAssertion(condition, message);
+	}
+	/** Like {@link Assert#isTrue(boolean, String)} with no message */
+	public static void isTrue(boolean expression) {
+		checkAssertion(expression, null);
+	}
+	
+	
+	/** Asserts that the given object is not null, with given message */
+	public static void isNotNull(Object object, String message) {
+		checkAssertion(!(object == null), message);
+	}
+	/** Like {@link Assert#isNotNull(Object, String)} with no message. */
+	public static void isNotNull(Object object) {
+		checkAssertion(!(object == null), null);
+	}
+	
+	
+	/** Asserts that given object1 equals object2. */
+	public static void equals(Object object1, Object object2) {
+		checkAssertion(object1.equals(object2), null);
+	}
+	
+	
+	/** Causes an inconditional assertion failure, with given message. 
+	 * Will always call the assertion handler, and return an RuntimeException if nothing is thrown. */
 	public static RuntimeException fail(String message) {
-		Assert.isTrue(false, message);
-		return null;
+		checkAssertion(false, message);
+		return new AssertFailedException(message);
 	}
-	/** Causes an inconditional assertion failure, with given message. Never returns. */
-	public static RuntimeException assertFail(String message) {
-		Assert.isTrue(false, message);
-		return null;
-	}
-	
-	
-	/** Like {@link #fail(String)} with empty message. */
+	/** Like {@link Assert#fail(String)} with no message. */
 	public static RuntimeException fail() {
-		Assert.isTrue(false, "fail.");
-		return null;
-	}
-	/** Like {@link #fail(String)} with empty message. */
-	public static RuntimeException assertFail() {
-		Assert.isTrue(false, "fail.");
-		return null;
+		checkAssertion(false, null);
+		return new AssertFailedException(null);
 	}
 	
 	
-	/** Like {@link #fail()}, specifically signals unreachable code */
+	/** Like {@link Assert#fail(String)}, but specifically signals unreachable code */
 	public static RuntimeException unreachable() {
-		return Assert.fail("Unreachable code.");
+		return fail("Unreachable code."); //$NON-NLS-1$
 	}
-	/** Like {@link #fail()}, specifically signals unreachable code */
-	public static RuntimeException assertUnreachable() {
-		return Assert.fail("Unreachable code.");
-	}
-
+	
+	
+//	/** A namespace class for holding assert methods to use as static imports. */
+//	public static class AssertNamespace {
+		/** Asserts if given condition is true or not. If it is not, call assert handler.
+		 * Default handler behavior is to throw an {@link AssertFailedException} with given message.
+		 */
+		public static void assertTrue(boolean condition, String message) {
+			checkAssertion(condition, message);
+		}
+		/** Like {@link Assert#isTrue(boolean, String)} with no message */
+		public static void assertTrue(boolean expression) {
+			checkAssertion(expression, null);
+		}
+		
+		
+		/** Asserts that the given object is not null, with given message */
+		public static void assertNotNull(Object object, String message) {
+			checkAssertion(!(object == null), message);
+		}
+		/** Like {@link Assert#isNotNull(Object, String)} with no message. */
+		public static void assertNotNull(Object object) {
+			checkAssertion(!(object == null), null);
+		}
+		
+		
+		/** Asserts that given object1 equals object2. */
+		public static void assertEquals(Object object1, Object object2) {
+			checkAssertion(object1.equals(object2), null);
+		}
+		
+		
+		/** Causes an inconditional assertion failure, with given message. 
+		 * Will always call the assertion handler, and return an RuntimeException if nothing is thrown. */
+		public static RuntimeException assertFail(String message) {
+			checkAssertion(false, message);
+			return new AssertFailedException(message);
+		}
+		/** Like {@link Assert#fail(String)} with no message. */
+		public static RuntimeException assertFail() {
+			checkAssertion(false, null);
+			return new AssertFailedException(null);
+		}
+		
+		
+		/** Like {@link Assert#fail(String)}, but specifically signals unreachable code */
+		public static RuntimeException assertUnreachable() {
+			return fail("Unreachable code."); //$NON-NLS-1$
+		}
+//	}
+	
 }

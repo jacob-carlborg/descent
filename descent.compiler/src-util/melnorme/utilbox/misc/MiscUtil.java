@@ -24,7 +24,7 @@ import melnorme.utilbox.core.Predicate;
 
 public class MiscUtil {
 	
-	public static <T> Predicate<T> notNullPredicate() {
+	public static <T> Predicate<T> getNotNullPredicate() {
 		return new NotNullPredicate<T>();
 	}
 	
@@ -35,7 +35,7 @@ public class MiscUtil {
 		}
 	}
 	
-	public static <T> Predicate<T> isNullPredicate() {
+	public static <T> Predicate<T> getIsNullPredicate() {
 		return new IsNullPredicate<T>();
 	}
 	
@@ -93,6 +93,17 @@ public class MiscUtil {
 				count++;
 		}
 		return count;
+	}
+	
+	/** Returns the first element of objs array that is not null.
+	 * At least one element must be not null. */
+	public static <T> T firstNonNull(T... objs) {
+		for (int i = 0; i < objs.length; i++) {
+			if(objs[i] != null)
+				return objs[i];
+		}
+		assertFail();
+		return null;
 	}
 	
 	/** Convenience method for extracting the element of a single element collection . */

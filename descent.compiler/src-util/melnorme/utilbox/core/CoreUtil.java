@@ -11,8 +11,6 @@
 package melnorme.utilbox.core;
 
 
-import static melnorme.utilbox.core.Assert.assertFail;
-
 import java.util.Arrays;
 
 /**
@@ -31,22 +29,6 @@ public class CoreUtil /* extends Assert */ {
 		return (a1 == a2) || (a1 != null && a2 != null && Arrays.equals(a1, a2));
 	}
 	
-	/** Returns the first element of objs array that is not null.
-	 * At least one element must be not null. */
-	public static <T> T firstNonNull(T... objs) {
-		for (int i = 0; i < objs.length; i++) {
-			if(objs[i] != null)
-				return objs[i];
-		}
-		assertFail();
-		return null;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public static <T> T blindCast(Object obj) {
-		return (T) obj;
-	}
-	
 	/** If possible casts and returns given obj as a type T, otherwise return null. */
 	public static <T> T tryCast(Object obj, Class<T> klass) {
 		if(klass.isAssignableFrom(obj.getClass())) {
@@ -57,6 +39,12 @@ public class CoreUtil /* extends Assert */ {
 		} else {
 			return null;
 		}
+	}
+	
+	/** Casts given obj to whatever type is expected. Use with care, this is very unsafe. */
+	@SuppressWarnings("unchecked")
+	public static <T> T blindCast(Object obj) {
+		return (T) obj;
 	}
 	
 	/** Shortcut for creating an array of T. */
@@ -89,13 +77,6 @@ public class CoreUtil /* extends Assert */ {
 		return elems;
 	}
 	
-	/** Marker method for signaling a feature that is not yet implemented. 
-	 * Uses the Deprecated annotation solely to cause a warning.
-	 * Causes an assertion failure. */ 
-	@Deprecated
-	public static RuntimeException assertTODO() {
-		return Assert.fail("TODO");
-	}
 	
 	/** Marker method for signaling a feature that is not yet implemented. 
 	 * Uses the Deprecated annotation solely to cause a warning. 
