@@ -10,7 +10,7 @@
  *******************************************************************************/
 package melnorme.utilbox.misc;
 
-import static melnorme.utilbox.core.Assert.assertTrue;
+import static melnorme.utilbox.core.Assert.AssertNamespace.assertTrue;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;

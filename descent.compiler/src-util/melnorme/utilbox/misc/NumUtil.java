@@ -1,6 +1,6 @@
 package melnorme.utilbox.misc;
 
-import static melnorme.utilbox.core.Assert.assertTrue;
+import static melnorme.utilbox.core.Assert.AssertNamespace.assertTrue;
 
 
 public class NumUtil {

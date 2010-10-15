@@ -134,8 +134,8 @@ public class Assert {
 	}
 	
 	
-//	/** A namespace class for holding assert methods to use as static imports. */
-//	public static class AssertNamespace {
+	/** A namespace class for holding assert methods to use as static imports. */
+	public static class AssertNamespace {
 		/** Asserts if given condition is true or not. If it is not, call assert handler.
 		 * Default handler behavior is to throw an {@link AssertFailedException} with given message.
 		 */
@@ -181,6 +181,6 @@ public class Assert {
 		public static RuntimeException assertUnreachable() {
 			return fail("Unreachable code."); //$NON-NLS-1$
 		}
-//	}
+	}
 	
 }

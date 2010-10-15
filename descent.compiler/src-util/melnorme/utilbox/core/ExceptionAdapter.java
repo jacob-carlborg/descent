@@ -11,7 +11,9 @@
  *******************************************************************************/
 package melnorme.utilbox.core;
 
-import static melnorme.utilbox.core.Assert.assertNotNull;
+
+import static melnorme.utilbox.core.Assert.AssertNamespace.assertFail;
+import static melnorme.utilbox.core.Assert.AssertNamespace.assertNotNull;
 
 import java.io.IOException;
 
@@ -57,7 +59,7 @@ public class ExceptionAdapter extends RuntimeException {
 	                pr.append("\n");
 	            }
 			} catch (IOException e) {
-				melnorme.utilbox.core.Assert.assertFail();
+				assertFail();
 			}
         }
 	}

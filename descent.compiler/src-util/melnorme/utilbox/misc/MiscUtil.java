@@ -10,8 +10,8 @@
  *******************************************************************************/
 package melnorme.utilbox.misc;
 
-import static melnorme.utilbox.core.Assert.assertFail;
-import static melnorme.utilbox.core.Assert.assertTrue;
+import static melnorme.utilbox.core.Assert.AssertNamespace.assertFail;
+import static melnorme.utilbox.core.Assert.AssertNamespace.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
