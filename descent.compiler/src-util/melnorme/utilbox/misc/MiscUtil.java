@@ -113,12 +113,22 @@ public class MiscUtil {
 	}
 	
 	/** Returns a copy of given collection, synchs on the given collection. */
+	@Deprecated
 	public static <T> List<T> synchronizedCreateCopy(Collection<T> collection) {
 		ArrayList<T> newCollection;
 		synchronized (collection) {
 			newCollection = new ArrayList<T>(collection);
 		}
 		return newCollection;
+	}
+	
+	/** Synchronizes on the given collection, and returns a copy suitable for iteration. */
+	public static <T> Iterable<T> synchronizedCreateIterable(Collection<T> collection) {
+		Iterable<T> iterable;
+		synchronized (collection) {
+			iterable = new ArrayList<T>(collection);
+		}
+		return iterable;
 	}
 	
 	/** Sleeps current thread for given millis amount. 
