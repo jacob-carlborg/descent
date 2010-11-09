@@ -2860,7 +2860,11 @@ public class NaiveASTFlattener extends AstVisitorAdapter {
 	@Override
 	public boolean visit(TypeidExp node) {
 		this.buffer.append("typeid(");
-		node.typeidType.accept(this);
+		if(node.typeidType != null) {
+			node.typeidType.accept(this);
+		} else {
+			node.argumentExp__DDT_ADDITION.accept(this);
+		}
 		this.buffer.append(")");
 		return false;
 	}

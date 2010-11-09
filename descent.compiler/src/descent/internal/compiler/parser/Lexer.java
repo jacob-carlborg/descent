@@ -1,88 +1,7 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.TOK.TOKPRAGMA;
-import static descent.internal.compiler.parser.TOK.TOKadd;
-import static descent.internal.compiler.parser.TOK.TOKaddass;
-import static descent.internal.compiler.parser.TOK.TOKand;
-import static descent.internal.compiler.parser.TOK.TOKandand;
-import static descent.internal.compiler.parser.TOK.TOKandass;
-import static descent.internal.compiler.parser.TOK.TOKassign;
-import static descent.internal.compiler.parser.TOK.TOKblockcomment;
-import static descent.internal.compiler.parser.TOK.TOKcatass;
-import static descent.internal.compiler.parser.TOK.TOKcharv;
-import static descent.internal.compiler.parser.TOK.TOKcolon;
-import static descent.internal.compiler.parser.TOK.TOKcomma;
-import static descent.internal.compiler.parser.TOK.TOKdcharv;
-import static descent.internal.compiler.parser.TOK.TOKdiv;
-import static descent.internal.compiler.parser.TOK.TOKdivass;
-import static descent.internal.compiler.parser.TOK.TOKdocblockcomment;
-import static descent.internal.compiler.parser.TOK.TOKdoclinecomment;
-import static descent.internal.compiler.parser.TOK.TOKdocpluscomment;
-import static descent.internal.compiler.parser.TOK.TOKdot;
-import static descent.internal.compiler.parser.TOK.TOKdotdotdot;
-import static descent.internal.compiler.parser.TOK.TOKeof;
-import static descent.internal.compiler.parser.TOK.TOKequal;
-import static descent.internal.compiler.parser.TOK.TOKfloat32v;
-import static descent.internal.compiler.parser.TOK.TOKfloat64v;
-import static descent.internal.compiler.parser.TOK.TOKfloat80v;
-import static descent.internal.compiler.parser.TOK.TOKge;
-import static descent.internal.compiler.parser.TOK.TOKgt;
-import static descent.internal.compiler.parser.TOK.TOKidentifier;
-import static descent.internal.compiler.parser.TOK.TOKidentity;
-import static descent.internal.compiler.parser.TOK.TOKimaginary32v;
-import static descent.internal.compiler.parser.TOK.TOKimaginary64v;
-import static descent.internal.compiler.parser.TOK.TOKimaginary80v;
-import static descent.internal.compiler.parser.TOK.TOKint32v;
-import static descent.internal.compiler.parser.TOK.TOKint64v;
-import static descent.internal.compiler.parser.TOK.TOKlbracket;
-import static descent.internal.compiler.parser.TOK.TOKlcurly;
-import static descent.internal.compiler.parser.TOK.TOKle;
-import static descent.internal.compiler.parser.TOK.TOKleg;
-import static descent.internal.compiler.parser.TOK.TOKlg;
-import static descent.internal.compiler.parser.TOK.TOKlinecomment;
-import static descent.internal.compiler.parser.TOK.TOKlparen;
-import static descent.internal.compiler.parser.TOK.TOKlt;
-import static descent.internal.compiler.parser.TOK.TOKmin;
-import static descent.internal.compiler.parser.TOK.TOKminass;
-import static descent.internal.compiler.parser.TOK.TOKminusminus;
-import static descent.internal.compiler.parser.TOK.TOKmod;
-import static descent.internal.compiler.parser.TOK.TOKmodass;
-import static descent.internal.compiler.parser.TOK.TOKmul;
-import static descent.internal.compiler.parser.TOK.TOKmulass;
-import static descent.internal.compiler.parser.TOK.TOKnot;
-import static descent.internal.compiler.parser.TOK.TOKnotequal;
-import static descent.internal.compiler.parser.TOK.TOKnotidentity;
-import static descent.internal.compiler.parser.TOK.TOKor;
-import static descent.internal.compiler.parser.TOK.TOKorass;
-import static descent.internal.compiler.parser.TOK.TOKoror;
-import static descent.internal.compiler.parser.TOK.TOKpluscomment;
-import static descent.internal.compiler.parser.TOK.TOKplusplus;
-import static descent.internal.compiler.parser.TOK.TOKquestion;
-import static descent.internal.compiler.parser.TOK.TOKrbracket;
-import static descent.internal.compiler.parser.TOK.TOKrcurly;
-import static descent.internal.compiler.parser.TOK.TOKrparen;
-import static descent.internal.compiler.parser.TOK.TOKsemicolon;
-import static descent.internal.compiler.parser.TOK.TOKshl;
-import static descent.internal.compiler.parser.TOK.TOKshlass;
-import static descent.internal.compiler.parser.TOK.TOKshr;
-import static descent.internal.compiler.parser.TOK.TOKshrass;
-import static descent.internal.compiler.parser.TOK.TOKslice;
-import static descent.internal.compiler.parser.TOK.TOKstring;
-import static descent.internal.compiler.parser.TOK.TOKtilde;
-import static descent.internal.compiler.parser.TOK.TOKue;
-import static descent.internal.compiler.parser.TOK.TOKug;
-import static descent.internal.compiler.parser.TOK.TOKuge;
-import static descent.internal.compiler.parser.TOK.TOKul;
-import static descent.internal.compiler.parser.TOK.TOKule;
-import static descent.internal.compiler.parser.TOK.TOKunord;
-import static descent.internal.compiler.parser.TOK.TOKuns32v;
-import static descent.internal.compiler.parser.TOK.TOKuns64v;
-import static descent.internal.compiler.parser.TOK.TOKushr;
-import static descent.internal.compiler.parser.TOK.TOKushrass;
-import static descent.internal.compiler.parser.TOK.TOKwcharv;
-import static descent.internal.compiler.parser.TOK.TOKwhitespace;
-import static descent.internal.compiler.parser.TOK.TOKxor;
-import static descent.internal.compiler.parser.TOK.TOKxorass;
+
+import static descent.internal.compiler.parser.TOK.*;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -521,7 +440,23 @@ public class Lexer implements IProblemRequestor {
 					return;
 				}
 				continue; // skip white space
-
+			// ANNOTATION ERASE WORKAROUND. 
+			// DDT: treat annotations as whitespace, to be able to parse them.	
+			case '@':
+				lexAnnotation();
+				boolean ANNOTATIONS_AS_SHARED = true;
+				if (ANNOTATIONS_AS_SHARED) {
+					// pretend the annotation is shared token
+					t.sourceLen = p - t.ptr;
+					t.value = TOKshared;
+					t.setString(input, t.ptr, t.sourceLen);
+					return;
+				} else {
+					// Ignore annotation chars
+					continue;
+				}
+			// END OF ANNOTATION ERASE WORKAROUND 
+				
 			case '0':
 			case '1':
 			case '2':
@@ -6189,5 +6124,14 @@ public class Lexer implements IProblemRequestor {
 		sb.append(input, token.ptr + token.sourceLen, end - (token.ptr + token.sourceLen));
 		return sb.toString();
 	}
-
+	
+	protected void lexAnnotation() {
+		while(true) {
+			p++;
+			char ch = input(p);
+			if(!Character.isLetterOrDigit(ch)) 
+				break;
+		}
+	}
+	
 }

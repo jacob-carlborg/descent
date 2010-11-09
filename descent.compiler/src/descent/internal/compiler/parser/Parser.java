@@ -7216,7 +7216,26 @@ public class Parser extends Lexer {
 		case TOKtypeid:
 		{   Type t2;
 			int start = token.ptr;
-
+			
+			boolean DDT__TYPEIDEXP_FIX = true;
+			if(DDT__TYPEIDEXP_FIX) { // XXX: BM: alternate code taken from DMD 2.050
+				nextToken();
+				check(TOKlparen /*, "typeid"*/);
+				Object o;
+				if (isDeclaration(token, 0, TOKreserved, null))
+				{   // argument is a type
+					o = parseType();
+				}
+				else
+				{   // argument is an expression
+					o = parseAssignExp();
+				}
+				check(TOKrparen);
+				e = new TypeidExp(filename, lineNumber, o);
+				e.setSourceRange(start, prevToken.ptr + prevToken.sourceLen - start);
+				break;
+			}
+			
 		    nextToken();
 		    check(TOKlparen);
 		    if (apiLevel < D2) {
