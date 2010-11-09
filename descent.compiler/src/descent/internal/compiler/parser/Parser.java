@@ -7603,7 +7603,7 @@ public class Parser extends Lexer {
 						arguments.add(index);
 						if (token.value == TOKcomma) {
 							nextToken();
-							while (true) {
+							while (token.value != TOKrbracket && token.value != TOKeof) {
 								Expression arg;
 
 								arg = parseAssignExp();
