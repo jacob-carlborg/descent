@@ -29,11 +29,11 @@ public class CoreUtil /* extends Assert */ {
 		return (a1 == a2) || (a1 != null && a2 != null && Arrays.equals(a1, a2));
 	}
 	
-	/** If possible casts and returns given obj as a type T, otherwise return null. */
-	public static <T> T tryCast(Object obj, Class<T> klass) {
-		if(klass.isAssignableFrom(obj.getClass())) {
-			return CoreUtil.<T>blindCast(obj);
-			// The next line should also work, but doesnt compile due to a JDK javac bug:
+	/** If possible casts and returns given object as a type T, otherwise return null. */
+	public static <T> T tryCast(Object object, Class<T> klass) {
+		if(klass.isAssignableFrom(object.getClass())) {
+			return CoreUtil.<T>blindCast(object);
+			// The next line should work instead, but doesn't compile due to a JDK javac bug:
 			// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6302954
 			// return blindCast(obj); 
 		} else {
@@ -41,10 +41,27 @@ public class CoreUtil /* extends Assert */ {
 		}
 	}
 	
-	/** Casts given obj to whatever type is expected. Use with care, this is very unsafe. */
+	/** Casts given object to a supertype as typed by given klass. This cast is safe. */
+	public static <U, T extends U> U upCast(T object, @SuppressWarnings("unused") Class<U> klass) {
+		return object;
+	}
+	
+	/** Casts given object to a subtype as typed by given klass. This cast is unsafe. */
 	@SuppressWarnings("unchecked")
-	public static <T> T blindCast(Object obj) {
-		return (T) obj;
+	public static <T, D extends T> D downCast(T object, @SuppressWarnings("unused") Class<D> klass) {
+		return (D) object;
+	}
+	
+	/** Casts given object to whatever subtype is expected. Use with care, this is unsafe. */
+	@SuppressWarnings("unchecked")
+	public static <T, D extends T> D blindDownCast(T object) {
+		return (D) object;
+	}
+	
+	/** Casts given object to whatever type is expected. Use with care, this is very unsafe. */
+	@SuppressWarnings("unchecked")
+	public static <T> T blindCast(Object object) {
+		return (T) object;
 	}
 	
 	/** Shortcut for creating an array of T. */
