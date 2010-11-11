@@ -447,7 +447,6 @@ public class Parser extends Lexer {
 		return parseDeclDefs(once, false);
 	}
 
-	@SuppressWarnings("unchecked")
 	public Dsymbols parseDeclDefs(boolean once, boolean thinksItsD2) {
 		if (token.value == null) {
 			nextToken();
