@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- * 		Bruce Eckel - initial ideia
+ * 		Bruce Eckel - initial code
  *		Bruno Medeiros - modifications
  *******************************************************************************/
 package melnorme.utilbox.core;
@@ -18,7 +18,6 @@ import static melnorme.utilbox.core.Assert.AssertNamespace.assertNotNull;
 import java.io.IOException;
 
 
-
 /**
  * Exception adapter to make checked exceptions less annoying. 
  * Based on Bruce Eckel's article:
@@ -26,10 +25,10 @@ import java.io.IOException;
  */
 @SuppressWarnings("serial")
 public class ExceptionAdapter extends RuntimeException {
-
+	
 	// Number of frames that originalException traveled while checked
 	protected int checkedLength; 
-
+	
 	protected ExceptionAdapter(Exception e) {
 		super(e);
 		assertNotNull(e);
@@ -41,52 +40,53 @@ public class ExceptionAdapter extends RuntimeException {
 		StackTraceElement ste = getStackTrace()[0];
 		String firstMethod = ste.getClassName() +"."+ ste.getMethodName();
 		// Adjust checkedLength if EA was created in method unchecked
-		if(firstMethod.endsWith("ExceptionAdapter.unchecked"))
+		if(firstMethod.endsWith("ExceptionAdapter.unchecked")) {
 			checkedLength++;
-		
+		}
 	}
-
-
+	
+	
 	protected void printStackTraceAppendable(Appendable pr) {
-        synchronized(pr) {
-            try {
+		synchronized(pr) {
+			try {
 				pr.append(this.toString());
-	            StackTraceElement[] trace = getCause().getStackTrace();
-	            for (int i=0; i < trace.length; i++) {
-	                pr.append("\tat " + trace[i]);
-	            	if(i == checkedLength)
-	            		pr.append(" [UNCHECKED]");
-	                pr.append("\n");
-	            }
+				StackTraceElement[] trace = getCause().getStackTrace();
+				for (int i=0; i < trace.length; i++) {
+					pr.append("\tat " + trace[i]);
+					if(i == checkedLength) {
+						pr.append(" [UNCHECKED]");
+					}
+					pr.append("\n");
+				}
 			} catch (IOException e) {
 				assertFail();
 			}
-        }
+		}
 	}
 	
 	@Override
 	public void printStackTrace(java.io.PrintStream ps) {		
 		printStackTraceAppendable(ps);
 	}
-
+	
 	@Override
 	public void printStackTrace(java.io.PrintWriter pw) {
 		printStackTraceAppendable(pw);
 	}
-
+	
 	@Override
 	public Exception getCause() {
 		return (Exception) super.getCause();
 	}
-
+	
 	public void rethrow() throws Exception {
 		throw getCause();
 	}
-
+	
 	@Override
 	public String toString() {
-        String className = getClass().getSimpleName();
-        return "["+className+"] " + getLocalizedMessage() + "\n";
+		String className = getClass().getSimpleName();
+		return "["+className+"] " + getLocalizedMessage() + "\n";
 	}
 	
 	/** Creates an unchecked Throwable, if not unchecked already. */
@@ -98,7 +98,7 @@ public class ExceptionAdapter extends RuntimeException {
 		if(e instanceof Error)
 			throw (Error) e;
 		else {
-			Assert.fail("uncheck: Unsupported Throwable: " + e);
+			assertFail("uncheck: Unsupported Throwable: " + e);
 			return null;
 		}
 	}
