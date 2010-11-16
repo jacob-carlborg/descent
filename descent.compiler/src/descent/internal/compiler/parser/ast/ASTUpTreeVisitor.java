@@ -955,8 +955,8 @@ public class ASTUpTreeVisitor extends TreeVisitor implements IASTVisitor {
 	}
 	@Override
 	public boolean visit(TypeAArray node) {
-		Assert.isTrue(TypeAArray.class.getSuperclass().equals(Type.class));
-		return visit((Type) node);
+		Assert.isTrue(TypeAArray.class.getSuperclass().equals(TypeArray.class));
+		return visit((TypeArray) node);
 	}
 	@Override
 	public boolean visit(TypeBasic node) {
@@ -970,8 +970,8 @@ public class ASTUpTreeVisitor extends TreeVisitor implements IASTVisitor {
 	}
 	@Override
 	public boolean visit(TypeDArray node) {
-		Assert.isTrue(TypeDArray.class.getSuperclass().equals(Type.class));
-		return visit((Type) node);
+		Assert.isTrue(TypeDArray.class.getSuperclass().equals(TypeArray.class));
+		return visit((TypeArray) node);
 	}
 	@Override
 	public boolean visit(TypedefDeclaration node) {
@@ -980,8 +980,8 @@ public class ASTUpTreeVisitor extends TreeVisitor implements IASTVisitor {
 	}
 	@Override
 	public boolean visit(TypeDelegate node) {
-		Assert.isTrue(TypeDelegate.class.getSuperclass().equals(Type.class));
-		return visit((Type) node);
+		Assert.isTrue(TypeDelegate.class.getSuperclass().equals(TypeNext.class));
+		return visit((TypeNext) node);
 	}
 	@Override
 	public boolean visit(TypeEnum node) {
@@ -995,8 +995,8 @@ public class ASTUpTreeVisitor extends TreeVisitor implements IASTVisitor {
 	}
 	@Override
 	public boolean visit(TypeFunction node) {
-		Assert.isTrue(TypeFunction.class.getSuperclass().equals(Type.class));
-		return visit((Type) node);
+		Assert.isTrue(TypeFunction.class.getSuperclass().equals(TypeNext.class));
+		return visit((TypeNext) node);
 	}
 	@Override
 	public boolean visit(TypeIdentifier node) {
@@ -1075,8 +1075,8 @@ public class ASTUpTreeVisitor extends TreeVisitor implements IASTVisitor {
 	}
 	@Override
 	public boolean visit(TypePointer node) {
-		Assert.isTrue(TypePointer.class.getSuperclass().equals(Type.class));
-		return visit((Type) node);
+		Assert.isTrue(TypePointer.class.getSuperclass().equals(TypeNext.class));
+		return visit((TypeNext) node);
 	}
 	@Override
 	public boolean visit(TypeQualified node) {
@@ -1085,13 +1085,13 @@ public class ASTUpTreeVisitor extends TreeVisitor implements IASTVisitor {
 	}
 	@Override
 	public boolean visit(TypeSArray node) {
-		Assert.isTrue(TypeSArray.class.getSuperclass().equals(Type.class));
-		return visit((Type) node);
+		Assert.isTrue(TypeSArray.class.getSuperclass().equals(TypeArray.class));
+		return visit((TypeArray) node);
 	}
 	@Override
 	public boolean visit(TypeSlice node) {
-		Assert.isTrue(TypeSlice.class.getSuperclass().equals(Type.class));
-		return visit((Type) node);
+		Assert.isTrue(TypeSlice.class.getSuperclass().equals(TypeNext.class));
+		return visit((TypeNext) node);
 	}
 	@Override
 	public boolean visit(TypeStruct node) {
@@ -2121,8 +2121,8 @@ public class ASTUpTreeVisitor extends TreeVisitor implements IASTVisitor {
 	}
 	@Override
 	public void endVisit(TypeAArray node) {
-		Assert.isTrue(TypeAArray.class.getSuperclass().equals(Type.class));
-		endVisit((Type) node);
+		Assert.isTrue(TypeAArray.class.getSuperclass().equals(TypeArray.class));
+		endVisit((TypeArray) node);
 	}
 	@Override
 	public void endVisit(TypeBasic node) {
@@ -2136,8 +2136,8 @@ public class ASTUpTreeVisitor extends TreeVisitor implements IASTVisitor {
 	}
 	@Override
 	public void endVisit(TypeDArray node) {
-		Assert.isTrue(TypeDArray.class.getSuperclass().equals(Type.class));
-		endVisit((Type) node);
+		Assert.isTrue(TypeDArray.class.getSuperclass().equals(TypeArray.class));
+		endVisit((TypeArray) node);
 	}
 	@Override
 	public void endVisit(TypedefDeclaration node) {
@@ -2146,8 +2146,8 @@ public class ASTUpTreeVisitor extends TreeVisitor implements IASTVisitor {
 	}
 	@Override
 	public void endVisit(TypeDelegate node) {
-		Assert.isTrue(TypeDelegate.class.getSuperclass().equals(Type.class));
-		endVisit((Type) node);
+		Assert.isTrue(TypeDelegate.class.getSuperclass().equals(TypeNext.class));
+		endVisit((TypeNext) node);
 	}
 	@Override
 	public void endVisit(TypeEnum node) {
@@ -2161,8 +2161,8 @@ public class ASTUpTreeVisitor extends TreeVisitor implements IASTVisitor {
 	}
 	@Override
 	public void endVisit(TypeFunction node) {
-		Assert.isTrue(TypeFunction.class.getSuperclass().equals(Type.class));
-		endVisit((Type) node);
+		Assert.isTrue(TypeFunction.class.getSuperclass().equals(TypeNext.class));
+		endVisit((TypeNext) node);
 	}
 	@Override
 	public void endVisit(TypeIdentifier node) {
@@ -2241,8 +2241,8 @@ public class ASTUpTreeVisitor extends TreeVisitor implements IASTVisitor {
 	}
 	@Override
 	public void endVisit(TypePointer node) {
-		Assert.isTrue(TypePointer.class.getSuperclass().equals(Type.class));
-		endVisit((Type) node);
+		Assert.isTrue(TypePointer.class.getSuperclass().equals(TypeNext.class));
+		endVisit((TypeNext) node);
 	}
 	@Override
 	public void endVisit(TypeQualified node) {
@@ -2251,13 +2251,13 @@ public class ASTUpTreeVisitor extends TreeVisitor implements IASTVisitor {
 	}
 	@Override
 	public void endVisit(TypeSArray node) {
-		Assert.isTrue(TypeSArray.class.getSuperclass().equals(Type.class));
-		endVisit((Type) node);
+		Assert.isTrue(TypeSArray.class.getSuperclass().equals(TypeArray.class));
+		endVisit((TypeArray) node);
 	}
 	@Override
 	public void endVisit(TypeSlice node) {
-		Assert.isTrue(TypeSlice.class.getSuperclass().equals(Type.class));
-		endVisit((Type) node);
+		Assert.isTrue(TypeSlice.class.getSuperclass().equals(TypeNext.class));
+		endVisit((TypeNext) node);
 	}
 	@Override
 	public void endVisit(TypeStruct node) {
