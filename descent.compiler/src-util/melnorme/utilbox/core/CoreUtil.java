@@ -29,18 +29,6 @@ public class CoreUtil /* extends Assert */ {
 		return (a1 == a2) || (a1 != null && a2 != null && Arrays.equals(a1, a2));
 	}
 	
-	/** If possible casts and returns given object as a type T, otherwise return null. */
-	public static <T> T tryCast(Object object, Class<T> klass) {
-		if(klass.isAssignableFrom(object.getClass())) {
-			return CoreUtil.<T>blindCast(object);
-			// The next line should work instead, but doesn't compile due to a JDK javac bug:
-			// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6302954
-			// return blindCast(obj); 
-		} else {
-			return null;
-		}
-	}
-	
 	/** Casts given object to a supertype as typed by given klass. This cast is safe. */
 	public static <U, T extends U> U upCast(T object, @SuppressWarnings("unused") Class<U> klass) {
 		return object;
@@ -54,14 +42,20 @@ public class CoreUtil /* extends Assert */ {
 	
 	/** Casts given object to whatever subtype is expected. Use with care, this is unsafe. */
 	@SuppressWarnings("unchecked")
-	public static <T, D extends T> D blindDownCast(T object) {
+	public static <T, D extends T> D downCast(T object) {
 		return (D) object;
 	}
 	
-	/** Casts given object to whatever type is expected. Use with care, this is very unsafe. */
-	@SuppressWarnings("unchecked")
-	public static <T> T blindCast(Object object) {
-		return (T) object;
+	/** If possible casts and returns given object as a type T, otherwise return null. */
+	public static <T> T tryCast(Object object, Class<T> klass) {
+		if(klass.isAssignableFrom(object.getClass())) {
+			return CoreUtil.<Object, T>downCast(object);
+			// The next line should work instead, but doesn't compile due to a JDK javac bug:
+			// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6302954
+			// return downCast(obj); 
+		} else {
+			return null;
+		}
 	}
 	
 	/** Shortcut for creating an array of T. */

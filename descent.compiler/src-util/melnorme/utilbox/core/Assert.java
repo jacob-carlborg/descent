@@ -44,7 +44,7 @@ public class Assert {
 						};
 					};
 				} else {
-					assertHandler = CoreUtil.blindCast(handler);
+					assertHandler = CoreUtil.downCast(handler);
 				}
 			} catch(Exception e) {
 				throw new RuntimeException(e); // Yes, let our classloading fail.
