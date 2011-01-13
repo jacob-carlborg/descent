@@ -15,5 +15,8 @@ public interface IASTNode extends IElement, IVisitable<IASTVisitor> {
 	String toStringAsNode(boolean printRangeInfo);
 
 	boolean hasNoSourceRangeInfo();
-
+	
+	@Override
+	public IASTNode[] getChildren(); // Redefined to refine the type of children
+	
 }
