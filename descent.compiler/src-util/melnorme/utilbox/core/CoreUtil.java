@@ -46,6 +46,12 @@ public class CoreUtil /* extends Assert */ {
 		return (D) object;
 	}
 	
+	/** Casts given object to whatever type is expected. Use with care, this is very unsafe. */
+	@SuppressWarnings("unchecked")
+	public static <T> T blindCast(Object object) {
+		return (T) object;
+	}
+	
 	/** If possible casts and returns given object as a type T, otherwise return null. */
 	public static <T> T tryCast(Object object, Class<T> klass) {
 		if(klass.isAssignableFrom(object.getClass())) {
