@@ -11,6 +11,8 @@
 package melnorme.utilbox.core;
 
 
+import static melnorme.utilbox.core.Assert.AssertNamespace.assertNotNull;
+
 import java.util.Arrays;
 
 /**
@@ -29,12 +31,12 @@ public class CoreUtil /* extends Assert */ {
 		return (a1 == a2) || (a1 != null && a2 != null && Arrays.equals(a1, a2));
 	}
 	
-	/** Casts given object to a supertype as typed by given klass. This cast is safe. */
+	/** Casts given object to a supertype as typed by given klass (actual value not used). This cast is safe. */
 	public static <U, T extends U> U upCast(T object, @SuppressWarnings("unused") Class<U> klass) {
 		return object;
 	}
 	
-	/** Casts given object to a subtype as typed by given klass. This cast is unsafe. */
+	/** Casts given object to a subtype as typed by given klass (actual value not used). This cast is unsafe. */
 	@SuppressWarnings("unchecked")
 	public static <T, D extends T> D downCast(T object, @SuppressWarnings("unused") Class<D> klass) {
 		return (D) object;
@@ -52,9 +54,10 @@ public class CoreUtil /* extends Assert */ {
 		return (T) object;
 	}
 	
-	/** If possible casts and returns given object as a type T, otherwise return null. */
+	/** If given object is an instance of given klass, return it cast to T, otherwise return null. */
 	public static <T> T tryCast(Object object, Class<T> klass) {
-		if(klass.isAssignableFrom(object.getClass())) {
+		assertNotNull(object);
+		if(klass.isInstance(object)) {
 			return CoreUtil.<Object, T>downCast(object);
 			// The next line should work instead, but doesn't compile due to a JDK javac bug:
 			// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6302954
