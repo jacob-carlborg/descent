@@ -10,6 +10,7 @@
  *******************************************************************************/
 package melnorme.utilbox.misc;
 
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -19,8 +20,11 @@ import java.util.List;
  * Miscelleanous String utilities 
  */
 public final class StringUtil {
-
-
+	
+	public static final Charset UTF8 = Charset.forName("UTF-8");
+	public static final Charset UTF16 = Charset.forName("UTF-16");
+	
+	
 	/** @return a String of the given Collection elements with the given separator String. */
 	public static String collToString(Collection<?> coll, String sep) {
 		//if(coll == null) return "<null>";
