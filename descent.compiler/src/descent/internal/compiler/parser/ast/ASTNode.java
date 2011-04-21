@@ -5,13 +5,16 @@ import melnorme.utilbox.tree.IElement;
 import melnorme.utilbox.tree.IVisitable;
 import descent.internal.compiler.parser.ASTDmdNode;
 
+/**
+ * Abstract node class. Only ASTDmdNode is allowed to extends (BM: consider changing this?) 
+ */
 public abstract class ASTNode 
 	implements IASTNode, IElement, IVisitable<IASTVisitor> {
 	
 	public static final ASTDmdNode[] NO_ELEMENTS = new ASTDmdNode[0]; 
 	
 	/** AST node parent, null if the node is the tree root. */
-	public ASTNode parentBruno = null;
+	public ASTDmdNode parentNode = null;
 	
 	/** A character index into the original source string, 
 	 * or <code>-1</code> if no source position information is available
@@ -24,13 +27,13 @@ public abstract class ASTNode
 	public int length = 0;
 
 	@Override
-	public ASTNode getParent() {
-		return parentBruno;
+	public ASTDmdNode getParent() {
+		return parentNode;
 	}
 	
 	/** Set the parent of this node. Can be null. */
-	public void setParent(ASTNode parent) {
-		this.parentBruno = parent;
+	public void setParent(ASTDmdNode parent) {
+		this.parentNode = parent;
 	}
 	
 	/** Gets the source range start position, aka offset. */
