@@ -97,9 +97,10 @@ public abstract class ASTNode
 	@Override
 	public final void accept(IASTVisitor visitor) {
 		// begin with the generic pre-visit
-		visitor.preVisit(this);
-		// dynamic dispatch to internal method for type-specific visit/endVisit
-		this.accept0(visitor);
+		if(visitor.preVisit(this)) {
+			// dynamic dispatch to internal method for type-specific visit/endVisit
+			this.accept0(visitor);
+		}
 		// end with the generic post-visit
 		visitor.postVisit(this);
 	}

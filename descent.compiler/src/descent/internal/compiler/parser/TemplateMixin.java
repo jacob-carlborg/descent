@@ -251,8 +251,9 @@ public class TemplateMixin extends TemplateInstance {
 				for(Dsymbol member : members) {
 					member.accept(new AstVisitorAdapter() {
 						@Override
-						public void preVisit(ASTNode node) {
+						public boolean preVisit(ASTNode node) {
 							node.setSourceRange(start, length);
+							return true;
 						}
 					});
 				}

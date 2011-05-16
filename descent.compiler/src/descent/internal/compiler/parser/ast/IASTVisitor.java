@@ -5,7 +5,7 @@ import descent.internal.compiler.parser.Package;
 
 public interface IASTVisitor {
 	
-	void preVisit(ASTNode node);
+	boolean preVisit(ASTNode node);
 	
 	void postVisit(ASTNode node);
 	

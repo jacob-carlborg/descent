@@ -634,12 +634,13 @@ public class FuncDeclaration extends Declaration {
 			
 			module.accept(new AstVisitorAdapter() {
 				@Override
-				public void preVisit(ASTNode node) {
+				public boolean preVisit(ASTNode node) {
 					try {
 						node.start += javaElement.getSourceRange__adapter().getOffset();
 					} catch (JavaModelException__Common e) {
 						e.printStackTrace();
 					}
+					return true;
 				}
 			});
 	

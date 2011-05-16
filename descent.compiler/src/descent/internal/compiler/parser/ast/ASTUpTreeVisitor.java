@@ -1,19 +1,19 @@
 package descent.internal.compiler.parser.ast;
 
 import melnorme.utilbox.core.Assert;
-import melnorme.utilbox.tree.TreeVisitor;
 import descent.internal.compiler.parser.*;
 import descent.internal.compiler.parser.Package;
 
 /**
- * An abstract visitor class that that delegates each visit method, to the visit
- * method of the element's superclass 
+ * An abstract visitor class that delegates each visit method to the method with the parameter's superclass.
+ * Thus it navigates upwards in the AST hierarchy until a concrete methed implementation is executed.
+ * This is a cute idea, but it can be a performance issue. 
  */
-public class ASTUpTreeVisitor extends TreeVisitor implements IASTVisitor {
+public class ASTUpTreeVisitor implements IASTVisitor {
 	
 	@Override
-	public void preVisit(ASTNode elem) {
-		// Default implementation: do nothing
+	public boolean preVisit(ASTNode elem) {
+		return true; // Default implementation: do nothing
 	}
 	@Override
 	public void postVisit(ASTNode elem) {

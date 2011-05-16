@@ -954,7 +954,8 @@ public class AstVisitorAdapter implements IASTVisitor {
 	}
 	
 	@Override
-	public void preVisit(ASTNode node) {
+	public boolean preVisit(ASTNode node) {
+		return true;
 	}
 	
 	@Override

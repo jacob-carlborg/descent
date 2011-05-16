@@ -75,7 +75,7 @@ public class CompileDeclaration extends AttribDeclaration {
 				for(Dsymbol s : decl) {
 					s.accept(new AstVisitorAdapter() {
 						@Override
-						public void preVisit(ASTNode node) {
+						public boolean preVisit(ASTNode node) {
 							if (node instanceof ASTDmdNode) {
 								ASTDmdNode s = (ASTDmdNode) node;
 								s.setStart(getStart() + 1);
@@ -83,6 +83,7 @@ public class CompileDeclaration extends AttribDeclaration {
 								s.setLineNumber(getLineNumber());
 								context.setCreator(s, CompileDeclaration.this);
 							}
+							return true;
 						}
 					});
 				}
