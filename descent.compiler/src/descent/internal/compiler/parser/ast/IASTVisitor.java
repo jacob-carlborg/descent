@@ -1,18 +1,14 @@
 package descent.internal.compiler.parser.ast;
 
-import melnorme.utilbox.tree.ITreeVisitor;
 import descent.internal.compiler.parser.*;
 import descent.internal.compiler.parser.Package;
 
-public interface IASTVisitor extends ITreeVisitor<ASTNode> {
+public interface IASTVisitor {
 	
-	@Override
 	void preVisit(ASTNode node);
-	@Override
+	
 	void postVisit(ASTNode node);
 	
-	//boolean visit(IASTNode node);
-	//void endVisit(IASTNode node);
 
 	/** Visits the node element. 
 	 * @return true if children element should be visited */
