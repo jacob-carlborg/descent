@@ -12,8 +12,8 @@ package melnorme.utilbox.tree;
 
 import java.util.List;
 
-/** Abstract visitor for a heterogenous tree with some utility methods. */
-public abstract class TreeVisitor {
+/** Some utility methods for visitors. */
+public abstract class TreeVisitorUtil {
 	
 	/** Accepts the visitor on child. If child is null, nothing happens. */
 	public static <T> void acceptChild(T visitor, IVisitable<T> child) {
@@ -21,12 +21,12 @@ public abstract class TreeVisitor {
 			child.accept(visitor);
 		}
 	}
-
+	
 	/** Same as {@link #acceptChild(Object, IVisitable) } */
 	public static <T> void acceptChildren(T visitor, IVisitable<T> child) {
-		TreeVisitor.acceptChild(visitor, child);
+		TreeVisitorUtil.acceptChild(visitor, child);
 	}
-
+	
 	/** Accepts the visitor on the children. If children is null, nothing
 	 * happens.	*/
 	public static <T> void acceptChildren(T visitor, IVisitable<T>[] children) {
@@ -34,10 +34,10 @@ public abstract class TreeVisitor {
 			return;
 		
 		for(int i = 0; i < children.length; i++) {
-			TreeVisitor.acceptChild(visitor, children[i]);
+			TreeVisitorUtil.acceptChild(visitor, children[i]);
 		}
 	}
-
+	
 	/** Accepts the visitor on the children. If children is null, nothing
 	 * happens. */
 	public static <T> void acceptChildren(T visitor, List<? extends IVisitable<T>> children) {
@@ -45,8 +45,8 @@ public abstract class TreeVisitor {
 			return;
 		
 		for(int i = 0; i < children.size(); i++) {
-			TreeVisitor.acceptChild(visitor, children.get(i));
+			TreeVisitorUtil.acceptChild(visitor, children.get(i));
 		}
 	}
-
+	
 }
