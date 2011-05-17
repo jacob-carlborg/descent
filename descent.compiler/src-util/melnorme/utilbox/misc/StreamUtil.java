@@ -38,12 +38,12 @@ public class StreamUtil {
 			final int BUFFER_SIZE = 1024;
 			byte[] buffer = new byte[BUFFER_SIZE];
 			byte[] bytes = new byte[0];
-			int totalRead = 0;
+//			int totalRead = 0;
 			
 			int read;
 			while((read = inputStream.read(buffer)) != EOF) {
 				bytes = ArrayUtil.concat(bytes, buffer, read);
-				totalRead += read;
+//				totalRead += read;
 			}
 			return bytes;
 		} finally {
@@ -58,12 +58,12 @@ public class StreamUtil {
 			final int BUFFER_SIZE = 1024;
 			char[] buffer = new char[BUFFER_SIZE];
 			char[] chars = new char[0];
-			int totalRead = 0;
+//			int totalRead = 0;
 			
 			int read;
 			while((read = reader.read(buffer)) != EOF) {
 				chars = ArrayUtil.concat(chars, buffer, read);
-				totalRead += read;
+//				totalRead += read;
 			}
 			return chars;
 		} finally {
