@@ -15,7 +15,6 @@ public class TokenUtil {
 		TOK.TOKequal,   TOK.TOKnotequal, 
 		TOK.TOKidentity,TOK.TOKnotidentity, 
 		TOK.TOKindex,   
-		TOK.TOKis, TOK.TOKnotis, 
 		TOK.TOKtobool, 
 		
 		TOK.TOKneg,
@@ -68,6 +67,8 @@ public class TokenUtil {
 	}; 
 	
 	public static final TOK[] keywords = {
+		TOK.TOKnotis, TOK.TOKis, // Operator keywords 
+		
 		TOK.TOKcast, 
 		TOK.TOKnull,
 		TOK.TOKassert, 
