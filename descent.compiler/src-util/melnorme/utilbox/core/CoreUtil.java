@@ -16,7 +16,7 @@ import static melnorme.utilbox.core.Assert.AssertNamespace.assertNotNull;
 import java.util.Arrays;
 
 /**
- * Utils for miscellaneous core language functionality. 
+ * Utils for miscellaneous Java core language functionality. 
  */
 public class CoreUtil /* extends Assert */ {
 	
@@ -72,38 +72,37 @@ public class CoreUtil /* extends Assert */ {
 		return elems;
 	}
 	
-	public static boolean[] arrayP(boolean... elems) {
+	/** @return an array of boolean's. */
+	public static boolean[] arrayB(boolean... elems) {
 		return elems;
 	}
-	public static byte[] arrayP(byte... elems) {
+	/** @return an array of byte's. */
+	public static byte[] arrayB(byte... elems) {
 		return elems;
 	}
-	public static short[] arrayP(short... elems) {
+	/** @return an array of short's. */
+	public static short[] arrayS(short... elems) {
 		return elems;
 	}
-	public static int[] arrayP(int... elems) {
+	/** @return an array of int's. */
+	public static int[] arrayI(int... elems) {
 		return elems;
 	}
-	public static long[] arrayP(long... elems) {
+	/** @return an array of long's. */
+	public static long[] arrayL(long... elems) {
 		return elems;
 	}
-	public static float[] arrayP(float... elems) {
+	/** @return an array of char's. */
+	public static char[] arrayC(char... elems) {
 		return elems;
 	}
-	public static double[] arrayP(double... elems) {
+	/** @return an array of float's. */
+	public static float[] arrayF(float... elems) {
 		return elems;
 	}
-	public static char[] arrayP(char... elems) {
+	/** @return an array of double's. */
+	public static double[] arrayD(double... elems) {
 		return elems;
-	}
-	
-	
-	/** Marker method for signaling a feature that is not yet implemented. 
-	 * Uses the Deprecated annotation solely to cause a warning. 
-	 * Returns false. */
-	@Deprecated
-	public static boolean taskTODO() {
-		return false;
 	}
 	
 }
