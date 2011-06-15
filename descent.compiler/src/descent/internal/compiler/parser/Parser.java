@@ -3744,11 +3744,20 @@ public class Parser extends Lexer {
 					check(TOKrbracket);
 				} else {
 					Expression e = parseExpression(); // [ expression ]
-
+					
+					// BM DDT BUGFIX: added null check for t
+					if(t == null) {
+						// t can be null on certain files with syntax errors
+						// try to workaround by supplying a dummy type. Not sure this is correct.
+						ta = new TypeSArray(new TypeBasic(TY.Tvoid), e, encoder);
+						//ta.setSourceRange(token.ptr, token.sourceLen);
+						check(TOKrbracket);
+					} else {
 					ta = new TypeSArray(t, e, encoder);
 					ta.setSourceRange(t.start, token.ptr + token.sourceLen
 							- t.start);
 					check(TOKrbracket);
+					}
 				}
 
 				if (ts != t) {
