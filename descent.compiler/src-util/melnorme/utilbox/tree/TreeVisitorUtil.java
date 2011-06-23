@@ -10,7 +10,6 @@
  *******************************************************************************/
 package melnorme.utilbox.tree;
 
-import java.util.List;
 
 /** Some utility methods for visitors. */
 public abstract class TreeVisitorUtil {
@@ -40,12 +39,12 @@ public abstract class TreeVisitorUtil {
 	
 	/** Accepts the visitor on the children. If children is null, nothing
 	 * happens. */
-	public static <T> void acceptChildren(T visitor, List<? extends IVisitable<T>> children) {
+	public static <T> void acceptChildren(T visitor, Iterable<? extends IVisitable<T>> children) {
 		if (children == null)
 			return;
 		
-		for(int i = 0; i < children.size(); i++) {
-			TreeVisitorUtil.acceptChild(visitor, children.get(i));
+		for(IVisitable<T> child : children) {
+			TreeVisitorUtil.acceptChild(visitor, child);
 		}
 	}
 	

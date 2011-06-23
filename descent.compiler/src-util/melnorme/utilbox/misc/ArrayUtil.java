@@ -22,6 +22,8 @@ import melnorme.utilbox.core.Predicate;
 
 public class ArrayUtil {
 	
+	public static final Object[] EMPTY_ARRAY = new Object[] {};
+	
 //	/** Returns true if both arrays have the same elements, ignoring order. False otherwise. */
 //	public static <T extends Comparable<? super T>> boolean arrayContainsSame(T[] arr1, T[] arr2) {
 //		List<T> list1 = Arrays.asList(arr1);
@@ -206,23 +208,23 @@ public class ArrayUtil {
 		return newArray;
 	}
 	
+	/** Removes the last given count elements from given array, creating a new array. */
+	public static <T> T[] removeLast(T[] array, int count) {
+		assertTrue(array.length >= count);
+		T[] newArray = ArrayUtil.copyFrom(array, array.length - count);
+		return newArray;
+	}
 	
-	/** Return the index of the first occurrence of elem in array, or -1 if no occurrences. */
+	/* ====================== search ====================== */
+	
+	/** Return the same as {@link List#indexOf(Object)}, using given array as a collection. */
 	public static <T> int indexOf(T[] array, T elem) {
-		for (int i = 0; i < array.length; i++) {
-			if(array[i].equals(elem))
-				return i;
-		}
-		return -1;
+		return Arrays.asList(array).indexOf(elem);
 	}
 	
 	/** Return true if array contains an element equal to obj. */
 	public static <T> boolean contains(T[] array, T obj) {
-		for(T elem: array) {
-			if(elem.equals(obj))
-				return true;
-		}
-		return false;
+		return indexOf(array, obj) != -1;
 	}
 	
 	/** Returns the index in given array of the first occurrence of given elem, 
@@ -235,11 +237,11 @@ public class ArrayUtil {
 		return -1;
 	}
 	
-	/** Returns the index in given array of the first element that equals given elem, 
+	/** Returns the index in given array of the first element that is the same as given elem, 
 	 * or -1 if none is found. */
-	public static <T> int indexOfUsingEquals(T[] array, T elem) {
+	public static <T> int indexOfIdentity(T[] array, T elem) {
 		for (int i = 0; i < array.length; i++) {
-			if(array[i].equals(elem))
+			if(array[i] == elem)
 				return i;
 		}
 		return -1;
