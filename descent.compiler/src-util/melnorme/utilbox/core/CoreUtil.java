@@ -11,8 +11,6 @@
 package melnorme.utilbox.core;
 
 
-import static melnorme.utilbox.core.Assert.AssertNamespace.assertNotNull;
-
 import java.util.Arrays;
 
 /**
@@ -56,7 +54,6 @@ public class CoreUtil /* extends Assert */ {
 	
 	/** If given object is an instance of given klass, return it cast to T, otherwise return null. */
 	public static <T> T tryCast(Object object, Class<T> klass) {
-		assertNotNull(object);
 		if(klass.isInstance(object)) {
 			return CoreUtil.<Object, T>downCast(object);
 			// The next line should work instead, but doesn't compile due to a JDK javac bug:
