@@ -53,7 +53,6 @@ public class ReflectionUtils {
 	}
 	
 	/** Same as {@link Method#invoke(Object, Object...)} but unchecks the exceptions. */
-	@SuppressWarnings("unchecked")
 	public static <T> T uncheckedInvoke(Object obj, final Method method, Object... args) {
 		try {
 			return (T) method.invoke(obj, args);
@@ -89,6 +88,8 @@ public class ReflectionUtils {
 			}
 		}
 	}
+	
+	/* ---------------------------------------------------------------- */
 	
 	/** Reads the field with given fieldName in given object. */
 	public static <T> Object readField(T object, String fieldName) {
